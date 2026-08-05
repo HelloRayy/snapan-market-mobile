@@ -128,9 +128,9 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
 
           {/* Middle Text & Pagination Dots */}
           <div className="w-full max-w-sm mx-auto my-auto py-4 space-y-4">
-            {/* Pagination Dots with Fluid Pill Animation */}
+            {/* Pagination Dots with Fluid Pill Animation (Only 4 Dots for Content Slides) */}
             <div className="flex items-center gap-1.5" role="tablist" aria-label="Slide Indicator">
-              {slides.map((slide, index) => (
+              {slides.slice(0, 4).map((slide, index) => (
                 <button
                   key={slide.id}
                   onClick={() => setCurrentSlide(index)}

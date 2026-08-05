@@ -860,7 +860,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                       className="h-4.5 w-4.5 rounded-md border-neutral-300 text-[#1d64ec] focus:ring-blue-500/20 cursor-pointer mt-0.5"
                     />
                     <label htmlFor="agree-terms-checkbox" className="text-xs text-slate-700 font-medium cursor-pointer leading-tight">
-                      Saya menyetujui <span className="font-bold text-slate-900 underline">Syarat & Ketentuan</span> serta <span className="font-bold text-slate-900 underline">Kebijakan Privasi</span> Snapan Market
+                      Saya menyetujui <span className="font-bold text-[#1d64ec] hover:underline cursor-pointer">Syarat & Ketentuan</span> serta <span className="font-bold text-[#1d64ec] hover:underline cursor-pointer">Kebijakan Privasi</span> Snapan Market
                     </label>
                   </div>
                   {errors.agreeTerms && (

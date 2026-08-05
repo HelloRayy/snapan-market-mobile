@@ -149,14 +149,14 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
           <ArrowLeft className="h-4.5 w-4.5 text-slate-900" aria-hidden="true" />
         </button>
 
-        {/* Stable Grid Container for Overlapping Crossfade */}
-        <div className="grid grid-cols-1 grid-rows-1 min-h-[48px]">
+        {/* Zero-Layout-Shift Snappy Header Container (Locked min-h-[52px] with 150ms opacity crossfade) */}
+        <div className="grid grid-cols-1 grid-rows-1 min-h-[52px]">
           {/* Login Title Layer */}
           <div
-            className={`col-start-1 row-start-1 space-y-0.5 transition-all duration-300 ease-in-out ${
+            className={`col-start-1 row-start-1 space-y-0.5 transition-opacity duration-150 ease-out ${
               authTab === 'login'
-                ? 'opacity-100 translate-y-0 scale-100'
-                : 'opacity-0 -translate-y-2 scale-98 pointer-events-none'
+                ? 'opacity-100'
+                : 'opacity-0 pointer-events-none'
             }`}
           >
             <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 font-shopify-sans leading-tight">
@@ -169,10 +169,10 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
 
           {/* Register Title Layer */}
           <div
-            className={`col-start-1 row-start-1 space-y-0.5 transition-all duration-300 ease-in-out ${
+            className={`col-start-1 row-start-1 space-y-0.5 transition-opacity duration-150 ease-out ${
               authTab === 'register'
-                ? 'opacity-100 translate-y-0 scale-100'
-                : 'opacity-0 translate-y-2 scale-98 pointer-events-none'
+                ? 'opacity-100'
+                : 'opacity-0 pointer-events-none'
             }`}
           >
             <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 font-shopify-sans leading-tight">

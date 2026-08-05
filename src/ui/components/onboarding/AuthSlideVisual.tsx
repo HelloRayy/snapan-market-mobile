@@ -652,66 +652,69 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                     )}
                   </div>
 
-                  {/* 3. WhatsApp Phone Number Floating Label Field with 🇮🇩 +62 Prefix Badge */}
+                  {/* 3. WhatsApp Phone Number 2-Box Layout */}
                   <div>
-                    <div
-                      key={`phone-box-${shakeKey}`}
-                      className={`relative flex items-center h-16 rounded-[22px] border bg-pure-white px-4 transition-all shadow-2xs ${
-                        errors.phoneNumber
-                          ? 'border-rose-400 bg-rose-50/20 focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20 do-shake'
-                          : focusedField === 'phoneNumber'
-                          ? 'border-[#1d64ec] ring-2 ring-blue-500/20'
-                          : 'border-neutral-200 hover:border-neutral-300'
-                      }`}
-                    >
-                      {/* Indonesian Country Flag +62 Badge */}
-                      <div className="flex items-center gap-1.5 mr-3 px-2.5 py-1 rounded-xl bg-neutral-100 border border-neutral-200/80 shrink-0 select-none">
-                        <span className="text-base leading-none">🇮🇩</span>
-                        <span className="text-xs font-extrabold text-slate-900 tracking-tight">+62</span>
+                    <div key={`phone-box-${shakeKey}`} className={`flex items-center gap-2.5 ${errors.phoneNumber ? 'do-shake' : ''}`}>
+                      {/* Left Box: Indonesian Flag +62 Country Badge */}
+                      <div className="w-[88px] h-16 rounded-[22px] border border-neutral-200/90 bg-neutral-50/80 flex items-center justify-center gap-1.5 shadow-2xs shrink-0 select-none">
+                        <span className="text-lg leading-none">🇮🇩</span>
+                        <span className="text-xs font-extrabold text-slate-900 tracking-tight font-mono">+62</span>
                       </div>
-                      
-                      <label
-                        htmlFor="register-phone-input"
-                        className={`absolute pointer-events-none transition-all duration-200 ease-out select-none ${
-                          focusedField === 'phoneNumber' || phoneNumber
-                            ? 'left-19 top-0 -translate-y-1/2 text-xs bg-pure-white px-1.5 rounded-md'
-                            : 'left-21 top-1/2 -translate-y-1/2 text-sm font-normal text-neutral-400'
-                        } ${
+
+                      {/* Right Box: Phone Input with Floating Label */}
+                      <div
+                        className={`flex-1 relative flex items-center h-16 rounded-[22px] border bg-pure-white px-4 transition-all shadow-2xs ${
                           errors.phoneNumber
-                            ? 'text-rose-500 font-semibold'
+                            ? 'border-rose-400 bg-rose-50/20 focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20'
                             : focusedField === 'phoneNumber'
-                            ? 'text-[#1d64ec] font-semibold'
-                            : phoneNumber
-                            ? 'text-slate-900 font-semibold'
-                            : 'text-neutral-400 font-normal'
+                            ? 'border-[#1d64ec] ring-2 ring-blue-500/20'
+                            : 'border-neutral-200 hover:border-neutral-300'
                         }`}
                       >
-                        Nomor WhatsApp / HP
-                      </label>
+                        <label
+                          htmlFor="register-phone-input"
+                          className={`absolute pointer-events-none transition-all duration-200 ease-out select-none ${
+                            focusedField === 'phoneNumber' || phoneNumber
+                              ? 'left-3.5 top-0 -translate-y-1/2 text-xs bg-pure-white px-1.5 rounded-md'
+                              : 'left-4 top-1/2 -translate-y-1/2 text-sm font-normal text-neutral-400'
+                          } ${
+                            errors.phoneNumber
+                              ? 'text-rose-500 font-semibold'
+                              : focusedField === 'phoneNumber'
+                              ? 'text-[#1d64ec] font-semibold'
+                              : phoneNumber
+                              ? 'text-slate-900 font-semibold'
+                              : 'text-neutral-400 font-normal'
+                          }`}
+                        >
+                          Nomor WhatsApp / HP
+                        </label>
 
-                      <input
-                        id="register-phone-input"
-                        name="phoneNumber"
-                        type="tel"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        value={phoneNumber}
-                        onFocus={() => setFocusedField('phoneNumber')}
-                        onBlur={() => setFocusedField(null)}
-                        onChange={(e) => {
-                          let digitsOnly = e.target.value.replace(/\D/g, '');
-                          if (digitsOnly.startsWith('0')) {
-                            digitsOnly = digitsOnly.slice(1);
-                          } else if (digitsOnly.startsWith('62')) {
-                            digitsOnly = digitsOnly.slice(2);
-                          }
-                          setPhoneNumber(digitsOnly);
-                          setErrors((prev) => ({ ...prev, phoneNumber: undefined }));
-                        }}
-                        className="w-full bg-transparent text-base font-bold text-slate-900 focus:outline-none pt-1 truncate tracking-wide"
-                        placeholder={focusedField === 'phoneNumber' ? '812-3456-7890' : ''}
-                      />
+                        <input
+                          id="register-phone-input"
+                          name="phoneNumber"
+                          type="tel"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          value={phoneNumber}
+                          onFocus={() => setFocusedField('phoneNumber')}
+                          onBlur={() => setFocusedField(null)}
+                          onChange={(e) => {
+                            let digitsOnly = e.target.value.replace(/\D/g, '');
+                            if (digitsOnly.startsWith('0')) {
+                              digitsOnly = digitsOnly.slice(1);
+                            } else if (digitsOnly.startsWith('62')) {
+                              digitsOnly = digitsOnly.slice(2);
+                            }
+                            setPhoneNumber(digitsOnly);
+                            setErrors((prev) => ({ ...prev, phoneNumber: undefined }));
+                          }}
+                          className="w-full bg-transparent text-base font-bold text-slate-900 focus:outline-none pt-1 truncate tracking-wide font-mono"
+                          placeholder={focusedField === 'phoneNumber' ? '812-3456-7890' : ''}
+                        />
+                      </div>
                     </div>
+
                     {errors.phoneNumber && (
                       <p className="text-[11px] text-rose-500 font-semibold flex items-center gap-1.5 mt-1.5 ml-1 leading-none animate-in fade-in duration-200">
                         <AlertCircle className="h-3.5 w-3.5 shrink-0" />

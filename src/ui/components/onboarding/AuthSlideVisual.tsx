@@ -96,7 +96,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
         newErrors.email = 'Format email tidak valid (contoh: nama@domain.com)';
       }
       if (password.length < 6) {
-        newErrors.password = 'Password minimal harus 6 karakter';
+        newErrors.password = 'Kata sandi minimal harus 6 karakter';
       }
       if (!agreeTerms) {
         newErrors.agreeTerms = 'Centang untuk menyetujui Syarat & Ketentuan';
@@ -106,7 +106,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
         newErrors.email = 'Masukkan alamat email yang valid';
       }
       if (!password) {
-        newErrors.password = 'Mohon masukkan password Anda';
+        newErrors.password = 'Mohon masukkan kata sandi Anda';
       }
     }
 
@@ -144,7 +144,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
         <button
           onClick={handleHeaderBack}
           className="flex h-9 w-9 items-center justify-center rounded-full bg-canvas-mist border border-faint-border text-slate-900 hover:bg-cool-stone/30 focus-visible:ring-2 focus-visible:ring-blue-500 transition-colors active:scale-95 cursor-pointer"
-          aria-label={authTab === 'register' ? 'Kembali ke Login' : 'Kembali ke slide sebelumnya'}
+          aria-label={authTab === 'register' ? 'Kembali ke Masuk' : 'Kembali ke slide sebelumnya'}
         >
           <ArrowLeft className="h-4.5 w-4.5 text-slate-900" aria-hidden="true" />
         </button>
@@ -160,10 +160,10 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
             }`}
           >
             <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 font-shopify-sans leading-tight">
-              Go ahead and set up your account
+              Ayo Masuk ke Akun Kamu
             </h1>
             <p className="text-xs text-slate-600 font-medium">
-              Sign in-up to enjoy the best managing experience
+              Masuk atau daftar untuk menikmati pengalaman terbaik
             </p>
           </div>
 
@@ -176,10 +176,10 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
             }`}
           >
             <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 font-shopify-sans leading-tight">
-              Create Account
+              Buat Akun Baru
             </h1>
             <p className="text-xs text-slate-600 font-medium">
-              Fill in your details to get started
+              Isi data diri kamu untuk mulai bergabung
             </p>
           </div>
         </div>
@@ -214,7 +214,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
               authTab === 'login' ? 'text-slate-900' : 'text-neutral-500 hover:text-slate-900 font-semibold'
             }`}
           >
-            Login
+            Masuk
           </button>
           <button
             role="tab"
@@ -224,7 +224,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
               authTab === 'register' ? 'text-slate-900' : 'text-neutral-500 hover:text-slate-900 font-semibold'
             }`}
           >
-            Register
+            Daftar
           </button>
         </div>
 
@@ -264,7 +264,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                         : 'text-neutral-400 font-normal'
                     }`}
                   >
-                    Full Name
+                    Nama Lengkap
                   </label>
 
                   <input
@@ -450,7 +450,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                     : 'text-neutral-400 font-normal'
                 }`}
               >
-                Email Address
+                Alamat Email
               </label>
 
               <input
@@ -503,7 +503,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                     : 'text-neutral-400 font-normal'
                 }`}
               >
-                Password
+                Kata Sandi
               </label>
 
               <input
@@ -546,13 +546,13 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                   onChange={(e) => setRememberMe(e.target.checked)}
                   className="h-4.5 w-4.5 rounded-md border-neutral-300 text-[#1d64ec] focus:ring-blue-500/20 cursor-pointer"
                 />
-                <span className="text-xs font-semibold text-slate-900">Remember me</span>
+                <span className="text-xs font-semibold text-slate-900">Ingat Saya</span>
               </label>
               <button
                 type="button"
                 className="text-xs font-semibold text-[#1d64ec] hover:underline cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm"
               >
-                Forgot Password?
+                Lupa Kata Sandi?
               </button>
             </div>
           ) : (
@@ -589,9 +589,9 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
             {isSubmitting ? (
               <Loader2 className="h-5 w-5 animate-spin text-white" />
             ) : authTab === 'login' ? (
-              'Login'
+              'Masuk'
             ) : (
-              'Create Account'
+              'Buat Akun'
             )}
           </ButtonPrimary>
         </form>
@@ -602,7 +602,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
             <div className="w-full border-t border-neutral-200" />
           </div>
           <span className="relative bg-pure-white px-3.5 text-xs font-medium text-neutral-500 select-none">
-            Or {authTab === 'login' ? 'login' : 'register'} with
+            Atau {authTab === 'login' ? 'masuk' : 'daftar'} dengan
           </span>
         </div>
 

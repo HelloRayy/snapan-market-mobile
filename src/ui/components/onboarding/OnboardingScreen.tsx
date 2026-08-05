@@ -22,36 +22,36 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
   const slides = [
     {
       id: 0,
-      title: 'Generate Social Media Post for your Business',
+      title: 'Buat Konten Promosi Produk Bisnismu',
       description: 'Solusi lengkap membuat konten & visual promosi e-commerce menarik dalam hitungan detik.',
       type: 'content' as const,
       visual: <Slide1Visual />
     },
     {
       id: 1,
-      title: 'Generate Captions & Hashtags for your Social Media Posts',
+      title: 'Otomatiskan Deskripsi & Tag Populer',
       description: 'Otomatisasi deskripsi produk & tag terpopuler untuk meningkatkan jangkauan pembeli.',
       type: 'content' as const,
       visual: <Slide2Visual />
     },
     {
       id: 2,
-      title: 'Make Product Images for your E-Commerce Brand',
+      title: 'Foto Produk Profesional untuk Brand Kamu',
       description: 'Foto & banner promo profesional siap pakai untuk memaksimalkan penjualan toko online kamu.',
       type: 'content' as const,
       visual: <Slide3Visual />
     },
     {
       id: 3,
-      title: 'Ready to Experience Snapan Market!',
+      title: 'Siap Menjelajahi Snapan Market!',
       description: 'Mulai jelajahi dan nikmati pengalaman jual beli online antar warga SMKN 8 yang aman dan praktis.',
       type: 'content' as const,
       visual: <Slide4Visual />
     },
     {
       id: 4,
-      title: 'Go ahead and set up your account',
-      description: 'Sign in-up to enjoy the best managing experience',
+      title: 'Ayo Buat dan Atur Akun Kamu',
+      description: 'Masuk atau daftar untuk menikmati pengalaman belanja dan berjualan terbaik.',
       type: 'auth' as const,
       visual: null
     }
@@ -102,7 +102,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
       className="fixed inset-0 z-50 flex flex-col justify-between bg-pure-white p-5 text-slate-ink select-none overflow-y-auto no-scrollbar font-gt-standard"
     >
       {current.type === 'auth' ? (
-        /* Slide Terakhir: Login / Register Page */
+        /* Slide Terakhir: Halaman Masuk / Daftar */
         <div className="w-full h-full animate-in fade-in slide-in-from-right-6 duration-300 ease-out">
           <AuthSlideVisual
             onBack={() => setCurrentSlide((prev) => prev - 1)}
@@ -128,8 +128,8 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
 
           {/* Middle Text & Pagination Dots */}
           <div className="w-full max-w-sm mx-auto my-auto py-4 space-y-4">
-            {/* Pagination Dots with Fluid Pill Animation (Only 4 Dots for Content Slides) */}
-            <div className="flex items-center gap-1.5" role="tablist" aria-label="Slide Indicator">
+            {/* Pagination Dots with Fluid Pill Animation (4 Dots for Content Slides) */}
+            <div className="flex items-center gap-1.5" role="tablist" aria-label="Indikator Slide">
               {slides.slice(0, 4).map((slide, index) => (
                 <button
                   key={slide.id}
@@ -137,7 +137,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                   className={`h-1.5 rounded-full transition-all duration-300 cubic-bezier(0.16,1,0.3,1) active:scale-90 cursor-pointer ${
                     currentSlide === index ? 'w-8 bg-[#1d64ec] shadow-sm' : 'w-2 bg-cool-stone hover:bg-warm-fog'
                   }`}
-                  aria-label={`Go to slide ${index + 1}`}
+                  aria-label={`Buka slide ${index + 1}`}
                   aria-selected={currentSlide === index}
                 />
               ))}
@@ -165,7 +165,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                 onClick={handleSkip}
                 className="shrink-0 font-bold"
               >
-                Skip
+                Lewati
               </ButtonSecondary>
             )}
 
@@ -185,7 +185,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                 )
               }
             >
-              {currentSlide === 3 ? 'Get Started' : 'Next'}
+              {currentSlide === 3 ? 'Mulai Sekarang' : 'Lanjut'}
             </ButtonPrimary>
           </div>
         </>

@@ -185,7 +185,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                 )
               }
             >
-              {currentSlide === 3 ? 'Login / Register' : 'Next'}
+              {currentSlide === 3 ? 'Get Started' : 'Next'}
             </ButtonPrimary>
           </div>
         </>

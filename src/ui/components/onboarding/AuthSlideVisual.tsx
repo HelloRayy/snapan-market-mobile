@@ -636,7 +636,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                                     : 'text-slate-700 hover:bg-neutral-100 hover:text-slate-900'
                                 }`}
                               >
-                                <span>No. {opt}</span>
+                                <span>{opt}</span>
                                 {classNumber === opt && <Check className="h-3.5 w-3.5 shrink-0" />}
                               </button>
                             ))}

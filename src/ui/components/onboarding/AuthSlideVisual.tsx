@@ -212,11 +212,11 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
     }
   };
 
-  // Helper formatting for 60s timer (e.g. 1:00 or 0:45)
+  // Helper formatting for 60s timer (e.g. 01:00 or 00:19 with padded zeros)
   const formatTimer = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
   return (
@@ -327,13 +327,13 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
               )}
             </div>
 
-            {/* Countdown Timer Pill */}
-            <div className="flex items-center justify-between px-4 py-3 bg-[#f3f0ff] rounded-2xl text-xs font-semibold text-[#5433eb]">
+            {/* Premium Countdown Timer Pill with Monospace Badge */}
+            <div className="flex items-center justify-between px-4 py-3.5 bg-[#5433eb]/8 border border-[#5433eb]/15 rounded-2xl text-xs font-semibold text-[#5433eb] shadow-2xs">
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-[#5433eb]" />
-                <span>Kode kedaluwarsa dalam</span>
+                <span className="font-semibold text-slate-800">Kode kedaluwarsa dalam</span>
               </div>
-              <span className="font-bold text-sm tracking-wide font-mono">
+              <span className="bg-[#5433eb] text-white px-3 py-1 rounded-xl text-xs font-extrabold tracking-wider font-mono shadow-xs tabular-nums">
                 {formatTimer(countdown)}
               </span>
             </div>
@@ -416,7 +416,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
 
             {/* Dynamic Form Content */}
             <form onSubmit={handleSubmitForm} noValidate className="space-y-4 pt-1">
-              {/* REGISTER EXTRA FIELDS (Low-Friction 4 Inputs: Nama -> Kelas/Jurusan/No -> No WA -> Password) */}
+              {/* REGISTER EXTRA FIELDS */}
               {authTab === 'register' ? (
                 <div className="space-y-4 animate-in fade-in slide-in-from-bottom-3 duration-300 ease-out" ref={dropdownRef}>
                   {/* 1. Full Name Floating Label Field */}

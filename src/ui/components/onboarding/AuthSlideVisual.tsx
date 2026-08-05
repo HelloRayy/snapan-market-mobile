@@ -61,6 +61,12 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
   const majorOptions = ['DKV', 'LK', 'PPLG', 'PS', 'TJKT'];
   const classNumOptions = ['1', '2', '3'];
 
+  // Format Phone Number with Hyphens Every 4 Digits e.g. 8512-3123-123
+  const formatPhoneWithHyphens = (rawDigits: string) => {
+    if (!rawDigits) return '';
+    return rawDigits.replace(/(\d{4})(?=\d)/g, '$1-');
+  };
+
   // Check if Register form inputs are complete
   const isRegisterIncomplete =
     !fullName.trim() ||
@@ -652,7 +658,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                     )}
                   </div>
 
-                  {/* 3. WhatsApp Phone Number 2-Box Layout */}
+                  {/* 3. WhatsApp Phone Number 2-Box Layout with Auto Hyphens Every 4 Digits */}
                   <div>
                     <div key={`phone-box-${shakeKey}`} className={`flex items-center gap-2.5 ${errors.phoneNumber ? 'do-shake' : ''}`}>
                       {/* Left Box: Indonesian Flag +62 Country Badge */}
@@ -661,7 +667,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                         <span className="text-xs font-extrabold text-slate-900 tracking-tight font-mono">+62</span>
                       </div>
 
-                      {/* Right Box: Phone Input with Floating Label */}
+                      {/* Right Box: Phone Input with Floating Label & Auto-Hyphen Formatting */}
                       <div
                         className={`flex-1 relative flex items-center h-16 rounded-[22px] border bg-pure-white px-4 transition-all shadow-2xs ${
                           errors.phoneNumber
@@ -696,7 +702,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                           type="tel"
                           inputMode="numeric"
                           pattern="[0-9]*"
-                          value={phoneNumber}
+                          value={formatPhoneWithHyphens(phoneNumber)}
                           onFocus={() => setFocusedField('phoneNumber')}
                           onBlur={() => setFocusedField(null)}
                           onChange={(e) => {
@@ -706,11 +712,14 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                             } else if (digitsOnly.startsWith('62')) {
                               digitsOnly = digitsOnly.slice(2);
                             }
+                            if (digitsOnly.length > 12) {
+                              digitsOnly = digitsOnly.slice(0, 12);
+                            }
                             setPhoneNumber(digitsOnly);
                             setErrors((prev) => ({ ...prev, phoneNumber: undefined }));
                           }}
                           className="w-full bg-transparent text-base font-bold text-slate-900 focus:outline-none pt-1 truncate tracking-wide font-mono"
-                          placeholder={focusedField === 'phoneNumber' ? '812-3456-7890' : ''}
+                          placeholder={focusedField === 'phoneNumber' ? '8123-4567-890' : ''}
                         />
                       </div>
                     </div>

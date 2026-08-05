@@ -197,7 +197,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
     e.preventDefault();
     const fullCode = otpDigits.join('');
     if (fullCode.length < 6) {
-      setErrors({ otpCode: 'Mohon masukkan 6-digit kode OTP dengan lengkap' });
+      setErrors({ otpCode: 'Mohon masukkan 6-digit kode verifikasi OTP' });
       setShakeKey((prev) => prev + 1);
       return;
     }
@@ -384,12 +384,12 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
               )}
             </div>
 
-            {/* Verify Code Primary Button */}
+            {/* Always Clickable Verify Primary Button (Triggers Error Shake if Code Incomplete) */}
             <ButtonPrimary
               type="submit"
               size="lg"
-              disabled={isSubmitting || otpDigits.join('').length < 6}
-              className="w-full justify-center font-bold h-14 text-base rounded-full bg-[#1d64ec] hover:bg-blue-600 shadow-md shadow-blue-500/25 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitting}
+              className="w-full justify-center font-bold h-14 text-base rounded-full bg-[#1d64ec] hover:bg-blue-600 shadow-md shadow-blue-500/25 text-white cursor-pointer active:scale-[0.98]"
             >
               {isSubmitting ? (
                 <Loader2 className="h-5 w-5 animate-spin text-white" />

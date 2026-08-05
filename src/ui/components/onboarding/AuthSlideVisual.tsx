@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Mail, Lock, Eye, EyeOff, ArrowLeft, User, ChevronDown, Check, AlertCircle, Loader2, Phone, Headphones } from 'lucide-react';
 import { ButtonPrimary } from '../ui/ButtonPrimary';
 import { ButtonSecondary } from '../ui/ButtonSecondary';
+import { Checkbox } from '../ui/Checkbox';
 
 interface AuthSlideVisualProps {
   onBack?: () => void;
@@ -850,18 +851,20 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                 </div>
               ) : (
                 <div>
-                  <div key={`terms-box-${shakeKey}`} className={`flex items-start gap-2 text-xs pt-1 px-1 animate-in fade-in duration-300 ${errors.agreeTerms ? 'do-shake' : ''}`}>
-                    <input
+                  <div key={`terms-box-${shakeKey}`} className={`flex items-start pt-1 px-1 animate-in fade-in duration-300 ${errors.agreeTerms ? 'do-shake' : ''}`}>
+                    <Checkbox
                       id="agree-terms-checkbox"
-                      name="agreeTerms"
-                      type="checkbox"
                       checked={agreeTerms}
-                      onChange={(e) => { setAgreeTerms(e.target.checked); setErrors((prev) => ({ ...prev, agreeTerms: undefined })); }}
-                      className="h-4.5 w-4.5 rounded-md border-neutral-300 text-[#1d64ec] focus:ring-blue-500/20 cursor-pointer mt-0.5"
+                      onCheckedChange={(checked) => {
+                        setAgreeTerms(checked);
+                        setErrors((prev) => ({ ...prev, agreeTerms: undefined }));
+                      }}
+                      label={
+                        <>
+                          Saya menyetujui <span className="font-bold text-[#1d64ec] hover:underline cursor-pointer">Syarat & Ketentuan</span> serta <span className="font-bold text-[#1d64ec] hover:underline cursor-pointer">Kebijakan Privasi</span> Snapan Market
+                        </>
+                      }
                     />
-                    <label htmlFor="agree-terms-checkbox" className="text-xs text-slate-700 font-medium cursor-pointer leading-tight">
-                      Saya menyetujui <span className="font-bold text-[#1d64ec] hover:underline cursor-pointer">Syarat & Ketentuan</span> serta <span className="font-bold text-[#1d64ec] hover:underline cursor-pointer">Kebijakan Privasi</span> Snapan Market
-                    </label>
                   </div>
                   {errors.agreeTerms && (
                     <p className="text-[11px] text-rose-500 font-semibold flex items-center gap-1.5 mt-1.5 ml-1 leading-none animate-in fade-in duration-200">

@@ -33,7 +33,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
   const [loginIdentifier, setLoginIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
-  const [agreeTerms, setAgreeTerms] = useState(true);
+  const [agreeTerms, setAgreeTerms] = useState(false); // Default unchecked per user feedback
 
   // 6-Digit WhatsApp OTP State
   const [otpDigits, setOtpDigits] = useState<string[]>(['', '', '', '', '', '']);
@@ -59,6 +59,20 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
   const gradeOptions = ['X', 'XI', 'XII', 'Guru / Karyawan'];
   const majorOptions = ['DKV', 'LK', 'PPLG', 'PS', 'TJKT'];
   const classNumOptions = ['01', '02', '03'];
+
+  // Check if Register form inputs are complete
+  const isRegisterIncomplete =
+    !fullName.trim() ||
+    !gradeLevel ||
+    !major ||
+    !classNumber ||
+    !phoneNumber.trim() ||
+    phoneNumber.length < 8 ||
+    password.length < 6 ||
+    !agreeTerms;
+
+  // Check if Login form inputs are complete
+  const isLoginIncomplete = !loginIdentifier.trim() || !password;
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -190,7 +204,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
         newErrors.classGroup = 'Pilih Kelas, Jurusan, dan No. Kelas SMKN 8';
       }
       if (!phoneNumber.trim() || phoneNumber.length < 8) {
-        newErrors.phoneNumber = 'Masukkan nomor WhatsApp aktif Anda';
+        newErrors.phoneNumber = 'Masukkan nomor WhatsApp aktif Anda (min. 8 angka)';
       }
       if (password.length < 6) {
         newErrors.password = 'Kata sandi minimal harus 6 karakter';
@@ -349,8 +363,8 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
             <ButtonPrimary
               type="submit"
               size="lg"
-              disabled={isSubmitting}
-              className="w-full justify-center font-bold h-14 text-base rounded-full bg-[#1d64ec] hover:bg-blue-600 shadow-md shadow-blue-500/25 text-white"
+              disabled={isSubmitting || otpDigits.join('').length < 6}
+              className="w-full justify-center font-bold h-14 text-base rounded-full bg-[#1d64ec] hover:bg-blue-600 shadow-md shadow-blue-500/25 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <Loader2 className="h-5 w-5 animate-spin text-white" />
@@ -616,7 +630,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                     )}
                   </div>
 
-                  {/* 3. WhatsApp Phone Number Floating Label Field */}
+                  {/* 3. WhatsApp Phone Number Floating Label Field (Strict Numeric Input Only) */}
                   <div>
                     <div
                       key={`phone-box-${shakeKey}`}
@@ -658,7 +672,11 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                         value={phoneNumber}
                         onFocus={() => setFocusedField('phoneNumber')}
                         onBlur={() => setFocusedField(null)}
-                        onChange={(e) => { setPhoneNumber(e.target.value.replace(/\D/g, '')); setErrors((prev) => ({ ...prev, phoneNumber: undefined })); }}
+                        onChange={(e) => {
+                          const digitsOnly = e.target.value.replace(/\D/g, '');
+                          setPhoneNumber(digitsOnly);
+                          setErrors((prev) => ({ ...prev, phoneNumber: undefined }));
+                        }}
                         className="w-full bg-transparent text-base font-bold text-slate-900 focus:outline-none pt-1 truncate font-mono tracking-wide"
                       />
                     </div>
@@ -830,12 +848,12 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                 </div>
               )}
 
-              {/* Submit Primary Button */}
+              {/* Submit Primary Button (Disabled until all inputs & terms are completed) */}
               <ButtonPrimary
                 type="submit"
                 size="lg"
-                disabled={isSubmitting}
-                className="w-full justify-center font-bold h-14 text-base rounded-full mt-2"
+                disabled={isSubmitting || (authTab === 'register' ? isRegisterIncomplete : isLoginIncomplete)}
+                className="w-full justify-center font-bold h-14 text-base rounded-full mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
                   <Loader2 className="h-5 w-5 animate-spin text-white" />

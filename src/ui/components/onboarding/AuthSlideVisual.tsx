@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Mail, Lock, Eye, EyeOff, ArrowLeft, User, ChevronDown, Check, AlertCircle, Loader2, Phone, Headphones } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowLeft, User, ChevronDown, Check, AlertCircle, Loader2, Headphones } from 'lucide-react';
 import { ButtonPrimary } from '../ui/ButtonPrimary';
 import { ButtonSecondary } from '../ui/ButtonSecondary';
 import { Checkbox } from '../ui/Checkbox';
@@ -111,16 +111,16 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
     return () => clearInterval(timer);
   }, [regStep, countdown]);
 
-  // Mask Phone Number Helper e.g. 08512345678 -> +6285-****-**78
+  // Mask Phone Number Helper e.g. 08512345678 / 8512345678 -> +6285-****-**78
   const maskPhoneNumber = (rawPhone: string) => {
     if (!rawPhone) return '+6285-****-**78';
-    const clean = rawPhone.replace(/\D/g, '');
-    let formatted = clean;
-    if (formatted.startsWith('0')) {
-      formatted = '62' + formatted.slice(1);
-    } else if (!formatted.startsWith('62')) {
-      formatted = '62' + formatted;
+    let clean = rawPhone.replace(/\D/g, '');
+    if (clean.startsWith('0')) {
+      clean = clean.slice(1);
+    } else if (clean.startsWith('62')) {
+      clean = clean.slice(2);
     }
+    const formatted = '62' + clean;
     if (formatted.length < 8) return '+' + formatted;
     const prefix = '+' + formatted.slice(0, 4);
     const suffix = formatted.slice(-2);
@@ -632,7 +632,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                                 onClick={() => { setClassNumber(opt); setOpenClassNum(false); setErrors((prev) => ({ ...prev, classGroup: undefined })); }}
                                 className={`w-full flex items-center justify-between py-1.5 px-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer ${
                                   classNumber === opt
-                                    ? 'bg-[#1d64ec] text-white shadow-2xs'
+                                    ? 'bg-[#1d64ec] text-[#ffffff] shadow-2xs'
                                     : 'text-slate-700 hover:bg-neutral-100 hover:text-slate-900'
                                 }`}
                               >
@@ -652,7 +652,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                     )}
                   </div>
 
-                  {/* 3. WhatsApp Phone Number Floating Label Field (Strict Numeric Input Only) */}
+                  {/* 3. WhatsApp Phone Number Floating Label Field with 🇮🇩 +62 Prefix Badge */}
                   <div>
                     <div
                       key={`phone-box-${shakeKey}`}
@@ -664,14 +664,18 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                           : 'border-neutral-200 hover:border-neutral-300'
                       }`}
                     >
-                      <Phone className={`h-5 w-5 shrink-0 mr-3 ${errors.phoneNumber ? 'text-rose-500' : focusedField === 'phoneNumber' ? 'text-[#1d64ec]' : 'text-emerald-800'}`} aria-hidden="true" />
+                      {/* Indonesian Country Flag +62 Badge */}
+                      <div className="flex items-center gap-1.5 mr-3 px-2.5 py-1 rounded-xl bg-neutral-100 border border-neutral-200/80 shrink-0 select-none">
+                        <span className="text-base leading-none">🇮🇩</span>
+                        <span className="text-xs font-extrabold text-slate-900 tracking-tight">+62</span>
+                      </div>
                       
                       <label
                         htmlFor="register-phone-input"
                         className={`absolute pointer-events-none transition-all duration-200 ease-out select-none ${
                           focusedField === 'phoneNumber' || phoneNumber
-                            ? 'left-8 top-0 -translate-y-1/2 text-xs bg-pure-white px-1.5 rounded-md'
-                            : 'left-11 top-1/2 -translate-y-1/2 text-sm font-normal text-neutral-400'
+                            ? 'left-19 top-0 -translate-y-1/2 text-xs bg-pure-white px-1.5 rounded-md'
+                            : 'left-21 top-1/2 -translate-y-1/2 text-sm font-normal text-neutral-400'
                         } ${
                           errors.phoneNumber
                             ? 'text-rose-500 font-semibold'
@@ -695,11 +699,17 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                         onFocus={() => setFocusedField('phoneNumber')}
                         onBlur={() => setFocusedField(null)}
                         onChange={(e) => {
-                          const digitsOnly = e.target.value.replace(/\D/g, '');
+                          let digitsOnly = e.target.value.replace(/\D/g, '');
+                          if (digitsOnly.startsWith('0')) {
+                            digitsOnly = digitsOnly.slice(1);
+                          } else if (digitsOnly.startsWith('62')) {
+                            digitsOnly = digitsOnly.slice(2);
+                          }
                           setPhoneNumber(digitsOnly);
                           setErrors((prev) => ({ ...prev, phoneNumber: undefined }));
                         }}
                         className="w-full bg-transparent text-base font-bold text-slate-900 focus:outline-none pt-1 truncate tracking-wide"
+                        placeholder={focusedField === 'phoneNumber' ? '812-3456-7890' : ''}
                       />
                     </div>
                     {errors.phoneNumber && (
@@ -784,15 +794,15 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                       focusedField === 'password' || password
                         ? 'left-8 top-0 -translate-y-1/2 text-xs bg-pure-white px-1.5 rounded-md'
                         : 'left-11 top-1/2 -translate-y-1/2 text-sm font-normal text-neutral-400'
-                    } ${
-                      errors.password
-                        ? 'text-rose-500 font-semibold'
-                        : focusedField === 'password'
-                        ? 'text-[#1d64ec] font-semibold'
-                        : password
-                        ? 'text-slate-900 font-semibold'
-                        : 'text-neutral-400 font-normal'
-                    }`}
+                      } ${
+                        errors.password
+                          ? 'text-rose-500 font-semibold'
+                          : focusedField === 'password'
+                          ? 'text-[#1d64ec] font-semibold'
+                          : password
+                          ? 'text-slate-900 font-semibold'
+                          : 'text-neutral-400 font-normal'
+                      }`}
                   >
                     Kata Sandi
                   </label>

@@ -59,7 +59,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
   // SMKN 8 Specific Options
   const gradeOptions = ['X', 'XI', 'XII', 'Guru / Karyawan'];
   const majorOptions = ['DKV', 'LK', 'PPLG', 'PS', 'TJKT'];
-  const classNumOptions = ['01', '02', '03'];
+  const classNumOptions = ['1', '2', '3'];
 
   // Check if Register form inputs are complete
   const isRegisterIncomplete =
@@ -794,15 +794,15 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                       focusedField === 'password' || password
                         ? 'left-8 top-0 -translate-y-1/2 text-xs bg-pure-white px-1.5 rounded-md'
                         : 'left-11 top-1/2 -translate-y-1/2 text-sm font-normal text-neutral-400'
-                      } ${
-                        errors.password
-                          ? 'text-rose-500 font-semibold'
-                          : focusedField === 'password'
-                          ? 'text-[#1d64ec] font-semibold'
-                          : password
-                          ? 'text-slate-900 font-semibold'
-                          : 'text-neutral-400 font-normal'
-                      }`}
+                    } ${
+                      errors.password
+                        ? 'text-rose-500 font-semibold'
+                        : focusedField === 'password'
+                        ? 'text-[#1d64ec] font-semibold'
+                        : password
+                        ? 'text-slate-900 font-semibold'
+                        : 'text-neutral-400 font-normal'
+                    }`}
                   >
                     Kata Sandi
                   </label>

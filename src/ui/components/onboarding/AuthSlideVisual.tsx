@@ -294,7 +294,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                 Verifikasi Kode OTP
               </h1>
               <p className="text-xs text-slate-600 font-medium leading-relaxed">
-                Kode 6-digit telah dikirim ke WhatsApp <span className="font-bold text-slate-900 font-mono tracking-wide">{maskPhoneNumber(phoneNumber)}</span>
+                Kode 6-digit telah dikirim ke WhatsApp <span className="font-bold text-slate-900">{maskPhoneNumber(phoneNumber)}</span>
               </p>
             </div>
           ) : authTab === 'login' ? (
@@ -329,7 +329,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
             : 'rounded-t-[36px] rounded-b-none border-t border-faint-border pt-6 pb-10'
         }`}
       >
-        {/* STEP 2: WHATSAPP OTP VERIFICATION SCREEN (Enhanced a11y & Visuals) */}
+        {/* STEP 2: WHATSAPP OTP VERIFICATION SCREEN */}
         {regStep === 'otp' ? (
           <form onSubmit={handleVerifyOtp} className="space-y-6 pt-4 text-center animate-in fade-in slide-in-from-right-4 duration-300 ease-out">
             {/* Centered Main Title & Subtitle */}
@@ -398,14 +398,11 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
               )}
             </ButtonPrimary>
 
-            {/* Bottom Centered Resend & Customer Service Section with ARIA Live Region */}
+            {/* Clean, Simple Resend & Timer Text Matching User Reference Screenshot */}
             <div className="space-y-3 text-center text-xs" role="status" aria-live="polite">
               {countdown > 0 ? (
-                <p className="text-slate-600 font-medium flex items-center justify-center gap-1.5">
-                  <span>Kirim ulang kode dalam</span>
-                  <span className="font-mono font-extrabold text-slate-900 bg-neutral-100 px-2 py-0.5 rounded-lg border border-neutral-200 shadow-2xs tabular-nums">
-                    {countdown}s
-                  </span>
+                <p className="text-slate-600 font-medium">
+                  Kirim ulang kode dalam <span className="font-bold text-slate-900">{countdown} detik</span>
                 </p>
               ) : (
                 <button
@@ -524,10 +521,10 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                     )}
                   </div>
 
-                  {/* 2. Dropdown Grid: [ Kelas ] [ Jurusan ] [ No. Kelas ] (Compact & Safe Alignment) */}
+                  {/* 2. Dropdown Grid: [ Kelas ] [ Jurusan ] [ No. Kelas ] */}
                   <div>
                     <div key={`classgroup-box-${shakeKey}`} className={`grid grid-cols-3 gap-2.5 ${errors.classGroup ? 'do-shake' : ''}`}>
-                      {/* Micro Dropdown 1: Kelas (Left Aligned to Prevent Left Screen Edge Overflow) */}
+                      {/* Micro Dropdown 1: Kelas */}
                       <div className="relative">
                         <button
                           type="button"
@@ -567,7 +564,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                         )}
                       </div>
 
-                      {/* Micro Dropdown 2: Jurusan (Centered) */}
+                      {/* Micro Dropdown 2: Jurusan */}
                       <div className="relative">
                         <button
                           type="button"
@@ -607,7 +604,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                         )}
                       </div>
 
-                      {/* Micro Dropdown 3: No. Kelas (Right Aligned to Prevent Right Screen Edge Overflow) */}
+                      {/* Micro Dropdown 3: No. Kelas */}
                       <div className="relative">
                         <button
                           type="button"
@@ -702,7 +699,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                           setPhoneNumber(digitsOnly);
                           setErrors((prev) => ({ ...prev, phoneNumber: undefined }));
                         }}
-                        className="w-full bg-transparent text-base font-bold text-slate-900 focus:outline-none pt-1 truncate font-mono tracking-wide"
+                        className="w-full bg-transparent text-base font-bold text-slate-900 focus:outline-none pt-1 truncate tracking-wide"
                       />
                     </div>
                     {errors.phoneNumber && (

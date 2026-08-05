@@ -618,7 +618,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                           }`}
                         >
                           <span className={`w-full text-center text-xs font-bold truncate ${classNumber ? 'text-[#111827]' : 'text-neutral-400 font-medium'}`}>
-                            {classNumber ? `No. ${classNumber}` : 'No. Kelas'}
+                            {classNumber || 'No. Kelas'}
                           </span>
                           <ChevronDown className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 ${openClassNum ? 'rotate-180 text-[#1d64ec]' : 'text-neutral-400'}`} />
                         </button>

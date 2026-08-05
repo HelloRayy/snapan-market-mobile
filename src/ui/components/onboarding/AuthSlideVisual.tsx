@@ -257,8 +257,8 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
         }
       `}</style>
 
-      {/* Uniform Outer Header Section (Matching all Auth Pages) */}
-      <div className="space-y-1.5 pt-2 pb-0.5 px-1 shrink-0">
+      {/* Uniform Outer Header Section with Generous Bottom Margin to Sheet Card */}
+      <div className="space-y-2.5 pt-2 pb-2 mb-2 px-1 shrink-0">
         <button
           onClick={handleHeaderBack}
           className="flex h-9 w-9 items-center justify-center rounded-full bg-canvas-mist border border-faint-border text-slate-900 hover:bg-cool-stone/30 focus-visible:ring-2 focus-visible:ring-blue-500 transition-colors active:scale-95 cursor-pointer"
@@ -271,7 +271,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
         <div className="grid grid-cols-1 grid-rows-1 min-h-[52px]">
           {regStep === 'otp' ? (
             /* OTP Step 2 Header Title */
-            <div className="col-start-1 row-start-1 space-y-0.5 animate-in fade-in duration-200">
+            <div className="col-start-1 row-start-1 space-y-1 animate-in fade-in duration-200">
               <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 font-shopify-sans leading-tight">
                 Verifikasi Kode OTP
               </h1>
@@ -281,7 +281,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
             </div>
           ) : authTab === 'login' ? (
             /* Login Header Title */
-            <div className="col-start-1 row-start-1 space-y-0.5 transition-opacity duration-150 ease-out opacity-100">
+            <div className="col-start-1 row-start-1 space-y-1 transition-opacity duration-150 ease-out opacity-100">
               <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 font-shopify-sans leading-tight">
                 Ayo Masuk ke Akun Kamu
               </h1>
@@ -291,7 +291,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
             </div>
           ) : (
             /* Register Header Title */
-            <div className="col-start-1 row-start-1 space-y-0.5 transition-opacity duration-150 ease-out opacity-100">
+            <div className="col-start-1 row-start-1 space-y-1 transition-opacity duration-150 ease-out opacity-100">
               <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 font-shopify-sans leading-tight">
                 Buat Akun Baru
               </h1>

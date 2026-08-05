@@ -143,7 +143,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
       <div className="space-y-1.5 pt-2 pb-0.5 px-1 shrink-0">
         <button
           onClick={handleHeaderBack}
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-canvas-mist border border-faint-border text-slate-900 hover:bg-cool-stone/30 focus-visible:ring-2 focus-visible:ring-blue-500 transition-colors active:scale-95 cursor-pointer"
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-canvas-mist border border-faint-border text-slate-900 hover:bg-cool-stone/30 focus-visible:ring-2 focus-visible:ring-[#5433eb] transition-colors active:scale-95 cursor-pointer"
           aria-label={authTab === 'register' ? 'Kembali ke Login' : 'Kembali ke slide sebelumnya'}
         >
           <ArrowLeft className="h-4.5 w-4.5 text-slate-900" aria-hidden="true" />
@@ -193,15 +193,15 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
             : 'rounded-t-[36px] rounded-b-none border-t border-faint-border pt-6 pb-10'
         }`}
       >
-        {/* iOS-Style Segmented Control Tab Switcher */}
+        {/* Kumo Signature Style Segmented Control Tab Switcher */}
         <div
-          className="relative flex items-center rounded-full bg-[#f1f3f5] p-1 border border-neutral-200/70 shadow-inner h-12 select-none"
+          className="relative flex items-center rounded-full bg-[#f4f3ff] p-1 border border-[#e2deff] shadow-xs h-12 select-none"
           role="tablist"
           aria-label="Metode Otentikasi"
         >
-          {/* Animated Sliding White Pill Background Indicator */}
+          {/* Animated Sliding Kumo Violet Pill Background Indicator */}
           <div
-            className={`absolute top-1 bottom-1 left-1 w-[calc(50%-0.25rem)] rounded-full bg-white shadow-md shadow-black/8 border border-black/5 transition-transform duration-250 cubic-bezier(0.16,1,0.3,1) ${
+            className={`absolute top-1 bottom-1 left-1 w-[calc(50%-0.25rem)] rounded-full bg-[#5433eb] shadow-md shadow-[#5433eb]/30 border border-[#5433eb]/20 transition-transform duration-250 cubic-bezier(0.16,1,0.3,1) ${
               authTab === 'login' ? 'translate-x-0' : 'translate-x-full'
             }`}
           />
@@ -210,8 +210,8 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
             role="tab"
             aria-selected={authTab === 'login'}
             onClick={() => { setAuthTab('login'); setErrors({}); }}
-            className={`flex-1 relative z-10 flex items-center justify-center whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer text-sm font-bold rounded-full py-2.5 transition-colors duration-200 ${
-              authTab === 'login' ? 'text-slate-900' : 'text-neutral-600 hover:text-slate-900 font-semibold'
+            className={`flex-1 relative z-10 flex items-center justify-center whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5433eb] cursor-pointer text-sm font-bold rounded-full py-2.5 transition-colors duration-200 ${
+              authTab === 'login' ? 'text-white' : 'text-[#645e88] hover:text-[#5433eb] font-semibold'
             }`}
           >
             Login
@@ -220,8 +220,8 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
             role="tab"
             aria-selected={authTab === 'register'}
             onClick={() => { setAuthTab('register'); setErrors({}); }}
-            className={`flex-1 relative z-10 flex items-center justify-center whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer text-sm font-bold rounded-full py-2.5 transition-colors duration-200 ${
-              authTab === 'register' ? 'text-slate-900' : 'text-neutral-600 hover:text-slate-900 font-semibold'
+            className={`flex-1 relative z-10 flex items-center justify-center whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5433eb] cursor-pointer text-sm font-bold rounded-full py-2.5 transition-colors duration-200 ${
+              authTab === 'register' ? 'text-white' : 'text-[#645e88] hover:text-[#5433eb] font-semibold'
             }`}
           >
             Register
@@ -241,11 +241,11 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                     errors.fullName
                       ? 'border-rose-400 bg-rose-50/20 focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20 do-shake'
                       : focusedField === 'fullName'
-                      ? 'border-[#1d64ec] ring-2 ring-blue-500/20'
+                      ? 'border-[#5433eb] ring-2 ring-[#5433eb]/20'
                       : 'border-neutral-200 hover:border-neutral-300'
                   }`}
                 >
-                  <User className={`h-5 w-5 shrink-0 mr-3 ${errors.fullName ? 'text-rose-500' : focusedField === 'fullName' ? 'text-[#1d64ec]' : 'text-emerald-800'}`} aria-hidden="true" />
+                  <User className={`h-5 w-5 shrink-0 mr-3 ${errors.fullName ? 'text-rose-500' : focusedField === 'fullName' ? 'text-[#5433eb]' : 'text-emerald-800'}`} aria-hidden="true" />
                   
                   {/* Outlined Floating Label */}
                   <label
@@ -258,7 +258,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                       errors.fullName
                         ? 'text-rose-500 font-semibold'
                         : focusedField === 'fullName'
-                        ? 'text-[#1d64ec] font-semibold'
+                        ? 'text-[#5433eb] font-semibold'
                         : fullName
                         ? 'text-slate-900 font-semibold'
                         : 'text-neutral-400 font-normal'
@@ -298,14 +298,14 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                         errors.classGroup
                           ? 'border-rose-400 bg-rose-50/20'
                           : openGrade
-                          ? 'border-[#1d64ec] ring-2 ring-blue-500/20 bg-blue-50/20'
+                          ? 'border-[#5433eb] ring-2 ring-[#5433eb]/20 bg-[#5433eb]/5'
                           : 'border-neutral-200 hover:border-neutral-300'
                       }`}
                     >
                       <span className={`w-full text-center text-sm font-bold truncate ${gradeLevel ? 'text-slate-900' : 'text-neutral-400 font-medium'}`}>
                         {gradeLevel || 'Kelas'}
                       </span>
-                      <ChevronDown className={`h-4 w-4 shrink-0 transition-transform duration-200 ${openGrade ? 'rotate-180 text-[#1d64ec]' : 'text-neutral-400'}`} />
+                      <ChevronDown className={`h-4 w-4 shrink-0 transition-transform duration-200 ${openGrade ? 'rotate-180 text-[#5433eb]' : 'text-neutral-400'}`} />
                     </button>
 
                     {openGrade && (
@@ -317,7 +317,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                             onClick={() => { setGradeLevel(opt); setOpenGrade(false); setErrors((prev) => ({ ...prev, classGroup: undefined })); }}
                             className={`relative w-full flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer ${
                               gradeLevel === opt
-                                ? 'bg-[#1d64ec] text-white shadow-xs'
+                                ? 'bg-[#5433eb] text-white shadow-xs'
                                 : 'text-slate-700 hover:bg-neutral-100 hover:text-slate-900'
                             }`}
                           >
@@ -338,14 +338,14 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                         errors.classGroup
                           ? 'border-rose-400 bg-rose-50/20'
                           : openMajor
-                          ? 'border-[#1d64ec] ring-2 ring-blue-500/20 bg-blue-50/20'
+                          ? 'border-[#5433eb] ring-2 ring-[#5433eb]/20 bg-[#5433eb]/5'
                           : 'border-neutral-200 hover:border-neutral-300'
                       }`}
                     >
                       <span className={`w-full text-center text-sm font-bold truncate ${major ? 'text-slate-900' : 'text-neutral-400 font-medium'}`}>
                         {major || 'Jurusan'}
                       </span>
-                      <ChevronDown className={`h-4 w-4 shrink-0 transition-transform duration-200 ${openMajor ? 'rotate-180 text-[#1d64ec]' : 'text-neutral-400'}`} />
+                      <ChevronDown className={`h-4 w-4 shrink-0 transition-transform duration-200 ${openMajor ? 'rotate-180 text-[#5433eb]' : 'text-neutral-400'}`} />
                     </button>
 
                     {openMajor && (
@@ -357,7 +357,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                             onClick={() => { setMajor(opt); setOpenMajor(false); setErrors((prev) => ({ ...prev, classGroup: undefined })); }}
                             className={`relative w-full flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer ${
                               major === opt
-                                ? 'bg-[#1d64ec] text-white shadow-xs'
+                                ? 'bg-[#5433eb] text-white shadow-xs'
                                 : 'text-slate-700 hover:bg-neutral-100 hover:text-slate-900'
                             }`}
                           >
@@ -378,14 +378,14 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                         errors.classGroup
                           ? 'border-rose-400 bg-rose-50/20'
                           : openClassNum
-                          ? 'border-[#1d64ec] ring-2 ring-blue-500/20 bg-blue-50/20'
+                          ? 'border-[#5433eb] ring-2 ring-[#5433eb]/20 bg-[#5433eb]/5'
                           : 'border-neutral-200 hover:border-neutral-300'
                       }`}
                     >
                       <span className={`w-full text-center text-xs font-bold truncate ${classNumber ? 'text-[#111827]' : 'text-neutral-400 font-medium'}`}>
                         {classNumber ? `No. ${classNumber}` : 'No. Kelas'}
                       </span>
-                      <ChevronDown className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 ${openClassNum ? 'rotate-180 text-[#1d64ec]' : 'text-neutral-400'}`} />
+                      <ChevronDown className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 ${openClassNum ? 'rotate-180 text-[#5433eb]' : 'text-neutral-400'}`} />
                     </button>
 
                     {openClassNum && (
@@ -397,7 +397,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                             onClick={() => { setClassNumber(opt); setOpenClassNum(false); setErrors((prev) => ({ ...prev, classGroup: undefined })); }}
                             className={`relative w-full flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer ${
                               classNumber === opt
-                                ? 'bg-[#1d64ec] text-white shadow-xs'
+                                ? 'bg-[#5433eb] text-white shadow-xs'
                                 : 'text-slate-700 hover:bg-neutral-100 hover:text-slate-900'
                             }`}
                           >
@@ -427,11 +427,11 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                 errors.email
                   ? 'border-rose-400 bg-rose-50/20 focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20 do-shake'
                   : focusedField === 'email'
-                  ? 'border-[#1d64ec] ring-2 ring-blue-500/20'
+                  ? 'border-[#5433eb] ring-2 ring-[#5433eb]/20'
                   : 'border-neutral-200 hover:border-neutral-300'
               }`}
             >
-              <Mail className={`h-5 w-5 shrink-0 mr-3 ${errors.email ? 'text-rose-500' : focusedField === 'email' ? 'text-[#1d64ec]' : 'text-emerald-800'}`} aria-hidden="true" />
+              <Mail className={`h-5 w-5 shrink-0 mr-3 ${errors.email ? 'text-rose-500' : focusedField === 'email' ? 'text-[#5433eb]' : 'text-emerald-800'}`} aria-hidden="true" />
               
               {/* Outlined Floating Label */}
               <label
@@ -444,7 +444,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                   errors.email
                     ? 'text-rose-500 font-semibold'
                     : focusedField === 'email'
-                    ? 'text-[#1d64ec] font-semibold'
+                    ? 'text-[#5433eb] font-semibold'
                     : email
                     ? 'text-slate-900 font-semibold'
                     : 'text-neutral-400 font-normal'
@@ -480,11 +480,11 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                 errors.password
                   ? 'border-rose-400 bg-rose-50/20 focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20 do-shake'
                   : focusedField === 'password'
-                  ? 'border-[#1d64ec] ring-2 ring-blue-500/20'
+                  ? 'border-[#5433eb] ring-2 ring-[#5433eb]/20'
                   : 'border-neutral-200 hover:border-neutral-300'
               }`}
             >
-              <Lock className={`h-5 w-5 shrink-0 mr-3 ${errors.password ? 'text-rose-500' : focusedField === 'password' ? 'text-[#1d64ec]' : 'text-emerald-800'}`} aria-hidden="true" />
+              <Lock className={`h-5 w-5 shrink-0 mr-3 ${errors.password ? 'text-rose-500' : focusedField === 'password' ? 'text-[#5433eb]' : 'text-emerald-800'}`} aria-hidden="true" />
               
               {/* Outlined Floating Label */}
               <label
@@ -497,7 +497,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                   errors.password
                     ? 'text-rose-500 font-semibold'
                     : focusedField === 'password'
-                    ? 'text-[#1d64ec] font-semibold'
+                    ? 'text-[#5433eb] font-semibold'
                     : password
                     ? 'text-slate-900 font-semibold'
                     : 'text-neutral-400 font-normal'
@@ -520,7 +520,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="text-neutral-400 hover:text-slate-900 p-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg"
+                className="text-neutral-400 hover:text-slate-900 p-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#5433eb] rounded-lg"
                 aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
               >
                 {showPassword ? <EyeOff className="h-5 w-5" aria-hidden="true" /> : <Eye className="h-5 w-5" aria-hidden="true" />}
@@ -544,13 +544,13 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4.5 w-4.5 rounded-md border-neutral-300 text-[#1d64ec] focus:ring-blue-500/20 cursor-pointer"
+                  className="h-4.5 w-4.5 rounded-md border-neutral-300 text-[#5433eb] focus:ring-[#5433eb]/20 cursor-pointer"
                 />
                 <span className="text-xs font-semibold text-slate-900">Remember me</span>
               </label>
               <button
                 type="button"
-                className="text-xs font-semibold text-emerald-800 hover:underline cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm"
+                className="text-xs font-semibold text-[#5433eb] hover:underline cursor-pointer focus-visible:ring-2 focus-visible:ring-[#5433eb] rounded-sm"
               >
                 Forgot Password?
               </button>
@@ -564,7 +564,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                   type="checkbox"
                   checked={agreeTerms}
                   onChange={(e) => { setAgreeTerms(e.target.checked); setErrors((prev) => ({ ...prev, agreeTerms: undefined })); }}
-                  className="h-4.5 w-4.5 rounded-md border-neutral-300 text-[#1d64ec] focus:ring-blue-500/20 cursor-pointer mt-0.5"
+                  className="h-4.5 w-4.5 rounded-md border-neutral-300 text-[#5433eb] focus:ring-[#5433eb]/20 cursor-pointer mt-0.5"
                 />
                 <label htmlFor="agree-terms-checkbox" className="text-xs text-slate-700 font-medium cursor-pointer leading-tight">
                   Saya menyetujui <span className="font-bold text-slate-900 underline">Syarat & Ketentuan</span> serta <span className="font-bold text-slate-900 underline">Kebijakan Privasi</span> Snapan Market
@@ -579,12 +579,12 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
             </div>
           )}
 
-          {/* Submit Primary Button */}
+          {/* Submit Primary Button (Kumo Violet Theme) */}
           <ButtonPrimary
             type="submit"
             size="lg"
             disabled={isSubmitting}
-            className="w-full justify-center font-bold h-14 text-base rounded-full mt-2"
+            className="w-full justify-center font-bold h-14 text-base rounded-full mt-2 bg-[#5433eb] hover:bg-[#4323d9] active:scale-[0.98] shadow-md shadow-[#5433eb]/20 text-white"
           >
             {isSubmitting ? (
               <Loader2 className="h-5 w-5 animate-spin text-white" />

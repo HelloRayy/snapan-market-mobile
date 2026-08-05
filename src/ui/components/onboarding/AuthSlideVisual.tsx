@@ -61,10 +61,12 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
   const majorOptions = ['DKV', 'LK', 'PPLG', 'PS', 'TJKT'];
   const classNumOptions = ['1', '2', '3'];
 
-  // Format Phone Number with Hyphens Every 4 Digits e.g. 8512-3123-123
+  // Format Phone Number as 3 digits - 4 digits - 4 digits e.g. 857-9799-857
   const formatPhoneWithHyphens = (rawDigits: string) => {
     if (!rawDigits) return '';
-    return rawDigits.replace(/(\d{4})(?=\d)/g, '$1-');
+    if (rawDigits.length <= 3) return rawDigits;
+    if (rawDigits.length <= 7) return `${rawDigits.slice(0, 3)}-${rawDigits.slice(3)}`;
+    return `${rawDigits.slice(0, 3)}-${rawDigits.slice(3, 7)}-${rawDigits.slice(7, 12)}`;
   };
 
   // Check if Register form inputs are complete
@@ -658,7 +660,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                     )}
                   </div>
 
-                  {/* 3. WhatsApp Phone Number 2-Box Layout with Auto Hyphens Every 4 Digits */}
+                  {/* 3. WhatsApp Phone Number 2-Box Layout with 3-4-4 Auto Hyphen Formatting */}
                   <div>
                     <div key={`phone-box-${shakeKey}`} className={`flex items-center gap-2.5 ${errors.phoneNumber ? 'do-shake' : ''}`}>
                       {/* Left Box: Indonesian Flag +62 Country Badge */}
@@ -667,7 +669,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                         <span className="text-xs font-extrabold text-slate-900 tracking-tight font-mono">+62</span>
                       </div>
 
-                      {/* Right Box: Phone Input with Floating Label & Auto-Hyphen Formatting */}
+                      {/* Right Box: Phone Input with Floating Label & 3-4-4 Auto-Hyphen Formatting */}
                       <div
                         className={`flex-1 relative flex items-center h-16 rounded-[22px] border bg-pure-white px-4 transition-all shadow-2xs ${
                           errors.phoneNumber
@@ -719,7 +721,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                             setErrors((prev) => ({ ...prev, phoneNumber: undefined }));
                           }}
                           className="w-full bg-transparent text-base font-bold text-slate-900 focus:outline-none pt-1 truncate tracking-wide font-mono"
-                          placeholder={focusedField === 'phoneNumber' ? '8123-4567-890' : ''}
+                          placeholder={focusedField === 'phoneNumber' ? '857-9799-8570' : ''}
                         />
                       </div>
                     </div>

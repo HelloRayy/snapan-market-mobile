@@ -193,15 +193,15 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
             : 'rounded-t-[36px] rounded-b-none border-t border-faint-border pt-6 pb-10'
         }`}
       >
-        {/* Button Primary Matching Segmented Control Tab Switcher */}
+        {/* Optimal UX iOS-Style Floating White Pill Segmented Control */}
         <div
-          className="relative flex items-center rounded-full bg-[#f1f3f5] p-1 border border-neutral-200/80 shadow-inner h-12 select-none"
+          className="relative flex items-center rounded-full bg-[#f1f3f5] p-1 border border-neutral-200/70 shadow-inner h-12 select-none"
           role="tablist"
           aria-label="Metode Otentikasi"
         >
-          {/* Animated Sliding Pill matching ButtonPrimary Gradient & Glow */}
+          {/* Floating White Pill Background Indicator with Subtle Elevation Shadow */}
           <div
-            className={`absolute top-1 bottom-1 left-1 w-[calc(50%-0.25rem)] rounded-full bg-[#1d64ec] bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-md shadow-blue-500/25 border border-[#154ec1] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] transition-transform duration-250 cubic-bezier(0.16,1,0.3,1) ${
+            className={`absolute top-1 bottom-1 left-1 w-[calc(50%-0.25rem)] rounded-full bg-white shadow-md shadow-black/8 border border-black/5 transition-transform duration-250 cubic-bezier(0.16,1,0.3,1) ${
               authTab === 'login' ? 'translate-x-0' : 'translate-x-full'
             }`}
           />
@@ -211,7 +211,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
             aria-selected={authTab === 'login'}
             onClick={() => { setAuthTab('login'); setErrors({}); }}
             className={`flex-1 relative z-10 flex items-center justify-center whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer text-sm font-bold rounded-full py-2.5 transition-colors duration-200 ${
-              authTab === 'login' ? 'text-white drop-shadow-xs' : 'text-neutral-600 hover:text-slate-900 font-semibold'
+              authTab === 'login' ? 'text-slate-900' : 'text-neutral-500 hover:text-slate-900 font-semibold'
             }`}
           >
             Login
@@ -221,7 +221,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
             aria-selected={authTab === 'register'}
             onClick={() => { setAuthTab('register'); setErrors({}); }}
             className={`flex-1 relative z-10 flex items-center justify-center whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer text-sm font-bold rounded-full py-2.5 transition-colors duration-200 ${
-              authTab === 'register' ? 'text-white drop-shadow-xs' : 'text-neutral-600 hover:text-slate-900 font-semibold'
+              authTab === 'register' ? 'text-slate-900' : 'text-neutral-500 hover:text-slate-900 font-semibold'
             }`}
           >
             Register

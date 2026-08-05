@@ -12,7 +12,7 @@ interface FormErrors {
   fullName?: string;
   classGroup?: string;
   phoneNumber?: string;
-  email?: string;
+  loginIdentifier?: string;
   password?: string;
   agreeTerms?: string;
   otpCode?: string;
@@ -30,7 +30,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
   const [major, setMajor] = useState('');
   const [classNumber, setClassNumber] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [email, setEmail] = useState('');
+  const [loginIdentifier, setLoginIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   const [agreeTerms, setAgreeTerms] = useState(true);
@@ -175,9 +175,6 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
       if (!phoneNumber.trim() || phoneNumber.length < 8) {
         newErrors.phoneNumber = 'Masukkan nomor WhatsApp aktif Anda';
       }
-      if (!email.trim() || !email.includes('@')) {
-        newErrors.email = 'Format email tidak valid (contoh: nama@domain.com)';
-      }
       if (password.length < 6) {
         newErrors.password = 'Kata sandi minimal harus 6 karakter';
       }
@@ -185,8 +182,8 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
         newErrors.agreeTerms = 'Centang untuk menyetujui Syarat & Ketentuan';
       }
     } else {
-      if (!email.trim() || !email.includes('@')) {
-        newErrors.email = 'Masukkan alamat email yang valid';
+      if (!loginIdentifier.trim()) {
+        newErrors.loginIdentifier = 'Masukkan Nomor WhatsApp atau Email Anda';
       }
       if (!password) {
         newErrors.password = 'Mohon masukkan kata sandi Anda';
@@ -290,7 +287,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
             : 'rounded-t-[36px] rounded-b-none border-t border-faint-border pt-6 pb-10'
         }`}
       >
-        {/* STEP 2: WHATSAPP OTP VERIFICATION SCREEN (Matching Reference UI) */}
+        {/* STEP 2: WHATSAPP OTP VERIFICATION SCREEN */}
         {regStep === 'otp' ? (
           <form onSubmit={handleVerifyOtp} className="space-y-6 pt-2 animate-in fade-in slide-in-from-right-4 duration-300 ease-out">
             <div className="space-y-4 text-center">
@@ -330,7 +327,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
               )}
             </div>
 
-            {/* Countdown Timer Pill (Matching Reference Image) */}
+            {/* Countdown Timer Pill */}
             <div className="flex items-center justify-between px-4 py-3 bg-[#f3f0ff] rounded-2xl text-xs font-semibold text-[#5433eb]">
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-[#5433eb]" />
@@ -419,10 +416,10 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
 
             {/* Dynamic Form Content */}
             <form onSubmit={handleSubmitForm} noValidate className="space-y-4 pt-1">
-              {/* REGISTER EXTRA FIELDS */}
-              {authTab === 'register' && (
+              {/* REGISTER EXTRA FIELDS (Low-Friction 4 Inputs: Nama -> Kelas/Jurusan/No -> No WA -> Password) */}
+              {authTab === 'register' ? (
                 <div className="space-y-4 animate-in fade-in slide-in-from-bottom-3 duration-300 ease-out" ref={dropdownRef}>
-                  {/* Full Name Floating Label Field */}
+                  {/* 1. Full Name Floating Label Field */}
                   <div>
                     <div
                       key={`fullname-box-${shakeKey}`}
@@ -474,7 +471,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                     )}
                   </div>
 
-                  {/* Dropdown Grid: [ Kelas ] [ Jurusan ] [ No. Kelas ] */}
+                  {/* 2. Dropdown Grid: [ Kelas ] [ Jurusan ] [ No. Kelas ] */}
                   <div>
                     <div key={`classgroup-box-${shakeKey}`} className={`grid grid-cols-3 gap-2.5 ${errors.classGroup ? 'do-shake' : ''}`}>
                       {/* Micro Dropdown 1: Kelas */}
@@ -605,7 +602,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                     )}
                   </div>
 
-                  {/* WhatsApp Phone Number Floating Label Field */}
+                  {/* 3. WhatsApp Phone Number Floating Label Field */}
                   <div>
                     <div
                       key={`phone-box-${shakeKey}`}
@@ -657,61 +654,61 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                     )}
                   </div>
                 </div>
-              )}
-
-              {/* Email Address Floating Label Field */}
-              <div>
-                <div
-                  key={`email-box-${shakeKey}`}
-                  className={`relative flex items-center h-16 rounded-[22px] border bg-pure-white px-4 transition-all shadow-2xs ${
-                    errors.email
-                      ? 'border-rose-400 bg-rose-50/20 focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20 do-shake'
-                      : focusedField === 'email'
-                      ? 'border-[#1d64ec] ring-2 ring-blue-500/20'
-                      : 'border-neutral-200 hover:border-neutral-300'
-                  }`}
-                >
-                  <Mail className={`h-5 w-5 shrink-0 mr-3 ${errors.email ? 'text-rose-500' : focusedField === 'email' ? 'text-[#1d64ec]' : 'text-emerald-800'}`} aria-hidden="true" />
-                  
-                  <label
-                    htmlFor="auth-email-input"
-                    className={`absolute pointer-events-none transition-all duration-200 ease-out select-none ${
-                      focusedField === 'email' || email
-                        ? 'left-8 top-0 -translate-y-1/2 text-xs bg-pure-white px-1.5 rounded-md'
-                        : 'left-11 top-1/2 -translate-y-1/2 text-sm font-normal text-neutral-400'
-                    } ${
-                      errors.email
-                        ? 'text-rose-500 font-semibold'
-                        : focusedField === 'email'
-                        ? 'text-[#1d64ec] font-semibold'
-                        : email
-                        ? 'text-slate-900 font-semibold'
-                        : 'text-neutral-400 font-normal'
+              ) : (
+                /* LOGIN TAB FIELD 1: Nomor WhatsApp / Email */
+                <div>
+                  <div
+                    key={`login-id-box-${shakeKey}`}
+                    className={`relative flex items-center h-16 rounded-[22px] border bg-pure-white px-4 transition-all shadow-2xs ${
+                      errors.loginIdentifier
+                        ? 'border-rose-400 bg-rose-50/20 focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20 do-shake'
+                        : focusedField === 'loginIdentifier'
+                        ? 'border-[#1d64ec] ring-2 ring-blue-500/20'
+                        : 'border-neutral-200 hover:border-neutral-300'
                     }`}
                   >
-                    Alamat Email
-                  </label>
+                    <Mail className={`h-5 w-5 shrink-0 mr-3 ${errors.loginIdentifier ? 'text-rose-500' : focusedField === 'loginIdentifier' ? 'text-[#1d64ec]' : 'text-emerald-800'}`} aria-hidden="true" />
+                    
+                    <label
+                      htmlFor="auth-login-identifier-input"
+                      className={`absolute pointer-events-none transition-all duration-200 ease-out select-none ${
+                        focusedField === 'loginIdentifier' || loginIdentifier
+                          ? 'left-8 top-0 -translate-y-1/2 text-xs bg-pure-white px-1.5 rounded-md'
+                          : 'left-11 top-1/2 -translate-y-1/2 text-sm font-normal text-neutral-400'
+                      } ${
+                        errors.loginIdentifier
+                          ? 'text-rose-500 font-semibold'
+                          : focusedField === 'loginIdentifier'
+                          ? 'text-[#1d64ec] font-semibold'
+                          : loginIdentifier
+                          ? 'text-slate-900 font-semibold'
+                          : 'text-neutral-400 font-normal'
+                      }`}
+                    >
+                      Nomor WhatsApp / Email
+                    </label>
 
-                  <input
-                    id="auth-email-input"
-                    name="email"
-                    type="email"
-                    value={email}
-                    onFocus={() => setFocusedField('email')}
-                    onBlur={() => setFocusedField(null)}
-                    onChange={(e) => { setEmail(e.target.value); setErrors((prev) => ({ ...prev, email: undefined })); }}
-                    className="w-full bg-transparent text-base font-bold text-slate-900 focus:outline-none pt-1 truncate"
-                  />
+                    <input
+                      id="auth-login-identifier-input"
+                      name="loginIdentifier"
+                      type="text"
+                      value={loginIdentifier}
+                      onFocus={() => setFocusedField('loginIdentifier')}
+                      onBlur={() => setFocusedField(null)}
+                      onChange={(e) => { setLoginIdentifier(e.target.value); setErrors((prev) => ({ ...prev, loginIdentifier: undefined })); }}
+                      className="w-full bg-transparent text-base font-bold text-slate-900 focus:outline-none pt-1 truncate"
+                    />
+                  </div>
+                  {errors.loginIdentifier && (
+                    <p className="text-[11px] text-rose-500 font-semibold flex items-center gap-1.5 mt-1.5 ml-1 leading-none animate-in fade-in duration-200">
+                      <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                      <span>{errors.loginIdentifier}</span>
+                    </p>
+                  )}
                 </div>
-                {errors.email && (
-                  <p className="text-[11px] text-rose-500 font-semibold flex items-center gap-1.5 mt-1.5 ml-1 leading-none animate-in fade-in duration-200">
-                    <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-                    <span>{errors.email}</span>
-                  </p>
-                )}
-              </div>
+              )}
 
-              {/* Password Floating Label Field */}
+              {/* 4. Password Floating Label Field */}
               <div>
                 <div
                   key={`password-box-${shakeKey}`}

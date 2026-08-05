@@ -524,10 +524,10 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                     )}
                   </div>
 
-                  {/* 2. Dropdown Grid: [ Kelas ] [ Jurusan ] [ No. Kelas ] */}
+                  {/* 2. Dropdown Grid: [ Kelas ] [ Jurusan ] [ No. Kelas ] (Compact & Safe Alignment) */}
                   <div>
                     <div key={`classgroup-box-${shakeKey}`} className={`grid grid-cols-3 gap-2.5 ${errors.classGroup ? 'do-shake' : ''}`}>
-                      {/* Micro Dropdown 1: Kelas */}
+                      {/* Micro Dropdown 1: Kelas (Left Aligned to Prevent Left Screen Edge Overflow) */}
                       <div className="relative">
                         <button
                           type="button"
@@ -547,27 +547,27 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                         </button>
 
                         {openGrade && (
-                          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 z-50 min-w-[145px] w-[145%] bg-white/95 backdrop-blur-md border border-neutral-200/90 rounded-2xl p-1.5 shadow-2xl shadow-black/15 animate-in fade-in zoom-in-95 duration-150 space-y-1">
+                          <div className="absolute left-0 top-full mt-1.5 z-50 w-[130%] min-w-full bg-white/98 backdrop-blur-md border border-neutral-200/90 rounded-2xl p-1 shadow-xl shadow-black/10 animate-in fade-in zoom-in-95 duration-150 space-y-0.5">
                             {gradeOptions.map((opt) => (
                               <button
                                 key={opt}
                                 type="button"
                                 onClick={() => { setGradeLevel(opt); setOpenGrade(false); setErrors((prev) => ({ ...prev, classGroup: undefined })); }}
-                                className={`relative w-full flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer ${
+                                className={`w-full flex items-center justify-between py-1.5 px-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer ${
                                   gradeLevel === opt
-                                    ? 'bg-[#1d64ec] text-white shadow-xs'
+                                    ? 'bg-[#1d64ec] text-white shadow-2xs'
                                     : 'text-slate-700 hover:bg-neutral-100 hover:text-slate-900'
                                 }`}
                               >
-                                <span className="text-center truncate">{opt}</span>
-                                {gradeLevel === opt && <Check className="absolute right-2 h-3.5 w-3.5" />}
+                                <span className="truncate">{opt}</span>
+                                {gradeLevel === opt && <Check className="h-3.5 w-3.5 shrink-0" />}
                               </button>
                             ))}
                           </div>
                         )}
                       </div>
 
-                      {/* Micro Dropdown 2: Jurusan */}
+                      {/* Micro Dropdown 2: Jurusan (Centered) */}
                       <div className="relative">
                         <button
                           type="button"
@@ -587,27 +587,27 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                         </button>
 
                         {openMajor && (
-                          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 z-50 min-w-[130px] w-[140%] bg-white/95 backdrop-blur-md border border-neutral-200/90 rounded-2xl p-1.5 shadow-2xl shadow-black/15 animate-in fade-in zoom-in-95 duration-150 max-h-48 overflow-y-auto space-y-1 no-scrollbar">
+                          <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1.5 z-50 min-w-[125px] w-[130%] bg-white/98 backdrop-blur-md border border-neutral-200/90 rounded-2xl p-1 shadow-xl shadow-black/10 animate-in fade-in zoom-in-95 duration-150 max-h-48 overflow-y-auto space-y-0.5 no-scrollbar">
                             {majorOptions.map((opt) => (
                               <button
                                 key={opt}
                                 type="button"
                                 onClick={() => { setMajor(opt); setOpenMajor(false); setErrors((prev) => ({ ...prev, classGroup: undefined })); }}
-                                className={`relative w-full flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer ${
+                                className={`w-full flex items-center justify-between py-1.5 px-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer ${
                                   major === opt
-                                    ? 'bg-[#1d64ec] text-white shadow-xs'
+                                    ? 'bg-[#1d64ec] text-white shadow-2xs'
                                     : 'text-slate-700 hover:bg-neutral-100 hover:text-slate-900'
                                 }`}
                               >
-                                <span className="text-center">{opt}</span>
-                                {major === opt && <Check className="absolute right-2.5 h-3.5 w-3.5" />}
+                                <span>{opt}</span>
+                                {major === opt && <Check className="h-3.5 w-3.5 shrink-0" />}
                               </button>
                             ))}
                           </div>
                         )}
                       </div>
 
-                      {/* Micro Dropdown 3: No. Kelas */}
+                      {/* Micro Dropdown 3: No. Kelas (Right Aligned to Prevent Right Screen Edge Overflow) */}
                       <div className="relative">
                         <button
                           type="button"
@@ -627,20 +627,20 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                         </button>
 
                         {openClassNum && (
-                          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 z-50 min-w-[130px] w-[140%] bg-white/95 backdrop-blur-md border border-neutral-200/90 rounded-2xl p-1.5 shadow-2xl shadow-black/15 animate-in fade-in zoom-in-95 duration-150 space-y-1">
+                          <div className="absolute right-0 top-full mt-1.5 z-50 w-[130%] min-w-full bg-white/98 backdrop-blur-md border border-neutral-200/90 rounded-2xl p-1 shadow-xl shadow-black/10 animate-in fade-in zoom-in-95 duration-150 space-y-0.5">
                             {classNumOptions.map((opt) => (
                               <button
                                 key={opt}
                                 type="button"
                                 onClick={() => { setClassNumber(opt); setOpenClassNum(false); setErrors((prev) => ({ ...prev, classGroup: undefined })); }}
-                                className={`relative w-full flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer ${
+                                className={`w-full flex items-center justify-between py-1.5 px-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer ${
                                   classNumber === opt
-                                    ? 'bg-[#1d64ec] text-white shadow-xs'
+                                    ? 'bg-[#1d64ec] text-white shadow-2xs'
                                     : 'text-slate-700 hover:bg-neutral-100 hover:text-slate-900'
                                 }`}
                               >
-                                <span className="text-center">No. {opt}</span>
-                                {classNumber === opt && <Check className="absolute right-2.5 h-3.5 w-3.5" />}
+                                <span>No. {opt}</span>
+                                {classNumber === opt && <Check className="h-3.5 w-3.5 shrink-0" />}
                               </button>
                             ))}
                           </div>

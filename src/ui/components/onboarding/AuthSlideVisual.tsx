@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Mail, Lock, Eye, EyeOff, ArrowLeft, User, ChevronDown, Check, AlertCircle, Loader2, Phone } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowLeft, User, ChevronDown, Check, AlertCircle, Loader2, Phone, Headphones } from 'lucide-react';
 import { ButtonPrimary } from '../ui/ButtonPrimary';
 import { ButtonSecondary } from '../ui/ButtonSecondary';
 
@@ -86,6 +86,22 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
     return () => clearInterval(timer);
   }, [regStep, countdown]);
 
+  // Mask Phone Number Helper e.g. 08512345678 -> +6285-****-**78
+  const maskPhoneNumber = (rawPhone: string) => {
+    if (!rawPhone) return '+6285-****-**78';
+    const clean = rawPhone.replace(/\D/g, '');
+    let formatted = clean;
+    if (formatted.startsWith('0')) {
+      formatted = '62' + formatted.slice(1);
+    } else if (!formatted.startsWith('62')) {
+      formatted = '62' + formatted;
+    }
+    if (formatted.length < 8) return '+' + formatted;
+    const prefix = '+' + formatted.slice(0, 4);
+    const suffix = formatted.slice(-2);
+    return `${prefix}-****-**${suffix}`;
+  };
+
   const handleMockSocialLogin = (_provider: string) => {
     setIsSubmitting(true);
     setTimeout(() => {
@@ -105,17 +121,18 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
     }
   };
 
-  // Handle OTP 6-Digit Box Changes
+  // Handle OTP 6-Digit Box Changes (Strictly Number Only)
   const handleOtpChange = (index: number, value: string) => {
-    if (!/^\d*$/.test(value)) return;
+    const numericValue = value.replace(/\D/g, '');
+    if (!numericValue && value !== '') return;
 
     const newDigits = [...otpDigits];
-    newDigits[index] = value.slice(-1);
+    newDigits[index] = numericValue.slice(-1);
     setOtpDigits(newDigits);
     setErrors((prev) => ({ ...prev, otpCode: undefined }));
 
     // Auto-advance focus to next input
-    if (value && index < 5) {
+    if (numericValue && index < 5) {
       otpInputsRef.current[index + 1]?.focus();
     }
   };
@@ -128,9 +145,9 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
 
   const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData('text').trim();
-    if (/^\d{6}$/.test(pastedData)) {
-      const digits = pastedData.split('');
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').trim();
+    if (pastedData.length >= 6) {
+      const digits = pastedData.slice(0, 6).split('');
       setOtpDigits(digits);
       otpInputsRef.current[5]?.focus();
     }
@@ -226,59 +243,51 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
         }
       `}</style>
 
-      {/* Outer Header Section */}
-      {regStep === 'otp' ? (
-        /* OTP Centered Top Bar Header (Matching Reference Screenshot) */
-        <div className="relative flex items-center justify-center pt-2 pb-1.5 px-1 shrink-0">
-          <button
-            onClick={handleHeaderBack}
-            className="absolute left-1 flex h-9 w-9 items-center justify-center rounded-full bg-canvas-mist border border-faint-border text-slate-900 hover:bg-cool-stone/30 focus-visible:ring-2 focus-visible:ring-blue-500 transition-colors active:scale-95 cursor-pointer"
-            aria-label="Kembali ke formulir"
-          >
-            <ArrowLeft className="h-4.5 w-4.5 text-slate-900" aria-hidden="true" />
-          </button>
+      {/* Uniform Outer Header Section (Matching all Auth Pages) */}
+      <div className="space-y-1.5 pt-2 pb-0.5 px-1 shrink-0">
+        <button
+          onClick={handleHeaderBack}
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-canvas-mist border border-faint-border text-slate-900 hover:bg-cool-stone/30 focus-visible:ring-2 focus-visible:ring-blue-500 transition-colors active:scale-95 cursor-pointer"
+          aria-label="Kembali"
+        >
+          <ArrowLeft className="h-4.5 w-4.5 text-slate-900" aria-hidden="true" />
+        </button>
 
-          <h1 className="text-base font-extrabold tracking-tight text-slate-900 font-shopify-sans">
-            Verifikasi Kode
-          </h1>
+        {/* Zero-Layout-Shift Snappy Header Container */}
+        <div className="grid grid-cols-1 grid-rows-1 min-h-[52px]">
+          {regStep === 'otp' ? (
+            /* OTP Step 2 Header Title */
+            <div className="col-start-1 row-start-1 space-y-0.5 animate-in fade-in duration-200">
+              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 font-shopify-sans leading-tight">
+                Verifikasi Kode OTP
+              </h1>
+              <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                Kode 6-digit telah dikirim ke WhatsApp <span className="font-bold text-slate-900 font-mono tracking-wide">{maskPhoneNumber(phoneNumber)}</span>
+              </p>
+            </div>
+          ) : authTab === 'login' ? (
+            /* Login Header Title */
+            <div className="col-start-1 row-start-1 space-y-0.5 transition-opacity duration-150 ease-out opacity-100">
+              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 font-shopify-sans leading-tight">
+                Ayo Masuk ke Akun Kamu
+              </h1>
+              <p className="text-xs text-slate-600 font-medium">
+                Masuk atau daftar untuk menikmati pengalaman terbaik
+              </p>
+            </div>
+          ) : (
+            /* Register Header Title */
+            <div className="col-start-1 row-start-1 space-y-0.5 transition-opacity duration-150 ease-out opacity-100">
+              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 font-shopify-sans leading-tight">
+                Buat Akun Baru
+              </h1>
+              <p className="text-xs text-slate-600 font-medium">
+                Isi data diri kamu untuk mulai bergabung
+              </p>
+            </div>
+          )}
         </div>
-      ) : (
-        /* Form Header Section */
-        <div className="space-y-1.5 pt-2 pb-0.5 px-1 shrink-0">
-          <button
-            onClick={handleHeaderBack}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-canvas-mist border border-faint-border text-slate-900 hover:bg-cool-stone/30 focus-visible:ring-2 focus-visible:ring-blue-500 transition-colors active:scale-95 cursor-pointer"
-            aria-label="Kembali"
-          >
-            <ArrowLeft className="h-4.5 w-4.5 text-slate-900" aria-hidden="true" />
-          </button>
-
-          {/* Zero-Layout-Shift Snappy Header Container */}
-          <div className="grid grid-cols-1 grid-rows-1 min-h-[52px]">
-            {authTab === 'login' ? (
-              /* Login Header Title */
-              <div className="col-start-1 row-start-1 space-y-0.5 transition-opacity duration-150 ease-out opacity-100">
-                <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 font-shopify-sans leading-tight">
-                  Ayo Masuk ke Akun Kamu
-                </h1>
-                <p className="text-xs text-slate-600 font-medium">
-                  Masuk atau daftar untuk menikmati pengalaman terbaik
-                </p>
-              </div>
-            ) : (
-              /* Register Header Title */
-              <div className="col-start-1 row-start-1 space-y-0.5 transition-opacity duration-150 ease-out opacity-100">
-                <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 font-shopify-sans leading-tight">
-                  Buat Akun Baru
-                </h1>
-                <p className="text-xs text-slate-600 font-medium">
-                  Isi data diri kamu untuk mulai bergabung
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      </div>
 
       {/* Main Form Sheet Card */}
       <div
@@ -288,7 +297,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
             : 'rounded-t-[36px] rounded-b-none border-t border-faint-border pt-6 pb-10'
         }`}
       >
-        {/* STEP 2: WHATSAPP OTP VERIFICATION SCREEN (100% Centered Matching Reference Screenshot) */}
+        {/* STEP 2: WHATSAPP OTP VERIFICATION SCREEN */}
         {regStep === 'otp' ? (
           <form onSubmit={handleVerifyOtp} className="space-y-6 pt-4 text-center animate-in fade-in slide-in-from-right-4 duration-300 ease-out">
             {/* Centered Main Title & Subtitle */}
@@ -297,19 +306,21 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                 Masukkan Kode Verifikasi
               </h2>
               <p className="text-xs text-slate-600 font-medium leading-relaxed max-w-xs mx-auto">
-                Kode 6-digit telah dikirim ke WhatsApp <span className="font-bold text-slate-900">+62 {phoneNumber || '812-3456-7890'}</span>
+                Silakan masukkan 6 angka kode OTP yang telah kami kirimkan.
               </p>
             </div>
 
-            {/* 6-Digit PIN Boxes (Centered) */}
+            {/* 6-Digit PIN Boxes (Strictly Number-Only Input Keyboard) */}
             <div className="space-y-2">
               <div key={`otp-box-${shakeKey}`} className={`flex items-center justify-center gap-2 my-2 ${errors.otpCode ? 'do-shake' : ''}`}>
                 {otpDigits.map((digit, idx) => (
                   <input
                     key={idx}
                     ref={(el) => (otpInputsRef.current[idx] = el)}
-                    type="text"
+                    type="tel"
                     inputMode="numeric"
+                    pattern="[0-9]*"
+                    autoComplete="one-time-code"
                     maxLength={1}
                     value={digit}
                     onChange={(e) => handleOtpChange(idx, e.target.value)}
@@ -348,11 +359,14 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
               )}
             </ButtonPrimary>
 
-            {/* Bottom Centered Resend & Timer Text (Matching Screenshot) */}
+            {/* Bottom Centered Resend & Customer Service Section */}
             <div className="space-y-3 text-center text-xs">
               {countdown > 0 ? (
-                <p className="text-slate-600 font-medium">
-                  Kirim ulang kode dalam <span className="font-bold text-slate-900 font-mono">{countdown} detik</span>
+                <p className="text-slate-600 font-medium flex items-center justify-center gap-1.5">
+                  <span>Kirim ulang kode dalam</span>
+                  <span className="font-mono font-extrabold text-slate-900 bg-neutral-100 px-2 py-0.5 rounded-lg border border-neutral-200 shadow-2xs tabular-nums">
+                    {countdown}s
+                  </span>
                 </p>
               ) : (
                 <button
@@ -364,13 +378,15 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                 </button>
               )}
 
-              <div className="pt-2">
-                <span className="text-neutral-400">Butuh bantuan? </span>
+              {/* Customer Service Icon ("Hubungi Bantuan") */}
+              <div className="pt-2 flex items-center justify-center gap-1.5">
+                <span className="text-neutral-500">Butuh bantuan?</span>
                 <button
                   type="button"
-                  className="font-bold text-[#1d64ec] hover:underline cursor-pointer"
+                  className="inline-flex items-center gap-1 font-bold text-[#1d64ec] hover:underline cursor-pointer focus:outline-none"
                 >
-                  Hubungi Bantuan
+                  <Headphones className="h-3.5 w-3.5 text-[#1d64ec]" aria-hidden="true" />
+                  <span>Hubungi Bantuan</span>
                 </button>
               </div>
             </div>
@@ -637,11 +653,13 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                         id="register-phone-input"
                         name="phoneNumber"
                         type="tel"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         value={phoneNumber}
                         onFocus={() => setFocusedField('phoneNumber')}
                         onBlur={() => setFocusedField(null)}
-                        onChange={(e) => { setPhoneNumber(e.target.value); setErrors((prev) => ({ ...prev, phoneNumber: undefined })); }}
-                        className="w-full bg-transparent text-base font-bold text-slate-900 focus:outline-none pt-1 truncate"
+                        onChange={(e) => { setPhoneNumber(e.target.value.replace(/\D/g, '')); setErrors((prev) => ({ ...prev, phoneNumber: undefined })); }}
+                        className="w-full bg-transparent text-base font-bold text-slate-900 focus:outline-none pt-1 truncate font-mono tracking-wide"
                       />
                     </div>
                     {errors.phoneNumber && (

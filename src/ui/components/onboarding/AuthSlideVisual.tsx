@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Mail, Lock, Eye, EyeOff, ArrowLeft, User, ChevronDown, Check, AlertCircle, Loader2, Phone, Clock } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowLeft, User, ChevronDown, Check, AlertCircle, Loader2, Phone } from 'lucide-react';
 import { ButtonPrimary } from '../ui/ButtonPrimary';
 import { ButtonSecondary } from '../ui/ButtonSecondary';
 
@@ -212,13 +212,6 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
     }
   };
 
-  // Helper formatting for 60s timer (e.g. 01:00 or 00:19 with padded zeros)
-  const formatTimer = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
-  };
-
   return (
     <div className="w-full max-w-sm mx-auto flex flex-col justify-between h-full font-gt-standard text-slate-ink pb-2">
       {/* Subtle Micro-Shake Style Block */}
@@ -234,50 +227,58 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
       `}</style>
 
       {/* Outer Header Section */}
-      <div className="space-y-1.5 pt-2 pb-0.5 px-1 shrink-0">
-        <button
-          onClick={handleHeaderBack}
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-canvas-mist border border-faint-border text-slate-900 hover:bg-cool-stone/30 focus-visible:ring-2 focus-visible:ring-blue-500 transition-colors active:scale-95 cursor-pointer"
-          aria-label="Kembali"
-        >
-          <ArrowLeft className="h-4.5 w-4.5 text-slate-900" aria-hidden="true" />
-        </button>
+      {regStep === 'otp' ? (
+        /* OTP Centered Top Bar Header (Matching Reference Screenshot) */
+        <div className="relative flex items-center justify-center pt-2 pb-1.5 px-1 shrink-0">
+          <button
+            onClick={handleHeaderBack}
+            className="absolute left-1 flex h-9 w-9 items-center justify-center rounded-full bg-canvas-mist border border-faint-border text-slate-900 hover:bg-cool-stone/30 focus-visible:ring-2 focus-visible:ring-blue-500 transition-colors active:scale-95 cursor-pointer"
+            aria-label="Kembali ke formulir"
+          >
+            <ArrowLeft className="h-4.5 w-4.5 text-slate-900" aria-hidden="true" />
+          </button>
 
-        {/* Zero-Layout-Shift Snappy Header Container */}
-        <div className="grid grid-cols-1 grid-rows-1 min-h-[52px]">
-          {regStep === 'otp' ? (
-            /* OTP Step 2 Header Title */
-            <div className="col-start-1 row-start-1 space-y-0.5 animate-in fade-in duration-200">
-              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 font-shopify-sans leading-tight">
-                Verifikasi Kode OTP
-              </h1>
-              <p className="text-xs text-slate-600 font-medium leading-relaxed">
-                Kode 6-digit telah dikirim ke WhatsApp <span className="font-bold text-slate-900">+62 {phoneNumber || '812-3456-7890'}</span>
-              </p>
-            </div>
-          ) : authTab === 'login' ? (
-            /* Login Header Title */
-            <div className="col-start-1 row-start-1 space-y-0.5 transition-opacity duration-150 ease-out opacity-100">
-              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 font-shopify-sans leading-tight">
-                Ayo Masuk ke Akun Kamu
-              </h1>
-              <p className="text-xs text-slate-600 font-medium">
-                Masuk atau daftar untuk menikmati pengalaman terbaik
-              </p>
-            </div>
-          ) : (
-            /* Register Header Title */
-            <div className="col-start-1 row-start-1 space-y-0.5 transition-opacity duration-150 ease-out opacity-100">
-              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 font-shopify-sans leading-tight">
-                Buat Akun Baru
-              </h1>
-              <p className="text-xs text-slate-600 font-medium">
-                Isi data diri kamu untuk mulai bergabung
-              </p>
-            </div>
-          )}
+          <h1 className="text-base font-extrabold tracking-tight text-slate-900 font-shopify-sans">
+            Verifikasi Kode
+          </h1>
         </div>
-      </div>
+      ) : (
+        /* Form Header Section */
+        <div className="space-y-1.5 pt-2 pb-0.5 px-1 shrink-0">
+          <button
+            onClick={handleHeaderBack}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-canvas-mist border border-faint-border text-slate-900 hover:bg-cool-stone/30 focus-visible:ring-2 focus-visible:ring-blue-500 transition-colors active:scale-95 cursor-pointer"
+            aria-label="Kembali"
+          >
+            <ArrowLeft className="h-4.5 w-4.5 text-slate-900" aria-hidden="true" />
+          </button>
+
+          {/* Zero-Layout-Shift Snappy Header Container */}
+          <div className="grid grid-cols-1 grid-rows-1 min-h-[52px]">
+            {authTab === 'login' ? (
+              /* Login Header Title */
+              <div className="col-start-1 row-start-1 space-y-0.5 transition-opacity duration-150 ease-out opacity-100">
+                <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 font-shopify-sans leading-tight">
+                  Ayo Masuk ke Akun Kamu
+                </h1>
+                <p className="text-xs text-slate-600 font-medium">
+                  Masuk atau daftar untuk menikmati pengalaman terbaik
+                </p>
+              </div>
+            ) : (
+              /* Register Header Title */
+              <div className="col-start-1 row-start-1 space-y-0.5 transition-opacity duration-150 ease-out opacity-100">
+                <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 font-shopify-sans leading-tight">
+                  Buat Akun Baru
+                </h1>
+                <p className="text-xs text-slate-600 font-medium">
+                  Isi data diri kamu untuk mulai bergabung
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Main Form Sheet Card */}
       <div
@@ -287,16 +288,22 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
             : 'rounded-t-[36px] rounded-b-none border-t border-faint-border pt-6 pb-10'
         }`}
       >
-        {/* STEP 2: WHATSAPP OTP VERIFICATION SCREEN */}
+        {/* STEP 2: WHATSAPP OTP VERIFICATION SCREEN (100% Centered Matching Reference Screenshot) */}
         {regStep === 'otp' ? (
-          <form onSubmit={handleVerifyOtp} className="space-y-6 pt-2 animate-in fade-in slide-in-from-right-4 duration-300 ease-out">
-            <div className="space-y-4 text-center">
-              <p className="text-xs font-semibold text-neutral-500 text-left">
+          <form onSubmit={handleVerifyOtp} className="space-y-6 pt-4 text-center animate-in fade-in slide-in-from-right-4 duration-300 ease-out">
+            {/* Centered Main Title & Subtitle */}
+            <div className="space-y-2">
+              <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 font-shopify-sans">
                 Masukkan Kode Verifikasi
+              </h2>
+              <p className="text-xs text-slate-600 font-medium leading-relaxed max-w-xs mx-auto">
+                Kode 6-digit telah dikirim ke WhatsApp <span className="font-bold text-slate-900">+62 {phoneNumber || '812-3456-7890'}</span>
               </p>
+            </div>
 
-              {/* 6-Digit PIN Boxes */}
-              <div key={`otp-box-${shakeKey}`} className={`flex items-center justify-between gap-2 ${errors.otpCode ? 'do-shake' : ''}`}>
+            {/* 6-Digit PIN Boxes (Centered) */}
+            <div className="space-y-2">
+              <div key={`otp-box-${shakeKey}`} className={`flex items-center justify-center gap-2 my-2 ${errors.otpCode ? 'do-shake' : ''}`}>
                 {otpDigits.map((digit, idx) => (
                   <input
                     key={idx}
@@ -327,17 +334,6 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
               )}
             </div>
 
-            {/* Premium Countdown Timer Pill with Monospace Badge */}
-            <div className="flex items-center justify-between px-4 py-3.5 bg-[#5433eb]/8 border border-[#5433eb]/15 rounded-2xl text-xs font-semibold text-[#5433eb] shadow-2xs">
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-[#5433eb]" />
-                <span className="font-semibold text-slate-800">Kode kedaluwarsa dalam</span>
-              </div>
-              <span className="bg-[#5433eb] text-white px-3 py-1 rounded-xl text-xs font-extrabold tracking-wider font-mono shadow-xs tabular-nums">
-                {formatTimer(countdown)}
-              </span>
-            </div>
-
             {/* Verify Code Primary Button */}
             <ButtonPrimary
               type="submit"
@@ -348,26 +344,28 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
               {isSubmitting ? (
                 <Loader2 className="h-5 w-5 animate-spin text-white" />
               ) : (
-                'Verifikasi Kode'
+                'Verifikasi'
               )}
             </ButtonPrimary>
 
-            {/* Resend & Help Actions */}
-            <div className="space-y-2 text-center text-xs">
-              <p className="text-neutral-500">Tidak menerima kode?</p>
-              <button
-                type="button"
-                onClick={handleResendOtp}
-                disabled={!canResend}
-                className={`font-bold transition-colors cursor-pointer ${
-                  canResend ? 'text-[#1d64ec] hover:underline' : 'text-neutral-400 cursor-not-allowed'
-                }`}
-              >
-                Kirim ulang kode
-              </button>
+            {/* Bottom Centered Resend & Timer Text (Matching Screenshot) */}
+            <div className="space-y-3 text-center text-xs">
+              {countdown > 0 ? (
+                <p className="text-slate-600 font-medium">
+                  Kirim ulang kode dalam <span className="font-bold text-slate-900 font-mono">{countdown} detik</span>
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleResendOtp}
+                  className="font-bold text-[#1d64ec] hover:underline cursor-pointer"
+                >
+                  Kirim Ulang Kode
+                </button>
+              )}
 
               <div className="pt-2">
-                <span className="text-neutral-500">Butuh bantuan? </span>
+                <span className="text-neutral-400">Butuh bantuan? </span>
                 <button
                   type="button"
                   className="font-bold text-[#1d64ec] hover:underline cursor-pointer"

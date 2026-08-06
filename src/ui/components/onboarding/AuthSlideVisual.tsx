@@ -337,32 +337,32 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
       </div>
 
       {/* Outer Wrapper for Peeking Asset & Form Sheet Card */}
-      <div className="flex-1 flex flex-col justify-end relative">
-        {/* Dynamic 3D Peeking Character with Playful Framer Motion Duck-Down & Pop-Up Spring Effect */}
-        <div className="relative w-full flex items-center justify-center -mb-2 z-20 pointer-events-none select-none overflow-hidden h-36 sm:h-40">
+      <div className="flex-1 flex flex-col justify-end relative overflow-visible">
+        {/* Dynamic 3D Peeking Character with Duck-Down & Pop-Up Motion (No Unintended Cropping) */}
+        <div className="relative w-full flex items-center justify-center -mb-2 z-10 pointer-events-none select-none overflow-visible">
           <AnimatePresence mode="wait">
             <motion.img
               key={regStep === 'otp' ? 'otp-satpam' : authTab}
               src={regStep === 'otp' ? otpHeroSvg : personLoginBgSvg}
               alt={regStep === 'otp' ? "Pak Satpam OTP Verifikasi" : "Siswa SMKN 8 Peeking"}
-              initial={{ y: 140, opacity: 0 }}
+              initial={{ y: 160, opacity: 0 }}
               animate={{ y: 10, opacity: 1 }}
-              exit={{ y: 140, opacity: 0 }}
+              exit={{ y: 160, opacity: 0 }}
               transition={{
                 type: 'spring',
-                stiffness: 280,
-                damping: 20,
+                stiffness: 300,
+                damping: 24,
                 mass: 0.8,
               }}
-              className="w-56 sm:w-64 h-auto object-contain drop-shadow-md origin-bottom"
+              className="w-56 sm:w-64 h-auto object-contain drop-shadow-md origin-bottom transform translate-y-2.5"
             />
           </AnimatePresence>
         </div>
 
-        {/* Main Form Sheet Card with Smooth Auto-Scroll Ref */}
+        {/* Main Form Sheet Card with z-20 so character ducks behind it smoothly without overflow-hidden clipping */}
         <div
           ref={formSheetRef}
-          className={`-mx-5 -mb-5 bg-pure-white px-6 shadow-2xl space-y-4 overflow-y-auto scroll-smooth transition-all duration-300 cubic-bezier(0.16,1,0.3,1) ${
+          className={`relative z-20 -mx-5 -mb-5 bg-pure-white px-6 shadow-2xl space-y-4 overflow-y-auto scroll-smooth transition-all duration-300 cubic-bezier(0.16,1,0.3,1) ${
             authTab === 'register' || regStep === 'otp'
               ? 'h-full min-h-[75vh] rounded-t-[36px] rounded-b-none border-t border-faint-border pt-6 pb-12'
               : 'rounded-t-[36px] rounded-b-none border-t border-faint-border pt-6 pb-10'

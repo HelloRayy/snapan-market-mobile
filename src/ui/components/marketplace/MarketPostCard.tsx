@@ -3,7 +3,7 @@ import { Heart, MoreHorizontal, Check, BadgeCheck, Box, ArrowRight } from 'lucid
 import { MarketThreadItem } from '@/types/marketFeed';
 import { ButtonPrimary } from '../ui/ButtonPrimary';
 
-// Custom Smooth Rounded Comment Icon (Rounded tail, no sharp points)
+// Custom Smooth Rounded Lucide-Family Comment Icon (Rounded tail tip, 100% Lucide family match)
 const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -15,7 +15,7 @@ const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
     strokeLinejoin="round"
     className={className}
   >
-    <path d="M7.9 20A9 9 0 1 0 4 16.1L3.3 18.7C3.1 19.4 3.6 20 4.3 19.8L7.9 20Z" />
+    <path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-.8 2.5c-.25.78.47 1.5 1.25 1.25l2.5-.8a2 2 0 0 1 1.1.09 10 10 0 1 0-4.144-4.207Z" />
   </svg>
 );
 

@@ -106,8 +106,8 @@ export const HomePage: React.FC = () => {
         onSearchChange={(query) => setSearchQuery(query)}
       />
 
-      {/* Main Threads Feed Container */}
-      <main className="max-w-xl mx-auto divide-y divide-neutral-100">
+      {/* Main Threads Feed Container with pt-14 for Fixed Header Offset */}
+      <main className="max-w-xl mx-auto divide-y divide-neutral-100 pt-14">
         {/* Scrollable Tab Switcher ("Untuk Anda" & "Terbaru") - Scrolls away naturally under sticky header */}
         <div className="flex items-center border-b border-neutral-100 select-none bg-pure-white">
           <button

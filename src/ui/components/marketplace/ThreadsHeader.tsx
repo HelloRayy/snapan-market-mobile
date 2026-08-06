@@ -21,7 +21,7 @@ export const ThreadsHeader: React.FC<ThreadsHeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-pure-white/95 backdrop-blur-md border-b border-neutral-200/80 shadow-2xs font-gt-standard">
+    <header className="fixed top-0 left-0 right-0 z-40 bg-pure-white/95 backdrop-blur-md border-b border-neutral-200/80 shadow-2xs font-gt-standard">
       {/* Top Main Bar: [ Left: Cart ] --- [ Center: Logo Title ] --- [ Right: Search ] */}
       <div className="max-w-xl mx-auto px-4 h-14 flex items-center justify-between gap-3 relative select-none">
         {/* Left Side: Cart Icon Only */}

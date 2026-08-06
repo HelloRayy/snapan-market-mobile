@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ShoppingBag, Store, X } from 'lucide-react';
+import { Search, ShoppingCart, Store, X } from 'lucide-react';
 
 interface ThreadsHeaderProps {
   cartCount: number;
@@ -31,7 +31,7 @@ export const ThreadsHeader: React.FC<ThreadsHeaderProps> = ({
             className="w-10 h-10 rounded-full flex items-center justify-center text-slate-800 hover:bg-neutral-100/90 active:scale-90 transition-all cursor-pointer relative"
             aria-label="Keranjang Belanja"
           >
-            <ShoppingBag className="w-5 h-5 text-slate-900 stroke-[2.25]" />
+            <ShoppingCart className="w-5 h-5 text-slate-900 stroke-[2.25]" />
             {cartCount > 0 && (
               <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-[#1d64ec] ring-2 ring-white animate-pulse" />
             )}

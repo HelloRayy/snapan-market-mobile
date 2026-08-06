@@ -190,30 +190,31 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               )}
             </div>
 
-            {/* Right Side: Price Display & Icon-Only Primary Buy Button */}
-            <div className="flex items-center gap-2 shrink-0 ml-auto">
-              <span className="text-[14px] font-semibold text-slate-900 tracking-tight whitespace-nowrap">
-                {formatRupiah(item.price)}
-              </span>
-
-              <button
-                type="button"
-                onClick={handleAddToCartClick}
-                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-2xs cursor-pointer active:scale-90 shrink-0 ${
-                  isAdded
-                    ? 'bg-emerald-600 text-white'
-                    : 'bg-[#1d64ec] hover:bg-blue-600 text-white'
-                }`}
-                aria-label="Tambah ke Keranjang"
-                title="Beli sekarang / Tambah ke keranjang"
-              >
-                {isAdded ? (
-                  <Check className="w-4 h-4 text-white stroke-[2.5]" />
-                ) : (
-                  <ShoppingCart className="w-4 h-4 text-white stroke-[2.25]" />
-                )}
-              </button>
-            </div>
+            {/* Right Side: Integrated Price & Primary Buy CTA Pill Button */}
+            <button
+              type="button"
+              onClick={handleAddToCartClick}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all shadow-2xs cursor-pointer active:scale-95 shrink-0 ml-auto ${
+                isAdded
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-[#1d64ec] hover:bg-blue-600 text-white'
+              }`}
+              aria-label={`Beli seharga ${formatRupiah(item.price)}`}
+            >
+              {isAdded ? (
+                <>
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Keranjang</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="w-3.5 h-3.5" />
+                  <span>Beli</span>
+                  <span className="opacity-40">•</span>
+                  <span className="font-semibold">{formatRupiah(item.price)}</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
       </div>

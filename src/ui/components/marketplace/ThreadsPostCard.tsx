@@ -46,10 +46,10 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
       <div className="space-y-2">
         {/* Top Header Row: Kiri = PP, Nama, Verif, Kelas | Kanan = Jam, Titik 3 */}
         <div className="flex items-center justify-between gap-2">
-          {/* Kiri Side: PP (36px) + Nama (16px) + Verif Icon + Kelas Badge */}
-          <div className="flex items-center gap-2.5 min-w-0 flex-wrap">
+          {/* Kiri Side: PP (36px) + Nama (16px) + Verif Icon + Kelas (Pure Text) + Jam (Pure Text) */}
+          <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
             {/* PP Avatar 36x36px (w-9 h-9) */}
-            <div className="relative w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
+            <div className="relative w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 mr-1">
               <img
                 src={item.seller.avatar}
                 alt={item.seller.name}
@@ -66,14 +66,17 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
             {item.seller.isVerified && (
               <BadgeCheck className="w-4 h-4 text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified Seller" />
             )}
-            <span className="text-[11px] font-normal px-2 py-0.5 rounded-full bg-blue-50/80 text-[#1d64ec] border border-blue-100 shrink-0">
+
+            {/* Kelas & Jam as Pure Text (No Badge, matching reference) */}
+            <span className="text-[16px] font-normal text-neutral-400 ml-1">
               {item.seller.classGroup}
             </span>
+            <span className="text-[16px] font-normal text-neutral-400">·</span>
+            <span className="text-[16px] font-normal text-neutral-400">{item.timestamp}</span>
           </div>
 
-          {/* Kanan Side: Jam (16px) + Action Btn Titik 3 */}
+          {/* Kanan Side: Action Btn Titik 3 */}
           <div className="flex items-center gap-1.5 shrink-0">
-            <span className="text-[16px] font-normal text-neutral-400">{item.timestamp}</span>
             <button
               type="button"
               onClick={(e) => e.stopPropagation()}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Loader2, Plus, Sparkles } from 'lucide-react';
+import { Loader2, Sparkles } from 'lucide-react';
 import { ThreadsHeader } from '../components/marketplace/ThreadsHeader';
 import { ThreadsPostCard } from '../components/marketplace/ThreadsPostCard';
 import { ThreadsBottomNav } from '../components/marketplace/ThreadsBottomNav';
@@ -138,25 +138,7 @@ export const HomePage: React.FC = () => {
           </button>
         </div>
 
-        {/* Start Posting Prompt Card (Threads Style Top Composer Bar) */}
-        <div className="p-4 flex items-center justify-between gap-3 bg-neutral-50/30 border-b border-neutral-100">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-[#1d64ec] text-white flex items-center justify-center font-extrabold text-xs shadow-2xs">
-              S8
-            </div>
-            <span className="text-xs font-medium text-neutral-400">
-              Ada yang mau dijual di SMKN 8 hari ini?
-            </span>
-          </div>
 
-          <button
-            type="button"
-            className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-200 border border-neutral-200 text-xs font-bold text-slate-900 transition-all cursor-pointer"
-          >
-            <Plus className="w-3.5 h-3.5 text-[#1d64ec]" />
-            <span>Posting</span>
-          </button>
-        </div>
 
         {/* Feed List Items */}
         {filteredItems.length > 0 ? (

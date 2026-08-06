@@ -71,15 +71,12 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
       <div className="flex items-start gap-3">
         {/* Left Column: Seller Avatar 36x36px (w-9 h-9) */}
         <div className="shrink-0 pt-0.5">
-          <div className="relative w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs">
+          <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs">
             <img
               src={item.seller.avatar}
               alt={item.seller.name}
               className="w-full h-full object-cover"
             />
-            <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-slate-900 text-white border-2 border-white flex items-center justify-center text-[9px] font-bold">
-              +
-            </div>
           </div>
         </div>
 

@@ -13,8 +13,8 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   onPostClick,
 }) => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#fafafa]/90 backdrop-blur-xl border-t border-neutral-200/80 font-gt-standard select-none">
-      <div className="max-w-xl mx-auto flex items-center justify-around h-[50px] px-3">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#fafafa]/90 backdrop-blur-xl border-t border-neutral-200/80 font-gt-standard select-none pb-safe">
+      <div className="max-w-xl mx-auto flex items-center justify-around h-[56px] px-3">
         {/* 1. Home Icon */}
         <button
           type="button"

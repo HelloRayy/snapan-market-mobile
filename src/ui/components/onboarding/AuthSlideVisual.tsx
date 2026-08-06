@@ -330,12 +330,12 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
         </div>
       </div>
 
-      {/* 3D Peeking Student Character overlapping the top curve of form sheet */}
-      <div className="relative w-full flex items-center justify-center -mb-[3px] z-20 pointer-events-none select-none overflow-visible animate-in fade-in duration-300">
+      {/* 3D Peeking Student Character gripping directly onto top border of form sheet */}
+      <div className="relative w-full flex items-center justify-center -mb-[38px] sm:-mb-[44px] z-20 pointer-events-none select-none overflow-visible animate-in fade-in duration-300">
         <img
           src={personLoginSvg}
           alt="Siswa SMKN 8 Peeking"
-          className="h-32 sm:h-36 object-contain drop-shadow-md transform translate-y-1 transition-transform duration-300"
+          className="w-48 sm:w-56 h-auto object-contain mix-blend-multiply transform translate-y-1 transition-transform duration-300"
         />
       </div>
 

@@ -3,6 +3,7 @@ import { Download, Share, CheckCircle2, ArrowRight, ShieldCheck, Zap, WifiOff, S
 import { usePWA } from '@/ui/hooks/usePWA';
 import { ButtonPrimary } from '../ui/ButtonPrimary';
 import { ButtonSecondary } from '../ui/ButtonSecondary';
+import { CustomPwaInstallModal } from './CustomPwaInstallModal';
 import personLoginBgSvg from '@/assets/new-market-asset/person-login-bg.svg';
 
 interface PwaLandingPageProps {
@@ -13,8 +14,14 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
   const { isInstalled, promptInstall } = usePWA();
   const [copied, setCopied] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
+  const [showCustomInstallModal, setShowCustomInstallModal] = useState(false);
 
-  const handleInstallClick = async () => {
+  const handleInstallClick = () => {
+    setShowCustomInstallModal(true);
+  };
+
+  const handleConfirmInstallFromCustomModal = async () => {
+    setShowCustomInstallModal(false);
     const success = await promptInstall();
     if (!success) {
       // Browser didn't trigger native prompt (e.g. desktop/iOS Safari) -> open interactive guide modal
@@ -145,6 +152,13 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           Lanjut Versi Web Browser
         </ButtonSecondary>
       </div>
+
+      {/* Custom Premium PWA Install Dialog Modal */}
+      <CustomPwaInstallModal
+        isOpen={showCustomInstallModal}
+        onClose={() => setShowCustomInstallModal(false)}
+        onConfirmInstall={handleConfirmInstallFromCustomModal}
+      />
 
       {/* Interactive Installation Guide Modal */}
       {showGuideModal && (

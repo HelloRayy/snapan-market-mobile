@@ -28,6 +28,9 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Dynamic Motion Layering State: z-10 during animation (behind card), z-30 when standing (hands on top of border)
+  const [isAnimatingHero, setIsAnimatingHero] = useState(false);
+
   // Scroll Container Ref
   const formSheetRef = useRef<HTMLDivElement>(null);
 
@@ -338,19 +341,25 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
 
       {/* Outer Wrapper for Peeking Asset & Form Sheet Card */}
       <div className="flex-1 flex flex-col justify-end relative overflow-visible">
-        {/* Dynamic 3D Peeking Character with z-30 (Above Form Sheet z-20 so Hands Grip ON TOP of the border) */}
-        <div className="relative w-full flex items-center justify-center -mb-2 z-30 pointer-events-none select-none overflow-visible">
+        {/* Dynamic 3D Peeking Character with Smart Dynamic Z-Index (z-10 behind card during motion, z-30 when resting so hands grip on top) */}
+        <div
+          className={`relative w-full flex items-center justify-center -mb-2 pointer-events-none select-none overflow-visible transition-all duration-150 ${
+            isAnimatingHero ? 'z-10' : 'z-30'
+          }`}
+        >
           <AnimatePresence mode="wait">
             <motion.img
               key={regStep === 'otp' ? 'otp-satpam' : authTab}
               src={regStep === 'otp' ? otpHeroSvg : personLoginBgSvg}
               alt={regStep === 'otp' ? "Pak Satpam OTP Verifikasi" : "Siswa SMKN 8 Peeking"}
-              initial={{ y: 150, opacity: 0 }}
+              initial={{ y: 160, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 150, opacity: 0 }}
+              exit={{ y: 160, opacity: 0 }}
+              onAnimationStart={() => setIsAnimatingHero(true)}
+              onAnimationComplete={() => setIsAnimatingHero(false)}
               transition={{
                 type: 'spring',
-                stiffness: 300,
+                stiffness: 280,
                 damping: 24,
                 mass: 0.8,
               }}
@@ -800,7 +809,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                           errors.loginIdentifier
                             ? 'text-rose-500 font-semibold'
                             : focusedField === 'loginIdentifier'
-                            ? 'text-[#1d64ec] font-semibold'
+                            ? 'text-[#1d64ec]'
                             : loginIdentifier
                             ? 'text-slate-900 font-semibold'
                             : 'text-neutral-400 font-normal'
@@ -853,7 +862,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                         errors.password
                           ? 'text-rose-500 font-semibold'
                           : focusedField === 'password'
-                          ? 'text-[#1d64ec] font-semibold'
+                          ? 'text-[#1d64ec]'
                           : password
                           ? 'text-slate-900 font-semibold'
                           : 'text-neutral-400 font-normal'

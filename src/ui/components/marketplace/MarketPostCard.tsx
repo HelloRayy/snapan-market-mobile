@@ -154,10 +154,10 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             </div>
           )}
 
-          {/* Bottom E-Commerce Action Bar: [Left: Love | Comment | Stock Icon] --- [Right: Harga & Icon-Only Buy CTA] */}
-          <div className="pt-2 flex items-center justify-between gap-2 min-w-0">
+          {/* Bottom E-Commerce Action Bar: [Left: Love | Comment | Stock Icon] --- [Right: Button CTA] */}
+          <div className="pt-2 flex flex-wrap items-center justify-between gap-y-2 gap-x-3 min-w-0">
             {/* Left Side: Love, Comment & Stock (Icon Only) */}
-            <div className="flex items-center gap-3.5 text-slate-600 min-w-0">
+            <div className="flex items-center gap-3.5 text-slate-600 shrink-0">
               {/* Like Button */}
               <button
                 type="button"
@@ -194,7 +194,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               size="sm"
               onClick={handleAddToCartClick}
               iconRight={isAdded ? null : <ArrowRight className="w-3.5 h-3.5 stroke-[2.25]" />}
-              className={`rounded-full shadow-2xs px-3.5 h-8 text-[12px] shrink-0 ml-auto ${
+              className={`rounded-full shadow-2xs px-3.5 h-8 text-[12px] shrink-0 sm:ml-auto ${
                 isAdded ? 'bg-emerald-600 border-emerald-700' : ''
               }`}
               aria-label="Lihat Detail Produk"

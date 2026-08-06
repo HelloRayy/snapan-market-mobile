@@ -91,7 +91,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl flex flex-col justify-between overflow-hidden select-none animate-in fade-in duration-200 font-gt-standard">
+    <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-2xl flex flex-col justify-between overflow-hidden select-none animate-in fade-in duration-200 font-gt-standard">
       {/* Top Bar: Floating Kumo UI Close Button & Counter Badge */}
       <div className="relative z-50 flex items-center justify-between px-4 pt-4 pb-2 max-w-xl mx-auto w-full">
         {/* Top-Left: Floating Kumo UI Circular Close X Button */}
@@ -136,25 +136,29 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
         ))}
       </div>
 
-      {/* Bottom Floating Bar: [Left: Indicator Dots] --- [Right: Mute / Sound Button] */}
+      {/* Bottom Floating Bar: [Center: Indicator Dots] --- [Right: Mute / Sound Button] */}
       <div className="relative z-50 flex items-center justify-between px-4 pb-6 pt-2 max-w-xl mx-auto w-full">
-        {/* Left/Center: Indicator Dots for Multi-Image */}
-        <div className="flex items-center gap-1.5">
-          {images.length > 1 &&
-            images.map((_, idx) => (
+        {/* Spacer for balance */}
+        <div className="w-10 h-10 pointer-events-none" />
+
+        {/* Center: Indicator Dots for Multi-Image (Centered Horizontally) */}
+        {images.length > 1 && (
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 bg-neutral-900/70 border border-neutral-700/50 backdrop-blur-md px-3 py-1.5 rounded-full shadow-md">
+            {images.map((_, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => scrollToImage(idx)}
                 className={`transition-all duration-200 cursor-pointer ${
                   currentIndex === idx
-                    ? 'w-6 h-1.5 rounded-full bg-white'
-                    : 'w-1.5 h-1.5 rounded-full bg-white/40 hover:bg-white/70'
+                    ? 'w-7 h-2 rounded-full bg-white shadow-xs'
+                    : 'w-2 h-2 rounded-full bg-white/40 hover:bg-white/70'
                 }`}
                 aria-label={`Ke gambar ${idx + 1}`}
               />
             ))}
-        </div>
+          </div>
+        )}
 
         {/* Right Side: Mute / Sound Button for Video / Audio */}
         <button

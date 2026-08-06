@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, MoreHorizontal, ShoppingCart, Check, BadgeCheck, Package } from 'lucide-react';
+import { Heart, MessageCircle, MoreHorizontal, Check, BadgeCheck, Package, ArrowRight } from 'lucide-react';
 import { MarketThreadItem } from '@/types/marketFeed';
-import { formatRupiah } from '@/utils/formatters';
 
 interface MarketPostCardProps {
   item: MarketThreadItem;
@@ -190,16 +189,16 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               )}
             </div>
 
-            {/* Right Side: Integrated Price & Primary Buy CTA Pill Button */}
+            {/* Right Side: Kumo UI Primary CTA Button "Cek Barang ->" */}
             <button
               type="button"
               onClick={handleAddToCartClick}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all shadow-2xs cursor-pointer active:scale-95 shrink-0 ml-auto ${
+              className={`group inline-flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-full text-[12px] font-semibold tracking-tight transition-all duration-200 ease-out shadow-xs hover:shadow-md cursor-pointer active:scale-95 shrink-0 ml-auto select-none ${
                 isAdded
                   ? 'bg-emerald-600 text-white'
                   : 'bg-[#1d64ec] hover:bg-blue-600 text-white'
               }`}
-              aria-label={`Beli seharga ${formatRupiah(item.price)}`}
+              aria-label="Cek Barang Produk"
             >
               {isAdded ? (
                 <>
@@ -208,10 +207,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 </>
               ) : (
                 <>
-                  <ShoppingCart className="w-3.5 h-3.5" />
-                  <span>Beli</span>
-                  <span className="opacity-40">•</span>
-                  <span className="font-semibold">{formatRupiah(item.price)}</span>
+                  <span>Cek Barang</span>
+                  <ArrowRight className="w-3.5 h-3.5 stroke-[2.25] group-hover:translate-x-0.5 transition-transform duration-200" />
                 </>
               )}
             </button>

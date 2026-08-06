@@ -92,14 +92,14 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               {item.seller.isVerified && (
                 <BadgeCheck className="w-4 h-4 text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified Seller" />
               )}
-              <span className="text-[15px] font-normal text-slate-600 truncate min-w-0 shrink">
+              <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
                 {item.seller.classGroup}
               </span>
             </div>
 
-            {/* Kanan Side: Jam (16px) + Action Btn Titik 3 - High Contrast Text */}
+            {/* Kanan Side: Jam (14px) + Action Btn Titik 3 - Muted Contrast Text */}
             <div className="flex items-center gap-2 shrink-0 ml-auto">
-              <span className="text-[15px] font-normal text-slate-500 whitespace-nowrap">{item.timestamp}</span>
+              <span className="text-[14px] font-normal text-neutral-400 whitespace-nowrap">{item.timestamp}</span>
               <button
                 type="button"
                 onClick={(e) => e.stopPropagation()}

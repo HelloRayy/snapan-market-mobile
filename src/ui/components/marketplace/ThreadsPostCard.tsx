@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, Repeat2, Send, MoreHorizontal, ShoppingCart, Check, MapPin, ShieldCheck } from 'lucide-react';
+import { Heart, MessageCircle, Repeat2, Send, MoreHorizontal, ShoppingCart, Check, MapPin, BadgeCheck } from 'lucide-react';
 import { MarketThreadItem } from '@/types/threadsFeed';
 import { formatRupiah } from '@/utils/formatters';
 
@@ -68,7 +68,7 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
                 {item.seller.name}
               </span>
               {item.seller.isVerified && (
-                <ShieldCheck className="w-4 h-4 text-[#1d64ec] shrink-0" aria-label="Verified Seller" />
+                <BadgeCheck className="w-4 h-4 text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified Seller" />
               )}
               <span className="text-[11px] font-normal px-2 py-0.5 rounded-full bg-blue-50/80 text-[#1d64ec] border border-blue-100 shrink-0">
                 {item.seller.classGroup}

@@ -46,7 +46,7 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
       <div className="space-y-2">
         {/* Top Header Row: Kiri = PP, Nama, Verif, Kelas | Kanan = Jam, Titik 3 */}
         <div className="flex items-center justify-between gap-2">
-          {/* Kiri Side: PP (36px) + Nama (16px) + Verif Icon + Kelas (Pure Text) + Jam (Pure Text) */}
+          {/* Kiri Side: PP (36px) + Nama (16px) + Verif Icon + Kelas (Pure Text) */}
           <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
             {/* PP Avatar 36x36px (w-9 h-9) */}
             <div className="relative w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 mr-1">
@@ -67,16 +67,15 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
               <BadgeCheck className="w-4 h-4 text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified Seller" />
             )}
 
-            {/* Kelas & Jam as Pure Text (No Badge, matching reference) */}
-            <span className="text-[16px] font-normal text-neutral-400 ml-1">
+            {/* Kelas Pure Text */}
+            <span className="text-[16px] font-normal text-neutral-400 ml-1 truncate">
               {item.seller.classGroup}
             </span>
-            <span className="text-[16px] font-normal text-neutral-400">·</span>
-            <span className="text-[16px] font-normal text-neutral-400">{item.timestamp}</span>
           </div>
 
-          {/* Kanan Side: Action Btn Titik 3 */}
-          <div className="flex items-center gap-1.5 shrink-0">
+          {/* Kanan Side: Jam (16px) + Action Btn Titik 3 */}
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[16px] font-normal text-neutral-400">{item.timestamp}</span>
             <button
               type="button"
               onClick={(e) => e.stopPropagation()}

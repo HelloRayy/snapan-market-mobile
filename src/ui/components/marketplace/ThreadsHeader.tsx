@@ -14,6 +14,20 @@ export const ThreadsHeader: React.FC<ThreadsHeaderProps> = ({
 }) => {
   const [showSearchInput, setShowSearchInput] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Scroll listener for dynamic frosted glass blur & opacity
+  React.useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleSearchChange = (val: string) => {
     setSearchValue(val);
@@ -21,7 +35,13 @@ export const ThreadsHeader: React.FC<ThreadsHeaderProps> = ({
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 bg-pure-white/90 backdrop-blur-xl font-gt-standard">
+    <header
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 font-gt-standard ${
+        isScrolled
+          ? 'bg-pure-white/75 backdrop-blur-xl shadow-2xs'
+          : 'bg-pure-white/80 backdrop-blur-md'
+      }`}
+    >
       {/* Top Main Bar: [ Left: Cart ] --- [ Center: Logo Title ] --- [ Right: Search ] */}
       <div className="max-w-xl mx-auto px-4 h-14 flex items-center justify-between gap-3 relative select-none">
         {/* Left Side: Cart Icon Only */}

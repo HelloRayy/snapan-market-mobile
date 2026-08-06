@@ -61,27 +61,27 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
         {/* Right Column: Content starting directly under Name */}
         <div className="flex-1 min-w-0 space-y-1">
           {/* Top Header Row: Kiri = Nama, Verif, Kelas | Kanan = Jam, Titik 3 */}
-          <div className="flex items-center justify-between gap-2">
-            {/* Kiri Side: Nama (16px) + Verif Icon + Kelas (Pure Text) - Single Inline Row */}
-            <div className="flex items-center gap-1 min-w-0">
-              <span className="font-semibold text-[16px] text-slate-900 truncate hover:underline shrink-0">
+          <div className="flex items-center justify-between gap-2 min-w-0">
+            {/* Kiri Side: Nama + Verif Icon + Kelas - Truncated cleanly to prevent overlap */}
+            <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+              <span className="font-semibold text-[16px] text-slate-900 truncate hover:underline shrink-0 max-w-[60%]">
                 {item.seller.name}
               </span>
               {item.seller.isVerified && (
                 <BadgeCheck className="w-4 h-4 text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified Seller" />
               )}
-              <span className="text-[15px] font-normal text-neutral-400 truncate shrink-0 ml-0.5">
+              <span className="text-[15px] font-normal text-neutral-400 truncate min-w-0 shrink">
                 {item.seller.classGroup}
               </span>
             </div>
 
-            {/* Kanan Side: Jam (16px) + Action Btn Titik 3 */}
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-[16px] font-normal text-neutral-400">{item.timestamp}</span>
+            {/* Kanan Side: Jam (16px) + Action Btn Titik 3 - Fixed width shrink-0 */}
+            <div className="flex items-center gap-2 shrink-0 ml-auto">
+              <span className="text-[15px] font-normal text-neutral-400 whitespace-nowrap">{item.timestamp}</span>
               <button
                 type="button"
                 onClick={(e) => e.stopPropagation()}
-                className="text-neutral-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors"
+                className="text-neutral-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
                 aria-label="Opsi postingan"
               >
                 <MoreHorizontal className="w-4 h-4" />

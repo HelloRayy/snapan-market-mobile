@@ -22,8 +22,8 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
   const slides = [
     {
       id: 0,
-      title: 'Buat Konten Promosi Produk Bisnismu',
-      description: 'Solusi lengkap membuat konten & visual promosi e-commerce menarik dalam hitungan detik.',
+      title: 'Pusat Jual Beli Warga SMKN 8 Semarang',
+      description: 'Mulai dari barang preloved, jajanan lezat kantin, hingga karya buatanmu — tawarkan semua produkmu langsung ke teman & guru di SMKN 8 Semarang.',
       type: 'content' as const,
       visual: <Slide1Visual />
     },

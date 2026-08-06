@@ -65,7 +65,7 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
   return (
     <article
       onClick={() => onPostClick?.(item)}
-      className="w-full border-b border-neutral-200 bg-pure-white px-4 py-3.5 hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none overflow-hidden"
+      className="w-full border-b border-neutral-200 bg-pure-white px-4 py-3.5 hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none overflow-visible"
     >
       <div className="flex items-start gap-3">
         {/* Left Column: Seller Avatar 36x36px (w-9 h-9) */}
@@ -83,7 +83,7 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
         </div>
 
         {/* Right Column: Content starting directly under Name */}
-        <div className="flex-1 min-w-0 space-y-1">
+        <div className="flex-1 min-w-0 space-y-1 overflow-visible">
           {/* Top Header Row: Kiri = Nama, Verif, Kelas | Kanan = Jam, Titik 3 */}
           <div className="flex items-center justify-between gap-2 min-w-0">
             {/* Kiri Side: Nama + Verif Icon + Kelas - High contrast WCAG compliance */}
@@ -118,9 +118,9 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
             {item.caption}
           </p>
 
-          {/* Product Image Gallery (Supports Single & Multi-Image Carousel with Peek) */}
+          {/* Product Image Gallery (Supports Single & Multi-Image Carousel with Unclipped Peek) */}
           {item.images && item.images.length === 1 && (
-            <div className="relative w-full rounded-2xl overflow-hidden border border-neutral-200/80 shadow-2xs bg-neutral-100 max-h-[280px] aspect-[16/10.5] mt-2.5">
+            <div className="relative w-full rounded-2xl overflow-hidden border border-neutral-200/80 shadow-2xs bg-neutral-100 max-h-[320px] aspect-[16/10] mt-2.5">
               <img
                 src={item.images[0]}
                 alt={item.caption}
@@ -137,12 +137,12 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
               onMouseUp={handleMouseLeaveOrUp}
               onMouseMove={handleMouseMove}
               onClick={(e) => e.stopPropagation()}
-              className="flex gap-2 overflow-x-auto snap-x snap-mandatory scrollbar-none mt-2.5 -mr-4 pr-4 cursor-grab active:cursor-grabbing select-none"
+              className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory scrollbar-none mt-2.5 -mr-4 pr-4 cursor-grab active:cursor-grabbing select-none touch-pan-x"
             >
               {item.images.map((imgUrl, idx) => (
                 <div
                   key={idx}
-                  className="shrink-0 snap-start w-[82%] sm:w-[75%] rounded-2xl overflow-hidden border border-neutral-200/80 shadow-2xs bg-neutral-100 max-h-[280px] aspect-[4/5]"
+                  className="shrink-0 snap-start w-[82%] sm:w-[75%] rounded-2xl overflow-hidden border border-neutral-200/80 shadow-2xs bg-neutral-100 max-h-[340px] aspect-[3/4]"
                 >
                   <img
                     src={imgUrl}

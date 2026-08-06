@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Mail, Lock, Eye, EyeOff, ArrowLeft, User, ChevronDown, Check, AlertCircle, Loader2, Headphones, ShieldCheck, Sparkles } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowLeft, User, ChevronDown, Check, AlertCircle, Loader2, Headphones } from 'lucide-react';
 import { ButtonPrimary } from '../ui/ButtonPrimary';
 import { ButtonSecondary } from '../ui/ButtonSecondary';
 import { Checkbox } from '../ui/Checkbox';
+import personLoginSvg from '../../../assets/new-market-asset/person-login 1.svg';
 
 interface AuthSlideVisualProps {
   onBack?: () => void;
@@ -329,20 +330,13 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
         </div>
       </div>
 
-      {/* Interactive 3D Security & School Badge Pill overlapping the form sheet */}
-      <div className="relative w-full flex items-center justify-center -mb-5 z-20 pointer-events-none px-1 animate-in fade-in duration-300">
-        <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-neutral-200/90 shadow-md shadow-blue-500/10">
-          <div className="w-6 h-6 rounded-full bg-blue-100/80 border border-blue-200 flex items-center justify-center text-[#1d64ec] shrink-0">
-            <ShieldCheck className="w-3.5 h-3.5" />
-          </div>
-          <span className="text-[11px] font-extrabold text-slate-900 tracking-tight">
-            Akun Resmi SMKN 8 Semarang
-          </span>
-          <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[9px] font-extrabold border border-emerald-200/60">
-            <Sparkles className="w-2.5 h-2.5" />
-            Aman
-          </span>
-        </div>
+      {/* 3D Peeking Student Character overlapping the top curve of form sheet */}
+      <div className="relative w-full flex items-center justify-center -mb-[3px] z-20 pointer-events-none select-none overflow-visible animate-in fade-in duration-300">
+        <img
+          src={personLoginSvg}
+          alt="Siswa SMKN 8 Peeking"
+          className="h-32 sm:h-36 object-contain drop-shadow-md transform translate-y-1 transition-transform duration-300"
+        />
       </div>
 
       {/* Main Form Sheet Card */}

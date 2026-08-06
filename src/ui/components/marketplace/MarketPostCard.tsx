@@ -118,12 +118,13 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
           {/* Product Image Gallery (Supports Single & Multi-Image Carousel with Free Scroll) */}
           {item.images && item.images.length === 1 && (
-            <div className="relative w-full rounded-2xl overflow-hidden border border-neutral-200/80 shadow-2xs bg-neutral-100 max-h-[320px] aspect-[16/10] mt-2.5">
+            <div className="relative w-full rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[320px] aspect-[16/10] mt-2.5">
               <img
                 src={item.images[0]}
                 alt={item.caption}
                 className="w-full h-full object-cover hover:scale-[1.01] transition-transform duration-300"
               />
+              <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
             </div>
           )}
 
@@ -140,13 +141,14 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               {item.images.map((imgUrl, idx) => (
                 <div
                   key={idx}
-                  className="shrink-0 w-[82%] sm:w-[75%] rounded-2xl overflow-hidden border border-neutral-200/80 shadow-2xs bg-neutral-100 max-h-[340px] aspect-[3/4]"
+                  className="relative shrink-0 w-[82%] sm:w-[75%] rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[340px] aspect-[3/4]"
                 >
                   <img
                     src={imgUrl}
                     alt={`${item.caption} - ${idx + 1}`}
                     className="w-full h-full object-cover pointer-events-none"
                   />
+                  <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
                 </div>
               ))}
             </div>

@@ -31,20 +31,7 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
   };
 
   const handleMouseLeaveOrUp = () => {
-    if (!isMouseDown) return;
     setIsMouseDown(false);
-    if (scrollContainerRef.current) {
-      const firstChild = scrollContainerRef.current.firstElementChild as HTMLElement;
-      if (firstChild) {
-        const itemWidth = firstChild.offsetWidth + 10; // width + gap
-        const currentScroll = scrollContainerRef.current.scrollLeft;
-        const targetIndex = Math.round(currentScroll / itemWidth);
-        scrollContainerRef.current.scrollTo({
-          left: targetIndex * itemWidth,
-          behavior: 'smooth',
-        });
-      }
-    }
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -131,7 +118,7 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
             {item.caption}
           </p>
 
-          {/* Product Image Gallery (Supports Single & Multi-Image Carousel with Unclipped Peek) */}
+          {/* Product Image Gallery (Supports Single & Multi-Image Carousel with Free Scroll) */}
           {item.images && item.images.length === 1 && (
             <div className="relative w-full rounded-2xl overflow-hidden border border-neutral-200/80 shadow-2xs bg-neutral-100 max-h-[320px] aspect-[16/10] mt-2.5">
               <img
@@ -150,12 +137,12 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
               onMouseUp={handleMouseLeaveOrUp}
               onMouseMove={handleMouseMove}
               onClick={(e) => e.stopPropagation()}
-              className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory scrollbar-none mt-2.5 -mr-4 pr-4 cursor-grab active:cursor-grabbing select-none touch-pan-x"
+              className="flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 -ml-[64px] pl-[64px] -mr-4 pr-4 cursor-grab active:cursor-grabbing select-none touch-pan-x"
             >
               {item.images.map((imgUrl, idx) => (
                 <div
                   key={idx}
-                  className="shrink-0 snap-start w-[82%] sm:w-[75%] rounded-2xl overflow-hidden border border-neutral-200/80 shadow-2xs bg-neutral-100 max-h-[340px] aspect-[3/4]"
+                  className="shrink-0 w-[82%] sm:w-[75%] rounded-2xl overflow-hidden border border-neutral-200/80 shadow-2xs bg-neutral-100 max-h-[340px] aspect-[3/4]"
                 >
                   <img
                     src={imgUrl}

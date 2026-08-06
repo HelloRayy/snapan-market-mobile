@@ -5,6 +5,7 @@ import { ButtonPrimary } from '../ui/ButtonPrimary';
 import { ButtonSecondary } from '../ui/ButtonSecondary';
 import { Checkbox } from '../ui/Checkbox';
 import personLoginBgSvg from '../../../assets/new-market-asset/person-login-bg.svg';
+import heroRegistSvg from '../../../assets/new-market-asset/hero-regist.svg';
 import otpHeroSvg from '../../../assets/new-market-asset/otp-hero.svg';
 
 interface AuthSlideVisualProps {
@@ -27,6 +28,9 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
   const [regStep, setRegStep] = useState<'form' | 'otp'>('form');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Dynamic Motion Layering State: z-10 during animation (behind card), z-30 when standing (hands on top of border)
+  const [isAnimatingHero, setIsAnimatingHero] = useState(false);
 
   // Scroll Container Ref
   const formSheetRef = useRef<HTMLDivElement>(null);
@@ -159,6 +163,19 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
     } else {
       onBack?.();
     }
+  };
+
+  // Helper getters for Hero Asset & Alt text
+  const getHeroImageSrc = () => {
+    if (regStep === 'otp') return otpHeroSvg;
+    if (authTab === 'register') return heroRegistSvg;
+    return personLoginBgSvg;
+  };
+
+  const getHeroAltText = () => {
+    if (regStep === 'otp') return "Pak Satpam OTP Verifikasi";
+    if (authTab === 'register') return "Siswa SMKN 8 Say Hi Register";
+    return "Siswa SMKN 8 Peeking Login";
   };
 
   // Handle OTP 6-Digit Box Changes (Strictly Number Only)
@@ -338,21 +355,27 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
 
       {/* Outer Wrapper for Peeking Asset & Form Sheet Card */}
       <div className="flex-1 flex flex-col justify-end relative overflow-visible">
-        {/* Dynamic 3D Peeking Character with Ultra-Fast 0-Delay Spring Transition */}
-        <div className="relative w-full flex items-center justify-center -mb-2 z-30 pointer-events-none select-none overflow-visible">
+        {/* Dynamic 3D Peeking Character with Smart Dynamic Z-Index (z-10 behind card during motion, z-30 when standing for hand gripping) */}
+        <div
+          className={`relative w-full flex items-center justify-center -mb-2 pointer-events-none select-none overflow-visible transition-all duration-150 ${
+            isAnimatingHero ? 'z-10' : 'z-30'
+          }`}
+        >
           <AnimatePresence mode="wait">
             <motion.img
               key={regStep === 'otp' ? 'otp-satpam' : authTab}
-              src={regStep === 'otp' ? otpHeroSvg : personLoginBgSvg}
-              alt={regStep === 'otp' ? "Pak Satpam OTP Verifikasi" : "Siswa SMKN 8 Peeking"}
-              initial={{ y: 120, opacity: 0, scale: 0.95 }}
-              animate={{ y: 0, opacity: 1, scale: 1 }}
-              exit={{ y: 120, opacity: 0, scale: 0.95 }}
+              src={getHeroImageSrc()}
+              alt={getHeroAltText()}
+              initial={{ y: 160, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 160, opacity: 0 }}
+              onAnimationStart={() => setIsAnimatingHero(true)}
+              onAnimationComplete={() => setIsAnimatingHero(false)}
               transition={{
                 type: 'spring',
-                stiffness: 450,
-                damping: 30,
-                mass: 0.5,
+                stiffness: 280,
+                damping: 24,
+                mass: 0.8,
               }}
               className="w-56 sm:w-64 h-auto object-contain drop-shadow-md origin-bottom transform translate-y-7 sm:translate-y-8"
             />

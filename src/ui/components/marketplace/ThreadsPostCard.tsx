@@ -17,6 +17,31 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
   const [likesCount, setLikesCount] = useState(item.likesCount);
   const [isAdded, setIsAdded] = useState(false);
 
+  // Drag to Scroll State for Multi-Image Carousel
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const [isMouseDown, setIsMouseDown] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollContainerRef.current) return;
+    setIsMouseDown(true);
+    setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
+    setScrollLeft(scrollContainerRef.current.scrollLeft);
+  };
+
+  const handleMouseLeaveOrUp = () => {
+    setIsMouseDown(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isMouseDown || !scrollContainerRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollContainerRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+  };
+
   const handleLikeToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isLiked) {
@@ -40,7 +65,7 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
   return (
     <article
       onClick={() => onPostClick?.(item)}
-      className="w-full border-b border-neutral-200 bg-pure-white px-4 py-3.5 hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none"
+      className="w-full border-b border-neutral-200 bg-pure-white px-4 py-3.5 hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none overflow-hidden"
     >
       <div className="flex items-start gap-3">
         {/* Left Column: Seller Avatar 36x36px (w-9 h-9) */}
@@ -93,16 +118,39 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
             {item.caption}
           </p>
 
-
-
-          {/* Product Image Card (Max height 280px) with mt-2.5 gap */}
-          {item.images && item.images.length > 0 && (
+          {/* Product Image Gallery (Supports Single & Multi-Image Carousel with Peek) */}
+          {item.images && item.images.length === 1 && (
             <div className="relative w-full rounded-2xl overflow-hidden border border-neutral-200/80 shadow-2xs bg-neutral-100 max-h-[280px] aspect-[16/10.5] mt-2.5">
               <img
                 src={item.images[0]}
                 alt={item.caption}
                 className="w-full h-full object-cover hover:scale-[1.01] transition-transform duration-300"
               />
+            </div>
+          )}
+
+          {item.images && item.images.length > 1 && (
+            <div
+              ref={scrollContainerRef}
+              onMouseDown={handleMouseDown}
+              onMouseLeave={handleMouseLeaveOrUp}
+              onMouseUp={handleMouseLeaveOrUp}
+              onMouseMove={handleMouseMove}
+              onClick={(e) => e.stopPropagation()}
+              className="flex gap-2 overflow-x-auto snap-x snap-mandatory scrollbar-none mt-2.5 -mr-4 pr-4 cursor-grab active:cursor-grabbing select-none"
+            >
+              {item.images.map((imgUrl, idx) => (
+                <div
+                  key={idx}
+                  className="shrink-0 snap-start w-[82%] sm:w-[75%] rounded-2xl overflow-hidden border border-neutral-200/80 shadow-2xs bg-neutral-100 max-h-[280px] aspect-[4/5]"
+                >
+                  <img
+                    src={imgUrl}
+                    alt={`${item.caption} - ${idx + 1}`}
+                    className="w-full h-full object-cover pointer-events-none"
+                  />
+                </div>
+              ))}
             </div>
           )}
 

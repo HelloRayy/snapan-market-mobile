@@ -15,7 +15,8 @@ export const MOCK_THREADS_ITEMS: MarketThreadItem[] = [
     price: 150000,
     category: 'Jasa DKV/PPLG',
     images: [
-      'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80'
+      'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80',
+      'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800&q=80'
     ],
     stock: 5,
     locationTag: 'Lab Komputer PPLG',
@@ -40,7 +41,8 @@ export const MOCK_THREADS_ITEMS: MarketThreadItem[] = [
     originalPrice: 350000,
     category: 'Jasa DKV/PPLG',
     images: [
-      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80'
+      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80',
+      'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=800&q=80'
     ],
     stock: 3,
     locationTag: 'Studio DKV Gedung B',
@@ -65,7 +67,8 @@ export const MOCK_THREADS_ITEMS: MarketThreadItem[] = [
     originalPrice: 12000,
     category: 'Kantin',
     images: [
-      'https://images.unsplash.com/photo-1541544741938-0af808871cc0?w=800&q=80'
+      'https://images.unsplash.com/photo-1541544741938-0af808871cc0?w=800&q=80',
+      'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80'
     ],
     stock: 10,
     locationTag: 'Kantin Utama Depan Aula',

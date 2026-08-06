@@ -27,7 +27,7 @@ export function usePWA() {
     window.addEventListener('appinstalled', handleAppInstalled);
 
     // Cek jika aplikasi dibuka dalam mode standalone (sudah ter-install)
-    if (window.matchMedia('(display-mode: standalone)').matches) {
+    if (window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone) {
       setIsInstalled(true);
     }
 
@@ -37,15 +37,20 @@ export function usePWA() {
     };
   }, []);
 
-  const promptInstall = async () => {
-    if (!deferredPrompt) return;
-    await deferredPrompt.prompt();
-    const choiceResult = await deferredPrompt.userChoice;
-    if (choiceResult.outcome === 'accepted') {
-      setIsInstalled(true);
-      setIsInstallable(false);
+  const promptInstall = async (): Promise<boolean> => {
+    if (!deferredPrompt) return false;
+    try {
+      await deferredPrompt.prompt();
+      const choiceResult = await deferredPrompt.userChoice;
+      if (choiceResult.outcome === 'accepted') {
+        setIsInstalled(true);
+        setIsInstallable(false);
+      }
+      setDeferredPrompt(null);
+      return true;
+    } catch {
+      return false;
     }
-    setDeferredPrompt(null);
   };
 
   return {

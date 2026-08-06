@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Download, Share, CheckCircle2, ArrowRight, ShieldCheck, Zap, WifiOff } from 'lucide-react';
+import { Download, Share, CheckCircle2, ArrowRight, ShieldCheck, Zap, WifiOff, Smartphone, PlusSquare, X } from 'lucide-react';
 import { usePWA } from '@/ui/hooks/usePWA';
 import { ButtonPrimary } from '../ui/ButtonPrimary';
 import { ButtonSecondary } from '../ui/ButtonSecondary';
@@ -12,9 +12,14 @@ interface PwaLandingPageProps {
 export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }) => {
   const { isInstalled, promptInstall } = usePWA();
   const [copied, setCopied] = useState(false);
+  const [showGuideModal, setShowGuideModal] = useState(false);
 
   const handleInstallClick = async () => {
-    await promptInstall();
+    const success = await promptInstall();
+    if (!success) {
+      // Browser didn't trigger native prompt (e.g. desktop/iOS Safari) -> open interactive guide modal
+      setShowGuideModal(true);
+    }
   };
 
   const handleShareLink = () => {
@@ -140,6 +145,50 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           Lanjut Versi Web Browser
         </ButtonSecondary>
       </div>
+
+      {/* Interactive Installation Guide Modal */}
+      {showGuideModal && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-sm bg-white rounded-3xl p-5 space-y-4 shadow-2xl animate-in slide-in-from-bottom-6 duration-200">
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+              <div className="flex items-center gap-2 font-bold text-sm text-slate-900">
+                <Smartphone className="h-5 w-5 text-[#1d64ec]" />
+                <span>Petunjuk Memasang Aplikasi PWA</span>
+              </div>
+              <button
+                onClick={() => setShowGuideModal(false)}
+                className="p-1 rounded-full text-neutral-400 hover:text-slate-900 hover:bg-neutral-100 transition-colors cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-2.5 text-xs text-slate-700">
+              <div className="flex items-start gap-3 bg-neutral-50 p-3 rounded-2xl border border-neutral-200/80">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#1d64ec] text-white text-xs font-bold">1</span>
+                <div>
+                  Buka menu browser HP kamu (tombol titik 3 <span className="font-bold text-slate-900">⋮</span> di Android atau tombol <span className="font-bold text-slate-900">Share 📤</span> di iPhone).
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 bg-neutral-50 p-3 rounded-2xl border border-neutral-200/80">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#1d64ec] text-white text-xs font-bold">2</span>
+                <div>
+                  Pilih menu <span className="font-bold text-slate-900">'Tambahkan ke Layar Utama'</span> (<PlusSquare className="inline h-3.5 w-3.5 text-blue-600" />) atau <span className="font-bold text-slate-900">'Install App'</span>.
+                </div>
+              </div>
+            </div>
+
+            <ButtonPrimary
+              size="lg"
+              onClick={() => setShowGuideModal(false)}
+              className="w-full justify-center font-bold h-12 text-sm rounded-full bg-[#1d64ec] text-white cursor-pointer mt-2"
+            >
+              Saya Mengerti
+            </ButtonPrimary>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

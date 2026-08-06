@@ -44,8 +44,8 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
       className="w-full border-b border-neutral-100 bg-pure-white px-4 py-3.5 hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none"
     >
       <div className="flex items-start gap-3">
-        {/* Left Column: Seller Avatar 36x36px with Threads '+' Badge + Connector Line */}
-        <div className="flex flex-col items-center shrink-0 self-stretch">
+        {/* Left Column: Seller Avatar 36x36px with Threads '+' Badge */}
+        <div className="shrink-0">
           {/* Avatar Image 36x36px (w-9 h-9) */}
           <div className="relative w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs">
             <img
@@ -56,14 +56,6 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
             <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-slate-900 text-white border-2 border-white flex items-center justify-center text-[9px] font-bold">
               +
             </div>
-          </div>
-
-          {/* Threads Vertical Connector Line */}
-          <div className="w-0.5 flex-1 bg-neutral-200/70 my-2 rounded-full min-h-[36px]" />
-
-          {/* Mini Sub Avatar Count Indicator */}
-          <div className="w-5 h-5 rounded-full bg-neutral-100 border border-neutral-200/80 flex items-center justify-center text-[9px] font-normal text-neutral-500">
-            8
           </div>
         </div>
 

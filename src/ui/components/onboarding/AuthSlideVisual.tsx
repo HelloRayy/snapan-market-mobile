@@ -165,7 +165,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
     }
   };
 
-  // Helper getters for Hero Asset & Alt text
+  // Helper getters for Hero Asset, Alt text & Specific Position Alignment
   const getHeroImageSrc = () => {
     if (regStep === 'otp') return otpHeroSvg;
     if (authTab === 'register') return heroRegistSvg;
@@ -176,6 +176,17 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
     if (regStep === 'otp') return "Pak Satpam OTP Verifikasi";
     if (authTab === 'register') return "Siswa SMKN 8 Say Hi Register";
     return "Siswa SMKN 8 Peeking Login";
+  };
+
+  const getHeroImageClass = () => {
+    if (regStep === 'otp') {
+      return "w-56 sm:w-64 h-auto object-contain drop-shadow-md origin-bottom transform translate-y-7 sm:translate-y-8";
+    }
+    if (authTab === 'register') {
+      // Adjusted translate-y-10 sm:translate-y-11 so hero-regist.svg bottom body crop is hidden behind form card border
+      return "w-56 sm:w-64 h-auto object-contain drop-shadow-md origin-bottom transform translate-y-10.5 sm:translate-y-11.5";
+    }
+    return "w-56 sm:w-64 h-auto object-contain drop-shadow-md origin-bottom transform translate-y-7 sm:translate-y-8";
   };
 
   // Handle OTP 6-Digit Box Changes (Strictly Number Only)
@@ -377,7 +388,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                 damping: 24,
                 mass: 0.8,
               }}
-              className="w-56 sm:w-64 h-auto object-contain drop-shadow-md origin-bottom transform translate-y-7 sm:translate-y-8"
+              className={getHeroImageClass()}
             />
           </AnimatePresence>
         </div>

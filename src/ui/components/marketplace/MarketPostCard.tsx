@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Heart, MoreHorizontal, Check, BadgeCheck, Box, ArrowRight } from 'lucide-react';
 import { MarketThreadItem } from '@/types/marketFeed';
 import { ButtonPrimary } from '../ui/ButtonPrimary';
+import { MediaLightboxModal } from './MediaLightboxModal';
 
 // Custom Smooth Rounded Lucide-Family Comment Icon (Rounded tail tip, 100% Lucide family match)
 const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -33,6 +34,16 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
   const [isLiked, setIsLiked] = useState(item.isLiked || false);
   const [likesCount, setLikesCount] = useState(item.likesCount);
   const [isAdded, setIsAdded] = useState(false);
+
+  // Fullscreen Media Lightbox State
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  const handleImageClick = (e: React.MouseEvent, index: number) => {
+    e.stopPropagation();
+    setSelectedImageIndex(index);
+    setIsLightboxOpen(true);
+  };
 
   // Drag to Scroll State for Multi-Image Carousel
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
@@ -134,7 +145,10 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
           {/* Product Image Gallery (Supports Single & Multi-Image Carousel with Free Scroll) */}
           {item.images && item.images.length === 1 && (
-            <div className="relative w-full rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[320px] aspect-[16/10] mt-2.5">
+            <div
+              onClick={(e) => handleImageClick(e, 0)}
+              className="relative w-full rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[320px] aspect-[16/10] mt-2.5 cursor-pointer"
+            >
               <img
                 src={item.images[0]}
                 alt={item.caption}
@@ -157,7 +171,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               {item.images.map((imgUrl, idx) => (
                 <div
                   key={idx}
-                  className="relative shrink-0 w-[82%] sm:w-[75%] rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[340px] aspect-[3/4]"
+                  onClick={(e) => handleImageClick(e, idx)}
+                  className="relative shrink-0 w-[82%] sm:w-[75%] rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[340px] aspect-[3/4] cursor-pointer"
                 >
                   <img
                     src={imgUrl}
@@ -227,6 +242,15 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Fullscreen Media Lightbox Modal */}
+      <MediaLightboxModal
+        isOpen={isLightboxOpen}
+        images={item.images || []}
+        initialIndex={selectedImageIndex}
+        onClose={() => setIsLightboxOpen(false)}
+        caption={item.caption}
+      />
     </article>
   );
 };

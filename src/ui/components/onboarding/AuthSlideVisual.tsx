@@ -321,10 +321,10 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
 
       {/* Outer Wrapper for Form Sheet Card */}
       <div className="flex-1 flex flex-col justify-end relative overflow-visible">
-        {/* Main Form Sheet Card with z-20 & Uniform Height for Zero Layout Shift */}
+        {/* Main Form Sheet Card with Fixed min 440px Height for Zero Layout Shift */}
         <div
           ref={formSheetRef}
-          className="relative z-20 -mx-5 -mb-5 bg-pure-white px-6 shadow-2xl space-y-4 overflow-y-auto scroll-smooth transition-all duration-300 cubic-bezier(0.16,1,0.3,1) h-full min-h-[75vh] rounded-t-[36px] rounded-b-none border-t border-faint-border pt-6 pb-12"
+          className="relative z-20 -mx-5 -mb-5 bg-pure-white px-6 shadow-2xl space-y-4 overflow-y-auto scroll-smooth transition-all duration-300 cubic-bezier(0.16,1,0.3,1) h-[440px] min-h-[440px] rounded-t-[36px] rounded-b-none border-t border-faint-border pt-6 pb-12"
         >
           {/* STEP 2: WHATSAPP OTP VERIFICATION SCREEN */}
           {regStep === 'otp' ? (

@@ -13,7 +13,6 @@ export const HomePage: React.FC = () => {
   const [feedTab, setFeedTab] = useState<'for-you' | 'latest'>('for-you');
   const [bottomNavTab, setBottomNavTab] = useState('home');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
 
   // Items State & Infinite Scroll Loading
   const [items, setItems] = useState<MarketThreadItem[]>(MOCK_THREADS_ITEMS);
@@ -25,8 +24,6 @@ export const HomePage: React.FC = () => {
   const addItemToCart = useCartStore((state) => state.addItem);
   const totalCartItems = useCartStore((state) => state.getTotalItems());
   const totalCartPrice = useCartStore((state) => state.getTotalPrice());
-
-  const categories = ['Semua', 'Kantin', 'Fashion', 'Jasa DKV/PPLG', 'Elektronik'];
 
   // Handle Add To Cart from Threads Post Card
   const handleAddToCart = (threadItem: MarketThreadItem) => {
@@ -54,13 +51,11 @@ export const HomePage: React.FC = () => {
 
   // Filtered Items
   const filteredItems = items.filter((item) => {
-    const matchesSearch =
+    return (
       item.caption.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.seller.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.seller.classGroup.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      selectedCategory === 'Semua' || item.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+      item.seller.classGroup.toLowerCase().includes(searchQuery.toLowerCase())
+    );
   });
 
   // Simulated Infinite Scroll Loader
@@ -106,8 +101,6 @@ export const HomePage: React.FC = () => {
 
       {/* Threads Sticky Header */}
       <ThreadsHeader
-        activeTab={feedTab}
-        onTabChange={(tab) => setFeedTab(tab)}
         cartCount={totalCartItems}
         cartTotal={totalCartPrice}
         onSearchChange={(query) => setSearchQuery(query)}
@@ -115,25 +108,33 @@ export const HomePage: React.FC = () => {
 
       {/* Main Threads Feed Container */}
       <main className="max-w-xl mx-auto divide-y divide-neutral-100">
-        {/* Horizontal Category Pill Selector */}
-        <div className="px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar border-b border-neutral-100 bg-neutral-50/50">
-          {categories.map((cat) => {
-            const isActive = selectedCategory === cat;
-            return (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setSelectedCategory(cat)}
-                className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                  isActive
-                    ? 'bg-slate-900 text-white shadow-2xs'
-                    : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-100'
-                }`}
-              >
-                {cat}
-              </button>
-            );
-          })}
+        {/* Scrollable Tab Switcher ("Untuk Anda" & "Terbaru") - Scrolls away naturally under sticky header */}
+        <div className="flex items-center border-b border-neutral-100 select-none bg-pure-white">
+          <button
+            type="button"
+            onClick={() => setFeedTab('for-you')}
+            className={`flex-1 py-3 text-sm text-center relative transition-colors cursor-pointer ${
+              feedTab === 'for-you' ? 'text-slate-900 font-semibold' : 'text-neutral-400 hover:text-slate-600 font-normal'
+            }`}
+          >
+            Untuk Anda
+            {feedTab === 'for-you' && (
+              <span className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-slate-900 rounded-full animate-in fade-in duration-200" />
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setFeedTab('latest')}
+            className={`flex-1 py-3 text-sm text-center relative transition-colors cursor-pointer ${
+              feedTab === 'latest' ? 'text-slate-900 font-semibold' : 'text-neutral-400 hover:text-slate-600 font-normal'
+            }`}
+          >
+            Terbaru
+            {feedTab === 'latest' && (
+              <span className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-slate-900 rounded-full animate-in fade-in duration-200" />
+            )}
+          </button>
         </div>
 
         {/* Start Posting Prompt Card (Threads Style Top Composer Bar) */}

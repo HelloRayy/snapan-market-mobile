@@ -1,20 +1,15 @@
 import React, { useState } from 'react';
 import { Search, ShoppingBag, Store, X } from 'lucide-react';
-import { formatRupiah } from '@/utils/formatters';
 
 interface ThreadsHeaderProps {
-  activeTab: 'for-you' | 'latest';
-  onTabChange: (tab: 'for-you' | 'latest') => void;
   cartCount: number;
   cartTotal?: number;
   onSearchChange?: (query: string) => void;
 }
 
 export const ThreadsHeader: React.FC<ThreadsHeaderProps> = ({
-  activeTab,
-  onTabChange,
   cartCount,
-  cartTotal = 0,
+  cartTotal: _cartTotal = 0,
   onSearchChange,
 }) => {
   const [showSearchInput, setShowSearchInput] = useState(false);
@@ -29,27 +24,25 @@ export const ThreadsHeader: React.FC<ThreadsHeaderProps> = ({
     <header className="sticky top-0 z-40 bg-pure-white/95 backdrop-blur-md border-b border-neutral-200/80 shadow-2xs font-gt-standard">
       {/* Top Main Bar: [ Left: Cart ] --- [ Center: Logo Title ] --- [ Right: Search ] */}
       <div className="max-w-xl mx-auto px-4 h-14 flex items-center justify-between gap-3 relative select-none">
-        {/* Left Side: Cart Icon Badge */}
+        {/* Left Side: Cart Icon Only */}
         <div className="flex items-center">
-          <div className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100/80 border border-neutral-200/80 text-xs font-semibold text-slate-800 shadow-2xs cursor-pointer hover:bg-neutral-200/60 active:scale-95 transition-all">
-            <ShoppingBag className="w-4 h-4 text-[#1d64ec]" />
-            <span className="font-semibold text-slate-900">{cartCount}</span>
-            {cartCount > 0 && cartTotal > 0 && (
-              <span className="hidden sm:inline text-neutral-500 font-normal ml-0.5">
-                ({formatRupiah(cartTotal)})
-              </span>
+          <button
+            type="button"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-slate-700 hover:bg-neutral-100 active:scale-95 transition-all cursor-pointer relative"
+            aria-label="Keranjang Belanja"
+          >
+            <ShoppingBag className="w-5 h-5 text-slate-900 stroke-[2]" />
+            {cartCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#1d64ec]" />
             )}
-          </div>
+          </button>
         </div>
 
-        {/* Center: Title / Logo with reduced font-weight (font-semibold / medium) */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-slate-900 flex items-center justify-center text-white shadow-2xs">
-            <Store className="w-3.5 h-3.5 text-white" />
+        {/* Center: Logo Only (No Text) */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-2xs">
+            <Store className="w-4.5 h-4.5 text-white" />
           </div>
-          <span className="font-semibold text-base text-slate-900 tracking-tight font-shopify-sans">
-            Snapan<span className="text-[#1d64ec] font-normal">Market</span>
-          </span>
         </div>
 
         {/* Right Side: Search Toggle Button */}
@@ -90,32 +83,6 @@ export const ThreadsHeader: React.FC<ThreadsHeaderProps> = ({
         </div>
       )}
 
-      {/* Threads 2-Tab Navigation ("Untuk Anda" & "Terbaru") with reduced font-weight */}
-      <div className="max-w-xl mx-auto flex items-center border-t border-neutral-100 select-none">
-        <button
-          onClick={() => onTabChange('for-you')}
-          className={`flex-1 py-3 text-sm text-center relative transition-colors cursor-pointer ${
-            activeTab === 'for-you' ? 'text-slate-900 font-semibold' : 'text-neutral-400 hover:text-slate-600 font-normal'
-          }`}
-        >
-          Untuk Anda
-          {activeTab === 'for-you' && (
-            <span className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-slate-900 rounded-full animate-in fade-in duration-200" />
-          )}
-        </button>
-
-        <button
-          onClick={() => onTabChange('latest')}
-          className={`flex-1 py-3 text-sm text-center relative transition-colors cursor-pointer ${
-            activeTab === 'latest' ? 'text-slate-900 font-semibold' : 'text-neutral-400 hover:text-slate-600 font-normal'
-          }`}
-        >
-          Terbaru
-          {activeTab === 'latest' && (
-            <span className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-slate-900 rounded-full animate-in fade-in duration-200" />
-          )}
-        </button>
-      </div>
     </header>
   );
 };

@@ -69,9 +69,9 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
       className="w-full border-b border-neutral-200 bg-pure-white px-4 py-3.5 hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none overflow-visible"
     >
       <div className="flex items-start gap-3">
-        {/* Left Column: Seller Avatar 36x36px (w-9 h-9) */}
+        {/* Left Column: Seller Avatar 40x40px (w-10 h-10) */}
         <div className="shrink-0 pt-0.5">
-          <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs">
+          <div className="w-10 h-10 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs">
             <img
               src={item.seller.avatar}
               alt={item.seller.name}
@@ -136,7 +136,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               onMouseUp={handleMouseLeaveOrUp}
               onMouseMove={handleMouseMove}
               onClick={(e) => e.stopPropagation()}
-              className="flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 -ml-[64px] pl-[64px] -mr-4 pr-4 cursor-grab active:cursor-grabbing select-none touch-pan-x"
+              className="flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 -ml-[68px] pl-[68px] -mr-4 pr-4 cursor-grab active:cursor-grabbing select-none touch-pan-x"
             >
               {item.images.map((imgUrl, idx) => (
                 <div

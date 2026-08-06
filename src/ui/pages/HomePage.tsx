@@ -108,32 +108,33 @@ export const HomePage: React.FC = () => {
 
       {/* Main Threads Feed Container with pt-14 for Fixed Header Offset */}
       <main className="max-w-xl mx-auto divide-y divide-neutral-100 pt-14">
-        {/* Scrollable Tab Switcher ("Untuk Anda" & "Terbaru") - Scrolls away naturally under sticky header */}
-        <div className="flex items-center border-b border-neutral-100 select-none bg-pure-white">
+        {/* Scrollable Tab Switcher ("Untuk Anda" & "Terbaru") - Smooth Sliding Indicator Bar */}
+        <div className="relative flex items-center border-b border-neutral-200 select-none bg-pure-white">
+          {/* Smooth Sliding Bar (No Kedut/Flicker, Pure Slide) */}
+          <div
+            className={`absolute bottom-0 left-0 w-1/2 h-[2px] bg-slate-900 transition-transform duration-200 cubic-bezier(0.16,1,0.3,1) ${
+              feedTab === 'for-you' ? 'translate-x-0' : 'translate-x-full'
+            }`}
+          />
+
           <button
             type="button"
             onClick={() => setFeedTab('for-you')}
-            className={`flex-1 py-3 text-sm text-center relative transition-colors cursor-pointer ${
-              feedTab === 'for-you' ? 'text-slate-900 font-semibold' : 'text-neutral-400 hover:text-slate-600 font-normal'
+            className={`flex-1 py-3 text-sm text-center relative cursor-pointer ${
+              feedTab === 'for-you' ? 'text-slate-900 font-bold' : 'text-neutral-400 hover:text-slate-600 font-medium'
             }`}
           >
             Untuk Anda
-            {feedTab === 'for-you' && (
-              <span className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-slate-900 rounded-full animate-in fade-in duration-200" />
-            )}
           </button>
 
           <button
             type="button"
             onClick={() => setFeedTab('latest')}
-            className={`flex-1 py-3 text-sm text-center relative transition-colors cursor-pointer ${
-              feedTab === 'latest' ? 'text-slate-900 font-semibold' : 'text-neutral-400 hover:text-slate-600 font-normal'
+            className={`flex-1 py-3 text-sm text-center relative cursor-pointer ${
+              feedTab === 'latest' ? 'text-slate-900 font-bold' : 'text-neutral-400 hover:text-slate-600 font-medium'
             }`}
           >
             Terbaru
-            {feedTab === 'latest' && (
-              <span className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-slate-900 rounded-full animate-in fade-in duration-200" />
-            )}
           </button>
         </div>
 

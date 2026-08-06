@@ -338,28 +338,28 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
 
       {/* Outer Wrapper for Peeking Asset & Form Sheet Card */}
       <div className="flex-1 flex flex-col justify-end relative overflow-visible">
-        {/* Dynamic 3D Peeking Character with Duck-Down & Pop-Up Motion (No Unintended Cropping) */}
-        <div className="relative w-full flex items-center justify-center -mb-2 z-10 pointer-events-none select-none overflow-visible">
+        {/* Dynamic 3D Peeking Character with z-30 (Above Form Sheet z-20 so Hands Grip ON TOP of the border) */}
+        <div className="relative w-full flex items-center justify-center -mb-2 z-30 pointer-events-none select-none overflow-visible">
           <AnimatePresence mode="wait">
             <motion.img
               key={regStep === 'otp' ? 'otp-satpam' : authTab}
               src={regStep === 'otp' ? otpHeroSvg : personLoginBgSvg}
               alt={regStep === 'otp' ? "Pak Satpam OTP Verifikasi" : "Siswa SMKN 8 Peeking"}
-              initial={{ y: 160, opacity: 0 }}
-              animate={{ y: 10, opacity: 1 }}
-              exit={{ y: 160, opacity: 0 }}
+              initial={{ y: 150, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 150, opacity: 0 }}
               transition={{
                 type: 'spring',
                 stiffness: 300,
                 damping: 24,
                 mass: 0.8,
               }}
-              className="w-56 sm:w-64 h-auto object-contain drop-shadow-md origin-bottom transform translate-y-2.5"
+              className="w-56 sm:w-64 h-auto object-contain drop-shadow-md origin-bottom transform translate-y-7 sm:translate-y-8"
             />
           </AnimatePresence>
         </div>
 
-        {/* Main Form Sheet Card with z-20 so character ducks behind it smoothly without overflow-hidden clipping */}
+        {/* Main Form Sheet Card with z-20 */}
         <div
           ref={formSheetRef}
           className={`relative z-20 -mx-5 -mb-5 bg-pure-white px-6 shadow-2xl space-y-4 overflow-y-auto scroll-smooth transition-all duration-300 cubic-bezier(0.16,1,0.3,1) ${
@@ -542,7 +542,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                             errors.fullName
                               ? 'text-rose-500 font-semibold'
                               : focusedField === 'fullName'
-                              ? 'text-[#1d64ec] font-semibold'
+                              ? 'text-[#1d64ec]'
                               : fullName
                               ? 'text-slate-900 font-semibold'
                               : 'text-neutral-400 font-normal'

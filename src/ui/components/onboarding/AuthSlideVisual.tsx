@@ -522,8 +522,8 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                     setAuthTab('register');
                     setErrors({});
                     setTimeout(() => {
-                      formSheetRef.current?.scrollTo({ top: 180, behavior: 'smooth' });
-                    }, 120);
+                      formSheetRef.current?.scrollTo({ top: 280, behavior: 'smooth' });
+                    }, 80);
                   }}
                   className={`flex-1 relative z-10 flex items-center justify-center whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer text-sm font-bold rounded-full py-2.5 transition-colors duration-200 ${
                     authTab === 'register' ? 'text-slate-900' : 'text-neutral-500 hover:text-slate-900 font-semibold'

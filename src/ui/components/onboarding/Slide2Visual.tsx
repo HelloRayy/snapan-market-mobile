@@ -7,7 +7,7 @@ export const Slide2Visual: React.FC = () => {
       <img
         src={market2Img}
         alt="Jual & Kelola Produkmu dengan Mudah"
-        className="max-w-full max-h-full mx-auto my-auto object-contain drop-shadow-md transition-transform duration-300 hover:scale-[1.02]"
+        className="w-[85%] h-[85%] mx-auto my-auto object-contain drop-shadow-md transition-transform duration-300 hover:scale-[1.02]"
       />
     </div>
   );

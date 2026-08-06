@@ -7,7 +7,7 @@ export const Slide1Visual: React.FC = () => {
       <img
         src={market1Img}
         alt="Pusat Jual Beli Warga SMKN 8 Semarang"
-        className="w-full h-full object-contain drop-shadow-md transition-transform duration-300 hover:scale-[1.02]"
+        className="max-w-full max-h-full mx-auto my-auto object-contain drop-shadow-md transition-transform duration-300 hover:scale-[1.02]"
       />
     </div>
   );

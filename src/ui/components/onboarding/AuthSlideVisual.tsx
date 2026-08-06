@@ -1,12 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Mail, Lock, Eye, EyeOff, ArrowLeft, User, ChevronDown, Check, AlertCircle, Loader2, Headphones } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ButtonPrimary } from '../ui/ButtonPrimary';
 import { ButtonSecondary } from '../ui/ButtonSecondary';
 import { Checkbox } from '../ui/Checkbox';
-import personLoginBgSvg from '../../../assets/new-market-asset/person-login-bg.svg';
-import heroRegistSvg from '../../../assets/new-market-asset/hero-regist.svg';
-import otpHeroSvg from '../../../assets/new-market-asset/otp-hero.svg';
 
 interface AuthSlideVisualProps {
   onBack?: () => void;
@@ -28,9 +24,6 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
   const [regStep, setRegStep] = useState<'form' | 'otp'>('form');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Dynamic Motion Layering State: z-10 during animation (behind card), z-30 when standing (hands on top of border)
-  const [isAnimatingHero, setIsAnimatingHero] = useState(false);
 
   // Scroll Container Ref
   const formSheetRef = useRef<HTMLDivElement>(null);
@@ -149,30 +142,6 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
     } else {
       onBack?.();
     }
-  };
-
-  // Helper getters for Hero Asset, Alt text, Specific Class & Position Alignment
-  const getHeroImageSrc = () => {
-    if (regStep === 'otp') return otpHeroSvg;
-    if (authTab === 'register') return heroRegistSvg;
-    return personLoginBgSvg;
-  };
-
-  const getHeroAltText = () => {
-    if (regStep === 'otp') return "Pak Satpam OTP Verifikasi";
-    if (authTab === 'register') return "Siswa SMKN 8 Say Hi Register";
-    return "Siswa SMKN 8 Peeking Login";
-  };
-
-  const getHeroImageClass = () => {
-    if (regStep === 'otp') {
-      return "w-56 sm:w-64 h-auto object-contain drop-shadow-md origin-bottom transform translate-y-6 sm:translate-y-7";
-    }
-    if (authTab === 'register') {
-      // Balanced translate-y-6 so full fingers are shown complete without clip-path while hiding hoodie body crop line behind card
-      return "w-56 sm:w-64 h-auto object-contain drop-shadow-md origin-bottom transform translate-y-6 sm:translate-y-7";
-    }
-    return "w-56 sm:w-64 h-auto object-contain drop-shadow-md origin-bottom transform translate-y-6 sm:translate-y-7";
   };
 
   // Handle OTP 6-Digit Box Changes (Strictly Number Only)
@@ -350,37 +319,8 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
         </div>
       </div>
 
-      {/* Outer Wrapper for Peeking Asset & Form Sheet Card */}
+      {/* Outer Wrapper for Form Sheet Card */}
       <div className="flex-1 flex flex-col justify-end relative overflow-visible">
-        {/* Dynamic 3D Peeking Character with Smart Dynamic Z-Index (hidden on OTP step) */}
-        {regStep !== 'otp' && (
-          <div
-            className={`relative w-full flex items-center justify-center -mb-2 pointer-events-none select-none overflow-visible transition-all duration-150 ${
-              isAnimatingHero ? 'z-10' : 'z-30'
-            }`}
-          >
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={authTab}
-                src={getHeroImageSrc()}
-                alt={getHeroAltText()}
-                initial={{ y: 160, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 160, opacity: 0 }}
-                onAnimationStart={() => setIsAnimatingHero(true)}
-                onAnimationComplete={() => setIsAnimatingHero(false)}
-                transition={{
-                  type: 'spring',
-                  stiffness: 280,
-                  damping: 24,
-                  mass: 0.8,
-                }}
-                className={getHeroImageClass()}
-              />
-            </AnimatePresence>
-          </div>
-        )}
-
         {/* Main Form Sheet Card with z-20 & Uniform Height for Zero Layout Shift */}
         <div
           ref={formSheetRef}

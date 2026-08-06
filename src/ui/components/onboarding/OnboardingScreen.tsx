@@ -29,8 +29,8 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
     },
     {
       id: 1,
-      title: 'Otomatiskan Deskripsi & Tag Populer',
-      description: 'Otomatisasi deskripsi produk & tag terpopuler untuk meningkatkan jangkauan pembeli.',
+      title: 'Jual & Kelola Produkmu dengan Mudah',
+      description: 'Unggah foto produk, atur harga, dan terima pesanan langsung dari teman & guru di SMKN 8 Semarang hanya dalam beberapa langkah.',
       type: 'content' as const,
       visual: <Slide2Visual />
     },

@@ -43,82 +43,83 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
       onClick={() => onPostClick?.(item)}
       className="w-full border-b border-neutral-100 bg-pure-white px-4 py-3.5 hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none"
     >
-      <div className="space-y-2">
-        {/* Top Header Row: Kiri = PP, Nama, Verif, Kelas | Kanan = Jam, Titik 3 */}
-        <div className="flex items-center justify-between gap-2">
-          {/* Kiri Side: PP (36px) + Nama (16px) + Verif Icon + Kelas (Pure Text) */}
-          <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
-            {/* PP Avatar 36x36px (w-9 h-9) */}
-            <div className="relative w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 mr-1">
-              <img
-                src={item.seller.avatar}
-                alt={item.seller.name}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-slate-900 text-white border-2 border-white flex items-center justify-center text-[9px] font-bold">
-                +
-              </div>
+      <div className="flex items-start gap-3">
+        {/* Left Column: Seller Avatar 36x36px (w-9 h-9) */}
+        <div className="shrink-0 pt-0.5">
+          <div className="relative w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs">
+            <img
+              src={item.seller.avatar}
+              alt={item.seller.name}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-slate-900 text-white border-2 border-white flex items-center justify-center text-[9px] font-bold">
+              +
             </div>
-
-            <span className="font-semibold text-[16px] text-slate-900 truncate hover:underline">
-              {item.seller.name}
-            </span>
-            {item.seller.isVerified && (
-              <BadgeCheck className="w-4 h-4 text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified Seller" />
-            )}
-
-            {/* Kelas Pure Text */}
-            <span className="text-[16px] font-normal text-neutral-400 ml-1 truncate">
-              {item.seller.classGroup}
-            </span>
-          </div>
-
-          {/* Kanan Side: Jam (16px) + Action Btn Titik 3 */}
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="text-[16px] font-normal text-neutral-400">{item.timestamp}</span>
-            <button
-              type="button"
-              onClick={(e) => e.stopPropagation()}
-              className="text-neutral-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors"
-              aria-label="Opsi postingan"
-            >
-              <MoreHorizontal className="w-4 h-4" />
-            </button>
           </div>
         </div>
 
-        {/* Bawah nya nama = Desc / Caption (Indented pl-[46px] to align under name) */}
-        <p className="text-[16px] text-slate-900 font-normal leading-snug break-words pl-[46px]">
-          {item.caption}
-        </p>
-
-        {/* Price Tag & Location Tag Badge Pill Bar */}
-        <div className="flex items-center gap-2 flex-wrap pl-[46px] pt-0.5">
-          {/* Main Price Tag Pill */}
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-white shadow-2xs">
-            <span className="text-[11px] font-normal text-neutral-300">Harga:</span>
-            <span className="text-xs font-semibold tracking-tight">
-              {formatRupiah(item.price)}
-            </span>
-            {item.originalPrice && item.originalPrice > item.price && (
-              <span className="text-[10px] text-neutral-400 line-through font-normal">
-                {formatRupiah(item.originalPrice)}
+        {/* Right Column: Content starting directly under Name */}
+        <div className="flex-1 min-w-0 space-y-2">
+          {/* Top Header Row: Kiri = Nama, Verif, Kelas | Kanan = Jam, Titik 3 */}
+          <div className="flex items-center justify-between gap-2">
+            {/* Kiri Side: Nama (16px) + Verif Icon + Kelas (Pure Text) */}
+            <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
+              <span className="font-semibold text-[16px] text-slate-900 truncate hover:underline">
+                {item.seller.name}
               </span>
+              {item.seller.isVerified && (
+                <BadgeCheck className="w-4 h-4 text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified Seller" />
+              )}
+              <span className="text-[16px] font-normal text-neutral-400 truncate">
+                {item.seller.classGroup}
+              </span>
+            </div>
+
+            {/* Kanan Side: Jam (16px) + Action Btn Titik 3 */}
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-[16px] font-normal text-neutral-400">{item.timestamp}</span>
+              <button
+                type="button"
+                onClick={(e) => e.stopPropagation()}
+                className="text-neutral-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors"
+                aria-label="Opsi postingan"
+              >
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Bawah Nama = Description Caption Text */}
+          <p className="text-[16px] text-slate-900 font-normal leading-snug break-words">
+            {item.caption}
+          </p>
+
+          {/* Price Tag & Location Tag Badge Pill Bar */}
+          <div className="flex items-center gap-2 flex-wrap pt-0.5">
+            {/* Main Price Tag Pill */}
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-white shadow-2xs">
+              <span className="text-[11px] font-normal text-neutral-300">Harga:</span>
+              <span className="text-xs font-semibold tracking-tight">
+                {formatRupiah(item.price)}
+              </span>
+              {item.originalPrice && item.originalPrice > item.price && (
+                <span className="text-[10px] text-neutral-400 line-through font-normal">
+                  {formatRupiah(item.originalPrice)}
+                </span>
+              )}
+            </div>
+
+            {/* Location Tag Badge */}
+            {item.locationTag && (
+              <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-neutral-100 border border-neutral-200/80 text-[11px] font-normal text-slate-700">
+                <MapPin className="w-3 h-3 text-[#1d64ec]" />
+                <span>{item.locationTag}</span>
+              </div>
             )}
           </div>
 
-          {/* Location Tag Badge */}
-          {item.locationTag && (
-            <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-neutral-100 border border-neutral-200/80 text-[11px] font-normal text-slate-700">
-              <MapPin className="w-3 h-3 text-[#1d64ec]" />
-              <span>{item.locationTag}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Product Image Card (Max height 280px) */}
-        {item.images && item.images.length > 0 && (
-          <div className="pl-[46px]">
+          {/* Product Image Card (Max height 280px) */}
+          {item.images && item.images.length > 0 && (
             <div className="relative w-full rounded-2xl overflow-hidden border border-neutral-200/80 shadow-2xs bg-neutral-100 max-h-[280px] aspect-[16/10.5] mt-1">
               <img
                 src={item.images[0]}
@@ -130,78 +131,78 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
                 {item.category}
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Bottom Threads Action Bar & Buy Button */}
-        <div className="pl-[46px] pt-1 flex items-center justify-between gap-2">
-          {/* Social Actions (Like, Comment, Repost, Share) */}
-          <div className="flex items-center gap-4 text-neutral-600">
-            {/* Like Button */}
+          {/* Bottom Threads Action Bar & Buy Button */}
+          <div className="pt-1 flex items-center justify-between gap-2">
+            {/* Social Actions (Like, Comment, Repost, Share) */}
+            <div className="flex items-center gap-4 text-neutral-600">
+              {/* Like Button */}
+              <button
+                type="button"
+                onClick={handleLikeToggle}
+                className={`flex items-center gap-1.5 text-xs font-normal hover:opacity-80 active:scale-90 transition-all cursor-pointer ${
+                  isLiked ? 'text-rose-500' : 'text-neutral-600'
+                }`}
+              >
+                <Heart className={`w-4.5 h-4.5 stroke-[1.75] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+                <span className="text-neutral-500">{likesCount}</span>
+              </button>
+
+              {/* Comment Button */}
+              <button
+                type="button"
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-1.5 text-xs font-normal text-neutral-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
+              >
+                <MessageCircle className="w-4.5 h-4.5 stroke-[1.75]" />
+                <span className="text-neutral-500">{item.commentsCount}</span>
+              </button>
+
+              {/* Repost Button */}
+              <button
+                type="button"
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-1.5 text-xs font-normal text-neutral-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
+              >
+                <Repeat2 className="w-4.5 h-4.5 stroke-[1.75]" />
+                <span className="text-neutral-500">{item.repostsCount}</span>
+              </button>
+
+              {/* Share Button */}
+              <button
+                type="button"
+                onClick={(e) => e.stopPropagation()}
+                className="text-neutral-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
+                aria-label="Bagikan"
+              >
+                <Send className="w-4.5 h-4.5 stroke-[1.75]" />
+              </button>
+            </div>
+
+            {/* Quick Buy / Add to Cart Primary Button */}
             <button
               type="button"
-              onClick={handleLikeToggle}
-              className={`flex items-center gap-1.5 text-xs font-normal hover:opacity-80 active:scale-90 transition-all cursor-pointer ${
-                isLiked ? 'text-rose-500' : 'text-neutral-600'
+              onClick={handleAddToCartClick}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all shadow-2xs cursor-pointer active:scale-95 ${
+                isAdded
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-[#1d64ec] hover:bg-blue-600 text-white'
               }`}
             >
-              <Heart className={`w-4.5 h-4.5 stroke-[1.75] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-              <span className="text-neutral-500">{likesCount}</span>
-            </button>
-
-            {/* Comment Button */}
-            <button
-              type="button"
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1.5 text-xs font-normal text-neutral-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
-            >
-              <MessageCircle className="w-4.5 h-4.5 stroke-[1.75]" />
-              <span className="text-neutral-500">{item.commentsCount}</span>
-            </button>
-
-            {/* Repost Button */}
-            <button
-              type="button"
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1.5 text-xs font-normal text-neutral-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
-            >
-              <Repeat2 className="w-4.5 h-4.5 stroke-[1.75]" />
-              <span className="text-neutral-500">{item.repostsCount}</span>
-            </button>
-
-            {/* Share Button */}
-            <button
-              type="button"
-              onClick={(e) => e.stopPropagation()}
-              className="text-neutral-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
-              aria-label="Bagikan"
-            >
-              <Send className="w-4.5 h-4.5 stroke-[1.75]" />
+              {isAdded ? (
+                <>
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Keranjang</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="w-3.5 h-3.5" />
+                  <span>Beli</span>
+                </>
+              )}
             </button>
           </div>
-
-          {/* Quick Buy / Add to Cart Primary Button */}
-          <button
-            type="button"
-            onClick={handleAddToCartClick}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all shadow-2xs cursor-pointer active:scale-95 ${
-              isAdded
-                ? 'bg-emerald-600 text-white'
-                : 'bg-[#1d64ec] hover:bg-blue-600 text-white'
-            }`}
-          >
-            {isAdded ? (
-              <>
-                <Check className="w-3.5 h-3.5" />
-                <span>Keranjang</span>
-              </>
-            ) : (
-              <>
-                <ShoppingCart className="w-3.5 h-3.5" />
-                <span>Beli</span>
-              </>
-            )}
-          </button>
         </div>
       </div>
     </article>

@@ -31,7 +31,20 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
   };
 
   const handleMouseLeaveOrUp = () => {
+    if (!isMouseDown) return;
     setIsMouseDown(false);
+    if (scrollContainerRef.current) {
+      const firstChild = scrollContainerRef.current.firstElementChild as HTMLElement;
+      if (firstChild) {
+        const itemWidth = firstChild.offsetWidth + 10; // width + gap
+        const currentScroll = scrollContainerRef.current.scrollLeft;
+        const targetIndex = Math.round(currentScroll / itemWidth);
+        scrollContainerRef.current.scrollTo({
+          left: targetIndex * itemWidth,
+          behavior: 'smooth',
+        });
+      }
+    }
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -137,7 +150,7 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
               onMouseUp={handleMouseLeaveOrUp}
               onMouseMove={handleMouseMove}
               onClick={(e) => e.stopPropagation()}
-              className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory scrollbar-none mt-2.5 -mr-4 pr-4 cursor-grab active:cursor-grabbing select-none touch-pan-x"
+              className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory scrollbar-none mt-2.5 -ml-[64px] pl-[64px] -mr-4 pr-4 cursor-grab active:cursor-grabbing select-none touch-pan-x"
             >
               {item.images.map((imgUrl, idx) => (
                 <div

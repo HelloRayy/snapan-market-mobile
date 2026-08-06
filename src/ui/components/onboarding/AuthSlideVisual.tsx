@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Mail, Lock, Eye, EyeOff, ArrowLeft, User, ChevronDown, Check, AlertCircle, Loader2, Headphones } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ButtonPrimary } from '../ui/ButtonPrimary';
 import { ButtonSecondary } from '../ui/ButtonSecondary';
 import { Checkbox } from '../ui/Checkbox';
@@ -337,14 +338,25 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
 
       {/* Outer Wrapper for Peeking Asset & Form Sheet Card */}
       <div className="flex-1 flex flex-col justify-end relative">
-        {/* Dynamic 3D Peeking Character (Pak Satpam for OTP, Siswa for Auth) */}
-        <div className="relative w-full flex items-center justify-center -mb-2 z-20 pointer-events-none select-none overflow-visible animate-in fade-in duration-300">
-          <img
-            key={regStep === 'otp' ? 'otp-satpam' : 'auth-siswa'}
-            src={regStep === 'otp' ? otpHeroSvg : personLoginBgSvg}
-            alt={regStep === 'otp' ? "Pak Satpam OTP Verifikasi" : "Siswa SMKN 8 Peeking"}
-            className="w-56 sm:w-64 h-auto object-contain transform translate-y-2.5 transition-all duration-300 drop-shadow-md animate-in fade-in zoom-in-95"
-          />
+        {/* Dynamic 3D Peeking Character with Playful Framer Motion Duck-Down & Pop-Up Spring Effect */}
+        <div className="relative w-full flex items-center justify-center -mb-2 z-20 pointer-events-none select-none overflow-hidden h-36 sm:h-40">
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={regStep === 'otp' ? 'otp-satpam' : authTab}
+              src={regStep === 'otp' ? otpHeroSvg : personLoginBgSvg}
+              alt={regStep === 'otp' ? "Pak Satpam OTP Verifikasi" : "Siswa SMKN 8 Peeking"}
+              initial={{ y: 140, opacity: 0 }}
+              animate={{ y: 10, opacity: 1 }}
+              exit={{ y: 140, opacity: 0 }}
+              transition={{
+                type: 'spring',
+                stiffness: 280,
+                damping: 20,
+                mass: 0.8,
+              }}
+              className="w-56 sm:w-64 h-auto object-contain drop-shadow-md origin-bottom"
+            />
+          </AnimatePresence>
         </div>
 
         {/* Main Form Sheet Card with Smooth Auto-Scroll Ref */}

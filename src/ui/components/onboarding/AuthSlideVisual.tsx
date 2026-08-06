@@ -79,20 +79,6 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
     return `${rawDigits.slice(0, 3)}-${rawDigits.slice(3, 7)}-${rawDigits.slice(7, 12)}`;
   };
 
-  // Check if Register form inputs are complete
-  const isRegisterIncomplete =
-    !fullName.trim() ||
-    !gradeLevel ||
-    !major ||
-    !classNumber ||
-    !phoneNumber.trim() ||
-    phoneNumber.length < 8 ||
-    password.length < 6 ||
-    !agreeTerms;
-
-  // Check if Login form inputs are complete
-  const isLoginIncomplete = !loginIdentifier.trim() || !password;
-
   // Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -971,12 +957,12 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                   </div>
                 )}
 
-                {/* Submit Primary Button (Disabled until all inputs & terms are completed) */}
+                {/* Submit Primary Button (Always active for superior UX feedback on click) */}
                 <ButtonPrimary
                   type="submit"
                   size="lg"
-                  disabled={isSubmitting || (authTab === 'register' ? isRegisterIncomplete : isLoginIncomplete)}
-                  className="w-full justify-center font-bold h-14 text-base rounded-full mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isSubmitting}
+                  className="w-full justify-center font-bold h-14 text-base rounded-full mt-2 cursor-pointer active:scale-[0.98]"
                 >
                   {isSubmitting ? (
                     <Loader2 className="h-5 w-5 animate-spin text-white" />

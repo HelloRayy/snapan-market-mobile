@@ -62,7 +62,7 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
         <div className="flex-1 min-w-0 space-y-1">
           {/* Top Header Row: Kiri = Nama, Verif, Kelas | Kanan = Jam, Titik 3 */}
           <div className="flex items-center justify-between gap-2 min-w-0">
-            {/* Kiri Side: Nama + Verif Icon + Kelas - Truncated cleanly to prevent overlap */}
+            {/* Kiri Side: Nama + Verif Icon + Kelas - High contrast WCAG compliance */}
             <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
               <span className="font-semibold text-[16px] text-slate-900 truncate hover:underline shrink-0 max-w-[60%]">
                 {item.seller.name}
@@ -70,18 +70,18 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
               {item.seller.isVerified && (
                 <BadgeCheck className="w-4 h-4 text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified Seller" />
               )}
-              <span className="text-[15px] font-normal text-neutral-400 truncate min-w-0 shrink">
+              <span className="text-[15px] font-normal text-slate-600 truncate min-w-0 shrink">
                 {item.seller.classGroup}
               </span>
             </div>
 
-            {/* Kanan Side: Jam (16px) + Action Btn Titik 3 - Fixed width shrink-0 */}
+            {/* Kanan Side: Jam (16px) + Action Btn Titik 3 - High Contrast Text */}
             <div className="flex items-center gap-2 shrink-0 ml-auto">
-              <span className="text-[15px] font-normal text-neutral-400 whitespace-nowrap">{item.timestamp}</span>
+              <span className="text-[15px] font-normal text-slate-500 whitespace-nowrap">{item.timestamp}</span>
               <button
                 type="button"
                 onClick={(e) => e.stopPropagation()}
-                className="text-neutral-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
+                className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
                 aria-label="Opsi postingan"
               >
                 <MoreHorizontal className="w-4 h-4" />
@@ -111,7 +111,7 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
 
             {/* Location Tag Badge */}
             {item.locationTag && (
-              <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-neutral-100 border border-neutral-200/80 text-[11px] font-normal text-slate-700">
+              <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-neutral-100 border border-neutral-200/80 text-[11px] font-medium text-slate-800">
                 <MapPin className="w-3 h-3 text-[#1d64ec]" />
                 <span>{item.locationTag}</span>
               </div>
@@ -136,44 +136,44 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
           {/* Bottom Threads Action Bar & Buy Button */}
           <div className="pt-1 flex items-center justify-between gap-2">
             {/* Social Actions (Like, Comment, Repost, Share) */}
-            <div className="flex items-center gap-4 text-neutral-600">
+            <div className="flex items-center gap-4 text-slate-600">
               {/* Like Button */}
               <button
                 type="button"
                 onClick={handleLikeToggle}
-                className={`flex items-center gap-1.5 text-xs font-normal hover:opacity-80 active:scale-90 transition-all cursor-pointer ${
-                  isLiked ? 'text-rose-500' : 'text-neutral-600'
+                className={`flex items-center gap-1.5 text-xs font-medium hover:opacity-80 active:scale-90 transition-all cursor-pointer ${
+                  isLiked ? 'text-rose-500' : 'text-slate-600'
                 }`}
               >
                 <Heart className={`w-4.5 h-4.5 stroke-[1.75] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-                <span className="text-neutral-500">{likesCount}</span>
+                <span className="text-slate-600">{likesCount}</span>
               </button>
 
               {/* Comment Button */}
               <button
                 type="button"
                 onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1.5 text-xs font-normal text-neutral-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
+                className="flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
               >
                 <MessageCircle className="w-4.5 h-4.5 stroke-[1.75]" />
-                <span className="text-neutral-500">{item.commentsCount}</span>
+                <span className="text-slate-600">{item.commentsCount}</span>
               </button>
 
               {/* Repost Button */}
               <button
                 type="button"
                 onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1.5 text-xs font-normal text-neutral-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
+                className="flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
               >
                 <Repeat2 className="w-4.5 h-4.5 stroke-[1.75]" />
-                <span className="text-neutral-500">{item.repostsCount}</span>
+                <span className="text-slate-600">{item.repostsCount}</span>
               </button>
 
               {/* Share Button */}
               <button
                 type="button"
                 onClick={(e) => e.stopPropagation()}
-                className="text-neutral-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
+                className="text-slate-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
                 aria-label="Bagikan"
               >
                 <Send className="w-4.5 h-4.5 stroke-[1.75]" />

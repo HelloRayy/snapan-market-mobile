@@ -121,7 +121,7 @@ export const HomePage: React.FC = () => {
             type="button"
             onClick={() => setFeedTab('for-you')}
             className={`flex-1 py-3 text-sm text-center relative cursor-pointer ${
-              feedTab === 'for-you' ? 'text-slate-900 font-semibold' : 'text-neutral-400 hover:text-slate-600 font-normal'
+              feedTab === 'for-you' ? 'text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-900 font-normal'
             }`}
           >
             Untuk Anda
@@ -131,7 +131,7 @@ export const HomePage: React.FC = () => {
             type="button"
             onClick={() => setFeedTab('latest')}
             className={`flex-1 py-3 text-sm text-center relative cursor-pointer ${
-              feedTab === 'latest' ? 'text-slate-900 font-semibold' : 'text-neutral-400 hover:text-slate-600 font-normal'
+              feedTab === 'latest' ? 'text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-900 font-normal'
             }`}
           >
             Terbaru

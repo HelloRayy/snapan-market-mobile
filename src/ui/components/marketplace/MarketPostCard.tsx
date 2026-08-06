@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Heart, MessageCircle, MoreHorizontal, Check, BadgeCheck, Package, ArrowRight } from 'lucide-react';
 import { MarketThreadItem } from '@/types/marketFeed';
+import { ButtonPrimary } from '../ui/ButtonPrimary';
 
 interface MarketPostCardProps {
   item: MarketThreadItem;
@@ -189,29 +190,25 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               )}
             </div>
 
-            {/* Right Side: Kumo UI Primary CTA Button "Cek Barang ->" */}
-            <button
-              type="button"
+            {/* Right Side: Exact Kumo UI ButtonPrimary Component "Cek Barang ->" */}
+            <ButtonPrimary
+              size="sm"
               onClick={handleAddToCartClick}
-              className={`group inline-flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-full text-[12px] font-semibold tracking-tight transition-all duration-200 ease-out shadow-xs hover:shadow-md cursor-pointer active:scale-95 shrink-0 ml-auto select-none ${
-                isAdded
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-[#1d64ec] hover:bg-blue-600 text-white'
+              iconRight={isAdded ? null : <ArrowRight className="w-3.5 h-3.5 stroke-[2.25]" />}
+              className={`rounded-full shadow-2xs px-3.5 h-8 text-[12px] shrink-0 ml-auto ${
+                isAdded ? 'bg-emerald-600 border-emerald-700' : ''
               }`}
               aria-label="Cek Barang Produk"
             >
               {isAdded ? (
-                <>
+                <span className="flex items-center gap-1.5">
                   <Check className="w-3.5 h-3.5" />
                   <span>Keranjang</span>
-                </>
+                </span>
               ) : (
-                <>
-                  <span>Cek Barang</span>
-                  <ArrowRight className="w-3.5 h-3.5 stroke-[2.25] group-hover:translate-x-0.5 transition-transform duration-200" />
-                </>
+                'Cek Barang'
               )}
-            </button>
+            </ButtonPrimary>
           </div>
         </div>
       </div>

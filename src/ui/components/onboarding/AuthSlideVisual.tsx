@@ -165,7 +165,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
     }
   };
 
-  // Helper getters for Hero Asset, Alt text & Specific Position Alignment
+  // Helper getters for Hero Asset, Alt text, Specific Class & Clip Path
   const getHeroImageSrc = () => {
     if (regStep === 'otp') return otpHeroSvg;
     if (authTab === 'register') return heroRegistSvg;
@@ -180,13 +180,21 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
 
   const getHeroImageClass = () => {
     if (regStep === 'otp') {
-      return "w-56 sm:w-64 h-auto object-contain drop-shadow-md origin-bottom transform translate-y-7 sm:translate-y-8";
+      return "w-56 sm:w-64 h-auto object-contain drop-shadow-md origin-bottom transform translate-y-3.5 sm:translate-y-4";
     }
     if (authTab === 'register') {
-      // Adjusted translate-y-10 sm:translate-y-11 so hero-regist.svg bottom body crop is hidden behind form card border
-      return "w-56 sm:w-64 h-auto object-contain drop-shadow-md origin-bottom transform translate-y-10.5 sm:translate-y-11.5";
+      // Precision translate-y-4 so fingers rest exactly on the top border curve of the form sheet card without touching the buttons
+      return "w-56 sm:w-64 h-auto object-contain drop-shadow-md origin-bottom transform translate-y-4 sm:translate-y-4.5";
     }
-    return "w-56 sm:w-64 h-auto object-contain drop-shadow-md origin-bottom transform translate-y-7 sm:translate-y-8";
+    return "w-56 sm:w-64 h-auto object-contain drop-shadow-md origin-bottom transform translate-y-3.5 sm:translate-y-4";
+  };
+
+  const getHeroImageStyle = () => {
+    if (authTab === 'register' && regStep !== 'otp') {
+      // Trim bottom 14px of flat hoodie crop so bottom edge is hidden behind sheet border
+      return { clipPath: 'inset(0 0 14px 0)' };
+    }
+    return {};
   };
 
   // Handle OTP 6-Digit Box Changes (Strictly Number Only)
@@ -389,6 +397,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                 mass: 0.8,
               }}
               className={getHeroImageClass()}
+              style={getHeroImageStyle()}
             />
           </AnimatePresence>
         </div>

@@ -40,7 +40,7 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
   return (
     <article
       onClick={() => onPostClick?.(item)}
-      className="w-full border-b border-neutral-100 bg-pure-white px-4 py-3.5 hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none"
+      className="w-full border-b border-neutral-200/80 bg-pure-white px-4 py-3.5 hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none"
     >
       <div className="flex items-start gap-3">
         {/* Left Column: Seller Avatar 36x36px (w-9 h-9) */}
@@ -95,18 +95,14 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
 
 
 
-          {/* Product Image Card (Max height 280px) */}
+          {/* Product Image Card (Max height 280px) with mt-2.5 gap */}
           {item.images && item.images.length > 0 && (
-            <div className="relative w-full rounded-2xl overflow-hidden border border-neutral-200/80 shadow-2xs bg-neutral-100 max-h-[280px] aspect-[16/10.5] mt-1">
+            <div className="relative w-full rounded-2xl overflow-hidden border border-neutral-200/80 shadow-2xs bg-neutral-100 max-h-[280px] aspect-[16/10.5] mt-2.5">
               <img
                 src={item.images[0]}
                 alt={item.caption}
                 className="w-full h-full object-cover hover:scale-[1.01] transition-transform duration-300"
               />
-              {/* Category Badge Pill */}
-              <div className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-md bg-black/60 backdrop-blur-md text-white text-[10px] font-medium uppercase tracking-wider">
-                {item.category}
-              </div>
             </div>
           )}
 

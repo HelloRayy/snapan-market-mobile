@@ -107,7 +107,7 @@ export const HomePage: React.FC = () => {
       />
 
       {/* Main Threads Feed Container with pt-14 for Fixed Header Offset */}
-      <main className="max-w-xl mx-auto divide-y divide-neutral-100 pt-14">
+      <main className="max-w-xl mx-auto divide-y divide-neutral-200/80 pt-14">
         {/* Scrollable Tab Switcher ("Untuk Anda" & "Terbaru") - Smooth Sliding Indicator Bar */}
         <div className="relative flex items-center border-b border-neutral-200 select-none bg-pure-white">
           {/* Smooth Sliding Bar (No Kedut/Flicker, Pure Slide) */}

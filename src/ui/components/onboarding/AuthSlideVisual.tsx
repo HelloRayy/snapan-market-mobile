@@ -352,41 +352,39 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
 
       {/* Outer Wrapper for Peeking Asset & Form Sheet Card */}
       <div className="flex-1 flex flex-col justify-end relative overflow-visible">
-        {/* Dynamic 3D Peeking Character with Smart Dynamic Z-Index (z-10 behind card during motion, z-30 when standing for hand gripping) */}
-        <div
-          className={`relative w-full flex items-center justify-center -mb-2 pointer-events-none select-none overflow-visible transition-all duration-150 ${
-            isAnimatingHero ? 'z-10' : 'z-30'
-          }`}
-        >
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={regStep === 'otp' ? 'otp-satpam' : authTab}
-              src={getHeroImageSrc()}
-              alt={getHeroAltText()}
-              initial={{ y: 160, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 160, opacity: 0 }}
-              onAnimationStart={() => setIsAnimatingHero(true)}
-              onAnimationComplete={() => setIsAnimatingHero(false)}
-              transition={{
-                type: 'spring',
-                stiffness: 280,
-                damping: 24,
-                mass: 0.8,
-              }}
-              className={getHeroImageClass()}
-            />
-          </AnimatePresence>
-        </div>
+        {/* Dynamic 3D Peeking Character with Smart Dynamic Z-Index (hidden on OTP step) */}
+        {regStep !== 'otp' && (
+          <div
+            className={`relative w-full flex items-center justify-center -mb-2 pointer-events-none select-none overflow-visible transition-all duration-150 ${
+              isAnimatingHero ? 'z-10' : 'z-30'
+            }`}
+          >
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={authTab}
+                src={getHeroImageSrc()}
+                alt={getHeroAltText()}
+                initial={{ y: 160, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 160, opacity: 0 }}
+                onAnimationStart={() => setIsAnimatingHero(true)}
+                onAnimationComplete={() => setIsAnimatingHero(false)}
+                transition={{
+                  type: 'spring',
+                  stiffness: 280,
+                  damping: 24,
+                  mass: 0.8,
+                }}
+                className={getHeroImageClass()}
+              />
+            </AnimatePresence>
+          </div>
+        )}
 
-        {/* Main Form Sheet Card with z-20 */}
+        {/* Main Form Sheet Card with z-20 & Uniform Height for Zero Layout Shift */}
         <div
           ref={formSheetRef}
-          className={`relative z-20 -mx-5 -mb-5 bg-pure-white px-6 shadow-2xl space-y-4 overflow-y-auto scroll-smooth transition-all duration-300 cubic-bezier(0.16,1,0.3,1) ${
-            authTab === 'register' || regStep === 'otp'
-              ? 'h-full min-h-[75vh] rounded-t-[36px] rounded-b-none border-t border-faint-border pt-6 pb-12'
-              : 'rounded-t-[36px] rounded-b-none border-t border-faint-border pt-6 pb-10'
-          }`}
+          className="relative z-20 -mx-5 -mb-5 bg-pure-white px-6 shadow-2xl space-y-4 overflow-y-auto scroll-smooth transition-all duration-300 cubic-bezier(0.16,1,0.3,1) h-full min-h-[75vh] rounded-t-[36px] rounded-b-none border-t border-faint-border pt-6 pb-12"
         >
           {/* STEP 2: WHATSAPP OTP VERIFICATION SCREEN */}
           {regStep === 'otp' ? (

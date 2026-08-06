@@ -44,16 +44,16 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
       className="w-full border-b border-neutral-100 bg-pure-white px-4 py-3.5 hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none"
     >
       <div className="flex items-start gap-3">
-        {/* Left Column: Seller Avatar with Threads '+' Badge + Connector Line */}
+        {/* Left Column: Seller Avatar 36x36px with Threads '+' Badge + Connector Line */}
         <div className="flex flex-col items-center shrink-0 self-stretch">
-          {/* Avatar Image with Plus Badge */}
-          <div className="relative w-10 h-10 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs">
+          {/* Avatar Image 36x36px (w-9 h-9) */}
+          <div className="relative w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs">
             <img
               src={item.seller.avatar}
               alt={item.seller.name}
               className="w-full h-full object-cover"
             />
-            <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-slate-900 text-white border-2 border-white flex items-center justify-center text-[10px] font-bold">
+            <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-slate-900 text-white border-2 border-white flex items-center justify-center text-[9px] font-bold">
               +
             </div>
           </div>
@@ -69,14 +69,14 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
 
         {/* Right Column: Content */}
         <div className="flex-1 min-w-0 space-y-2">
-          {/* Top Header Row: Name, Class Badge, Timestamp & Menu */}
+          {/* Top Header Row: Name (16px), Class Badge, Timestamp (16px) & Menu */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
-              <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline">
+              <span className="font-semibold text-[16px] text-slate-900 truncate hover:underline">
                 {item.seller.name}
               </span>
               {item.seller.isVerified && (
-                <ShieldCheck className="w-3.5 h-3.5 text-[#1d64ec] shrink-0" aria-label="Verified Seller" />
+                <ShieldCheck className="w-4 h-4 text-[#1d64ec] shrink-0" aria-label="Verified Seller" />
               )}
               <span className="text-[11px] font-normal px-2 py-0.5 rounded-full bg-blue-50/80 text-[#1d64ec] border border-blue-100 shrink-0">
                 {item.seller.classGroup}
@@ -84,7 +84,7 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
             </div>
 
             <div className="flex items-center gap-1.5 shrink-0">
-              <span className="text-[13px] font-normal text-neutral-400">{item.timestamp}</span>
+              <span className="text-[16px] font-normal text-neutral-400">{item.timestamp}</span>
               <button
                 type="button"
                 onClick={(e) => e.stopPropagation()}
@@ -96,8 +96,8 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
             </div>
           </div>
 
-          {/* Post Text / Caption (Light/Normal Weight 15px) */}
-          <p className="text-[15px] text-slate-900 font-normal leading-snug break-words">
+          {/* Post Text / Caption (16px Normal Weight) */}
+          <p className="text-[16px] text-slate-900 font-normal leading-snug break-words">
             {item.caption}
           </p>
 
@@ -125,9 +125,9 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
             )}
           </div>
 
-          {/* Product Image Card (16px rounded-2xl) */}
+          {/* Product Image Card (Adjustable height max 280px) */}
           {item.images && item.images.length > 0 && (
-            <div className="relative w-full rounded-2xl overflow-hidden border border-neutral-200/80 shadow-2xs bg-neutral-100 aspect-16/10 mt-1.5">
+            <div className="relative w-full rounded-2xl overflow-hidden border border-neutral-200/80 shadow-2xs bg-neutral-100 max-h-[280px] aspect-[16/10.5] mt-1.5">
               <img
                 src={item.images[0]}
                 alt={item.caption}

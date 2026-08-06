@@ -1,215 +1,201 @@
-import React, { useState } from 'react';
-import { Search, ShoppingBag, LogIn, LogOut, Store } from 'lucide-react';
-import { ProductCard } from '../components/marketplace/ProductCard';
-import { MobileBottomNav } from '../components/marketplace/MobileBottomNav';
+import React, { useState, useEffect, useRef } from 'react';
+import { Loader2, Plus, Sparkles } from 'lucide-react';
+import { ThreadsHeader } from '../components/marketplace/ThreadsHeader';
+import { ThreadsPostCard } from '../components/marketplace/ThreadsPostCard';
+import { ThreadsBottomNav } from '../components/marketplace/ThreadsBottomNav';
 import { InstallBanner } from '../components/pwa/InstallBanner';
 import { OfflineBanner } from '../components/pwa/OfflineBanner';
-import { Button } from '../components/ui/Button';
-import { Badge } from '../components/ui/Badge';
-import { Product } from '@/types/product';
-import { useAuth } from '../hooks/useAuth';
+import { MOCK_THREADS_ITEMS } from '@/data/mockThreadsData';
+import { MarketThreadItem } from '@/types/threadsFeed';
 import { useCartStore } from '../store/cartStore';
-import { formatRupiah } from '@/utils/formatters';
-
-// Sample Starter Products
-const STARTER_PRODUCTS: Product[] = [
-  {
-    id: 'prod-1',
-    name: 'Kemeja Oversized Premium Cotton Streetwear',
-    slug: 'kemeja-oversized-premium',
-    description: 'Kemeja casual berbahan katun impor yang nyaman dan adem.',
-    price: 149000,
-    originalPrice: 220000,
-    stock: 25,
-    rating: 4.8,
-    soldCount: 340,
-    category: 'Fashion',
-    images: ['https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&q=80'],
-    sellerId: 'sel-1',
-    sellerName: 'Snapan Apparel Store',
-    isVerifiedSeller: true,
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: 'prod-2',
-    name: 'Wireless Earbuds Active Noise Cancelling TWS',
-    slug: 'wireless-earbuds-anc',
-    description: 'Earbuds nirkabel dengan audio bass jernih & daya tahan baterai 24 jam.',
-    price: 329000,
-    originalPrice: 499000,
-    stock: 12,
-    rating: 4.9,
-    soldCount: 890,
-    category: 'Elektronik',
-    images: ['https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&q=80'],
-    sellerId: 'sel-2',
-    sellerName: 'GadgetZone Indonesia',
-    isVerifiedSeller: true,
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: 'prod-3',
-    name: 'Sepatu Sneakers Running Lightweight Unisex',
-    slug: 'sepatu-sneakers-running',
-    description: 'Sepatu olahraga ringan dengan bantalan empuk untuk lari harian.',
-    price: 289000,
-    originalPrice: 350000,
-    stock: 18,
-    rating: 4.7,
-    soldCount: 520,
-    category: 'Olahraga',
-    images: ['https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80'],
-    sellerId: 'sel-1',
-    sellerName: 'Snapan Apparel Store',
-    isVerifiedSeller: true,
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: 'prod-4',
-    name: 'Smart Watch Display AMOLED Health Monitor',
-    slug: 'smart-watch-display-amoled',
-    description: 'Jam tangan pintar dengan pemantau detak jantung, tidur & 100+ mode olahraga.',
-    price: 450000,
-    originalPrice: 699000,
-    stock: 8,
-    rating: 4.9,
-    soldCount: 1200,
-    category: 'Elektronik',
-    images: ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80'],
-    sellerId: 'sel-2',
-    sellerName: 'GadgetZone Indonesia',
-    isVerifiedSeller: true,
-    createdAt: new Date().toISOString()
-  }
-];
 
 export const HomePage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('home');
+  const [feedTab, setFeedTab] = useState<'for-you' | 'latest'>('for-you');
+  const [bottomNavTab, setBottomNavTab] = useState('home');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
 
-  const { user, isAuthenticated, signInWithGoogle, signOut } = useAuth();
+  // Items State & Infinite Scroll Loading
+  const [items, setItems] = useState<MarketThreadItem[]>(MOCK_THREADS_ITEMS);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const observerTargetRef = useRef<HTMLDivElement>(null);
+
+  // Cart Store Integration
+  const addItemToCart = useCartStore((state) => state.addItem);
   const totalCartItems = useCartStore((state) => state.getTotalItems());
   const totalCartPrice = useCartStore((state) => state.getTotalPrice());
 
-  const categories = ['Semua', 'Fashion', 'Elektronik', 'Olahraga', 'Kecantikan'];
+  const categories = ['Semua', 'Kantin', 'Fashion', 'Jasa DKV/PPLG', 'Elektronik'];
 
-  const filteredProducts = STARTER_PRODUCTS.filter((prod) => {
-    const matchesSearch = prod.name.toLowerCase().includes(searchQuery.toLowerCase());
+  // Handle Add To Cart from Threads Post Card
+  const handleAddToCart = (threadItem: MarketThreadItem) => {
+    addItemToCart(
+      {
+        id: threadItem.id,
+        name: threadItem.caption.slice(0, 40) + '...',
+        slug: threadItem.id,
+        description: threadItem.caption,
+        price: threadItem.price,
+        originalPrice: threadItem.originalPrice,
+        stock: threadItem.stock,
+        rating: 4.9,
+        soldCount: 15,
+        category: threadItem.category,
+        images: threadItem.images,
+        sellerId: threadItem.seller.id,
+        sellerName: threadItem.seller.name,
+        isVerifiedSeller: threadItem.seller.isVerified,
+        createdAt: new Date().toISOString(),
+      },
+      1
+    );
+  };
+
+  // Filtered Items
+  const filteredItems = items.filter((item) => {
+    const matchesSearch =
+      item.caption.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.seller.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.seller.classGroup.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory =
-      !selectedCategory || selectedCategory === 'Semua' || prod.category === selectedCategory;
+      selectedCategory === 'Semua' || item.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
+  // Simulated Infinite Scroll Loader
+  const loadMoreItems = () => {
+    if (isLoadingMore) return;
+    setIsLoadingMore(true);
+    setTimeout(() => {
+      // Append duplicated items with new unique IDs to simulate infinite feed
+      const newBatch: MarketThreadItem[] = MOCK_THREADS_ITEMS.map((base, idx) => ({
+        ...base,
+        id: `thread-auto-${page}-${idx}-${Date.now()}`,
+        timestamp: `${page * 2}j lalu`,
+        likesCount: base.likesCount + Math.floor(Math.random() * 10),
+      }));
+      setItems((prev) => [...prev, ...newBatch]);
+      setPage((prev) => prev + 1);
+      setIsLoadingMore(false);
+    }, 1000);
+  };
+
+  // Intersection Observer for Infinite Scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoadingMore) {
+          loadMoreItems();
+        }
+      },
+      { threshold: 0.8 }
+    );
+
+    if (observerTargetRef.current) {
+      observer.observe(observerTargetRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [isLoadingMore, page]);
+
   return (
-    <div className="min-h-screen pb-20 md:pb-8 bg-neutral-50 text-neutral-900">
+    <div className="min-h-screen bg-pure-white text-slate-ink pb-20 font-gt-standard select-none">
       <OfflineBanner />
       <InstallBanner />
 
-      {/* Header Bar */}
-      <header className="sticky top-0 z-40 border-b border-neutral-200 bg-white/90 backdrop-blur-xl px-4 py-3 shadow-xs">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-black text-white font-bold shadow-md">
-              <Store className="h-5 w-5" />
-            </div>
-            <div>
-              <h1 className="text-base font-bold tracking-tight text-black">
-                Snapan<span className="text-neutral-500">Market</span>
-              </h1>
-              <p className="text-[10px] text-neutral-500 font-medium">Marketplace PWA Mobile</p>
-            </div>
-          </div>
+      {/* Threads Sticky Header */}
+      <ThreadsHeader
+        activeTab={feedTab}
+        onTabChange={(tab) => setFeedTab(tab)}
+        cartCount={totalCartItems}
+        cartTotal={totalCartPrice}
+        onSearchChange={(query) => setSearchQuery(query)}
+      />
 
-          <div className="flex items-center gap-3">
-            {/* Cart Counter */}
-            <div className="relative flex items-center gap-2 rounded-xl border border-neutral-200 bg-neutral-100 px-3 py-1.5 text-xs text-neutral-800 font-semibold">
-              <ShoppingBag className="h-4 w-4 text-black" />
-              <span>{totalCartItems}</span>
-              {totalCartItems > 0 && (
-                <span className="hidden sm:inline text-neutral-600 font-medium">
-                  ({formatRupiah(totalCartPrice)})
-                </span>
-              )}
-            </div>
-
-            {/* Auth Action */}
-            {isAuthenticated ? (
-              <div className="flex items-center gap-2">
-                <span className="hidden sm:inline text-xs font-medium text-neutral-700">
-                  {user?.email?.split('@')[0]}
-                </span>
-                <Button size="sm" variant="ghost" onClick={signOut} title="Logout" className="text-neutral-700 hover:bg-neutral-100">
-                  <LogOut className="h-4 w-4" />
-                </Button>
-              </div>
-            ) : (
-              <Button size="sm" variant="outline" onClick={signInWithGoogle} className="gap-1.5 border-black text-black hover:bg-neutral-100">
-                <LogIn className="h-4 w-4" />
-                <span className="hidden sm:inline">Login</span>
-              </Button>
-            )}
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content Area */}
-      <main className="mx-auto max-w-6xl px-4 pt-4 space-y-6">
-        {/* Search Bar */}
-        <div className="relative">
-          <Search className="absolute left-3.5 top-3 h-4 w-4 text-neutral-400" />
-          <input
-            type="text"
-            placeholder="Cari produk impian di Snapan Market..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-2xl border border-neutral-200 bg-white pl-10 pr-4 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-black focus:outline-none focus:ring-2 focus:ring-black/10 transition-all shadow-xs"
-          />
-        </div>
-
-        {/* Categories Bar */}
-        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+      {/* Main Threads Feed Container */}
+      <main className="max-w-xl mx-auto divide-y divide-neutral-100">
+        {/* Horizontal Category Pill Selector */}
+        <div className="px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar border-b border-neutral-100 bg-neutral-50/50">
           {categories.map((cat) => {
-            const isActive =
-              (cat === 'Semua' && !selectedCategory) || selectedCategory === cat;
+            const isActive = selectedCategory === cat;
             return (
               <button
                 key={cat}
-                onClick={() => setSelectedCategory(cat === 'Semua' ? null : cat)}
-                className="shrink-0"
+                type="button"
+                onClick={() => setSelectedCategory(cat)}
+                className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-slate-900 text-white shadow-2xs'
+                    : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-100'
+                }`}
               >
-                <Badge
-                  variant={isActive ? 'slate' : 'slate'}
-                  className={`px-3.5 py-1.5 text-xs font-bold cursor-pointer transition-all ${
-                    isActive
-                      ? 'bg-black text-white border-black shadow-md'
-                      : 'bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-100'
-                  }`}
-                >
-                  {cat}
-                </Badge>
+                {cat}
               </button>
             );
           })}
         </div>
 
-        {/* Product Grid */}
-        <section className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-base font-bold text-neutral-900">Rekomendasi Produk</h2>
-            <span className="text-xs text-neutral-500 font-medium">{filteredProducts.length} Produk</span>
+        {/* Start Posting Prompt Card (Threads Style Top Composer Bar) */}
+        <div className="p-4 flex items-center justify-between gap-3 bg-neutral-50/30 border-b border-neutral-100">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-[#1d64ec] text-white flex items-center justify-center font-extrabold text-xs shadow-2xs">
+              S8
+            </div>
+            <span className="text-xs font-medium text-neutral-400">
+              Ada yang mau dijual di SMKN 8 hari ini?
+            </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 md:grid-cols-4">
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+          <button
+            type="button"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-200 border border-neutral-200 text-xs font-bold text-slate-900 transition-all cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5 text-[#1d64ec]" />
+            <span>Posting</span>
+          </button>
+        </div>
+
+        {/* Feed List Items */}
+        {filteredItems.length > 0 ? (
+          filteredItems.map((item) => (
+            <ThreadsPostCard
+              key={item.id}
+              item={item}
+              onAddToCart={handleAddToCart}
+            />
+          ))
+        ) : (
+          <div className="py-12 px-4 text-center space-y-2">
+            <Sparkles className="w-8 h-8 text-neutral-300 mx-auto" />
+            <p className="text-sm font-bold text-slate-900">Belum ada postingan produk</p>
+            <p className="text-xs text-neutral-500 font-normal">
+              Coba ganti kata kunci pencarian atau kategori di atas.
+            </p>
           </div>
-        </section>
+        )}
+
+        {/* Infinite Scroll Observer Target Element & Loader */}
+        <div
+          ref={observerTargetRef}
+          className="py-6 flex flex-col items-center justify-center gap-2 text-center text-xs text-neutral-400 font-medium"
+        >
+          {isLoadingMore ? (
+            <div className="flex items-center gap-2 text-[#1d64ec] font-bold animate-pulse">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>Memuat postingan Threads berikutnya...</span>
+            </div>
+          ) : (
+            <span>Scroll ke bawah untuk memuat postingan baru</span>
+          )}
+        </div>
       </main>
 
-      {/* Mobile Bottom Navigation */}
-      <MobileBottomNav activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab)} />
+      {/* Threads 5-Icon Bottom Navigation */}
+      <ThreadsBottomNav
+        activeTab={bottomNavTab}
+        onTabChange={(tab) => setBottomNavTab(tab)}
+      />
     </div>
   );
 };

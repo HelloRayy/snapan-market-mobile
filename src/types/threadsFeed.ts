@@ -1,0 +1,26 @@
+export interface SellerProfile {
+  id: string;
+  name: string;
+  avatar: string;
+  classGroup: string; // e.g. 'XII PPLG 1', 'XI DKV 2', 'Guru / Karyawan'
+  isVerified: boolean;
+  username: string;
+}
+
+export interface MarketThreadItem {
+  id: string;
+  seller: SellerProfile;
+  caption: string;
+  price: number;
+  originalPrice?: number;
+  category: 'Kantin' | 'Fashion' | 'Jasa DKV/PPLG' | 'Elektronik' | 'Lainnya';
+  images: string[];
+  stock: number;
+  locationTag?: string; // e.g. 'Kantin Depan', 'Gedung PPLG', 'Parkiran Belakang'
+  likesCount: number;
+  commentsCount: number;
+  repostsCount: number;
+  timestamp: string; // e.g. '10m lalu', '2j lalu', '1hr lalu'
+  isLiked?: boolean;
+  isSaved?: boolean;
+}

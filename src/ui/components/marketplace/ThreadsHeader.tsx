@@ -38,8 +38,8 @@ export const ThreadsHeader: React.FC<ThreadsHeaderProps> = ({
     <header
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 font-gt-standard ${
         isScrolled
-          ? 'bg-pure-white/75 backdrop-blur-xl shadow-2xs'
-          : 'bg-pure-white/80 backdrop-blur-md'
+          ? 'bg-[#fafafa]/85 backdrop-blur-xl border-b border-neutral-200/60 shadow-2xs'
+          : 'bg-[#fafafa]/90 backdrop-blur-md border-b border-neutral-200/40'
       }`}
     >
       {/* Top Main Bar: [ Left: Cart ] --- [ Center: Logo Title ] --- [ Right: Search ] */}

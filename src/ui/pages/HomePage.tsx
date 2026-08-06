@@ -95,7 +95,7 @@ export const HomePage: React.FC = () => {
   }, [isLoadingMore, page]);
 
   return (
-    <div className="min-h-screen bg-pure-white text-slate-ink pb-20 font-gt-standard select-none">
+    <div className="min-h-screen bg-[#fafafa] text-slate-ink pb-20 font-gt-standard select-none">
       <OfflineBanner />
       <InstallBanner />
 
@@ -109,7 +109,7 @@ export const HomePage: React.FC = () => {
       {/* Main Threads Feed Container with pt-14 for Fixed Header Offset */}
       <main className="max-w-xl mx-auto divide-y divide-neutral-200/80 pt-14">
         {/* Scrollable Tab Switcher ("Untuk Anda" & "Terbaru") - Smooth Sliding Indicator Bar */}
-        <div className="relative flex items-center border-b border-neutral-200 select-none bg-pure-white">
+        <div className="relative flex items-center border-b border-neutral-200/80 select-none bg-[#fafafa]">
           {/* Smooth Sliding Bar (No Kedut/Flicker, Pure Slide) */}
           <div
             className={`absolute bottom-0 left-0 w-1/2 h-[2px] bg-slate-900 transition-transform duration-200 cubic-bezier(0.16,1,0.3,1) ${

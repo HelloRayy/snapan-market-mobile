@@ -27,21 +27,33 @@ export const ThreadsHeader: React.FC<ThreadsHeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-40 bg-pure-white/95 backdrop-blur-md border-b border-neutral-200/80 shadow-2xs font-gt-standard">
-      {/* Top Main Bar */}
-      <div className="max-w-xl mx-auto px-4 pt-3 pb-2 flex items-center justify-between gap-3">
-        {/* Left Side: Logo */}
-        <div className="flex items-center gap-2 select-none">
-          <div className="w-8 h-8 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-xs">
-            <Store className="w-4 h-4 text-white" />
+      {/* Top Main Bar: [ Left: Cart ] --- [ Center: Logo Title ] --- [ Right: Search ] */}
+      <div className="max-w-xl mx-auto px-4 h-14 flex items-center justify-between gap-3 relative select-none">
+        {/* Left Side: Cart Icon Badge */}
+        <div className="flex items-center">
+          <div className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100/80 border border-neutral-200/80 text-xs font-semibold text-slate-800 shadow-2xs cursor-pointer hover:bg-neutral-200/60 active:scale-95 transition-all">
+            <ShoppingBag className="w-4 h-4 text-[#1d64ec]" />
+            <span className="font-semibold text-slate-900">{cartCount}</span>
+            {cartCount > 0 && cartTotal > 0 && (
+              <span className="hidden sm:inline text-neutral-500 font-normal ml-0.5">
+                ({formatRupiah(cartTotal)})
+              </span>
+            )}
           </div>
-          <span className="font-extrabold text-lg text-slate-900 tracking-tight font-shopify-sans">
-            Snapan<span className="text-[#1d64ec]">Market</span>
+        </div>
+
+        {/* Center: Title / Logo with reduced font-weight (font-semibold / medium) */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-slate-900 flex items-center justify-center text-white shadow-2xs">
+            <Store className="w-3.5 h-3.5 text-white" />
+          </div>
+          <span className="font-semibold text-base text-slate-900 tracking-tight font-shopify-sans">
+            Snapan<span className="text-[#1d64ec] font-normal">Market</span>
           </span>
         </div>
 
-        {/* Right Side: Search & Cart Action Icons */}
-        <div className="flex items-center gap-2">
-          {/* Search Toggle Button */}
+        {/* Right Side: Search Toggle Button */}
+        <div className="flex items-center">
           <button
             onClick={() => {
               setShowSearchInput(!showSearchInput);
@@ -55,20 +67,9 @@ export const ThreadsHeader: React.FC<ThreadsHeaderProps> = ({
             {showSearchInput ? (
               <X className="w-5 h-5 text-slate-900" />
             ) : (
-              <Search className="w-5 h-5 text-slate-900" />
+              <Search className="w-5 h-5 text-slate-900 stroke-[2]" />
             )}
           </button>
-
-          {/* Cart Badge Button */}
-          <div className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100 border border-neutral-200 text-xs font-bold text-slate-900 shadow-2xs">
-            <ShoppingBag className="w-4 h-4 text-[#1d64ec]" />
-            <span>{cartCount}</span>
-            {cartCount > 0 && cartTotal > 0 && (
-              <span className="hidden sm:inline text-neutral-500 font-medium ml-0.5">
-                ({formatRupiah(cartTotal)})
-              </span>
-            )}
-          </div>
         </div>
       </div>
 
@@ -83,18 +84,18 @@ export const ThreadsHeader: React.FC<ThreadsHeaderProps> = ({
               placeholder="Cari jajanan kantin, barang DKV, aksesoris TJKT..."
               value={searchValue}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-neutral-300 bg-neutral-50 text-slate-900 focus:bg-white focus:border-[#1d64ec] focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+              className="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-neutral-300 bg-neutral-50 text-slate-900 focus:bg-white focus:border-[#1d64ec] focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all font-normal"
             />
           </div>
         </div>
       )}
 
-      {/* Threads 2-Tab Navigation ("Untuk Anda" & "Terbaru") */}
+      {/* Threads 2-Tab Navigation ("Untuk Anda" & "Terbaru") with reduced font-weight */}
       <div className="max-w-xl mx-auto flex items-center border-t border-neutral-100 select-none">
         <button
           onClick={() => onTabChange('for-you')}
-          className={`flex-1 py-3 text-sm font-bold text-center relative transition-colors cursor-pointer ${
-            activeTab === 'for-you' ? 'text-slate-900 font-extrabold' : 'text-neutral-400 hover:text-slate-600'
+          className={`flex-1 py-3 text-sm text-center relative transition-colors cursor-pointer ${
+            activeTab === 'for-you' ? 'text-slate-900 font-semibold' : 'text-neutral-400 hover:text-slate-600 font-normal'
           }`}
         >
           Untuk Anda
@@ -105,8 +106,8 @@ export const ThreadsHeader: React.FC<ThreadsHeaderProps> = ({
 
         <button
           onClick={() => onTabChange('latest')}
-          className={`flex-1 py-3 text-sm font-bold text-center relative transition-colors cursor-pointer ${
-            activeTab === 'latest' ? 'text-slate-900 font-extrabold' : 'text-neutral-400 hover:text-slate-600'
+          className={`flex-1 py-3 text-sm text-center relative transition-colors cursor-pointer ${
+            activeTab === 'latest' ? 'text-slate-900 font-semibold' : 'text-neutral-400 hover:text-slate-600 font-normal'
           }`}
         >
           Terbaru

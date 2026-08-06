@@ -155,36 +155,36 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           )}
 
           {/* Bottom E-Commerce Action Bar: [Left: Love | Comment | Stock Icon] --- [Right: Button CTA] */}
-          <div className="pt-2 flex flex-wrap items-center justify-between gap-y-2 gap-x-3 min-w-0">
+          <div className="pt-2 flex flex-wrap items-center justify-between gap-y-2 gap-x-2 min-w-0">
             {/* Left Side: Love, Comment & Stock (Icon Only) */}
-            <div className="flex items-center gap-3.5 text-slate-600 shrink-0">
+            <div className="flex items-center gap-2.5 xs:gap-3.5 text-slate-600 shrink-0">
               {/* Like Button */}
               <button
                 type="button"
                 onClick={handleLikeToggle}
-                className={`flex items-center gap-1.5 text-xs font-medium hover:opacity-80 active:scale-90 transition-all cursor-pointer ${
+                className={`flex items-center gap-1 text-xs font-medium hover:opacity-80 active:scale-90 transition-all cursor-pointer ${
                   isLiked ? 'text-rose-500' : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <Heart className={`w-4.5 h-4.5 stroke-[1.75] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-                <span className="text-slate-700 font-normal text-[13px]">{likesCount}</span>
+                <Heart className={`w-4 h-4 stroke-[1.75] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+                <span className="text-slate-700 font-normal text-[12.5px]">{likesCount}</span>
               </button>
 
               {/* Comment Button */}
               <button
                 type="button"
                 onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
+                className="flex items-center gap-1 text-xs font-medium text-slate-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
               >
-                <MessageCircle className="w-4.5 h-4.5 stroke-[1.75]" />
-                <span className="text-slate-700 font-normal text-[13px]">{item.commentsCount}</span>
+                <MessageCircle className="w-4 h-4 stroke-[1.75]" />
+                <span className="text-slate-700 font-normal text-[12.5px]">{item.commentsCount}</span>
               </button>
 
               {/* Stock Indicator (Icon + Number) */}
               {item.stock !== undefined && (
                 <div className="flex items-center gap-1 text-slate-500 hover:text-slate-700 transition-colors" title={`Stok tersisa ${item.stock}`}>
-                  <Box className="w-4 h-4 stroke-[1.75]" />
-                  <span className="text-[13px] font-normal text-slate-600">{item.stock}</span>
+                  <Box className="w-3.5 h-3.5 stroke-[1.75]" />
+                  <span className="text-[12.5px] font-normal text-slate-600">{item.stock}</span>
                 </div>
               )}
             </div>
@@ -194,7 +194,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               size="sm"
               onClick={handleAddToCartClick}
               iconRight={isAdded ? null : <ArrowRight className="w-3.5 h-3.5 stroke-[2.25]" />}
-              className={`rounded-full shadow-2xs px-3.5 h-8 text-[12px] shrink-0 sm:ml-auto ${
+              className={`rounded-full shadow-2xs px-3 h-7.5 text-[11.5px] shrink-0 ml-auto ${
                 isAdded ? 'bg-emerald-600 border-emerald-700' : ''
               }`}
               aria-label="Lihat Detail Produk"

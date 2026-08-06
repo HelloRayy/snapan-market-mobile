@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Download, Share, PlusSquare, CheckCircle2, Smartphone, ArrowRight, ShieldCheck, Zap, WifiOff } from 'lucide-react';
+import React, { useState } from 'react';
+import { Download, Share, CheckCircle2, ArrowRight, ShieldCheck, Zap, WifiOff } from 'lucide-react';
 import { usePWA } from '@/ui/hooks/usePWA';
 import { ButtonPrimary } from '../ui/ButtonPrimary';
 import { ButtonSecondary } from '../ui/ButtonSecondary';
@@ -10,27 +10,11 @@ interface PwaLandingPageProps {
 }
 
 export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }) => {
-  const { isInstallable, isInstalled, promptInstall } = usePWA();
-  const [isIos, setIsIos] = useState(false);
-  const [showIosGuide, setShowIosGuide] = useState(false);
+  const { isInstalled, promptInstall } = usePWA();
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    // Detect iOS devices (iPhone, iPad, iPod)
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
-    setIsIos(isIosDevice);
-  }, []);
-
-  const handleInstallClick = () => {
-    if (isIos) {
-      setShowIosGuide(true);
-    } else if (isInstallable) {
-      promptInstall();
-    } else {
-      // Fallback for browsers that don't emit beforeinstallprompt or are desktop
-      setShowIosGuide(true);
-    }
+  const handleInstallClick = async () => {
+    await promptInstall();
   };
 
   const handleShareLink = () => {
@@ -121,31 +105,6 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
             <div className="text-[9px] text-neutral-500">Ukuran &lt; 3MB</div>
           </div>
         </div>
-
-        {/* iOS / Installation Guide Drawer */}
-        {showIosGuide && (
-          <div className="p-4 rounded-3xl bg-blue-50/90 border border-blue-200 text-left space-y-3 animate-in fade-in slide-in-from-bottom-3 duration-200">
-            <div className="flex items-center gap-2 font-bold text-xs text-slate-900">
-              <Smartphone className="h-4 w-4 text-blue-600 shrink-0" />
-              <span>Cara Pasang di Layar Utama HP:</span>
-            </div>
-            
-            <div className="space-y-2 text-xs text-slate-700">
-              <div className="flex items-start gap-2.5 bg-white p-2.5 rounded-2xl border border-blue-100 shadow-2xs">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-[#1d64ec] text-xs font-bold">1</span>
-                <div>
-                  Ketuk ikon <span className="font-bold text-slate-900">Bagikan (Share)</span> <Share className="inline h-3.5 w-3.5 text-blue-600" /> di bilah bawah browser HP kamu.
-                </div>
-              </div>
-              <div className="flex items-start gap-2.5 bg-white p-2.5 rounded-2xl border border-blue-100 shadow-2xs">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-[#1d64ec] text-xs font-bold">2</span>
-                <div>
-                  Pilih menu <span className="font-bold text-slate-900">'Tambahkan ke Layar Utama'</span> <PlusSquare className="inline h-3.5 w-3.5 text-blue-600" />.
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Bottom CTA Action Bar */}
@@ -167,7 +126,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
             className="w-full justify-center font-bold h-14 text-base rounded-full bg-[#1d64ec] hover:bg-blue-600 shadow-md shadow-blue-500/25 text-white active:scale-[0.98] cursor-pointer"
             iconLeft={<Download className="h-5 w-5 text-white" />}
           >
-            {isIos ? 'Lihat Cara Pasang di iOS' : 'Pasang Aplikasi PWA (1-Klik)'}
+            Pasang Aplikasi PWA (1-Klik)
           </ButtonPrimary>
         )}
 

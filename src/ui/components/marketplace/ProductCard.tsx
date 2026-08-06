@@ -3,7 +3,7 @@ import { ShoppingBag, CheckCircle2 } from 'lucide-react';
 import { Product } from '@/types/product';
 import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
-import { Button } from '../ui/Button';
+import { ButtonPrimary } from '../ui/ButtonPrimary';
 import { RatingStars } from './RatingStars';
 import { formatRupiah, formatCompactNumber } from '@/utils/formatters';
 import { useCartStore } from '@/ui/store/cartStore';
@@ -63,15 +63,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               )}
             </div>
 
-            <Button
+            <ButtonPrimary
               size="sm"
-              variant="primary"
               onClick={() => addItem(product)}
-              className="px-2.5 py-1.5 bg-black hover:bg-neutral-800 text-white border-none shadow-sm"
+              className="px-2.5 py-1.5 h-8 w-8 rounded-lg p-0 flex items-center justify-center"
               title="Tambah ke keranjang"
             >
               <ShoppingBag className="w-4 h-4" />
-            </Button>
+            </ButtonPrimary>
           </div>
         </div>
       </div>

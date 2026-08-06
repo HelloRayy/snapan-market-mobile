@@ -1,7 +1,7 @@
 import React from 'react';
 import { Download, X } from 'lucide-react';
 import { usePWA } from '@/ui/hooks/usePWA';
-import { Button } from '../ui/Button';
+import { ButtonPrimary } from '../ui/ButtonPrimary';
 
 export const InstallBanner: React.FC = () => {
   const { isInstallable, promptInstall } = usePWA();
@@ -23,9 +23,9 @@ export const InstallBanner: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button size="sm" variant="primary" onClick={promptInstall}>
+          <ButtonPrimary size="sm" onClick={promptInstall}>
             Install
-          </Button>
+          </ButtonPrimary>
           <button
             onClick={() => setDismissed(true)}
             className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white"

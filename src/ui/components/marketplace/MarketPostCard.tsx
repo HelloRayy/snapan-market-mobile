@@ -190,7 +190,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               )}
             </div>
 
-            {/* Right Side: Exact Kumo UI ButtonPrimary Component "Cek Barang ->" */}
+            {/* Right Side: Exact Kumo UI ButtonPrimary Component "Lihat Detail ->" */}
             <ButtonPrimary
               size="sm"
               onClick={handleAddToCartClick}
@@ -198,7 +198,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               className={`rounded-full shadow-2xs px-3.5 h-8 text-[12px] shrink-0 ml-auto ${
                 isAdded ? 'bg-emerald-600 border-emerald-700' : ''
               }`}
-              aria-label="Cek Barang Produk"
+              aria-label="Lihat Detail Produk"
             >
               {isAdded ? (
                 <span className="flex items-center gap-1.5">
@@ -206,7 +206,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                   <span>Keranjang</span>
                 </span>
               ) : (
-                'Cek Barang'
+                'Lihat Detail'
               )}
             </ButtonPrimary>
           </div>

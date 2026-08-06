@@ -40,7 +40,7 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
   return (
     <article
       onClick={() => onPostClick?.(item)}
-      className="w-full border-b border-neutral-200/80 bg-pure-white px-4 py-3.5 hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none"
+      className="w-full border-b border-neutral-200 bg-pure-white px-4 py-3.5 hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none"
     >
       <div className="flex items-start gap-3">
         {/* Left Column: Seller Avatar 36x36px (w-9 h-9) */}

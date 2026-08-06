@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, MoreHorizontal, Check, BadgeCheck, Package, ArrowRight } from 'lucide-react';
+import { Heart, MessageCircle, MoreHorizontal, Check, BadgeCheck, Box, ArrowRight } from 'lucide-react';
 import { MarketThreadItem } from '@/types/marketFeed';
 import { ButtonPrimary } from '../ui/ButtonPrimary';
 
@@ -184,7 +184,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               {/* Stock Indicator (Icon + Number) */}
               {item.stock !== undefined && (
                 <div className="flex items-center gap-1 text-slate-500 hover:text-slate-700 transition-colors" title={`Stok tersisa ${item.stock}`}>
-                  <Package className="w-4 h-4 stroke-[1.75]" />
+                  <Box className="w-4 h-4 stroke-[1.75]" />
                   <span className="text-[13px] font-normal text-slate-600">{item.stock}</span>
                 </div>
               )}

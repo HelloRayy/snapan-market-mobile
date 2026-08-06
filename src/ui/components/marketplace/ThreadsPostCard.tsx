@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, Repeat2, Send, MoreHorizontal, ShoppingCart, Check, MapPin, BadgeCheck } from 'lucide-react';
+import { Heart, MessageCircle, Repeat2, Send, MoreHorizontal, ShoppingCart, Check, BadgeCheck } from 'lucide-react';
 import { MarketThreadItem } from '@/types/threadsFeed';
-import { formatRupiah } from '@/utils/formatters';
 
 interface ThreadsPostCardProps {
   item: MarketThreadItem;
@@ -94,29 +93,7 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
             {item.caption}
           </p>
 
-          {/* Price Tag & Location Tag Badge Pill Bar */}
-          <div className="flex items-center gap-2 flex-wrap pt-0.5">
-            {/* Main Price Tag Pill */}
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-white shadow-2xs">
-              <span className="text-[11px] font-normal text-neutral-300">Harga:</span>
-              <span className="text-xs font-semibold tracking-tight">
-                {formatRupiah(item.price)}
-              </span>
-              {item.originalPrice && item.originalPrice > item.price && (
-                <span className="text-[10px] text-neutral-400 line-through font-normal">
-                  {formatRupiah(item.originalPrice)}
-                </span>
-              )}
-            </div>
 
-            {/* Location Tag Badge */}
-            {item.locationTag && (
-              <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-neutral-100 border border-neutral-200/80 text-[11px] font-medium text-slate-800">
-                <MapPin className="w-3 h-3 text-[#1d64ec]" />
-                <span>{item.locationTag}</span>
-              </div>
-            )}
-          </div>
 
           {/* Product Image Card (Max height 280px) */}
           {item.images && item.images.length > 0 && (

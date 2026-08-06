@@ -1,4 +1,4 @@
-import { MarketThreadItem } from '@/types/threadsFeed';
+import { MarketThreadItem } from '@/types/marketFeed';
 
 export const MOCK_THREADS_ITEMS: MarketThreadItem[] = [
   {

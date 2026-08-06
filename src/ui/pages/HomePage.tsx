@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Loader2, Sparkles } from 'lucide-react';
-import { ThreadsHeader } from '../components/marketplace/ThreadsHeader';
-import { ThreadsPostCard } from '../components/marketplace/ThreadsPostCard';
-import { ThreadsBottomNav } from '../components/marketplace/ThreadsBottomNav';
+import { MarketHeader } from '../components/marketplace/MarketHeader';
+import { MarketPostCard } from '../components/marketplace/MarketPostCard';
+import { MarketBottomNav } from '../components/marketplace/MarketBottomNav';
 import { InstallBanner } from '../components/pwa/InstallBanner';
 import { OfflineBanner } from '../components/pwa/OfflineBanner';
-import { MOCK_THREADS_ITEMS } from '@/data/mockThreadsData';
-import { MarketThreadItem } from '@/types/threadsFeed';
+import { MOCK_THREADS_ITEMS } from '@/data/mockMarketData';
+import { MarketThreadItem } from '@/types/marketFeed';
 import { useCartStore } from '../store/cartStore';
 
 export const HomePage: React.FC = () => {
@@ -99,8 +99,8 @@ export const HomePage: React.FC = () => {
       <OfflineBanner />
       <InstallBanner />
 
-      {/* Threads Sticky Header */}
-      <ThreadsHeader
+      {/* Market Sticky Header */}
+      <MarketHeader
         cartCount={totalCartItems}
         cartTotal={totalCartPrice}
         onSearchChange={(query) => setSearchQuery(query)}
@@ -143,7 +143,7 @@ export const HomePage: React.FC = () => {
         {/* Feed List Items */}
         {filteredItems.length > 0 ? (
           filteredItems.map((item) => (
-            <ThreadsPostCard
+            <MarketPostCard
               key={item.id}
               item={item}
               onAddToCart={handleAddToCart}
@@ -167,7 +167,7 @@ export const HomePage: React.FC = () => {
           {isLoadingMore ? (
             <div className="flex items-center gap-2 text-[#1d64ec] font-bold animate-pulse">
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Memuat postingan Threads berikutnya...</span>
+              <span>Memuat postingan berikutnya...</span>
             </div>
           ) : (
             <span>Scroll ke bawah untuk memuat postingan baru</span>
@@ -175,8 +175,8 @@ export const HomePage: React.FC = () => {
         </div>
       </main>
 
-      {/* Threads 5-Icon Bottom Navigation */}
-      <ThreadsBottomNav
+      {/* Market 5-Icon Bottom Navigation */}
+      <MarketBottomNav
         activeTab={bottomNavTab}
         onTabChange={(tab) => setBottomNavTab(tab)}
       />

@@ -1,13 +1,13 @@
 import React from 'react';
 import { Home, Send, Plus, Heart, User } from 'lucide-react';
 
-interface ThreadsBottomNavProps {
+interface MarketBottomNavProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   onPostClick?: () => void;
 }
 
-export const ThreadsBottomNav: React.FC<ThreadsBottomNavProps> = ({
+export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   activeTab,
   onTabChange,
   onPostClick,

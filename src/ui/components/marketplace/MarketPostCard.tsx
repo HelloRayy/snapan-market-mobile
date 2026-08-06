@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, Repeat2, Send, MoreHorizontal, ShoppingCart, Check, BadgeCheck } from 'lucide-react';
-import { MarketThreadItem } from '@/types/threadsFeed';
+import { Heart, MessageCircle, MoreHorizontal, ShoppingCart, Check, BadgeCheck } from 'lucide-react';
+import { MarketThreadItem } from '@/types/marketFeed';
+import { formatRupiah } from '@/utils/formatters';
 
-interface ThreadsPostCardProps {
+interface MarketPostCardProps {
   item: MarketThreadItem;
   onAddToCart?: (item: MarketThreadItem) => void;
   onPostClick?: (item: MarketThreadItem) => void;
 }
 
-export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
+export const MarketPostCard: React.FC<MarketPostCardProps> = ({
   item,
   onAddToCart,
   onPostClick,
@@ -154,20 +155,20 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
             </div>
           )}
 
-          {/* Bottom Threads Action Bar & Buy Button */}
-          <div className="pt-1 flex items-center justify-between gap-2">
-            {/* Social Actions (Like, Comment, Repost, Share) */}
-            <div className="flex items-center gap-4 text-slate-600">
+          {/* Bottom E-Commerce Action Bar: [Left: Love | Comment | Stok] --- [Right: Harga & Primary CTA Buy Button] */}
+          <div className="pt-2 flex items-center justify-between gap-2">
+            {/* Left Side: Love, Comment & Stock Badge */}
+            <div className="flex items-center gap-3.5 text-slate-600">
               {/* Like Button */}
               <button
                 type="button"
                 onClick={handleLikeToggle}
                 className={`flex items-center gap-1.5 text-xs font-medium hover:opacity-80 active:scale-90 transition-all cursor-pointer ${
-                  isLiked ? 'text-rose-500' : 'text-slate-600'
+                  isLiked ? 'text-rose-500' : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 <Heart className={`w-4.5 h-4.5 stroke-[1.75] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-                <span className="text-slate-600">{likesCount}</span>
+                <span className="text-slate-700 font-normal">{likesCount}</span>
               </button>
 
               {/* Comment Button */}
@@ -177,52 +178,45 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
                 className="flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
               >
                 <MessageCircle className="w-4.5 h-4.5 stroke-[1.75]" />
-                <span className="text-slate-600">{item.commentsCount}</span>
+                <span className="text-slate-700 font-normal">{item.commentsCount}</span>
               </button>
 
-              {/* Repost Button */}
-              <button
-                type="button"
-                onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
-              >
-                <Repeat2 className="w-4.5 h-4.5 stroke-[1.75]" />
-                <span className="text-slate-600">{item.repostsCount}</span>
-              </button>
-
-              {/* Share Button */}
-              <button
-                type="button"
-                onClick={(e) => e.stopPropagation()}
-                className="text-slate-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
-                aria-label="Bagikan"
-              >
-                <Send className="w-4.5 h-4.5 stroke-[1.75]" />
-              </button>
+              {/* Stock Indicator Badge */}
+              {item.stock !== undefined && (
+                <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200/60 text-[11px] font-medium">
+                  Stok: {item.stock}
+                </div>
+              )}
             </div>
 
-            {/* Quick Buy / Add to Cart Primary Button */}
-            <button
-              type="button"
-              onClick={handleAddToCartClick}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all shadow-2xs cursor-pointer active:scale-95 ${
-                isAdded
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-[#1d64ec] hover:bg-blue-600 text-white'
-              }`}
-            >
-              {isAdded ? (
-                <>
-                  <Check className="w-3.5 h-3.5" />
-                  <span>Keranjang</span>
-                </>
-              ) : (
-                <>
-                  <ShoppingCart className="w-3.5 h-3.5" />
-                  <span>Beli</span>
-                </>
-              )}
-            </button>
+            {/* Right Side: Price Display & Primary CTA Buy Button */}
+            <div className="flex items-center gap-2.5 shrink-0 ml-auto">
+              <span className="text-sm font-semibold text-slate-900 tracking-tight">
+                {formatRupiah(item.price)}
+              </span>
+
+              <button
+                type="button"
+                onClick={handleAddToCartClick}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all shadow-2xs cursor-pointer active:scale-95 ${
+                  isAdded
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-[#1d64ec] hover:bg-blue-600 text-white'
+                }`}
+              >
+                {isAdded ? (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Keranjang</span>
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="w-3.5 h-3.5" />
+                    <span>Beli</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>

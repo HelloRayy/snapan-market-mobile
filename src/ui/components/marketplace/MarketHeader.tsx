@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Search, ShoppingCart, Store, X } from 'lucide-react';
 
-interface ThreadsHeaderProps {
+interface MarketHeaderProps {
   cartCount: number;
   cartTotal?: number;
   onSearchChange?: (query: string) => void;
 }
 
-export const ThreadsHeader: React.FC<ThreadsHeaderProps> = ({
+export const MarketHeader: React.FC<MarketHeaderProps> = ({
   cartCount,
   cartTotal: _cartTotal = 0,
   onSearchChange,

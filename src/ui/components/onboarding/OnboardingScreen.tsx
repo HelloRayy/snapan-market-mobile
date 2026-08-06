@@ -80,17 +80,20 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
     setCurrentSlide(slides.length - 1);
   };
 
-  // Touch Swipe Gesture Handlers
+  // Touch Swipe Gesture Handlers (Active ONLY on Onboarding Slides 0-3)
   const handleTouchStart = (e: React.TouchEvent) => {
+    if (slides[currentSlide].type === 'auth') return;
     touchStartX.current = e.targetTouches[0].clientX;
     touchEndX.current = null;
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
+    if (slides[currentSlide].type === 'auth') return;
     touchEndX.current = e.targetTouches[0].clientX;
   };
 
   const handleTouchEnd = () => {
+    if (slides[currentSlide].type === 'auth') return;
     if (!touchStartX.current || !touchEndX.current) return;
     const distance = touchStartX.current - touchEndX.current;
     const isSwipeLeft = distance > 40;

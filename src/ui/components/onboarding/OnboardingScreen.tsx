@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ChevronRight, LogIn } from 'lucide-react';
 import { Slide1Visual } from './Slide1Visual';
 import { Slide2Visual } from './Slide2Visual';
@@ -15,9 +15,20 @@ interface OnboardingScreenProps {
 export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
+  // Outer Screen Container Ref for Scroll Reset
+  const screenContainerRef = useRef<HTMLDivElement>(null);
+
   // Touch Swipe Gesture State
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
+
+  // Auto Reset Scroll Position on Slide / Page Change
+  useEffect(() => {
+    if (screenContainerRef.current) {
+      screenContainerRef.current.scrollTo({ top: 0, behavior: 'instant' });
+    }
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [currentSlide]);
 
   const slides = [
     {
@@ -96,6 +107,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
 
   return (
     <div
+      ref={screenContainerRef}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}

@@ -26,6 +26,9 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Scroll Container Ref
+  const formSheetRef = useRef<HTMLDivElement>(null);
+
   // Form State
   const [fullName, setFullName] = useState('');
   const [gradeLevel, setGradeLevel] = useState('');
@@ -150,6 +153,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
       setRegStep('form');
     } else if (authTab === 'register') {
       setAuthTab('login');
+      formSheetRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       onBack?.();
     }
@@ -341,9 +345,10 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
           />
         </div>
 
-        {/* Main Form Sheet Card */}
+        {/* Main Form Sheet Card with Smooth Auto-Scroll Ref */}
         <div
-          className={`-mx-5 -mb-5 bg-pure-white px-6 shadow-2xl space-y-4 overflow-y-auto transition-all duration-300 cubic-bezier(0.16,1,0.3,1) ${
+          ref={formSheetRef}
+          className={`-mx-5 -mb-5 bg-pure-white px-6 shadow-2xl space-y-4 overflow-y-auto scroll-smooth transition-all duration-300 cubic-bezier(0.16,1,0.3,1) ${
             authTab === 'register' || regStep === 'otp'
               ? 'h-full min-h-[75vh] rounded-t-[36px] rounded-b-none border-t border-faint-border pt-6 pb-12'
               : 'rounded-t-[36px] rounded-b-none border-t border-faint-border pt-6 pb-10'
@@ -465,7 +470,11 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                 <button
                   role="tab"
                   aria-selected={authTab === 'login'}
-                  onClick={() => { setAuthTab('login'); setErrors({}); }}
+                  onClick={() => {
+                    setAuthTab('login');
+                    setErrors({});
+                    formSheetRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
                   className={`flex-1 relative z-10 flex items-center justify-center whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer text-sm font-bold rounded-full py-2.5 transition-colors duration-200 ${
                     authTab === 'login' ? 'text-slate-900' : 'text-neutral-500 hover:text-slate-900 font-semibold'
                   }`}
@@ -475,7 +484,13 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                 <button
                   role="tab"
                   aria-selected={authTab === 'register'}
-                  onClick={() => { setAuthTab('register'); setErrors({}); }}
+                  onClick={() => {
+                    setAuthTab('register');
+                    setErrors({});
+                    setTimeout(() => {
+                      formSheetRef.current?.scrollTo({ top: 180, behavior: 'smooth' });
+                    }, 120);
+                  }}
                   className={`flex-1 relative z-10 flex items-center justify-center whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer text-sm font-bold rounded-full py-2.5 transition-colors duration-200 ${
                     authTab === 'register' ? 'text-slate-900' : 'text-neutral-500 hover:text-slate-900 font-semibold'
                   }`}

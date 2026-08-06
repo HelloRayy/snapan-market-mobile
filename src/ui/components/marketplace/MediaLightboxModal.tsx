@@ -16,7 +16,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
   initialIndex = 0,
   onClose,
   caption,
-  isVideo: _isVideo = false,
+  isVideo = false,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isMuted, setIsMuted] = useState(true);
@@ -130,13 +130,13 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
             <img
               src={imgUrl}
               alt={caption || `Media Preview ${idx + 1}`}
-              className="max-h-[82vh] max-w-full object-contain rounded-xl shadow-2xl pointer-events-none"
+              className="max-h-[86vh] max-w-full h-auto w-auto object-contain rounded-2xl shadow-2xl pointer-events-none"
             />
           </div>
         ))}
       </div>
 
-      {/* Bottom Floating Bar: [Center: Indicator Dots] --- [Right: Mute / Sound Button] */}
+      {/* Bottom Floating Bar: [Center: Indicator Dots] --- [Right: Mute / Sound Button (Only if Video)] */}
       <div className="relative z-50 flex items-center justify-between px-4 pb-6 pt-2 max-w-xl mx-auto w-full">
         {/* Spacer for balance */}
         <div className="w-10 h-10 pointer-events-none" />
@@ -160,19 +160,23 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
           </div>
         )}
 
-        {/* Right Side: Mute / Sound Button for Video / Audio */}
-        <button
-          type="button"
-          onClick={() => setIsMuted(!isMuted)}
-          className="w-10 h-10 rounded-full bg-neutral-900/80 hover:bg-neutral-800 text-white border border-neutral-700/60 backdrop-blur-md flex items-center justify-center active:scale-90 transition-all shadow-md cursor-pointer ml-auto"
-          aria-label={isMuted ? 'Nyalakan Suara' : 'Matikan Suara'}
-        >
-          {isMuted ? (
-            <VolumeX className="w-5 h-5 text-white stroke-[2]" />
-          ) : (
-            <Volume2 className="w-5 h-5 text-white stroke-[2]" />
-          )}
-        </button>
+        {/* Right Side: Mute / Sound Button (Only rendered if isVideo is true) */}
+        {isVideo ? (
+          <button
+            type="button"
+            onClick={() => setIsMuted(!isMuted)}
+            className="w-10 h-10 rounded-full bg-neutral-900/80 hover:bg-neutral-800 text-white border border-neutral-700/60 backdrop-blur-md flex items-center justify-center active:scale-90 transition-all shadow-md cursor-pointer ml-auto"
+            aria-label={isMuted ? 'Nyalakan Suara' : 'Matikan Suara'}
+          >
+            {isMuted ? (
+              <VolumeX className="w-5 h-5 text-white stroke-[2]" />
+            ) : (
+              <Volume2 className="w-5 h-5 text-white stroke-[2]" />
+            )}
+          </button>
+        ) : (
+          <div className="w-10 h-10 pointer-events-none ml-auto" />
+        )}
       </div>
     </div>
   );

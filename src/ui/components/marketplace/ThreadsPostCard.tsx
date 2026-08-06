@@ -41,47 +41,50 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
   return (
     <article
       onClick={() => onPostClick?.(item)}
-      className="w-full border-b border-neutral-100 bg-pure-white px-4 py-4 hover:bg-neutral-50/60 transition-colors cursor-pointer font-gt-standard select-none"
+      className="w-full border-b border-neutral-100 bg-pure-white px-4 py-3.5 hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none"
     >
       <div className="flex items-start gap-3">
-        {/* Left Column: Seller Avatar + Threads Vertical Thread Connector Line */}
+        {/* Left Column: Seller Avatar with Threads '+' Badge + Connector Line */}
         <div className="flex flex-col items-center shrink-0 self-stretch">
-          {/* Avatar Image with Online/Verified Border */}
-          <div className="relative w-10 h-10 rounded-full overflow-hidden border border-neutral-200 shadow-2xs">
+          {/* Avatar Image with Plus Badge */}
+          <div className="relative w-10 h-10 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs">
             <img
               src={item.seller.avatar}
               alt={item.seller.name}
               className="w-full h-full object-cover"
             />
+            <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-slate-900 text-white border-2 border-white flex items-center justify-center text-[10px] font-bold">
+              +
+            </div>
           </div>
 
           {/* Threads Vertical Connector Line */}
-          <div className="w-0.5 flex-1 bg-neutral-200/70 my-2 rounded-full min-h-[40px]" />
+          <div className="w-0.5 flex-1 bg-neutral-200/70 my-2 rounded-full min-h-[36px]" />
 
-          {/* Mini Sub Avatar Stack Indicator */}
-          <div className="w-5 h-5 rounded-full bg-neutral-100 border border-neutral-200 flex items-center justify-center text-[9px] font-extrabold text-neutral-500">
+          {/* Mini Sub Avatar Count Indicator */}
+          <div className="w-5 h-5 rounded-full bg-neutral-100 border border-neutral-200/80 flex items-center justify-center text-[9px] font-normal text-neutral-500">
             8
           </div>
         </div>
 
         {/* Right Column: Content */}
-        <div className="flex-1 min-w-0 space-y-2.5">
-          {/* Top Header Row: Name, Class Badge & Time */}
+        <div className="flex-1 min-w-0 space-y-2">
+          {/* Top Header Row: Name, Class Badge, Timestamp & Menu */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
-              <span className="font-extrabold text-sm text-slate-900 truncate hover:underline">
+              <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline">
                 {item.seller.name}
               </span>
               {item.seller.isVerified && (
                 <ShieldCheck className="w-3.5 h-3.5 text-[#1d64ec] shrink-0" aria-label="Verified Seller" />
               )}
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-[#1d64ec] border border-blue-200/60 shrink-0">
+              <span className="text-[11px] font-normal px-2 py-0.5 rounded-full bg-blue-50/80 text-[#1d64ec] border border-blue-100 shrink-0">
                 {item.seller.classGroup}
               </span>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-xs font-medium text-neutral-400">{item.timestamp}</span>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <span className="text-[13px] font-normal text-neutral-400">{item.timestamp}</span>
               <button
                 type="button"
                 onClick={(e) => e.stopPropagation()}
@@ -93,8 +96,8 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
             </div>
           </div>
 
-          {/* Post Text / Caption */}
-          <p className="text-xs sm:text-sm text-slate-800 font-normal leading-relaxed break-words">
+          {/* Post Text / Caption (Light/Normal Weight 15px) */}
+          <p className="text-[15px] text-slate-900 font-normal leading-snug break-words">
             {item.caption}
           </p>
 
@@ -102,8 +105,8 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
           <div className="flex items-center gap-2 flex-wrap pt-0.5">
             {/* Main Price Tag Pill */}
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-white shadow-2xs">
-              <span className="text-[11px] font-medium text-neutral-300">Harga:</span>
-              <span className="text-xs font-extrabold tracking-tight">
+              <span className="text-[11px] font-normal text-neutral-300">Harga:</span>
+              <span className="text-xs font-semibold tracking-tight">
                 {formatRupiah(item.price)}
               </span>
               {item.originalPrice && item.originalPrice > item.price && (
@@ -115,72 +118,72 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
 
             {/* Location Tag Badge */}
             {item.locationTag && (
-              <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-neutral-100 border border-neutral-200 text-[11px] font-bold text-slate-700">
+              <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-neutral-100 border border-neutral-200/80 text-[11px] font-normal text-slate-700">
                 <MapPin className="w-3 h-3 text-[#1d64ec]" />
                 <span>{item.locationTag}</span>
               </div>
             )}
           </div>
 
-          {/* Product Image Card */}
+          {/* Product Image Card (16px rounded-2xl) */}
           {item.images && item.images.length > 0 && (
-            <div className="relative w-full rounded-2xl overflow-hidden border border-neutral-200 shadow-2xs bg-neutral-100 aspect-16/10 mt-2">
+            <div className="relative w-full rounded-2xl overflow-hidden border border-neutral-200/80 shadow-2xs bg-neutral-100 aspect-16/10 mt-1.5">
               <img
                 src={item.images[0]}
                 alt={item.caption}
-                className="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-300"
+                className="w-full h-full object-cover hover:scale-[1.01] transition-transform duration-300"
               />
-              {/* Category Badge Pill on top of image */}
-              <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md text-white text-[10px] font-extrabold uppercase tracking-wider">
+              {/* Category Badge Pill */}
+              <div className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-md bg-black/60 backdrop-blur-md text-white text-[10px] font-medium uppercase tracking-wider">
                 {item.category}
               </div>
             </div>
           )}
 
-          {/* Bottom Threads Action Bar & Buy Button */}
-          <div className="pt-1 flex items-center justify-between gap-2">
+          {/* Bottom Threads Action Bar & Buy Button (Light Weight Counters) */}
+          <div className="pt-1.5 flex items-center justify-between gap-2">
             {/* Social Actions (Like, Comment, Repost, Share) */}
-            <div className="flex items-center gap-4 text-slate-700">
+            <div className="flex items-center gap-4 text-neutral-600">
               {/* Like Button */}
               <button
                 type="button"
                 onClick={handleLikeToggle}
-                className={`flex items-center gap-1.5 text-xs font-semibold hover:opacity-80 active:scale-90 transition-all cursor-pointer ${
-                  isLiked ? 'text-rose-500' : 'text-slate-700'
+                className={`flex items-center gap-1.5 text-xs font-normal hover:opacity-80 active:scale-90 transition-all cursor-pointer ${
+                  isLiked ? 'text-rose-500' : 'text-neutral-600'
                 }`}
               >
-                <Heart className={`w-4 h-4 ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-                <span>{likesCount}</span>
+                <Heart className={`w-4.5 h-4.5 stroke-[1.75] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+                <span className="text-neutral-500">{likesCount}</span>
               </button>
 
               {/* Comment Button */}
               <button
                 type="button"
                 onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
+                className="flex items-center gap-1.5 text-xs font-normal text-neutral-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
               >
-                <MessageCircle className="w-4 h-4" />
-                <span>{item.commentsCount}</span>
+                <MessageCircle className="w-4.5 h-4.5 stroke-[1.75]" />
+                <span className="text-neutral-500">{item.commentsCount}</span>
               </button>
 
               {/* Repost Button */}
               <button
                 type="button"
                 onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
+                className="flex items-center gap-1.5 text-xs font-normal text-neutral-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
               >
-                <Repeat2 className="w-4 h-4" />
-                <span>{item.repostsCount}</span>
+                <Repeat2 className="w-4.5 h-4.5 stroke-[1.75]" />
+                <span className="text-neutral-500">{item.repostsCount}</span>
               </button>
 
               {/* Share Button */}
               <button
                 type="button"
                 onClick={(e) => e.stopPropagation()}
-                className="text-slate-700 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
+                className="text-neutral-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
                 aria-label="Bagikan"
               >
-                <Send className="w-4 h-4" />
+                <Send className="w-4.5 h-4.5 stroke-[1.75]" />
               </button>
             </div>
 
@@ -188,16 +191,16 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
             <button
               type="button"
               onClick={handleAddToCartClick}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95 ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all shadow-2xs cursor-pointer active:scale-95 ${
                 isAdded
-                  ? 'bg-emerald-600 text-white shadow-emerald-500/20'
-                  : 'bg-[#1d64ec] hover:bg-blue-600 text-white shadow-blue-500/20'
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-[#1d64ec] hover:bg-blue-600 text-white'
               }`}
             >
               {isAdded ? (
                 <>
                   <Check className="w-3.5 h-3.5" />
-                  <span>Masuk Keranjang</span>
+                  <span>Keranjang</span>
                 </>
               ) : (
                 <>

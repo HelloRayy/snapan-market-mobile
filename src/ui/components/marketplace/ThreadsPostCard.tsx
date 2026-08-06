@@ -150,7 +150,7 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
               onMouseUp={handleMouseLeaveOrUp}
               onMouseMove={handleMouseMove}
               onClick={(e) => e.stopPropagation()}
-              className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory scrollbar-none mt-2.5 -ml-[48px] pl-[48px] -mr-4 pr-4 cursor-grab active:cursor-grabbing select-none touch-pan-x"
+              className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory scrollbar-none mt-2.5 -mr-4 pr-4 cursor-grab active:cursor-grabbing select-none touch-pan-x"
             >
               {item.images.map((imgUrl, idx) => (
                 <div

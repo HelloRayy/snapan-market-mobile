@@ -4,6 +4,7 @@ import { ButtonPrimary } from '../ui/ButtonPrimary';
 import { ButtonSecondary } from '../ui/ButtonSecondary';
 import { Checkbox } from '../ui/Checkbox';
 import personLoginBgSvg from '../../../assets/new-market-asset/person-login-bg.svg';
+import otpHeroSvg from '../../../assets/new-market-asset/otp-hero.svg';
 
 interface AuthSlideVisualProps {
   onBack?: () => void;
@@ -336,12 +337,13 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
 
       {/* Outer Wrapper for Peeking Asset & Form Sheet Card */}
       <div className="flex-1 flex flex-col justify-end relative">
-        {/* 3D Peeking Student Character attached directly on top of form sheet */}
+        {/* Dynamic 3D Peeking Character (Pak Satpam for OTP, Siswa for Auth) */}
         <div className="relative w-full flex items-center justify-center -mb-2 z-20 pointer-events-none select-none overflow-visible animate-in fade-in duration-300">
           <img
-            src={personLoginBgSvg}
-            alt="Siswa SMKN 8 Peeking"
-            className="w-56 sm:w-64 h-auto object-contain transform translate-y-2.5 transition-transform duration-300 drop-shadow-md"
+            key={regStep === 'otp' ? 'otp-satpam' : 'auth-siswa'}
+            src={regStep === 'otp' ? otpHeroSvg : personLoginBgSvg}
+            alt={regStep === 'otp' ? "Pak Satpam OTP Verifikasi" : "Siswa SMKN 8 Peeking"}
+            className="w-56 sm:w-64 h-auto object-contain transform translate-y-2.5 transition-all duration-300 drop-shadow-md animate-in fade-in zoom-in-95"
           />
         </div>
 

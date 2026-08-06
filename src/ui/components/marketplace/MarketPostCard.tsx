@@ -1,7 +1,23 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, MoreHorizontal, Check, BadgeCheck, Box, ArrowRight } from 'lucide-react';
+import { Heart, MoreHorizontal, Check, BadgeCheck, Box, ArrowRight } from 'lucide-react';
 import { MarketThreadItem } from '@/types/marketFeed';
 import { ButtonPrimary } from '../ui/ButtonPrimary';
+
+// Custom Smooth Rounded Comment Icon (Rounded tail, no sharp points)
+const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.75"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M7.9 20A9 9 0 1 0 4 16.1L3.3 18.7C3.1 19.4 3.6 20 4.3 19.8L7.9 20Z" />
+  </svg>
+);
 
 interface MarketPostCardProps {
   item: MarketThreadItem;
@@ -176,7 +192,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 onClick={(e) => e.stopPropagation()}
                 className="flex items-center gap-1 text-xs font-medium text-slate-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
               >
-                <MessageCircle className="w-4 h-4 stroke-[1.75]" />
+                <SmoothCommentIcon className="w-4 h-4 stroke-[1.75]" />
                 <span className="text-slate-700 font-normal text-[12.5px]">{item.commentsCount}</span>
               </button>
 

@@ -36,8 +36,8 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
     },
     {
       id: 2,
-      title: 'Foto Produk Profesional untuk Brand Kamu',
-      description: 'Foto & banner promo profesional siap pakai untuk memaksimalkan penjualan toko online kamu.',
+      title: 'Transaksi & COD Praktis di Sekolah',
+      description: 'Ketemuan langsung di sekolah, bayar saat terima barang (COD), atau pesan kantin untuk diambil tanpa perlu antre.',
       type: 'content' as const,
       visual: <Slide3Visual />
     },

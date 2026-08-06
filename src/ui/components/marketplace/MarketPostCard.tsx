@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, MoreHorizontal, ShoppingCart, Check, BadgeCheck } from 'lucide-react';
+import { Heart, MessageCircle, MoreHorizontal, ShoppingCart, Check, BadgeCheck, Package } from 'lucide-react';
 import { MarketThreadItem } from '@/types/marketFeed';
 import { formatRupiah } from '@/utils/formatters';
 
@@ -155,10 +155,10 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             </div>
           )}
 
-          {/* Bottom E-Commerce Action Bar: [Left: Love | Comment | Stok] --- [Right: Harga & Primary CTA Buy Button] */}
-          <div className="pt-2 flex items-center justify-between gap-2">
-            {/* Left Side: Love, Comment & Stock Badge */}
-            <div className="flex items-center gap-3.5 text-slate-600">
+          {/* Bottom E-Commerce Action Bar: [Left: Love | Comment | Stock Icon] --- [Right: Harga & Icon-Only Buy CTA] */}
+          <div className="pt-2 flex items-center justify-between gap-2 min-w-0">
+            {/* Left Side: Love, Comment & Stock (Icon Only) */}
+            <div className="flex items-center gap-3.5 text-slate-600 min-w-0">
               {/* Like Button */}
               <button
                 type="button"
@@ -168,7 +168,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 }`}
               >
                 <Heart className={`w-4.5 h-4.5 stroke-[1.75] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-                <span className="text-slate-700 font-normal">{likesCount}</span>
+                <span className="text-slate-700 font-normal text-[13px]">{likesCount}</span>
               </button>
 
               {/* Comment Button */}
@@ -178,42 +178,39 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 className="flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
               >
                 <MessageCircle className="w-4.5 h-4.5 stroke-[1.75]" />
-                <span className="text-slate-700 font-normal">{item.commentsCount}</span>
+                <span className="text-slate-700 font-normal text-[13px]">{item.commentsCount}</span>
               </button>
 
-              {/* Stock Indicator Badge */}
+              {/* Stock Indicator (Icon + Number) */}
               {item.stock !== undefined && (
-                <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200/60 text-[11px] font-medium">
-                  Stok: {item.stock}
+                <div className="flex items-center gap-1 text-slate-500 hover:text-slate-700 transition-colors" title={`Stok tersisa ${item.stock}`}>
+                  <Package className="w-4 h-4 stroke-[1.75]" />
+                  <span className="text-[13px] font-normal text-slate-600">{item.stock}</span>
                 </div>
               )}
             </div>
 
-            {/* Right Side: Price Display & Primary CTA Buy Button */}
-            <div className="flex items-center gap-2.5 shrink-0 ml-auto">
-              <span className="text-sm font-semibold text-slate-900 tracking-tight">
+            {/* Right Side: Price Display & Icon-Only Primary Buy Button */}
+            <div className="flex items-center gap-2 shrink-0 ml-auto">
+              <span className="text-[14px] font-semibold text-slate-900 tracking-tight whitespace-nowrap">
                 {formatRupiah(item.price)}
               </span>
 
               <button
                 type="button"
                 onClick={handleAddToCartClick}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all shadow-2xs cursor-pointer active:scale-95 ${
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-2xs cursor-pointer active:scale-90 shrink-0 ${
                   isAdded
                     ? 'bg-emerald-600 text-white'
                     : 'bg-[#1d64ec] hover:bg-blue-600 text-white'
                 }`}
+                aria-label="Tambah ke Keranjang"
+                title="Beli sekarang / Tambah ke keranjang"
               >
                 {isAdded ? (
-                  <>
-                    <Check className="w-3.5 h-3.5" />
-                    <span>Keranjang</span>
-                  </>
+                  <Check className="w-4 h-4 text-white stroke-[2.5]" />
                 ) : (
-                  <>
-                    <ShoppingCart className="w-3.5 h-3.5" />
-                    <span>Beli</span>
-                  </>
+                  <ShoppingCart className="w-4 h-4 text-white stroke-[2.25]" />
                 )}
               </button>
             </div>

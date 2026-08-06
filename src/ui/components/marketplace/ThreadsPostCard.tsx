@@ -59,18 +59,18 @@ export const ThreadsPostCard: React.FC<ThreadsPostCardProps> = ({
         </div>
 
         {/* Right Column: Content starting directly under Name */}
-        <div className="flex-1 min-w-0 space-y-2">
+        <div className="flex-1 min-w-0 space-y-1">
           {/* Top Header Row: Kiri = Nama, Verif, Kelas | Kanan = Jam, Titik 3 */}
           <div className="flex items-center justify-between gap-2">
-            {/* Kiri Side: Nama (16px) + Verif Icon + Kelas (Pure Text) */}
-            <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
-              <span className="font-semibold text-[16px] text-slate-900 truncate hover:underline">
+            {/* Kiri Side: Nama (16px) + Verif Icon + Kelas (Pure Text) - Single Inline Row */}
+            <div className="flex items-center gap-1 min-w-0">
+              <span className="font-semibold text-[16px] text-slate-900 truncate hover:underline shrink-0">
                 {item.seller.name}
               </span>
               {item.seller.isVerified && (
                 <BadgeCheck className="w-4 h-4 text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified Seller" />
               )}
-              <span className="text-[16px] font-normal text-neutral-400 truncate">
+              <span className="text-[15px] font-normal text-neutral-400 truncate shrink-0 ml-0.5">
                 {item.seller.classGroup}
               </span>
             </div>

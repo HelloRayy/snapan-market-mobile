@@ -225,8 +225,10 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className={`flex-1 w-full max-w-xl mx-auto flex items-center overflow-x-auto snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing ${
-          scale > 1 ? 'overflow-hidden' : 'touch-pan-x touch-pan-y'
+        className={`flex-1 w-full max-w-xl mx-auto flex items-center scrollbar-none cursor-grab active:cursor-grabbing ${
+          scale > 1
+            ? 'overflow-hidden touch-none'
+            : 'overflow-x-auto snap-x snap-mandatory touch-pan-x touch-pan-y'
         }`}
       >
         {images.map((imgUrl, idx) => (

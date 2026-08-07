@@ -117,7 +117,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 {item.seller.name}
               </span>
               {item.seller.isVerified && (
-                <BadgeCheck className="w-4 h-4 text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified Seller" />
+                <BadgeCheck className="w-[18px] h-[18px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified Seller" />
               )}
               <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
                 {item.seller.classGroup}

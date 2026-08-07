@@ -161,10 +161,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
         </div>
       ) : (
         /* THREAD COMMENT WITH TOP REPLY: Indented child reply + L-shaped curved connecting line (└─) */
-        <div className="relative space-y-3">
-          {/* L-Shaped Curved Branch Connecting Line (└─) */}
-          <div className="absolute left-[17px] top-[36px] bottom-[20px] w-[20px] border-l-2 border-b-2 border-[#e5e7eb] rounded-bl-xl pointer-events-none" />
-
+        <div className="space-y-3">
           {/* Parent Comment Row */}
           <div className="flex items-start gap-3">
             {/* Left Parent Avatar (36x36px) */}
@@ -221,8 +218,11 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
             </div>
           </div>
 
-          {/* Child Reply Row (Indented right with ml-7, connected to the end of L-curve!) */}
-          <div className="flex items-start gap-3 ml-7">
+          {/* Child Reply Row (Indented right with ml-7, L-curve ends at left center of child avatar!) */}
+          <div className="flex items-start gap-3 ml-7 relative">
+            {/* L-Shaped Curved Branch Line: Starts from parent avatar bottom, curves into left center of child avatar (18px down) */}
+            <div className="absolute -left-[11px] -top-3.5 h-[36px] w-[11px] border-l-2 border-b-2 border-[#e5e7eb] rounded-bl-xl pointer-events-none" />
+
             {/* Left Child Avatar (36x36px) */}
             <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 z-10 bg-white">
               <img

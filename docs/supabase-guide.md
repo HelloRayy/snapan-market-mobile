@@ -1,6 +1,6 @@
-# Supabase Setup & Marketplace Database Schema Guide
+# Supabase Setup & Marketplace Database Schema Guide (Laptop B)
 
-Panduan integrasi Supabase, konfigurasi **Google OAuth Authentication**, dan SQL Schema e-commerce lengkap untuk marketplace **Snapan Market**.
+Panduan integrasi Supabase, konfigurasi **Google OAuth Authentication**, SQL Schema, dan RLS Security Policies untuk **Snapan Market Mobile**.
 
 ---
 
@@ -15,183 +15,136 @@ VITE_SUPABASE_ANON_KEY=your-anon-key-here
 
 ---
 
-## 🔐 2. Konfigurasi Google OAuth di Dashboard Supabase
+## 🔐 2. Konfigurasi Google OAuth & Storage Bucket
 
-1. Buka [Supabase Dashboard](https://supabase.com/dashboard) -> Masuk ke project Anda.
-2. Buka menu **Authentication -> Providers -> Google**.
-3. Aktifkan Google Provider (`Enable Google provider`).
-4. Masukkan **Client ID** dan **Client Secret** dari [Google Cloud Console](https://console.cloud.google.com/).
-5. Salin **Redirect URL** dari Supabase dan daftarkan ke *Authorized redirect URIs* di Google Cloud Console.
+1. **Google OAuth**:
+   - Buka [Supabase Dashboard](https://supabase.com/dashboard) -> Authentication -> Providers -> Google.
+   - Aktifkan Google Provider dan isi Client ID & Client Secret dari Google Cloud Console.
+
+2. **Supabase Storage Bucket (`market-media`)**:
+   - Buka menu **Storage** di Supabase Dashboard.
+   - Buat New Bucket bernama `market-media`.
+   - Set status bucket menjadi **Public**.
 
 ---
 
-## 🗄️ 3. SQL Schema Lengkap E-Commerce (Snapan Market)
+## 🗄️ 3. SQL Migration Script (Supabase SQL Editor)
 
-Jalankan perintah SQL berikut di **Supabase SQL Editor**:
+Jalankan script berikut di **Supabase Dashboard -> SQL Editor**:
 
 ```sql
--- Enable Extension ( UUID Generation )
-create extension if not exists "uuid-ossp";
-
--- 1. Tabel Profiles (User Accounts)
-create table public.profiles (
+-- ========================================================
+-- 1. TABEL PROFILES (Ekstensi dari Auth Users)
+-- ========================================================
+create table if not exists public.profiles (
   id uuid references auth.users on delete cascade primary key,
-  full_name text,
+  full_name text not null,
   avatar_url text,
-  phone text,
-  address text,
+  class_group text default 'Siswa Snapan',
+  is_verified boolean default false,
   role text default 'buyer' check (role in ('buyer', 'seller', 'admin')),
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
-);
-
--- 2. Tabel Categories (Kategori Produk)
-create table public.categories (
-  id uuid default gen_random_uuid() primary key,
-  name text not null unique,
-  slug text not null unique,
-  icon text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- 3. Tabel Products (Katalog Produk)
-create table public.products (
-  id uuid default gen_random_uuid() primary key,
-  name text not null,
-  slug text,
-  description text,
-  price numeric not null check (price >= 0),
-  stock integer default 0 check (stock >= 0),
-  category_id uuid references public.categories(id) on delete set null,
-  seller_id uuid references public.profiles(id) on delete cascade not null,
-  image_url text,
-  rating numeric default 0 check (rating >= 0 and rating <= 5),
-  sold_count integer default 0 check (sold_count >= 0),
-  is_active boolean default true,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
-);
-
--- 4. Tabel Orders (Transaksi Pembelian)
-create table public.orders (
-  id uuid default gen_random_uuid() primary key,
-  buyer_id uuid references public.profiles(id) on delete cascade not null,
-  total_amount numeric not null check (total_amount >= 0),
-  status text default 'pending' check (status in ('pending', 'paid', 'processing', 'shipped', 'completed', 'cancelled')),
-  shipping_address text not null,
-  notes text,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
-);
-
--- 5. Tabel Order Items (Detail Barang per Pesanan)
-create table public.order_items (
-  id uuid default gen_random_uuid() primary key,
-  order_id uuid references public.orders(id) on delete cascade not null,
-  product_id uuid references public.products(id) on delete restrict not null,
-  quantity integer not null check (quantity > 0),
-  unit_price numeric not null check (unit_price >= 0),
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null
-);
-
--- 6. Tabel Reviews (Ulasan & Rating Produk)
-create table public.reviews (
-  id uuid default gen_random_uuid() primary key,
-  product_id uuid references public.products(id) on delete cascade not null,
-  user_id uuid references public.profiles(id) on delete cascade not null,
-  rating integer not null check (rating >= 1 and rating <= 5),
-  comment text,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  constraint unique_user_product_review unique (product_id, user_id)
-);
-
--- ========================================================
--- ROW LEVEL SECURITY (RLS) POLICIES
--- ========================================================
-
-alter table public.profiles enable row level security;
-alter table public.categories enable row level security;
-alter table public.products enable row level security;
-alter table public.orders enable row level security;
-alter table public.order_items enable row level security;
-alter table public.reviews enable row level security;
-
--- PROFILES Policies
-create policy "Public profiles are viewable by everyone"
-  on public.profiles for select using (true);
-
-create policy "Users can update their own profile"
-  on public.profiles for update using (auth.uid() = id);
-
--- CATEGORIES Policies
-create policy "Categories are viewable by everyone"
-  on public.categories for select using (true);
-
--- PRODUCTS Policies
-create policy "Active products are viewable by everyone"
-  on public.products for select using (is_active = true or auth.uid() = seller_id);
-
-create policy "Sellers can insert their own products"
-  on public.products for insert with check (auth.uid() = seller_id);
-
-create policy "Sellers can update their own products"
-  on public.products for update using (auth.uid() = seller_id);
-
-create policy "Sellers can delete their own products"
-  on public.products for delete using (auth.uid() = seller_id);
-
--- ORDERS Policies
-create policy "Users can view their own orders"
-  on public.orders for select using (auth.uid() = buyer_id);
-
-create policy "Users can create their own orders"
-  on public.orders for insert with check (auth.uid() = buyer_id);
-
-create policy "Users can update their own orders"
-  on public.orders for update using (auth.uid() = buyer_id);
-
--- ORDER ITEMS Policies
-create policy "Users can view items of their own orders"
-  on public.order_items for select using (
-    exists (
-      select 1 from public.orders
-      where orders.id = order_items.order_id and orders.buyer_id = auth.uid()
-    )
-  );
-
-create policy "Users can insert order items into their own orders"
-  on public.order_items for insert with check (
-    exists (
-      select 1 from public.orders
-      where orders.id = order_items.order_id and orders.buyer_id = auth.uid()
-    )
-  );
-
--- REVIEWS Policies
-create policy "Reviews are viewable by everyone"
-  on public.reviews for select using (true);
-
-create policy "Users can create reviews"
-  on public.reviews for insert with check (auth.uid() = user_id);
-
-create policy "Users can update their own reviews"
-  on public.reviews for update using (auth.uid() = user_id);
-
--- Trigger untuk membuat Profile otomatis saat Sign Up
+-- Trigger Otomatis saat User Sign Up (Google OAuth / Email)
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
   insert into public.profiles (id, full_name, avatar_url)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', 'User'),
+    coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', 'Pengguna Baru'),
     coalesce(new.raw_user_meta_data->>'avatar_url', new.raw_user_meta_data->>'picture', '')
   );
   return new;
 end;
 $$ language plpgsql security definer;
 
-create trigger on_auth_user_created
+create or replace trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+
+-- ========================================================
+-- 2. TABEL MARKET POSTS (Postingan Jualan Feed)
+-- ========================================================
+create table if not exists public.market_posts (
+  id uuid default gen_random_uuid() primary key,
+  seller_id uuid references public.profiles(id) on delete cascade not null,
+  caption text not null,
+  images text[] default '{}',
+  is_video boolean default false,
+  stock integer default 1 check (stock >= 0),
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+
+-- ========================================================
+-- 3. TABEL POST LIKES (Suka Postingan)
+-- ========================================================
+create table if not exists public.post_likes (
+  post_id uuid references public.market_posts(id) on delete cascade not null,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  primary key (post_id, user_id)
+);
+
+
+-- ========================================================
+-- 4. TABEL POST COMMENTS (Komentar Postingan)
+-- ========================================================
+create table if not exists public.post_comments (
+  id uuid default gen_random_uuid() primary key,
+  post_id uuid references public.market_posts(id) on delete cascade not null,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  content text not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+
+-- ========================================================
+-- 5. TABEL CART ITEMS (Keranjang Belanja User)
+-- ========================================================
+create table if not exists public.cart_items (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  post_id uuid references public.market_posts(id) on delete cascade not null,
+  quantity integer default 1 check (quantity > 0),
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique (user_id, post_id)
+);
+
+
+-- ========================================================
+-- 🛡️ ROW LEVEL SECURITY (RLS) POLICIES
+-- ========================================================
+alter table public.profiles enable row level security;
+alter table public.market_posts enable row level security;
+alter table public.post_likes enable row level security;
+alter table public.post_comments enable row level security;
+alter table public.cart_items enable row level security;
+
+-- Profiles: Siapa saja bisa baca, user hanya bisa edit profile sendiri
+create policy "Profiles viewable by everyone" on public.profiles for select using (true);
+create policy "Users can update own profile" on public.profiles for update using (auth.uid() = id);
+
+-- Market Posts: Siapa saja bisa baca, seller terautentikasi bisa posting/edit
+create policy "Market posts viewable by everyone" on public.market_posts for select using (true);
+create policy "Sellers can insert own posts" on public.market_posts for insert with check (auth.uid() = seller_id);
+create policy "Sellers can update own posts" on public.market_posts for update using (auth.uid() = seller_id);
+
+-- Post Likes: Publik bisa lihat, user terautentikasi bisa toggle like
+create policy "Likes viewable by everyone" on public.post_likes for select using (true);
+create policy "Users can like posts" on public.post_likes for insert with check (auth.uid() = user_id);
+create policy "Users can unlike posts" on public.post_likes for delete using (auth.uid() = user_id);
+
+-- Post Comments: Publik bisa lihat, user terautentikasi bisa memberi komentar
+create policy "Comments viewable by everyone" on public.post_comments for select using (true);
+create policy "Users can insert comments" on public.post_comments for insert with check (auth.uid() = user_id);
+
+-- Cart Items: User hanya bisa kelola keranjang miliknya sendiri
+create policy "Users view own cart" on public.cart_items for select using (auth.uid() = user_id);
+create policy "Users add to own cart" on public.cart_items for insert with check (auth.uid() = user_id);
+create policy "Users modify own cart" on public.cart_items for update using (auth.uid() = user_id);
+create policy "Users remove from own cart" on public.cart_items for delete using (auth.uid() = user_id);
 ```

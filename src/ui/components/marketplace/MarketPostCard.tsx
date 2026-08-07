@@ -205,7 +205,10 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               {/* Comment Button */}
               <button
                 type="button"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPostClick?.(item);
+                }}
                 className="flex items-center gap-1.5 min-h-[40px] px-2.5 py-1.5 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer text-slate-600 hover:text-slate-900 select-none"
                 aria-label={`Komentar postingan. ${item.commentsCount} komentar`}
               >
@@ -225,7 +228,14 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             {/* Right Side: Exact Kumo UI ButtonPrimary Component "Lihat Detail ->" */}
             <ButtonPrimary
               size="sm"
-              onClick={handleAddToCartClick}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onPostClick) {
+                  onPostClick(item);
+                } else {
+                  handleAddToCartClick(e);
+                }
+              }}
               iconRight={isAdded ? null : <ArrowRight className="w-3.5 h-3.5 stroke-[2.25]" />}
               className={`rounded-full shadow-2xs px-3 h-7.5 text-[11.5px] shrink-0 ml-auto ${
                 isAdded ? 'bg-emerald-600 border-emerald-700' : ''

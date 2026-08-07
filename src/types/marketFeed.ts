@@ -7,6 +7,25 @@ export interface SellerProfile {
   username: string;
 }
 
+export interface ThreadComment {
+  id: string;
+  postId: string;
+  user: {
+    id: string;
+    name: string;
+    avatar: string;
+    username: string;
+    classGroup: string;
+    isVerified?: boolean;
+    isAuthor?: boolean; // Badge 'Pembuat' / 'Penjual'
+  };
+  content: string;
+  timestamp: string;
+  likesCount: number;
+  isLiked?: boolean;
+  replies?: ThreadComment[]; // Nested replies
+}
+
 export interface MarketThreadItem {
   id: string;
   seller: SellerProfile;
@@ -23,4 +42,5 @@ export interface MarketThreadItem {
   timestamp: string; // e.g. '10m lalu', '2j lalu', '1hr lalu'
   isLiked?: boolean;
   isSaved?: boolean;
+  comments?: ThreadComment[];
 }

@@ -9,7 +9,11 @@ import { MOCK_THREADS_ITEMS } from '@/data/mockMarketData';
 import { MarketThreadItem } from '@/types/marketFeed';
 import { useCartStore } from '../store/cartStore';
 
-export const HomePage: React.FC = () => {
+interface HomePageProps {
+  onSelectPost?: (post: MarketThreadItem) => void;
+}
+
+export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
   const [feedTab, setFeedTab] = useState<'for-you' | 'latest'>('for-you');
   const [bottomNavTab, setBottomNavTab] = useState('home');
   const [searchQuery, setSearchQuery] = useState('');
@@ -147,6 +151,7 @@ export const HomePage: React.FC = () => {
               key={item.id}
               item={item}
               onAddToCart={handleAddToCart}
+              onPostClick={onSelectPost}
             />
           ))
         ) : (

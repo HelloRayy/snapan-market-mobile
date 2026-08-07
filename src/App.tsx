@@ -5,11 +5,14 @@ import { SplashScreen } from '@/ui/components/onboarding/SplashScreen';
 import { OnboardingScreen } from '@/ui/components/onboarding/OnboardingScreen';
 import { PwaLandingPage } from '@/ui/components/pwa/PwaLandingPage';
 import { HomePage } from '@/ui/pages/HomePage';
+import { PostDetailPage } from '@/ui/pages/PostDetailPage';
+import { MarketThreadItem } from '@/types/marketFeed';
 
 export function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
   const [currentRoute, setCurrentRoute] = useState<string>(window.location.pathname);
+  const [selectedPost, setSelectedPost] = useState<MarketThreadItem | null>(null);
 
   // Sync route with window location & localStorage session check
   useEffect(() => {
@@ -77,7 +80,14 @@ export function App() {
       ) : showSplash ? (
         <SplashScreen onFinish={() => setShowSplash(false)} />
       ) : hasCompletedOnboarding && !isOnboardingRoute ? (
-        <HomePage />
+        selectedPost ? (
+          <PostDetailPage
+            post={selectedPost}
+            onBack={() => setSelectedPost(null)}
+          />
+        ) : (
+          <HomePage onSelectPost={(post) => setSelectedPost(post)} />
+        )
       ) : (
         <OnboardingScreen onComplete={handleOnboardingComplete} />
       )}

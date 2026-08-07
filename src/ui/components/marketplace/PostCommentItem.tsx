@@ -125,8 +125,9 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 )}
 
                 {comment.user.isAuthor && (
-                  <span className="px-2 py-0.5 rounded-md bg-slate-900 text-white text-[11px] font-medium shrink-0 shadow-2xs">
-                    Pembuat
+                  <span className="relative inline-flex items-center px-2 py-0.5 rounded-[6px] text-[11px] font-semibold text-white bg-[#18181b] border border-black/40 shadow-2xs overflow-hidden shrink-0 select-none">
+                    <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
+                    <span className="relative z-10 leading-none">Pembuat</span>
                   </span>
                 )}
 
@@ -191,8 +192,9 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                   )}
 
                   {comment.user.isAuthor && (
-                    <span className="px-2 py-0.5 rounded-md bg-slate-900 text-white text-[11px] font-medium shrink-0 shadow-2xs">
-                      Pembuat
+                    <span className="relative inline-flex items-center px-2 py-0.5 rounded-[6px] text-[11px] font-semibold text-white bg-[#18181b] border border-black/40 shadow-2xs overflow-hidden shrink-0 select-none">
+                      <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
+                      <span className="relative z-10 leading-none">Pembuat</span>
                     </span>
                   )}
 
@@ -250,8 +252,9 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                   )}
 
                   {topReply.user.isAuthor && (
-                    <span className="px-2 py-0.5 rounded-md bg-slate-900 text-white text-[11px] font-medium shrink-0 shadow-2xs">
-                      Pembuat
+                    <span className="relative inline-flex items-center px-2 py-0.5 rounded-[6px] text-[11px] font-semibold text-white bg-[#18181b] border border-black/40 shadow-2xs overflow-hidden shrink-0 select-none">
+                      <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
+                      <span className="relative z-10 leading-none">Pembuat</span>
                     </span>
                   )}
 

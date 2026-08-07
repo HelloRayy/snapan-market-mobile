@@ -160,25 +160,23 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
           )}
         </div>
       ) : (
-        /* THREAD COMMENT WITH TOP REPLY: Shared left column avatar alignment + 2px bg-neutral-300 vertical connecting line */
-        <div className="space-y-3">
+        /* THREAD COMMENT WITH TOP REPLY: Indented child reply + L-shaped curved connecting line (└─) */
+        <div className="relative space-y-3">
+          {/* L-Shaped Curved Branch Connecting Line (└─) */}
+          <div className="absolute left-[17px] top-[36px] bottom-[20px] w-[20px] border-l-2 border-b-2 border-[#e5e7eb] rounded-bl-xl pointer-events-none" />
+
           {/* Parent Comment Row */}
           <div className="flex items-start gap-3">
-            {/* Left Column: Avatar + 2px Vertical Connecting Line (bg-neutral-300) */}
-            <div className="flex flex-col items-center shrink-0 self-stretch">
-              <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
-                <img
-                  src={comment.user.avatar}
-                  alt={comment.user.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-              {/* 2px Vertical Line matching section separator color (#e5e7eb / neutral-200) */}
-              <div className="w-[2px] flex-1 bg-[#e5e7eb] my-1 rounded-full min-h-[24px]" />
+            {/* Left Parent Avatar (36x36px) */}
+            <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 z-10 bg-white">
+              <img
+                src={comment.user.avatar}
+                alt={comment.user.name}
+                className="w-full h-full object-cover"
+              />
             </div>
 
-            {/* Right Column: User Info, Content, Action Bar */}
+            {/* Right Parent Content */}
             <div className="flex-1 min-w-0 space-y-1">
               <div className="flex items-center justify-between gap-2 min-w-0">
                 <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
@@ -223,10 +221,10 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
             </div>
           </div>
 
-          {/* Child Reply Row (Avatar aligned directly under Parent Avatar!) */}
-          <div className="flex items-start gap-3">
-            {/* Left Child Avatar (36x36px aligned directly under Parent Avatar!) */}
-            <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
+          {/* Child Reply Row (Indented right with ml-7, connected to the end of L-curve!) */}
+          <div className="flex items-start gap-3 ml-7">
+            {/* Left Child Avatar (36x36px) */}
+            <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 z-10 bg-white">
               <img
                 src={topReply.user.avatar}
                 alt={topReply.user.name}

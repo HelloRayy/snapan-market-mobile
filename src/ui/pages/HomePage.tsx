@@ -5,12 +5,12 @@ import { MarketPostCard } from '../components/marketplace/MarketPostCard';
 import { MarketBottomNav } from '../components/marketplace/MarketBottomNav';
 import { InstallBanner } from '../components/pwa/InstallBanner';
 import { OfflineBanner } from '../components/pwa/OfflineBanner';
-import { MOCK_THREADS_ITEMS } from '@/data/mockMarketData';
-import { MarketThreadItem } from '@/types/marketFeed';
+import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
+import { MarketPostItem } from '@/types/marketFeed';
 import { useCartStore } from '../store/cartStore';
 
 interface HomePageProps {
-  onSelectPost?: (post: MarketThreadItem) => void;
+  onSelectPost?: (post: MarketPostItem) => void;
 }
 
 export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
@@ -19,7 +19,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Items State & Infinite Scroll Loading
-  const [items, setItems] = useState<MarketThreadItem[]>(MOCK_THREADS_ITEMS);
+  const [items, setItems] = useState<MarketPostItem[]>(MOCK_MARKET_POSTS);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
   const observerTargetRef = useRef<HTMLDivElement>(null);
@@ -29,24 +29,24 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
   const totalCartItems = useCartStore((state) => state.getTotalItems());
   const totalCartPrice = useCartStore((state) => state.getTotalPrice());
 
-  // Handle Add To Cart from Threads Post Card
-  const handleAddToCart = (threadItem: MarketThreadItem) => {
+  // Handle Add To Cart from Post Card
+  const handleAddToCart = (postItem: MarketPostItem) => {
     addItemToCart(
       {
-        id: threadItem.id,
-        name: threadItem.caption.slice(0, 40) + '...',
-        slug: threadItem.id,
-        description: threadItem.caption,
-        price: threadItem.price,
-        originalPrice: threadItem.originalPrice,
-        stock: threadItem.stock,
+        id: postItem.id,
+        name: postItem.caption.slice(0, 40) + '...',
+        slug: postItem.id,
+        description: postItem.caption,
+        price: postItem.price,
+        originalPrice: postItem.originalPrice,
+        stock: postItem.stock,
         rating: 4.9,
         soldCount: 15,
-        category: threadItem.category,
-        images: threadItem.images,
-        sellerId: threadItem.seller.id,
-        sellerName: threadItem.seller.name,
-        isVerifiedSeller: threadItem.seller.isVerified,
+        category: postItem.category,
+        images: postItem.images,
+        sellerId: postItem.seller.id,
+        sellerName: postItem.seller.name,
+        isVerifiedSeller: postItem.seller.isVerified,
         createdAt: new Date().toISOString(),
       },
       1
@@ -68,9 +68,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
     setIsLoadingMore(true);
     setTimeout(() => {
       // Append duplicated items with new unique IDs to simulate infinite feed
-      const newBatch: MarketThreadItem[] = MOCK_THREADS_ITEMS.map((base, idx) => ({
+      const newBatch: MarketPostItem[] = MOCK_MARKET_POSTS.map((base, idx) => ({
         ...base,
-        id: `thread-auto-${page}-${idx}-${Date.now()}`,
+        id: `post-auto-${page}-${idx}-${Date.now()}`,
         timestamp: `${page * 2}j lalu`,
         likesCount: base.likesCount + Math.floor(Math.random() * 10),
       }));

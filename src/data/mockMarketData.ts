@@ -1,8 +1,8 @@
-import { MarketThreadItem } from '@/types/marketFeed';
+import { MarketPostItem } from '@/types/marketFeed';
 
-export const MOCK_THREADS_ITEMS: MarketThreadItem[] = [
+export const MOCK_MARKET_POSTS: MarketPostItem[] = [
   {
-    id: 'thread-1',
+    id: 'post-1',
     seller: {
       id: 'user-1',
       name: 'Raymond Chin',
@@ -28,7 +28,7 @@ export const MOCK_THREADS_ITEMS: MarketThreadItem[] = [
     comments: [
       {
         id: 'comment-1',
-        postId: 'thread-1',
+        postId: 'post-1',
         user: {
           id: 'user-20',
           name: 'zura.wk',
@@ -44,7 +44,7 @@ export const MOCK_THREADS_ITEMS: MarketThreadItem[] = [
         replies: [
           {
             id: 'comment-1-1',
-            postId: 'thread-1',
+            postId: 'post-1',
             user: {
               id: 'user-1',
               name: 'Raymond Chin',
@@ -63,7 +63,7 @@ export const MOCK_THREADS_ITEMS: MarketThreadItem[] = [
       },
       {
         id: 'comment-2',
-        postId: 'thread-1',
+        postId: 'post-1',
         user: {
           id: 'user-21',
           name: 'lisayayaa_',
@@ -80,7 +80,7 @@ export const MOCK_THREADS_ITEMS: MarketThreadItem[] = [
     ],
   },
   {
-    id: 'thread-2',
+    id: 'post-2',
     seller: {
       id: 'user-2',
       name: 'Faiz Intifada',
@@ -106,7 +106,7 @@ export const MOCK_THREADS_ITEMS: MarketThreadItem[] = [
     isLiked: false,
   },
   {
-    id: 'thread-3',
+    id: 'post-3',
     seller: {
       id: 'user-3',
       name: 'Ibu Kantin Sayang',
@@ -132,7 +132,7 @@ export const MOCK_THREADS_ITEMS: MarketThreadItem[] = [
     isLiked: true,
   },
   {
-    id: 'thread-4',
+    id: 'post-4',
     seller: {
       id: 'user-4',
       name: 'Rian TJKT',
@@ -157,7 +157,7 @@ export const MOCK_THREADS_ITEMS: MarketThreadItem[] = [
     isLiked: false,
   },
   {
-    id: 'thread-5',
+    id: 'post-5',
     seller: {
       id: 'user-5',
       name: 'Bima Elektronik',

@@ -7,7 +7,7 @@ export interface SellerProfile {
   username: string;
 }
 
-export interface ThreadComment {
+export interface PostComment {
   id: string;
   postId: string;
   user: {
@@ -23,10 +23,10 @@ export interface ThreadComment {
   timestamp: string;
   likesCount: number;
   isLiked?: boolean;
-  replies?: ThreadComment[]; // Nested replies
+  replies?: PostComment[]; // Nested replies
 }
 
-export interface MarketThreadItem {
+export interface MarketPostItem {
   id: string;
   seller: SellerProfile;
   caption: string;
@@ -42,5 +42,5 @@ export interface MarketThreadItem {
   timestamp: string; // e.g. '10m lalu', '2j lalu', '1hr lalu'
   isLiked?: boolean;
   isSaved?: boolean;
-  comments?: ThreadComment[];
+  comments?: PostComment[];
 }

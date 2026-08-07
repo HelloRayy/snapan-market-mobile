@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Heart, MoreHorizontal, BadgeCheck, Box } from 'lucide-react';
-import { MarketThreadItem } from '@/types/marketFeed';
+import { MarketPostItem } from '@/types/marketFeed';
 import { MediaLightboxModal } from './MediaLightboxModal';
 
 // Custom Smooth Rounded Lucide-Family Comment Icon (Rounded tail tip, 100% Lucide family match)
@@ -20,9 +20,9 @@ const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
 );
 
 interface MarketPostCardProps {
-  item: MarketThreadItem;
-  onAddToCart?: (item: MarketThreadItem) => void;
-  onPostClick?: (item: MarketThreadItem) => void;
+  item: MarketPostItem;
+  onAddToCart?: (item: MarketPostItem) => void;
+  onPostClick?: (item: MarketPostItem) => void;
   variant?: 'feed' | 'detail';
 }
 

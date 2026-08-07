@@ -6,13 +6,13 @@ import { OnboardingScreen } from '@/ui/components/onboarding/OnboardingScreen';
 import { PwaLandingPage } from '@/ui/components/pwa/PwaLandingPage';
 import { HomePage } from '@/ui/pages/HomePage';
 import { PostDetailPage } from '@/ui/pages/PostDetailPage';
-import { MarketThreadItem } from '@/types/marketFeed';
+import { MarketPostItem } from '@/types/marketFeed';
 
 export function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
   const [currentRoute, setCurrentRoute] = useState<string>(window.location.pathname);
-  const [selectedPost, setSelectedPost] = useState<MarketThreadItem | null>(null);
+  const [selectedPost, setSelectedPost] = useState<MarketPostItem | null>(null);
 
   // Sync route with window location & localStorage session check
   useEffect(() => {

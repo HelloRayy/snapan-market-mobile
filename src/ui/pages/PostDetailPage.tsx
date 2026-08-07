@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import { MarketThreadItem, ThreadComment } from '@/types/marketFeed';
+import { MarketPostItem, PostComment } from '@/types/marketFeed';
 import { MarketPostCard } from '../components/marketplace/MarketPostCard';
-import { ThreadCommentItem } from '../components/marketplace/ThreadCommentItem';
+import { PostCommentItem } from '../components/marketplace/PostCommentItem';
 import { CommentInputBar } from '../components/marketplace/CommentInputBar';
 
 interface PostDetailPageProps {
-  post: MarketThreadItem;
+  post: MarketPostItem;
   onBack: () => void;
-  onAddToCart?: (item: MarketThreadItem) => void;
+  onAddToCart?: (item: MarketPostItem) => void;
 }
 
 export const PostDetailPage: React.FC<PostDetailPageProps> = ({
@@ -16,7 +16,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   onBack,
   onAddToCart,
 }) => {
-  const [comments, setComments] = useState<ThreadComment[]>(post.comments || []);
+  const [comments, setComments] = useState<PostComment[]>(post.comments || []);
   const [replyToUser, setReplyToUser] = useState<string | null>(null);
 
   // Scroll to top on mount
@@ -25,7 +25,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   }, []);
 
   const handleAddComment = (content: string) => {
-    const newComment: ThreadComment = {
+    const newComment: PostComment = {
       id: `comment-${Date.now()}`,
       postId: post.id,
       user: {
@@ -88,11 +88,11 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
             <span className="text-xs text-neutral-400">Urutkan dari Terbaru</span>
           </div>
 
-          {/* Comment List with Threads Vertical Lines */}
+          {/* Comment List */}
           {comments.length > 0 ? (
             <div className="divide-y divide-neutral-100">
               {comments.map((comment) => (
-                <ThreadCommentItem
+                <PostCommentItem
                   key={comment.id}
                   comment={comment}
                   onReplyClick={handleReplyClick}

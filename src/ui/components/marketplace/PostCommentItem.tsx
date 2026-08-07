@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Heart, Repeat, Send, BadgeCheck, MoreHorizontal } from 'lucide-react';
-import { ThreadComment } from '@/types/marketFeed';
+import { PostComment } from '@/types/marketFeed';
 
 // Custom Smooth Rounded Lucide-Family Comment Icon
 const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -18,13 +18,13 @@ const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
-interface ThreadCommentItemProps {
-  comment: ThreadComment;
+interface PostCommentItemProps {
+  comment: PostComment;
   onReplyClick?: (username: string) => void;
   isNested?: boolean;
 }
 
-export const ThreadCommentItem: React.FC<ThreadCommentItemProps> = ({
+export const PostCommentItem: React.FC<PostCommentItemProps> = ({
   comment,
   onReplyClick,
   isNested = false,
@@ -88,7 +88,7 @@ export const ThreadCommentItem: React.FC<ThreadCommentItemProps> = ({
   return (
     <div className={`w-full ${isNested ? 'pt-3.5 pl-0' : 'py-3.5 border-b border-neutral-100 dark:border-neutral-800'}`}>
       {!hasReplies ? (
-        /* SINGLE COMMENT (NO REPLIES): Full-width layout matching Threads screenshot reference */
+        /* SINGLE COMMENT (NO REPLIES): Full-width layout */
         <div className="space-y-2">
           {/* Header Row: Avatar + Username + Verified + Timestamp + Option (...) Icon */}
           <div className="flex items-center justify-between gap-2">
@@ -143,9 +143,9 @@ export const ThreadCommentItem: React.FC<ThreadCommentItemProps> = ({
           {renderActionBar()}
         </div>
       ) : (
-        /* NESTED THREAD COMMENT (HAS REPLIES): 2-Column layout with vertical connecting line (|) */
+        /* NESTED COMMENT (HAS REPLIES): 2-Column layout with vertical connecting line (|) */
         <div className="flex items-start gap-3">
-          {/* Left Column: Avatar 36x36px + Vertical Thread Line (|) */}
+          {/* Left Column: Avatar 36x36px + Vertical Connecting Line (|) */}
           <div className="flex flex-col items-center shrink-0">
             <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs">
               <img
@@ -155,7 +155,7 @@ export const ThreadCommentItem: React.FC<ThreadCommentItemProps> = ({
               />
             </div>
 
-            {/* Threads-style Vertical Connecting Line (|) */}
+            {/* Vertical Connecting Line (|) */}
             <div className="w-[2px] flex-1 bg-neutral-200 dark:bg-neutral-800 my-1 rounded-full min-h-[40px]" />
           </div>
 
@@ -203,7 +203,7 @@ export const ThreadCommentItem: React.FC<ThreadCommentItemProps> = ({
             {/* Render Nested Replies Recursively */}
             <div className="mt-2 space-y-2">
               {comment.replies!.map((reply) => (
-                <ThreadCommentItem
+                <PostCommentItem
                   key={reply.id}
                   comment={reply}
                   onReplyClick={onReplyClick}

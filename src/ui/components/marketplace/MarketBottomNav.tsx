@@ -44,7 +44,7 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
           </div>
         </button>
 
-        {/* 3. Center Threads Plus Button (Rounded Rectangle Pill) */}
+        {/* 3. Center Create Post Plus Button (Rounded Rectangle Pill) */}
         <div className="flex-1 flex items-center justify-center h-full">
           <button
             type="button"

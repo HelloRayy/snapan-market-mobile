@@ -81,7 +81,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
   };
 
   // Content Snippets used in both variants
-  const renderImages = () => (
+  const renderImages = (isDetail: boolean) => (
     <>
       {item.images && item.images.length === 1 && (
         <div
@@ -105,7 +105,9 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           onMouseUp={handleMouseLeaveOrUp}
           onMouseMove={handleMouseMove}
           onClick={(e) => e.stopPropagation()}
-          className="flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 -mx-4 px-4 cursor-grab active:cursor-grabbing select-none touch-pan-x touch-pan-y"
+          className={`flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none touch-pan-x touch-pan-y ${
+            isDetail ? '-mx-4 px-4' : '-ml-[52px] pl-[52px] -mr-4 pr-4'
+          }`}
         >
           {item.images.map((imgUrl, idx) => (
             <div
@@ -217,7 +219,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           </p>
 
           {/* Product Images: Full Width */}
-          {renderImages()}
+          {renderImages(true)}
 
           {/* Action Bar */}
           {renderActionBar()}
@@ -271,7 +273,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             </p>
 
             {/* Product Images */}
-            {renderImages()}
+            {renderImages(false)}
 
             {/* Action Bar */}
             {renderActionBar()}

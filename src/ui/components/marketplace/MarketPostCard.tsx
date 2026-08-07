@@ -106,7 +106,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           onMouseMove={handleMouseMove}
           onClick={(e) => e.stopPropagation()}
           className={`flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none touch-pan-x touch-pan-y ${
-            isDetail ? '-mx-4 px-4' : '-ml-[52px] pl-[52px] -mr-4 pr-4'
+            isDetail ? '-mx-4 px-4' : '-mr-4 pr-4'
           }`}
         >
           {item.images.map((imgUrl, idx) => (

@@ -44,6 +44,13 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
 
   const hasReplies = comment.replies && comment.replies.length > 0;
 
+  // Filter to display ONLY 1 top reply (highest likes count or author reply)
+  const topReply = hasReplies
+    ? [...comment.replies!].sort(
+        (a, b) => (b.user.isAuthor ? 1 : 0) - (a.user.isAuthor ? 1 : 0) || b.likesCount - a.likesCount
+      )[0]
+    : null;
+
   const renderActionBar = () => (
     <div className="flex items-center gap-4 text-slate-500 pt-2 text-[13px]">
       {/* Like Button */}
@@ -87,7 +94,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
 
   return (
     <div className={`w-full ${isNested ? 'pt-3.5 pl-0' : 'py-3.5 border-b border-neutral-200'}`}>
-      {!hasReplies ? (
+      {!topReply ? (
         /* SINGLE COMMENT (NO REPLIES): Full-width layout */
         <div className="space-y-2">
           {/* Header Row: Avatar + Username + Verified + Timestamp + Option (...) Icon */}
@@ -143,7 +150,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
           {renderActionBar()}
         </div>
       ) : (
-        /* NESTED COMMENT (HAS REPLIES): 2-Column layout with vertical connecting line (|) */
+        /* NESTED THREAD COMMENT (HAS REPLIES): 2-Column layout displaying ONLY 1 top reply */
         <div className="flex items-start gap-3">
           {/* Left Column: Avatar 36x36px + Vertical Connecting Line (|) */}
           <div className="flex flex-col items-center shrink-0">
@@ -200,17 +207,17 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
             {/* Action Bar */}
             {renderActionBar()}
 
-            {/* Render Nested Replies Recursively */}
-            <div className="mt-2 space-y-2">
-              {comment.replies!.map((reply) => (
+            {/* Render ONLY 1 Top Reply Below */}
+            {topReply && (
+              <div className="mt-2.5">
                 <PostCommentItem
-                  key={reply.id}
-                  comment={reply}
+                  key={topReply.id}
+                  comment={topReply}
                   onReplyClick={onReplyClick}
                   isNested={true}
                 />
-              ))}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       )}

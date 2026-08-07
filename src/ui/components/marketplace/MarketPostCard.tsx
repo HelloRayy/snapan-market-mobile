@@ -81,14 +81,12 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
   };
 
   // Content Snippets used in both variants
-  const renderImages = (isDetail: boolean) => (
+  const renderImages = () => (
     <>
       {item.images && item.images.length === 1 && (
         <div
           onClick={(e) => handleImageClick(e, 0)}
-          className={`relative w-full max-w-[440px] mx-auto rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 cursor-pointer touch-pan-y ${
-            isDetail ? 'max-h-[604px] aspect-[440/604]' : 'max-h-[320px] aspect-[16/10] mt-2.5'
-          }`}
+          className="relative w-full rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[340px] aspect-[16/10] mt-2.5 cursor-pointer touch-pan-y"
         >
           <img
             src={item.images[0]}
@@ -107,17 +105,13 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           onMouseUp={handleMouseLeaveOrUp}
           onMouseMove={handleMouseMove}
           onClick={(e) => e.stopPropagation()}
-          className={`flex gap-2.5 overflow-x-auto scrollbar-none cursor-grab active:cursor-grabbing select-none touch-pan-x touch-pan-y ${
-            isDetail ? '-mx-3 px-3' : 'mt-2.5 -ml-[52px] pl-[52px] -mr-4 pr-4'
-          }`}
+          className="flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 -mx-4 px-4 cursor-grab active:cursor-grabbing select-none touch-pan-x touch-pan-y"
         >
           {item.images.map((imgUrl, idx) => (
             <div
               key={idx}
               onClick={(e) => handleImageClick(e, idx)}
-              className={`relative shrink-0 rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 cursor-pointer ${
-                isDetail ? 'w-[85%] max-w-[440px] max-h-[604px] aspect-[440/604]' : 'w-[82%] sm:w-[75%] max-h-[340px] aspect-[3/4]'
-              }`}
+              className="relative shrink-0 w-[82%] sm:w-[75%] rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[340px] aspect-[3/4] cursor-pointer"
             >
               <img
                 src={imgUrl}
@@ -223,7 +217,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           </p>
 
           {/* Product Images: Full Width */}
-          {renderImages(true)}
+          {renderImages()}
 
           {/* Action Bar */}
           {renderActionBar()}
@@ -277,7 +271,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             </p>
 
             {/* Product Images */}
-            {renderImages(false)}
+            {renderImages()}
 
             {/* Action Bar */}
             {renderActionBar()}

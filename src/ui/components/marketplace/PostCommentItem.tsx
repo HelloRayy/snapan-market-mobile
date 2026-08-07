@@ -51,24 +51,29 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
       )[0]
     : null;
 
-  const renderActionBar = () => (
+  const renderActionBar = (
+    liked: boolean,
+    count: number,
+    onLike?: () => void,
+    onReply?: () => void
+  ) => (
     <div className="flex items-center gap-4 text-slate-500 pt-2 text-[13px]">
       {/* Like Button */}
       <button
         type="button"
-        onClick={handleLikeToggle}
+        onClick={onLike}
         className={`flex items-center gap-1 hover:opacity-80 active:scale-90 transition-all cursor-pointer ${
-          isLiked ? 'text-rose-500' : 'text-slate-500 hover:text-slate-900'
+          liked ? 'text-rose-500' : 'text-slate-500 hover:text-slate-900'
         }`}
       >
-        <Heart className={`w-4 h-4 stroke-[1.75] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-        {likesCount > 0 && <span className="font-normal text-slate-600">{likesCount}</span>}
+        <Heart className={`w-4 h-4 stroke-[1.75] ${liked ? 'fill-rose-500 text-rose-500' : ''}`} />
+        {count > 0 && <span className="font-normal text-slate-600">{count}</span>}
       </button>
 
       {/* Reply Button */}
       <button
         type="button"
-        onClick={() => onReplyClick?.(comment.user.username || comment.user.name)}
+        onClick={onReply}
         className="flex items-center gap-1 hover:text-slate-900 active:scale-90 transition-all cursor-pointer text-slate-500"
       >
         <SmoothCommentIcon className="w-4 h-4 stroke-[1.75]" />
@@ -147,77 +152,131 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
           </p>
 
           {/* Action Bar */}
-          {renderActionBar()}
+          {renderActionBar(
+            isLiked,
+            likesCount,
+            handleLikeToggle,
+            () => onReplyClick?.(comment.user.username || comment.user.name)
+          )}
         </div>
       ) : (
-        /* NESTED THREAD COMMENT (HAS REPLIES): 2-Column layout displaying ONLY 1 top reply */
-        <div className="flex items-start gap-3">
-          {/* Left Column: Avatar 36x36px + Vertical Connecting Line (|) */}
-          <div className="flex flex-col items-center shrink-0">
-            <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs">
+        /* THREAD COMMENT WITH TOP REPLY: Shared left column avatar alignment + 2px bg-neutral-300 vertical connecting line */
+        <div className="space-y-3">
+          {/* Parent Comment Row */}
+          <div className="flex items-start gap-3">
+            {/* Left Column: Avatar + 2px Vertical Connecting Line (bg-neutral-300) */}
+            <div className="flex flex-col items-center shrink-0 self-stretch">
+              <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
+                <img
+                  src={comment.user.avatar}
+                  alt={comment.user.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* 2px Vertical Line (bg-neutral-300) connecting down to child avatar */}
+              <div className="w-[2px] flex-1 bg-neutral-300 dark:bg-neutral-700 my-1 rounded-full min-h-[24px]" />
+            </div>
+
+            {/* Right Column: User Info, Content, Action Bar */}
+            <div className="flex-1 min-w-0 space-y-1">
+              <div className="flex items-center justify-between gap-2 min-w-0">
+                <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+                  <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
+                    {comment.user.username || comment.user.name}
+                  </span>
+
+                  {comment.user.isVerified && (
+                    <BadgeCheck className="w-[17px] h-[17px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified User" />
+                  )}
+
+                  {comment.user.isAuthor && (
+                    <span className="px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-[11px] font-medium text-slate-600 dark:text-neutral-300 shrink-0">
+                      Pembuat
+                    </span>
+                  )}
+
+                  <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
+                    {comment.timestamp}
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
+                  aria-label="Opsi komentar"
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
+              </div>
+
+              <p className="text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5">
+                {comment.content}
+              </p>
+
+              {renderActionBar(
+                isLiked,
+                likesCount,
+                handleLikeToggle,
+                () => onReplyClick?.(comment.user.username || comment.user.name)
+              )}
+            </div>
+          </div>
+
+          {/* Child Reply Row (Avatar aligned directly under Parent Avatar!) */}
+          <div className="flex items-start gap-3">
+            {/* Left Child Avatar (36x36px aligned directly under Parent Avatar!) */}
+            <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
               <img
-                src={comment.user.avatar}
-                alt={comment.user.name}
+                src={topReply.user.avatar}
+                alt={topReply.user.name}
                 className="w-full h-full object-cover"
               />
             </div>
 
-            {/* Vertical Connecting Line (|) */}
-            <div className="w-[2px] flex-1 bg-neutral-200 dark:bg-neutral-800 my-1 rounded-full min-h-[40px]" />
-          </div>
-
-          {/* Right Column: User Info, Comment Text & Actions */}
-          <div className="flex-1 min-w-0 space-y-1">
-            {/* Header Row */}
-            <div className="flex items-center justify-between gap-2 min-w-0">
-              <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
-                <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
-                  {comment.user.username || comment.user.name}
-                </span>
-
-                {comment.user.isVerified && (
-                  <BadgeCheck className="w-[17px] h-[17px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified User" />
-                )}
-
-                {comment.user.isAuthor && (
-                  <span className="px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-[11px] font-medium text-slate-600 dark:text-neutral-300 shrink-0">
-                    Pembuat
+            {/* Right Child Content */}
+            <div className="flex-1 min-w-0 space-y-1">
+              <div className="flex items-center justify-between gap-2 min-w-0">
+                <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+                  <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
+                    {topReply.user.username || topReply.user.name}
                   </span>
-                )}
 
-                <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
-                  {comment.timestamp}
-                </span>
+                  {topReply.user.isVerified && (
+                    <BadgeCheck className="w-[17px] h-[17px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified User" />
+                  )}
+
+                  {topReply.user.isAuthor && (
+                    <span className="px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-[11px] font-medium text-slate-600 dark:text-neutral-300 shrink-0">
+                      Pembuat
+                    </span>
+                  )}
+
+                  <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
+                    {topReply.timestamp}
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
+                  aria-label="Opsi komentar"
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
               </div>
 
-              <button
-                type="button"
-                className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
-                aria-label="Opsi komentar"
-              >
-                <MoreHorizontal className="w-4 h-4" />
-              </button>
+              <p className="text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5">
+                {topReply.content}
+              </p>
+
+              {renderActionBar(
+                topReply.isLiked || false,
+                topReply.likesCount,
+                undefined,
+                () => onReplyClick?.(topReply.user.username || topReply.user.name)
+              )}
             </div>
-
-            {/* Comment Body Content */}
-            <p className="text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5">
-              {comment.content}
-            </p>
-
-            {/* Action Bar */}
-            {renderActionBar()}
-
-            {/* Render ONLY 1 Top Reply Below */}
-            {topReply && (
-              <div className="mt-2.5">
-                <PostCommentItem
-                  key={topReply.id}
-                  comment={topReply}
-                  onReplyClick={onReplyClick}
-                  isNested={true}
-                />
-              </div>
-            )}
           </div>
         </div>
       )}

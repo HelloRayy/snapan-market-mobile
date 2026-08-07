@@ -78,10 +78,10 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
           variant="detail"
         />
 
-        {/* Threaded Comments Section */}
+        {/* Comments Section */}
         <section className="px-4 pt-2">
           {/* Section Divider Header */}
-          <div className="py-2.5 border-b border-neutral-100 flex items-center justify-between">
+          <div className="py-2.5 border-b border-neutral-200 flex items-center justify-between">
             <h2 className="font-semibold text-sm text-slate-900">
               Komentar ({comments.length})
             </h2>
@@ -90,7 +90,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
 
           {/* Comment List */}
           {comments.length > 0 ? (
-            <div className="divide-y divide-neutral-100">
+            <div className="divide-y divide-neutral-200">
               {comments.map((comment) => (
                 <PostCommentItem
                   key={comment.id}

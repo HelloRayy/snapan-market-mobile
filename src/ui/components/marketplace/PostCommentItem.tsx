@@ -86,7 +86,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
   );
 
   return (
-    <div className={`w-full ${isNested ? 'pt-3.5 pl-0' : 'py-3.5 border-b border-neutral-100 dark:border-neutral-800'}`}>
+    <div className={`w-full ${isNested ? 'pt-3.5 pl-0' : 'py-3.5 border-b border-neutral-200'}`}>
       {!hasReplies ? (
         /* SINGLE COMMENT (NO REPLIES): Full-width layout */
         <div className="space-y-2">

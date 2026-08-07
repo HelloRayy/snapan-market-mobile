@@ -186,36 +186,38 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           )}
 
           {/* Bottom E-Commerce Action Bar: [Left: Love | Comment | Stock Icon] --- [Right: Button CTA] */}
-          <div className="pt-2 flex flex-wrap items-center justify-between gap-y-2 gap-x-2 min-w-0">
-            {/* Left Side: Love, Comment & Stock (Icon Only) */}
-            <div className="flex items-center gap-2.5 xs:gap-3.5 text-slate-600 shrink-0">
+          <div className="pt-2.5 flex flex-wrap items-center justify-between gap-y-2 gap-x-1 min-w-0">
+            {/* Left Side: Love, Comment & Stock (Icon Only with Generous 44px Mobile Touch Target) */}
+            <div className="flex items-center gap-0.5 sm:gap-1.5 text-slate-600 shrink-0 -ml-1.5">
               {/* Like Button */}
               <button
                 type="button"
                 onClick={handleLikeToggle}
-                className={`flex items-center gap-1 text-xs font-medium hover:opacity-80 active:scale-90 transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 min-h-[40px] px-2.5 py-1.5 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer select-none ${
                   isLiked ? 'text-rose-500' : 'text-slate-600 hover:text-slate-900'
                 }`}
+                aria-label={`Sukai postingan. ${likesCount} suka`}
               >
-                <Heart className={`w-4 h-4 stroke-[1.75] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-                <span className="text-slate-700 font-normal text-[12.5px]">{likesCount}</span>
+                <Heart className={`w-5 h-5 stroke-[2] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+                <span className={`font-semibold text-sm ${isLiked ? 'text-rose-600' : 'text-slate-800'}`}>{likesCount}</span>
               </button>
 
               {/* Comment Button */}
               <button
                 type="button"
                 onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1 text-xs font-medium text-slate-600 hover:text-slate-900 active:scale-90 transition-all cursor-pointer"
+                className="flex items-center gap-1.5 min-h-[40px] px-2.5 py-1.5 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer text-slate-600 hover:text-slate-900 select-none"
+                aria-label={`Komentar postingan. ${item.commentsCount} komentar`}
               >
-                <SmoothCommentIcon className="w-4 h-4 stroke-[1.75]" />
-                <span className="text-slate-700 font-normal text-[12.5px]">{item.commentsCount}</span>
+                <SmoothCommentIcon className="w-5 h-5 stroke-[2]" />
+                <span className="font-semibold text-sm text-slate-800">{item.commentsCount}</span>
               </button>
 
               {/* Stock Indicator (Icon + Number) */}
               {item.stock !== undefined && (
-                <div className="flex items-center gap-1 text-slate-500 hover:text-slate-700 transition-colors" title={`Stok tersisa ${item.stock}`}>
-                  <Box className="w-3.5 h-3.5 stroke-[1.75]" />
-                  <span className="text-[12.5px] font-normal text-slate-600">{item.stock}</span>
+                <div className="flex items-center gap-1.5 min-h-[40px] px-2 py-1.5 text-slate-500 hover:text-slate-700 transition-colors select-none" title={`Stok tersisa ${item.stock}`}>
+                  <Box className="w-4.5 h-4.5 stroke-[2] text-slate-500" />
+                  <span className="font-semibold text-sm text-slate-700">{item.stock}</span>
                 </div>
               )}
             </div>

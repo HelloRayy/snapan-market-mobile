@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, MoreHorizontal } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { MarketThreadItem, ThreadComment } from '@/types/marketFeed';
 import { MarketPostCard } from '../components/marketplace/MarketPostCard';
 import { ThreadCommentItem } from '../components/marketplace/ThreadCommentItem';
@@ -52,8 +52,8 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
 
   return (
     <div className="min-h-screen bg-pure-white pb-24 font-gt-standard">
-      {/* Top Header Bar: [Left: ← Back Button] --- [Center: Postingan] --- [Right: Options] */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-neutral-200 px-4 h-14 flex items-center justify-between max-w-xl mx-auto">
+      {/* Top Header Bar: [Left: ← Back Button] --- [Center: Postingan] --- [Right: Spacer] */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-neutral-200 px-4 h-14 flex items-center justify-between max-w-xl mx-auto">
         <button
           type="button"
           onClick={onBack}
@@ -65,17 +65,12 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
 
         <h1 className="font-semibold text-base text-slate-900">Postingan</h1>
 
-        <button
-          type="button"
-          className="w-9 h-9 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
-          aria-label="Opsi Postingan"
-        >
-          <MoreHorizontal className="w-5 h-5" />
-        </button>
+        {/* Spacer for center title balance */}
+        <div className="w-9 h-9 pointer-events-none" />
       </header>
 
       {/* Main Content Area */}
-      <main className="max-w-xl mx-auto pt-2 sm:pt-3">
+      <main className="max-w-xl mx-auto pt-16">
         {/* Focused Main Post Card */}
         <MarketPostCard
           item={post}

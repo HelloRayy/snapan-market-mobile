@@ -75,7 +75,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
       </header>
 
       {/* Main Content Area */}
-      <main className="max-w-xl mx-auto">
+      <main className="max-w-xl mx-auto pt-2 sm:pt-3">
         {/* Focused Main Post Card */}
         <MarketPostCard
           item={post}

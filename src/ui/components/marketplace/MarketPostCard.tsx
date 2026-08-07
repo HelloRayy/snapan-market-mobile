@@ -169,7 +169,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
     <article
       onClick={() => onPostClick?.(item)}
       className={`w-full border-b border-neutral-200 bg-pure-white hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none overflow-visible ${
-        variant === 'detail' ? 'px-3 pt-1 pb-3' : 'px-4 py-3.5'
+        variant === 'detail' ? 'px-4 pt-3 pb-3.5' : 'px-4 py-3.5'
       }`}
     >
       {variant === 'detail' ? (

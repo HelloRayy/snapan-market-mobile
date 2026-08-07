@@ -160,17 +160,22 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
           )}
         </div>
       ) : (
-        /* THREAD COMMENT WITH TOP REPLY: Indented child reply + single L-shaped curved connecting line (└─) */
+        /* THREAD COMMENT WITH TOP REPLY: Indented child reply + dynamic L-shaped curved connecting line (└─) */
         <div className="space-y-3">
           {/* Parent Comment Row */}
           <div className="flex items-start gap-3">
-            {/* Left Parent Avatar (36x36px) */}
-            <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 z-10 bg-white">
-              <img
-                src={comment.user.avatar}
-                alt={comment.user.name}
-                className="w-full h-full object-cover"
-              />
+            {/* Left Parent Column: Avatar (36x36px) + Dynamic Vertical Connecting Line */}
+            <div className="flex flex-col items-center shrink-0 self-stretch">
+              <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 bg-white">
+                <img
+                  src={comment.user.avatar}
+                  alt={comment.user.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Dynamic 2px Vertical Line: Stretches 100% height of Person A row regardless of caption length! */}
+              <div className="w-[2px] flex-1 bg-[#d1d5db] mt-1 mb-0 rounded-full" />
             </div>
 
             {/* Right Parent Content */}
@@ -220,8 +225,8 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
 
           {/* Child Reply Row (Indented right with ml-7) */}
           <div className="flex items-start gap-3 ml-7 relative">
-            {/* Single L-Shaped Branch Line: Extends UP to Person A avatar bottom & curves right into Person B left center (18px) with NO extra line below */}
-            <div className="absolute -left-[11px] -top-12 h-[60px] w-[12px] border-l-2 border-b-2 border-[#d1d5db] rounded-bl-xl pointer-events-none z-0" />
+            {/* L-Shaped Elbow Curve: Seamlessly picks up vertical line from Person A above and curves right into Person B left center (18px) */}
+            <div className="absolute -left-[11px] -top-3.5 h-[32px] w-[12px] border-l-2 border-b-2 border-[#d1d5db] rounded-bl-xl pointer-events-none z-0" />
 
             {/* Left Child Avatar (36x36px) */}
             <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 z-10 bg-white">

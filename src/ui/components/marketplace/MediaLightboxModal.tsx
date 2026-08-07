@@ -20,18 +20,26 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isMuted, setIsMuted] = useState(true);
-  const [zoomScale, setZoomScale] = useState(1);
+
+  // Transform state for 2D Pan & Instant Pinch Zoom
+  const [scale, setScale] = useState(1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isTouching, setIsTouching] = useState(false);
+
+  // Drag to dismiss state
   const [dragY, setDragY] = useState(0);
-  const [isDraggingVertical, setIsDraggingVertical] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const touchStartY = useRef<number>(0);
-  const initialPinchDist = useRef<number | null>(null);
+  const panStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const touchStartYRef = useRef<number>(0);
+  const initialPinchDistRef = useRef<number | null>(null);
+  const initialPinchScaleRef = useRef<number>(1);
 
-  // Reset states on open/slide change
+  // Reset transform state on slide/open change
   useEffect(() => {
     setCurrentIndex(initialIndex);
-    setZoomScale(1);
+    setScale(1);
+    setPosition({ x: 0, y: 0 });
     setDragY(0);
   }, [initialIndex, isOpen]);
 
@@ -62,7 +70,8 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
     const index = Math.round(scrollRef.current.scrollLeft / slideWidth);
     if (index !== currentIndex && index >= 0 && index < images.length) {
       setCurrentIndex(index);
-      setZoomScale(1); // Reset zoom on slide change
+      setScale(1);
+      setPosition({ x: 0, y: 0 });
     }
   };
 
@@ -74,54 +83,89 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
       behavior: 'smooth',
     });
     setCurrentIndex(index);
-    setZoomScale(1);
+    setScale(1);
+    setPosition({ x: 0, y: 0 });
   };
 
-  // Toggle Zoom on Double Click/Tap
+  // Toggle Zoom Button / Double Tap
   const handleToggleZoom = () => {
-    setZoomScale((prev) => (prev > 1 ? 1 : 2.2));
+    if (scale > 1) {
+      setScale(1);
+      setPosition({ x: 0, y: 0 });
+    } else {
+      setScale(2.5);
+      setPosition({ x: 0, y: 0 });
+    }
   };
 
-  // Swipe Vertical to Dismiss Handlers
+  // Touch Handlers for Native 2D Pan & Pinch Zoom
   const handleTouchStart = (e: React.TouchEvent) => {
+    setIsTouching(true);
+
     if (e.touches.length === 1) {
-      touchStartY.current = e.touches[0].clientY;
-      setIsDraggingVertical(true);
+      if (scale > 1) {
+        // 2D Pan Mode (Zoomed In)
+        panStartRef.current = {
+          x: e.touches[0].clientX - position.x,
+          y: e.touches[0].clientY - position.y,
+        };
+      } else {
+        // Swipe to Dismiss Mode (Unzoomed)
+        touchStartYRef.current = e.touches[0].clientY;
+      }
     } else if (e.touches.length === 2) {
-      // Pinch gesture start
+      // Instant Pinch Zoom Mode
       const dist = Math.hypot(
         e.touches[0].clientX - e.touches[1].clientX,
         e.touches[0].clientY - e.touches[1].clientY
       );
-      initialPinchDist.current = dist;
+      initialPinchDistRef.current = dist;
+      initialPinchScaleRef.current = scale;
     }
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (e.touches.length === 1 && isDraggingVertical && zoomScale === 1) {
-      const deltaY = e.touches[0].clientY - touchStartY.current;
-      // Drag to dismiss feedback
-      setDragY(deltaY);
-    } else if (e.touches.length === 2 && initialPinchDist.current !== null) {
-      // Pinch gesture move
-      const dist = Math.hypot(
+    if (e.touches.length === 2 && initialPinchDistRef.current !== null) {
+      // Native 2-Finger Pinch Zoom (Instant, no delay animation)
+      const currentDist = Math.hypot(
         e.touches[0].clientX - e.touches[1].clientX,
         e.touches[0].clientY - e.touches[1].clientY
       );
-      const factor = dist / initialPinchDist.current;
-      setZoomScale((prev) => Math.min(Math.max(prev * factor, 1), 3.5));
-      initialPinchDist.current = dist;
+      const zoomFactor = currentDist / initialPinchDistRef.current;
+      const newScale = Math.min(Math.max(initialPinchScaleRef.current * zoomFactor, 1), 4);
+      
+      setScale(newScale);
+      if (newScale === 1) {
+        setPosition({ x: 0, y: 0 });
+      }
+    } else if (e.touches.length === 1) {
+      if (scale > 1) {
+        // Native 2D Pan (Move image X & Y freely)
+        const newX = e.touches[0].clientX - panStartRef.current.x;
+        const newY = e.touches[0].clientY - panStartRef.current.y;
+        setPosition({ x: newX, y: newY });
+      } else {
+        // Swipe to Dismiss (Vertical Drag)
+        const deltaY = e.touches[0].clientY - touchStartYRef.current;
+        setDragY(deltaY);
+      }
     }
   };
 
   const handleTouchEnd = () => {
-    setIsDraggingVertical(false);
-    initialPinchDist.current = null;
-    // Dismiss threshold (100px swipe up/down)
-    if (Math.abs(dragY) > 110) {
-      onClose();
-    } else {
-      setDragY(0);
+    setIsTouching(false);
+    initialPinchDistRef.current = null;
+
+    if (scale <= 1) {
+      setScale(1);
+      setPosition({ x: 0, y: 0 });
+
+      // Check vertical drag threshold for dismiss
+      if (Math.abs(dragY) > 110) {
+        onClose();
+      } else {
+        setDragY(0);
+      }
     }
   };
 
@@ -161,7 +205,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
             aria-label="Zoom Gambar"
             title="Zoom In/Out"
           >
-            {zoomScale > 1 ? (
+            {scale > 1 ? (
               <ZoomOut className="w-4.5 h-4.5 text-slate-800 stroke-[2]" />
             ) : (
               <ZoomIn className="w-4.5 h-4.5 text-slate-800 stroke-[2]" />
@@ -181,7 +225,9 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex-1 w-full max-w-xl mx-auto flex items-center overflow-x-auto snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing touch-pan-x touch-pan-y"
+        className={`flex-1 w-full max-w-xl mx-auto flex items-center overflow-x-auto snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing ${
+          scale > 1 ? 'overflow-hidden' : 'touch-pan-x touch-pan-y'
+        }`}
       >
         {images.map((imgUrl, idx) => (
           <div
@@ -193,8 +239,11 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
               src={imgUrl}
               alt={caption || `Media Preview ${idx + 1}`}
               style={{
-                transform: `scale(${currentIndex === idx ? zoomScale : 1})`,
-                transition: 'transform 250ms ease-out',
+                transform: `translate3d(${currentIndex === idx ? position.x : 0}px, ${
+                  currentIndex === idx ? position.y : 0
+                }px, 0) scale(${currentIndex === idx ? scale : 1})`,
+                transition: isTouching ? 'none' : 'transform 180ms ease-out',
+                touchAction: 'none',
               }}
               className="max-h-[86vh] max-w-full h-auto w-auto object-contain rounded-2xl shadow-xl pointer-events-none select-none"
             />

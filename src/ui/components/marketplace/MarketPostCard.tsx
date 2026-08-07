@@ -166,7 +166,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               onMouseUp={handleMouseLeaveOrUp}
               onMouseMove={handleMouseMove}
               onClick={(e) => e.stopPropagation()}
-              className="flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 -ml-[68px] pl-[68px] -mr-4 pr-4 cursor-grab active:cursor-grabbing select-none touch-pan-y"
+              className="flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 -ml-[68px] pl-[68px] -mr-4 pr-4 cursor-grab active:cursor-grabbing select-none touch-pan-x touch-pan-y"
             >
               {item.images.map((imgUrl, idx) => (
                 <div

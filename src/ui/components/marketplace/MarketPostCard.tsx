@@ -86,8 +86,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
       {item.images && item.images.length === 1 && (
         <div
           onClick={(e) => handleImageClick(e, 0)}
-          className={`relative w-full rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 cursor-pointer touch-pan-y ${
-            isDetail ? 'max-h-[360px] aspect-[16/10]' : 'max-h-[320px] aspect-[16/10] mt-2.5'
+          className={`relative w-full max-w-[440px] mx-auto rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 cursor-pointer touch-pan-y ${
+            isDetail ? 'max-h-[604px] aspect-[440/604]' : 'max-h-[320px] aspect-[16/10] mt-2.5'
           }`}
         >
           <img
@@ -108,14 +108,16 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           onMouseMove={handleMouseMove}
           onClick={(e) => e.stopPropagation()}
           className={`flex gap-2.5 overflow-x-auto scrollbar-none cursor-grab active:cursor-grabbing select-none touch-pan-x touch-pan-y ${
-            isDetail ? '-mx-4 px-4' : 'mt-2.5 -ml-[52px] pl-[52px] -mr-4 pr-4'
+            isDetail ? '-mx-3 px-3' : 'mt-2.5 -ml-[52px] pl-[52px] -mr-4 pr-4'
           }`}
         >
           {item.images.map((imgUrl, idx) => (
             <div
               key={idx}
               onClick={(e) => handleImageClick(e, idx)}
-              className="relative shrink-0 w-[82%] sm:w-[75%] rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[340px] aspect-[3/4] cursor-pointer"
+              className={`relative shrink-0 rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 cursor-pointer ${
+                isDetail ? 'w-[85%] max-w-[440px] max-h-[604px] aspect-[440/604]' : 'w-[82%] sm:w-[75%] max-h-[340px] aspect-[3/4]'
+              }`}
             >
               <img
                 src={imgUrl}
@@ -172,7 +174,9 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
   return (
     <article
       onClick={() => onPostClick?.(item)}
-      className="w-full border-b border-neutral-200 bg-pure-white px-4 py-3.5 hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none overflow-visible"
+      className={`w-full border-b border-neutral-200 bg-pure-white hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none overflow-visible ${
+        variant === 'detail' ? 'px-3 pt-1 pb-3' : 'px-4 py-3.5'
+      }`}
     >
       {variant === 'detail' ? (
         /* DETAIL PAGE VARIANT: Single column, caption & images aligned full-width with top header avatar */

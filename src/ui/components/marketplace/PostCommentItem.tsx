@@ -125,7 +125,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 )}
 
                 {comment.user.isAuthor && (
-                  <span className="px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-[11px] font-medium text-slate-600 dark:text-neutral-300 shrink-0">
+                  <span className="px-2 py-0.5 rounded-md bg-slate-900 text-white text-[11px] font-medium shrink-0 shadow-2xs">
                     Pembuat
                   </span>
                 )}
@@ -191,7 +191,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                   )}
 
                   {comment.user.isAuthor && (
-                    <span className="px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-[11px] font-medium text-slate-600 dark:text-neutral-300 shrink-0">
+                    <span className="px-2 py-0.5 rounded-md bg-slate-900 text-white text-[11px] font-medium shrink-0 shadow-2xs">
                       Pembuat
                     </span>
                   )}
@@ -250,7 +250,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                   )}
 
                   {topReply.user.isAuthor && (
-                    <span className="px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-[11px] font-medium text-slate-600 dark:text-neutral-300 shrink-0">
+                    <span className="px-2 py-0.5 rounded-md bg-slate-900 text-white text-[11px] font-medium shrink-0 shadow-2xs">
                       Pembuat
                     </span>
                   )}

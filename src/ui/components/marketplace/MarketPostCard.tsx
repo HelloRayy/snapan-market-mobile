@@ -199,7 +199,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 aria-label={`Sukai postingan. ${likesCount} suka`}
               >
                 <Heart className={`w-5 h-5 stroke-[2] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-                <span className={`font-semibold text-sm ${isLiked ? 'text-rose-600' : 'text-slate-800'}`}>{likesCount}</span>
+                <span className={`font-normal text-[14px] ${isLiked ? 'text-rose-500' : 'text-slate-700'}`}>{likesCount}</span>
               </button>
 
               {/* Comment Button */}
@@ -210,14 +210,14 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 aria-label={`Komentar postingan. ${item.commentsCount} komentar`}
               >
                 <SmoothCommentIcon className="w-5 h-5 stroke-[2]" />
-                <span className="font-semibold text-sm text-slate-800">{item.commentsCount}</span>
+                <span className="font-normal text-[14px] text-slate-700">{item.commentsCount}</span>
               </button>
 
               {/* Stock Indicator (Icon + Number) */}
               {item.stock !== undefined && (
                 <div className="flex items-center gap-1.5 min-h-[40px] px-2 py-1.5 text-slate-500 hover:text-slate-700 transition-colors select-none" title={`Stok tersisa ${item.stock}`}>
                   <Box className="w-4.5 h-4.5 stroke-[2] text-slate-500" />
-                  <span className="font-semibold text-sm text-slate-700">{item.stock}</span>
+                  <span className="font-normal text-[14px] text-slate-700">{item.stock}</span>
                 </div>
               )}
             </div>

@@ -25,7 +25,6 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
   const [dragY, setDragY] = useState(0);
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const touchStartYRef = useRef<number>(0);
 
   // Reset transform state on slide/open change
   useEffect(() => {
@@ -73,27 +72,45 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
     setCurrentIndex(index);
   };
 
-  // Touch Handlers for Vertical Swipe to Dismiss
+  const touchStartXRef = useRef<number>(0);
+  const touchStartYRef = useRef<number>(0);
+  const isVerticalSwipeRef = useRef<boolean>(false);
+
+  // Touch Handlers for Vertical Swipe to Dismiss (Angle-Locked)
   const handleTouchStart = (e: React.TouchEvent) => {
     if (e.touches.length === 1) {
+      touchStartXRef.current = e.touches[0].clientX;
       touchStartYRef.current = e.touches[0].clientY;
+      isVerticalSwipeRef.current = false;
     }
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (e.touches.length === 1) {
+      const deltaX = Math.abs(e.touches[0].clientX - touchStartXRef.current);
       const deltaY = e.touches[0].clientY - touchStartYRef.current;
-      setDragY(deltaY);
+      const absY = Math.abs(deltaY);
+
+      // If user is swiping horizontally to next photo (deltaX > absY), lock vertical drag!
+      if (!isVerticalSwipeRef.current && deltaX > absY && deltaX > 8) {
+        setDragY(0);
+        return;
+      }
+
+      // Only trigger vertical drag to dismiss if Y movement is distinctly dominant over X
+      if (absY > deltaX * 1.3 && absY > 12) {
+        isVerticalSwipeRef.current = true;
+        setDragY(deltaY);
+      }
     }
   };
 
   const handleTouchEnd = () => {
-    // Check vertical drag threshold for dismiss (110px)
-    if (Math.abs(dragY) > 110) {
+    if (isVerticalSwipeRef.current && Math.abs(dragY) > 130) {
       onClose();
-    } else {
-      setDragY(0);
     }
+    setDragY(0);
+    isVerticalSwipeRef.current = false;
   };
 
   const opacity = Math.max(0.3, 1 - Math.abs(dragY) / 350);

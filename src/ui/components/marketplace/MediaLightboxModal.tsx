@@ -25,6 +25,9 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
   const [dragY, setDragY] = useState(0);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const touchStartXRef = useRef<number>(0);
+  const touchStartYRef = useRef<number>(0);
+  const isVerticalSwipeRef = useRef<boolean>(false);
 
   // Reset transform state on slide/open change
   useEffect(() => {
@@ -71,10 +74,6 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
     });
     setCurrentIndex(index);
   };
-
-  const touchStartXRef = useRef<number>(0);
-  const touchStartYRef = useRef<number>(0);
-  const isVerticalSwipeRef = useRef<boolean>(false);
 
   // Touch Handlers for Vertical Swipe to Dismiss (Angle-Locked)
   const handleTouchStart = (e: React.TouchEvent) => {

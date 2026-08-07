@@ -80,6 +80,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         <MarketPostCard
           item={post}
           onAddToCart={onAddToCart}
+          variant="detail"
         />
 
         {/* Threaded Comments Section */}

@@ -174,8 +174,8 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 />
               </div>
 
-              {/* 2px Vertical Line (bg-neutral-300) connecting down to child avatar */}
-              <div className="w-[2px] flex-1 bg-neutral-300 dark:bg-neutral-700 my-1 rounded-full min-h-[24px]" />
+              {/* 2px Vertical Line (bg-neutral-200) connecting down to child avatar */}
+              <div className="w-[2px] flex-1 bg-neutral-200 dark:bg-neutral-800 my-1 rounded-full min-h-[24px]" />
             </div>
 
             {/* Right Column: User Info, Content, Action Bar */}

@@ -147,12 +147,12 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           {item.images && item.images.length === 1 && (
             <div
               onClick={(e) => handleImageClick(e, 0)}
-              className="relative w-full rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[320px] aspect-[16/10] mt-2.5 cursor-pointer"
+              className="relative w-full rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[320px] aspect-[16/10] mt-2.5 cursor-pointer touch-pan-y"
             >
               <img
                 src={item.images[0]}
                 alt={item.caption}
-                className="w-full h-full object-cover hover:scale-[1.01] transition-transform duration-300"
+                className="w-full h-full object-cover hover:scale-[1.01] transition-transform duration-300 pointer-events-none"
               />
               <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
             </div>
@@ -166,7 +166,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               onMouseUp={handleMouseLeaveOrUp}
               onMouseMove={handleMouseMove}
               onClick={(e) => e.stopPropagation()}
-              className="flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 -ml-[68px] pl-[68px] -mr-4 pr-4 cursor-grab active:cursor-grabbing select-none touch-pan-x"
+              className="flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 -ml-[68px] pl-[68px] -mr-4 pr-4 cursor-grab active:cursor-grabbing select-none touch-pan-y"
             >
               {item.images.map((imgUrl, idx) => (
                 <div

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Heart, Repeat, Send, BadgeCheck } from 'lucide-react';
+import { Heart, Repeat, Send, BadgeCheck, MoreHorizontal } from 'lucide-react';
 import { ThreadComment } from '@/types/marketFeed';
 
-// Custom Smooth Rounded Comment Icon
+// Custom Smooth Rounded Lucide-Family Comment Icon
 const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -44,101 +44,163 @@ export const ThreadCommentItem: React.FC<ThreadCommentItemProps> = ({
 
   const hasReplies = comment.replies && comment.replies.length > 0;
 
+  const renderActionBar = () => (
+    <div className="flex items-center gap-4 text-slate-500 pt-2 text-[13px]">
+      {/* Like Button */}
+      <button
+        type="button"
+        onClick={handleLikeToggle}
+        className={`flex items-center gap-1 hover:opacity-80 active:scale-90 transition-all cursor-pointer ${
+          isLiked ? 'text-rose-500' : 'text-slate-500 hover:text-slate-900'
+        }`}
+      >
+        <Heart className={`w-4 h-4 stroke-[1.75] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+        {likesCount > 0 && <span className="font-normal text-slate-600">{likesCount}</span>}
+      </button>
+
+      {/* Reply Button */}
+      <button
+        type="button"
+        onClick={() => onReplyClick?.(comment.user.username || comment.user.name)}
+        className="flex items-center gap-1 hover:text-slate-900 active:scale-90 transition-all cursor-pointer text-slate-500"
+      >
+        <SmoothCommentIcon className="w-4 h-4 stroke-[1.75]" />
+      </button>
+
+      {/* Repost Button */}
+      <button
+        type="button"
+        className="hover:text-slate-900 active:scale-90 transition-all cursor-pointer text-slate-500"
+      >
+        <Repeat className="w-4 h-4 stroke-[1.75]" />
+      </button>
+
+      {/* Share Button */}
+      <button
+        type="button"
+        className="hover:text-slate-900 active:scale-90 transition-all cursor-pointer text-slate-500"
+      >
+        <Send className="w-4 h-4 stroke-[1.75]" />
+      </button>
+    </div>
+  );
+
   return (
     <div className={`w-full ${isNested ? 'pt-3.5 pl-0' : 'py-3.5 border-b border-neutral-100 dark:border-neutral-800'}`}>
-      <div className="flex items-start gap-3">
-        {/* Left Column: Avatar 36x36px + Vertical Thread Line (|) */}
-        <div className="flex flex-col items-center shrink-0">
-          <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs">
-            <img
-              src={comment.user.avatar}
-              alt={comment.user.name}
-              className="w-full h-full object-cover"
-            />
-          </div>
+      {!hasReplies ? (
+        /* SINGLE COMMENT (NO REPLIES): Full-width layout matching Threads screenshot reference */
+        <div className="space-y-2">
+          {/* Header Row: Avatar + Username + Verified + Timestamp + Option (...) Icon */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2.5 min-w-0 flex-1 overflow-hidden">
+              {/* Avatar (w-9 h-9) */}
+              <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
+                <img
+                  src={comment.user.avatar}
+                  alt={comment.user.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
 
-          {/* Threads-style Vertical Connecting Line (|) */}
-          {hasReplies && (
-            <div className="w-[2px] flex-1 bg-neutral-200 dark:bg-neutral-800 my-1 rounded-full min-h-[40px]" />
-          )}
-        </div>
-
-        {/* Right Column: User Info, Comment Text & Actions */}
-        <div className="flex-1 min-w-0 space-y-1">
-          {/* Header Row: Username + Verified + Author Badge + Timestamp + Option Icon */}
-          <div className="flex items-center justify-between gap-2 min-w-0">
-            <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
-              {/* Username */}
-              <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
-                {comment.user.username || comment.user.name}
-              </span>
-
-              {/* Verified Badge */}
-              {comment.user.isVerified && (
-                <BadgeCheck className="w-[17px] h-[17px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified User" />
-              )}
-
-              {/* Author/Seller Badge */}
-              {comment.user.isAuthor && (
-                <span className="px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-[11px] font-medium text-slate-600 dark:text-neutral-300 shrink-0">
-                  Pembuat
+              {/* Username + Verified + Timestamp */}
+              <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+                <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
+                  {comment.user.username || comment.user.name}
                 </span>
-              )}
 
-              {/* Timestamp */}
-              <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
-                {comment.timestamp}
-              </span>
+                {comment.user.isVerified && (
+                  <BadgeCheck className="w-[17px] h-[17px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified User" />
+                )}
+
+                {comment.user.isAuthor && (
+                  <span className="px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-[11px] font-medium text-slate-600 dark:text-neutral-300 shrink-0">
+                    Pembuat
+                  </span>
+                )}
+
+                <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
+                  {comment.timestamp}
+                </span>
+              </div>
             </div>
+
+            {/* Option (...) Icon */}
+            <button
+              type="button"
+              className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
+              aria-label="Opsi komentar"
+            >
+              <MoreHorizontal className="w-4 h-4" />
+            </button>
           </div>
 
-          {/* Comment Body Content */}
-          <p className="text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5">
+          {/* Comment Content (Full Width Aligned with Avatar) */}
+          <p className="text-[15px] text-slate-900 font-normal leading-snug break-words">
             {comment.content}
           </p>
 
-          {/* Comment Action Icons Bar: [Like] [Reply] [Repost] [Share] */}
-          <div className="flex items-center gap-4 text-slate-500 pt-2 text-[13px]">
-            {/* Like Button */}
-            <button
-              type="button"
-              onClick={handleLikeToggle}
-              className={`flex items-center gap-1 hover:opacity-80 active:scale-90 transition-all cursor-pointer ${
-                isLiked ? 'text-rose-500' : 'text-slate-500 hover:text-slate-900'
-              }`}
-            >
-              <Heart className={`w-4 h-4 stroke-[1.75] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-              {likesCount > 0 && <span className="font-normal text-slate-600">{likesCount}</span>}
-            </button>
+          {/* Action Bar */}
+          {renderActionBar()}
+        </div>
+      ) : (
+        /* NESTED THREAD COMMENT (HAS REPLIES): 2-Column layout with vertical connecting line (|) */
+        <div className="flex items-start gap-3">
+          {/* Left Column: Avatar 36x36px + Vertical Thread Line (|) */}
+          <div className="flex flex-col items-center shrink-0">
+            <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs">
+              <img
+                src={comment.user.avatar}
+                alt={comment.user.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
 
-            {/* Reply Button */}
-            <button
-              type="button"
-              onClick={() => onReplyClick?.(comment.user.username || comment.user.name)}
-              className="flex items-center gap-1 hover:text-slate-900 active:scale-90 transition-all cursor-pointer text-slate-500"
-            >
-              <SmoothCommentIcon className="w-4 h-4 stroke-[1.75]" />
-            </button>
-
-            {/* Repost Button */}
-            <button
-              type="button"
-              className="hover:text-slate-900 active:scale-90 transition-all cursor-pointer text-slate-500"
-            >
-              <Repeat className="w-4 h-4 stroke-[1.75]" />
-            </button>
-
-            {/* Share Button */}
-            <button
-              type="button"
-              className="hover:text-slate-900 active:scale-90 transition-all cursor-pointer text-slate-500"
-            >
-              <Send className="w-4 h-4 stroke-[1.75]" />
-            </button>
+            {/* Threads-style Vertical Connecting Line (|) */}
+            <div className="w-[2px] flex-1 bg-neutral-200 dark:bg-neutral-800 my-1 rounded-full min-h-[40px]" />
           </div>
 
-          {/* Render Nested Replies Recursively */}
-          {hasReplies && (
+          {/* Right Column: User Info, Comment Text & Actions */}
+          <div className="flex-1 min-w-0 space-y-1">
+            {/* Header Row */}
+            <div className="flex items-center justify-between gap-2 min-w-0">
+              <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+                <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
+                  {comment.user.username || comment.user.name}
+                </span>
+
+                {comment.user.isVerified && (
+                  <BadgeCheck className="w-[17px] h-[17px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified User" />
+                )}
+
+                {comment.user.isAuthor && (
+                  <span className="px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-[11px] font-medium text-slate-600 dark:text-neutral-300 shrink-0">
+                    Pembuat
+                  </span>
+                )}
+
+                <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
+                  {comment.timestamp}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
+                aria-label="Opsi komentar"
+              >
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Comment Body Content */}
+            <p className="text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5">
+              {comment.content}
+            </p>
+
+            {/* Action Bar */}
+            {renderActionBar()}
+
+            {/* Render Nested Replies Recursively */}
             <div className="mt-2 space-y-2">
               {comment.replies!.map((reply) => (
                 <ThreadCommentItem
@@ -149,9 +211,9 @@ export const ThreadCommentItem: React.FC<ThreadCommentItemProps> = ({
                 />
               ))}
             </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

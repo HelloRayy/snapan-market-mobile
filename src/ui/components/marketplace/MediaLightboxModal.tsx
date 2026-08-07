@@ -24,7 +24,6 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
   // Transform state for 2D Pan & Instant Pinch Zoom
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isTouching, setIsTouching] = useState(false);
 
   // Drag to dismiss state
   const [dragY, setDragY] = useState(0);
@@ -100,8 +99,6 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
 
   // Touch Handlers for Native 2D Pan & Pinch Zoom
   const handleTouchStart = (e: React.TouchEvent) => {
-    setIsTouching(true);
-
     if (e.touches.length === 1) {
       if (scale > 1) {
         // 2D Pan Mode (Zoomed In)
@@ -153,7 +150,6 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
   };
 
   const handleTouchEnd = () => {
-    setIsTouching(false);
     initialPinchDistRef.current = null;
 
     if (scale <= 1) {
@@ -178,7 +174,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
         transform: `translateY(${dragY}px)`,
         opacity: opacity,
       }}
-      className="fixed inset-0 z-[100] backdrop-blur-2xl flex flex-col justify-between overflow-hidden select-none transition-transform duration-75 font-gt-standard text-slate-900"
+      className="fixed inset-0 z-[100] backdrop-blur-2xl flex flex-col justify-between overflow-hidden select-none font-gt-standard text-slate-900"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -189,7 +185,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
         <button
           type="button"
           onClick={onClose}
-          className="w-10 h-10 rounded-full bg-white/90 hover:bg-neutral-100 text-slate-800 border border-neutral-200/80 backdrop-blur-md flex items-center justify-center active:scale-90 transition-all shadow-xs cursor-pointer"
+          className="w-10 h-10 rounded-full bg-white/90 hover:bg-neutral-100 text-slate-800 border border-neutral-200/80 backdrop-blur-md flex items-center justify-center active:scale-90 transition-transform shadow-xs cursor-pointer"
           aria-label="Tutup Media"
         >
           <X className="w-5 h-5 text-slate-800 stroke-[2.25]" />
@@ -201,7 +197,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
           <button
             type="button"
             onClick={handleToggleZoom}
-            className="w-9 h-9 rounded-full bg-white/90 hover:bg-neutral-100 text-slate-700 border border-neutral-200/80 backdrop-blur-md flex items-center justify-center active:scale-90 transition-all shadow-xs cursor-pointer"
+            className="w-9 h-9 rounded-full bg-white/90 hover:bg-neutral-100 text-slate-700 border border-neutral-200/80 backdrop-blur-md flex items-center justify-center active:scale-90 transition-transform shadow-xs cursor-pointer"
             aria-label="Zoom Gambar"
             title="Zoom In/Out"
           >
@@ -244,7 +240,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
                 transform: `translate3d(${currentIndex === idx ? position.x : 0}px, ${
                   currentIndex === idx ? position.y : 0
                 }px, 0) scale(${currentIndex === idx ? scale : 1})`,
-                transition: isTouching ? 'none' : 'transform 180ms ease-out',
+                transition: 'none',
                 touchAction: 'none',
               }}
               className="max-h-[86vh] max-w-full h-auto w-auto object-contain rounded-2xl shadow-xl pointer-events-none select-none"
@@ -266,7 +262,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
                 key={idx}
                 type="button"
                 onClick={() => scrollToImage(idx)}
-                className={`transition-all duration-200 cursor-pointer ${
+                className={`cursor-pointer ${
                   currentIndex === idx
                     ? 'w-7 h-2 rounded-full bg-slate-900 shadow-2xs'
                     : 'w-2 h-2 rounded-full bg-slate-300 hover:bg-slate-500'

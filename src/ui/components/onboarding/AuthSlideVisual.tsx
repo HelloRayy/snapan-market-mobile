@@ -138,7 +138,6 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
       setRegStep('form');
     } else if (authTab === 'register') {
       setAuthTab('login');
-      formSheetRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       onBack?.();
     }
@@ -321,10 +320,10 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
 
       {/* Outer Wrapper for Form Sheet Card */}
       <div className="flex-1 flex flex-col justify-end relative overflow-visible">
-        {/* Main Form Sheet Card with Fixed min 440px Height for Zero Layout Shift */}
+        {/* Main Form Sheet Card with Dynamic Screen Fit for Zero Scrollbars */}
         <div
           ref={formSheetRef}
-          className="relative z-20 -mx-5 -mb-5 bg-pure-white px-6 shadow-2xl space-y-4 overflow-y-auto scroll-smooth transition-all duration-300 cubic-bezier(0.16,1,0.3,1) h-[440px] min-h-[440px] rounded-t-[36px] rounded-b-none border-t border-faint-border pt-6 pb-12"
+          className="relative z-20 -mx-5 -mb-5 bg-pure-white px-6 shadow-2xl space-y-3.5 flex-1 flex flex-col justify-between overflow-y-auto sm:overflow-hidden scroll-smooth transition-all duration-300 cubic-bezier(0.16,1,0.3,1) rounded-t-[36px] rounded-b-none border-t border-faint-border pt-5 pb-8 min-h-[68vh]"
         >
           {/* STEP 2: WHATSAPP OTP VERIFICATION SCREEN */}
           {regStep === 'otp' ? (
@@ -445,7 +444,6 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                   onClick={() => {
                     setAuthTab('login');
                     setErrors({});
-                    formSheetRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   className={`flex-1 relative z-10 flex items-center justify-center whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer text-sm font-bold rounded-full py-2.5 transition-colors duration-200 ${
                     authTab === 'login' ? 'text-slate-900' : 'text-neutral-500 hover:text-slate-900 font-semibold'
@@ -459,9 +457,6 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                   onClick={() => {
                     setAuthTab('register');
                     setErrors({});
-                    setTimeout(() => {
-                      formSheetRef.current?.scrollTo({ top: 280, behavior: 'smooth' });
-                    }, 80);
                   }}
                   className={`flex-1 relative z-10 flex items-center justify-center whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer text-sm font-bold rounded-full py-2.5 transition-colors duration-200 ${
                     authTab === 'register' ? 'text-slate-900' : 'text-neutral-500 hover:text-slate-900 font-semibold'
@@ -480,7 +475,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                     <div>
                       <div
                         key={`fullname-box-${shakeKey}`}
-                        className={`relative flex items-center h-16 rounded-[22px] border bg-pure-white px-4 transition-all shadow-2xs ${
+                        className={`relative flex items-center h-14 rounded-[22px] border bg-pure-white px-4 transition-all shadow-2xs ${
                           errors.fullName
                             ? 'border-rose-400 bg-rose-50/20 focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20 do-shake'
                             : focusedField === 'fullName'
@@ -738,7 +733,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                   <div>
                     <div
                       key={`login-id-box-${shakeKey}`}
-                      className={`relative flex items-center h-16 rounded-[22px] border bg-pure-white px-4 transition-all shadow-2xs ${
+                      className={`relative flex items-center h-14 rounded-[22px] border bg-pure-white px-4 transition-all shadow-2xs ${
                         errors.loginIdentifier
                           ? 'border-rose-400 bg-rose-50/20 focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20 do-shake'
                           : focusedField === 'loginIdentifier'
@@ -791,7 +786,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                 <div>
                   <div
                     key={`password-box-${shakeKey}`}
-                    className={`relative flex items-center h-16 rounded-[22px] border bg-pure-white px-4 transition-all shadow-2xs ${
+                    className={`relative flex items-center h-14 rounded-[22px] border bg-pure-white px-4 transition-all shadow-2xs ${
                       errors.password
                         ? 'border-rose-400 bg-rose-50/20 focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20 do-shake'
                         : focusedField === 'password'

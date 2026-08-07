@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronRight, LogIn } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Slide1Visual } from './Slide1Visual';
 import { Slide2Visual } from './Slide2Visual';
 import { Slide3Visual } from './Slide3Visual';
@@ -12,8 +13,33 @@ interface OnboardingScreenProps {
   onComplete: () => void;
 }
 
+const slideVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 280 : -280,
+    opacity: 0,
+    scale: 0.96,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    scale: 1,
+  },
+  exit: (direction: number) => ({
+    x: direction < 0 ? 280 : -280,
+    opacity: 0,
+    scale: 0.96,
+  }),
+};
+
+const slideTransition = {
+  type: 'spring' as const,
+  stiffness: 280,
+  damping: 28,
+  mass: 0.8,
+};
+
 export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [[currentSlide, direction], setSlideState] = useState([0, 0]);
 
   // Outer Screen Container Ref for Scroll Reset
   const screenContainerRef = useRef<HTMLDivElement>(null);
@@ -68,16 +94,25 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
     }
   ];
 
+  const goToSlide = (newIndex: number) => {
+    const newDir = newIndex > currentSlide ? 1 : -1;
+    setSlideState([newIndex, newDir]);
+  };
+
   const handleNext = () => {
     if (currentSlide < slides.length - 1) {
-      setCurrentSlide((prev) => prev + 1);
+      setSlideState([currentSlide + 1, 1]);
     } else {
       onComplete();
     }
   };
 
   const handleSkip = () => {
-    setCurrentSlide(slides.length - 1);
+    setSlideState([slides.length - 1, 1]);
+  };
+
+  const handleBackFromAuth = () => {
+    setSlideState([currentSlide - 1, -1]);
   };
 
   // Touch Swipe Gesture Handlers (Active ONLY on Onboarding Slides 0-3)
@@ -100,9 +135,9 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
     const isSwipeRight = distance < -40;
 
     if (isSwipeLeft && currentSlide < slides.length - 1) {
-      setCurrentSlide((prev) => prev + 1);
+      setSlideState([currentSlide + 1, 1]);
     } else if (isSwipeRight && currentSlide > 0) {
-      setCurrentSlide((prev) => prev - 1);
+      setSlideState([currentSlide - 1, -1]);
     }
   };
 
@@ -120,35 +155,39 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
         /* Slide Terakhir: Halaman Masuk / Daftar */
         <div className="w-full h-full animate-in fade-in slide-in-from-right-6 duration-300 ease-out">
           <AuthSlideVisual
-            onBack={() => setCurrentSlide((prev) => prev - 1)}
+            onBack={handleBackFromAuth}
             onSuccess={onComplete}
           />
         </div>
       ) : (
         /* Slide Standard Onboarding (Slide 1 - 4) */
         <>
-          {/* Top Visual Carousel Viewport (Native Horizontal Slide Motion) */}
-          <div className="w-full max-w-sm mx-auto pt-2 overflow-hidden">
-            <div
-              className="flex w-full transition-transform duration-350 cubic-bezier(0.16,1,0.3,1)"
-              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-            >
-              {slides.slice(0, 4).map((slide) => (
-                <div key={slide.id} className="w-full shrink-0">
-                  {slide.visual}
-                </div>
-              ))}
-            </div>
+          {/* Top Visual Carousel Viewport (Framermotion Direction-Aware Spring Slide Motion) */}
+          <div className="w-full max-w-sm mx-auto pt-2 overflow-hidden min-h-[280px] flex items-center justify-center relative">
+            <AnimatePresence initial={false} custom={direction} mode="popLayout">
+              <motion.div
+                key={currentSlide}
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={slideTransition}
+                className="w-full shrink-0 flex justify-center"
+              >
+                {current.visual}
+              </motion.div>
+            </AnimatePresence>
           </div>
 
           {/* Middle Text & Pagination Dots */}
           <div className="w-full max-w-sm mx-auto my-auto py-4 space-y-4">
-            {/* Pagination Dots with Fluid Pill Animation (4 Dots for Content Slides) */}
+            {/* Pagination Dots with Smooth Motion */}
             <div className="flex items-center gap-1.5" role="tablist" aria-label="Indikator Slide">
               {slides.slice(0, 4).map((slide, index) => (
                 <button
                   key={slide.id}
-                  onClick={() => setCurrentSlide(index)}
+                  onClick={() => goToSlide(index)}
                   className={`h-1.5 rounded-full transition-all duration-300 cubic-bezier(0.16,1,0.3,1) active:scale-90 cursor-pointer ${
                     currentSlide === index ? 'w-8 bg-[#1d64ec] shadow-sm' : 'w-2 bg-cool-stone hover:bg-warm-fog'
                   }`}
@@ -158,17 +197,27 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
               ))}
             </div>
 
-            {/* Dynamic Staggered Text Transition */}
-            <div
-              key={`text-${currentSlide}`}
-              className="space-y-2 animate-in fade-in slide-in-from-right-4 duration-300 ease-out"
-            >
-              <h2 className="text-2xl font-bold tracking-tight text-slate-ink leading-snug font-shopify-sans">
-                {current.title}
-              </h2>
-              <p className="text-sm text-ash-veil leading-relaxed font-normal font-gt-standard">
-                {current.description}
-              </p>
+            {/* Dynamic Staggered Text Direction-Aware Slide Transition */}
+            <div className="space-y-2 overflow-hidden">
+              <AnimatePresence initial={false} custom={direction} mode="popLayout">
+                <motion.div
+                  key={currentSlide}
+                  custom={direction}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={slideTransition}
+                  className="space-y-2"
+                >
+                  <h2 className="text-2xl font-bold tracking-tight text-slate-ink leading-snug font-shopify-sans">
+                    {current.title}
+                  </h2>
+                  <p className="text-sm text-ash-veil leading-relaxed font-normal font-gt-standard">
+                    {current.description}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
 

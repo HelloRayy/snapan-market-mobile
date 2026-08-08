@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Send } from 'lucide-react';
-import { ButtonPrimary } from '../ui/ButtonPrimary';
 
 interface CommentInputBarProps {
   replyToUser?: string | null;
@@ -48,21 +47,21 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
           className="flex-1 bg-neutral-100 hover:bg-neutral-100/80 focus:bg-white border border-transparent focus:border-[#1d64ec] rounded-full px-4 py-2 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all"
         />
 
-        {/* Kumo UI Primary Send Button */}
-        <ButtonPrimary
+        {/* Kumo UI Primary Black Send Button */}
+        <button
           type="submit"
           disabled={!text.trim()}
-          size="sm"
-          className={`rounded-full px-3.5 h-8 text-[12px] shrink-0 transition-opacity ${
-            !text.trim() ? 'opacity-50 cursor-not-allowed' : 'active:scale-95'
+          className={`relative inline-flex items-center justify-center gap-1 rounded-full px-3.5 h-8 text-[12px] font-semibold text-white bg-[#18181b] border border-black/40 shadow-2xs overflow-hidden shrink-0 transition-all ${
+            !text.trim() ? 'opacity-40 cursor-not-allowed' : 'active:scale-95 cursor-pointer'
           }`}
           aria-label="Kirim Komentar"
         >
-          <span className="flex items-center gap-1">
+          <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
+          <span className="relative z-10 flex items-center gap-1">
             <span>Kirim</span>
             <Send className="w-3 h-3 stroke-[2.25]" />
           </span>
-        </ButtonPrimary>
+        </button>
       </form>
     </div>
   );

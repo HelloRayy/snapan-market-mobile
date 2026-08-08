@@ -37,14 +37,14 @@ export const StickyBuyBar: React.FC<StickyBuyBarProps> = ({
         <span>Tanya</span>
       </button>
 
-      {/* 2. Primary Action: Kumo UI Primary Black "Beli Sekarang" CTA Button */}
+      {/* 2. Primary Action: Kumo UI Electric Blue "Beli Sekarang" CTA Button */}
       <button
         type="button"
         onClick={onBuyClick}
-        className="relative inline-flex items-center justify-between flex-1 h-12 px-3.5 rounded-2xl text-white bg-[#18181b] border border-black/40 shadow-md active:scale-[0.98] transition-all cursor-pointer overflow-hidden shrink-0 select-none group min-w-0"
+        className="relative inline-flex items-center justify-between flex-1 h-12 px-3.5 rounded-2xl text-white bg-[#1d64ec] border border-[#154ec1] shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all cursor-pointer overflow-hidden shrink-0 select-none group min-w-0"
       >
         {/* Kumo Inset Top Rim Highlight Gradient */}
-        <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] group-hover:from-neutral-600/80 transition-all pointer-events-none" />
+        <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] group-hover:from-[#2563eb] transition-all pointer-events-none" />
 
         {/* Left Side: Shopping Bag Icon + Text */}
         <span className="relative z-10 flex items-center gap-2 font-semibold text-[14px] tracking-tight truncate">

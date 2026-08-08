@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { X, Send, MapPin } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 
@@ -14,8 +14,32 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
   onClose,
 }) => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [dragY, setDragY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const startYRef = useRef(0);
 
   if (!isOpen) return null;
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    startYRef.current = e.touches[0].clientY;
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const currentY = e.touches[0].clientY;
+    const deltaY = currentY - startYRef.current;
+    if (deltaY > 0) {
+      setDragY(deltaY);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    if (dragY > 90) {
+      onClose();
+    }
+    setDragY(0);
+  };
 
   const formatRupiah = (val: number) =>
     new Intl.NumberFormat('id-ID', {
@@ -59,14 +83,27 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
   const images = post.images && post.images.length > 0 ? post.images : ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80'];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 font-gt-standard">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-xs animate-backdrop-fade font-gt-standard">
       {/* Overlay Backdrop Click */}
       <div className="absolute inset-0" onClick={onClose} />
 
-      {/* Bottom Sheet Card - Structurally Refactored Layout */}
-      <div className="relative w-full max-w-md bg-white rounded-t-[32px] p-5 z-10 shadow-2xl animate-in slide-in-from-bottom duration-300 space-y-3.5">
-        {/* Top Handle Bar Indicator */}
-        <div className="w-10 h-1 bg-neutral-200 rounded-full mx-auto -mt-1 mb-0.5" />
+      {/* Bottom Sheet Card - Native Spring Animation & Drag Gesture */}
+      <div
+        style={{
+          transform: dragY > 0 ? `translateY(${dragY}px)` : undefined,
+          transition: isDragging ? 'none' : 'transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)',
+        }}
+        className="relative w-full max-w-md bg-white rounded-t-[32px] p-5 pb-8 z-10 shadow-[0_-8px_40px_rgba(0,0,0,0.25)] animate-sheet-slide space-y-3.5 will-change-transform"
+      >
+        {/* Top Handle Bar Indicator with Drag Listener */}
+        <div
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          className="py-2 -mt-3 -mx-5 cursor-grab active:cursor-grabbing flex justify-center items-center touch-pan-y"
+        >
+          <div className="w-12 h-1.5 bg-neutral-300 rounded-full" />
+        </div>
 
         {/* Header: [Spacer Left] --- [Title Center] --- [Circle X Right] */}
         <div className="flex items-center justify-between border-b border-neutral-100 pb-2.5">

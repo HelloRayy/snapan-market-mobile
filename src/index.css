@@ -61,3 +61,28 @@ body {
 @utility animate-shake {
   animation: shake-h 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
+
+/* Native Bottom Sheet Slide-Up & Backdrop Animations */
+@keyframes sheet-slide-up {
+  0% {
+    transform: translateY(100%);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes backdrop-fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@utility animate-sheet-slide {
+  animation: sheet-slide-up 0.36s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+@utility animate-backdrop-fade {
+  animation: backdrop-fade-in 0.28s ease-out forwards;
+}

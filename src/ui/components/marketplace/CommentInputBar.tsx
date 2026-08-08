@@ -40,6 +40,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
 
         {/* Input Text Field */}
         <input
+          id="comment-input-field"
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}

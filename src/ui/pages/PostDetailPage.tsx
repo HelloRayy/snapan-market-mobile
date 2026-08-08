@@ -49,6 +49,25 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
 
   const handleReplyClick = (username: string) => {
     setReplyToUser(username);
+    const inputEl = document.getElementById('comment-input-field');
+    if (inputEl) {
+      inputEl.focus();
+    }
+  };
+
+  const handleChatClick = () => {
+    const sellerUsername = post.seller.username || post.seller.name;
+    setReplyToUser(sellerUsername);
+    const commentsSection = document.getElementById('comments-section');
+    if (commentsSection) {
+      commentsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    setTimeout(() => {
+      const inputEl = document.getElementById('comment-input-field');
+      if (inputEl) {
+        inputEl.focus();
+      }
+    }, 300);
   };
 
   return (
@@ -80,7 +99,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         />
 
         {/* Comments Section */}
-        <section className="px-4 pt-2">
+        <section id="comments-section" className="px-4 pt-2">
           {/* Section Divider Header */}
           <div className="py-2.5 flex items-center justify-between">
             <h2 className="font-semibold text-sm text-slate-900">
@@ -116,11 +135,12 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         </section>
       </main>
 
-      {/* Sticky Bottom Primary Buy CTA Bar */}
+      {/* Sticky Bottom Dual Action CTA Bar (Tanya + Beli) */}
       <StickyBuyBar
         price={post.price || 150000}
         stockCount={post.stock || 5}
         onBuyClick={() => onAddToCart?.(post)}
+        onChatClick={handleChatClick}
       />
     </div>
   );

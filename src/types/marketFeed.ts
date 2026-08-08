@@ -42,6 +42,7 @@ export interface MarketPostItem {
   repostsCount: number;
   timestamp: string; // e.g. '10m lalu', '2j lalu', '1hr lalu'
   isLiked?: boolean;
+  isReposted?: boolean;
   isSaved?: boolean;
   comments?: PostComment[];
 }

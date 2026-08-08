@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, MoreHorizontal, Box } from 'lucide-react';
+import { Heart, MoreHorizontal, Box, Repeat2, Send } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { MediaLightboxModal } from './MediaLightboxModal';
 import { ClickableVerifiedBadge } from './VerifiedBadgeModal';
@@ -34,6 +34,16 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 }) => {
   const [isLiked, setIsLiked] = useState(item.isLiked || false);
   const [likesCount, setLikesCount] = useState(item.likesCount);
+
+  const [isReposted, setIsReposted] = useState(item.isReposted || false);
+  const [repostsCount, setRepostsCount] = useState(item.repostsCount || 0);
+
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 2500);
+  };
 
   // Fullscreen Media Lightbox State
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -78,6 +88,42 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
     } else {
       setIsLiked(true);
       setLikesCount((prev) => prev + 1);
+    }
+  };
+
+  const handleRepostToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isReposted) {
+      setIsReposted(false);
+      setRepostsCount((prev) => Math.max(0, prev - 1));
+      showToast('Batal diposting ulang');
+    } else {
+      setIsReposted(true);
+      setRepostsCount((prev) => prev + 1);
+      showToast('Postingan berhasil diposting ulang! 🚀');
+    }
+  };
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const shareUrl = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: item.title || 'Snapan Market',
+          text: `Cek postingan ${item.seller.name} di Snapan Market!`,
+          url: shareUrl,
+        });
+      } catch (err) {
+        // User cancelled share dialog
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        showToast('Tautan postingan berhasil disalin! 📋');
+      } catch (err) {
+        showToast('Tautan disalin ke papan klip');
+      }
     }
   };
 
@@ -130,39 +176,65 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
   );
 
   const renderActionBar = () => (
-    <div className="pt-1 flex items-center gap-1 text-slate-600 -ml-1">
-      {/* Like Button */}
+    <div className="pt-1 flex items-center justify-between text-slate-600 -ml-1 pr-1 max-w-full">
+      {/* 1. Like Button */}
       <button
         type="button"
         onClick={handleLikeToggle}
-        className={`flex items-center gap-1.5 min-h-[36px] px-2.5 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer select-none ${
+        className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer select-none ${
           isLiked ? 'text-rose-500' : 'text-slate-600 hover:text-slate-900'
         }`}
         aria-label={`Sukai postingan. ${likesCount} suka`}
       >
-        <Heart className={`w-5 h-5 stroke-[2] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-        <span className={`font-normal text-[14px] ${isLiked ? 'text-rose-500' : 'text-slate-700'}`}>{likesCount}</span>
+        <Heart className={`w-4.5 h-4.5 stroke-[2] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+        <span className={`font-normal text-[13.5px] ${isLiked ? 'text-rose-500 font-medium' : 'text-slate-700'}`}>{likesCount}</span>
       </button>
 
-      {/* Comment Button */}
+      {/* 2. Comment Button */}
       <button
         type="button"
         onClick={(e) => {
           e.stopPropagation();
           onPostClick?.(item);
         }}
-        className="flex items-center gap-1.5 min-h-[36px] px-2.5 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer text-slate-600 hover:text-slate-900 select-none"
+        className="flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer text-slate-600 hover:text-slate-900 select-none"
         aria-label={`Komentar postingan. ${item.commentsCount} komentar`}
       >
-        <SmoothCommentIcon className="w-5 h-5 stroke-[2]" />
-        <span className="font-normal text-[14px] text-slate-700">{item.commentsCount}</span>
+        <SmoothCommentIcon className="w-4.5 h-4.5 stroke-[2]" />
+        <span className="font-normal text-[13.5px] text-slate-700">{item.commentsCount}</span>
       </button>
 
-      {/* Stock Indicator (Icon + Number) */}
+      {/* 3. Repost Button */}
+      <button
+        type="button"
+        onClick={handleRepostToggle}
+        className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer select-none ${
+          isReposted ? 'text-emerald-500' : 'text-slate-600 hover:text-slate-900'
+        }`}
+        aria-label={`Post ulang postingan. ${repostsCount} posting ulang`}
+      >
+        <Repeat2 className={`w-4.5 h-4.5 stroke-[2] ${isReposted ? 'text-emerald-500' : ''}`} />
+        <span className={`font-normal text-[13.5px] ${isReposted ? 'text-emerald-500 font-medium' : 'text-slate-700'}`}>
+          {repostsCount}
+        </span>
+      </button>
+
+      {/* 4. Send / Share Button */}
+      <button
+        type="button"
+        onClick={handleShare}
+        className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer text-slate-600 hover:text-slate-900 select-none"
+        aria-label="Bagikan postingan"
+        title="Bagikan / Kirim"
+      >
+        <Send className="w-4 h-4 stroke-[1.8] text-slate-600" />
+      </button>
+
+      {/* 5. Stock Indicator (Icon + Number) */}
       {item.stock !== undefined && (
-        <div className="flex items-center gap-1.5 min-h-[36px] px-2.5 py-1 text-slate-500 hover:text-slate-700 transition-colors select-none" title={`Stok tersisa ${item.stock}`}>
-          <Box className="w-4.5 h-4.5 stroke-[2] text-slate-500" />
-          <span className="font-normal text-[14px] text-slate-700">{item.stock}</span>
+        <div className="flex items-center gap-1.5 min-h-[36px] px-1.5 py-1 text-slate-500 hover:text-slate-700 transition-colors select-none ml-auto" title={`Stok tersisa ${item.stock}`}>
+          <Box className="w-4 h-4 stroke-[2] text-slate-500" />
+          <span className="font-normal text-[13.5px] text-slate-700">{item.stock}</span>
         </div>
       )}
     </div>
@@ -290,6 +362,13 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
         onClose={() => setIsLightboxOpen(false)}
         caption={item.caption}
       />
+
+      {/* Floating Feedback Toast Notification for Repost & Share */}
+      {toastMessage && (
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[99999] px-4 py-2 rounded-full bg-slate-900/95 text-white text-xs font-semibold shadow-2xl border border-white/20 backdrop-blur-md animate-in fade-in slide-in-from-bottom-3 duration-200 pointer-events-none">
+          {toastMessage}
+        </div>
+      )}
     </article>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { X, Send, MapPin, CheckCircle2 } from 'lucide-react';
+import { X, Send, MapPin } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
+import { ClickableVerifiedBadge } from './VerifiedBadgeModal';
 
 interface BuyBottomSheetProps {
   isOpen: boolean;
@@ -169,7 +170,9 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
                 <span className="font-bold text-base text-slate-900 truncate">
                   {post.seller.name}
                 </span>
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#1d64ec] shrink-0" />
+                {post.seller.isVerified && (
+                  <ClickableVerifiedBadge sellerName={post.seller.name} className="w-[17px] h-[17px]" />
+                )}
               </div>
 
               {/* Badges: Kelas & Slot/Stok */}

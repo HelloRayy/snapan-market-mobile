@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Heart, MoreHorizontal, BadgeCheck, Box } from 'lucide-react';
+import { Heart, MoreHorizontal, Box } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { MediaLightboxModal } from './MediaLightboxModal';
+import { ClickableVerifiedBadge } from './VerifiedBadgeModal';
 
 // Custom Smooth Rounded Lucide-Family Comment Icon (Rounded tail tip, 100% Lucide family match)
 const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -194,7 +195,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 </span>
 
                 {item.seller.isVerified && (
-                  <BadgeCheck className="w-[17px] h-[17px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified Seller" />
+                  <ClickableVerifiedBadge sellerName={item.seller.name} className="w-[17px] h-[17px]" />
                 )}
 
                 <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
@@ -247,7 +248,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                   {item.seller.name}
                 </span>
                 {item.seller.isVerified && (
-                  <BadgeCheck className="w-[18px] h-[18px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified Seller" />
+                  <ClickableVerifiedBadge sellerName={item.seller.name} className="w-[18px] h-[18px]" />
                 )}
                 <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
                   {item.seller.classGroup}

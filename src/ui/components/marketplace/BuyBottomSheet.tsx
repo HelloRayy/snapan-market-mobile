@@ -111,14 +111,14 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
     >
       {/* Overlay Backdrop Click */}
       <div
-        className={`absolute inset-0 bg-black/75 backdrop-blur-xs transition-opacity duration-300 ${
+        className={`absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 ${
           isOpen ? 'opacity-100' : 'opacity-0'
         }`}
         onClick={onClose}
         onTouchMove={(e) => e.preventDefault()}
       />
 
-      {/* Bottom Sheet Dark Card - Matching User Reference Image */}
+      {/* Bottom Sheet White Card - Matching Structure of User Reference Image with Pure White Background */}
       <div
         style={{
           transform: !isOpen
@@ -130,7 +130,7 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
             ? 'none'
             : 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
-        className="relative w-full max-w-md bg-[#18181b] text-white rounded-t-[32px] p-5 pb-7 z-10 shadow-[0_-12px_50px_rgba(0,0,0,0.6)] space-y-4 border-t border-neutral-800 will-change-transform"
+        className="relative w-full max-w-md bg-white text-slate-900 rounded-t-[32px] p-5 pb-7 z-10 shadow-[0_-12px_50px_rgba(0,0,0,0.15)] space-y-4 border-t border-neutral-100 will-change-transform"
       >
         {/* Top Handle Bar Indicator with Drag Listener */}
         <div
@@ -139,7 +139,7 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
           onTouchEnd={handleTouchEnd}
           className="py-1.5 -mt-3 -mx-5 cursor-grab active:cursor-grabbing flex justify-center items-center touch-pan-y"
         >
-          <div className="w-12 h-1.5 bg-neutral-700 rounded-full" />
+          <div className="w-12 h-1.5 bg-neutral-300 rounded-full" />
         </div>
 
         {/* 1. Header Penjual (Avatar + Nama + Badge Kelas & Slot Tersisa) */}
@@ -149,23 +149,23 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
             <img
               src={post.seller.avatar}
               alt={post.seller.name}
-              className="w-11 h-11 rounded-full object-cover border border-neutral-700 shrink-0 shadow-xs"
+              className="w-11 h-11 rounded-full object-cover border border-neutral-200 shrink-0 shadow-2xs"
             />
 
             <div className="flex flex-col min-w-0 space-y-1">
               <div className="flex items-center gap-1.5">
-                <span className="font-bold text-base text-white truncate">
+                <span className="font-bold text-base text-slate-900 truncate">
                   {post.seller.name}
                 </span>
-                <CheckCircle2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#1d64ec] shrink-0" />
               </div>
 
               {/* Badges: Kelas & Slot/Stok */}
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="px-2 py-0.5 rounded-md text-[10.5px] font-semibold bg-neutral-800 text-neutral-300 border border-neutral-700">
+                <span className="px-2 py-0.5 rounded-md text-[10.5px] font-semibold bg-neutral-100 text-slate-700 border border-neutral-200/80">
                   {post.seller.classGroup}
                 </span>
-                <span className="px-2 py-0.5 rounded-md text-[10.5px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                <span className="px-2 py-0.5 rounded-md text-[10.5px] font-semibold bg-amber-50 text-amber-700 border border-amber-200/80">
                   {stockBadgeText}
                 </span>
               </div>
@@ -176,7 +176,7 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center text-neutral-300 transition-colors cursor-pointer active:scale-95 shrink-0"
+            className="w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200/80 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-95 shrink-0"
             aria-label="Tutup Modal"
           >
             <X className="w-4 h-4 stroke-[2.2]" />
@@ -184,7 +184,7 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
         </div>
 
         {/* 2. Main Product Image (Replaces QR Code in Reference Image) */}
-        <div className="relative rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-900 group shadow-md">
+        <div className="relative rounded-2xl overflow-hidden border border-neutral-200/80 bg-neutral-50 group shadow-2xs">
           <div
             className="w-full h-52 overflow-x-auto flex snap-x snap-mandatory scrollbar-none"
             onScroll={(e) => {
@@ -208,14 +208,14 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
           {/* Pagination Dot Indicator */}
           {images.length > 1 && (
             <div className="absolute bottom-2.5 left-0 right-0 flex justify-center pointer-events-none">
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/20">
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20">
                 {images.map((_, idx) => (
                   <div
                     key={idx}
                     className={`h-1.5 rounded-full transition-all duration-300 ${
                       idx === activeImageIndex
                         ? 'w-4 bg-white'
-                        : 'w-1.5 bg-white/40'
+                        : 'w-1.5 bg-white/50'
                     }`}
                   />
                 ))}
@@ -226,10 +226,10 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
 
         {/* 3. Detail Produk (Nama Barang & Deskripsi Singkat) */}
         <div className="space-y-1">
-          <h3 className="font-bold text-lg text-white leading-snug">
+          <h3 className="font-bold text-lg text-slate-900 leading-snug">
             {titleText}
           </h3>
-          <p className="text-xs text-neutral-400 font-normal leading-relaxed line-clamp-2">
+          <p className="text-xs text-neutral-500 font-normal leading-relaxed line-clamp-2">
             {rawCaption}
           </p>
         </div>
@@ -239,8 +239,10 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
           <button
             type="button"
             onClick={handleWhatsAppCheckout}
-            className="relative inline-flex items-center justify-between w-full h-12 px-5 rounded-2xl text-white bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 active:scale-[0.98] font-medium text-sm shadow-md transition-all cursor-pointer overflow-hidden select-none group"
+            className="relative inline-flex items-center justify-between w-full h-12 px-5 rounded-2xl text-white bg-[#18181b] hover:bg-black active:scale-[0.98] font-medium text-sm shadow-md transition-all cursor-pointer overflow-hidden select-none group"
           >
+            <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
+            
             {/* Left Label */}
             <span className="relative z-10 flex items-center gap-2 shrink-0 font-medium">
               <Send className="w-4 h-4 stroke-[1.8] text-white" />
@@ -248,7 +250,7 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
             </span>
 
             {/* Right Price */}
-            <span className="relative z-10 font-bold text-sm text-blue-400 tracking-tight shrink-0">
+            <span className="relative z-10 font-bold text-sm text-white tracking-tight shrink-0">
               {formatRupiah(post.price)}
             </span>
           </button>

@@ -142,18 +142,13 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
           <X className="w-4 h-4 stroke-[2.2]" />
         </button>
 
-        {/* Top Handle Bar Indicator with Drag Listener */}
+        {/* 1. Header Penjual (Avatar + Nama + Badge Kelas & Slot Tersisa) with Drag Gesture */}
         <div
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
-          className="py-1.5 -mt-3 -mx-5 cursor-grab active:cursor-grabbing flex justify-center items-center touch-pan-y"
+          className="flex items-center justify-between gap-3 pt-0.5 cursor-grab active:cursor-grabbing touch-pan-y"
         >
-          <div className="w-12 h-1.5 bg-neutral-300 rounded-full" />
-        </div>
-
-        {/* 1. Header Penjual (Avatar + Nama + Badge Kelas & Slot Tersisa) */}
-        <div className="flex items-center justify-between gap-3 pt-0.5">
           <div className="flex items-center gap-3 min-w-0">
             {/* Avatar Penjual */}
             <img

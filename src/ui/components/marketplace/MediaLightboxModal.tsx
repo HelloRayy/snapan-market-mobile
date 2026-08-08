@@ -114,8 +114,15 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
 
   const opacity = Math.max(0.3, 1 - Math.abs(dragY) / 350);
 
+  const handleClose = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onClose();
+  };
+
   return (
     <div
+      onClick={(e) => e.stopPropagation()}
+      onPointerDown={(e) => e.stopPropagation()}
       style={{
         backgroundColor: `rgba(255, 255, 255, ${0.98 * opacity})`,
         transform: `translateY(${dragY}px)`,
@@ -131,7 +138,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
         {/* Top-Left: Floating Kumo UI Circular Close X Button */}
         <button
           type="button"
-          onClick={onClose}
+          onClick={handleClose}
           className="w-10 h-10 rounded-full bg-white/90 hover:bg-neutral-100 text-slate-800 border border-neutral-200/80 backdrop-blur-md flex items-center justify-center active:scale-90 transition-transform shadow-xs cursor-pointer"
           aria-label="Tutup Media"
         >

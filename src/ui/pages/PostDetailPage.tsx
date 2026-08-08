@@ -78,7 +78,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-pure-white pb-28 font-gt-standard">
+    <div className="min-h-screen bg-pure-white pb-36 font-gt-standard">
       {/* Top Header Bar: [Left: ← Back Button] --- [Center: Postingan] --- [Right: Spacer] */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-neutral-200 px-4 h-14 flex items-center justify-between max-w-xl mx-auto">
         <button

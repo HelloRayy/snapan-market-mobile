@@ -23,8 +23,8 @@ export const StickyBuyBar: React.FC<StickyBuyBarProps> = ({
 
   return (
     <div className="fixed bottom-0 left-0 right-0 max-w-xl mx-auto z-40 font-gt-standard">
-      {/* Full Width White Container with Top-Left & Top-Right Rounded Corners & Top Notch Line */}
-      <div className="bg-white border-t border-neutral-200/80 px-3.5 pt-2.5 pb-3.5 rounded-t-[24px] shadow-[0_-4px_25px_rgba(0,0,0,0.08)] space-y-3.5">
+      {/* Full Width White Container with Top-Left & Top-Right Rounded Corners & Safe Area Bottom Padding */}
+      <div className="bg-white border-t border-neutral-200/80 px-4 pt-3 pb-7 pb-[calc(1.75rem+env(safe-area-inset-bottom,0px))] rounded-t-[24px] shadow-[0_-4px_25px_rgba(0,0,0,0.08)] space-y-3.5">
         {/* Top Notch / Drag Handle Line */}
         <div className="w-10 h-1 bg-neutral-300/80 rounded-full mx-auto" />
 

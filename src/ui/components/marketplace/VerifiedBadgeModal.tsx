@@ -90,8 +90,8 @@ export const ClickableVerifiedBadge: React.FC<ClickableVerifiedBadgeProps> = ({
         type="button"
         onClick={handleToggleTooltip}
         className="inline-flex items-center shrink-0 cursor-pointer hover:opacity-80 active:scale-90 transition-transform select-none"
-        title="Penjual Terverifikasi"
-        aria-label="Penjual Terverifikasi"
+        title="User Terverifikasi"
+        aria-label="User Terverifikasi"
       >
         <BadgeCheck className={`${className} text-[#1d64ec] fill-[#1d64ec] text-white`} />
       </button>
@@ -120,7 +120,7 @@ export const ClickableVerifiedBadge: React.FC<ClickableVerifiedBadgeProps> = ({
 
             <BadgeCheck className="w-4 h-4 text-[#1d64ec] fill-[#1d64ec] text-white shrink-0" />
             <span className="text-[13px] font-bold text-slate-900 tracking-tight">
-              Penjual Terverifikasi
+              User Terverifikasi
             </span>
           </div>,
           document.body

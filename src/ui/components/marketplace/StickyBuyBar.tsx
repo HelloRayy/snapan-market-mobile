@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShoppingBag, ArrowRight, MessageSquare } from 'lucide-react';
+import { ShoppingCart, ArrowRight, MessageSquare } from 'lucide-react';
 
 interface StickyBuyBarProps {
   price?: number;
@@ -46,10 +46,10 @@ export const StickyBuyBar: React.FC<StickyBuyBarProps> = ({
         {/* Kumo Inset Top Rim Highlight Gradient */}
         <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] group-hover:from-[#2563eb] transition-all pointer-events-none" />
 
-        {/* Left Side: Shopping Bag Icon + Text */}
+        {/* Left Side: Shopping Cart Icon + Text */}
         <span className="relative z-10 flex items-center gap-2 font-semibold text-[14px] tracking-tight truncate">
           <div className="w-6.5 h-6.5 rounded-lg bg-white/10 flex items-center justify-center border border-white/15 shrink-0">
-            <ShoppingBag className="w-3.5 h-3.5 text-white stroke-[2.2]" />
+            <ShoppingCart className="w-3.5 h-3.5 text-white stroke-[2.2]" />
           </div>
           <span className="truncate">Beli</span>
         </span>

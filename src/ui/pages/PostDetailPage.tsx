@@ -4,6 +4,7 @@ import { MarketPostItem, PostComment } from '@/types/marketFeed';
 import { MarketPostCard } from '../components/marketplace/MarketPostCard';
 import { PostCommentItem } from '../components/marketplace/PostCommentItem';
 import { CommentInputBar } from '../components/marketplace/CommentInputBar';
+import { StickyBuyBar } from '../components/marketplace/StickyBuyBar';
 
 interface PostDetailPageProps {
   post: MarketPostItem;
@@ -88,6 +89,13 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
             <span className="text-xs text-neutral-400">Urutkan dari Terbaru</span>
           </div>
 
+          {/* In-Page Inline Comment Input Field (under Komentar Header) */}
+          <CommentInputBar
+            replyToUser={replyToUser}
+            onSubmitComment={handleAddComment}
+            isInline={true}
+          />
+
           {/* Comment List */}
           {comments.length > 0 ? (
             <div className="divide-y divide-neutral-200">
@@ -108,10 +116,11 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         </section>
       </main>
 
-      {/* Sticky Bottom Reply Input Bar */}
-      <CommentInputBar
-        replyToUser={replyToUser}
-        onSubmitComment={handleAddComment}
+      {/* Sticky Bottom Primary Buy CTA Bar */}
+      <StickyBuyBar
+        price={post.price || 150000}
+        stockCount={post.stock || 5}
+        onBuyClick={() => onAddToCart?.(post)}
       />
     </div>
   );

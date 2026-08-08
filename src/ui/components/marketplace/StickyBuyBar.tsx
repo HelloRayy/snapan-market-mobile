@@ -25,16 +25,15 @@ export const StickyBuyBar: React.FC<StickyBuyBarProps> = ({
     <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto z-50 font-gt-standard select-none">
       {/* Floating White Pill Dock Container (Identical to Home Bottom Nav Style) */}
       <div className="bg-white/95 backdrop-blur-xl border border-neutral-200/80 p-1.5 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.12)] flex items-center gap-2">
-        {/* Left Kumo Secondary Button: "Tanya" */}
+        {/* Left Kumo Secondary Button: Icon Only "Tanya" */}
         <button
           type="button"
           onClick={onChatClick}
-          className="h-11 px-4 rounded-full bg-white text-[#111827] border border-neutral-200 shadow-2xs hover:bg-neutral-50 active:scale-[0.98] font-medium text-[13.5px] flex items-center justify-center gap-1.5 transition-all cursor-pointer shrink-0 select-none"
+          className="w-11 h-11 rounded-full bg-white text-[#111827] border border-neutral-200 shadow-2xs hover:bg-neutral-50 active:scale-95 flex items-center justify-center transition-all cursor-pointer shrink-0 select-none"
           title="Tanyakan ke Penjual / Kolom Komentar"
           aria-label="Tanya Penjual di Komentar"
         >
-          <MessageSquare className="w-4 h-4 text-slate-700 stroke-[1.8]" />
-          <span>Tanya</span>
+          <MessageSquare className="w-5 h-5 text-slate-800 stroke-[1.8]" />
         </button>
 
         {/* Right Kumo Primary Button: Left Label --- Right Price */}

@@ -18,9 +18,12 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const startYRef = useRef(0);
 
-  // Body scroll lock effect (Native Modal Behavior - Prevents background scrolling when open)
+  // Body scroll lock & state reset effect (Native Modal Behavior)
   React.useEffect(() => {
     if (isOpen) {
+      setActiveImageIndex(0);
+      setDragY(0);
+
       const originalOverflow = document.body.style.overflow;
       const originalPosition = document.body.style.position;
       const originalWidth = document.body.style.width;
@@ -39,7 +42,7 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
         window.scrollTo(0, scrollY);
       };
     }
-  }, [isOpen]);
+  }, [isOpen, post.id]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     startYRef.current = e.touches[0].clientY;

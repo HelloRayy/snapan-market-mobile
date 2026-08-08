@@ -22,10 +22,13 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   const [replyToUser, setReplyToUser] = useState<string | null>(null);
   const [isBuySheetOpen, setIsBuySheetOpen] = useState(false);
 
-  // Scroll to top on mount
+  // Scroll to top & sync comments and state when post prop changes
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    setComments(post.comments || []);
+    setReplyToUser(null);
+    setIsBuySheetOpen(false);
+  }, [post.id, post.comments]);
 
   const handleAddComment = (content: string) => {
     const newComment: PostComment = {
@@ -150,8 +153,9 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         onChatClick={handleChatClick}
       />
 
-      {/* Interactive Buy Bottom Sheet Modal */}
+      {/* Interactive Buy Bottom Sheet Modal (Synced to active post.id) */}
       <BuyBottomSheet
+        key={post.id}
         isOpen={isBuySheetOpen}
         post={post}
         onClose={() => setIsBuySheetOpen(false)}

@@ -28,18 +28,22 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
           const Icon = item.icon;
           const isActive = activeTab === item.id;
 
-          // Center Plus Action Button: Elevated Floating FAB Protruding Out Above Container
+          // Center Plus Action Button: Elevated Kumo Primary Electric Blue Floating FAB
           if (item.isAction) {
             return (
               <div key={item.id} className="relative flex items-center justify-center shrink-0 w-11 h-9">
                 <button
                   type="button"
                   onClick={onPostClick || (() => onTabChange('post'))}
-                  className="absolute -top-5 w-11.5 h-11.5 rounded-full bg-[#18181b] hover:bg-black active:scale-90 text-white flex items-center justify-center shadow-[0_8px_20px_rgba(0,0,0,0.3)] border-2 border-white transition-all cursor-pointer z-10"
+                  className="absolute -top-5 w-11.5 h-11.5 rounded-full bg-[#1d64ec] hover:bg-[#154ec1] border border-[#154ec1] active:scale-90 text-white flex items-center justify-center shadow-[0_8px_20px_rgba(29,100,236,0.4)] ring-4 ring-white transition-all cursor-pointer z-10 overflow-hidden group"
                   aria-label="Jual Produk Baru"
                   title="Jual Produk Baru"
                 >
-                  <Plus className="w-5.5 h-5.5 stroke-[2.5]" />
+                  {/* Kumo Inset Top Rim Highlight Gradient */}
+                  <span className="absolute inset-0 rounded-full bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.4)] group-hover:from-[#2563eb] transition-all pointer-events-none" />
+
+                  {/* Plus Icon */}
+                  <Plus className="w-5.5 h-5.5 stroke-[2.5] text-white relative z-10" />
                 </button>
               </div>
             );

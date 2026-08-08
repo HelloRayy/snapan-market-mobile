@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { BadgeCheck, X, HelpCircle, CheckCircle2 } from 'lucide-react';
 
 interface VerifiedBadgeModalProps {
@@ -16,7 +17,7 @@ export const VerifiedBadgeModal: React.FC<VerifiedBadgeModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 font-gt-standard select-none animate-in fade-in duration-200"
+      className="fixed inset-0 z-[100000] flex items-center justify-center p-4 font-gt-standard select-none animate-in fade-in duration-200"
       onClick={onClose}
     >
       {/* Dark Overlay Backdrop */}
@@ -108,32 +109,80 @@ export const ClickableVerifiedBadge: React.FC<ClickableVerifiedBadgeProps> = ({
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showDetailsInline, setShowDetailsInline] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [tooltipPos, setTooltipPos] = useState<{ top: number; left: number; arrowLeft: number } | null>(null);
 
-  // Close tooltip on click outside
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+
+  const updatePosition = () => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const tooltipWidth = 260; // 260px width
+      const centerLeft = rect.left + rect.width / 2;
+
+      // Ensure tooltip stays within viewport screen padding
+      const clampedLeft = Math.max(
+        tooltipWidth / 2 + 12,
+        Math.min(window.innerWidth - tooltipWidth / 2 - 12, centerLeft)
+      );
+
+      // Arrow position relative to tooltip box center
+      const arrowOffset = centerLeft - clampedLeft;
+
+      setTooltipPos({
+        top: rect.top - 10, // 10px above icon
+        left: clampedLeft,
+        arrowLeft: tooltipWidth / 2 + arrowOffset,
+      });
+    }
+  };
+
+  const handleToggleTooltip = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isTooltipOpen) {
+      updatePosition();
+      setShowDetailsInline(false);
+      setIsTooltipOpen(true);
+    } else {
+      setIsTooltipOpen(false);
+    }
+  };
+
+  // Update position on scroll or resize when open & handle click outside
   useEffect(() => {
+    if (!isTooltipOpen) return;
+
+    const handleScrollOrResize = () => updatePosition();
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node) &&
+        tooltipRef.current &&
+        !tooltipRef.current.contains(event.target as Node)
+      ) {
         setIsTooltipOpen(false);
         setShowDetailsInline(false);
       }
     };
-    if (isTooltipOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+
+    window.addEventListener('scroll', handleScrollOrResize, true);
+    window.addEventListener('resize', handleScrollOrResize);
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      window.removeEventListener('scroll', handleScrollOrResize, true);
+      window.removeEventListener('resize', handleScrollOrResize);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [isTooltipOpen]);
 
   return (
-    <div ref={containerRef} className="relative inline-flex items-center">
+    <span className="inline-flex items-center">
       {/* Clickable Badge Checkmark Trigger */}
       <button
+        ref={buttonRef}
         type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsTooltipOpen(!isTooltipOpen);
-          setShowDetailsInline(false);
-        }}
+        onClick={handleToggleTooltip}
         className="inline-flex items-center shrink-0 cursor-pointer hover:opacity-80 active:scale-90 transition-transform select-none"
         title="Klik untuk info Penjual Terverifikasi"
         aria-label="Penjual Terverifikasi"
@@ -141,76 +190,90 @@ export const ClickableVerifiedBadge: React.FC<ClickableVerifiedBadgeProps> = ({
         <BadgeCheck className={`${className} text-[#1d64ec] fill-[#1d64ec] text-white`} />
       </button>
 
-      {/* Floating Popover Tooltip (Appears ABOVE the badge checkmark with Pure White Background) */}
-      {isTooltipOpen && (
-        <div
-          onClick={(e) => e.stopPropagation()}
-          className="absolute bottom-full mb-2.5 left-1/2 -translate-x-1/2 w-64 bg-white text-slate-900 rounded-2xl p-3.5 shadow-[0_10px_35px_rgba(0,0,0,0.15)] border border-neutral-200/90 z-50 font-gt-standard select-none animate-in fade-in zoom-in-95 duration-150 space-y-2"
-        >
-          {/* Bottom Caret Pointer */}
-          <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white rotate-45 border-b border-r border-neutral-200/90" />
+      {/* Floating React Portal Popover Tooltip (Rendered to document.body with max z-index: 999999) */}
+      {isTooltipOpen &&
+        tooltipPos &&
+        createPortal(
+          <div
+            ref={tooltipRef}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: 'fixed',
+              top: `${tooltipPos.top}px`,
+              left: `${tooltipPos.left}px`,
+              transform: 'translate(-50%, -100%)',
+              zIndex: 999999,
+            }}
+            className="w-65 bg-white text-slate-900 rounded-2xl p-3.5 shadow-[0_12px_45px_rgba(0,0,0,0.22)] border border-neutral-200/90 font-gt-standard select-none animate-in fade-in zoom-in-95 duration-150 space-y-2 pointer-events-auto"
+          >
+            {/* Bottom Caret Pointer pointing down to badge icon */}
+            <div
+              style={{ left: `${tooltipPos.arrowLeft}px` }}
+              className="absolute -bottom-1.5 -translate-x-1/2 w-3.5 h-3.5 bg-white rotate-45 border-b border-r border-neutral-200/90"
+            />
 
-          {/* Tooltip Header */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 font-bold text-xs text-slate-900">
-              <BadgeCheck className="w-4 h-4 text-[#1d64ec] fill-[#1d64ec] text-white shrink-0" />
-              <span>Penjual Terverifikasi</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setIsTooltipOpen(false)}
-              className="text-neutral-400 hover:text-slate-900 p-0.5 rounded-full hover:bg-neutral-100 transition-colors"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          {/* Short Tooltip Description */}
-          <p className="text-[11.5px] text-neutral-600 font-normal leading-relaxed">
-            <strong className="text-slate-900 font-medium">{sellerName}</strong> terverifikasi resmi oleh Admin Snapan Market.
-          </p>
-
-          {/* Clickable "? Cara Mendapatkan Badge" Trigger */}
-          {!showDetailsInline ? (
-            <button
-              type="button"
-              onClick={() => setShowDetailsInline(true)}
-              className="flex items-center gap-1 text-[11px] font-semibold text-[#1d64ec] hover:underline pt-1 cursor-pointer transition-colors"
-            >
-              <HelpCircle className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
-              <span>? Cara Mendapatkan Badge</span>
-            </button>
-          ) : (
-            /* Expanded Inline Details inside Tooltip */
-            <div className="pt-2 border-t border-neutral-100 space-y-1.5 animate-in fade-in duration-200 bg-neutral-50 -mx-1.5 p-2 rounded-xl border border-neutral-200/60">
-              <span className="text-[11px] font-semibold text-[#1d64ec] flex items-center gap-1">
-                <HelpCircle className="w-3.5 h-3.5 stroke-[2.2]" />
-                Syarat Verifikasi:
-              </span>
-              <ul className="space-y-1 text-[11px] text-slate-700 leading-normal">
-                <li className="flex items-start gap-1.5">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0 mt-0.5" />
-                  <span>Minimal <strong>3 penjualan berhasil</strong>.</span>
-                </li>
-                <li className="flex items-start gap-1.5">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0 mt-0.5" />
-                  <span>Siswa aktif & terverifikasi admin.</span>
-                </li>
-              </ul>
+            {/* Tooltip Header */}
+            <div className="flex items-center justify-between relative z-10">
+              <div className="flex items-center gap-1.5 font-bold text-xs text-slate-900">
+                <BadgeCheck className="w-4 h-4 text-[#1d64ec] fill-[#1d64ec] text-white shrink-0" />
+                <span>Penjual Terverifikasi</span>
+              </div>
               <button
                 type="button"
-                onClick={() => {
-                  setIsTooltipOpen(false);
-                  setIsModalOpen(true);
-                }}
-                className="text-[10.5px] text-[#1d64ec] font-semibold hover:underline pt-1 block cursor-pointer"
+                onClick={() => setIsTooltipOpen(false)}
+                className="text-neutral-400 hover:text-slate-900 p-0.5 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer"
               >
-                Lihat detail lengkap modal...
+                <X className="w-3.5 h-3.5" />
               </button>
             </div>
-          )}
-        </div>
-      )}
+
+            {/* Short Tooltip Description */}
+            <p className="text-[11.5px] text-neutral-600 font-normal leading-relaxed relative z-10">
+              <strong className="text-slate-900 font-medium">{sellerName}</strong> terverifikasi resmi oleh Admin Snapan Market.
+            </p>
+
+            {/* Clickable "? Cara Mendapatkan Badge" Trigger */}
+            {!showDetailsInline ? (
+              <button
+                type="button"
+                onClick={() => setShowDetailsInline(true)}
+                className="flex items-center gap-1 text-[11px] font-semibold text-[#1d64ec] hover:underline pt-1 cursor-pointer transition-colors relative z-10"
+              >
+                <HelpCircle className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
+                <span>? Cara Mendapatkan Badge</span>
+              </button>
+            ) : (
+              /* Expanded Inline Details inside Tooltip */
+              <div className="pt-2 border-t border-neutral-100 space-y-1.5 animate-in fade-in duration-200 bg-neutral-50 -mx-1.5 p-2 rounded-xl border border-neutral-200/60 relative z-10">
+                <span className="text-[11px] font-semibold text-[#1d64ec] flex items-center gap-1">
+                  <HelpCircle className="w-3.5 h-3.5 stroke-[2.2]" />
+                  Syarat Verifikasi:
+                </span>
+                <ul className="space-y-1 text-[11px] text-slate-700 leading-normal">
+                  <li className="flex items-start gap-1.5">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0 mt-0.5" />
+                    <span>Minimal <strong>3 penjualan berhasil</strong>.</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0 mt-0.5" />
+                    <span>Siswa aktif & terverifikasi admin.</span>
+                  </li>
+                </ul>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsTooltipOpen(false);
+                    setIsModalOpen(true);
+                  }}
+                  className="text-[10.5px] text-[#1d64ec] font-semibold hover:underline pt-1 block cursor-pointer"
+                >
+                  Lihat detail lengkap modal...
+                </button>
+              </div>
+            )}
+          </div>,
+          document.body
+        )}
 
       {/* Full Modal fallback if clicked detail */}
       <VerifiedBadgeModal
@@ -218,6 +281,6 @@ export const ClickableVerifiedBadge: React.FC<ClickableVerifiedBadgeProps> = ({
         onClose={() => setIsModalOpen(false)}
         sellerName={sellerName}
       />
-    </div>
+    </span>
   );
 };

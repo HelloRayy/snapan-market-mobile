@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { RotateCcw } from 'lucide-react';
 import { SplashScreen } from '@/ui/components/onboarding/SplashScreen';
 import { OnboardingScreen } from '@/ui/components/onboarding/OnboardingScreen';
@@ -77,14 +78,29 @@ export function App() {
       ) : showSplash ? (
         <SplashScreen onFinish={() => setShowSplash(false)} />
       ) : hasCompletedOnboarding && !isOnboardingRoute ? (
-        selectedPost ? (
-          <PostDetailPage
-            post={selectedPost}
-            onBack={() => setSelectedPost(null)}
-          />
-        ) : (
+        <div className="relative min-h-screen">
+          {/* Main Feed HomePage (Always kept in DOM so scroll position is NEVER reset) */}
           <HomePage onSelectPost={(post) => setSelectedPost(post)} />
-        )
+
+          {/* Slide-over Detail Page Layer (Slides Right-to-Left on Open, Left-to-Right on Close) */}
+          <AnimatePresence>
+            {selectedPost && (
+              <motion.div
+                key={selectedPost.id}
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: 'tween', duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
+                className="fixed inset-0 z-50 bg-white overflow-y-auto"
+              >
+                <PostDetailPage
+                  post={selectedPost}
+                  onBack={() => setSelectedPost(null)}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       ) : (
         <OnboardingScreen onComplete={handleOnboardingComplete} />
       )}

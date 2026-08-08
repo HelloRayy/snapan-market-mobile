@@ -22,9 +22,13 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   const [replyToUser, setReplyToUser] = useState<string | null>(null);
   const [isBuySheetOpen, setIsBuySheetOpen] = useState(false);
 
-  // Scroll to top & sync comments and state when post prop changes
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  // Sync comments & reset scroll of detail page container on post prop change
   useEffect(() => {
-    window.scrollTo(0, 0);
+    if (containerRef.current) {
+      containerRef.current.scrollTop = 0;
+    }
     setComments(post.comments || []);
     setReplyToUser(null);
     setIsBuySheetOpen(false);
@@ -81,7 +85,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-pure-white pb-36 font-gt-standard">
+    <div ref={containerRef} className="min-h-screen bg-pure-white pb-36 font-gt-standard">
       {/* Top Header Bar: [Left: ← Back Button] --- [Center: Postingan] --- [Right: Spacer] */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-neutral-200 px-4 h-14 flex items-center justify-between max-w-xl mx-auto">
         <button

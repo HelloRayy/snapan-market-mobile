@@ -227,23 +227,23 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
           </div>
         </div>
 
-        {/* 6. Tombol CTA WhatsApp Jelas: Left Label --- Right Price (Exact Match to User Reference) */}
+        {/* 6. Tombol CTA WhatsApp Jelas: Left Label --- Right Price (Reduced Font Weight) */}
         <div className="pt-1 space-y-2">
           <button
             type="button"
             onClick={handleWhatsAppCheckout}
-            className="relative inline-flex items-center justify-between w-full h-12 px-5 rounded-2xl text-white bg-[#18181b] hover:bg-black active:scale-[0.98] font-bold text-sm shadow-md transition-all cursor-pointer overflow-hidden select-none group"
+            className="relative inline-flex items-center justify-between w-full h-12 px-5 rounded-2xl text-white bg-[#18181b] hover:bg-black active:scale-[0.98] font-medium text-[14px] shadow-md transition-all cursor-pointer overflow-hidden select-none group"
           >
             <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
             
             {/* Left Label */}
-            <span className="relative z-10 flex items-center gap-2 shrink-0">
-              <Send className="w-4 h-4 stroke-[2.2]" />
+            <span className="relative z-10 flex items-center gap-2 shrink-0 font-medium">
+              <Send className="w-4 h-4 stroke-[1.8]" />
               <span>Chat via WhatsApp</span>
             </span>
 
             {/* Right Price */}
-            <span className="relative z-10 font-bold text-sm text-white tracking-tight shrink-0">
+            <span className="relative z-10 font-medium text-[14px] text-white/95 tracking-tight shrink-0">
               {formatRupiah(post.price)}
             </span>
           </button>

@@ -28,6 +28,7 @@ export interface PostComment {
 
 export interface MarketPostItem {
   id: string;
+  title?: string;
   seller: SellerProfile;
   caption: string;
   price: number;

@@ -3,6 +3,7 @@ import { MarketPostItem } from '@/types/marketFeed';
 export const MOCK_MARKET_POSTS: MarketPostItem[] = [
   {
     id: 'post-1',
+    title: 'Proyek Pembuatan Website & PWA Kilat',
     seller: {
       id: 'user-1',
       name: 'Raymond Chin',
@@ -81,6 +82,7 @@ export const MOCK_MARKET_POSTS: MarketPostItem[] = [
   },
   {
     id: 'post-2',
+    title: 'Jasa UI/UX Design & Engineering PWA',
     seller: {
       id: 'user-2',
       name: 'Faiz Intifada',
@@ -107,6 +109,7 @@ export const MOCK_MARKET_POSTS: MarketPostItem[] = [
   },
   {
     id: 'post-3',
+    title: 'Tahu Walik Renyah + Sambal Kecap',
     seller: {
       id: 'user-3',
       name: 'Ibu Kantin Sayang',
@@ -133,6 +136,7 @@ export const MOCK_MARKET_POSTS: MarketPostItem[] = [
   },
   {
     id: 'post-4',
+    title: 'Oversized Blue Hoodie Katun Import',
     seller: {
       id: 'user-4',
       name: 'Rian TJKT',
@@ -158,6 +162,7 @@ export const MOCK_MARKET_POSTS: MarketPostItem[] = [
   },
   {
     id: 'post-5',
+    title: 'Headset Gaming TWS Latency Rendah',
     seller: {
       id: 'user-5',
       name: 'Bima Elektronik',

@@ -90,7 +90,7 @@ export function App() {
                 initial={{ x: '100%' }}
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
-                transition={{ type: 'tween', duration: 0.14, ease: [0.25, 1, 0.5, 1] }}
+                transition={{ type: 'tween', duration: 0.20, ease: [0.25, 1, 0.5, 1] }}
                 className="fixed inset-0 z-50 bg-white overflow-y-auto"
               >
                 <PostDetailPage

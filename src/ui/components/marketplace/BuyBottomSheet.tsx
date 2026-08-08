@@ -109,16 +109,16 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-end justify-center font-gt-standard transition-all duration-300 ${
+      className={`fixed inset-0 z-50 flex items-end justify-center font-gt-standard transition-all duration-200 ${
         isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
       }`}
     >
-      {/* Overlay Backdrop Click */}
+      {/* Dark Backdrop Overlay */}
       <div
-        className={`absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 ${
+        onClick={onClose}
+        className={`absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-200 ${
           isOpen ? 'opacity-100' : 'opacity-0'
         }`}
-        onClick={onClose}
         onTouchMove={(e) => e.preventDefault()}
       />
 
@@ -132,7 +132,7 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
             : 'translateY(0%)',
           transition: isDragging
             ? 'none'
-            : 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
+            : 'transform 0.20s cubic-bezier(0.25, 1, 0.5, 1)',
         }}
         className="relative w-full max-w-md bg-white text-slate-900 rounded-t-[20px] p-5 pb-7 z-10 shadow-[0_-12px_50px_rgba(0,0,0,0.15)] space-y-4 border-t border-neutral-100 will-change-transform"
       >

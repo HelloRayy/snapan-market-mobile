@@ -76,9 +76,9 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
                   <motion.div
                     layoutId="active-nav-pill"
                     transition={{
-                      type: 'spring',
-                      stiffness: 420,
-                      damping: 32,
+                      type: 'tween',
+                      duration: 0.20,
+                      ease: [0.25, 1, 0.5, 1],
                     }}
                     className="absolute inset-0 rounded-full bg-gradient-to-b from-neutral-100 to-neutral-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9)] border border-neutral-300/80 pointer-events-none z-0"
                   />

@@ -36,7 +36,7 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 font-gt-standard ${
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-200 cubic-bezier(0.25,1,0.5,1) font-gt-standard ${
         isScrolled
           ? 'bg-[#fafafa]/85 backdrop-blur-xl border-b border-neutral-200/60 shadow-2xs'
           : 'bg-[#fafafa]/90 backdrop-blur-md border-b border-neutral-200/40'
@@ -64,7 +64,7 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
           <button
             type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-xs hover:scale-105 active:scale-95 transition-all duration-200 cubic-bezier(0.16,1,0.3,1) cursor-pointer"
+            className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-xs hover:scale-105 active:scale-95 transition-all duration-200 cubic-bezier(0.25,1,0.5,1) cursor-pointer"
             aria-label="Snapan Market Logo"
           >
             <Store className="w-5 h-5 text-white stroke-[2.25]" />

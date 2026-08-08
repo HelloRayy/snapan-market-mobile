@@ -98,3 +98,8 @@ html, body {
 .safe-pb {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+/* Standardized Motion Token Utility for All Slide, Shift & Fade Transitions */
+.kumo-transition {
+  transition: all 0.20s cubic-bezier(0.25, 1, 0.5, 1);
+}

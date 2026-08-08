@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Agentation } from 'agentation';
 import { RotateCcw } from 'lucide-react';
 import { SplashScreen } from '@/ui/components/onboarding/SplashScreen';
 import { OnboardingScreen } from '@/ui/components/onboarding/OnboardingScreen';
@@ -59,8 +58,6 @@ export function App() {
 
   return (
     <div className="relative min-h-screen bg-pure-white text-slate-ink overflow-x-hidden font-gt-standard">
-      {/* Agentation Page Feedback Overlay */}
-      {import.meta.env.DEV && <Agentation />}
 
       {/* Floating Dev Mode Control Button (Replay Onboarding / Splash) */}
       {import.meta.env.DEV && (

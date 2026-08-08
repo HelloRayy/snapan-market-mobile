@@ -99,7 +99,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
   }, [isLoadingMore, page]);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] text-slate-ink pb-20 font-gt-standard select-none">
+    <div className="min-h-screen bg-[#fafafa] text-slate-ink pb-28 font-gt-standard select-none">
       <OfflineBanner />
       <InstallBanner />
 

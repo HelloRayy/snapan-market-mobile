@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ShoppingCart, Store, X } from 'lucide-react';
+import { Search, Store, X } from 'lucide-react';
 
 interface MarketHeaderProps {
   cartCount: number;
@@ -8,7 +8,7 @@ interface MarketHeaderProps {
 }
 
 export const MarketHeader: React.FC<MarketHeaderProps> = ({
-  cartCount,
+  cartCount: _cartCount,
   cartTotal: _cartTotal = 0,
   onSearchChange,
 }) => {
@@ -44,17 +44,18 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
     >
       {/* Top Main Bar: [ Left: Cart ] --- [ Center: Logo Title ] --- [ Right: Search ] */}
       <div className="max-w-xl mx-auto px-4 h-14 flex items-center justify-between gap-3 relative select-none">
-        {/* Left Side: Cart Icon Only */}
+        {/* Left Side: User Profile Avatar */}
         <div className="flex items-center">
           <button
             type="button"
-            className="w-10 h-10 rounded-full flex items-center justify-center text-slate-800 hover:bg-neutral-100/90 active:scale-90 transition-all cursor-pointer relative"
-            aria-label="Keranjang Belanja"
+            className="w-8.5 h-8.5 rounded-full ring-2 ring-neutral-200/90 hover:ring-slate-900 active:scale-95 transition-all cursor-pointer overflow-hidden relative shadow-2xs group"
+            aria-label="Profil Saya"
           >
-            <ShoppingCart className="w-5 h-5 text-slate-900 stroke-[2.25]" />
-            {cartCount > 0 && (
-              <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-[#1d64ec] ring-2 ring-white animate-pulse" />
-            )}
+            <img
+              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80"
+              alt="Foto Profil Rinia Safitri"
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200"
+            />
           </button>
         </div>
 

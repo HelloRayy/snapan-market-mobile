@@ -23,24 +23,25 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   return (
     <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto z-50 font-gt-standard select-none">
       {/* Floating White Pill Dock Container */}
-      <nav className="bg-white/95 backdrop-blur-xl border border-neutral-200/80 p-1.5 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.12)] flex items-center justify-around">
+      <nav className="bg-white/95 backdrop-blur-xl border border-neutral-200/80 p-1.5 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.12)] flex items-center justify-around relative">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
 
-          // Center Plus Action Button: Floating / Elevated with NO Label
+          // Center Plus Action Button: Elevated Floating FAB Protruding Out Above Container
           if (item.isAction) {
             return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={onPostClick || (() => onTabChange('post'))}
-                className="w-10 h-10 rounded-full bg-[#18181b] hover:bg-black active:scale-90 text-white flex items-center justify-center shadow-md border border-black/20 transition-all cursor-pointer shrink-0 -my-1"
-                aria-label="Jual Produk Baru"
-                title="Jual Produk Baru"
-              >
-                <Plus className="w-5 h-5 stroke-[2.5]" />
-              </button>
+              <div key={item.id} className="relative flex items-center justify-center shrink-0 w-11 h-9">
+                <button
+                  type="button"
+                  onClick={onPostClick || (() => onTabChange('post'))}
+                  className="absolute -top-5 w-11.5 h-11.5 rounded-full bg-[#18181b] hover:bg-black active:scale-90 text-white flex items-center justify-center shadow-[0_8px_20px_rgba(0,0,0,0.3)] border-2 border-white transition-all cursor-pointer z-10"
+                  aria-label="Jual Produk Baru"
+                  title="Jual Produk Baru"
+                >
+                  <Plus className="w-5.5 h-5.5 stroke-[2.5]" />
+                </button>
+              </div>
             );
           }
 

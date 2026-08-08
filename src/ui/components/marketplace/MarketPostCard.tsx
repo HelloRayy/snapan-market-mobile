@@ -133,6 +133,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
       {item.images && item.images.length === 1 && (
         <div
           onClick={(e) => handleImageClick(e, 0)}
+          onPointerDown={(e) => e.stopPropagation()}
           className="relative w-full rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[340px] aspect-[16/10] mt-2.5 cursor-pointer touch-pan-y"
         >
           <img
@@ -152,6 +153,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           onMouseUp={handleMouseLeaveOrUp}
           onMouseMove={handleMouseMove}
           onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
           className={`flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none touch-pan-x touch-pan-y ${
             isDetail ? '-mx-4 px-4' : '-ml-[68px] pl-[68px] -mr-4 pr-4 w-[calc(100%+84px)]'
           }`}
@@ -160,6 +162,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             <div
               key={idx}
               onClick={(e) => handleImageClick(e, idx)}
+              onPointerDown={(e) => e.stopPropagation()}
               className="relative shrink-0 w-[82%] sm:w-[75%] rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[340px] aspect-[3/4] cursor-pointer"
             >
               <img

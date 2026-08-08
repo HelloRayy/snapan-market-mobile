@@ -11,8 +11,6 @@ interface StickyBuyBarProps {
 
 export const StickyBuyBar: React.FC<StickyBuyBarProps> = ({
   price = 150000,
-  originalPrice,
-  stockCount,
   onBuyClick,
   onChatClick,
 }) => {
@@ -24,49 +22,29 @@ export const StickyBuyBar: React.FC<StickyBuyBarProps> = ({
     }).format(val);
 
   return (
-    <div className="fixed bottom-4 left-4 right-20 max-w-lg z-40 font-gt-standard">
-      {/* Detached Floating Pill Container (Leaves room on right for floating action button) */}
-      <div className="bg-[#1d64ec] p-1.5 rounded-full shadow-[0_8px_30px_rgba(29,100,236,0.35)] backdrop-blur-md border border-white/25 flex items-center gap-2">
-        {/* Inner Active White Pill: "💬 Tanya" Button */}
+    <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto z-40 font-gt-standard">
+      {/* Sleek Floating Dark Dock Container (Exact Match to User Reference Image) */}
+      <div className="bg-[#1c1c1e]/95 backdrop-blur-xl border border-white/10 p-2 rounded-[28px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex items-center gap-2.5">
+        {/* Left Pill Button: "Chat Seller" (Outline Glass Pill) */}
         <button
           type="button"
           onClick={onChatClick}
-          className="h-10 px-3.5 rounded-full bg-white hover:bg-neutral-50 active:scale-95 text-[#1d64ec] font-bold text-[13px] flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer shrink-0 select-none"
+          className="flex-1 h-12 rounded-full border border-white/25 bg-white/5 hover:bg-white/10 active:scale-95 text-white font-medium text-[14px] flex items-center justify-center gap-2 transition-all cursor-pointer shrink-0 select-none"
           title="Tanyakan ke Penjual / Kolom Komentar"
           aria-label="Tanya Penjual di Komentar"
         >
-          <MessageSquare className="w-4 h-4 text-[#1d64ec] stroke-[2.4]" />
-          <span>Tanya</span>
+          <MessageSquare className="w-4 h-4 text-white stroke-[2.2]" />
+          <span>Chat Seller</span>
         </button>
 
-        {/* Right CTA Area: "🛒 Beli • Rp 150.000" Button */}
+        {/* Right Pill Button: "Beli • Rp 150.000" (Vibrant Primary Blue Pill) */}
         <button
           type="button"
           onClick={onBuyClick}
-          className="flex-1 h-10 pr-3 text-white font-semibold text-[13px] flex items-center justify-between gap-2 active:scale-95 transition-all cursor-pointer select-none min-w-0"
+          className="flex-1 h-12 rounded-full bg-[#1d64ec] hover:bg-[#154ec1] active:scale-95 text-white font-semibold text-[14px] flex items-center justify-center gap-1.5 shadow-lg transition-all cursor-pointer shrink-0 select-none"
         >
-          <span className="flex items-center gap-1.5 shrink-0">
-            <ShoppingCart className="w-4 h-4 text-white stroke-[2.2] shrink-0" />
-            <span className="font-semibold">Beli Sekarang</span>
-          </span>
-
-          <div className="flex items-center gap-1.5 shrink-0 ml-auto">
-            {stockCount !== undefined && stockCount > 0 && (
-              <span className="px-1.5 py-0.5 rounded-md text-[10px] font-medium bg-white/15 text-blue-100 border border-white/20 hidden sm:inline-flex">
-                Stok {stockCount}
-              </span>
-            )}
-            <div className="flex flex-col items-end leading-none shrink-0">
-              <span className="font-bold text-[14px] text-white tracking-tight whitespace-nowrap">
-                {formatRupiah(price)}
-              </span>
-              {originalPrice && originalPrice > price && (
-                <span className="text-[9px] text-blue-200 line-through whitespace-nowrap">
-                  {formatRupiah(originalPrice)}
-                </span>
-              )}
-            </div>
-          </div>
+          <ShoppingCart className="w-4 h-4 text-white stroke-[2.2]" />
+          <span>Beli • {formatRupiah(price)}</span>
         </button>
       </div>
     </div>

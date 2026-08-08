@@ -1,20 +1,25 @@
 import React, { useState } from 'react';
-import { Search, ShoppingCart, Store, X } from 'lucide-react';
+import { Search, Store, X, User } from 'lucide-react';
 
 interface MarketHeaderProps {
-  cartCount: number;
+  cartCount?: number;
   cartTotal?: number;
   onSearchChange?: (query: string) => void;
+  onProfileClick?: () => void;
+  userAvatar?: string;
 }
 
 export const MarketHeader: React.FC<MarketHeaderProps> = ({
-  cartCount,
+  cartCount: _cartCount = 0,
   cartTotal: _cartTotal = 0,
   onSearchChange,
+  onProfileClick,
+  userAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop',
 }) => {
   const [showSearchInput, setShowSearchInput] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
 
   // Scroll listener for dynamic frosted glass blur & opacity
   React.useEffect(() => {
@@ -42,23 +47,34 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
           : 'bg-[#fafafa]/90 backdrop-blur-md border-b border-neutral-200/40'
       }`}
     >
-      {/* Top Main Bar: [ Left: Cart ] --- [ Center: Logo Title ] --- [ Right: Search ] */}
+      {/* Top Main Bar: [ Left: Profile Avatar ] --- [ Center: Store Logo ] --- [ Right: Search Toggle ] */}
       <div className="max-w-xl mx-auto px-4 h-14 flex items-center justify-between gap-3 relative select-none">
-        {/* Left Side: Cart Icon Only */}
+        {/* Left Side: Dummy User Profile Avatar Button (Replaces Cart Icon) */}
         <div className="flex items-center">
           <button
             type="button"
-            className="w-10 h-10 rounded-full flex items-center justify-center text-slate-800 hover:bg-neutral-100/90 active:scale-90 transition-all cursor-pointer relative"
-            aria-label="Keranjang Belanja"
+            onClick={onProfileClick}
+            className="group relative flex items-center justify-center p-0.5 rounded-full hover:ring-2 hover:ring-blue-500/20 active:scale-95 transition-all duration-200 cursor-pointer"
+            aria-label="Buka Profil Pengguna"
           >
-            <ShoppingCart className="w-5 h-5 text-slate-900 stroke-[2.25]" />
-            {cartCount > 0 && (
-              <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-[#1d64ec] ring-2 ring-white animate-pulse" />
-            )}
+            <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-300/80 shadow-2xs bg-neutral-100 flex items-center justify-center group-hover:border-[#1d64ec] transition-colors">
+              {!avatarError && userAvatar ? (
+                <img
+                  src={userAvatar}
+                  alt="Foto Profil Pengguna"
+                  onError={() => setAvatarError(true)}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User className="w-5 h-5 text-slate-700" />
+              )}
+            </div>
+            {/* Online Green Active Indicator Badge */}
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
           </button>
         </div>
 
-        {/* Center: Logo Only (No Text) with Micro Hover Effect */}
+        {/* Center: Store Logo Button with Micro Hover Effect */}
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
           <button
             type="button"
@@ -73,6 +89,7 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
         {/* Right Side: Search Toggle Button */}
         <div className="flex items-center">
           <button
+            type="button"
             onClick={() => {
               setShowSearchInput(!showSearchInput);
               if (showSearchInput) {
@@ -107,7 +124,6 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
           </div>
         </div>
       )}
-
     </header>
   );
 };

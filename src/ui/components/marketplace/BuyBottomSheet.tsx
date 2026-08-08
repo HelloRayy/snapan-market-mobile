@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { X, Send, MapPin } from 'lucide-react';
+import { X, Send, MapPin, CheckCircle2 } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 
 interface BuyBottomSheetProps {
@@ -111,14 +111,14 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
     >
       {/* Overlay Backdrop Click */}
       <div
-        className={`absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 ${
+        className={`absolute inset-0 bg-black/75 backdrop-blur-xs transition-opacity duration-300 ${
           isOpen ? 'opacity-100' : 'opacity-0'
         }`}
         onClick={onClose}
         onTouchMove={(e) => e.preventDefault()}
       />
 
-      {/* Bottom Sheet Card - Pure Native Bottom Slide Up/Down Expansion */}
+      {/* Bottom Sheet Dark Card - Matching User Reference Image */}
       <div
         style={{
           transform: !isOpen
@@ -130,36 +130,63 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
             ? 'none'
             : 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
-        className="relative w-full max-w-md bg-white rounded-t-[32px] p-5 pb-8 z-10 shadow-[0_-12px_50px_rgba(0,0,0,0.3)] space-y-3.5 will-change-transform"
+        className="relative w-full max-w-md bg-[#18181b] text-white rounded-t-[32px] p-5 pb-7 z-10 shadow-[0_-12px_50px_rgba(0,0,0,0.6)] space-y-4 border-t border-neutral-800 will-change-transform"
       >
         {/* Top Handle Bar Indicator with Drag Listener */}
         <div
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
-          className="py-2 -mt-3 -mx-5 cursor-grab active:cursor-grabbing flex justify-center items-center touch-pan-y"
+          className="py-1.5 -mt-3 -mx-5 cursor-grab active:cursor-grabbing flex justify-center items-center touch-pan-y"
         >
-          <div className="w-12 h-1.5 bg-neutral-300 rounded-full" />
+          <div className="w-12 h-1.5 bg-neutral-700 rounded-full" />
         </div>
 
-        {/* Header: [Spacer Left] --- [Title Center] --- [Circle X Right] */}
-        <div className="flex items-center justify-between border-b border-neutral-100 pb-2.5">
-          <div className="w-8 h-8 pointer-events-none" />
-          <h2 className="font-bold text-base text-slate-900">Informasi {isService ? 'Jasa' : 'Pembelian'}</h2>
+        {/* 1. Header Penjual (Avatar + Nama + Badge Kelas & Slot Tersisa) */}
+        <div className="flex items-start justify-between gap-3 pt-1">
+          <div className="flex items-center gap-3 min-w-0">
+            {/* Avatar Penjual */}
+            <img
+              src={post.seller.avatar}
+              alt={post.seller.name}
+              className="w-11 h-11 rounded-full object-cover border border-neutral-700 shrink-0 shadow-xs"
+            />
+
+            <div className="flex flex-col min-w-0 space-y-1">
+              <div className="flex items-center gap-1.5">
+                <span className="font-bold text-base text-white truncate">
+                  {post.seller.name}
+                </span>
+                <CheckCircle2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+              </div>
+
+              {/* Badges: Kelas & Slot/Stok */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="px-2 py-0.5 rounded-md text-[10.5px] font-semibold bg-neutral-800 text-neutral-300 border border-neutral-700">
+                  {post.seller.classGroup}
+                </span>
+                <span className="px-2 py-0.5 rounded-md text-[10.5px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                  {stockBadgeText}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Close Button X */}
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200/80 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-95"
+            className="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center text-neutral-300 transition-colors cursor-pointer active:scale-95 shrink-0"
             aria-label="Tutup Modal"
           >
             <X className="w-4 h-4 stroke-[2.2]" />
           </button>
         </div>
 
-        {/* 1. Thumbnail / Preview Karya Carousel */}
-        <div className="relative group">
+        {/* 2. Main Product Image (Replaces QR Code in Reference Image) */}
+        <div className="relative rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-900 group shadow-md">
           <div
-            className="w-full h-44 rounded-2xl overflow-x-auto flex snap-x snap-mandatory scrollbar-none border border-neutral-200/80 bg-neutral-50 shadow-2xs"
+            className="w-full h-52 overflow-x-auto flex snap-x snap-mandatory scrollbar-none"
             onScroll={(e) => {
               const scrollLeft = e.currentTarget.scrollLeft;
               const width = e.currentTarget.clientWidth;
@@ -178,101 +205,55 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
             ))}
           </div>
 
-          {/* High-Contrast Glass Pagination Dot Container */}
+          {/* Pagination Dot Indicator */}
           {images.length > 1 && (
             <div className="absolute bottom-2.5 left-0 right-0 flex justify-center pointer-events-none">
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 shadow-md">
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/20">
                 {images.map((_, idx) => (
                   <div
                     key={idx}
                     className={`h-1.5 rounded-full transition-all duration-300 ${
                       idx === activeImageIndex
-                        ? 'w-4 bg-white shadow-sm'
-                        : 'w-1.5 bg-white/50'
+                        ? 'w-4 bg-white'
+                        : 'w-1.5 bg-white/40'
                     }`}
                   />
                 ))}
               </div>
             </div>
           )}
-
-          {/* Photo Counter Badge */}
-          {images.length > 1 && (
-            <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-xs text-white text-[10px] font-medium border border-white/20 pointer-events-none">
-              {activeImageIndex + 1}/{images.length}
-            </div>
-          )}
         </div>
 
-        {/* 2. Badge Kategori + Slot Tersisa (Kiri) & Harga (Kanan) */}
-        <div className="flex items-center justify-between pt-0.5">
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-neutral-100 text-slate-700 uppercase tracking-wider border border-neutral-200/60">
-              {post.category}
-            </span>
-            <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200/80">
-              {stockBadgeText}
-            </span>
-          </div>
-
-          {/* Harga - Menonjol Kanan */}
-          <span className="font-bold text-lg text-[#1d64ec]">
-            {formatRupiah(post.price)}
-          </span>
+        {/* 3. Detail Produk (Nama Barang & Deskripsi Singkat) */}
+        <div className="space-y-1">
+          <h3 className="font-bold text-lg text-white leading-snug">
+            {titleText}
+          </h3>
+          <p className="text-xs text-neutral-400 font-normal leading-relaxed line-clamp-2">
+            {rawCaption}
+          </p>
         </div>
 
-        {/* 3. Judul Singkat & Bold (Tanpa Emoji) */}
-        <h3 className="font-bold text-base text-slate-900 leading-snug">
-          {titleText}
-        </h3>
-
-        {/* 4. Deskripsi Pendek (Body Text) */}
-        <p className="text-xs text-neutral-500 font-normal leading-relaxed">
-          {rawCaption.length > 55 ? rawCaption : 'Menerima pembuatan desain UI/UX, prototype Figma, dan engineering PWA responsive untuk project/tugas sekolah.'}
-        </p>
-
-        {/* 5. Info Penjual (Avatar Kecil + Nama + Kelas) */}
-        <div className="flex items-center gap-2.5 p-2.5 bg-neutral-50 rounded-xl border border-neutral-200/70">
-          <img
-            src={post.seller.avatar}
-            alt={post.seller.name}
-            className="w-8 h-8 rounded-full object-cover border border-neutral-200 shrink-0 shadow-2xs"
-          />
-          <div className="flex flex-col min-w-0">
-            <div className="flex items-center gap-1.5">
-              <span className="font-bold text-xs text-slate-900 truncate">
-                {post.seller.name}
-              </span>
-              <span className="text-[10px] font-medium px-1.5 py-0.2 rounded bg-neutral-200/70 text-slate-700 shrink-0">
-                {post.seller.classGroup}
-              </span>
-            </div>
-            <span className="text-[10px] text-neutral-400 font-medium">Penjual Terverifikasi Siswa</span>
-          </div>
-        </div>
-
-        {/* 6. Tombol CTA WhatsApp Jelas: Left Label --- Right Price (Reduced Font Weight) */}
+        {/* 4. Tombol Bottom Action (WhatsApp Checkout & Pricing) */}
         <div className="pt-1 space-y-2">
           <button
             type="button"
             onClick={handleWhatsAppCheckout}
-            className="relative inline-flex items-center justify-between w-full h-12 px-5 rounded-2xl text-white bg-[#18181b] hover:bg-black active:scale-[0.98] font-medium text-[14px] shadow-md transition-all cursor-pointer overflow-hidden select-none group"
+            className="relative inline-flex items-center justify-between w-full h-12 px-5 rounded-2xl text-white bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 active:scale-[0.98] font-medium text-sm shadow-md transition-all cursor-pointer overflow-hidden select-none group"
           >
-            <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
-            
             {/* Left Label */}
             <span className="relative z-10 flex items-center gap-2 shrink-0 font-medium">
-              <Send className="w-4 h-4 stroke-[1.8]" />
+              <Send className="w-4 h-4 stroke-[1.8] text-white" />
               <span>Chat via WhatsApp</span>
             </span>
 
             {/* Right Price */}
-            <span className="relative z-10 font-medium text-[14px] text-white/95 tracking-tight shrink-0">
+            <span className="relative z-10 font-bold text-sm text-blue-400 tracking-tight shrink-0">
               {formatRupiah(post.price)}
             </span>
           </button>
 
-          {/* 7. Caption Kecil COD di Bawah Tombol */}
+          {/* COD Info */}
           <p className="text-[11px] text-center text-neutral-400 font-normal flex items-center justify-center gap-1">
             <MapPin className="w-3 h-3 text-neutral-400 shrink-0" />
             <span>COD & Janjian Ketemuan di Lingkungan SMKN 8</span>

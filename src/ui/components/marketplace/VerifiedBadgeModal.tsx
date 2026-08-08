@@ -141,33 +141,33 @@ export const ClickableVerifiedBadge: React.FC<ClickableVerifiedBadgeProps> = ({
         <BadgeCheck className={`${className} text-[#1d64ec] fill-[#1d64ec] text-white`} />
       </button>
 
-      {/* Floating Popover Tooltip (Appears right under the badge checkmark) */}
+      {/* Floating Popover Tooltip (Appears ABOVE the badge checkmark with Pure White Background) */}
       {isTooltipOpen && (
         <div
           onClick={(e) => e.stopPropagation()}
-          className="absolute top-full mt-2 left-0 sm:left-1/2 sm:-translate-x-1/2 w-64 bg-[#18181b] text-white rounded-2xl p-3.5 shadow-2xl border border-neutral-700/80 z-50 font-gt-standard select-none animate-in fade-in zoom-in-95 duration-150 space-y-2"
+          className="absolute bottom-full mb-2.5 left-1/2 -translate-x-1/2 w-64 bg-white text-slate-900 rounded-2xl p-3.5 shadow-[0_10px_35px_rgba(0,0,0,0.15)] border border-neutral-200/90 z-50 font-gt-standard select-none animate-in fade-in zoom-in-95 duration-150 space-y-2"
         >
-          {/* Top Caret Pointer */}
-          <div className="absolute -top-1.5 left-3 sm:left-1/2 sm:-translate-x-1/2 w-3 h-3 bg-[#18181b] rotate-45 border-t border-l border-neutral-700/80" />
+          {/* Bottom Caret Pointer */}
+          <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white rotate-45 border-b border-r border-neutral-200/90" />
 
           {/* Tooltip Header */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 font-bold text-xs text-white">
-              <BadgeCheck className="w-4 h-4 text-blue-400 fill-blue-400 text-white shrink-0" />
+            <div className="flex items-center gap-1.5 font-bold text-xs text-slate-900">
+              <BadgeCheck className="w-4 h-4 text-[#1d64ec] fill-[#1d64ec] text-white shrink-0" />
               <span>Penjual Terverifikasi</span>
             </div>
             <button
               type="button"
               onClick={() => setIsTooltipOpen(false)}
-              className="text-neutral-400 hover:text-white p-0.5 rounded-full hover:bg-neutral-800 transition-colors"
+              className="text-neutral-400 hover:text-slate-900 p-0.5 rounded-full hover:bg-neutral-100 transition-colors"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
 
           {/* Short Tooltip Description */}
-          <p className="text-[11.5px] text-neutral-300 font-normal leading-relaxed">
-            <strong className="text-white font-medium">{sellerName}</strong> terverifikasi resmi oleh Admin Snapan Market.
+          <p className="text-[11.5px] text-neutral-600 font-normal leading-relaxed">
+            <strong className="text-slate-900 font-medium">{sellerName}</strong> terverifikasi resmi oleh Admin Snapan Market.
           </p>
 
           {/* Clickable "? Cara Mendapatkan Badge" Trigger */}
@@ -175,25 +175,25 @@ export const ClickableVerifiedBadge: React.FC<ClickableVerifiedBadgeProps> = ({
             <button
               type="button"
               onClick={() => setShowDetailsInline(true)}
-              className="flex items-center gap-1 text-[11px] font-semibold text-blue-400 hover:text-blue-300 hover:underline pt-1 cursor-pointer transition-colors"
+              className="flex items-center gap-1 text-[11px] font-semibold text-[#1d64ec] hover:underline pt-1 cursor-pointer transition-colors"
             >
-              <HelpCircle className="w-3.5 h-3.5 text-blue-400 stroke-[2.2] shrink-0" />
+              <HelpCircle className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
               <span>? Cara Mendapatkan Badge</span>
             </button>
           ) : (
             /* Expanded Inline Details inside Tooltip */
-            <div className="pt-2 border-t border-neutral-800 space-y-1.5 animate-in fade-in duration-200">
-              <span className="text-[11px] font-semibold text-blue-400 flex items-center gap-1">
+            <div className="pt-2 border-t border-neutral-100 space-y-1.5 animate-in fade-in duration-200 bg-neutral-50 -mx-1.5 p-2 rounded-xl border border-neutral-200/60">
+              <span className="text-[11px] font-semibold text-[#1d64ec] flex items-center gap-1">
                 <HelpCircle className="w-3.5 h-3.5 stroke-[2.2]" />
                 Syarat Verifikasi:
               </span>
-              <ul className="space-y-1 text-[11px] text-neutral-300 leading-normal">
+              <ul className="space-y-1 text-[11px] text-slate-700 leading-normal">
                 <li className="flex items-start gap-1.5">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0 mt-0.5" />
                   <span>Minimal <strong>3 penjualan berhasil</strong>.</span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0 mt-0.5" />
+                <li className="flex items-start gap-1.5">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0 mt-0.5" />
                   <span>Siswa aktif & terverifikasi admin.</span>
                 </li>
               </ul>
@@ -203,7 +203,7 @@ export const ClickableVerifiedBadge: React.FC<ClickableVerifiedBadgeProps> = ({
                   setIsTooltipOpen(false);
                   setIsModalOpen(true);
                 }}
-                className="text-[10.5px] text-neutral-400 hover:text-white underline pt-1 block cursor-pointer"
+                className="text-[10.5px] text-[#1d64ec] font-semibold hover:underline pt-1 block cursor-pointer"
               >
                 Lihat detail lengkap modal...
               </button>

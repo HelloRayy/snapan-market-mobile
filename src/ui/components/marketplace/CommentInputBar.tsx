@@ -44,22 +44,22 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={replyToUser ? `Balas @${replyToUser}...` : 'Ketik komentar / pertanyaan produk...'}
-          className="flex-1 bg-neutral-100 hover:bg-neutral-100/80 focus:bg-white border border-transparent focus:border-[#1d64ec] rounded-full px-4 py-2 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all"
+          className="flex-1 bg-neutral-100 hover:bg-neutral-100/80 focus:bg-white border border-transparent focus:border-[#1d64ec] rounded-full px-4 h-10 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all"
         />
 
-        {/* Kumo UI Primary Black Send Button */}
+        {/* Kumo UI Primary Black Send Button (Larger Height & Width) */}
         <button
           type="submit"
           disabled={!text.trim()}
-          className={`relative inline-flex items-center justify-center gap-1 rounded-full px-3.5 h-8 text-[12px] font-semibold text-white bg-[#18181b] border border-black/40 shadow-2xs overflow-hidden shrink-0 transition-all ${
-            !text.trim() ? 'opacity-40 cursor-not-allowed' : 'active:scale-95 cursor-pointer'
+          className={`relative inline-flex items-center justify-center gap-1.5 rounded-full px-4.5 h-10 text-[13px] font-bold text-white bg-[#18181b] border border-black/40 shadow-xs overflow-hidden shrink-0 transition-all ${
+            !text.trim() ? 'opacity-40 cursor-not-allowed' : 'active:scale-95 cursor-pointer hover:bg-black'
           }`}
           aria-label="Kirim Komentar"
         >
           <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
-          <span className="relative z-10 flex items-center gap-1">
+          <span className="relative z-10 flex items-center gap-1.5">
             <span>Kirim</span>
-            <Send className="w-3 h-3 stroke-[2.25]" />
+            <Send className="w-3.5 h-3.5 stroke-[2.25]" />
           </span>
         </button>
       </form>

@@ -62,14 +62,19 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
               key={item.id}
               type="button"
               onClick={() => onTabChange(item.id)}
-              className={`flex flex-col items-center justify-center px-4 py-1.5 rounded-full transition-all duration-200 cursor-pointer active:scale-95 relative ${
+              className={`flex flex-col items-center justify-center px-4 py-1.5 rounded-full transition-all duration-200 cursor-pointer active:scale-95 relative overflow-hidden ${
                 isActive
-                  ? 'bg-neutral-200/70 text-slate-900 font-semibold'
+                  ? 'text-slate-900 font-semibold shadow-2xs'
                   : 'bg-transparent text-neutral-400 hover:text-slate-900 font-normal'
               }`}
               aria-label={item.label}
             >
-              <div className="relative flex items-center justify-center">
+              {/* Kumo UI Neutral Light Inset Top Rim Highlight Gradient on Active Selected Tab */}
+              {isActive && (
+                <span className="absolute inset-0 rounded-full bg-gradient-to-b from-neutral-100 to-neutral-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9)] border border-neutral-300/80 pointer-events-none" />
+              )}
+
+              <div className="relative z-10 flex items-center justify-center">
                 <Icon
                   className={`w-5 h-5 transition-all ${iconFillClass}`}
                 />
@@ -79,7 +84,7 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
                   </span>
                 )}
               </div>
-              <span className={`text-[10.5px] mt-0.5 leading-none ${isActive ? 'font-semibold text-slate-900' : 'font-normal text-neutral-400'}`}>
+              <span className={`text-[10.5px] mt-0.5 leading-none relative z-10 ${isActive ? 'font-semibold text-slate-900' : 'font-normal text-neutral-400'}`}>
                 {item.label}
               </span>
             </button>

@@ -22,18 +22,18 @@ export const StickyBuyBar: React.FC<StickyBuyBarProps> = ({
     }).format(val);
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto z-40 font-gt-standard">
-      {/* Sleek Floating Dark Dock Container (Exact Match to User Reference Image) */}
-      <div className="bg-[#1c1c1e]/95 backdrop-blur-xl border border-white/10 p-2 rounded-[28px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex items-center gap-2.5">
-        {/* Left Pill Button: "Chat Seller" (Outline Glass Pill) */}
+    <div className="fixed bottom-0 left-0 right-0 max-w-xl mx-auto z-40 font-gt-standard">
+      {/* Full Width White Container with Top-Left & Top-Right Rounded Corners */}
+      <div className="bg-white border-t border-neutral-200/80 p-3 rounded-t-[24px] shadow-[0_-4px_25px_rgba(0,0,0,0.08)] flex items-center gap-3">
+        {/* Left Pill Button: "Chat Seller" (Light Neutral Pill) */}
         <button
           type="button"
           onClick={onChatClick}
-          className="flex-1 h-12 rounded-full border border-white/25 bg-white/5 hover:bg-white/10 active:scale-95 text-white font-medium text-[14px] flex items-center justify-center gap-2 transition-all cursor-pointer shrink-0 select-none"
+          className="flex-1 h-12 rounded-full border border-neutral-200/80 bg-neutral-100 hover:bg-neutral-200/80 active:scale-95 text-slate-800 font-semibold text-[14px] flex items-center justify-center gap-2 transition-all cursor-pointer shrink-0 select-none"
           title="Tanyakan ke Penjual / Kolom Komentar"
           aria-label="Tanya Penjual di Komentar"
         >
-          <MessageSquare className="w-4 h-4 text-white stroke-[2.2]" />
+          <MessageSquare className="w-4 h-4 text-slate-800 stroke-[2.2]" />
           <span>Chat Seller</span>
         </button>
 
@@ -41,7 +41,7 @@ export const StickyBuyBar: React.FC<StickyBuyBarProps> = ({
         <button
           type="button"
           onClick={onBuyClick}
-          className="flex-1 h-12 rounded-full bg-[#1d64ec] hover:bg-[#154ec1] active:scale-95 text-white font-semibold text-[14px] flex items-center justify-center gap-1.5 shadow-lg transition-all cursor-pointer shrink-0 select-none"
+          className="flex-1 h-12 rounded-full bg-[#1d64ec] hover:bg-[#154ec1] active:scale-95 text-white font-semibold text-[14px] flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 transition-all cursor-pointer shrink-0 select-none"
         >
           <ShoppingCart className="w-4 h-4 text-white stroke-[2.2]" />
           <span>Beli • {formatRupiah(price)}</span>

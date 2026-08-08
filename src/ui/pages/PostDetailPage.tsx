@@ -5,6 +5,7 @@ import { MarketPostCard } from '../components/marketplace/MarketPostCard';
 import { PostCommentItem } from '../components/marketplace/PostCommentItem';
 import { CommentInputBar } from '../components/marketplace/CommentInputBar';
 import { StickyBuyBar } from '../components/marketplace/StickyBuyBar';
+import { BuyBottomSheet } from '../components/marketplace/BuyBottomSheet';
 
 interface PostDetailPageProps {
   post: MarketPostItem;
@@ -19,6 +20,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
 }) => {
   const [comments, setComments] = useState<PostComment[]>(post.comments || []);
   const [replyToUser, setReplyToUser] = useState<string | null>(null);
+  const [isBuySheetOpen, setIsBuySheetOpen] = useState(false);
 
   // Scroll to top on mount
   useEffect(() => {
@@ -70,8 +72,13 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
     }, 300);
   };
 
+  const handleBuyClick = () => {
+    setIsBuySheetOpen(true);
+    onAddToCart?.(post);
+  };
+
   return (
-    <div className="min-h-screen bg-pure-white pb-24 font-gt-standard">
+    <div className="min-h-screen bg-pure-white pb-28 font-gt-standard">
       {/* Top Header Bar: [Left: ← Back Button] --- [Center: Postingan] --- [Right: Spacer] */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-neutral-200 px-4 h-14 flex items-center justify-between max-w-xl mx-auto">
         <button
@@ -135,12 +142,19 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         </section>
       </main>
 
-      {/* Sticky Bottom Dual Action CTA Bar (Tanya + Beli) */}
+      {/* Floating Pill Buy Bar (Exact Reference Match) */}
       <StickyBuyBar
         price={post.price || 150000}
         stockCount={post.stock || 5}
-        onBuyClick={() => onAddToCart?.(post)}
+        onBuyClick={handleBuyClick}
         onChatClick={handleChatClick}
+      />
+
+      {/* Interactive Buy Bottom Sheet Modal */}
+      <BuyBottomSheet
+        isOpen={isBuySheetOpen}
+        post={post}
+        onClose={() => setIsBuySheetOpen(false)}
       />
     </div>
   );

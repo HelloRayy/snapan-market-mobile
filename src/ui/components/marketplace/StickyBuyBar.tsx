@@ -12,6 +12,7 @@ interface StickyBuyBarProps {
 export const StickyBuyBar: React.FC<StickyBuyBarProps> = ({
   price = 150000,
   originalPrice,
+  stockCount,
   onBuyClick,
   onChatClick,
 }) => {
@@ -23,43 +24,51 @@ export const StickyBuyBar: React.FC<StickyBuyBarProps> = ({
     }).format(val);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 max-w-xl mx-auto bg-white/95 backdrop-blur-md border-t border-neutral-200/80 px-4 py-2.5 z-40 font-gt-standard shadow-[0_-4px_20px_rgba(0,0,0,0.06)] flex items-center gap-2.5">
-      {/* 1. Secondary Action: "Tanya" Button */}
-      <button
-        type="button"
-        onClick={onChatClick}
-        className="h-12 px-3.5 rounded-2xl bg-neutral-100 hover:bg-neutral-200/80 active:scale-95 text-slate-800 font-semibold text-[13px] flex items-center justify-center gap-1.5 border border-neutral-200/60 transition-all cursor-pointer shrink-0 select-none"
-        title="Tanyakan ke Penjual / Kolom Komentar"
-        aria-label="Tanya Penjual di Komentar"
-      >
-        <MessageSquare className="w-4 h-4 text-slate-700 stroke-[2.2]" />
-        <span>Tanya</span>
-      </button>
+    <div className="fixed bottom-4 left-4 right-4 max-w-xl mx-auto z-40 font-gt-standard">
+      {/* Detached Floating Pill Container (Exact Reference Match) */}
+      <div className="bg-[#1d64ec] p-1.5 rounded-full shadow-[0_8px_30px_rgba(29,100,236,0.35)] backdrop-blur-md border border-white/25 flex items-center gap-2">
+        {/* Inner Active White Pill: "💬 Tanya" Button */}
+        <button
+          type="button"
+          onClick={onChatClick}
+          className="h-11 px-4.5 rounded-full bg-white hover:bg-neutral-50 active:scale-95 text-[#1d64ec] font-bold text-[13px] flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer shrink-0 select-none"
+          title="Tanyakan ke Penjual / Kolom Komentar"
+          aria-label="Tanya Penjual di Komentar"
+        >
+          <MessageSquare className="w-4 h-4 text-[#1d64ec] stroke-[2.4]" />
+          <span>Tanya</span>
+        </button>
 
-      {/* 2. Primary Action: Kumo UI Electric Blue Centered Single-Line CTA Button */}
-      <button
-        type="button"
-        onClick={onBuyClick}
-        className="relative inline-flex items-center justify-center flex-1 h-12 px-4 rounded-2xl text-white bg-[#1d64ec] border border-[#154ec1] shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all cursor-pointer overflow-hidden shrink-0 select-none group min-w-0"
-      >
-        {/* Kumo Inset Top Rim Highlight Gradient */}
-        <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] group-hover:from-[#2563eb] transition-all pointer-events-none" />
-
-        {/* Centered Single-Line Content: [🛒 Beli Sekarang • Rp 150.000] */}
-        <span className="relative z-10 flex items-center justify-center gap-2 font-semibold text-[15px] text-white tracking-tight truncate">
-          <ShoppingCart className="w-4 h-4 text-white stroke-[2.2] shrink-0" />
-          <span className="truncate">Beli Sekarang</span>
-          <span className="opacity-40 font-normal">•</span>
-          <span className="font-bold text-[15px] tracking-tight shrink-0">
-            {formatRupiah(price)}
+        {/* Right CTA Area: "🛒 Beli Sekarang • Rp 150.000" Button */}
+        <button
+          type="button"
+          onClick={onBuyClick}
+          className="flex-1 h-11 pr-4 text-white font-semibold text-[14px] flex items-center justify-between gap-2 active:scale-95 transition-all cursor-pointer shrink-0 select-none min-w-0"
+        >
+          <span className="flex items-center gap-1.5 truncate">
+            <ShoppingCart className="w-4 h-4 text-white stroke-[2.2] shrink-0" />
+            <span className="truncate">Beli Sekarang</span>
           </span>
-          {originalPrice && originalPrice > price && (
-            <span className="text-[11px] text-white/70 line-through font-normal shrink-0">
-              {formatRupiah(originalPrice)}
-            </span>
-          )}
-        </span>
-      </button>
+
+          <div className="flex items-center gap-1.5 shrink-0">
+            {stockCount !== undefined && stockCount > 0 && (
+              <span className="px-1.5 py-0.5 rounded-md text-[10px] font-medium bg-white/15 text-blue-100 border border-white/20 hidden sm:inline-flex">
+                Stok {stockCount}
+              </span>
+            )}
+            <div className="flex flex-col items-end leading-none shrink-0">
+              <span className="font-bold text-[15px] text-white tracking-tight">
+                {formatRupiah(price)}
+              </span>
+              {originalPrice && originalPrice > price && (
+                <span className="text-[9px] text-blue-200 line-through">
+                  {formatRupiah(originalPrice)}
+                </span>
+              )}
+            </div>
+          </div>
+        </button>
+      </div>
     </div>
   );
 };

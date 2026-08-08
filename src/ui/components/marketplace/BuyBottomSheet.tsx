@@ -118,7 +118,7 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
         onTouchMove={(e) => e.preventDefault()}
       />
 
-      {/* Bottom Sheet White Card - Matching Structure of User Reference Image with Pure White Background */}
+      {/* Bottom Sheet White Card - Reduced Corner Radius & Floating Close Button */}
       <div
         style={{
           transform: !isOpen
@@ -130,8 +130,18 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
             ? 'none'
             : 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
-        className="relative w-full max-w-md bg-white text-slate-900 rounded-t-[32px] p-5 pb-7 z-10 shadow-[0_-12px_50px_rgba(0,0,0,0.15)] space-y-4 border-t border-neutral-100 will-change-transform"
+        className="relative w-full max-w-md bg-white text-slate-900 rounded-t-[20px] p-5 pb-7 z-10 shadow-[0_-12px_50px_rgba(0,0,0,0.15)] space-y-4 border-t border-neutral-100 will-change-transform"
       >
+        {/* Floating Close X Button Floating Above Card Center (Matching Reference Image) */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute -top-12 left-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-[#18181b]/90 hover:bg-black text-white flex items-center justify-center shadow-lg border border-white/20 backdrop-blur-md transition-all active:scale-90 cursor-pointer z-20"
+          aria-label="Tutup Modal"
+        >
+          <X className="w-4 h-4 stroke-[2.2]" />
+        </button>
+
         {/* Top Handle Bar Indicator with Drag Listener */}
         <div
           onTouchStart={handleTouchStart}
@@ -143,7 +153,7 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
         </div>
 
         {/* 1. Header Penjual (Avatar + Nama + Badge Kelas & Slot Tersisa) */}
-        <div className="flex items-start justify-between gap-3 pt-1">
+        <div className="flex items-center justify-between gap-3 pt-0.5">
           <div className="flex items-center gap-3 min-w-0">
             {/* Avatar Penjual */}
             <img
@@ -171,16 +181,6 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
               </div>
             </div>
           </div>
-
-          {/* Close Button X */}
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200/80 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-95 shrink-0"
-            aria-label="Tutup Modal"
-          >
-            <X className="w-4 h-4 stroke-[2.2]" />
-          </button>
         </div>
 
         {/* 2. Main Product Image (Replaces QR Code in Reference Image) */}

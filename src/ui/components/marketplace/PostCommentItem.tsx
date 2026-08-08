@@ -100,21 +100,21 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
   return (
     <div className={`w-full ${isNested ? 'pt-3.5 pl-0' : 'py-3.5 border-b border-neutral-200'}`}>
       {!topReply ? (
-        /* SINGLE COMMENT (NO REPLIES): Full-width layout */
-        <div className="space-y-2">
-          {/* Header Row: Avatar + Username + Verified + Timestamp + Option (...) Icon */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2.5 min-w-0 flex-1 overflow-hidden">
-              {/* Avatar (w-9 h-9) */}
-              <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
-                <img
-                  src={comment.user.avatar}
-                  alt={comment.user.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+        /* SINGLE COMMENT (NO REPLIES): 2-Column Threads Layout matching reference */
+        <div className="flex items-start gap-3">
+          {/* Left Column: Avatar (36x36px) */}
+          <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 mt-0.5">
+            <img
+              src={comment.user.avatar}
+              alt={comment.user.name}
+              className="w-full h-full object-cover"
+            />
+          </div>
 
-              {/* Username + Verified + Timestamp */}
+          {/* Right Column: Header (Username + Timestamp + Options) + Content + Action Bar */}
+          <div className="flex-1 min-w-0 space-y-1">
+            {/* Header Row: Username + Verified + Timestamp + Options (...) */}
+            <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
                 <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
                   {comment.user.username || comment.user.name}
@@ -136,30 +136,30 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                   {comment.timestamp}
                 </span>
               </div>
+
+              {/* Option (...) Icon */}
+              <button
+                type="button"
+                className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
+                aria-label="Opsi komentar"
+              >
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
             </div>
 
-            {/* Option (...) Icon */}
-            <button
-              type="button"
-              className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
-              aria-label="Opsi komentar"
-            >
-              <MoreHorizontal className="w-4 h-4" />
-            </button>
+            {/* Comment Content (Aligned with Username Column) */}
+            <p className="text-[15px] text-slate-900 font-normal leading-snug break-words">
+              {comment.content}
+            </p>
+
+            {/* Action Bar (Aligned with Username Column) */}
+            {renderActionBar(
+              isLiked,
+              likesCount,
+              handleLikeToggle,
+              () => onReplyClick?.(comment.user.username || comment.user.name)
+            )}
           </div>
-
-          {/* Comment Content (Full Width Aligned with Avatar) */}
-          <p className="text-[15px] text-slate-900 font-normal leading-snug break-words">
-            {comment.content}
-          </p>
-
-          {/* Action Bar */}
-          {renderActionBar(
-            isLiked,
-            likesCount,
-            handleLikeToggle,
-            () => onReplyClick?.(comment.user.username || comment.user.name)
-          )}
         </div>
       ) : (
         /* THREAD COMMENT WITH TOP REPLY: Indented child reply + dynamic L-shaped curved connecting line (└─) */

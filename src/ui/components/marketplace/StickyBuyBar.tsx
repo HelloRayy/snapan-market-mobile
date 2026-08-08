@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShoppingCart, MessageSquare } from 'lucide-react';
+import { CreditCard, MessageSquare } from 'lucide-react';
 
 interface StickyBuyBarProps {
   price?: number;
@@ -48,7 +48,7 @@ export const StickyBuyBar: React.FC<StickyBuyBarProps> = ({
 
           {/* Content Layer */}
           <span className="relative z-10 flex items-center justify-center gap-1.5 truncate">
-            <ShoppingCart className="w-4 h-4 text-white stroke-[2.2] shrink-0" />
+            <CreditCard className="w-4 h-4 text-white stroke-[2.2] shrink-0" />
             <span className="truncate">Beli • {formatRupiah(price)}</span>
           </span>
         </button>

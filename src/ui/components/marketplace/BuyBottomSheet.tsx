@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, X, Send } from 'lucide-react';
+import { X, Send } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 
 interface BuyBottomSheetProps {
@@ -49,16 +49,10 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
         {/* Top Handle Bar Indicator */}
         <div className="w-10 h-1 bg-neutral-200 rounded-full mx-auto -mt-1 mb-1" />
 
-        {/* Header: [Circle ←] --- [Title] --- [Circle X] */}
+        {/* Header: [Spacer] --- [Title] --- [Circle X] */}
         <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-9 h-9 rounded-full bg-neutral-100 hover:bg-neutral-200/80 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-95"
-            aria-label="Kembali"
-          >
-            <ArrowLeft className="w-4.5 h-4.5 stroke-[2.2]" />
-          </button>
+          {/* Left Spacer for Title Balance */}
+          <div className="w-9 h-9 pointer-events-none" />
 
           <h2 className="font-bold text-base text-slate-900">Informasi Pembelian</h2>
 
@@ -94,25 +88,27 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
             ))}
           </div>
 
-          {/* Pagination Dot Indicators (If multiple images) */}
+          {/* High-Contrast Glass Pagination Dot Container */}
           {images.length > 1 && (
-            <div className="absolute bottom-2.5 left-0 right-0 flex justify-center gap-1.5 pointer-events-none">
-              {images.map((_, idx) => (
-                <div
-                  key={idx}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    idx === activeImageIndex
-                      ? 'w-5 bg-white shadow-sm'
-                      : 'w-1.5 bg-white/60'
-                  }`}
-                />
-              ))}
+            <div className="absolute bottom-3 left-0 right-0 flex justify-center pointer-events-none">
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 shadow-md">
+                {images.map((_, idx) => (
+                  <div
+                    key={idx}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      idx === activeImageIndex
+                        ? 'w-4 bg-white shadow-sm'
+                        : 'w-1.5 bg-white/50'
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
           )}
 
           {/* Photo Counter Badge */}
           {images.length > 1 && (
-            <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-xs text-white text-[10px] font-medium pointer-events-none">
+            <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-xs text-white text-[10px] font-medium border border-white/20 pointer-events-none">
               {activeImageIndex + 1}/{images.length}
             </div>
           )}

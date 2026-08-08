@@ -132,14 +132,18 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
         }}
         className="relative w-full max-w-md bg-white text-slate-900 rounded-t-[20px] p-5 pb-7 z-10 shadow-[0_-12px_50px_rgba(0,0,0,0.15)] space-y-4 border-t border-neutral-100 will-change-transform"
       >
-        {/* Floating Close X Button Floating Above Card Center (Matching Reference Image) */}
+        {/* Floating Close X Button Floating Above Card Center (Kumo UI Style) */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute -top-12 left-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-[#18181b]/90 hover:bg-black text-white flex items-center justify-center shadow-lg border border-white/20 backdrop-blur-md transition-all active:scale-90 cursor-pointer z-20"
+          className="absolute -top-12 left-1/2 -translate-x-1/2 w-9.5 h-9.5 rounded-full bg-white text-slate-800 flex items-center justify-center shadow-md border border-neutral-200 active:scale-90 transition-all cursor-pointer z-20 overflow-hidden group"
           aria-label="Tutup Modal"
         >
-          <X className="w-4 h-4 stroke-[2.2]" />
+          {/* Kumo Inset Top Rim Highlight Gradient */}
+          <span className="absolute inset-0 rounded-full bg-gradient-to-b from-white to-neutral-100/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9)] group-hover:from-neutral-50 transition-all pointer-events-none" />
+
+          {/* X Icon */}
+          <X className="w-4 h-4 stroke-[2.2] text-slate-800 relative z-10" />
         </button>
 
         {/* 1. Header Penjual (Avatar + Nama + Badge Kelas & Slot Tersisa) with Drag Gesture */}
@@ -234,9 +238,10 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
           <button
             type="button"
             onClick={handleWhatsAppCheckout}
-            className="relative inline-flex items-center justify-between w-full h-12 px-5 rounded-2xl text-white bg-[#18181b] hover:bg-black active:scale-[0.98] font-medium text-sm shadow-md transition-all cursor-pointer overflow-hidden select-none group"
+            className="relative inline-flex items-center justify-between w-full h-12 px-5 rounded-2xl text-white bg-[#1d64ec] hover:bg-[#154ec1] border border-[#154ec1] active:scale-[0.98] font-medium text-sm shadow-md shadow-blue-500/25 transition-all cursor-pointer overflow-hidden select-none group"
           >
-            <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
+            {/* Kumo Inset Top Rim Highlight Gradient */}
+            <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] group-hover:from-[#2563eb] transition-all pointer-events-none" />
             
             {/* Left Label */}
             <span className="relative z-10 flex items-center gap-2 shrink-0 font-medium">
@@ -245,7 +250,7 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
             </span>
 
             {/* Right Price */}
-            <span className="relative z-10 font-bold text-sm text-white tracking-tight shrink-0">
+            <span className="relative z-10 font-medium text-sm text-white/95 tracking-tight shrink-0">
               {formatRupiah(post.price)}
             </span>
           </button>

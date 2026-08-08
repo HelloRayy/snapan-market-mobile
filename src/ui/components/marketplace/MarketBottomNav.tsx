@@ -1,5 +1,6 @@
 import React from 'react';
 import { Home, Send, Plus, Heart, User } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface MarketBottomNavProps {
   activeTab: string;
@@ -62,16 +63,24 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
               key={item.id}
               type="button"
               onClick={() => onTabChange(item.id)}
-              className={`flex flex-col items-center justify-center px-4 py-1.5 rounded-full transition-all duration-200 cursor-pointer active:scale-95 relative overflow-hidden ${
+              className={`flex flex-col items-center justify-center px-4 py-1.5 rounded-full transition-colors duration-200 cursor-pointer active:scale-95 relative overflow-hidden ${
                 isActive
-                  ? 'text-slate-900 font-semibold shadow-2xs'
+                  ? 'text-slate-900 font-semibold'
                   : 'bg-transparent text-neutral-400 hover:text-slate-900 font-normal'
               }`}
               aria-label={item.label}
             >
-              {/* Kumo UI Neutral Light Inset Top Rim Highlight Gradient on Active Selected Tab */}
+              {/* Animated Sliding Pill Highlight across Active Tabs (Framer Motion layoutId) */}
               {isActive && (
-                <span className="absolute inset-0 rounded-full bg-gradient-to-b from-neutral-100 to-neutral-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9)] border border-neutral-300/80 pointer-events-none" />
+                <motion.span
+                  layoutId="active-nav-pill"
+                  transition={{
+                    type: 'spring',
+                    stiffness: 380,
+                    damping: 30,
+                  }}
+                  className="absolute inset-0 rounded-full bg-gradient-to-b from-neutral-100 to-neutral-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9)] border border-neutral-300/80 pointer-events-none"
+                />
               )}
 
               <div className="relative z-10 flex items-center justify-center">

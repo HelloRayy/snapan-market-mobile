@@ -42,19 +42,24 @@ export const StickyBuyBar: React.FC<StickyBuyBarProps> = ({
           <span>Tanya</span>
         </button>
 
-        {/* Right Kumo Primary Button: "Beli • Rp 150.000" (Kumo UI Primary Gradient Style) */}
+        {/* Right Kumo Primary Button: Left Label --- Right Price (Exact Match to User Reference Image) */}
         <button
           type="button"
           onClick={onBuyClick}
-          className="relative inline-flex items-center justify-center gap-1.5 flex-1 h-11 px-4 rounded-xl text-white font-semibold text-[14px] bg-[#1d64ec] border border-[#154ec1] shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all cursor-pointer overflow-hidden select-none group"
+          className="relative inline-flex items-center justify-between flex-1 h-11 px-4.5 rounded-xl text-white font-semibold text-[14px] bg-[#1d64ec] border border-[#154ec1] shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all cursor-pointer overflow-hidden select-none group"
         >
           {/* Kumo Inset Top Rim Highlight Gradient */}
           <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] group-hover:from-[#2563eb] transition-all pointer-events-none" />
 
-          {/* Content Layer */}
-          <span className="relative z-10 flex items-center justify-center gap-1.5 truncate">
-            <CreditCard className="w-4 h-4 text-white stroke-[2.2] shrink-0" />
-            <span className="truncate">Beli • {formatRupiah(price)}</span>
+          {/* Left Label */}
+          <span className="relative z-10 flex items-center gap-1.5 shrink-0">
+            <CreditCard className="w-4 h-4 text-white stroke-[2.2]" />
+            <span>Beli Sekarang</span>
+          </span>
+
+          {/* Right Price */}
+          <span className="relative z-10 font-bold text-[14px] text-white tracking-tight shrink-0">
+            {formatRupiah(price)}
           </span>
         </button>
         </div>

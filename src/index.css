@@ -34,11 +34,15 @@
   --foreground: var(--color-ink-black);
 }
 
-body {
+html, body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-gt-standard);
   -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overscroll-behavior-y: none;
 }
 
 /* Custom Utilities & Glassmorphism Light */

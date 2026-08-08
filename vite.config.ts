@@ -18,7 +18,8 @@ export default defineConfig({
         description: 'Platform E-Commerce & Marketplace PWA Terpercaya',
         theme_color: '#ffffff',
         background_color: '#ffffff',
-        display: 'standalone',
+        display: 'fullscreen',
+        display_override: ['fullscreen', 'standalone', 'minimal-ui'],
         orientation: 'portrait',
         start_url: '/',
         icons: [

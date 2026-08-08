@@ -86,3 +86,11 @@ body {
 @utility animate-backdrop-fade {
   animation: backdrop-fade-in 0.28s ease-out forwards;
 }
+
+/* Safe Area Inset Support for Edge-to-Edge Fullscreen PWA */
+.safe-pt {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.safe-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}

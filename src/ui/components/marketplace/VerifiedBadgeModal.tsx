@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { BadgeCheck } from 'lucide-react';
 
@@ -18,22 +18,28 @@ export const ClickableVerifiedBadge: React.FC<ClickableVerifiedBadgeProps> = ({
 
   const updatePosition = () => {
     if (buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      const tooltipWidth = 168; // Width for text-[13px] font-bold single-line badge
-      const centerLeft = rect.left + rect.width / 2;
+      const buttonRect = buttonRef.current.getBoundingClientRect();
+      const iconCenter = buttonRect.left + buttonRect.width / 2;
 
-      // Keep tooltip within screen boundaries
+      // Measure exact rendered tooltip DOM width if available, or fallback
+      const tooltipWidth = tooltipRef.current?.getBoundingClientRect().width || 172;
+
+      // Clamp tooltip position within screen margins (8px padding)
       const clampedLeft = Math.max(
         tooltipWidth / 2 + 8,
-        Math.min(window.innerWidth - tooltipWidth / 2 - 8, centerLeft)
+        Math.min(window.innerWidth - tooltipWidth / 2 - 8, iconCenter)
       );
 
-      const arrowOffset = centerLeft - clampedLeft;
+      // Left edge of the rendered tooltip container in fixed coordinates
+      const tooltipLeftEdge = clampedLeft - tooltipWidth / 2;
+
+      // Exact pixel distance from tooltip container's left edge to icon center
+      const arrowLeftPixel = iconCenter - tooltipLeftEdge;
 
       setTooltipPos({
-        top: rect.top - 8, // 8px above checkmark icon
+        top: buttonRect.top - 8, // 8px above badge checkmark icon
         left: clampedLeft,
-        arrowLeft: tooltipWidth / 2 + arrowOffset,
+        arrowLeft: arrowLeftPixel,
       });
     }
   };
@@ -47,6 +53,13 @@ export const ClickableVerifiedBadge: React.FC<ClickableVerifiedBadgeProps> = ({
       setIsTooltipOpen(false);
     }
   };
+
+  // Measure exact DOM width after mount
+  useLayoutEffect(() => {
+    if (isTooltipOpen) {
+      updatePosition();
+    }
+  }, [isTooltipOpen]);
 
   // Close IMMEDIATELY on scroll, touchmove, wheel, resize, or click outside
   useEffect(() => {
@@ -96,7 +109,7 @@ export const ClickableVerifiedBadge: React.FC<ClickableVerifiedBadgeProps> = ({
         <BadgeCheck className={`${className} text-[#1d64ec] fill-[#1d64ec] text-white`} />
       </button>
 
-      {/* Larger Text & Instant Auto-Close Portal Tooltip (White Box + Sharp Pointed Caret Arrow) */}
+      {/* Portal Tooltip (Exact Pixel Caret Alignment with Icon Center) */}
       {isTooltipOpen &&
         tooltipPos &&
         createPortal(
@@ -112,7 +125,7 @@ export const ClickableVerifiedBadge: React.FC<ClickableVerifiedBadgeProps> = ({
             }}
             className="px-3 py-1.5 bg-white text-slate-900 rounded-xl shadow-[0_8px_25px_rgba(0,0,0,0.16)] border border-neutral-200/90 font-gt-standard select-none animate-in fade-in zoom-in-95 duration-150 flex items-center gap-1.5 whitespace-nowrap pointer-events-auto"
           >
-            {/* Ujung Runcing (Sharp Pointed Caret Notch Arrow pointing down) */}
+            {/* Ujung Runcing (Exact pixel placement pointing 100% dead-center to badge icon) */}
             <div
               style={{ left: `${tooltipPos.arrowLeft}px` }}
               className="absolute -bottom-1 -translate-x-1/2 w-2.5 h-2.5 bg-white rotate-45 border-b border-r border-neutral-200/90"

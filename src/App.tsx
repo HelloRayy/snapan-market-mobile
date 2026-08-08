@@ -54,10 +54,12 @@ export function App() {
     setShowSplash(true);
   };
 
+  const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
   return (
     <div className="relative min-h-screen bg-pure-white text-slate-ink overflow-x-hidden font-gt-standard">
-      {/* Agentation Page Feedback Overlay */}
-      {import.meta.env.DEV && <Agentation />}
+      {/* Agentation Page Feedback Overlay (Desktop Localhost Only) */}
+      {import.meta.env.DEV && isLocalhost && <Agentation />}
 
       {/* Floating Dev Mode Control Button (Replay Onboarding / Splash) */}
       {import.meta.env.DEV && (

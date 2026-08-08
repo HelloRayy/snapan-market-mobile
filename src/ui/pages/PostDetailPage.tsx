@@ -33,10 +33,10 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
       postId: post.id,
       user: {
         id: 'user-current',
-        name: 'Saya (Pembeli)',
-        username: 'pembeli_snapan',
+        name: 'Rinia Safitri',
+        username: 'rinia2812',
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
-        classGroup: 'XII PPLG 1',
+        classGroup: 'XII DKV 2',
         isVerified: false,
       },
       content: replyToUser ? `@${replyToUser} ${content}` : content,

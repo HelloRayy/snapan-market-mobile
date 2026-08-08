@@ -18,8 +18,6 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const startYRef = useRef(0);
 
-  if (!isOpen) return null;
-
   const handleTouchStart = (e: React.TouchEvent) => {
     startYRef.current = e.touches[0].clientY;
     setIsDragging(true);
@@ -83,17 +81,32 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
   const images = post.images && post.images.length > 0 ? post.images : ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80'];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-xs animate-backdrop-fade font-gt-standard">
+    <div
+      className={`fixed inset-0 z-50 flex items-end justify-center font-gt-standard transition-all duration-300 ${
+        isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+      }`}
+    >
       {/* Overlay Backdrop Click */}
-      <div className="absolute inset-0" onClick={onClose} />
+      <div
+        className={`absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 ${
+          isOpen ? 'opacity-100' : 'opacity-0'
+        }`}
+        onClick={onClose}
+      />
 
-      {/* Bottom Sheet Card - Native Spring Animation & Drag Gesture */}
+      {/* Bottom Sheet Card - Pure Native Bottom Slide Up/Down Expansion */}
       <div
         style={{
-          transform: dragY > 0 ? `translateY(${dragY}px)` : undefined,
-          transition: isDragging ? 'none' : 'transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)',
+          transform: !isOpen
+            ? 'translateY(100%)'
+            : dragY > 0
+            ? `translateY(${dragY}px)`
+            : 'translateY(0%)',
+          transition: isDragging
+            ? 'none'
+            : 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
-        className="relative w-full max-w-md bg-white rounded-t-[32px] p-5 pb-8 z-10 shadow-[0_-8px_40px_rgba(0,0,0,0.25)] animate-sheet-slide space-y-3.5 will-change-transform"
+        className="relative w-full max-w-md bg-white rounded-t-[32px] p-5 pb-8 z-10 shadow-[0_-12px_50px_rgba(0,0,0,0.3)] space-y-3.5 will-change-transform"
       >
         {/* Top Handle Bar Indicator with Drag Listener */}
         <div

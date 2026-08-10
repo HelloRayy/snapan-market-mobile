@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { RotateCcw } from 'lucide-react';
 import { OnboardingScreen } from '@/ui/components/onboarding/OnboardingScreen';
 import { PwaLandingPage } from '@/ui/components/pwa/PwaLandingPage';
 import { HomePage } from '@/ui/pages/HomePage';
@@ -47,27 +46,8 @@ export function App() {
     setHasCompletedOnboarding(true);
   };
 
-  const handleResetToOnboarding = () => {
-    localStorage.removeItem('snapan_has_onboarded');
-    window.history.pushState({}, '', '/onboarding');
-    setCurrentRoute('/onboarding');
-    setHasCompletedOnboarding(false);
-  };
-
   return (
     <div className="relative min-h-screen bg-pure-white text-slate-ink overflow-x-hidden font-gt-standard">
-      {/* Floating Dev Mode Control Button (Replay Onboarding) */}
-      {import.meta.env.DEV && (
-        <button
-          onClick={handleResetToOnboarding}
-          className="fixed top-3 right-3 z-[9999] flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/90 hover:bg-slate-900 text-white text-[11px] font-bold shadow-xl border border-white/20 backdrop-blur-md active:scale-95 transition-all cursor-pointer select-none"
-          title="Reset ke Onboarding (Dev Mode)"
-        >
-          <RotateCcw className="h-3.5 w-3.5 text-blue-400 animate-spin-slow" />
-          <span>Dev: Reset Onboarding</span>
-        </button>
-      )}
-
       {/* Render Dedicated PWA Download Landing Page if route is /download */}
       {isDownloadRoute ? (
         <PwaLandingPage onProceedToWeb={navigateToWeb} />

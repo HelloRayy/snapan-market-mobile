@@ -157,171 +157,198 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
           </div>
 
           {/* Form Scrollable Body */}
-          <div className="p-4 overflow-y-auto flex-1 space-y-3 relative">
-            {/* Author Row + Dynamic Topic Selector */}
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
-                <img
-                  src={currentUser.avatar}
-                  alt={currentUser.name}
-                  className="w-full h-full object-cover"
-                />
+          <div className="p-4 overflow-y-auto flex-1 space-y-4 relative">
+            {/* Thread Column Container: Left Connector Line + Right Content Area */}
+            <div className="flex gap-3 items-stretch">
+              {/* Left Column: Avatar (Top) + Vertical Thread Connector Line + Avatar (Bottom) */}
+              <div className="flex flex-col items-center shrink-0">
+                <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs">
+                  <img
+                    src={currentUser.avatar}
+                    alt={currentUser.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                {/* Threads Vertical Connector Line */}
+                <div className="w-[1.5px] bg-neutral-200 flex-1 my-1.5 min-h-[50px]" />
+                {/* Faded Bottom Small Avatar */}
+                <div className="w-4.5 h-4.5 rounded-full overflow-hidden border border-neutral-200/80 opacity-60">
+                  <img
+                    src={currentUser.avatar}
+                    alt={currentUser.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </div>
 
-              <div className="flex-1 min-w-0 pt-0.5">
-                {/* Username + Inline Topic Selector */}
-                <div className="flex items-center gap-1.5 flex-wrap relative">
-                  <span className="font-semibold text-[15.5px] text-slate-900">
-                    {currentUser.username}
-                  </span>
+              {/* Right Column: Author Header + Topic Popover + Textarea + Images + Action Bar */}
+              <div className="flex-1 min-w-0 pt-0.5 flex flex-col justify-between">
+                <div>
+                  {/* Username + Inline Topic Selector */}
+                  <div className="flex items-center gap-1.5 flex-wrap relative">
+                    <span className="font-bold text-[15px] text-slate-900">
+                      {currentUser.username}
+                    </span>
 
-                  {/* Topic Selector Button */}
-                  <div className="relative inline-block">
-                    <button
-                      type="button"
-                      onClick={() => setShowTopicDropdown(!showTopicDropdown)}
-                      className={`flex items-center gap-1 text-[14px] font-normal rounded-lg px-1.5 py-0.5 transition-all cursor-pointer ${
-                        selectedTopic
-                          ? selectedTopic.isOfficial
-                            ? 'bg-blue-50 text-[#1d64ec] font-bold'
-                            : 'bg-neutral-100 text-slate-900 font-bold'
-                          : 'text-neutral-400 hover:bg-neutral-100 hover:text-slate-600'
-                      }`}
-                    >
-                      <span className="text-neutral-400">›</span>
-                      {selectedTopic ? (
-                        <>
-                          {selectedTopic.isOfficial && (
-                            selectedTopic.icon === 'party-popper' ? (
-                              <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
-                            ) : (
-                              <ThreadsTopicIcon />
-                            )
-                          )}
-                          <span>{selectedTopic.name}</span>
-                        </>
-                      ) : (
-                        <span>Community or topic</span>
-                      )}
-                    </button>
+                    {/* Topic Selector Button */}
+                    <div className="relative inline-block">
+                      <button
+                        type="button"
+                        onClick={() => setShowTopicDropdown(!showTopicDropdown)}
+                        className="flex items-center gap-1 text-[13.5px] font-normal transition-all cursor-pointer"
+                      >
+                        <span className="text-neutral-400 font-normal">›</span>
+                        {selectedTopic ? (
+                          <span
+                            className={`flex items-center gap-1 px-2 py-0.5 rounded-md font-bold text-[13.5px] ${
+                              selectedTopic.isOfficial
+                                ? 'bg-blue-50 text-[#1d64ec]'
+                                : 'bg-neutral-100 text-slate-900'
+                            }`}
+                          >
+                            {selectedTopic.isOfficial && (
+                              selectedTopic.icon === 'party-popper' ? (
+                                <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
+                              ) : (
+                                <ThreadsTopicIcon />
+                              )
+                            )}
+                            <span>{selectedTopic.name}</span>
+                          </span>
+                        ) : (
+                          <span className="bg-neutral-100 hover:bg-neutral-200/80 text-neutral-500 font-medium px-2 py-0.5 rounded-md text-[13.5px] transition-colors">
+                            Community or topic
+                          </span>
+                        )}
+                      </button>
 
-                    {/* Dropdown Popover Overlay (Persis Screenshot 2!) */}
-                    {showTopicDropdown && (
-                      <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-2xl shadow-xl border border-neutral-200 z-50 p-2 animate-in fade-in slide-in-from-top-2 duration-150">
-                        <div className="px-3 py-1.5 text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
-                          Recent / Populer
-                        </div>
+                      {/* Dropdown Popover Overlay (Persis Screenshot 2!) */}
+                      {showTopicDropdown && (
+                        <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-2xl shadow-xl border border-neutral-200 z-50 p-2 animate-in fade-in slide-in-from-top-2 duration-150">
+                          <div className="px-3 py-1.5 text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                            Recent / Populer
+                          </div>
 
-                        <div className="space-y-0.5">
-                          {PRESET_TOPICS.map((topic) => (
-                            <button
-                              key={topic.id}
-                              type="button"
-                              onClick={() => handleSelectTopic(topic)}
-                              className="w-full text-left px-3 py-2 rounded-xl hover:bg-neutral-100/90 transition-colors flex items-center justify-between group cursor-pointer"
-                            >
-                              <div className="flex items-center gap-2 min-w-0">
-                                {topic.isOfficial && (
-                                  topic.icon === 'party-popper' ? (
-                                    <PartyPopper className="w-4 h-4 text-[#1d64ec] stroke-[2.2] shrink-0" />
-                                  ) : (
-                                    <ThreadsTopicIcon className="w-4 h-4 text-[#1d64ec] fill-current shrink-0" />
-                                  )
-                                )}
-                                <div>
-                                  <div className={`text-[14px] font-semibold ${topic.isOfficial ? 'text-[#1d64ec]' : 'text-slate-900'}`}>
-                                    {topic.name}
-                                  </div>
-                                  {topic.subtitle && (
-                                    <div className="text-[11.5px] text-neutral-400 font-normal truncate">
-                                      {topic.subtitle}
-                                    </div>
+                          <div className="space-y-0.5">
+                            {PRESET_TOPICS.map((topic) => (
+                              <button
+                                key={topic.id}
+                                type="button"
+                                onClick={() => handleSelectTopic(topic)}
+                                className="w-full text-left px-3 py-2 rounded-xl hover:bg-neutral-100/90 transition-colors flex items-center justify-between group cursor-pointer"
+                              >
+                                <div className="flex items-center gap-2 min-w-0">
+                                  {topic.isOfficial && (
+                                    topic.icon === 'party-popper' ? (
+                                      <PartyPopper className="w-4 h-4 text-[#1d64ec] stroke-[2.2] shrink-0" />
+                                    ) : (
+                                      <ThreadsTopicIcon className="w-4 h-4 text-[#1d64ec] fill-current shrink-0" />
+                                    )
                                   )}
+                                  <div>
+                                    <div className={`text-[14px] font-semibold ${topic.isOfficial ? 'text-[#1d64ec]' : 'text-slate-900'}`}>
+                                      {topic.name}
+                                    </div>
+                                    {topic.subtitle && (
+                                      <div className="text-[11.5px] text-neutral-400 font-normal truncate">
+                                        {topic.subtitle}
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
-                            </button>
-                          ))}
-                        </div>
+                              </button>
+                            ))}
+                          </div>
 
-                        {/* Custom Topic Input */}
-                        <div className="mt-2 pt-2 border-t border-neutral-100 px-2">
-                          <input
-                            type="text"
-                            placeholder="Ketik topik kustom + Enter..."
-                            value={customTopicInput}
-                            onChange={(e) => setCustomTopicInput(e.target.value)}
-                            onKeyDown={handleCustomTopicSubmit}
-                            className="w-full px-3 py-1.5 text-[13px] rounded-lg border border-neutral-200 focus:outline-none focus:border-blue-500 bg-neutral-50"
-                          />
+                          {/* Custom Topic Input */}
+                          <div className="mt-2 pt-2 border-t border-neutral-100 px-2">
+                            <input
+                              type="text"
+                              placeholder="Ketik topik kustom + Enter..."
+                              value={customTopicInput}
+                              onChange={(e) => setCustomTopicInput(e.target.value)}
+                              onKeyDown={handleCustomTopicSubmit}
+                              className="w-full px-3 py-1.5 text-[13px] rounded-lg border border-neutral-200 focus:outline-none focus:border-blue-500 bg-neutral-50"
+                            />
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                {/* Caption Textarea (Auto-expand feeling) */}
-                <textarea
-                  autoFocus
-                  rows={3}
-                  placeholder="Apa yang baru? Apa yang ingin kamu jual?"
-                  value={caption}
-                  onChange={(e) => setCaption(e.target.value)}
-                  className="w-full mt-2 text-[15px] text-slate-900 placeholder:text-neutral-400 focus:outline-none resize-none bg-transparent leading-relaxed"
-                />
+                  {/* Caption Textarea (Auto-expand feeling) */}
+                  <textarea
+                    autoFocus
+                    rows={3}
+                    placeholder="Apa yang baru? Apa yang ingin kamu jual?"
+                    value={caption}
+                    onChange={(e) => setCaption(e.target.value)}
+                    className="w-full mt-1.5 text-[15px] text-slate-900 placeholder:text-neutral-400 focus:outline-none resize-none bg-transparent leading-relaxed"
+                  />
 
-                {/* Uploaded Images Gallery (Persis Screenshot 3!) */}
-                {images.length > 0 && (
-                  <div className="flex items-center gap-2.5 overflow-x-auto py-2 scrollbar-none">
-                    {images.map((imgUrl, idx) => (
-                      <div key={idx} className="relative w-28 h-28 rounded-2xl overflow-hidden border border-neutral-200 shadow-2xs group shrink-0">
-                        <img
-                          src={imgUrl}
-                          alt={`Upload preview ${idx + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                        {/* Delete Badge '✕' */}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveImage(idx)}
-                          className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center backdrop-blur-xs transition-transform active:scale-90 cursor-pointer"
-                        >
-                          <X className="w-3.5 h-3.5 stroke-[2.5]" />
-                        </button>
-                      </div>
-                    ))}
+                  {/* Uploaded Images Gallery (Persis Screenshot 3!) */}
+                  {images.length > 0 && (
+                    <div className="flex items-center gap-2.5 overflow-x-auto py-2 scrollbar-none">
+                      {images.map((imgUrl, idx) => (
+                        <div key={idx} className="relative w-28 h-28 rounded-2xl overflow-hidden border border-neutral-200 shadow-2xs group shrink-0">
+                          <img
+                            src={imgUrl}
+                            alt={`Upload preview ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                          {/* Delete Badge '✕' */}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveImage(idx)}
+                            className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center backdrop-blur-xs transition-transform active:scale-90 cursor-pointer"
+                          >
+                            <X className="w-3.5 h-3.5 stroke-[2.5]" />
+                          </button>
+                        </div>
+                      ))}
 
-                    {/* Add Image Card Button */}
+                      {/* Add Image Card Button */}
+                      <button
+                        type="button"
+                        onClick={handleAddDummyImage}
+                        className="w-28 h-28 rounded-2xl border-2 border-dashed border-neutral-300 hover:border-blue-500 bg-neutral-50 hover:bg-blue-50/30 flex flex-col items-center justify-center gap-1 text-neutral-400 hover:text-[#1d64ec] transition-colors shrink-0 cursor-pointer"
+                      >
+                        <ImageIcon className="w-6 h-6 stroke-[1.8]" />
+                        <span className="text-[12px] font-semibold">+ Tambah</span>
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Action Icons Bar (Image, GIF, Poll, Price/Stock, Location) */}
+                  <div className="flex items-center gap-3.5 pt-2 text-neutral-400 select-none">
                     <button
                       type="button"
                       onClick={handleAddDummyImage}
-                      className="w-28 h-28 rounded-2xl border-2 border-dashed border-neutral-300 hover:border-blue-500 bg-neutral-50 hover:bg-blue-50/30 flex flex-col items-center justify-center gap-1 text-neutral-400 hover:text-[#1d64ec] transition-colors shrink-0 cursor-pointer"
+                      className="p-0.5 text-neutral-500 hover:text-slate-900 transition-colors cursor-pointer"
+                      title="Tambah Foto Produk"
                     >
-                      <ImageIcon className="w-6 h-6 stroke-[1.8]" />
-                      <span className="text-[12px] font-semibold">+ Tambah</span>
+                      <ImageIcon className="w-5 h-5 stroke-[1.75]" />
                     </button>
-                  </div>
-                )}
 
-                {/* Action Icons Bar (Image, Price/Stock, Location) */}
-                <div className="flex items-center gap-4 pt-2 text-neutral-400">
-                  <button
-                    type="button"
-                    onClick={handleAddDummyImage}
-                    className="p-1 hover:text-slate-800 transition-colors cursor-pointer"
-                    title="Tambah Foto Produk"
-                  >
-                    <ImageIcon className="w-5 h-5 stroke-[1.8]" />
-                  </button>
+                    <span className="text-[11px] font-bold text-neutral-400 border border-neutral-300 px-1 py-0.2 rounded-xs select-none">
+                      GIF
+                    </span>
 
-                  <div className="flex items-center gap-1.5 text-[12px] text-slate-700 bg-neutral-100 px-2.5 py-1 rounded-full">
-                    <Tag className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Rp {price ? price.toLocaleString('id-ID') : '50.000'}</span>
-                  </div>
+                    <div className="flex items-center gap-1.5 text-[12px] text-slate-700 bg-neutral-100 px-2.5 py-1 rounded-full">
+                      <Tag className="w-3.5 h-3.5 text-slate-500" />
+                      <span>Rp {price ? price.toLocaleString('id-ID') : '50.000'}</span>
+                    </div>
 
-                  <div className="flex items-center gap-1.5 text-[12px] text-slate-700 bg-neutral-100 px-2.5 py-1 rounded-full">
-                    <MapPin className="w-3.5 h-3.5 text-slate-500" />
-                    <span>{locationTag}</span>
+                    <div className="flex items-center gap-1.5 text-[12px] text-slate-700 bg-neutral-100 px-2.5 py-1 rounded-full">
+                      <MapPin className="w-3.5 h-3.5 text-slate-500" />
+                      <span>{locationTag}</span>
+                    </div>
                   </div>
+                </div>
+
+                {/* Add to Thread Faded Bottom Line (Persis Screenshot 1 & 3!) */}
+                <div className="pt-4 text-[14px] text-neutral-400 font-normal select-none">
+                  Tambahkan ke thread
                 </div>
               </div>
             </div>

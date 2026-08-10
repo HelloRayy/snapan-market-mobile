@@ -212,10 +212,11 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
           </div>
         </div>
 
-        {/* Form Scrollable Body (Threads 2-Column Alignment Layout) */}
+        {/* Form Scrollable Body */}
         <div className="p-4 overflow-y-auto flex-1 relative max-w-lg mx-auto w-full">
+          {/* 1. Top Section: Avatar + Username + Caption Textarea (2-Column Aligned) */}
           <div className="flex gap-2.5 items-start">
-            {/* Left Column: Avatar (Top) + (Threads Line & Small Avatar ONLY in Utas Mode) */}
+            {/* Left Column: Avatar */}
             <div className="flex flex-col items-center shrink-0 w-8">
               <div className="w-8 h-8 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs">
                 <img
@@ -239,281 +240,281 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
               )}
             </div>
 
-            {/* Right Column: Author Header + Textarea + Seller Form + Gallery + Actions (Aligned directly under Username!) */}
-            <div className="flex-1 min-w-0 flex flex-col justify-between">
-              <div>
-                {/* Username + Inline Topic Selector Header */}
-                <div className="flex items-center gap-1.5 flex-wrap relative leading-none">
-                  <span className="font-bold text-[14.5px] text-slate-900">
-                    {currentUser.username}
-                  </span>
+            {/* Right Column: ONLY Username + Topic Selector + Caption Textarea (Aligned with Username!) */}
+            <div className="flex-1 min-w-0 flex flex-col">
+              {/* Username + Inline Topic Selector Header */}
+              <div className="flex items-center gap-1.5 flex-wrap relative leading-none">
+                <span className="font-bold text-[14.5px] text-slate-900">
+                  {currentUser.username}
+                </span>
 
-                  {/* Topic Selector Button */}
-                  <div className="relative inline-flex items-center">
-                    <button
-                      type="button"
-                      onClick={() => setShowTopicDropdown(!showTopicDropdown)}
-                      className="flex items-center gap-1 text-[13px] font-normal transition-all cursor-pointer"
-                    >
-                      <span className="text-neutral-400 font-normal">›</span>
-                      {selectedTopic ? (
-                        <span
-                          className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md font-bold text-[13px] ${
-                            selectedTopic.isOfficial
-                              ? 'bg-blue-50 text-[#1d64ec]'
-                              : 'bg-neutral-100 text-slate-900'
-                          }`}
-                        >
-                          {selectedTopic.isOfficial && (
-                            selectedTopic.icon === 'party-popper' ? (
-                              <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
-                            ) : (
-                              <ThreadsTopicIcon />
-                            )
-                          )}
-                          <span>{selectedTopic.name}</span>
-                        </span>
-                      ) : (
-                        <span className="bg-neutral-100 hover:bg-neutral-200/80 text-neutral-500 font-medium px-1.5 py-0.5 rounded-md text-[13px] transition-colors">
-                          Community or topic
-                        </span>
-                      )}
-                    </button>
-
-                    {/* Dropdown Popover Overlay */}
-                    {showTopicDropdown && (
-                      <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-2xl shadow-xl border border-neutral-200 z-50 p-2 animate-in fade-in slide-in-from-top-2 duration-150">
-                        <div className="px-3 py-1.5 text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
-                          Recent / Populer
-                        </div>
-
-                        <div className="space-y-0.5">
-                          {PRESET_TOPICS.map((topic) => (
-                            <button
-                              key={topic.id}
-                              type="button"
-                              onClick={() => handleSelectTopic(topic)}
-                              className="w-full text-left px-3 py-2 rounded-xl hover:bg-neutral-100/90 transition-colors flex items-center justify-between group cursor-pointer"
-                            >
-                              <div className="flex items-center gap-2 min-w-0">
-                                {topic.isOfficial && (
-                                  topic.icon === 'party-popper' ? (
-                                    <PartyPopper className="w-4 h-4 text-[#1d64ec] stroke-[2.2] shrink-0" />
-                                  ) : (
-                                    <ThreadsTopicIcon className="w-4 h-4 text-[#1d64ec] fill-current shrink-0" />
-                                  )
-                                )}
-                                <div>
-                                  <div className={`text-[14px] font-semibold ${topic.isOfficial ? 'text-[#1d64ec]' : 'text-slate-900'}`}>
-                                    {topic.name}
-                                  </div>
-                                  {topic.subtitle && (
-                                    <div className="text-[11.5px] text-neutral-400 font-normal truncate">
-                                      {topic.subtitle}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-
-                        {/* Custom Topic Input */}
-                        <div className="mt-2 pt-2 border-t border-neutral-100 px-2">
-                          <input
-                            type="text"
-                            placeholder="Ketik topik kustom + Enter..."
-                            value={customTopicInput}
-                            onChange={(e) => setCustomTopicInput(e.target.value)}
-                            onKeyDown={handleCustomTopicSubmit}
-                            className="w-full px-3 py-1.5 text-[13px] rounded-lg border border-neutral-200 focus:outline-none focus:border-blue-500 bg-neutral-50"
-                          />
-                        </div>
-                      </div>
+                {/* Topic Selector Button */}
+                <div className="relative inline-flex items-center">
+                  <button
+                    type="button"
+                    onClick={() => setShowTopicDropdown(!showTopicDropdown)}
+                    className="flex items-center gap-1 text-[13px] font-normal transition-all cursor-pointer"
+                  >
+                    <span className="text-neutral-400 font-normal">›</span>
+                    {selectedTopic ? (
+                      <span
+                        className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md font-bold text-[13px] ${
+                          selectedTopic.isOfficial
+                            ? 'bg-blue-50 text-[#1d64ec]'
+                            : 'bg-neutral-100 text-slate-900'
+                        }`}
+                      >
+                        {selectedTopic.isOfficial && (
+                          selectedTopic.icon === 'party-popper' ? (
+                            <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
+                          ) : (
+                            <ThreadsTopicIcon />
+                          )
+                        )}
+                        <span>{selectedTopic.name}</span>
+                      </span>
+                    ) : (
+                      <span className="bg-neutral-100 hover:bg-neutral-200/80 text-neutral-500 font-medium px-1.5 py-0.5 rounded-md text-[13px] transition-colors">
+                        Community or topic
+                      </span>
                     )}
-                  </div>
-                </div>
+                  </button>
 
-                {/* Caption Textarea (Aligned directly under username!) */}
-                <textarea
-                  autoFocus
-                  rows={2}
-                  placeholder={postMode === 'product' ? 'Deskripsi lengkap barang / jasa...' : 'Apa yang baru?'}
-                  value={caption}
-                  onChange={(e) => setCaption(e.target.value)}
-                  className="w-full mt-1 text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none resize-none bg-transparent leading-snug"
-                />
-
-                {/* Dynamic Seller Product Inputs (Direct Full-Width Fields without Outer Card Container!) */}
-                {postMode === 'product' && (
-                  <div className="my-3 space-y-3.5 w-full">
-                    {/* Field 1: Judul Produk / Jasa */}
-                    <div className="space-y-1">
-                      <label className="block text-[12px] font-bold text-slate-800">
-                        Judul Produk / Jasa <span className="text-rose-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="misal: Jasa UI/UX Design & Engineering PWA"
-                        value={productTitle}
-                        onChange={(e) => setProductTitle(e.target.value)}
-                        className="w-full px-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white font-semibold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs"
-                      />
-                    </div>
-
-                    {/* 2-Column Grid: Harga (Rp) & Stok / Slot */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <label className="block text-[12px] font-bold text-slate-800">
-                          Harga (Rp) <span className="text-rose-500">*</span>
-                        </label>
-                        <div className="relative">
-                          <span className="absolute left-3.5 top-2.5 text-[13.5px] font-bold text-neutral-400">Rp</span>
-                          <input
-                            type="text"
-                            placeholder="250.000"
-                            value={priceInput}
-                            onChange={(e) => setPriceInput(e.target.value)}
-                            className="w-full pl-10 pr-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white font-bold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs"
-                          />
-                        </div>
+                  {/* Dropdown Popover Overlay */}
+                  {showTopicDropdown && (
+                    <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-2xl shadow-xl border border-neutral-200 z-50 p-2 animate-in fade-in slide-in-from-top-2 duration-150">
+                      <div className="px-3 py-1.5 text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                        Recent / Populer
                       </div>
 
-                      <div className="space-y-1">
-                        <label className="block text-[12px] font-bold text-slate-800">
-                          Stok / Slot
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="3 Slot Tersisa"
-                          value={stockInput}
-                          onChange={(e) => setStockInput(e.target.value)}
-                          className="w-full px-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Field 4: Lokasi COD di Sekolah */}
-                    <div className="space-y-1">
-                      <label className="block text-[12px] font-bold text-slate-800">
-                        Lokasi COD di Sekolah
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="misal: Studio DKV Gedung B / Lab PPLG 1"
-                        value={locationInput}
-                        onChange={(e) => setLocationInput(e.target.value)}
-                        className="w-full px-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs"
-                      />
-                    </div>
-
-                    {/* Field 5: Kategori Barang / Jasa */}
-                    <div className="space-y-1.5 pt-0.5">
-                      <label className="block text-[12px] font-bold text-slate-800">
-                        Kategori Barang / Jasa
-                      </label>
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        {['Jasa DKV/PPLG', 'Preloved / Bekas', 'Baru', 'Kantin'].map((cat) => (
+                      <div className="space-y-0.5">
+                        {PRESET_TOPICS.map((topic) => (
                           <button
-                            key={cat}
+                            key={topic.id}
                             type="button"
-                            className="px-3 py-1.5 rounded-xl border border-neutral-200 hover:border-blue-400 bg-neutral-50 hover:bg-blue-50 text-[12px] font-semibold text-slate-700 hover:text-[#1d64ec] transition-colors cursor-pointer"
+                            onClick={() => handleSelectTopic(topic)}
+                            className="w-full text-left px-3 py-2 rounded-xl hover:bg-neutral-100/90 transition-colors flex items-center justify-between group cursor-pointer"
                           >
-                            {cat}
+                            <div className="flex items-center gap-2 min-w-0">
+                              {topic.isOfficial && (
+                                topic.icon === 'party-popper' ? (
+                                  <PartyPopper className="w-4 h-4 text-[#1d64ec] stroke-[2.2] shrink-0" />
+                                ) : (
+                                  <ThreadsTopicIcon className="w-4 h-4 text-[#1d64ec] fill-current shrink-0" />
+                                )
+                              )}
+                              <div>
+                                <div className={`text-[14px] font-semibold ${topic.isOfficial ? 'text-[#1d64ec]' : 'text-slate-900'}`}>
+                                  {topic.name}
+                                </div>
+                                {topic.subtitle && (
+                                  <div className="text-[11.5px] text-neutral-400 font-normal truncate">
+                                    {topic.subtitle}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
                           </button>
                         ))}
                       </div>
-                    </div>
-                  </div>
-                )}
 
-                {/* Uploaded Images Gallery */}
-                {images.length > 0 && (
-                  <div className="flex items-center gap-2 overflow-x-auto py-1.5 scrollbar-none">
-                    {images.map((imgUrl, idx) => (
-                      <div key={idx} className="relative w-24 h-24 rounded-2xl overflow-hidden border border-neutral-200 shadow-2xs group shrink-0">
-                        <img
-                          src={imgUrl}
-                          alt={`Upload preview ${idx + 1}`}
-                          className="w-full h-full object-cover"
+                      {/* Custom Topic Input */}
+                      <div className="mt-2 pt-2 border-t border-neutral-100 px-2">
+                        <input
+                          type="text"
+                          placeholder="Ketik topik kustom + Enter..."
+                          value={customTopicInput}
+                          onChange={(e) => setCustomTopicInput(e.target.value)}
+                          onKeyDown={handleCustomTopicSubmit}
+                          className="w-full px-3 py-1.5 text-[13px] rounded-lg border border-neutral-200 focus:outline-none focus:border-blue-500 bg-neutral-50"
                         />
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveImage(idx)}
-                          className="absolute top-1.5 right-1.5 w-5.5 h-5.5 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center backdrop-blur-xs transition-transform active:scale-90 cursor-pointer"
-                        >
-                          <X className="w-3 h-3 stroke-[2.5]" />
-                        </button>
                       </div>
-                    ))}
-
-                    <button
-                      type="button"
-                      onClick={handleAddDummyImage}
-                      className="w-24 h-24 rounded-2xl border-2 border-dashed border-neutral-300 hover:border-blue-500 bg-neutral-50 hover:bg-blue-50/30 flex flex-col items-center justify-center gap-1 text-neutral-400 hover:text-[#1d64ec] transition-colors shrink-0 cursor-pointer"
-                    >
-                      <ImageIcon className="w-5 h-5 stroke-[1.8]" />
-                      <span className="text-[11.5px] font-semibold">+ Tambah</span>
-                    </button>
-                  </div>
-                )}
-
-                {/* Action Icons Bar */}
-                <div className="flex items-center gap-3.5 pt-1.5 text-neutral-400 select-none">
-                  <button
-                    type="button"
-                    onClick={handleAddDummyImage}
-                    className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
-                    title="Tambah Foto / Media"
-                  >
-                    <ImageIcon className="w-[19px] h-[19px] stroke-[1.6]" />
-                  </button>
-                  <button
-                    type="button"
-                    className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
-                    title="Tambah GIF"
-                  >
-                    <span className="border border-neutral-400/80 rounded-[5px] px-1 py-[1px] text-[10px] font-extrabold text-neutral-500 leading-none inline-block">
-                      GIF
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
-                    title="Buat Polling"
-                  >
-                    <AlignLeft className="w-[19px] h-[19px] stroke-[1.8]" />
-                  </button>
-                  <button
-                    type="button"
-                    className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
-                    title="Opsi Postingan"
-                  >
-                    <ThreadsDocOptionIcon className="w-[19px] h-[19px]" />
-                  </button>
-                  <button
-                    type="button"
-                    className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
-                    title="Tag Lokasi"
-                  >
-                    <MapPin className="w-[19px] h-[19px] stroke-[1.6]" />
-                  </button>
-                  <button
-                    type="button"
-                    className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
-                    title="Tambah Musik / Audio"
-                  >
-                    <Music className="w-[19px] h-[19px] stroke-[1.6]" />
-                  </button>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {postMode === 'thread' && (
-                <div className="pt-3 text-[13.5px] text-neutral-400 font-normal select-none">
-                  Tambahkan ke thread
-                </div>
-              )}
+              {/* Caption Textarea (ONLY this is aligned under username!) */}
+              <textarea
+                autoFocus
+                rows={2}
+                placeholder={postMode === 'product' ? 'Deskripsi lengkap barang / jasa...' : 'Apa yang baru?'}
+                value={caption}
+                onChange={(e) => setCaption(e.target.value)}
+                className="w-full mt-1 text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none resize-none bg-transparent leading-snug"
+              />
             </div>
+          </div>
+
+          {/* 2. Bottom Section: Seller Form Inputs (Centered Screen, 100% Full Width!) */}
+          {postMode === 'product' && (
+            <div className="mt-3.5 space-y-3.5 w-full">
+              {/* Field 1: Judul Produk / Jasa */}
+              <div className="space-y-1">
+                <label className="block text-[12px] font-bold text-slate-800">
+                  Judul Produk / Jasa <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="misal: Jasa UI/UX Design & Engineering PWA"
+                  value={productTitle}
+                  onChange={(e) => setProductTitle(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white font-semibold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs"
+                />
+              </div>
+
+              {/* 2-Column Grid: Harga (Rp) & Stok / Slot */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="block text-[12px] font-bold text-slate-800">
+                    Harga (Rp) <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-2.5 text-[13.5px] font-bold text-neutral-400">Rp</span>
+                    <input
+                      type="text"
+                      placeholder="250.000"
+                      value={priceInput}
+                      onChange={(e) => setPriceInput(e.target.value)}
+                      className="w-full pl-10 pr-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white font-bold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-[12px] font-bold text-slate-800">
+                    Stok / Slot
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="3 Slot Tersisa"
+                    value={stockInput}
+                    onChange={(e) => setStockInput(e.target.value)}
+                    className="w-full px-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs"
+                  />
+                </div>
+              </div>
+
+              {/* Field 4: Lokasi COD di Sekolah */}
+              <div className="space-y-1">
+                <label className="block text-[12px] font-bold text-slate-800">
+                  Lokasi COD di Sekolah
+                </label>
+                <input
+                  type="text"
+                  placeholder="misal: Studio DKV Gedung B / Lab PPLG 1"
+                  value={locationInput}
+                  onChange={(e) => setLocationInput(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs"
+                />
+              </div>
+
+              {/* Field 5: Kategori Barang / Jasa Chips */}
+              <div className="space-y-1.5 pt-0.5">
+                <label className="block text-[12px] font-bold text-slate-800">
+                  Kategori Barang / Jasa
+                </label>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {['Jasa DKV/PPLG', 'Preloved / Bekas', 'Baru', 'Kantin'].map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      className="px-3 py-1.5 rounded-xl border border-neutral-200 hover:border-blue-400 bg-neutral-50 hover:bg-blue-50 text-[12px] font-semibold text-slate-700 hover:text-[#1d64ec] transition-colors cursor-pointer"
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 3. Uploaded Images Gallery & Action Icons */}
+          <div className="mt-3.5 space-y-3">
+            {images.length > 0 && (
+              <div className="flex items-center gap-2 overflow-x-auto py-1.5 scrollbar-none">
+                {images.map((imgUrl, idx) => (
+                  <div key={idx} className="relative w-24 h-24 rounded-2xl overflow-hidden border border-neutral-200 shadow-2xs group shrink-0">
+                    <img
+                      src={imgUrl}
+                      alt={`Upload preview ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(idx)}
+                      className="absolute top-1.5 right-1.5 w-5.5 h-5.5 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center backdrop-blur-xs transition-transform active:scale-90 cursor-pointer"
+                    >
+                      <X className="w-3 h-3 stroke-[2.5]" />
+                    </button>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={handleAddDummyImage}
+                  className="w-24 h-24 rounded-2xl border-2 border-dashed border-neutral-300 hover:border-blue-500 bg-neutral-50 hover:bg-blue-50/30 flex flex-col items-center justify-center gap-1 text-neutral-400 hover:text-[#1d64ec] transition-colors shrink-0 cursor-pointer"
+                >
+                  <ImageIcon className="w-5 h-5 stroke-[1.8]" />
+                  <span className="text-[11.5px] font-semibold">+ Tambah</span>
+                </button>
+              </div>
+            )}
+
+            {/* Action Icons Bar */}
+            <div className="flex items-center gap-3.5 pt-1 text-neutral-400 select-none">
+              <button
+                type="button"
+                onClick={handleAddDummyImage}
+                className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
+                title="Tambah Foto / Media"
+              >
+                <ImageIcon className="w-[19px] h-[19px] stroke-[1.6]" />
+              </button>
+              <button
+                type="button"
+                className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
+                title="Tambah GIF"
+              >
+                <span className="border border-neutral-400/80 rounded-[5px] px-1 py-[1px] text-[10px] font-extrabold text-neutral-500 leading-none inline-block">
+                  GIF
+                </span>
+              </button>
+              <button
+                type="button"
+                className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
+                title="Buat Polling"
+              >
+                <AlignLeft className="w-[19px] h-[19px] stroke-[1.8]" />
+              </button>
+              <button
+                type="button"
+                className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
+                title="Opsi Postingan"
+              >
+                <ThreadsDocOptionIcon className="w-[19px] h-[19px]" />
+              </button>
+              <button
+                type="button"
+                className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
+                title="Tag Lokasi"
+              >
+                <MapPin className="w-[19px] h-[19px] stroke-[1.6]" />
+              </button>
+              <button
+                type="button"
+                className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
+                title="Tambah Musik / Audio"
+              >
+                <Music className="w-[19px] h-[19px] stroke-[1.6]" />
+              </button>
+            </div>
+
+            {postMode === 'thread' && (
+              <div className="pt-2 text-[13.5px] text-neutral-400 font-normal select-none">
+                Tambahkan ke thread
+              </div>
+            )}
           </div>
         </div>
 

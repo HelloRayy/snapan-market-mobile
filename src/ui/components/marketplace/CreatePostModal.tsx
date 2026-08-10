@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, FileText, MoreHorizontal, Image as ImageIcon, MapPin, Tag, PartyPopper } from 'lucide-react';
+import { X, FileText, MoreHorizontal, Image as ImageIcon, MapPin, PartyPopper, AlignLeft, Music } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 
 // Custom Threads 3-Dot Topic Icon
@@ -10,6 +10,19 @@ const ThreadsTopicIcon: React.FC<{ className?: string }> = ({ className = "w-3.5
     <circle cx="6" cy="16" r="3" />
     <circle cx="15" cy="12" r="3" />
   </svg>
+);
+
+// Custom Threads Document Icon with Option Dot (Ikon ke-4 persis screenshot!)
+const ThreadsDocOptionIcon: React.FC<{ className?: string }> = ({ className = "w-[19px] h-[19px] text-neutral-400" }) => (
+  <div className="relative inline-flex items-center justify-center">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="8" y1="12" x2="16" y2="12" />
+      <line x1="8" y1="16" x2="13" y2="16" />
+    </svg>
+    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-white ring-1 ring-neutral-400" />
+  </div>
 );
 
 interface TopicOption {
@@ -319,30 +332,64 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     </div>
                   )}
 
-                  {/* Action Icons Bar (Image, GIF, Poll, Price/Stock, Location) */}
-                  <div className="flex items-center gap-3 pt-1 text-neutral-400 select-none">
+                  {/* Action Icons Bar (6 Exact Icons from Threads: Image, GIF, Poll, DocOption, Location, Music) */}
+                  <div className="flex items-center gap-3.5 pt-1.5 text-neutral-400 select-none">
+                    {/* 1. Image Upload */}
                     <button
                       type="button"
                       onClick={handleAddDummyImage}
                       className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
-                      title="Tambah Foto Produk"
+                      title="Tambah Foto / Media"
                     >
-                      <ImageIcon className="w-4.5 h-4.5 stroke-[1.75]" />
+                      <ImageIcon className="w-[19px] h-[19px] stroke-[1.6]" />
                     </button>
 
-                    <span className="text-[10px] font-bold text-neutral-400 border border-neutral-300 px-1 py-0.2 rounded-xs select-none">
-                      GIF
-                    </span>
+                    {/* 2. GIF Badge */}
+                    <button
+                      type="button"
+                      className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
+                      title="Tambah GIF"
+                    >
+                      <span className="border border-neutral-400/80 rounded-[5px] px-1 py-[1px] text-[10px] font-extrabold text-neutral-500 leading-none inline-block">
+                        GIF
+                      </span>
+                    </button>
 
-                    <div className="flex items-center gap-1 text-[11.5px] text-slate-700 bg-neutral-100 px-2 py-0.5 rounded-full">
-                      <Tag className="w-3 h-3 text-slate-500" />
-                      <span>Rp {price ? price.toLocaleString('id-ID') : '50.000'}</span>
-                    </div>
+                    {/* 3. Poll Icon */}
+                    <button
+                      type="button"
+                      className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
+                      title="Buat Polling"
+                    >
+                      <AlignLeft className="w-[19px] h-[19px] stroke-[1.8]" />
+                    </button>
 
-                    <div className="flex items-center gap-1 text-[11.5px] text-slate-700 bg-neutral-100 px-2 py-0.5 rounded-full">
-                      <MapPin className="w-3 h-3 text-slate-500" />
-                      <span>{locationTag}</span>
-                    </div>
+                    {/* 4. Document Option Icon with White Dot Badge */}
+                    <button
+                      type="button"
+                      className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
+                      title="Opsi Postingan"
+                    >
+                      <ThreadsDocOptionIcon className="w-[19px] h-[19px]" />
+                    </button>
+
+                    {/* 5. Location Tag Icon */}
+                    <button
+                      type="button"
+                      className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
+                      title="Tag Lokasi"
+                    >
+                      <MapPin className="w-[19px] h-[19px] stroke-[1.6]" />
+                    </button>
+
+                    {/* 6. Music Icon */}
+                    <button
+                      type="button"
+                      className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
+                      title="Tambah Musik / Audio"
+                    >
+                      <Music className="w-[19px] h-[19px] stroke-[1.6]" />
+                    </button>
                   </div>
                 </div>
 

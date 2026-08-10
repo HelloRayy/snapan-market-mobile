@@ -344,23 +344,10 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   className="w-full mt-1 text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none resize-none bg-transparent leading-snug"
                 />
 
-                {/* Seller Product Form Card (If in Product Mode, aligned right next to avatar!) */}
+                {/* Dynamic Seller Product Inputs (Direct Full-Width Fields without Outer Card Container!) */}
                 {postMode === 'product' && (
-                  <div className="my-3 p-4 rounded-2xl bg-white border border-neutral-200/90 shadow-sm space-y-3.5 w-full">
-                    <div className="border-b border-neutral-100 pb-2.5 flex items-center justify-between">
-                      <div>
-                        <h4 className="text-[13px] font-bold text-slate-900 flex items-center gap-1.5">
-                          <span>🛍️ Rincian Produk & Jual</span>
-                        </h4>
-                        <p className="text-[11.5px] text-neutral-500 font-normal">
-                          Informasi yang akan tampil pada kartu jualan pembeli
-                        </p>
-                      </div>
-                      <span className="text-[10.5px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-[#1d64ec] border border-blue-200">
-                        Penjual
-                      </span>
-                    </div>
-
+                  <div className="my-3 space-y-3.5 w-full">
+                    {/* Field 1: Judul Produk / Jasa */}
                     <div className="space-y-1">
                       <label className="block text-[12px] font-bold text-slate-800">
                         Judul Produk / Jasa <span className="text-rose-500">*</span>
@@ -370,23 +357,24 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                         placeholder="misal: Jasa UI/UX Design & Engineering PWA"
                         value={productTitle}
                         onChange={(e) => setProductTitle(e.target.value)}
-                        className="w-full px-3 py-2 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-2 focus:ring-blue-100 bg-white font-semibold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs"
+                        className="w-full px-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white font-semibold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs"
                       />
                     </div>
 
+                    {/* 2-Column Grid: Harga (Rp) & Stok / Slot */}
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
                         <label className="block text-[12px] font-bold text-slate-800">
                           Harga (Rp) <span className="text-rose-500">*</span>
                         </label>
                         <div className="relative">
-                          <span className="absolute left-3 top-2 text-[13px] font-bold text-neutral-400">Rp</span>
+                          <span className="absolute left-3.5 top-2.5 text-[13.5px] font-bold text-neutral-400">Rp</span>
                           <input
                             type="text"
                             placeholder="250.000"
                             value={priceInput}
                             onChange={(e) => setPriceInput(e.target.value)}
-                            className="w-full pl-9 pr-3 py-2 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-2 focus:ring-blue-100 bg-white font-bold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs"
+                            className="w-full pl-10 pr-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white font-bold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs"
                           />
                         </div>
                       </div>
@@ -400,11 +388,12 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                           placeholder="3 Slot Tersisa"
                           value={stockInput}
                           onChange={(e) => setStockInput(e.target.value)}
-                          className="w-full px-3 py-2 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-2 focus:ring-blue-100 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs"
+                          className="w-full px-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs"
                         />
                       </div>
                     </div>
 
+                    {/* Field 4: Lokasi COD di Sekolah */}
                     <div className="space-y-1">
                       <label className="block text-[12px] font-bold text-slate-800">
                         Lokasi COD di Sekolah
@@ -414,10 +403,11 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                         placeholder="misal: Studio DKV Gedung B / Lab PPLG 1"
                         value={locationInput}
                         onChange={(e) => setLocationInput(e.target.value)}
-                        className="w-full px-3 py-2 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-2 focus:ring-blue-100 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs"
+                        className="w-full px-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs"
                       />
                     </div>
 
+                    {/* Field 5: Kategori Barang / Jasa */}
                     <div className="space-y-1.5 pt-0.5">
                       <label className="block text-[12px] font-bold text-slate-800">
                         Kategori Barang / Jasa
@@ -427,7 +417,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                           <button
                             key={cat}
                             type="button"
-                            className="px-2.5 py-1 rounded-lg border border-neutral-200 hover:border-blue-400 bg-neutral-50 hover:bg-blue-50 text-[11.5px] font-semibold text-slate-700 hover:text-[#1d64ec] transition-colors cursor-pointer"
+                            className="px-3 py-1.5 rounded-xl border border-neutral-200 hover:border-blue-400 bg-neutral-50 hover:bg-blue-50 text-[12px] font-semibold text-slate-700 hover:text-[#1d64ec] transition-colors cursor-pointer"
                           >
                             {cat}
                           </button>

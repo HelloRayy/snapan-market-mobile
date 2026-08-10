@@ -216,8 +216,8 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
         <div className="p-4 overflow-y-auto flex-1 relative max-w-lg mx-auto w-full">
           {/* 1. Top Section: Avatar + Username + Caption Textarea (2-Column Aligned) */}
           <div className="flex gap-2.5 items-start">
-            {/* Left Column: Avatar (Top) + Vertical Connector Line + Small Avatar (Bottom) */}
-            <div className="flex flex-col items-center shrink-0 w-8 self-stretch">
+            {/* Left Column: Avatar (Top) + Vertical Connector Line (Tightly Fitting) + Small Avatar (Bottom) */}
+            <div className="flex flex-col items-center shrink-0 w-8 self-stretch py-0.5">
               <div className="w-8 h-8 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
                 <img
                   src={currentUser.avatar}
@@ -226,7 +226,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 />
               </div>
 
-              <div className="w-[1.5px] bg-neutral-200 flex-1 my-1 min-h-[36px]" />
+              <div className="w-[1.5px] bg-neutral-200 flex-1 my-1 min-h-[10px]" />
 
               <div className="w-4 h-4 rounded-full overflow-hidden border border-neutral-200/80 opacity-60 shrink-0">
                 <img
@@ -331,14 +331,18 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 </div>
               </div>
 
-              {/* Caption Textarea (ONLY this is aligned under username!) */}
+              {/* Caption Textarea (Fit height, auto-expanding on Enter!) */}
               <textarea
                 autoFocus
-                rows={2}
+                rows={1}
                 placeholder={postMode === 'product' ? 'Deskripsi lengkap barang / jasa...' : 'Apa yang baru?'}
                 value={caption}
-                onChange={(e) => setCaption(e.target.value)}
-                className="w-full mt-1 text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none resize-none bg-transparent leading-snug"
+                onChange={(e) => {
+                  setCaption(e.target.value);
+                  e.target.style.height = 'auto';
+                  e.target.style.height = `${e.target.scrollHeight}px`;
+                }}
+                className="w-full mt-1 text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none resize-none bg-transparent leading-snug overflow-hidden"
               />
             </div>
           </div>

@@ -214,9 +214,9 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
 
         {/* Form Scrollable Body */}
         <div className="p-4 overflow-y-auto flex-1 relative max-w-lg mx-auto w-full">
-          {/* 1. Top Section: Avatar + Username + Caption Textarea (2-Column Aligned) */}
+          {/* 1. Top Section: Avatar + Username + Caption + Images + Action Icons (Threads 2-Column Aligned) */}
           <div className="flex gap-2.5 items-start">
-            {/* Left Column: Avatar (Top) + Vertical Connector Line (Tightly Fitting) + Small Avatar (Bottom) */}
+            {/* Left Column: Avatar (Top) + Vertical Connector Line + Small Avatar (Bottom) */}
             <div className="flex flex-col items-center shrink-0 w-8 self-stretch py-0.5">
               <div className="w-8 h-8 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
                 <img
@@ -237,119 +237,207 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
               </div>
             </div>
 
-            {/* Right Column: ONLY Username + Topic Selector + Caption Textarea (Aligned with Username!) */}
-            <div className="flex-1 min-w-0 flex flex-col">
-              {/* Username + Inline Topic Selector Header */}
-              <div className="flex items-center gap-1.5 flex-wrap relative leading-none">
-                <span className="font-bold text-[14.5px] text-slate-900">
-                  {currentUser.username}
-                </span>
+            {/* Right Column: Username + Topic Selector + Caption Textarea + Images Gallery + Action Icons */}
+            <div className="flex-1 min-w-0 flex flex-col justify-between">
+              <div>
+                {/* Username + Inline Topic Selector Header */}
+                <div className="flex items-center gap-1.5 flex-wrap relative leading-none">
+                  <span className="font-bold text-[14.5px] text-slate-900">
+                    {currentUser.username}
+                  </span>
 
-                {/* Topic Selector Button */}
-                <div className="relative inline-flex items-center">
+                  {/* Topic Selector Button */}
+                  <div className="relative inline-flex items-center">
+                    <button
+                      type="button"
+                      onClick={() => setShowTopicDropdown(!showTopicDropdown)}
+                      className="flex items-center gap-1 text-[13px] font-normal transition-all cursor-pointer"
+                    >
+                      <span className="text-neutral-400 font-normal">›</span>
+                      {selectedTopic ? (
+                        <span
+                          className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md font-bold text-[13px] ${
+                            selectedTopic.isOfficial
+                              ? 'bg-blue-50 text-[#1d64ec]'
+                              : 'bg-neutral-100 text-slate-900'
+                          }`}
+                        >
+                          {selectedTopic.isOfficial && (
+                            selectedTopic.icon === 'party-popper' ? (
+                              <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
+                            ) : (
+                              <ThreadsTopicIcon />
+                            )
+                          )}
+                          <span>{selectedTopic.name}</span>
+                        </span>
+                      ) : (
+                        <span className="bg-neutral-100 hover:bg-neutral-200/80 text-neutral-500 font-medium px-1.5 py-0.5 rounded-md text-[13px] transition-colors">
+                          Community or topic
+                        </span>
+                      )}
+                    </button>
+
+                    {/* Dropdown Popover Overlay */}
+                    {showTopicDropdown && (
+                      <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-2xl shadow-xl border border-neutral-200 z-50 p-2 animate-in fade-in slide-in-from-top-2 duration-150">
+                        <div className="px-3 py-1.5 text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                          Recent / Populer
+                        </div>
+
+                        <div className="space-y-0.5">
+                          {PRESET_TOPICS.map((topic) => (
+                            <button
+                              key={topic.id}
+                              type="button"
+                              onClick={() => handleSelectTopic(topic)}
+                              className="w-full text-left px-3 py-2 rounded-xl hover:bg-neutral-100/90 transition-colors flex items-center justify-between group cursor-pointer"
+                            >
+                              <div className="flex items-center gap-2 min-w-0">
+                                {topic.isOfficial && (
+                                  topic.icon === 'party-popper' ? (
+                                    <PartyPopper className="w-4 h-4 text-[#1d64ec] stroke-[2.2] shrink-0" />
+                                  ) : (
+                                    <ThreadsTopicIcon className="w-4 h-4 text-[#1d64ec] fill-current shrink-0" />
+                                  )
+                                )}
+                                <div>
+                                  <div className={`text-[14px] font-semibold ${topic.isOfficial ? 'text-[#1d64ec]' : 'text-slate-900'}`}>
+                                    {topic.name}
+                                  </div>
+                                  {topic.subtitle && (
+                                    <div className="text-[11.5px] text-neutral-400 font-normal truncate">
+                                      {topic.subtitle}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Custom Topic Input */}
+                        <div className="mt-2 pt-2 border-t border-neutral-100 px-2">
+                          <input
+                            type="text"
+                            placeholder="Ketik topik kustom + Enter..."
+                            value={customTopicInput}
+                            onChange={(e) => setCustomTopicInput(e.target.value)}
+                            onKeyDown={handleCustomTopicSubmit}
+                            className="w-full px-3 py-1.5 text-[13px] rounded-lg border border-neutral-200 focus:outline-none focus:border-blue-500 bg-neutral-50"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Caption Textarea (Fit height, auto-expanding on Enter!) */}
+                <textarea
+                  autoFocus
+                  rows={1}
+                  placeholder={postMode === 'product' ? 'Deskripsi lengkap barang / jasa...' : 'Apa yang baru?'}
+                  value={caption}
+                  onChange={(e) => {
+                    setCaption(e.target.value);
+                    e.target.style.height = 'auto';
+                    e.target.style.height = `${e.target.scrollHeight}px`;
+                  }}
+                  className="w-full mt-1 text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none resize-none bg-transparent leading-snug overflow-hidden"
+                />
+
+                {/* Uploaded Images Gallery */}
+                {images.length > 0 && (
+                  <div className="flex items-center gap-2 overflow-x-auto py-1.5 scrollbar-none">
+                    {images.map((imgUrl, idx) => (
+                      <div key={idx} className="relative w-24 h-24 rounded-2xl overflow-hidden border border-neutral-200 shadow-2xs group shrink-0">
+                        <img
+                          src={imgUrl}
+                          alt={`Upload preview ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(idx)}
+                          className="absolute top-1.5 right-1.5 w-5.5 h-5.5 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center backdrop-blur-xs transition-transform active:scale-90 cursor-pointer"
+                        >
+                          <X className="w-3 h-3 stroke-[2.5]" />
+                        </button>
+                      </div>
+                    ))}
+
+                    <button
+                      type="button"
+                      onClick={handleAddDummyImage}
+                      className="w-24 h-24 rounded-2xl border-2 border-dashed border-neutral-300 hover:border-blue-500 bg-neutral-50 hover:bg-blue-50/30 flex flex-col items-center justify-center gap-1 text-neutral-400 hover:text-[#1d64ec] transition-colors shrink-0 cursor-pointer"
+                    >
+                      <ImageIcon className="w-5 h-5 stroke-[1.8]" />
+                      <span className="text-[11.5px] font-semibold">+ Tambah</span>
+                    </button>
+                  </div>
+                )}
+
+                {/* Action Icons Bar */}
+                <div className="flex items-center gap-3.5 pt-1.5 text-neutral-400 select-none">
                   <button
                     type="button"
-                    onClick={() => setShowTopicDropdown(!showTopicDropdown)}
-                    className="flex items-center gap-1 text-[13px] font-normal transition-all cursor-pointer"
+                    onClick={handleAddDummyImage}
+                    className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
+                    title="Tambah Foto / Media"
                   >
-                    <span className="text-neutral-400 font-normal">›</span>
-                    {selectedTopic ? (
-                      <span
-                        className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md font-bold text-[13px] ${
-                          selectedTopic.isOfficial
-                            ? 'bg-blue-50 text-[#1d64ec]'
-                            : 'bg-neutral-100 text-slate-900'
-                        }`}
-                      >
-                        {selectedTopic.isOfficial && (
-                          selectedTopic.icon === 'party-popper' ? (
-                            <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
-                          ) : (
-                            <ThreadsTopicIcon />
-                          )
-                        )}
-                        <span>{selectedTopic.name}</span>
-                      </span>
-                    ) : (
-                      <span className="bg-neutral-100 hover:bg-neutral-200/80 text-neutral-500 font-medium px-1.5 py-0.5 rounded-md text-[13px] transition-colors">
-                        Community or topic
-                      </span>
-                    )}
+                    <ImageIcon className="w-[19px] h-[19px] stroke-[1.6]" />
                   </button>
-
-                  {/* Dropdown Popover Overlay */}
-                  {showTopicDropdown && (
-                    <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-2xl shadow-xl border border-neutral-200 z-50 p-2 animate-in fade-in slide-in-from-top-2 duration-150">
-                      <div className="px-3 py-1.5 text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
-                        Recent / Populer
-                      </div>
-
-                      <div className="space-y-0.5">
-                        {PRESET_TOPICS.map((topic) => (
-                          <button
-                            key={topic.id}
-                            type="button"
-                            onClick={() => handleSelectTopic(topic)}
-                            className="w-full text-left px-3 py-2 rounded-xl hover:bg-neutral-100/90 transition-colors flex items-center justify-between group cursor-pointer"
-                          >
-                            <div className="flex items-center gap-2 min-w-0">
-                              {topic.isOfficial && (
-                                topic.icon === 'party-popper' ? (
-                                  <PartyPopper className="w-4 h-4 text-[#1d64ec] stroke-[2.2] shrink-0" />
-                                ) : (
-                                  <ThreadsTopicIcon className="w-4 h-4 text-[#1d64ec] fill-current shrink-0" />
-                                )
-                              )}
-                              <div>
-                                <div className={`text-[14px] font-semibold ${topic.isOfficial ? 'text-[#1d64ec]' : 'text-slate-900'}`}>
-                                  {topic.name}
-                                </div>
-                                {topic.subtitle && (
-                                  <div className="text-[11.5px] text-neutral-400 font-normal truncate">
-                                    {topic.subtitle}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-
-                      {/* Custom Topic Input */}
-                      <div className="mt-2 pt-2 border-t border-neutral-100 px-2">
-                        <input
-                          type="text"
-                          placeholder="Ketik topik kustom + Enter..."
-                          value={customTopicInput}
-                          onChange={(e) => setCustomTopicInput(e.target.value)}
-                          onKeyDown={handleCustomTopicSubmit}
-                          className="w-full px-3 py-1.5 text-[13px] rounded-lg border border-neutral-200 focus:outline-none focus:border-blue-500 bg-neutral-50"
-                        />
-                      </div>
-                    </div>
-                  )}
+                  <button
+                    type="button"
+                    className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
+                    title="Tambah GIF"
+                  >
+                    <span className="border border-neutral-400/80 rounded-[5px] px-1 py-[1px] text-[10px] font-extrabold text-neutral-500 leading-none inline-block">
+                      GIF
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
+                    title="Buat Polling"
+                  >
+                    <AlignLeft className="w-[19px] h-[19px] stroke-[1.8]" />
+                  </button>
+                  <button
+                    type="button"
+                    className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
+                    title="Opsi Postingan"
+                  >
+                    <ThreadsDocOptionIcon className="w-[19px] h-[19px]" />
+                  </button>
+                  <button
+                    type="button"
+                    className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
+                    title="Tag Lokasi"
+                  >
+                    <MapPin className="w-[19px] h-[19px] stroke-[1.6]" />
+                  </button>
+                  <button
+                    type="button"
+                    className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
+                    title="Tambah Musik / Audio"
+                  >
+                    <Music className="w-[19px] h-[19px] stroke-[1.6]" />
+                  </button>
                 </div>
               </div>
 
-              {/* Caption Textarea (Fit height, auto-expanding on Enter!) */}
-              <textarea
-                autoFocus
-                rows={1}
-                placeholder={postMode === 'product' ? 'Deskripsi lengkap barang / jasa...' : 'Apa yang baru?'}
-                value={caption}
-                onChange={(e) => {
-                  setCaption(e.target.value);
-                  e.target.style.height = 'auto';
-                  e.target.style.height = `${e.target.scrollHeight}px`;
-                }}
-                className="w-full mt-1 text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none resize-none bg-transparent leading-snug overflow-hidden"
-              />
+              {postMode === 'thread' && (
+                <div className="pt-2 text-[13.5px] text-neutral-400 font-normal select-none">
+                  Tambahkan ke thread
+                </div>
+              )}
             </div>
           </div>
 
-          {/* 2. Bottom Section: Seller Form Inputs (Centered Screen, 100% Full Width!) */}
+          {/* 2. Bottom Section (ONLY for Product Mode): Seller Form Inputs (Full-Width Centered at Bottom!) */}
           {postMode === 'product' && (
-            <div className="mt-3.5 space-y-3.5 w-full">
+            <div className="mt-4 space-y-3.5 w-full pt-3 border-t border-neutral-100">
               {/* Field 1: Judul Produk / Jasa */}
               <div className="space-y-1">
                 <label className="block text-[12px] font-bold text-slate-800">
@@ -429,94 +517,6 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
               </div>
             </div>
           )}
-
-          {/* 3. Uploaded Images Gallery & Action Icons */}
-          <div className="mt-3.5 space-y-3">
-            {images.length > 0 && (
-              <div className="flex items-center gap-2 overflow-x-auto py-1.5 scrollbar-none">
-                {images.map((imgUrl, idx) => (
-                  <div key={idx} className="relative w-24 h-24 rounded-2xl overflow-hidden border border-neutral-200 shadow-2xs group shrink-0">
-                    <img
-                      src={imgUrl}
-                      alt={`Upload preview ${idx + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveImage(idx)}
-                      className="absolute top-1.5 right-1.5 w-5.5 h-5.5 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center backdrop-blur-xs transition-transform active:scale-90 cursor-pointer"
-                    >
-                      <X className="w-3 h-3 stroke-[2.5]" />
-                    </button>
-                  </div>
-                ))}
-
-                <button
-                  type="button"
-                  onClick={handleAddDummyImage}
-                  className="w-24 h-24 rounded-2xl border-2 border-dashed border-neutral-300 hover:border-blue-500 bg-neutral-50 hover:bg-blue-50/30 flex flex-col items-center justify-center gap-1 text-neutral-400 hover:text-[#1d64ec] transition-colors shrink-0 cursor-pointer"
-                >
-                  <ImageIcon className="w-5 h-5 stroke-[1.8]" />
-                  <span className="text-[11.5px] font-semibold">+ Tambah</span>
-                </button>
-              </div>
-            )}
-
-            {/* Action Icons Bar */}
-            <div className="flex items-center gap-3.5 pt-1 text-neutral-400 select-none">
-              <button
-                type="button"
-                onClick={handleAddDummyImage}
-                className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
-                title="Tambah Foto / Media"
-              >
-                <ImageIcon className="w-[19px] h-[19px] stroke-[1.6]" />
-              </button>
-              <button
-                type="button"
-                className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
-                title="Tambah GIF"
-              >
-                <span className="border border-neutral-400/80 rounded-[5px] px-1 py-[1px] text-[10px] font-extrabold text-neutral-500 leading-none inline-block">
-                  GIF
-                </span>
-              </button>
-              <button
-                type="button"
-                className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
-                title="Buat Polling"
-              >
-                <AlignLeft className="w-[19px] h-[19px] stroke-[1.8]" />
-              </button>
-              <button
-                type="button"
-                className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
-                title="Opsi Postingan"
-              >
-                <ThreadsDocOptionIcon className="w-[19px] h-[19px]" />
-              </button>
-              <button
-                type="button"
-                className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
-                title="Tag Lokasi"
-              >
-                <MapPin className="w-[19px] h-[19px] stroke-[1.6]" />
-              </button>
-              <button
-                type="button"
-                className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
-                title="Tambah Musik / Audio"
-              >
-                <Music className="w-[19px] h-[19px] stroke-[1.6]" />
-              </button>
-            </div>
-
-            {postMode === 'thread' && (
-              <div className="pt-2 text-[13.5px] text-neutral-400 font-normal select-none">
-                Tambahkan ke thread
-              </div>
-            )}
-          </div>
         </div>
 
         {/* Bottom Footer */}

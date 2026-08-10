@@ -342,27 +342,27 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     className="w-full mt-1 text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none resize-none bg-transparent leading-snug"
                   />
 
-                  {/* Dynamic Seller Product Input Section (Vertical Google-Form Style) */}
+                  {/* Dynamic Seller Product Input Section (Clean Form Layout Matching Screenshot) */}
                   {postMode === 'product' && (
-                    <div className="my-3 p-4 rounded-2xl bg-slate-50 border border-neutral-200/90 space-y-3.5 animate-in fade-in slide-in-from-top-1 duration-150">
+                    <div className="my-3 p-4 rounded-2xl bg-white border border-neutral-200/90 shadow-sm space-y-3.5 animate-in fade-in slide-in-from-top-1 duration-150">
                       {/* Form Header */}
-                      <div className="border-b border-neutral-200/80 pb-2.5 flex items-center justify-between">
+                      <div className="border-b border-neutral-100 pb-2.5 flex items-center justify-between">
                         <div>
-                          <h4 className="text-[13.5px] font-bold text-slate-900 flex items-center gap-1.5">
-                            <span>🛍️ Rincian Produk / Jasa Jualan</span>
+                          <h4 className="text-[13px] font-bold text-slate-900 flex items-center gap-1.5">
+                            <span>🛍️ Rincian Produk & Jual</span>
                           </h4>
-                          <p className="text-[11.5px] text-neutral-500">
-                            Isi rincian informasi jualan secara vertikal
+                          <p className="text-[11.5px] text-neutral-500 font-normal">
+                            Informasi yang akan tampil pada kartu jualan pembeli
                           </p>
                         </div>
-                        <span className="text-[10.5px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-[#1d64ec]">
-                          Form Penjual
+                        <span className="text-[10.5px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-[#1d64ec] border border-blue-200">
+                          Penjual
                         </span>
                       </div>
 
-                      {/* Field 1: Judul Produk / Jasa */}
+                      {/* Field 1: Judul Produk / Jasa (Full Width) */}
                       <div className="space-y-1">
-                        <label className="block text-[12px] font-semibold text-slate-700">
+                        <label className="block text-[12px] font-bold text-slate-800">
                           Judul Produk / Jasa <span className="text-rose-500">*</span>
                         </label>
                         <input
@@ -370,53 +370,74 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                           placeholder="misal: Jasa UI/UX Design & Engineering PWA"
                           value={productTitle}
                           onChange={(e) => setProductTitle(e.target.value)}
-                          className="w-full px-3 py-2 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-2 focus:ring-blue-100 bg-white font-semibold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all"
+                          className="w-full px-3 py-2 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-2 focus:ring-blue-100 bg-white font-semibold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs"
                         />
                       </div>
 
-                      {/* Field 2: Harga Produk (Rp) */}
-                      <div className="space-y-1">
-                        <label className="block text-[12px] font-semibold text-slate-700">
-                          Harga Produk / Tarif Jasa (Rp) <span className="text-rose-500">*</span>
-                        </label>
-                        <div className="relative">
-                          <span className="absolute left-3 top-2 text-[13px] font-bold text-neutral-400">Rp</span>
+                      {/* 2-Column Grid Layout: Harga (Rp) & Stok/Slot (Persis layout grid 2-kolom screenshot!) */}
+                      <div className="grid grid-cols-2 gap-3">
+                        {/* Field 2: Harga (Rp) */}
+                        <div className="space-y-1">
+                          <label className="block text-[12px] font-bold text-slate-800">
+                            Harga (Rp) <span className="text-rose-500">*</span>
+                          </label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-2 text-[13px] font-bold text-neutral-400">Rp</span>
+                            <input
+                              type="text"
+                              placeholder="250.000"
+                              value={priceInput}
+                              onChange={(e) => setPriceInput(e.target.value)}
+                              className="w-full pl-9 pr-3 py-2 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-2 focus:ring-blue-100 bg-white font-bold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Field 3: Jumlah Stok / Slot */}
+                        <div className="space-y-1">
+                          <label className="block text-[12px] font-bold text-slate-800">
+                            Stok / Slot
+                          </label>
                           <input
                             type="text"
-                            placeholder="250.000"
-                            value={priceInput}
-                            onChange={(e) => setPriceInput(e.target.value)}
-                            className="w-full pl-9 pr-3 py-2 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-2 focus:ring-blue-100 bg-white font-bold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all"
+                            placeholder="3 Slot Tersisa"
+                            value={stockInput}
+                            onChange={(e) => setStockInput(e.target.value)}
+                            className="w-full px-3 py-2 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-2 focus:ring-blue-100 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs"
                           />
                         </div>
                       </div>
 
-                      {/* Field 3: Jumlah Stok / Slot Tersisa */}
+                      {/* Field 4: Lokasi COD / Ketemuan (Full Width) */}
                       <div className="space-y-1">
-                        <label className="block text-[12px] font-semibold text-slate-700">
-                          Jumlah Stok / Slot Tersisa
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="misal: 3 Slot Tersisa atau 10 Porsi"
-                          value={stockInput}
-                          onChange={(e) => setStockInput(e.target.value)}
-                          className="w-full px-3 py-2 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-2 focus:ring-blue-100 bg-white text-slate-900 placeholder:text-neutral-400 transition-all"
-                        />
-                      </div>
-
-                      {/* Field 4: Lokasi COD / Ketemuan */}
-                      <div className="space-y-1">
-                        <label className="block text-[12px] font-semibold text-slate-700">
-                          Lokasi COD / Ketemuan Sekolah
+                        <label className="block text-[12px] font-bold text-slate-800">
+                          Lokasi COD di Sekolah
                         </label>
                         <input
                           type="text"
                           placeholder="misal: Studio DKV Gedung B / Lab PPLG 1"
                           value={locationInput}
                           onChange={(e) => setLocationInput(e.target.value)}
-                          className="w-full px-3 py-2 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-2 focus:ring-blue-100 bg-white text-slate-900 placeholder:text-neutral-400 transition-all"
+                          className="w-full px-3 py-2 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-2 focus:ring-blue-100 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs"
                         />
+                      </div>
+
+                      {/* Field 5: Radio Pills Tipe / Kondisi Barang (Persis Radio Chip Screenshot!) */}
+                      <div className="space-y-1.5 pt-0.5">
+                        <label className="block text-[12px] font-bold text-slate-800">
+                          Kategori Barang / Jasa
+                        </label>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {['Jasa DKV/PPLG', 'Preloved / Bekas', 'Baru', 'Kantin'].map((cat) => (
+                            <button
+                              key={cat}
+                              type="button"
+                              className="px-2.5 py-1 rounded-lg border border-neutral-200 hover:border-blue-400 bg-neutral-50 hover:bg-blue-50 text-[11.5px] font-semibold text-slate-700 hover:text-[#1d64ec] transition-colors cursor-pointer"
+                            >
+                              {cat}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )}

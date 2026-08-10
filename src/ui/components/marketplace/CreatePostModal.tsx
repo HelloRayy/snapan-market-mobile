@@ -446,7 +446,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  placeholder="misal: Jasa UI/UX Design & Engineering PWA"
+                  placeholder="Nama barang / jasa..."
                   value={productTitle}
                   onChange={(e) => setProductTitle(e.target.value)}
                   className="w-full px-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white font-semibold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs"
@@ -463,7 +463,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     <span className="absolute left-3.5 top-2.5 text-[13.5px] font-bold text-neutral-400">Rp</span>
                     <input
                       type="text"
-                      placeholder="250.000"
+                      placeholder="50.000"
                       value={priceInput}
                       onChange={(e) => setPriceInput(e.target.value)}
                       className="w-full pl-10 pr-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white font-bold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs"
@@ -477,7 +477,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   </label>
                   <input
                     type="text"
-                    placeholder="3 Slot Tersisa"
+                    placeholder="1"
                     value={stockInput}
                     onChange={(e) => setStockInput(e.target.value)}
                     className="w-full px-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs"
@@ -492,7 +492,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  placeholder="misal: Studio DKV Gedung B / Lab PPLG 1"
+                  placeholder="Contoh: Lab PPLG 1 / Kantin"
                   value={locationInput}
                   onChange={(e) => setLocationInput(e.target.value)}
                   className="w-full px-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs"

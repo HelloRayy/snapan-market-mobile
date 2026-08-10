@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, MoreHorizontal, Box, Repeat2, Send, Presentation } from 'lucide-react';
+import { Heart, MoreHorizontal, Box, Repeat2, Send, PartyPopper } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { MediaLightboxModal } from './MediaLightboxModal';
 import { ClickableVerifiedBadge } from './VerifiedBadgeModal';
@@ -291,8 +291,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
                     {/* Render special blue icon if official topic */}
                     {item.isOfficialTopic && (
-                      item.topicIcon === 'presentation' ? (
-                        <Presentation className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
+                      item.topicIcon === 'presentation' || item.topicIcon === 'party-popper' ? (
+                        <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
                       ) : (
                         <ThreadsTopicIcon />
                       )
@@ -373,8 +373,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
                     {/* Render special blue icon if official topic */}
                     {item.isOfficialTopic && (
-                      item.topicIcon === 'presentation' ? (
-                        <Presentation className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
+                      item.topicIcon === 'presentation' || item.topicIcon === 'party-popper' ? (
+                        <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
                       ) : (
                         <ThreadsTopicIcon />
                       )

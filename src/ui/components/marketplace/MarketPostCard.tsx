@@ -275,7 +275,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                   <ClickableVerifiedBadge sellerName={item.seller.name} className="w-[17px] h-[17px]" />
                 )}
 
-                {item.topicTag && (
+                {item.topicTag ? (
                   <div className="flex items-center gap-1 shrink-0">
                     <span className="text-neutral-400 font-normal text-[13.5px]">›</span>
                     <button
@@ -289,11 +289,11 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                       {item.topicTag}
                     </button>
                   </div>
+                ) : (
+                  <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
+                    {item.seller.classGroup}
+                  </span>
                 )}
-
-                <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
-                  {item.timestamp}
-                </span>
               </div>
             </div>
 
@@ -334,17 +334,17 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
           {/* Right Column: Content starting directly under Name */}
           <div className="flex-1 min-w-0 space-y-1 overflow-visible">
-            {/* Header Row: Name + Verified + Topic + Class/Timestamp + More Options (...) */}
+            {/* Header Row: Name + Verified + (Topic OR Class) + Timestamp + More Options (...) */}
             <div className="flex items-center justify-between gap-2 min-w-0">
               <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
-                <span className="font-semibold text-[16px] text-slate-900 truncate hover:underline shrink-0 max-w-[50%]">
+                <span className="font-semibold text-[15.5px] text-slate-900 truncate hover:underline shrink-0 max-w-[50%]">
                   {item.seller.name}
                 </span>
                 {item.seller.isVerified && (
-                  <ClickableVerifiedBadge sellerName={item.seller.name} className="w-[18px] h-[18px]" />
+                  <ClickableVerifiedBadge sellerName={item.seller.name} className="w-[17.5px] h-[17.5px]" />
                 )}
 
-                {item.topicTag && (
+                {item.topicTag ? (
                   <div className="flex items-center gap-1 shrink-0">
                     <span className="text-neutral-400 font-normal text-[14px]">›</span>
                     <button
@@ -358,11 +358,11 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                       {item.topicTag}
                     </button>
                   </div>
+                ) : (
+                  <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
+                    {item.seller.classGroup}
+                  </span>
                 )}
-
-                <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
-                  {item.seller.classGroup}
-                </span>
               </div>
 
               <div className="flex items-center gap-2 shrink-0 ml-auto">

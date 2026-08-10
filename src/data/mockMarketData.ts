@@ -1,8 +1,9 @@
-import { MarketThreadItem } from '@/types/marketFeed';
+import { MarketPostItem } from '@/types/marketFeed';
 
-export const MOCK_THREADS_ITEMS: MarketThreadItem[] = [
+export const MOCK_MARKET_POSTS: MarketPostItem[] = [
   {
-    id: 'thread-1',
+    id: 'post-1',
+    title: 'Proyek Pembuatan Website & PWA Kilat',
     seller: {
       id: 'user-1',
       name: 'Raymond Chin',
@@ -25,9 +26,63 @@ export const MOCK_THREADS_ITEMS: MarketThreadItem[] = [
     repostsCount: 9,
     timestamp: '1j lalu',
     isLiked: true,
+    comments: [
+      {
+        id: 'comment-1',
+        postId: 'post-1',
+        user: {
+          id: 'user-20',
+          name: 'zura.wk',
+          avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80',
+          username: 'zura.wk',
+          classGroup: 'XII DKV 1',
+          isVerified: false,
+        },
+        content: 'Bisikin budgetnya kak buat PWA landing page e-commerce 🚀',
+        timestamp: '16j lalu',
+        likesCount: 17,
+        isLiked: false,
+        replies: [
+          {
+            id: 'comment-1-1',
+            postId: 'post-1',
+            user: {
+              id: 'user-1',
+              name: 'Raymond Chin',
+              avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+              username: 'raymondchins',
+              classGroup: 'XII PPLG 1',
+              isVerified: true,
+              isAuthor: true,
+            },
+            content: 'DM aja kak nanti tak kirim estimasi harga & fiturnya 👍',
+            timestamp: '16j lalu',
+            likesCount: 24,
+            isLiked: true,
+          },
+        ],
+      },
+      {
+        id: 'comment-2',
+        postId: 'post-1',
+        user: {
+          id: 'user-21',
+          name: 'lisayayaa_',
+          avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80',
+          username: 'lisayayaa_',
+          classGroup: 'XI PPLG 2',
+          isVerified: true,
+        },
+        content: 'Bisa sekalian kerjakan backend Supabase Auth & DB gak mas?',
+        timestamp: '15j lalu',
+        likesCount: 8,
+        isLiked: false,
+      },
+    ],
   },
   {
-    id: 'thread-2',
+    id: 'post-2',
+    title: 'Jasa UI/UX Design & Engineering PWA',
     seller: {
       id: 'user-2',
       name: 'Faiz Intifada',
@@ -53,7 +108,8 @@ export const MOCK_THREADS_ITEMS: MarketThreadItem[] = [
     isLiked: false,
   },
   {
-    id: 'thread-3',
+    id: 'post-3',
+    title: 'Tahu Walik Renyah + Sambal Kecap',
     seller: {
       id: 'user-3',
       name: 'Ibu Kantin Sayang',
@@ -79,7 +135,8 @@ export const MOCK_THREADS_ITEMS: MarketThreadItem[] = [
     isLiked: true,
   },
   {
-    id: 'thread-4',
+    id: 'post-4',
+    title: 'Oversized Blue Hoodie Katun Import',
     seller: {
       id: 'user-4',
       name: 'Rian TJKT',
@@ -104,7 +161,8 @@ export const MOCK_THREADS_ITEMS: MarketThreadItem[] = [
     isLiked: false,
   },
   {
-    id: 'thread-5',
+    id: 'post-5',
+    title: 'Headset Gaming TWS Latency Rendah',
     seller: {
       id: 'user-5',
       name: 'Bima Elektronik',

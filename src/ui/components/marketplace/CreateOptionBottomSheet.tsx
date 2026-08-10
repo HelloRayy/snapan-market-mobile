@@ -30,7 +30,7 @@ export const CreateOptionBottomSheet: React.FC<CreateOptionBottomSheetProps> = (
           animate={{ y: 0 }}
           exit={{ y: '100%' }}
           transition={{ type: 'spring', stiffness: 350, damping: 32 }}
-          className="relative z-10 w-full max-w-lg bg-white rounded-t-3xl shadow-2xl p-5 pb-8 font-gt-standard border-t border-neutral-200/80 flex flex-col space-y-4"
+          className="relative z-10 w-full max-w-lg bg-white rounded-t-3xl shadow-2xl p-5 pb-12 pb-[max(3rem,env(safe-area-inset-bottom))] font-gt-standard border-t border-neutral-200/80 flex flex-col space-y-4"
         >
           {/* Top Handle Drag Indicator */}
           <div className="w-12 h-1 bg-neutral-300 rounded-full mx-auto mb-1 shrink-0" />
@@ -56,7 +56,7 @@ export const CreateOptionBottomSheet: React.FC<CreateOptionBottomSheetProps> = (
           </div>
 
           {/* 2 Big Action Cards (Utas Biasa vs Jual Produk) */}
-          <div className="space-y-2.5 pt-1">
+          <div className="space-y-3 pt-1 pb-1">
             {/* Option 1: Utas Biasa */}
             <button
               type="button"

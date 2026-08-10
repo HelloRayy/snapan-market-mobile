@@ -216,9 +216,9 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
         <div className="p-4 overflow-y-auto flex-1 relative max-w-lg mx-auto w-full">
           {/* 1. Top Section: Avatar + Username + Caption Textarea (2-Column Aligned) */}
           <div className="flex gap-2.5 items-start">
-            {/* Left Column: Avatar */}
-            <div className="flex flex-col items-center shrink-0 w-8">
-              <div className="w-8 h-8 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs">
+            {/* Left Column: Avatar (Top) + Vertical Connector Line + Small Avatar (Bottom) */}
+            <div className="flex flex-col items-center shrink-0 w-8 self-stretch">
+              <div className="w-8 h-8 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
                 <img
                   src={currentUser.avatar}
                   alt={currentUser.name}
@@ -226,18 +226,15 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 />
               </div>
 
-              {postMode === 'thread' && (
-                <>
-                  <div className="w-[1.5px] bg-neutral-200 flex-1 my-1 min-h-[48px]" />
-                  <div className="w-4 h-4 rounded-full overflow-hidden border border-neutral-200/80 opacity-60">
-                    <img
-                      src={currentUser.avatar}
-                      alt={currentUser.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </>
-              )}
+              <div className="w-[1.5px] bg-neutral-200 flex-1 my-1 min-h-[36px]" />
+
+              <div className="w-4 h-4 rounded-full overflow-hidden border border-neutral-200/80 opacity-60 shrink-0">
+                <img
+                  src={currentUser.avatar}
+                  alt={currentUser.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
 
             {/* Right Column: ONLY Username + Topic Selector + Caption Textarea (Aligned with Username!) */}

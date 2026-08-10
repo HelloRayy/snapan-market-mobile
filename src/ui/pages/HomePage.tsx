@@ -124,7 +124,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
           <button
             type="button"
             onClick={() => setFeedTab('for-you')}
-            className={`flex-1 py-3 text-sm text-center relative cursor-pointer ${
+            className={`flex-1 py-2.5 text-sm text-center relative cursor-pointer ${
               feedTab === 'for-you' ? 'text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-900 font-normal'
             }`}
           >
@@ -134,7 +134,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
           <button
             type="button"
             onClick={() => setFeedTab('latest')}
-            className={`flex-1 py-3 text-sm text-center relative cursor-pointer ${
+            className={`flex-1 py-2.5 text-sm text-center relative cursor-pointer ${
               feedTab === 'latest' ? 'text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-900 font-normal'
             }`}
           >

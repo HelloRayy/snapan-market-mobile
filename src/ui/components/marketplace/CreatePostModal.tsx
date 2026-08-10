@@ -342,50 +342,82 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     className="w-full mt-1 text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none resize-none bg-transparent leading-snug"
                   />
 
-                  {/* Dynamic Seller Product Input Section (Accordion when Mode === 'product') */}
+                  {/* Dynamic Seller Product Input Section (Vertical Google-Form Style) */}
                   {postMode === 'product' && (
-                    <div className="my-2 p-3 rounded-2xl bg-blue-50/60 border border-blue-200/80 space-y-2 animate-in fade-in slide-in-from-top-1 duration-150">
-                      <div className="text-[12px] font-bold text-[#1d64ec] flex items-center justify-between">
-                        <span>🛍️ Rincian Produk / Jasa Jualan</span>
-                        <span className="text-[11px] font-normal text-blue-600/80">Tampil dengan tombol WA & Rp</span>
+                    <div className="my-3 p-4 rounded-2xl bg-slate-50 border border-neutral-200/90 space-y-3.5 animate-in fade-in slide-in-from-top-1 duration-150">
+                      {/* Form Header */}
+                      <div className="border-b border-neutral-200/80 pb-2.5 flex items-center justify-between">
+                        <div>
+                          <h4 className="text-[13.5px] font-bold text-slate-900 flex items-center gap-1.5">
+                            <span>🛍️ Rincian Produk / Jasa Jualan</span>
+                          </h4>
+                          <p className="text-[11.5px] text-neutral-500">
+                            Isi rincian informasi jualan secara vertikal
+                          </p>
+                        </div>
+                        <span className="text-[10.5px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-[#1d64ec]">
+                          Form Penjual
+                        </span>
                       </div>
 
-                      <input
-                        type="text"
-                        placeholder="Judul Produk / Jasa (misal: Jasa UI/UX Design PWA)"
-                        value={productTitle}
-                        onChange={(e) => setProductTitle(e.target.value)}
-                        className="w-full px-3 py-1.5 text-[13.5px] rounded-xl border border-blue-200 focus:outline-none focus:border-blue-500 bg-white font-semibold text-slate-900 placeholder:font-normal placeholder:text-neutral-400"
-                      />
+                      {/* Field 1: Judul Produk / Jasa */}
+                      <div className="space-y-1">
+                        <label className="block text-[12px] font-semibold text-slate-700">
+                          Judul Produk / Jasa <span className="text-rose-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="misal: Jasa UI/UX Design & Engineering PWA"
+                          value={productTitle}
+                          onChange={(e) => setProductTitle(e.target.value)}
+                          className="w-full px-3 py-2 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-2 focus:ring-blue-100 bg-white font-semibold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all"
+                        />
+                      </div>
 
-                      <div className="grid grid-cols-2 gap-2">
+                      {/* Field 2: Harga Produk (Rp) */}
+                      <div className="space-y-1">
+                        <label className="block text-[12px] font-semibold text-slate-700">
+                          Harga Produk / Tarif Jasa (Rp) <span className="text-rose-500">*</span>
+                        </label>
                         <div className="relative">
-                          <span className="absolute left-3 top-1.5 text-[12.5px] font-bold text-neutral-400">Rp</span>
+                          <span className="absolute left-3 top-2 text-[13px] font-bold text-neutral-400">Rp</span>
                           <input
                             type="text"
                             placeholder="250.000"
                             value={priceInput}
                             onChange={(e) => setPriceInput(e.target.value)}
-                            className="w-full pl-9 pr-3 py-1.5 text-[13.5px] rounded-xl border border-blue-200 focus:outline-none focus:border-blue-500 bg-white font-bold text-slate-900 placeholder:font-normal placeholder:text-neutral-400"
+                            className="w-full pl-9 pr-3 py-2 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-2 focus:ring-blue-100 bg-white font-bold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all"
                           />
                         </div>
+                      </div>
 
+                      {/* Field 3: Jumlah Stok / Slot Tersisa */}
+                      <div className="space-y-1">
+                        <label className="block text-[12px] font-semibold text-slate-700">
+                          Jumlah Stok / Slot Tersisa
+                        </label>
                         <input
                           type="text"
-                          placeholder="Stok (misal: 3 Slot)"
+                          placeholder="misal: 3 Slot Tersisa atau 10 Porsi"
                           value={stockInput}
                           onChange={(e) => setStockInput(e.target.value)}
-                          className="w-full px-3 py-1.5 text-[13.5px] rounded-xl border border-blue-200 focus:outline-none focus:border-blue-500 bg-white text-slate-900 placeholder:text-neutral-400"
+                          className="w-full px-3 py-2 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-2 focus:ring-blue-100 bg-white text-slate-900 placeholder:text-neutral-400 transition-all"
                         />
                       </div>
 
-                      <input
-                        type="text"
-                        placeholder="Lokasi COD (misal: Lab PPLG / Studio DKV)"
-                        value={locationInput}
-                        onChange={(e) => setLocationInput(e.target.value)}
-                        className="w-full px-3 py-1.5 text-[13px] rounded-xl border border-blue-200 focus:outline-none focus:border-blue-500 bg-white text-slate-900 placeholder:text-neutral-400"
-                      />
+                      {/* Field 4: Lokasi COD / Ketemuan */}
+                      <div className="space-y-1">
+                        <label className="block text-[12px] font-semibold text-slate-700">
+                          Lokasi COD / Ketemuan Sekolah
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="misal: Studio DKV Gedung B / Lab PPLG 1"
+                          value={locationInput}
+                          onChange={(e) => setLocationInput(e.target.value)}
+                          className="w-full px-3 py-2 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-2 focus:ring-blue-100 bg-white text-slate-900 placeholder:text-neutral-400 transition-all"
+                        />
+                      </div>
                     </div>
                   )}
 

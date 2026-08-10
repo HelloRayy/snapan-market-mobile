@@ -216,7 +216,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
           <div className="p-4 overflow-y-auto flex-1 relative">
             {/* Thread Column Container: Left Connector Line + Right Content Area */}
             <div className="flex gap-2.5 items-start">
-              {/* Left Column: Avatar (Top) + Vertical Thread Connector Line + Avatar (Bottom) */}
+              {/* Left Column: Avatar (Top) + Vertical Thread Connector Line + Avatar (Bottom - Only shown in Utas Mode) */}
               <div className="flex flex-col items-center shrink-0 w-8">
                 <div className="w-8 h-8 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs">
                   <img
@@ -225,16 +225,19 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     className="w-full h-full object-cover"
                   />
                 </div>
-                {/* Threads Vertical Connector Line */}
-                <div className="w-[1.5px] bg-neutral-200 flex-1 my-1 min-h-[48px]" />
-                {/* Faded Bottom Small Avatar */}
-                <div className="w-4 h-4 rounded-full overflow-hidden border border-neutral-200/80 opacity-60">
-                  <img
-                    src={currentUser.avatar}
-                    alt={currentUser.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                {/* Threads Vertical Connector Line & Bottom Small Avatar (ONLY shown in Utas Mode!) */}
+                {postMode === 'thread' && (
+                  <>
+                    <div className="w-[1.5px] bg-neutral-200 flex-1 my-1 min-h-[48px]" />
+                    <div className="w-4 h-4 rounded-full overflow-hidden border border-neutral-200/80 opacity-60">
+                      <img
+                        src={currentUser.avatar}
+                        alt={currentUser.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Right Column: Author Header + Topic Popover + Textarea + Images + Action Bar */}
@@ -536,10 +539,12 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   </div>
                 </div>
 
-                {/* Add to Thread Faded Bottom Line (Persis Screenshot 1 & 3!) */}
-                <div className="pt-3 text-[13.5px] text-neutral-400 font-normal select-none">
-                  Tambahkan ke thread
-                </div>
+                {/* Add to Thread Faded Bottom Line (Hanya di Mode Utas Biasa) */}
+                {postMode === 'thread' && (
+                  <div className="pt-3 text-[13.5px] text-neutral-400 font-normal select-none">
+                    Tambahkan ke thread
+                  </div>
+                )}
               </div>
             </div>
           </div>

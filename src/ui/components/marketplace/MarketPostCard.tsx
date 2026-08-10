@@ -24,12 +24,14 @@ interface MarketPostCardProps {
   item: MarketPostItem;
   onAddToCart?: (item: MarketPostItem) => void;
   onPostClick?: (item: MarketPostItem) => void;
+  onTopicClick?: (topic: string) => void;
   variant?: 'feed' | 'detail';
 }
 
 export const MarketPostCard: React.FC<MarketPostCardProps> = ({
   item,
   onPostClick,
+  onTopicClick,
   variant = 'feed',
 }) => {
   const [isLiked, setIsLiked] = useState(item.isLiked || false);
@@ -265,12 +267,28 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               </div>
 
               <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
-                <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
+                <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[50%]">
                   {item.seller.name}
                 </span>
 
                 {item.seller.isVerified && (
                   <ClickableVerifiedBadge sellerName={item.seller.name} className="w-[17px] h-[17px]" />
+                )}
+
+                {item.topicTag && (
+                  <div className="flex items-center gap-1 shrink-0">
+                    <span className="text-neutral-400 font-normal text-[13.5px]">›</span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onTopicClick?.(item.topicTag!);
+                      }}
+                      className="font-bold text-[14px] text-slate-900 hover:text-[#1d64ec] hover:underline transition-colors cursor-pointer"
+                    >
+                      {item.topicTag}
+                    </button>
+                  </div>
                 )}
 
                 <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
@@ -316,15 +334,32 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
           {/* Right Column: Content starting directly under Name */}
           <div className="flex-1 min-w-0 space-y-1 overflow-visible">
-            {/* Header Row: Name + Verified + Class/Timestamp + More Options (...) */}
+            {/* Header Row: Name + Verified + Topic + Class/Timestamp + More Options (...) */}
             <div className="flex items-center justify-between gap-2 min-w-0">
               <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
-                <span className="font-semibold text-[16px] text-slate-900 truncate hover:underline shrink-0 max-w-[60%]">
+                <span className="font-semibold text-[16px] text-slate-900 truncate hover:underline shrink-0 max-w-[50%]">
                   {item.seller.name}
                 </span>
                 {item.seller.isVerified && (
                   <ClickableVerifiedBadge sellerName={item.seller.name} className="w-[18px] h-[18px]" />
                 )}
+
+                {item.topicTag && (
+                  <div className="flex items-center gap-1 shrink-0">
+                    <span className="text-neutral-400 font-normal text-[14px]">›</span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onTopicClick?.(item.topicTag!);
+                      }}
+                      className="font-bold text-[14.5px] text-slate-900 hover:text-[#1d64ec] hover:underline transition-colors cursor-pointer"
+                    >
+                      {item.topicTag}
+                    </button>
+                  </div>
+                )}
+
                 <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
                   {item.seller.classGroup}
                 </span>

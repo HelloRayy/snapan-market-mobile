@@ -21,6 +21,7 @@ export const MOCK_MARKET_POSTS: MarketPostItem[] = [
     ],
     stock: 5,
     locationTag: 'Lab Komputer PPLG',
+    topicTag: 'frontend',
     likesCount: 466,
     commentsCount: 287,
     repostsCount: 9,

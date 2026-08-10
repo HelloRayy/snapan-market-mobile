@@ -37,6 +37,7 @@ export interface MarketPostItem {
   images: string[];
   stock: number;
   locationTag?: string; // e.g. 'Kantin Depan', 'Gedung PPLG', 'Parkiran Belakang'
+  topicTag?: string; // e.g. 'frontend', 'html-css', 'design-ui'
   likesCount: number;
   commentsCount: number;
   repostsCount: number;

@@ -286,15 +286,18 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
                 {item.topicTag ? (
                   <div className="flex items-center gap-1.5 shrink-0 ml-0.5">
-                    {item.isOfficialTopic ? (
+                    {/* Always render chevron separator › */}
+                    <span className="text-neutral-400 font-normal text-[13.5px]">›</span>
+
+                    {/* Render special blue icon if official topic */}
+                    {item.isOfficialTopic && (
                       item.topicIcon === 'presentation' ? (
                         <Presentation className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
                       ) : (
                         <ThreadsTopicIcon />
                       )
-                    ) : (
-                      <span className="text-neutral-400 font-normal text-[13.5px]">›</span>
                     )}
+
                     <button
                       type="button"
                       onClick={(e) => {
@@ -365,15 +368,18 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
                 {item.topicTag ? (
                   <div className="flex items-center gap-1.5 shrink-0 ml-0.5">
-                    {item.isOfficialTopic ? (
+                    {/* Always render chevron separator › */}
+                    <span className="text-neutral-400 font-normal text-[14px]">›</span>
+
+                    {/* Render special blue icon if official topic */}
+                    {item.isOfficialTopic && (
                       item.topicIcon === 'presentation' ? (
                         <Presentation className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
                       ) : (
                         <ThreadsTopicIcon />
                       )
-                    ) : (
-                      <span className="text-neutral-400 font-normal text-[14px]">›</span>
                     )}
+
                     <button
                       type="button"
                       onClick={(e) => {

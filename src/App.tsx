@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { RotateCcw } from 'lucide-react';
-import { SplashScreen } from '@/ui/components/onboarding/SplashScreen';
 import { OnboardingScreen } from '@/ui/components/onboarding/OnboardingScreen';
 import { PwaLandingPage } from '@/ui/components/pwa/PwaLandingPage';
 import { HomePage } from '@/ui/pages/HomePage';
@@ -9,7 +8,6 @@ import { PostDetailPage } from '@/ui/pages/PostDetailPage';
 import { MarketPostItem } from '@/types/marketFeed';
 
 export function App() {
-  const [showSplash, setShowSplash] = useState(true);
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
   const [currentRoute, setCurrentRoute] = useState<string>(window.location.pathname);
   const [selectedPost, setSelectedPost] = useState<MarketPostItem | null>(null);
@@ -54,17 +52,16 @@ export function App() {
     window.history.pushState({}, '', '/onboarding');
     setCurrentRoute('/onboarding');
     setHasCompletedOnboarding(false);
-    setShowSplash(true);
   };
 
   return (
     <div className="relative min-h-screen bg-pure-white text-slate-ink overflow-x-hidden font-gt-standard">
-      {/* Floating Dev Mode Control Button (Replay Onboarding / Splash) */}
+      {/* Floating Dev Mode Control Button (Replay Onboarding) */}
       {import.meta.env.DEV && (
         <button
           onClick={handleResetToOnboarding}
           className="fixed top-3 right-3 z-[9999] flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/90 hover:bg-slate-900 text-white text-[11px] font-bold shadow-xl border border-white/20 backdrop-blur-md active:scale-95 transition-all cursor-pointer select-none"
-          title="Reset ke Splash & Onboarding (Dev Mode)"
+          title="Reset ke Onboarding (Dev Mode)"
         >
           <RotateCcw className="h-3.5 w-3.5 text-blue-400 animate-spin-slow" />
           <span>Dev: Reset Onboarding</span>
@@ -74,8 +71,6 @@ export function App() {
       {/* Render Dedicated PWA Download Landing Page if route is /download */}
       {isDownloadRoute ? (
         <PwaLandingPage onProceedToWeb={navigateToWeb} />
-      ) : showSplash ? (
-        <SplashScreen onFinish={() => setShowSplash(false)} />
       ) : hasCompletedOnboarding && !isOnboardingRoute ? (
         <div className="relative min-h-screen">
           {/* Main Feed HomePage (Always kept in DOM so scroll position is NEVER reset) */}

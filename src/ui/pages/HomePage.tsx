@@ -4,6 +4,7 @@ import { MarketHeader } from '../components/marketplace/MarketHeader';
 import { MarketPostCard } from '../components/marketplace/MarketPostCard';
 import { MarketBottomNav } from '../components/marketplace/MarketBottomNav';
 import { CreatePostModal } from '../components/marketplace/CreatePostModal';
+import { CreateOptionBottomSheet } from '../components/marketplace/CreateOptionBottomSheet';
 import { InstallBanner } from '../components/pwa/InstallBanner';
 import { OfflineBanner } from '../components/pwa/OfflineBanner';
 import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
@@ -18,7 +19,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
   const [feedTab, setFeedTab] = useState<'for-you' | 'latest'>('for-you');
   const [bottomNavTab, setBottomNavTab] = useState('home');
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Create Post Modal & Option Bottom Sheet States
+  const [isOptionBottomSheetOpen, setIsOptionBottomSheetOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedPostMode, setSelectedPostMode] = useState<'thread' | 'product'>('thread');
+
+  // Handle Option Select from Half-Screen Bottom Sheet
+  const handleSelectCreateOption = (mode: 'thread' | 'product') => {
+    setIsOptionBottomSheetOpen(false);
+    setSelectedPostMode(mode);
+    setIsCreateModalOpen(true);
+  };
 
   // Items State & Infinite Scroll Loading
   const [items, setItems] = useState<MarketPostItem[]>(MOCK_MARKET_POSTS);
@@ -217,12 +229,20 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
       <MarketBottomNav
         activeTab={bottomNavTab}
         onTabChange={(tab) => setBottomNavTab(tab)}
-        onPostClick={() => setIsCreateModalOpen(true)}
+        onPostClick={() => setIsOptionBottomSheetOpen(true)}
       />
 
-      {/* Create New Post Modal (Threads Style) */}
+      {/* Step 1: Half-Screen Bottom Sheet Option Picker */}
+      <CreateOptionBottomSheet
+        isOpen={isOptionBottomSheetOpen}
+        onClose={() => setIsOptionBottomSheetOpen(false)}
+        onSelectOption={handleSelectCreateOption}
+      />
+
+      {/* Step 2: Create New Post Full-Screen Modal */}
       <CreatePostModal
         isOpen={isCreateModalOpen}
+        initialMode={selectedPostMode}
         onClose={() => setIsCreateModalOpen(false)}
         onSubmitPost={handleCreatePost}
       />

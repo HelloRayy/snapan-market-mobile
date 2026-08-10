@@ -45,6 +45,7 @@ interface CreatePostModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmitPost?: (newPost: Partial<MarketPostItem>) => void;
+  initialMode?: 'thread' | 'product';
   currentUser?: {
     name: string;
     avatar: string;
@@ -56,13 +57,21 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
   isOpen,
   onClose,
   onSubmitPost,
+  initialMode = 'thread',
   currentUser = {
     name: 'radityarayhannnn',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
     username: 'radityarayhannnn',
   },
 }) => {
-  const [postMode, setPostMode] = useState<'thread' | 'product'>('thread');
+  const [postMode, setPostMode] = useState<'thread' | 'product'>(initialMode);
+
+  // Sync initialMode when modal opens
+  React.useEffect(() => {
+    if (isOpen) {
+      setPostMode(initialMode);
+    }
+  }, [isOpen, initialMode]);
   const [caption, setCaption] = useState('');
   const [productTitle, setProductTitle] = useState('');
   const [priceInput, setPriceInput] = useState<string>('');

@@ -41,7 +41,7 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-200 cubic-bezier(0.25,1,0.5,1) font-gt-standard ${
+      className={`sticky top-0 w-full z-40 transition-all duration-200 cubic-bezier(0.25,1,0.5,1) font-gt-standard ${
         isScrolled
           ? 'bg-[#fafafa]/85 backdrop-blur-xl border-b border-neutral-200/60 shadow-2xs'
           : 'bg-[#fafafa]/90 backdrop-blur-md border-b border-neutral-200/40'

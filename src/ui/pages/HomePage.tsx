@@ -110,10 +110,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
         onSearchChange={(query) => setSearchQuery(query)}
       />
 
-      {/* Main Threads Feed Container with 12px Gap below Fixed Header (56px header + 12px gap = 68px) */}
-      <main className="max-w-xl mx-auto divide-y divide-neutral-200 pt-[68px]">
-        {/* Scrollable Tab Switcher ("Untuk Anda" & "Terbaru") - Smooth Sliding Indicator Bar */}
-        <div className="relative flex items-center border-b border-neutral-200 select-none bg-[#fafafa]">
+      {/* Main Threads Feed Container (0px padding, no purple gap) */}
+      <main className="max-w-xl mx-auto divide-y divide-neutral-200 pt-0">
+        {/* Scrollable Tab Switcher ("Untuk Anda" & "Terbaru") - Sticky top-14 under header */}
+        <div className="sticky top-14 z-30 flex items-center border-b border-neutral-200 select-none bg-[#fafafa]/90 backdrop-blur-md">
           {/* Smooth Sliding Bar (No Kedut/Flicker, Pure Slide) */}
           <div
             className={`absolute bottom-0 left-0 w-1/2 h-[2px] bg-slate-900 transition-transform duration-200 cubic-bezier(0.25,1,0.5,1) ${

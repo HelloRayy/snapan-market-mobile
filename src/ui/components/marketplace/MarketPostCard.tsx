@@ -1,8 +1,17 @@
 import React, { useState } from 'react';
-import { Heart, MoreHorizontal, Box, Repeat2, Send } from 'lucide-react';
+import { Heart, MoreHorizontal, Box, Repeat2, Send, Presentation } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { MediaLightboxModal } from './MediaLightboxModal';
 import { ClickableVerifiedBadge } from './VerifiedBadgeModal';
+
+// Custom Threads 3-Dot Topic Icon
+const ThreadsTopicIcon: React.FC<{ className?: string }> = ({ className = "w-3.5 h-3.5 text-[#1d64ec] fill-current shrink-0" }) => (
+  <svg className={className} viewBox="0 0 24 24">
+    <circle cx="6" cy="8" r="3" />
+    <circle cx="6" cy="16" r="3" />
+    <circle cx="15" cy="12" r="3" />
+  </svg>
+);
 
 // Custom Smooth Rounded Lucide-Family Comment Icon (Rounded tail tip, 100% Lucide family match)
 const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -277,14 +286,24 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
                 {item.topicTag ? (
                   <div className="flex items-center gap-1.5 shrink-0 ml-0.5">
-                    <span className="text-neutral-400 font-normal text-[13.5px]">›</span>
+                    {item.isOfficialTopic ? (
+                      item.topicIcon === 'presentation' ? (
+                        <Presentation className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
+                      ) : (
+                        <ThreadsTopicIcon />
+                      )
+                    ) : (
+                      <span className="text-neutral-400 font-normal text-[13.5px]">›</span>
+                    )}
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         onTopicClick?.(item.topicTag!);
                       }}
-                      className="font-bold text-[14px] text-slate-900 hover:text-[#1d64ec] hover:underline transition-colors cursor-pointer"
+                      className={`font-bold text-[14px] transition-colors cursor-pointer ${
+                        item.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-900 hover:text-[#1d64ec] hover:underline'
+                      }`}
                     >
                       {item.topicTag}
                     </button>
@@ -346,14 +365,24 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
                 {item.topicTag ? (
                   <div className="flex items-center gap-1.5 shrink-0 ml-0.5">
-                    <span className="text-neutral-400 font-normal text-[14px]">›</span>
+                    {item.isOfficialTopic ? (
+                      item.topicIcon === 'presentation' ? (
+                        <Presentation className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
+                      ) : (
+                        <ThreadsTopicIcon />
+                      )
+                    ) : (
+                      <span className="text-neutral-400 font-normal text-[14px]">›</span>
+                    )}
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         onTopicClick?.(item.topicTag!);
                       }}
-                      className="font-bold text-[14.5px] text-slate-900 hover:text-[#1d64ec] hover:underline transition-colors cursor-pointer"
+                      className={`font-bold text-[14.5px] transition-colors cursor-pointer ${
+                        item.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-900 hover:text-[#1d64ec] hover:underline'
+                      }`}
                     >
                       {item.topicTag}
                     </button>

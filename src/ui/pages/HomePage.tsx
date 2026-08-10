@@ -3,6 +3,7 @@ import { Loader2, Sparkles } from 'lucide-react';
 import { MarketHeader } from '../components/marketplace/MarketHeader';
 import { MarketPostCard } from '../components/marketplace/MarketPostCard';
 import { MarketBottomNav } from '../components/marketplace/MarketBottomNav';
+import { CreatePostModal } from '../components/marketplace/CreatePostModal';
 import { InstallBanner } from '../components/pwa/InstallBanner';
 import { OfflineBanner } from '../components/pwa/OfflineBanner';
 import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
@@ -17,6 +18,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
   const [feedTab, setFeedTab] = useState<'for-you' | 'latest'>('for-you');
   const [bottomNavTab, setBottomNavTab] = useState('home');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Items State & Infinite Scroll Loading
   const [items, setItems] = useState<MarketPostItem[]>(MOCK_MARKET_POSTS);
@@ -28,6 +30,37 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
   const addItemToCart = useCartStore((state) => state.addItem);
   const totalCartItems = useCartStore((state) => state.getTotalItems());
   const totalCartPrice = useCartStore((state) => state.getTotalPrice());
+
+  // Handle Create New Post
+  const handleCreatePost = (newPostData: Partial<MarketPostItem>) => {
+    const createdPost: MarketPostItem = {
+      id: `post-user-${Date.now()}`,
+      seller: {
+        id: 'current-user-id',
+        name: 'radityarayhannnn',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+        classGroup: 'XII PPLG 1',
+        isVerified: true,
+        username: 'radityarayhannnn',
+      },
+      caption: newPostData.caption || '',
+      price: newPostData.price || 50000,
+      category: newPostData.category || 'Jasa DKV/PPLG',
+      images: newPostData.images && newPostData.images.length > 0 ? newPostData.images : ['https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80'],
+      stock: newPostData.stock || 1,
+      locationTag: newPostData.locationTag || 'Lab PPLG',
+      topicTag: newPostData.topicTag,
+      isOfficialTopic: newPostData.isOfficialTopic,
+      topicIcon: newPostData.topicIcon,
+      likesCount: 0,
+      commentsCount: 0,
+      repostsCount: 0,
+      timestamp: 'Baru saja',
+      isLiked: false,
+    };
+
+    setItems([createdPost, ...items]);
+  };
 
   // Handle Add To Cart from Post Card
   const handleAddToCart = (postItem: MarketPostItem) => {
@@ -184,6 +217,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
       <MarketBottomNav
         activeTab={bottomNavTab}
         onTabChange={(tab) => setBottomNavTab(tab)}
+        onPostClick={() => setIsCreateModalOpen(true)}
+      />
+
+      {/* Create New Post Modal (Threads Style) */}
+      <CreatePostModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmitPost={handleCreatePost}
       />
     </div>
   );

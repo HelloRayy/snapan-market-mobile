@@ -427,15 +427,11 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 </div>
               </div>
 
-              {/* Faded Prompt Line (Dynamic UX Copy for Threads vs Seller Form) */}
-              <div className="pt-2.5 text-[13.5px] text-neutral-400 font-medium select-none">
-                {postMode === 'product' ? (
-                  <span className="flex items-center gap-1 text-blue-600/90 font-semibold">
-                    🛍️ Isi rincian & harga produk di bawah
-                  </span>
-                ) : (
-                  <span>Tambahkan ke thread</span>
-                )}
+              {/* Faded Prompt Line (Minimalist Muted Gray Text matching Threads UI) */}
+              <div className="pt-2.5 text-[13.5px] text-neutral-400 font-normal select-none">
+                {postMode === 'product'
+                  ? 'Isi rincian barang / jasa yang dijual'
+                  : 'Tambahkan ke thread'}
               </div>
             </div>
           </div>

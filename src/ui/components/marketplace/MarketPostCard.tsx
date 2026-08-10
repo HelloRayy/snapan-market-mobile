@@ -276,7 +276,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 )}
 
                 {item.topicTag ? (
-                  <div className="flex items-center gap-0.5 shrink-0">
+                  <div className="flex items-center gap-1.5 shrink-0 ml-0.5">
                     <span className="text-neutral-400 font-normal text-[13.5px]">›</span>
                     <button
                       type="button"
@@ -336,7 +336,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           <div className="flex-1 min-w-0 space-y-1 overflow-visible">
             {/* Header Row: Name + Verified + (Topic OR Class) + Timestamp + More Options (...) */}
             <div className="flex items-center justify-between gap-2 min-w-0">
-              <div className="flex items-center gap-1 min-w-0 flex-1 overflow-hidden">
+              <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
                 <span className="font-semibold text-[15.5px] text-slate-900 truncate hover:underline shrink-0 max-w-[65%]">
                   {item.seller.name}
                 </span>
@@ -345,7 +345,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 )}
 
                 {item.topicTag ? (
-                  <div className="flex items-center gap-0.5 shrink-0">
+                  <div className="flex items-center gap-1.5 shrink-0 ml-0.5">
                     <span className="text-neutral-400 font-normal text-[14px]">›</span>
                     <button
                       type="button"

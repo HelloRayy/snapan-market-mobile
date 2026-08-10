@@ -28,6 +28,7 @@ export interface PostComment {
 
 export interface MarketPostItem {
   id: string;
+  postType?: 'thread' | 'product'; // 'thread' = Utas Sosial Biasa, 'product' = Barang / Jasa Jualan
   title?: string;
   seller: SellerProfile;
   caption: string;

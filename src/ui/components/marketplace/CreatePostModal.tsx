@@ -62,14 +62,16 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     username: 'radityarayhannnn',
   },
 }) => {
+  const [postMode, setPostMode] = useState<'thread' | 'product'>('thread');
   const [caption, setCaption] = useState('');
+  const [productTitle, setProductTitle] = useState('');
+  const [priceInput, setPriceInput] = useState<string>('');
+  const [stockInput, setStockInput] = useState<string>('');
+  const [locationInput, setLocationInput] = useState<string>('');
   const [images, setImages] = useState<string[]>([]);
   const [selectedTopic, setSelectedTopic] = useState<TopicOption | null>(null);
   const [customTopicInput, setCustomTopicInput] = useState('');
   const [showTopicDropdown, setShowTopicDropdown] = useState(false);
-  const [price] = useState<number>(50000);
-  const [stock] = useState<number>(1);
-  const [locationTag] = useState('Gedung PPLG');
 
   const handleAddDummyImage = () => {
     const dummyPics = [
@@ -102,17 +104,22 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     }
   };
 
-  const canPost = caption.trim().length > 0 || images.length > 0;
+  const canPost = caption.trim().length > 0 || images.length > 0 || productTitle.trim().length > 0;
 
   const handleSubmit = () => {
     if (!canPost) return;
 
+    const parsedPrice = priceInput ? parseInt(priceInput.replace(/\D/g, ''), 10) : (postMode === 'product' ? 50000 : 0);
+    const parsedStock = stockInput ? parseInt(stockInput, 10) : (postMode === 'product' ? 1 : 0);
+
     const newPost: Partial<MarketPostItem> = {
-      caption,
+      postType: postMode,
+      title: postMode === 'product' ? (productTitle || caption.slice(0, 30)) : undefined,
+      caption: caption || productTitle,
       images,
-      price: price || 50000,
-      stock: stock || 1,
-      locationTag: locationTag || 'Lab PPLG',
+      price: parsedPrice,
+      stock: parsedStock,
+      locationTag: locationInput || (postMode === 'product' ? 'Lab PPLG' : undefined),
       topicTag: selectedTopic ? selectedTopic.name : undefined,
       isOfficialTopic: selectedTopic ? selectedTopic.isOfficial : false,
       topicIcon: selectedTopic?.icon || (selectedTopic?.isOfficial ? 'threads' : undefined),
@@ -121,8 +128,13 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     onSubmitPost?.(newPost);
     // Reset form state
     setCaption('');
+    setProductTitle('');
+    setPriceInput('');
+    setStockInput('');
+    setLocationInput('');
     setImages([]);
     setSelectedTopic(null);
+    setPostMode('thread');
     onClose();
   };
 
@@ -137,7 +149,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
         transition={{ type: 'tween', duration: 0.22, ease: [0.25, 1, 0.5, 1] }}
         className="fixed inset-0 z-50 bg-white flex flex-col font-gt-standard overflow-hidden"
       >
-          {/* Top Bar Header: [ Batal ] --- [ Thread Baru ] --- [ Draft & Options ] */}
+          {/* Top Bar Header: [ Batal ] --- Mode Switcher --- [ Draft & Options ] */}
           <div className="px-4 h-14 flex items-center justify-between border-b border-neutral-200/80 bg-white shrink-0">
             <button
               type="button"
@@ -147,9 +159,31 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
               Batal
             </button>
 
-            <h2 className="text-[16px] font-bold text-slate-900 select-none">
-              Thread Baru
-            </h2>
+            {/* Mode Switcher Pill: 💬 Utas vs 🛍️ Jual Barang */}
+            <div className="flex items-center bg-neutral-100 p-0.5 rounded-full border border-neutral-200/80">
+              <button
+                type="button"
+                onClick={() => setPostMode('thread')}
+                className={`px-3 py-1 rounded-full text-[12.5px] font-semibold transition-all cursor-pointer ${
+                  postMode === 'thread'
+                    ? 'bg-white text-slate-900 shadow-2xs'
+                    : 'text-neutral-500 hover:text-slate-900'
+                }`}
+              >
+                💬 Utas
+              </button>
+              <button
+                type="button"
+                onClick={() => setPostMode('product')}
+                className={`px-3 py-1 rounded-full text-[12.5px] font-semibold transition-all cursor-pointer ${
+                  postMode === 'product'
+                    ? 'bg-[#1d64ec] text-white shadow-2xs'
+                    : 'text-neutral-500 hover:text-slate-900'
+                }`}
+              >
+                🛍️ Jual Produk
+              </button>
+            </div>
 
             <div className="flex items-center gap-3">
               <button
@@ -293,11 +327,58 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   <textarea
                     autoFocus
                     rows={2}
-                    placeholder="Apa yang baru? Apa yang ingin kamu jual?"
+                    placeholder={postMode === 'product' ? 'Deskripsi lengkap barang / jasa...' : 'Apa yang baru?'}
                     value={caption}
                     onChange={(e) => setCaption(e.target.value)}
                     className="w-full mt-1 text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none resize-none bg-transparent leading-snug"
                   />
+
+                  {/* Dynamic Seller Product Input Section (Accordion when Mode === 'product') */}
+                  {postMode === 'product' && (
+                    <div className="my-2 p-3 rounded-2xl bg-blue-50/60 border border-blue-200/80 space-y-2 animate-in fade-in slide-in-from-top-1 duration-150">
+                      <div className="text-[12px] font-bold text-[#1d64ec] flex items-center justify-between">
+                        <span>🛍️ Rincian Produk / Jasa Jualan</span>
+                        <span className="text-[11px] font-normal text-blue-600/80">Tampil dengan tombol WA & Rp</span>
+                      </div>
+
+                      <input
+                        type="text"
+                        placeholder="Judul Produk / Jasa (misal: Jasa UI/UX Design PWA)"
+                        value={productTitle}
+                        onChange={(e) => setProductTitle(e.target.value)}
+                        className="w-full px-3 py-1.5 text-[13.5px] rounded-xl border border-blue-200 focus:outline-none focus:border-blue-500 bg-white font-semibold text-slate-900 placeholder:font-normal placeholder:text-neutral-400"
+                      />
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="relative">
+                          <span className="absolute left-3 top-1.5 text-[12.5px] font-bold text-neutral-400">Rp</span>
+                          <input
+                            type="text"
+                            placeholder="250.000"
+                            value={priceInput}
+                            onChange={(e) => setPriceInput(e.target.value)}
+                            className="w-full pl-9 pr-3 py-1.5 text-[13.5px] rounded-xl border border-blue-200 focus:outline-none focus:border-blue-500 bg-white font-bold text-slate-900 placeholder:font-normal placeholder:text-neutral-400"
+                          />
+                        </div>
+
+                        <input
+                          type="text"
+                          placeholder="Stok (misal: 3 Slot)"
+                          value={stockInput}
+                          onChange={(e) => setStockInput(e.target.value)}
+                          className="w-full px-3 py-1.5 text-[13.5px] rounded-xl border border-blue-200 focus:outline-none focus:border-blue-500 bg-white text-slate-900 placeholder:text-neutral-400"
+                        />
+                      </div>
+
+                      <input
+                        type="text"
+                        placeholder="Lokasi COD (misal: Lab PPLG / Studio DKV)"
+                        value={locationInput}
+                        onChange={(e) => setLocationInput(e.target.value)}
+                        className="w-full px-3 py-1.5 text-[13px] rounded-xl border border-blue-200 focus:outline-none focus:border-blue-500 bg-white text-slate-900 placeholder:text-neutral-400"
+                      />
+                    </div>
+                  )}
 
                   {/* Uploaded Images Gallery (Persis Screenshot 3!) */}
                   {images.length > 0 && (

@@ -117,14 +117,13 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-xs transition-opacity duration-200">
-        <motion.div
-          initial={{ y: '100%', opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: '100%', opacity: 0 }}
-          transition={{ type: 'spring', stiffness: 320, damping: 30 }}
-          className="w-full max-w-xl bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col font-gt-standard border border-neutral-200"
-        >
+      <motion.div
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%' }}
+        transition={{ type: 'tween', duration: 0.22, ease: [0.25, 1, 0.5, 1] }}
+        className="fixed inset-0 z-50 bg-white flex flex-col font-gt-standard overflow-hidden"
+      >
           {/* Top Bar Header: [ Batal ] --- [ Thread Baru ] --- [ Draft & Options ] */}
           <div className="px-4 h-14 flex items-center justify-between border-b border-neutral-200/80 bg-white shrink-0">
             <button
@@ -348,7 +347,6 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
             </button>
           </div>
         </motion.div>
-      </div>
     </AnimatePresence>
   );
 };

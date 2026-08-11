@@ -10,6 +10,8 @@ import { OfflineBanner } from '../components/pwa/OfflineBanner';
 import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
 import { MarketPostItem } from '@/types/marketFeed';
 import { useCartStore } from '../store/cartStore';
+import { getMarketPosts, createMarketPost } from '@/services/api/marketPostsService';
+import type { MarketPostWithSeller } from '@/types/supabase';
 
 interface HomePageProps {
   onSelectPost?: (post: MarketPostItem) => void;
@@ -38,13 +40,65 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
   const [page, setPage] = useState(1);
   const observerTargetRef = useRef<HTMLDivElement>(null);
 
+  // Fetch Supabase Backend Posts on Mount
+  useEffect(() => {
+    async function loadSupabasePosts() {
+      try {
+        const supabasePosts = await getMarketPosts();
+        if (supabasePosts && supabasePosts.length > 0) {
+          const mappedPosts: MarketPostItem[] = supabasePosts.map((p: MarketPostWithSeller) => ({
+            id: p.id,
+            caption: p.caption,
+            price: p.price ?? 0,
+            originalPrice: p.original_price ?? undefined,
+            category: (p.category as MarketPostItem['category']) || 'Lainnya',
+            images: p.images || [],
+            stock: p.stock ?? 1,
+            locationTag: p.location_tag || undefined,
+            likesCount: p.likes_count || 0,
+            commentsCount: p.comments_count || 0,
+            repostsCount: 0,
+            timestamp: new Date(p.created_at).toLocaleDateString('id-ID', {
+              hour: '2-digit',
+              minute: '2-digit'
+            }),
+            isLiked: p.is_liked_by_user,
+            seller: {
+              id: p.seller?.id || p.seller_id,
+              name: p.seller?.full_name || 'Penjual Snapan',
+              avatar:
+                p.seller?.avatar_url ||
+                'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&q=80',
+              classGroup: p.seller?.class_group || 'Siswa Snapan',
+              isVerified: p.seller?.is_verified ?? false,
+              username: p.seller?.full_name
+                ? p.seller.full_name.toLowerCase().replace(/\s+/g, '')
+                : 'seller'
+            }
+          }));
+
+          // Merge Supabase posts with mock posts (Supabase posts at the top)
+          setItems((prev) => {
+            const existingIds = new Set(mappedPosts.map((mp) => mp.id));
+            const filteredMock = prev.filter((item) => !existingIds.has(item.id));
+            return [...mappedPosts, ...filteredMock];
+          });
+        }
+      } catch (err) {
+        console.warn('Supabase fetch bypassed, using mock data:', err);
+      }
+    }
+
+    loadSupabasePosts();
+  }, []);
+
   // Cart Store Integration
   const addItemToCart = useCartStore((state) => state.addItem);
   const totalCartItems = useCartStore((state) => state.getTotalItems());
   const totalCartPrice = useCartStore((state) => state.getTotalPrice());
 
   // Handle Create New Post
-  const handleCreatePost = (newPostData: Partial<MarketPostItem>) => {
+  const handleCreatePost = async (newPostData: Partial<MarketPostItem>) => {
     const createdPost: MarketPostItem = {
       id: `post-user-${Date.now()}`,
       seller: {
@@ -71,7 +125,23 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
       isLiked: false,
     };
 
-    setItems([createdPost, ...items]);
+    // Update UI immediately (Optimistic UI)
+    setItems((prev) => [createdPost, ...prev]);
+
+    // Send to Supabase Backend
+    try {
+      await createMarketPost({
+        seller_id: 'current-user-id',
+        caption: newPostData.caption || '',
+        images: newPostData.images || [],
+        stock: newPostData.stock || 1,
+        price: newPostData.price || 0,
+        category: newPostData.category || 'Umum',
+        location_tag: newPostData.locationTag || 'SMKN 8',
+      });
+    } catch (err) {
+      console.warn('Supabase post creation skipped or error (mock state maintained):', err);
+    }
   };
 
   // Handle Add To Cart from Post Card

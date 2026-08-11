@@ -209,6 +209,10 @@ export type Database = {
           images: string[]
           is_video: boolean
           stock: number
+          price?: number
+          original_price?: number | null
+          category?: string
+          location_tag?: string | null
           created_at: string
         }
         Insert: {
@@ -218,6 +222,10 @@ export type Database = {
           images?: string[]
           is_video?: boolean
           stock?: number
+          price?: number
+          original_price?: number | null
+          category?: string
+          location_tag?: string | null
           created_at?: string
         }
         Update: {
@@ -227,6 +235,10 @@ export type Database = {
           images?: string[]
           is_video?: boolean
           stock?: number
+          price?: number
+          original_price?: number | null
+          category?: string
+          location_tag?: string | null
           created_at?: string
         }
         Relationships: [

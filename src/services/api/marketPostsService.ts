@@ -66,6 +66,10 @@ export async function createMarketPost(payload: {
   images?: string[];
   is_video?: boolean;
   stock?: number;
+  price?: number;
+  original_price?: number;
+  category?: string;
+  location_tag?: string;
 }) {
   const { data, error } = await supabase
     .from('market_posts')
@@ -74,7 +78,11 @@ export async function createMarketPost(payload: {
       caption: payload.caption,
       images: payload.images || [],
       is_video: payload.is_video || false,
-      stock: payload.stock ?? 1
+      stock: payload.stock ?? 1,
+      price: payload.price ?? 0,
+      original_price: payload.original_price,
+      category: payload.category || 'Umum',
+      location_tag: payload.location_tag || 'SMKN 8'
     })
     .select()
     .single();

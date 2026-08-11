@@ -10,6 +10,7 @@ import { OfflineBanner } from '../components/pwa/OfflineBanner';
 import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
 import { MarketPostItem } from '@/types/marketFeed';
 import { useCartStore } from '../store/cartStore';
+import { useAuth } from '../hooks/useAuth';
 import { getMarketPosts, createMarketPost } from '@/services/api/marketPostsService';
 import type { MarketPostWithSeller } from '@/types/supabase';
 
@@ -92,6 +93,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
     loadSupabasePosts();
   }, []);
 
+  // Auth Hook Integration
+  const { user, profile } = useAuth();
+
   // Cart Store Integration
   const addItemToCart = useCartStore((state) => state.addItem);
   const totalCartItems = useCartStore((state) => state.getTotalItems());
@@ -99,15 +103,20 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
 
   // Handle Create New Post
   const handleCreatePost = async (newPostData: Partial<MarketPostItem>) => {
+    const activeSellerId = profile?.id || user?.id || 'current-user-id';
+    const activeSellerName = profile?.full_name || user?.user_metadata?.full_name || 'radityarayhannnn';
+    const activeSellerAvatar = profile?.avatar_url || user?.user_metadata?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80';
+    const activeSellerClass = profile?.class_group || 'XII PPLG 1';
+
     const createdPost: MarketPostItem = {
       id: `post-user-${Date.now()}`,
       seller: {
-        id: 'current-user-id',
-        name: 'radityarayhannnn',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
-        classGroup: 'XII PPLG 1',
+        id: activeSellerId,
+        name: activeSellerName,
+        avatar: activeSellerAvatar,
+        classGroup: activeSellerClass,
         isVerified: true,
-        username: 'radityarayhannnn',
+        username: activeSellerName.toLowerCase().replace(/\s+/g, ''),
       },
       caption: newPostData.caption || '',
       price: newPostData.price || 50000,
@@ -130,17 +139,19 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
 
     // Send to Supabase Backend
     try {
-      await createMarketPost({
-        seller_id: 'current-user-id',
-        caption: newPostData.caption || '',
-        images: newPostData.images || [],
-        stock: newPostData.stock || 1,
-        price: newPostData.price || 0,
-        category: newPostData.category || 'Umum',
-        location_tag: newPostData.locationTag || 'SMKN 8',
-      });
+      if (user?.id) {
+        await createMarketPost({
+          seller_id: user.id,
+          caption: newPostData.caption || '',
+          images: newPostData.images || [],
+          stock: newPostData.stock || 1,
+          price: newPostData.price || 0,
+          category: newPostData.category || 'Umum',
+          location_tag: newPostData.locationTag || 'SMKN 8',
+        });
+      }
     } catch (err) {
-      console.warn('Supabase post creation skipped or error (mock state maintained):', err);
+      console.warn('Supabase post creation error:', err);
     }
   };
 

@@ -6,12 +6,15 @@ import { HomePage } from '@/ui/pages/HomePage';
 import { PostDetailPage } from '@/ui/pages/PostDetailPage';
 import { MarketPostItem } from '@/types/marketFeed';
 
+import { useAuth } from '@/ui/hooks/useAuth';
+
 export function App() {
+  const { user } = useAuth();
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
   const [currentRoute, setCurrentRoute] = useState<string>(window.location.pathname);
   const [selectedPost, setSelectedPost] = useState<MarketPostItem | null>(null);
 
-  // Sync route with window location & localStorage session check
+  // Sync route with window location & localStorage/Supabase session check
   useEffect(() => {
     const handlePopState = () => {
       setCurrentRoute(window.location.pathname);
@@ -23,14 +26,14 @@ export function App() {
       setHasCompletedOnboarding(false);
     } else {
       const savedOnboarded = localStorage.getItem('snapan_has_onboarded');
-      if (savedOnboarded === 'true') {
+      if (savedOnboarded === 'true' || user) {
         setHasCompletedOnboarding(true);
       }
     }
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
+  }, [user]);
 
   // Check routes
   const isDownloadRoute = currentRoute === '/download' || window.location.hash === '#download';

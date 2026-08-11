@@ -22,6 +22,61 @@ export async function signInWithGoogle() {
 }
 
 /**
+ * Sign In dengan Email & Password
+ */
+export async function signInWithEmail(email: string, password: string) {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    console.error('Error signing in with email:', error.message);
+    throw error;
+  }
+
+  return data;
+}
+
+/**
+ * Sign Up dengan Email & Password
+ */
+export async function signUpWithEmail(email: string, password: string, fullName?: string, classGroup?: string) {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        full_name: fullName || 'Siswa Snapan',
+        name: fullName || 'Siswa Snapan',
+        class_group: classGroup || 'Siswa Snapan'
+      }
+    }
+  });
+
+  if (error) {
+    console.error('Error signing up with email:', error.message);
+    throw error;
+  }
+
+  // Backup Manual Upsert ke public.profiles jika trigger belum terpasang
+  if (data?.user) {
+    try {
+      await supabase.from('profiles').upsert({
+        id: data.user.id,
+        full_name: fullName || 'Siswa Snapan',
+        class_group: classGroup || 'Siswa Snapan',
+        role: 'buyer'
+      });
+    } catch (profileErr) {
+      console.warn('Manual profile upsert skipped:', profileErr);
+    }
+  }
+
+  return data;
+}
+
+/**
  * Keluar dari sesi (Sign Out)
  */
 export async function signOut() {

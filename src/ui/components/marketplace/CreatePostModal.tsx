@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, FileText, MoreHorizontal, Image as ImageIcon, MapPin, PartyPopper, AlignLeft, Music } from 'lucide-react';
+import { X, FileText, MoreHorizontal, Image as ImageIcon, MapPin, PartyPopper, AlignLeft, Music, ShoppingBag, Sparkles } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 
 // Custom Threads 3-Dot Topic Icon
@@ -81,6 +81,9 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
       setPostMode(initialMode);
     }
   }, [isOpen, initialMode]);
+
+  // Smart Intent Detection: detect selling keywords when in thread mode
+  const isSellingKeywordDetected = postMode === 'thread' && /\b(jual|dijual|wts|preloved|harga|rp|slot|ongkir|ready|stok|beli)\b/i.test(caption);
 
   const handleAddDummyImage = () => {
     const dummyPics = [
@@ -168,8 +171,14 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
             Batal
           </button>
 
-          <h2 className="text-[15.5px] font-bold text-slate-900 tracking-tight">
-            {postMode === 'product' ? '🛍️ Jual Produk Baru' : '💬 Utas Baru'}
+          <h2 className="text-[15.5px] font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
+            {postMode === 'product' ? (
+              <span className="text-[#1d64ec] flex items-center gap-1">
+                🛍️ Jual Produk Baru
+              </span>
+            ) : (
+              <span>💬 Utas Baru</span>
+            )}
           </h2>
 
           <div className="flex items-center gap-3">
@@ -314,7 +323,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 <textarea
                   autoFocus
                   rows={1}
-                  placeholder={postMode === 'product' ? 'Tulis deskripsi produk...' : 'Apa yang baru?'}
+                  placeholder={postMode === 'product' ? 'Tulis deskripsi atau rincian jualan...' : 'Apa yang baru?'}
                   value={caption}
                   onChange={(e) => {
                     setCaption(e.target.value);
@@ -323,6 +332,27 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   }}
                   className="w-full mt-1 text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none resize-none bg-transparent leading-snug overflow-hidden"
                 />
+
+                {/* Smart Intent Auto-Detection Banner (Prompt beralih ke Mode Jual jika terdeteksi kata jualan) */}
+                {isSellingKeywordDetected && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="my-2 p-2 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-between gap-2"
+                  >
+                    <div className="flex items-center gap-1.5 text-[12px] font-semibold text-[#1d64ec]">
+                      <Sparkles className="w-3.5 h-3.5 shrink-0" />
+                      <span>Terdeteksi ingin jualan?</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setPostMode('product')}
+                      className="px-2.5 py-1 rounded-lg bg-[#1d64ec] text-white text-[11px] font-bold hover:bg-[#154ec1] transition-colors cursor-pointer shadow-2xs active:scale-95 shrink-0"
+                    >
+                      Aktifkan Mode Jual 🛍️
+                    </button>
+                  </motion.div>
+                )}
 
                 {/* Uploaded Images Gallery */}
                 {images.length > 0 && (
@@ -402,10 +432,21 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   >
                     <Music className="w-[19px] h-[19px] stroke-[1.6]" />
                   </button>
+                  {/* Direct Toggle Action Icon in toolbar */}
+                  <button
+                    type="button"
+                    onClick={() => setPostMode(postMode === 'product' ? 'thread' : 'product')}
+                    className={`p-0.5 transition-colors cursor-pointer ${
+                      postMode === 'product' ? 'text-[#1d64ec]' : 'text-neutral-400 hover:text-[#1d64ec]'
+                    }`}
+                    title={postMode === 'product' ? 'Mode Jualan Aktif' : 'Ubah ke Mode Jualan'}
+                  >
+                    <ShoppingBag className="w-[19px] h-[19px] stroke-[1.8]" />
+                  </button>
                 </div>
               </div>
 
-              {/* Faded Prompt Line (Minimalist Muted Gray Text matching Threads UI) */}
+              {/* Faded Prompt Line */}
               <div className="pt-2.5 text-[13.5px] text-neutral-400 font-normal select-none">
                 {postMode === 'product'
                   ? 'Isi rincian barang / jasa yang dijual'
@@ -414,7 +455,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
             </div>
           </div>
 
-          {/* 2. Bottom Section (ONLY for Product Mode): Seller Form Inputs (Full-Width Centered at Bottom!) */}
+          {/* 2. Bottom Section (ONLY for Product Mode): Seller Form Inputs */}
           {postMode === 'product' && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -503,56 +544,51 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
           )}
         </div>
 
-        {/* Bottom Footer: [ Segmented Pill Slider ] --- [ Post Button ] */}
+        {/* Bottom Footer: [ iOS Style Mode Toggle Button ] --- [ Post Button ] */}
         <div className="px-4 py-3 border-t border-neutral-200/80 bg-white flex items-center justify-between gap-3 shrink-0">
-          {/* Segmented Pill Slider (Thumb-Friendly Mode Switcher) */}
-          <div className="flex items-center bg-neutral-100 p-1 rounded-full border border-neutral-200/80 relative">
-            <button
-              type="button"
-              onClick={() => setPostMode('thread')}
-              className={`relative px-3.5 py-1.5 rounded-full text-[13px] font-semibold transition-colors duration-200 cursor-pointer flex items-center gap-1.5 z-10 ${
-                postMode === 'thread'
-                  ? 'text-slate-900'
-                  : 'text-neutral-500 hover:text-slate-900'
+          {/* Interactive Button Toggle (Mode Switcher) */}
+          <button
+            type="button"
+            onClick={() => setPostMode(postMode === 'product' ? 'thread' : 'product')}
+            className={`flex items-center gap-2.5 px-3 py-1.5 rounded-2xl border transition-all cursor-pointer select-none active:scale-[0.98] ${
+              postMode === 'product'
+                ? 'bg-blue-50/90 border-blue-300 text-blue-950 shadow-2xs'
+                : 'bg-neutral-100/90 hover:bg-neutral-200/60 border-neutral-200 text-neutral-600'
+            }`}
+          >
+            {/* iOS-style Animated Toggle Switch */}
+            <div
+              className={`w-9 h-5 rounded-full p-0.5 transition-colors duration-200 flex items-center ${
+                postMode === 'product' ? 'bg-[#1d64ec]' : 'bg-neutral-300'
               }`}
             >
-              {postMode === 'thread' && (
-                <motion.div
-                  layoutId="post-mode-active-pill"
-                  transition={{ type: 'spring', stiffness: 450, damping: 35 }}
-                  className="absolute inset-0 bg-white rounded-full shadow-sm border border-neutral-200/60 -z-10"
-                />
-              )}
-              <span>💬</span>
-              <span>Utas</span>
-            </button>
+              <motion.div
+                layout
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                className={`w-4 h-4 rounded-full bg-white shadow-xs ${
+                  postMode === 'product' ? 'ml-auto' : 'mr-auto'
+                }`}
+              />
+            </div>
 
-            <button
-              type="button"
-              onClick={() => setPostMode('product')}
-              className={`relative px-3.5 py-1.5 rounded-full text-[13px] font-semibold transition-colors duration-200 cursor-pointer flex items-center gap-1.5 z-10 ${
-                postMode === 'product'
-                  ? 'text-white'
-                  : 'text-neutral-500 hover:text-slate-900'
-              }`}
-            >
-              {postMode === 'product' && (
-                <motion.div
-                  layoutId="post-mode-active-pill"
-                  transition={{ type: 'spring', stiffness: 450, damping: 35 }}
-                  className="absolute inset-0 bg-[#1d64ec] rounded-full shadow-sm -z-10"
-                />
-              )}
-              <span>🛍️</span>
-              <span>Jual Produk</span>
-            </button>
-          </div>
+            <div className="text-left flex flex-col">
+              <span className={`text-[12px] font-bold leading-tight ${
+                postMode === 'product' ? 'text-[#1d64ec]' : 'text-slate-800'
+              }`}>
+                {postMode === 'product' ? 'Mode Jualan Aktif' : 'Jadikan Jualan'}
+              </span>
+              <span className="text-[10px] text-neutral-500 font-normal leading-tight">
+                {postMode === 'product' ? 'Isi harga & stok' : 'Pasang harga & COD'}
+              </span>
+            </div>
+          </button>
 
+          {/* Post Action Button */}
           <button
             type="button"
             onClick={handleSubmit}
             disabled={!canPost}
-            className={`px-5 py-2 rounded-full font-bold text-[14.5px] transition-all duration-200 cursor-pointer shrink-0 ${
+            className={`px-5 py-2.5 rounded-full font-bold text-[14.5px] transition-all duration-200 cursor-pointer shrink-0 ${
               canPost
                 ? 'bg-slate-900 hover:bg-slate-800 text-white shadow-md active:scale-95'
                 : 'bg-neutral-200 text-neutral-400 cursor-not-allowed'

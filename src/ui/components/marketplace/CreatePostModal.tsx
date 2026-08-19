@@ -158,53 +158,31 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
         transition={{ type: 'tween', duration: 0.22, ease: [0.25, 1, 0.5, 1] }}
         className="fixed inset-0 z-50 bg-white flex flex-col font-gt-standard overflow-hidden"
       >
-        {/* Top Bar Header */}
+        {/* Top Bar Header: [ Batal ] --- [ Title ] --- [ Draft & Options ] */}
         <div className="px-4 h-14 flex items-center justify-between border-b border-neutral-200/80 bg-white shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="text-[15px] font-normal text-slate-900 hover:opacity-75 active:scale-95 transition-all cursor-pointer"
+            className="text-[15px] font-medium text-slate-900 hover:opacity-75 active:scale-95 transition-all cursor-pointer"
           >
             Batal
           </button>
 
-          {/* Mode Switcher Pill */}
-          <div className="flex items-center bg-neutral-100 p-0.5 rounded-full border border-neutral-200/80">
-            <button
-              type="button"
-              onClick={() => setPostMode('thread')}
-              className={`px-3 py-1 rounded-full text-[12.5px] font-semibold transition-all cursor-pointer ${
-                postMode === 'thread'
-                  ? 'bg-white text-slate-900 shadow-2xs'
-                  : 'text-neutral-500 hover:text-slate-900'
-              }`}
-            >
-              💬 Utas
-            </button>
-            <button
-              type="button"
-              onClick={() => setPostMode('product')}
-              className={`px-3 py-1 rounded-full text-[12.5px] font-semibold transition-all cursor-pointer ${
-                postMode === 'product'
-                  ? 'bg-[#1d64ec] text-white shadow-2xs'
-                  : 'text-neutral-500 hover:text-slate-900'
-              }`}
-            >
-              🛍️ Jual Produk
-            </button>
-          </div>
+          <h2 className="text-[15.5px] font-bold text-slate-900 tracking-tight">
+            {postMode === 'product' ? '🛍️ Jual Produk Baru' : '💬 Utas Baru'}
+          </h2>
 
           <div className="flex items-center gap-3">
             <button
               type="button"
-              className="text-slate-600 hover:text-slate-900 transition-colors p-1"
+              className="text-slate-600 hover:text-slate-900 transition-colors p-1 cursor-pointer"
               title="Draft"
             >
               <FileText className="w-5 h-5 stroke-[1.8]" />
             </button>
             <button
               type="button"
-              className="text-slate-600 hover:text-slate-900 transition-colors p-1"
+              className="text-slate-600 hover:text-slate-900 transition-colors p-1 cursor-pointer"
               title="Opsi"
             >
               <MoreHorizontal className="w-5 h-5 stroke-[1.8]" />
@@ -336,7 +314,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 <textarea
                   autoFocus
                   rows={1}
-                  placeholder={postMode === 'product' ? 'Deskripsi lengkap barang / jasa...' : 'Apa yang baru?'}
+                  placeholder={postMode === 'product' ? 'Tulis deskripsi produk...' : 'Apa yang baru?'}
                   value={caption}
                   onChange={(e) => {
                     setCaption(e.target.value);
@@ -438,7 +416,12 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
 
           {/* 2. Bottom Section (ONLY for Product Mode): Seller Form Inputs (Full-Width Centered at Bottom!) */}
           {postMode === 'product' && (
-            <div className="mt-4 space-y-3.5 w-full pt-3 border-t border-neutral-100">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+              className="mt-4 space-y-3.5 w-full pt-3 border-t border-neutral-100"
+            >
               {/* Field 1: Judul Produk / Jasa */}
               <div className="space-y-1">
                 <label className="block text-[12px] font-bold text-slate-800">
@@ -516,21 +499,60 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   ))}
                 </div>
               </div>
-            </div>
+            </motion.div>
           )}
         </div>
 
-        {/* Bottom Footer */}
-        <div className="px-4 py-3 border-t border-neutral-200/80 bg-white flex items-center justify-between shrink-0">
-          <div className="text-[14px] font-medium text-slate-700 select-none">
-            Opsi Postingan
+        {/* Bottom Footer: [ Segmented Pill Slider ] --- [ Post Button ] */}
+        <div className="px-4 py-3 border-t border-neutral-200/80 bg-white flex items-center justify-between gap-3 shrink-0">
+          {/* Segmented Pill Slider (Thumb-Friendly Mode Switcher) */}
+          <div className="flex items-center bg-neutral-100 p-1 rounded-full border border-neutral-200/80 relative">
+            <button
+              type="button"
+              onClick={() => setPostMode('thread')}
+              className={`relative px-3.5 py-1.5 rounded-full text-[13px] font-semibold transition-colors duration-200 cursor-pointer flex items-center gap-1.5 z-10 ${
+                postMode === 'thread'
+                  ? 'text-slate-900'
+                  : 'text-neutral-500 hover:text-slate-900'
+              }`}
+            >
+              {postMode === 'thread' && (
+                <motion.div
+                  layoutId="post-mode-active-pill"
+                  transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                  className="absolute inset-0 bg-white rounded-full shadow-sm border border-neutral-200/60 -z-10"
+                />
+              )}
+              <span>💬</span>
+              <span>Utas</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setPostMode('product')}
+              className={`relative px-3.5 py-1.5 rounded-full text-[13px] font-semibold transition-colors duration-200 cursor-pointer flex items-center gap-1.5 z-10 ${
+                postMode === 'product'
+                  ? 'text-white'
+                  : 'text-neutral-500 hover:text-slate-900'
+              }`}
+            >
+              {postMode === 'product' && (
+                <motion.div
+                  layoutId="post-mode-active-pill"
+                  transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                  className="absolute inset-0 bg-[#1d64ec] rounded-full shadow-sm -z-10"
+                />
+              )}
+              <span>🛍️</span>
+              <span>Jual Produk</span>
+            </button>
           </div>
 
           <button
             type="button"
             onClick={handleSubmit}
             disabled={!canPost}
-            className={`px-5 py-2 rounded-full font-bold text-[14.5px] transition-all duration-200 cursor-pointer ${
+            className={`px-5 py-2 rounded-full font-bold text-[14.5px] transition-all duration-200 cursor-pointer shrink-0 ${
               canPost
                 ? 'bg-slate-900 hover:bg-slate-800 text-white shadow-md active:scale-95'
                 : 'bg-neutral-200 text-neutral-400 cursor-not-allowed'

@@ -4,7 +4,6 @@ import { MarketHeader } from '../components/marketplace/MarketHeader';
 import { MarketPostCard } from '../components/marketplace/MarketPostCard';
 import { MarketBottomNav } from '../components/marketplace/MarketBottomNav';
 import { CreatePostModal } from '../components/marketplace/CreatePostModal';
-import { CreateOptionBottomSheet } from '../components/marketplace/CreateOptionBottomSheet';
 import { InstallBanner } from '../components/pwa/InstallBanner';
 import { OfflineBanner } from '../components/pwa/OfflineBanner';
 import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
@@ -23,17 +22,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
   const [bottomNavTab, setBottomNavTab] = useState('home');
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Create Post Modal & Option Bottom Sheet States
-  const [isOptionBottomSheetOpen, setIsOptionBottomSheetOpen] = useState(false);
+  // Create Post Modal State (1-Tap Zero Friction Trigger)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedPostMode, setSelectedPostMode] = useState<'thread' | 'product'>('thread');
-
-  // Handle Option Select from Half-Screen Bottom Sheet
-  const handleSelectCreateOption = (mode: 'thread' | 'product') => {
-    setIsOptionBottomSheetOpen(false);
-    setSelectedPostMode(mode);
-    setIsCreateModalOpen(true);
-  };
 
   // Items State & Infinite Scroll Loading
   const [items, setItems] = useState<MarketPostItem[]>(MOCK_MARKET_POSTS);
@@ -306,21 +297,17 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
         </div>
       </main>
 
-      {/* Market 5-Icon Bottom Navigation */}
+      {/* Market 5-Icon Bottom Navigation (1-Tap Direct Trigger) */}
       <MarketBottomNav
         activeTab={bottomNavTab}
         onTabChange={(tab) => setBottomNavTab(tab)}
-        onPostClick={() => setIsOptionBottomSheetOpen(true)}
+        onPostClick={() => {
+          setSelectedPostMode('thread');
+          setIsCreateModalOpen(true);
+        }}
       />
 
-      {/* Step 1: Half-Screen Bottom Sheet Option Picker */}
-      <CreateOptionBottomSheet
-        isOpen={isOptionBottomSheetOpen}
-        onClose={() => setIsOptionBottomSheetOpen(false)}
-        onSelectOption={handleSelectCreateOption}
-      />
-
-      {/* Step 2: Create New Post Full-Screen Modal */}
+      {/* Create New Post Full-Screen Modal (with Bottom Segmented Slider) */}
       <CreatePostModal
         isOpen={isCreateModalOpen}
         initialMode={selectedPostMode}

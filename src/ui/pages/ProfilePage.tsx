@@ -17,7 +17,7 @@ import { EditProfileModal } from '../components/profile/EditProfileModal';
 import { SettingsBottomSheet } from '../components/profile/SettingsBottomSheet';
 import { MediaLightboxModal } from '../components/marketplace/MediaLightboxModal';
 import { ClickableVerifiedBadge } from '../components/marketplace/VerifiedBadgeModal';
-import { SnapanBrandMark } from '../components/marketplace/MarketHeader';
+import { SnapanLogotype } from '../components/marketplace/MarketHeader';
 import { MOCK_MARKET_POSTS, MOCK_USER_REPLIES } from '@/data/mockMarketData';
 import { MarketPostItem } from '@/types/marketFeed';
 import { useAuth } from '../hooks/useAuth';
@@ -196,15 +196,15 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             )}
           </div>
 
-          {/* Center: Brand Mark Logo with Micro Hover/Tap Effect */}
+          {/* Center: Brand Logotype Text with Micro Hover/Tap Effect */}
           <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
             <button
               type="button"
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-200 cubic-bezier(0.25,1,0.5,1) cursor-pointer"
-              aria-label="Snapan Logo"
+              className="flex items-center justify-center hover:opacity-85 active:scale-95 transition-all duration-200 cursor-pointer"
+              aria-label="Snapan Market"
             >
-              <SnapanBrandMark className="w-8 h-8 text-slate-900" />
+              <SnapanLogotype />
             </button>
           </div>
 

@@ -175,7 +175,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
         onMouseUp={handleMouseLeaveOrUp}
         onMouseMove={handleMouseMove}
         onClick={(e) => e.stopPropagation()}
-        className="flex gap-2.5 overflow-x-auto no-scrollbar scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none touch-pan-x touch-pan-y -mr-4 pr-4 w-[calc(100%+16px)]"
+        className="flex gap-2.5 overflow-x-auto no-scrollbar scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none touch-pan-x touch-pan-y -ml-[48px] sm:-ml-[52px] pl-[48px] sm:pl-[52px] -mr-4 pr-4 w-[calc(100%+64px)] sm:w-[calc(100%+68px)]"
       >
         {parentPost.images.map((imgUrl, idx) => (
           <div

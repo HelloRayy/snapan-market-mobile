@@ -1,11 +1,20 @@
-import React, { useState } from 'react';
-import { Heart, MoreHorizontal, Repeat2, Send } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Heart, MoreHorizontal, Repeat2, Send, ChevronRight, PartyPopper, Box } from 'lucide-react';
 import { UserReplyThread, MarketPostItem } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { ClickableVerifiedBadge } from './VerifiedBadgeModal';
 import { MediaLightboxModal } from './MediaLightboxModal';
 
-// Custom Rounded Lucide-Family Comment Icon
+// Custom Threads 3-Dot Topic Icon
+const ThreadsTopicIcon: React.FC<{ className?: string }> = ({ className = "w-3.5 h-3.5 text-[#1d64ec] fill-current shrink-0" }) => (
+  <svg className={className} viewBox="0 0 24 24">
+    <circle cx="6" cy="8" r="3" />
+    <circle cx="6" cy="16" r="3" />
+    <circle cx="15" cy="12" r="3" />
+  </svg>
+);
+
+// Custom Smooth Rounded Lucide-Family Comment Icon
 const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -24,12 +33,14 @@ const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
 interface ReplyThreadCardProps {
   thread: UserReplyThread;
   onPostClick?: (post: MarketPostItem) => void;
+  onTopicClick?: (topic: string) => void;
   onUserClick?: (username: string) => void;
 }
 
 export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
   thread,
   onPostClick,
+  onTopicClick,
   onUserClick,
 }) => {
   const { parentPost, reply } = thread;
@@ -47,7 +58,33 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
   const [replyRepostsCount, setReplyRepostsCount] = useState(reply.repostsCount || 0);
 
   // Lightbox State
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  // Drag to Scroll State for Multi-Image Carousel
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isMouseDown, setIsMouseDown] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollContainerRef.current) return;
+    setIsMouseDown(true);
+    setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
+    setScrollLeft(scrollContainerRef.current.scrollLeft);
+  };
+
+  const handleMouseLeaveOrUp = () => {
+    setIsMouseDown(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isMouseDown || !scrollContainerRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollContainerRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+  };
 
   const handleParentLike = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -93,12 +130,12 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
     }
   };
 
-  const handleShare = (e: React.MouseEvent) => {
+  const handleShare = (e: React.MouseEvent, title: string, text: string) => {
     e.stopPropagation();
     if (navigator.share) {
       navigator.share({
-        title: `Utas dari ${parentPost.seller.name}`,
-        text: reply.content,
+        title,
+        text,
         url: window.location.href,
       }).catch(() => {});
     } else {
@@ -107,18 +144,68 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
     }
   };
 
+  const renderParentImages = () => {
+    if (!parentPost.images || parentPost.images.length === 0) return null;
+
+    if (parentPost.images.length === 1) {
+      return (
+        <div className="mt-1.5 rounded-2xl border border-neutral-200/80 overflow-hidden bg-neutral-100 max-h-[360px]">
+          <img
+            src={parentPost.images[0]}
+            alt={parentPost.title || 'Foto Utas'}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedImageIndex(0);
+              setIsLightboxOpen(true);
+            }}
+            className="w-full h-auto max-h-[360px] object-cover hover:scale-[1.01] transition-transform duration-200 cursor-pointer"
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div
+        ref={scrollContainerRef}
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeaveOrUp}
+        onMouseUp={handleMouseLeaveOrUp}
+        onMouseMove={handleMouseMove}
+        className="flex gap-2 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory pt-1.5 cursor-grab active:cursor-grabbing select-none"
+      >
+        {parentPost.images.map((img, idx) => (
+          <div
+            key={idx}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedImageIndex(idx);
+              setIsLightboxOpen(true);
+            }}
+            className="relative shrink-0 w-[82%] sm:w-[320px] aspect-[4/3] rounded-2xl overflow-hidden border border-neutral-200/80 bg-neutral-100 snap-start group"
+          >
+            <img
+              src={img}
+              alt={`Foto ${idx + 1}`}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none"
+            />
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <article className="w-full border-b border-neutral-200 bg-white font-gt-standard select-none px-4 py-3.5 hover:bg-neutral-50/40 transition-colors">
+    <article className="w-full border-b border-neutral-200 bg-pure-white font-gt-standard select-none px-4 py-3.5 hover:bg-neutral-50/40 transition-colors">
       {/* 1. PARENT POST SECTION WITH THREAD LINE */}
-      <div className="flex gap-3 min-w-0">
+      <div className="flex gap-3 items-start min-w-0">
         {/* Left Column: Parent Avatar + Continuous Thread Line */}
-        <div className="flex flex-col items-center shrink-0">
+        <div className="flex flex-col items-center shrink-0 self-stretch">
           <div
             onClick={(e) => {
               e.stopPropagation();
               onUserClick?.(parentPost.seller.username || parentPost.seller.name);
             }}
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border border-neutral-200/80 bg-neutral-100 shadow-2xs cursor-pointer hover:opacity-90 transition-opacity"
+            className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 cursor-pointer active:scale-95 transition-transform"
           >
             <img
               src={parentPost.seller.avatar}
@@ -126,109 +213,147 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
               className="w-full h-full object-cover"
             />
           </div>
-          {/* Thread Connector Line */}
+          {/* Continuous Thread Connector Line */}
           <div className="w-[2px] flex-1 bg-neutral-200 my-1 rounded-full min-h-[28px]" />
         </div>
 
-        {/* Right Column: Parent Content */}
+        {/* Right Column: Parent Content (Identical to Home Feed MarketPostCard) */}
         <div
           onClick={() => onPostClick?.(parentPost)}
-          className="flex-1 min-w-0 pb-3 cursor-pointer"
+          className="flex-1 min-w-0 space-y-1 overflow-visible pb-3 cursor-pointer"
         >
-          {/* Header Row: Author + Verified + Timestamp + More */}
+          {/* Header Row: Name + Verified + (Topic OR Class) + Timestamp + More Options (...) */}
           <div className="flex items-center justify-between gap-2 min-w-0">
-            <div className="flex items-center gap-1.5 min-w-0">
-              <span className="font-semibold text-[14.5px] text-slate-900 truncate">
+            <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+              <span
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onUserClick?.(parentPost.seller.username || parentPost.seller.name);
+                }}
+                className="font-semibold text-[15.5px] text-slate-900 truncate hover:underline shrink-1 max-w-[45%] cursor-pointer"
+              >
                 {parentPost.seller.name}
               </span>
               {parentPost.seller.isVerified && (
-                <ClickableVerifiedBadge sellerName={parentPost.seller.name} className="w-4 h-4 shrink-0" />
+                <ClickableVerifiedBadge sellerName={parentPost.seller.name} className="w-[17.5px] h-[17.5px] shrink-0" />
               )}
-              <span className="text-neutral-400 text-[13px] shrink-0 font-normal">
-                · {parentPost.timestamp}
-              </span>
+
+              {parentPost.topicTag ? (
+                <div className="flex items-center gap-1 shrink-1 min-w-0 overflow-hidden ml-0.5">
+                  {/* Larger Chevron Arrow Separator */}
+                  <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2.5] shrink-0" />
+
+                  {/* Render special blue icon if official topic */}
+                  {parentPost.isOfficialTopic && (
+                    parentPost.topicIcon === 'presentation' || parentPost.topicIcon === 'party-popper' ? (
+                      <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
+                    ) : (
+                      <ThreadsTopicIcon />
+                    )
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onTopicClick?.(parentPost.topicTag!);
+                    }}
+                    className={`font-bold text-[14.5px] transition-colors cursor-pointer truncate max-w-[135px] sm:max-w-[200px] ${
+                      parentPost.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-900 hover:text-[#1d64ec] hover:underline'
+                    }`}
+                  >
+                    {parentPost.topicTag}
+                  </button>
+                </div>
+              ) : (
+                <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
+                  {parentPost.seller.classGroup}
+                </span>
+              )}
             </div>
 
-            <button
-              type="button"
-              onClick={(e) => e.stopPropagation()}
-              className="w-7 h-7 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
-              aria-label="Opsi lainnya"
-            >
-              <MoreHorizontal className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-1.5 shrink-0 ml-auto">
+              <span className="text-[13.5px] sm:text-[14px] font-normal text-neutral-400 whitespace-nowrap">{parentPost.timestamp}</span>
+              <button
+                type="button"
+                onClick={(e) => e.stopPropagation()}
+                className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer"
+                aria-label="Opsi postingan"
+              >
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
-          {/* Caption Text */}
-          <p className="text-[14.5px] text-slate-900 leading-relaxed font-normal mt-1 whitespace-pre-line">
+          {/* Caption Text: Indented under name */}
+          <p className="text-[16px] text-slate-900 font-normal leading-snug break-words">
             <FormattedText text={parentPost.caption} />
           </p>
 
-          {/* Media Images (if present) */}
-          {parentPost.images && parentPost.images.length > 0 && (
-            <div className="mt-2.5 rounded-2xl border border-neutral-200/80 overflow-hidden bg-neutral-100 max-h-[340px]">
-              <img
-                src={parentPost.images[0]}
-                alt="Media Utas"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setLightboxImage(parentPost.images[0]);
-                }}
-                className="w-full h-full max-h-[340px] object-cover hover:scale-[1.01] transition-transform duration-200 cursor-pointer"
-              />
-            </div>
-          )}
+          {/* Multi-Image Carousel / Images */}
+          {renderParentImages()}
 
-          {/* Parent Action Bar */}
-          <div className="flex items-center gap-4 mt-2.5 -ml-1 text-slate-600 text-[13px]">
-            {/* Like */}
+          {/* Parent Action Bar (Identical layout and icons as Home Feed) */}
+          <div className="flex items-center gap-1 -ml-2 pt-1 text-slate-600">
+            {/* 1. Like Button */}
             <button
               type="button"
               onClick={handleParentLike}
-              className={`flex items-center gap-1.5 py-1 px-1.5 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer ${
+              className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer select-none ${
                 parentLiked ? 'text-rose-500' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Heart className={`w-4 h-4 stroke-[2] ${parentLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-              <span>{parentLikesCount}</span>
+              <Heart className={`w-4.5 h-4.5 stroke-[2] ${parentLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+              <span className={`font-normal text-[13.5px] ${parentLiked ? 'text-rose-500 font-medium' : 'text-slate-700'}`}>{parentLikesCount}</span>
             </button>
 
-            {/* Comment */}
+            {/* 2. Comment Button */}
             <button
               type="button"
               onClick={() => onPostClick?.(parentPost)}
-              className="flex items-center gap-1.5 py-1 px-1.5 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer text-slate-600 hover:text-slate-900"
+              className="flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer text-slate-600 hover:text-slate-900 select-none"
             >
-              <SmoothCommentIcon className="w-4 h-4 stroke-[2]" />
-              <span>{parentPost.commentsCount}</span>
+              <SmoothCommentIcon className="w-4.5 h-4.5 stroke-[2]" />
+              <span className="font-normal text-[13.5px] text-slate-700">{parentPost.commentsCount}</span>
             </button>
 
-            {/* Repost */}
+            {/* 3. Repost Button */}
             <button
               type="button"
               onClick={handleParentRepost}
-              className={`flex items-center gap-1.5 py-1 px-1.5 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer ${
+              className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer select-none ${
                 parentReposted ? 'text-emerald-500' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Repeat2 className={`w-4 h-4 stroke-[2] ${parentReposted ? 'text-emerald-500' : ''}`} />
-              <span>{parentRepostsCount}</span>
+              <Repeat2 className={`w-4.5 h-4.5 stroke-[2] ${parentReposted ? 'text-emerald-500' : ''}`} />
+              <span className={`font-normal text-[13.5px] ${parentReposted ? 'text-emerald-500 font-medium' : 'text-slate-700'}`}>
+                {parentRepostsCount}
+              </span>
             </button>
 
-            {/* Share */}
+            {/* 4. Send / Share Button */}
             <button
               type="button"
-              onClick={handleShare}
-              className="flex items-center justify-center w-7 h-7 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer text-slate-600 hover:text-slate-900"
+              onClick={(e) => handleShare(e, `Utas dari ${parentPost.seller.name}`, parentPost.caption)}
+              className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer text-slate-600 hover:text-slate-900 select-none"
+              aria-label="Bagikan postingan"
             >
-              <Send className="w-3.5 h-3.5 stroke-[1.8]" />
+              <Send className="w-4 h-4 stroke-[1.8] text-slate-600" />
             </button>
+
+            {/* 5. Stock Indicator (if product) */}
+            {parentPost.postType !== 'thread' && !!parentPost.price && parentPost.price > 0 && parentPost.stock !== undefined && parentPost.stock > 0 && (
+              <div className="flex items-center gap-1.5 min-h-[36px] px-1.5 py-1 text-slate-500 select-none ml-auto">
+                <Box className="w-4 h-4 stroke-[2] text-slate-500" />
+                <span className="font-normal text-[13.5px] text-slate-700">{parentPost.stock}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* 2. USER REPLY POST SECTION */}
-      <div className="flex gap-3 min-w-0 pt-0.5">
+      <div className="flex gap-3 items-start min-w-0 pt-1">
         {/* Left Column: Reply Author Avatar */}
         <div className="shrink-0">
           <div
@@ -236,7 +361,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
               e.stopPropagation();
               onUserClick?.(reply.user.username || reply.user.name);
             }}
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border border-neutral-200/80 bg-neutral-100 shadow-2xs cursor-pointer hover:opacity-90 transition-opacity"
+            className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 cursor-pointer active:scale-95 transition-transform"
           >
             <img
               src={reply.user.avatar}
@@ -247,90 +372,100 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
         </div>
 
         {/* Right Column: Reply Content */}
-        <div className="flex-1 min-w-0">
-          {/* Header Row: Author + Timestamp + More */}
+        <div className="flex-1 min-w-0 space-y-1">
+          {/* Header Row: Author + Verified + Timestamp + More */}
           <div className="flex items-center justify-between gap-2 min-w-0">
             <div className="flex items-center gap-1.5 min-w-0">
-              <span className="font-semibold text-[14.5px] text-slate-900 truncate">
+              <span
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onUserClick?.(reply.user.username || reply.user.name);
+                }}
+                className="font-semibold text-[15.5px] text-slate-900 truncate hover:underline cursor-pointer"
+              >
                 {reply.user.name}
               </span>
               {reply.user.isVerified && (
-                <ClickableVerifiedBadge sellerName={reply.user.name} className="w-4 h-4 shrink-0" />
+                <ClickableVerifiedBadge sellerName={reply.user.name} className="w-[17.5px] h-[17.5px] shrink-0" />
               )}
-              <span className="text-neutral-400 text-[13px] shrink-0 font-normal">
-                · {reply.timestamp}
-              </span>
             </div>
 
-            <button
-              type="button"
-              onClick={(e) => e.stopPropagation()}
-              className="w-7 h-7 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
-              aria-label="Opsi balasan lainnya"
-            >
-              <MoreHorizontal className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-1.5 shrink-0 ml-auto">
+              <span className="text-[13.5px] sm:text-[14px] font-normal text-neutral-400 whitespace-nowrap">{reply.timestamp}</span>
+              <button
+                type="button"
+                onClick={(e) => e.stopPropagation()}
+                className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer"
+                aria-label="Opsi balasan"
+              >
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {/* Reply Text */}
-          <p className="text-[14.5px] text-slate-900 leading-relaxed font-normal mt-1 whitespace-pre-line">
+          <p className="text-[16px] text-slate-900 font-normal leading-snug break-words">
             <FormattedText text={reply.content} />
           </p>
 
           {/* Reply Action Bar */}
-          <div className="flex items-center gap-4 mt-2 -ml-1 text-slate-600 text-[13px]">
+          <div className="flex items-center gap-1 -ml-2 pt-0.5 text-slate-600">
             {/* Like */}
             <button
               type="button"
               onClick={handleReplyLike}
-              className={`flex items-center gap-1.5 py-1 px-1.5 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer ${
+              className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer select-none ${
                 replyLiked ? 'text-rose-500' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Heart className={`w-4 h-4 stroke-[2] ${replyLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-              <span>{replyLikesCount}</span>
+              <Heart className={`w-4.5 h-4.5 stroke-[2] ${replyLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+              <span className={`font-normal text-[13.5px] ${replyLiked ? 'text-rose-500 font-medium' : 'text-slate-700'}`}>{replyLikesCount}</span>
             </button>
 
             {/* Comment */}
             <button
               type="button"
               onClick={() => onPostClick?.(parentPost)}
-              className="flex items-center gap-1.5 py-1 px-1.5 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer text-slate-600 hover:text-slate-900"
+              className="flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer text-slate-600 hover:text-slate-900 select-none"
             >
-              <SmoothCommentIcon className="w-4 h-4 stroke-[2]" />
+              <SmoothCommentIcon className="w-4.5 h-4.5 stroke-[2]" />
             </button>
 
             {/* Repost */}
             <button
               type="button"
               onClick={handleReplyRepost}
-              className={`flex items-center gap-1.5 py-1 px-1.5 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer ${
+              className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer select-none ${
                 replyReposted ? 'text-emerald-500' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Repeat2 className={`w-4 h-4 stroke-[2] ${replyReposted ? 'text-emerald-500' : ''}`} />
-              {replyRepostsCount > 0 && <span>{replyRepostsCount}</span>}
+              <Repeat2 className={`w-4.5 h-4.5 stroke-[2] ${replyReposted ? 'text-emerald-500' : ''}`} />
+              {replyRepostsCount > 0 && (
+                <span className={`font-normal text-[13.5px] ${replyReposted ? 'text-emerald-500 font-medium' : 'text-slate-700'}`}>
+                  {replyRepostsCount}
+                </span>
+              )}
             </button>
 
             {/* Share */}
             <button
               type="button"
-              onClick={handleShare}
-              className="flex items-center justify-center w-7 h-7 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer text-slate-600 hover:text-slate-900"
+              onClick={(e) => handleShare(e, `Balasan dari ${reply.user.name}`, reply.content)}
+              className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer text-slate-600 hover:text-slate-900 select-none"
             >
-              <Send className="w-3.5 h-3.5 stroke-[1.8]" />
+              <Send className="w-4 h-4 stroke-[1.8] text-slate-600" />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Media Lightbox */}
-      {lightboxImage && (
+      {/* Media Lightbox Modal */}
+      {isLightboxOpen && parentPost.images && parentPost.images.length > 0 && (
         <MediaLightboxModal
-          isOpen={!!lightboxImage}
-          onClose={() => setLightboxImage(null)}
-          images={[lightboxImage]}
-          initialIndex={0}
+          isOpen={isLightboxOpen}
+          onClose={() => setIsLightboxOpen(false)}
+          images={parentPost.images}
+          initialIndex={selectedImageIndex}
         />
       )}
     </article>

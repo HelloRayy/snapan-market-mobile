@@ -192,13 +192,12 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       <main className="w-full max-w-[590px] mx-auto px-4 pt-4 space-y-4">
         {/* PROFILE HEADER */}
         <section className="space-y-3.5 pt-1">
-
-          {/* Profile Row: Name on Left, Avatar on Far Right (Full Width justify-between) */}
-          <div className="flex items-center justify-between gap-4 min-h-[84px]">
+          {/* Row 1: Name + Handle on Left vs Avatar on Right */}
+          <div className="flex items-start justify-between gap-4">
             {/* Name, Handle, and Class on Left */}
-            <div className="flex flex-col items-start justify-center flex-1 min-w-0">
+            <div className="min-w-0 flex-1 pt-0.5">
               <div className="flex items-center gap-1.5 min-w-0">
-                <h1 className="font-bold text-[24px] text-slate-900 tracking-tight leading-tight truncate">
+                <h1 className="font-bold text-[22px] sm:text-[24px] text-slate-900 tracking-tight leading-tight truncate">
                   {profileData.name}
                 </h1>
                 {profileData.isVerified && (
@@ -206,14 +205,14 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 )}
               </div>
 
-              <p className="text-[16px] text-neutral-500 font-normal mt-0.5">
-                @{profileData.username} · <span className="font-semibold text-slate-700">{profileData.classGroup}</span>
+              <p className="text-[14.5px] sm:text-[15px] text-neutral-500 font-normal mt-1">
+                @{profileData.username} · <span className="font-medium text-slate-700">{profileData.classGroup}</span>
               </p>
             </div>
 
-            {/* Avatar on Far Right (84x84px) */}
+            {/* Avatar on Far Right (76x76px) */}
             <div className="relative shrink-0">
-              <div className="w-[84px] h-[84px] rounded-full overflow-hidden border border-neutral-200/90 shadow-2xs bg-neutral-100">
+              <div className="w-[76px] h-[76px] rounded-full overflow-hidden border border-neutral-200 shadow-2xs bg-neutral-100">
                 <img
                   src={profileData.avatar}
                   alt={profileData.name}
@@ -223,50 +222,51 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </div>
           </div>
 
-          {/* Card Bio Text */}
-          <p className="text-[14.5px] sm:text-[15px] text-slate-800 leading-normal font-normal whitespace-pre-line">
+          {/* Row 2: Bio Text */}
+          <p className="text-[14.5px] sm:text-[15px] text-slate-900 leading-relaxed font-normal whitespace-pre-line">
             {profileData.bio}
           </p>
 
-          {/* Card Bottom Stats: Followers + Sold + Rating */}
-          <div className="flex items-center justify-between text-[13.5px] text-neutral-500 font-normal flex-wrap gap-2 pt-0.5">
-            {/* Followers with Mini Avatar Stack */}
-            <div className="flex items-center gap-1.5">
-              <div className="flex items-center shrink-0">
-                <div className="w-[17px] h-[17px] rounded-full overflow-hidden border border-white bg-neutral-200 z-30 shadow-2xs">
-                  <img
-                    src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&q=80"
-                    alt="Follower 1"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="w-[17px] h-[17px] rounded-full overflow-hidden border border-white bg-neutral-200 -ml-1.5 z-20 shadow-2xs">
-                  <img
-                    src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=60&q=80"
-                    alt="Follower 2"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="w-[17px] h-[17px] rounded-full overflow-hidden border border-white bg-neutral-200 -ml-1.5 z-10 shadow-2xs">
-                  <img
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&q=80"
-                    alt="Follower 3"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+          {/* Row 3: Cohesive Left-Aligned Follower & Market Stats */}
+          <div className="flex items-center gap-1.5 text-[13.5px] text-neutral-500 font-normal flex-wrap pt-0.5">
+            {/* Mini Avatar Stack */}
+            <div className="flex items-center shrink-0 mr-1">
+              <div className="w-[18px] h-[18px] rounded-full overflow-hidden border border-white bg-neutral-200 z-30 shadow-2xs">
+                <img
+                  src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&q=80"
+                  alt="Follower 1"
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <span><strong className="text-slate-900 font-semibold">{profileData.followersCount}</strong> pengikut</span>
+              <div className="w-[18px] h-[18px] rounded-full overflow-hidden border border-white bg-neutral-200 -ml-1.5 z-20 shadow-2xs">
+                <img
+                  src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=60&q=80"
+                  alt="Follower 2"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="w-[18px] h-[18px] rounded-full overflow-hidden border border-white bg-neutral-200 -ml-1.5 z-10 shadow-2xs">
+                <img
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&q=80"
+                  alt="Follower 3"
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <span>🛍️ <strong className="text-slate-900 font-semibold">{profileData.soldCount}</strong> terjual</span>
-              <span>⭐ <strong className="text-slate-900 font-semibold">{profileData.rating}</strong> (18)</span>
-            </div>
+            <span><strong className="text-slate-900 font-semibold">{profileData.followersCount}</strong> pengikut</span>
+            <span>·</span>
+            <span><strong className="text-slate-900 font-semibold">{profileData.soldCount}</strong> terjual</span>
+            <span>·</span>
+            <span className="flex items-center gap-1">
+              <span>⭐</span>
+              <span><strong className="text-slate-900 font-semibold">{profileData.rating}</strong> (18)</span>
+            </span>
           </div>
         </section>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2 pt-0.5">
+        <div className="flex items-center gap-2 pt-1">
           {isOwnProfile ? (
             <>
               <button

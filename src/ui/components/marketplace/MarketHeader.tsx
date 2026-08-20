@@ -26,12 +26,7 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
   };
 
   return (
-    <header
-      className="relative w-full z-30 transition-all duration-200 font-gt-standard bg-white"
-      style={{
-        paddingTop: 'env(safe-area-inset-top, 0px)',
-      }}
-    >
+    <header className="relative w-full z-30 transition-all duration-200 font-gt-standard bg-white">
       {/* Top Main Bar: [ Left: Menu Icon ] --- [ Center: Store Logo ] --- [ Right: Search Toggle ] */}
       <div className="max-w-xl mx-auto px-4 h-14 flex items-center justify-between gap-3 relative select-none">
         {/* Left Side: Hamburger Menu Button (for Drawer) */}

@@ -216,52 +216,88 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost, onNavigateToPr
     return () => observer.disconnect();
   }, [isLoadingMore, page]);
 
+  // Smart Scroll Header Visibility State (16px threshold as requested)
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const scrollDiff = currentScrollY - lastScrollY.current;
+
+      // Always show if near the top of the feed (< 50px)
+      if (currentScrollY < 50) {
+        setIsHeaderVisible(true);
+      } else if (scrollDiff > 16) {
+        // Scrolling DOWN -> hide top bar
+        setIsHeaderVisible(false);
+      } else if (scrollDiff < -16) {
+        // Scrolling UP -> reveal top bar
+        setIsHeaderVisible(true);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="min-h-screen bg-white text-slate-ink pb-28 font-gt-standard select-none">
       <OfflineBanner />
       <InstallBanner />
 
-      {/* Market Sticky Header */}
-      <MarketHeader
-        cartCount={totalCartItems}
-        cartTotal={totalCartPrice}
-        onSearchChange={(query) => setSearchQuery(query)}
-      />
-
-      {/* Scrollable Tab Switcher ("Untuk Anda" & "Terbaru") - Sticky top-0 under safe-area */}
+      {/* Smart Sticky Header Container (Unified Top Bar + Tab Switcher) */}
       <div
-        className="sticky top-0 z-30 w-full border-b border-neutral-200/80 select-none bg-white"
+        className="sticky top-0 z-30 w-full bg-white select-none transition-all duration-200"
         style={{
           paddingTop: 'env(safe-area-inset-top, 0px)',
         }}
       >
-        <div className="max-w-xl mx-auto flex items-center relative">
-          {/* Smooth Sliding Bar (Pure Slide without flicker) */}
-          <div
-            className={`absolute bottom-0 left-0 w-1/2 h-[2px] bg-slate-900 transition-transform duration-200 cubic-bezier(0.25,1,0.5,1) ${
-              feedTab === 'for-you' ? 'translate-x-0' : 'translate-x-full'
-            }`}
+        {/* Top Bar with smooth height & opacity collapse */}
+        <div
+          className={`transition-all duration-200 ease-[cubic-bezier(0.25,1,0.5,1)] overflow-hidden ${
+            isHeaderVisible ? 'max-h-14 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
+          }`}
+        >
+          <MarketHeader
+            cartCount={totalCartItems}
+            cartTotal={totalCartPrice}
+            onSearchChange={(query) => setSearchQuery(query)}
           />
+        </div>
 
-          <button
-            type="button"
-            onClick={() => setFeedTab('for-you')}
-            className={`flex-1 py-3 text-[14px] text-center relative cursor-pointer transition-colors ${
-              feedTab === 'for-you' ? 'text-slate-900 font-bold' : 'text-neutral-400 hover:text-slate-700 font-medium'
-            }`}
-          >
-            Untuk Anda
-          </button>
+        {/* Scrollable Tab Switcher ("Untuk Anda" & "Terbaru") */}
+        <div className="w-full border-b border-neutral-200/80 bg-white">
+          <div className="max-w-xl mx-auto flex items-center relative">
+            {/* Smooth Sliding Bar (Pure Slide without flicker) */}
+            <div
+              className={`absolute bottom-0 left-0 w-1/2 h-[2px] bg-slate-900 transition-transform duration-200 cubic-bezier(0.25,1,0.5,1) ${
+                feedTab === 'for-you' ? 'translate-x-0' : 'translate-x-full'
+              }`}
+            />
 
-          <button
-            type="button"
-            onClick={() => setFeedTab('latest')}
-            className={`flex-1 py-3 text-[14px] text-center relative cursor-pointer transition-colors ${
-              feedTab === 'latest' ? 'text-slate-900 font-bold' : 'text-neutral-400 hover:text-slate-700 font-medium'
-            }`}
-          >
-            Terbaru
-          </button>
+            <button
+              type="button"
+              onClick={() => setFeedTab('for-you')}
+              className={`flex-1 py-3 text-[14px] text-center relative cursor-pointer transition-colors ${
+                feedTab === 'for-you' ? 'text-slate-900 font-bold' : 'text-neutral-400 hover:text-slate-700 font-medium'
+              }`}
+            >
+              Untuk Anda
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setFeedTab('latest')}
+              className={`flex-1 py-3 text-[14px] text-center relative cursor-pointer transition-colors ${
+                feedTab === 'latest' ? 'text-slate-900 font-bold' : 'text-neutral-400 hover:text-slate-700 font-medium'
+              }`}
+            >
+              Terbaru
+            </button>
+          </div>
         </div>
       </div>
 

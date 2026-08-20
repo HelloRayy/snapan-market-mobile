@@ -269,8 +269,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
         /* DETAIL PAGE VARIANT: Single column, caption & images aligned full-width with top header avatar */
         <div className="space-y-2.5">
           {/* Top Header Row: Profile Picture + Name + Class/Timestamp + More Options (...) */}
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex items-start gap-2.5 min-w-0 flex-1">
+          <div className="flex items-center justify-between gap-2 min-w-0">
+            <div className="flex items-center gap-2.5 min-w-0 flex-1 overflow-hidden">
               <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
                 <img
                   src={item.seller.avatar}
@@ -279,17 +279,17 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 />
               </div>
 
-              <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 min-w-0 flex-1 pt-0.5">
-                <span className="font-semibold text-[15px] text-slate-900 hover:underline shrink-0">
+              <div className="flex items-center gap-1 min-w-0 flex-1 overflow-hidden">
+                <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-1 max-w-[45%]">
                   {item.seller.name}
                 </span>
 
                 {item.seller.isVerified && (
-                  <ClickableVerifiedBadge sellerName={item.seller.name} className="w-[17px] h-[17px]" />
+                  <ClickableVerifiedBadge sellerName={item.seller.name} className="w-[17px] h-[17px] shrink-0" />
                 )}
 
                 {item.topicTag ? (
-                  <div className="inline-flex items-center gap-1 shrink-0">
+                  <div className="flex items-center gap-1 shrink-1 min-w-0 overflow-hidden ml-0.5">
                     {/* Larger Chevron Arrow Separator */}
                     <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2.5] shrink-0" />
 
@@ -308,7 +308,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                         e.stopPropagation();
                         onTopicClick?.(item.topicTag!);
                       }}
-                      className={`font-bold text-[14px] transition-colors cursor-pointer ${
+                      className={`font-bold text-[14px] transition-colors cursor-pointer truncate max-w-[140px] sm:max-w-[220px] ${
                         item.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-900 hover:text-[#1d64ec] hover:underline'
                       }`}
                     >
@@ -316,7 +316,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                     </button>
                   </div>
                 ) : (
-                  <span className="text-[13.5px] font-normal text-neutral-400">
+                  <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
                     {item.seller.classGroup}
                   </span>
                 )}
@@ -326,7 +326,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             <button
               type="button"
               onClick={(e) => e.stopPropagation()}
-              className="text-slate-500 hover:text-slate-900 p-1.5 rounded-full hover:bg-neutral-100 transition-colors shrink-0 self-start"
+              className="text-slate-500 hover:text-slate-900 p-1.5 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
               aria-label="Opsi postingan"
             >
               <MoreHorizontal className="w-4 h-4" />
@@ -345,11 +345,11 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           {renderActionBar()}
         </div>
       ) : (
-        /* HOME FEED VARIANT: 2-Column layout, caption & images indented under seller name */
-        <div className="flex items-start gap-3">
-          {/* Left Column: Seller Avatar 40x40px */}
-          <div className="shrink-0 pt-0.5">
-            <div className="w-10 h-10 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs">
+        /* FEED VARIANT: Two-column layout with left Avatar and right Content Column */
+        <div className="flex gap-3 items-start min-w-0">
+          {/* Left Column: Avatar + Profile Click Zone */}
+          <div className="flex flex-col items-center shrink-0">
+            <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 cursor-pointer active:scale-95 transition-transform">
               <img
                 src={item.seller.avatar}
                 alt={item.seller.name}
@@ -361,17 +361,17 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           {/* Right Column: Content starting directly under Name */}
           <div className="flex-1 min-w-0 space-y-1 overflow-visible">
             {/* Header Row: Name + Verified + (Topic OR Class) + Timestamp + More Options (...) */}
-            <div className="flex items-start justify-between gap-2 min-w-0">
-              <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 min-w-0 flex-1">
-                <span className="font-semibold text-[15.5px] text-slate-900 hover:underline shrink-0">
+            <div className="flex items-center justify-between gap-2 min-w-0">
+              <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+                <span className="font-semibold text-[15.5px] text-slate-900 truncate hover:underline shrink-1 max-w-[45%]">
                   {item.seller.name}
                 </span>
                 {item.seller.isVerified && (
-                  <ClickableVerifiedBadge sellerName={item.seller.name} className="w-[17.5px] h-[17.5px]" />
+                  <ClickableVerifiedBadge sellerName={item.seller.name} className="w-[17.5px] h-[17.5px] shrink-0" />
                 )}
 
                 {item.topicTag ? (
-                  <div className="inline-flex items-center gap-1 shrink-0">
+                  <div className="flex items-center gap-1 shrink-1 min-w-0 overflow-hidden ml-0.5">
                     {/* Larger Chevron Arrow Separator */}
                     <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2.5] shrink-0" />
 
@@ -390,7 +390,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                         e.stopPropagation();
                         onTopicClick?.(item.topicTag!);
                       }}
-                      className={`font-bold text-[14.5px] transition-colors cursor-pointer ${
+                      className={`font-bold text-[14.5px] transition-colors cursor-pointer truncate max-w-[135px] sm:max-w-[200px] ${
                         item.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-900 hover:text-[#1d64ec] hover:underline'
                       }`}
                     >
@@ -398,14 +398,14 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                     </button>
                   </div>
                 ) : (
-                  <span className="text-[13.5px] font-normal text-neutral-400">
+                  <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
                     {item.seller.classGroup}
                   </span>
                 )}
               </div>
 
-              <div className="flex items-center gap-2 shrink-0 ml-auto self-start pt-0.5">
-                <span className="text-[14px] font-normal text-neutral-400 whitespace-nowrap">{item.timestamp}</span>
+              <div className="flex items-center gap-1.5 shrink-0 ml-auto">
+                <span className="text-[13.5px] sm:text-[14px] font-normal text-neutral-400 whitespace-nowrap">{item.timestamp}</span>
                 <button
                   type="button"
                   onClick={(e) => e.stopPropagation()}

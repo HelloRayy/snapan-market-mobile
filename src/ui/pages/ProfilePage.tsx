@@ -10,6 +10,7 @@ import {
   Grid,
   Repeat2,
   Package,
+  GraduationCap,
 } from 'lucide-react';
 import { MarketPostCard } from '../components/marketplace/MarketPostCard';
 import { MarketBottomNav } from '../components/marketplace/MarketBottomNav';
@@ -169,28 +170,28 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
       {/* 2. Main Content Area */}
       <main className="w-full max-w-[590px] mx-auto px-4 pt-4 space-y-4">
-        {/* TOP IDENTITY SECTION: Exact Threads Layout */}
-        <section className="space-y-3 pt-1">
-          {/* Row 1: Name + Username (Left, vertically centered with Avatar) vs Avatar (Right) */}
-          <div className="flex items-center justify-between gap-4 min-h-[84px]">
-            <div className="flex flex-col items-start justify-center flex-1 min-w-0">
-              <div className="flex items-center gap-1.5 min-w-0">
-                <h1 className="font-bold text-[24px] text-slate-900 tracking-tight leading-tight truncate">
-                  {profileData.name}
-                </h1>
-                {profileData.isVerified && (
-                  <ClickableVerifiedBadge sellerName={profileData.name} className="w-5 h-5 shrink-0" />
-                )}
-              </div>
+        {/* STUDENT ID & MERCHANT CARD (Original Snapan Identity) */}
+        <section className="bg-white border border-neutral-200/90 rounded-3xl p-4.5 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] space-y-4 relative overflow-hidden">
+          {/* Top Brand Gradient Highlight Rim */}
+          <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-[#1d64ec] via-[#3b82f6] to-[#60a5fa]" />
 
-              <div className="flex items-center text-[16px] mt-0.5">
-                <span className="font-normal text-slate-900">{profileData.username}</span>
-              </div>
+          {/* Card Top Header Line: School ID & Active Badge */}
+          <div className="flex items-center justify-between text-xs font-semibold border-b border-neutral-100 pb-2.5 pt-0.5">
+            <div className="flex items-center gap-1.5 text-neutral-500">
+              <GraduationCap className="w-3.5 h-3.5 text-[#1d64ec]" />
+              <span className="tracking-tight uppercase">SMKN 8 Jakarta · ID Siswa & Seller</span>
             </div>
+            <div className="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full text-[11px] font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Aktif</span>
+            </div>
+          </div>
 
-            {/* Large Circular Avatar on Right (Exact 84x84px standard) */}
+          {/* Card Middle Row: Avatar + Name + Class Info */}
+          <div className="flex items-center gap-3.5">
+            {/* Avatar with Ring */}
             <div className="relative shrink-0">
-              <div className="w-[84px] h-[84px] rounded-full overflow-hidden border border-neutral-200/90 shadow-2xs bg-neutral-100">
+              <div className="w-[68px] h-[68px] rounded-full overflow-hidden border-2 border-white shadow-md ring-2 ring-neutral-200/80 bg-neutral-100">
                 <img
                   src={profileData.avatar}
                   alt={profileData.name}
@@ -198,110 +199,127 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 />
               </div>
             </div>
+
+            {/* Name, Handle, and Class */}
+            <div className="space-y-0.5 min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <h1 className="font-bold text-[21px] sm:text-[23px] text-slate-900 tracking-tight leading-tight truncate">
+                  {profileData.name}
+                </h1>
+                {profileData.isVerified && (
+                  <ClickableVerifiedBadge sellerName={profileData.name} className="w-4.5 h-4.5 shrink-0" />
+                )}
+              </div>
+
+              <p className="text-[14px] text-neutral-500 font-normal">
+                @{profileData.username} · <span className="font-semibold text-slate-700">{profileData.classGroup}</span>
+              </p>
+            </div>
           </div>
 
-          {/* Row 2: Bio Text */}
-          <p className="text-[14.5px] sm:text-[15px] text-slate-900 leading-relaxed font-normal whitespace-pre-line">
+          {/* Card Bio Text */}
+          <p className="text-[14px] sm:text-[14.5px] text-slate-800 leading-normal font-normal whitespace-pre-line">
             {profileData.bio}
           </p>
 
-          {/* Row 3: Follower Avatar Stack & Stats */}
-          <div className="flex items-center gap-2 text-[14px] text-neutral-500 font-normal pt-0.5">
-            {/* 3 Overlapping Mini Avatars Stack */}
-            <div className="flex items-center shrink-0">
-              <div className="w-[19px] h-[19px] rounded-full overflow-hidden border border-white bg-neutral-200 z-30 shadow-2xs">
-                <img
-                  src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&q=80"
-                  alt="Follower 1"
-                  className="w-full h-full object-cover"
-                />
+          {/* Card Bottom Stats: Followers + Sold + Rating */}
+          <div className="border-t border-neutral-100 pt-3 flex items-center justify-between text-[13px] text-neutral-500 font-normal flex-wrap gap-2">
+            {/* Followers with Mini Avatar Stack */}
+            <div className="flex items-center gap-1.5">
+              <div className="flex items-center shrink-0">
+                <div className="w-[17px] h-[17px] rounded-full overflow-hidden border border-white bg-neutral-200 z-30">
+                  <img
+                    src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&q=80"
+                    alt="Follower 1"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="w-[17px] h-[17px] rounded-full overflow-hidden border border-white bg-neutral-200 -ml-1.5 z-20">
+                  <img
+                    src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=60&q=80"
+                    alt="Follower 2"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="w-[17px] h-[17px] rounded-full overflow-hidden border border-white bg-neutral-200 -ml-1.5 z-10">
+                  <img
+                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&q=80"
+                    alt="Follower 3"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </div>
-              <div className="w-[19px] h-[19px] rounded-full overflow-hidden border border-white bg-neutral-200 -ml-1.5 z-20 shadow-2xs">
-                <img
-                  src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=60&q=80"
-                  alt="Follower 2"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="w-[19px] h-[19px] rounded-full overflow-hidden border border-white bg-neutral-200 -ml-1.5 z-10 shadow-2xs">
-                <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&q=80"
-                  alt="Follower 3"
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              <span><strong className="text-slate-900 font-semibold">{profileData.followersCount}</strong> pengikut</span>
             </div>
 
-            {/* Follower Stats Text */}
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span>{profileData.followersCount} pengikut</span>
-              <span>·</span>
-              <span>22,4 rb tayangan terbaru</span>
+            <div className="flex items-center gap-3">
+              <span>🛍️ <strong className="text-slate-900 font-semibold">{profileData.soldCount}</strong> terjual</span>
+              <span>⭐ <strong className="text-slate-900 font-semibold">{profileData.rating}</strong> (18)</span>
             </div>
-          </div>
-
-          {/* Row 5: Action Buttons */}
-          <div className="flex items-center gap-2 pt-2">
-            {isOwnProfile ? (
-              <>
-                <button
-                  type="button"
-                  onClick={() => setIsEditModalOpen(true)}
-                  className="flex-1 h-9 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center"
-                >
-                  Edit profil
-                </button>
-                <button
-                  type="button"
-                  onClick={handleShareProfile}
-                  className="flex-1 h-9 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center"
-                >
-                  Bagikan profil
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsFollowing(!isFollowing);
-                    setProfileData((prev) => ({
-                      ...prev,
-                      followersCount: isFollowing ? prev.followersCount - 1 : prev.followersCount + 1,
-                    }));
-                  }}
-                  className={`flex-1 h-9 rounded-xl font-bold text-[13.5px] transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-[0.98] ${
-                    isFollowing
-                      ? 'border border-neutral-300 bg-white text-slate-900 hover:bg-neutral-50'
-                      : 'bg-[#18181b] text-white hover:bg-black'
-                  }`}
-                >
-                  {isFollowing ? (
-                    <>
-                      <UserCheck className="w-4 h-4" />
-                      <span>Mengikuti</span>
-                    </>
-                  ) : (
-                    <>
-                      <UserPlus className="w-4 h-4" />
-                      <span>Ikuti</span>
-                    </>
-                  )}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    alert(`Fitur chat langsung dengan @${profileData.username} akan segera hadir!`);
-                  }}
-                  className="flex-1 h-9 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-1.5"
-                >
-                  <MessageCircle className="w-4 h-4 text-slate-700" />
-                  <span>Pesan</span>
-                </button>
-              </>
-            )}
           </div>
         </section>
+
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2 pt-0.5">
+          {isOwnProfile ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setIsEditModalOpen(true)}
+                className="flex-1 h-9 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center"
+              >
+                Edit profil
+              </button>
+              <button
+                type="button"
+                onClick={handleShareProfile}
+                className="flex-1 h-9 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center"
+              >
+                Bagikan ID
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsFollowing(!isFollowing);
+                  setProfileData((prev) => ({
+                    ...prev,
+                    followersCount: isFollowing ? prev.followersCount - 1 : prev.followersCount + 1,
+                  }));
+                }}
+                className={`flex-1 h-9 rounded-xl font-bold text-[13.5px] transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-[0.98] ${
+                  isFollowing
+                    ? 'border border-neutral-300 bg-white text-slate-900 hover:bg-neutral-50'
+                    : 'bg-[#18181b] text-white hover:bg-black'
+                }`}
+              >
+                {isFollowing ? (
+                  <>
+                    <UserCheck className="w-4 h-4" />
+                    <span>Mengikuti</span>
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="w-4 h-4" />
+                    <span>Ikuti Toko</span>
+                  </>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  alert(`Fitur chat langsung dengan @${profileData.username} akan segera hadir!`);
+                }}
+                className="flex-1 h-9 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <MessageCircle className="w-4 h-4 text-slate-700" />
+                <span>Pesan</span>
+              </button>
+            </>
+          )}
+        </div>
 
         {/* 3. 4-Tab Sliding Underline Switcher (Utas, Balasan, Media, Diposting Ulang) */}
         <div className="border-b border-neutral-200/80 pt-1 -mx-4 px-4 bg-white sticky top-14 z-20">

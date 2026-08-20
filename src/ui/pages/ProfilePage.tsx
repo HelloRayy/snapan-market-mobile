@@ -10,7 +10,6 @@ import {
   Grid,
   Repeat2,
   Package,
-  GraduationCap,
 } from 'lucide-react';
 import { MarketPostCard } from '../components/marketplace/MarketPostCard';
 import { MarketBottomNav } from '../components/marketplace/MarketBottomNav';
@@ -170,19 +169,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
       {/* 2. Main Content Area */}
       <main className="w-full max-w-[590px] mx-auto px-4 pt-4 space-y-4">
-        {/* STUDENT ID & MERCHANT HEADER */}
+        {/* PROFILE HEADER */}
         <section className="space-y-3.5 pt-1">
-          {/* Card Top Header Line: School ID & Active Badge */}
-          <div className="flex items-center justify-between text-xs font-semibold border-b border-neutral-100 pb-2">
-            <div className="flex items-center gap-1.5 text-neutral-500">
-              <GraduationCap className="w-3.5 h-3.5 text-[#1d64ec]" />
-              <span className="tracking-tight uppercase">SMKN 8 Jakarta · ID Siswa & Seller</span>
-            </div>
-            <div className="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full text-[11px] font-bold">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Aktif</span>
-            </div>
-          </div>
 
           {/* Card Middle Row: Avatar + Name + Class Info */}
           <div className="flex items-center gap-3.5">

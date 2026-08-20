@@ -129,6 +129,16 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost, onNavigateToPr
     // Update UI immediately (Optimistic UI)
     setItems((prev) => [createdPost, ...prev]);
 
+    // Reset search query and switch to for-you tab so new post is immediately shown
+    setSearchQuery('');
+    setFeedTab('for-you');
+    setIsHeaderVisible(true);
+
+    // Smoothly scroll to the very top so the user immediately sees their own post
+    setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }, 50);
+
     // Send to Supabase Backend
     try {
       if (user?.id) {

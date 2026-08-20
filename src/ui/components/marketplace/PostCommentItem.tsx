@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Heart, Repeat, Send, BadgeCheck, MoreHorizontal, Crown } from 'lucide-react';
 import { PostComment } from '@/types/marketFeed';
+import { FormattedText } from '@/ui/components/ui/FormattedText';
 
 // Custom Smooth Rounded Lucide-Family Comment Icon
 const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -149,7 +150,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
 
             {/* Comment Content (Aligned with Username Column) */}
             <p className="text-[15px] text-slate-900 font-normal leading-snug break-words">
-              {comment.content}
+              <FormattedText text={comment.content} />
             </p>
 
             {/* Action Bar (Aligned with Username Column) */}
@@ -215,7 +216,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
               </div>
 
               <p className="text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5">
-                {comment.content}
+                <FormattedText text={comment.content} />
               </p>
 
               {renderActionBar(
@@ -276,7 +277,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
               </div>
 
               <p className="text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5">
-                {topReply.content}
+                <FormattedText text={topReply.content} />
               </p>
 
               {renderActionBar(

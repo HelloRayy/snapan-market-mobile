@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Heart, MoreHorizontal, Box, Repeat2, Send, PartyPopper, ChevronRight } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
+import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { MediaLightboxModal } from './MediaLightboxModal';
 import { ClickableVerifiedBadge } from './VerifiedBadgeModal';
 
@@ -334,7 +335,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
           {/* Caption Text: Full Width Aligned with Avatar */}
           <p className="text-[15px] text-slate-900 font-normal leading-snug break-words">
-            {item.caption}
+            <FormattedText text={item.caption} />
           </p>
 
           {/* Product Images: Full Width */}
@@ -418,7 +419,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
             {/* Caption Text: Indented under name */}
             <p className="text-[16px] text-slate-900 font-normal leading-snug break-words">
-              {item.caption}
+              <FormattedText text={item.caption} />
             </p>
 
             {/* Product Images */}

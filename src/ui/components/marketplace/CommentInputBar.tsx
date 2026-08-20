@@ -22,12 +22,12 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
   };
 
   const containerClasses = isInline
-    ? 'w-full bg-white py-3 font-gt-standard mb-1'
+    ? 'w-full min-w-0 bg-white py-2.5 font-gt-standard mb-1'
     : 'fixed bottom-0 left-0 right-0 max-w-xl mx-auto bg-white/95 backdrop-blur-md border-t border-neutral-200 px-4 py-2.5 z-40 font-gt-standard shadow-lg';
 
   return (
     <div className={containerClasses}>
-      <form onSubmit={handleSubmit} className="flex items-center gap-2.5">
+      <form onSubmit={handleSubmit} className="flex items-center gap-2 w-full min-w-0">
         {/* Current User Avatar */}
         <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-neutral-200 shadow-2xs">
           <img
@@ -37,22 +37,24 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
           />
         </div>
 
-        {/* Input Text Field */}
+        {/* Input Text Field with min-w-0 for responsive auto-adjusting flex width */}
         <input
           id="comment-input-field"
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder={replyToUser ? `Balas @${replyToUser}...` : 'Ketik komentar / pertanyaan produk...'}
-          className="flex-1 bg-neutral-100 hover:bg-neutral-100/80 focus:bg-white border border-transparent focus:border-[#1d64ec] rounded-full px-4 h-10 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all"
+          placeholder={replyToUser ? `Balas @${replyToUser}...` : 'Ketik komentar / tanya produk...'}
+          className="flex-1 min-w-0 bg-neutral-100 hover:bg-neutral-100/80 focus:bg-white border border-transparent focus:border-[#1d64ec] rounded-full px-3.5 sm:px-4 h-10 text-[13.5px] sm:text-[14px] text-slate-900 placeholder:text-neutral-400 focus:outline-none transition-all shadow-2xs"
         />
 
-        {/* Kumo UI Primary Black Send Button (Larger Height & Width) */}
+        {/* Send Button CTA (Always visible & fits perfectly) */}
         <button
           type="submit"
           disabled={!text.trim()}
-          className={`relative inline-flex items-center justify-center gap-1.5 rounded-full px-4.5 h-10 text-[13px] font-bold text-white bg-[#18181b] border border-black/40 shadow-xs overflow-hidden shrink-0 transition-all ${
-            !text.trim() ? 'opacity-40 cursor-not-allowed' : 'active:scale-95 cursor-pointer hover:bg-black'
+          className={`relative inline-flex items-center justify-center gap-1.5 rounded-full px-3.5 sm:px-4 h-10 text-[13px] font-bold text-white bg-[#18181b] border border-black/40 shadow-xs overflow-hidden shrink-0 transition-all ${
+            !text.trim()
+              ? 'opacity-40 cursor-not-allowed'
+              : 'active:scale-95 cursor-pointer hover:bg-black'
           }`}
           aria-label="Kirim Komentar"
         >

@@ -106,9 +106,10 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
 
   const handleCustomTopicSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && customTopicInput.trim()) {
+      const cleanTopic = customTopicInput.trim().slice(0, 20);
       setSelectedTopic({
         id: `custom-${Date.now()}`,
-        name: customTopicInput.trim(),
+        name: cleanTopic,
         isOfficial: false,
       });
       setCustomTopicInput('');
@@ -303,16 +304,25 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                           ))}
                         </div>
 
-                        {/* Custom Topic Input */}
-                        <div className="mt-2 pt-2 border-t border-neutral-100 px-2">
-                          <input
-                            type="text"
-                            placeholder="Ketik topik kustom + Enter..."
-                            value={customTopicInput}
-                            onChange={(e) => setCustomTopicInput(e.target.value)}
-                            onKeyDown={handleCustomTopicSubmit}
-                            className="w-full px-3 py-1.5 text-[13px] rounded-lg border border-neutral-200 focus:outline-none focus:border-blue-500 bg-neutral-50"
-                          />
+                        {/* Custom Topic Input with Max Length 20 & Character Counter */}
+                        <div className="mt-2 pt-2 border-t border-neutral-100 px-2 space-y-1">
+                          <div className="relative flex items-center">
+                            <input
+                              type="text"
+                              maxLength={20}
+                              placeholder="Ketik topik baru..."
+                              value={customTopicInput}
+                              onChange={(e) => setCustomTopicInput(e.target.value)}
+                              onKeyDown={handleCustomTopicSubmit}
+                              className="w-full pl-2.5 pr-11 py-1.5 text-[12.5px] rounded-lg border border-neutral-200 focus:outline-none focus:border-[#1d64ec] bg-neutral-50"
+                            />
+                            <span className="absolute right-2 text-[10px] font-semibold text-neutral-400 pointer-events-none tabular-nums">
+                              {customTopicInput.length}/20
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-neutral-400 px-0.5">
+                            Maksimal 20 karakter · Tekan Enter
+                          </p>
                         </div>
                       </div>
                     )}

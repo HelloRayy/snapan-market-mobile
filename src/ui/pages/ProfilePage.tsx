@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   ArrowLeft,
-  Settings,
-  Share2,
   Menu,
-  Store,
   MessageCircle,
   UserPlus,
   UserCheck,
   Grid,
   Package,
+  Search,
+  X,
 } from 'lucide-react';
 import { MarketPostCard } from '../components/marketplace/MarketPostCard';
 import { ReplyThreadCard } from '../components/marketplace/ReplyThreadCard';
@@ -18,6 +17,7 @@ import { EditProfileModal } from '../components/profile/EditProfileModal';
 import { SettingsBottomSheet } from '../components/profile/SettingsBottomSheet';
 import { MediaLightboxModal } from '../components/marketplace/MediaLightboxModal';
 import { ClickableVerifiedBadge } from '../components/marketplace/VerifiedBadgeModal';
+import { SnapanBrandMark } from '../components/marketplace/MarketHeader';
 import { MOCK_MARKET_POSTS, MOCK_USER_REPLIES } from '@/data/mockMarketData';
 import { MarketPostItem } from '@/types/marketFeed';
 import { useAuth } from '../hooks/useAuth';
@@ -42,6 +42,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   // Active Tab state: 'threads' | 'replies' | 'media'
   const [activeTab, setActiveTab] = useState<'threads' | 'replies' | 'media'>('threads');
 
+  // Search state for Profile Top Bar
+  const [showSearchInput, setShowSearchInput] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
   // Modals state
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -53,6 +57,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   // Smart Scroll Header Visibility State (24px threshold as requested)
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const lastScrollY = useRef(0);
+
+  const cleanTargetUsername = username.replace(/^@/, '').toLowerCase();
+  const isViewingOtherUserProfile = cleanTargetUsername !== 'radityarayhannnn' && cleanTargetUsername !== 'me';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -66,7 +73,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         // Scrolling DOWN -> hide top bar
         setIsHeaderVisible(false);
       } else if (scrollDiff < -24) {
-        // Scrolling UP -> reveal top bar
+        // Scrolling UP -> reveal top bar immediately
         setIsHeaderVisible(true);
       }
 
@@ -77,48 +84,47 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Sync follow state
+  useEffect(() => {
+    if (isViewingOtherUserProfile) {
+      setIsFollowing(false);
+    }
+  }, [isViewingOtherUserProfile, username]);
+
   // Current logged in user info
   const currentUsername =
     profile?.full_name?.toLowerCase().replace(/\s+/g, '') ||
     user?.user_metadata?.full_name?.toLowerCase().replace(/\s+/g, '') ||
     'radityarayhannnn';
-  const cleanTargetUsername = username.replace(/^@/, '').toLowerCase();
   const isOwnProfile =
     cleanTargetUsername === currentUsername ||
     cleanTargetUsername === 'radityarayhannnn' ||
     cleanTargetUsername === 'me';
 
-  // Profile Data (Customized or Mocked for target user)
+  // Profile Data
   const [profileData, setProfileData] = useState({
     name: isOwnProfile
       ? (profile?.full_name || 'Raditya Rayhan')
-      : cleanTargetUsername === 'faizintifada'
-      ? 'Faiz Intifada'
-      : cleanTargetUsername === 'raymondchin'
-      ? 'Raymond Chin'
-      : cleanTargetUsername,
+      : username === 'me'
+      ? (profile?.full_name || 'Raditya Rayhan')
+      : cleanTargetUsername.charAt(0).toUpperCase() + cleanTargetUsername.slice(1),
     username: cleanTargetUsername,
     avatar: isOwnProfile
       ? (profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80')
-      : cleanTargetUsername === 'faizintifada'
-      ? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&q=80'
-      : cleanTargetUsername === 'raymondchin'
-      ? 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&q=80'
-      : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&q=80',
-    classGroup: isOwnProfile ? (profile?.class_group || 'XII PPLG 1') : 'XII PPLG 2 · SMKN 8',
+      : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
     bio: isOwnProfile
-      ? 'Web Developer & UI Enthusiast. Sedia jasa pembuatan landing page PWA & merchandise kelas! 🚀✨'
-      : 'Siswa aktif SMKN 8 Jakarta. Suka coding, fotografi & sharing proyek sekolah.',
-    followersCount: isOwnProfile ? 142 : 289,
-    followingCount: isOwnProfile ? 98 : 140,
-    soldCount: isOwnProfile ? 24 : 42,
-    activeProductsCount: isOwnProfile ? 6 : 9,
-    rating: 4.9,
-    ratingCount: 18,
-    isVerified: true,
-    skills: isOwnProfile
+      ? ((profile as { bio?: string } | null)?.bio || 'Building scalable mobile applications & web apps with clean architecture.')
+      : 'Siswa SMKN 8 Jakarta · Jurusan PPLG & DKV.',
+    classGroup: isOwnProfile
+      ? (profile?.class_group || 'XII PPLG 1')
+      : 'XII PPLG 2',
+    tags: isOwnProfile
       ? ['💻 Web PWA', '🎨 UI/UX', '👕 Preloved', '⚡ Joki Coding', '🍱 Kuliner']
       : ['📱 Flutter', '🎨 Figma', '📷 Fotografi', '💼 Project PJBL'],
+    followersCount: isOwnProfile ? 142 : 289,
+    soldCount: isOwnProfile ? 24 : 42,
+    rating: 4.9,
+    isVerified: true,
   });
 
   // Filter posts matching this profile
@@ -130,7 +136,19 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
   // Fallback if no specific posts found: show sample posts
   const basePosts = userPosts.length > 0 ? userPosts : MOCK_MARKET_POSTS.slice(0, 2);
-  const displayPosts = basePosts;
+  const displayPosts = basePosts.filter((p) => {
+    if (!searchQuery) return true;
+    return p.caption.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
+  // Filtered Replies
+  const displayReplies = MOCK_USER_REPLIES.filter((t) => {
+    if (!searchQuery) return true;
+    return (
+      t.reply.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.parentPost.caption.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  });
 
   // Extract all media items linked to their parent post for Media Tab
   const mediaItems = basePosts.flatMap((post) =>
@@ -138,30 +156,21 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       imgUrl,
       post,
     }))
-  );
-
-  const handleShareProfile = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: `${profileData.name} (@${profileData.username}) di Snapan Market`,
-        url: window.location.href,
-      }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      alert('Link profil disalin ke clipboard!');
-    }
-  };
+  ).filter(m => {
+    if (!searchQuery) return true;
+    return m.post.caption.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   return (
     <div className="min-h-screen bg-white text-slate-ink pb-28 font-gt-standard select-none">
-      {/* 1. Top Bar Header (Smart Scroll Reveal) */}
+      {/* 1. Top Bar Header: [ Left: Menu Icon ] --- [ Center: Logo Mark ] --- [ Right: Search Toggle ] */}
       <header
-        className={`sticky top-0 z-30 bg-white font-gt-standard select-none transition-all duration-200 ease-[cubic-bezier(0.25,1,0.5,1)] overflow-hidden ${
-          isHeaderVisible ? 'max-h-14 opacity-100 border-b border-neutral-200/80' : 'max-h-0 opacity-0 pointer-events-none'
+        className={`sticky top-0 z-30 bg-white font-gt-standard select-none transition-all duration-200 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+          isHeaderVisible ? 'opacity-100 border-b border-neutral-200/80' : 'max-h-0 opacity-0 pointer-events-none overflow-hidden'
         }`}
         style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
       >
-        <div className="w-full max-w-[590px] mx-auto px-4 h-14 flex items-center justify-between relative">
+        <div className="w-full max-w-[590px] mx-auto px-4 h-14 flex items-center justify-between relative select-none">
           {/* Left Side: Back button or Hamburger Menu */}
           <div className="flex items-center">
             {onBack ? (
@@ -185,41 +194,56 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             )}
           </div>
 
-          {/* Center: Store / App Logo (Exact rounded square store logo as Homepage) */}
+          {/* Center: Brand Mark Logo with Micro Hover/Tap Effect */}
           <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
             <button
               type="button"
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-xs hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
-              aria-label="Snapan Market Logo"
+              className="flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-200 cubic-bezier(0.25,1,0.5,1) cursor-pointer"
+              aria-label="Snapan Logo"
             >
-              <Store className="w-5 h-5 text-white stroke-[2.25]" />
+              <SnapanBrandMark className="w-8 h-8 text-slate-900" />
             </button>
           </div>
 
-          {/* Right Side: Quick Share & Settings */}
-          <div className="flex items-center gap-1">
+          {/* Right Side: Search Toggle Button */}
+          <div className="flex items-center">
             <button
               type="button"
-              onClick={handleShareProfile}
-              className="w-10 h-10 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
-              aria-label="Bagikan Profil"
+              onClick={() => {
+                setShowSearchInput(!showSearchInput);
+                if (showSearchInput) {
+                  setSearchQuery('');
+                }
+              }}
+              className="w-10 h-10 rounded-full flex items-center justify-center text-slate-800 hover:bg-neutral-100/90 active:scale-90 transition-all cursor-pointer"
+              aria-label="Cari di Profil"
             >
-              <Share2 className="w-5 h-5 stroke-[1.8]" />
+              {showSearchInput ? (
+                <X className="w-5 h-5 text-slate-900 stroke-[2.25]" />
+              ) : (
+                <Search className="w-5 h-5 text-slate-900 stroke-[2.25]" />
+              )}
             </button>
-
-            {isOwnProfile && (
-              <button
-                type="button"
-                onClick={() => setIsSettingsOpen(true)}
-                className="w-10 h-10 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
-                aria-label="Pengaturan Akun"
-              >
-                <Settings className="w-5 h-5 stroke-[1.8]" />
-              </button>
-            )}
           </div>
         </div>
+
+        {/* Collapsible Search Input Row */}
+        {showSearchInput && (
+          <div className="max-w-[590px] mx-auto px-4 pb-2.5 animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="relative flex items-center">
+              <Search className="absolute left-3.5 w-4 h-4 text-neutral-400 pointer-events-none" />
+              <input
+                type="text"
+                autoFocus
+                placeholder="Cari utas atau media di profil..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-neutral-300 bg-neutral-50 text-slate-900 focus:bg-white focus:border-[#1d64ec] focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all font-normal"
+              />
+            </div>
+          </div>
+        )}
       </header>
 
       {/* 2. Main Content Area */}
@@ -450,8 +474,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           {/* TAB 2: BALASAN (Connected Thread Chain Replies) */}
           {activeTab === 'replies' && (
             <div className="divide-y divide-neutral-200">
-              {MOCK_USER_REPLIES.length > 0 ? (
-                MOCK_USER_REPLIES.map((thread) => (
+              {displayReplies.length > 0 ? (
+                displayReplies.map((thread) => (
                   <ReplyThreadCard
                     key={thread.id}
                     thread={thread}

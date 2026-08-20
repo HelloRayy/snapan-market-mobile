@@ -191,58 +191,61 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
   const renderActionBar = () => (
     <div className="pt-1 flex items-center justify-between text-slate-600 -ml-1 pr-1 max-w-full">
-      {/* 1. Like Button */}
-      <button
-        type="button"
-        onClick={handleLikeToggle}
-        className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer select-none ${
-          isLiked ? 'text-rose-500' : 'text-slate-600 hover:text-slate-900'
-        }`}
-        aria-label={`Sukai postingan. ${likesCount} suka`}
-      >
-        <Heart className={`w-4.5 h-4.5 stroke-[2] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-        <span className={`font-normal text-[13.5px] ${isLiked ? 'text-rose-500 font-medium' : 'text-slate-700'}`}>{likesCount}</span>
-      </button>
+      {/* Left Action Buttons Cluster (Compact Threads-Style Spacing) */}
+      <div className="flex items-center gap-1 sm:gap-2">
+        {/* 1. Like Button */}
+        <button
+          type="button"
+          onClick={handleLikeToggle}
+          className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer select-none ${
+            isLiked ? 'text-rose-500' : 'text-slate-600 hover:text-slate-900'
+          }`}
+          aria-label={`Sukai postingan. ${likesCount} suka`}
+        >
+          <Heart className={`w-4.5 h-4.5 stroke-[2] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+          <span className={`font-normal text-[13.5px] ${isLiked ? 'text-rose-500 font-medium' : 'text-slate-700'}`}>{likesCount}</span>
+        </button>
 
-      {/* 2. Comment Button */}
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onPostClick?.(item);
-        }}
-        className="flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer text-slate-600 hover:text-slate-900 select-none"
-        aria-label={`Komentar postingan. ${item.commentsCount} komentar`}
-      >
-        <SmoothCommentIcon className="w-4.5 h-4.5 stroke-[2]" />
-        <span className="font-normal text-[13.5px] text-slate-700">{item.commentsCount}</span>
-      </button>
+        {/* 2. Comment Button */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onPostClick?.(item);
+          }}
+          className="flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer text-slate-600 hover:text-slate-900 select-none"
+          aria-label={`Komentar postingan. ${item.commentsCount} komentar`}
+        >
+          <SmoothCommentIcon className="w-4.5 h-4.5 stroke-[2]" />
+          <span className="font-normal text-[13.5px] text-slate-700">{item.commentsCount}</span>
+        </button>
 
-      {/* 3. Repost Button */}
-      <button
-        type="button"
-        onClick={handleRepostToggle}
-        className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer select-none ${
-          isReposted ? 'text-emerald-500' : 'text-slate-600 hover:text-slate-900'
-        }`}
-        aria-label={`Post ulang postingan. ${repostsCount} posting ulang`}
-      >
-        <Repeat2 className={`w-4.5 h-4.5 stroke-[2] ${isReposted ? 'text-emerald-500' : ''}`} />
-        <span className={`font-normal text-[13.5px] ${isReposted ? 'text-emerald-500 font-medium' : 'text-slate-700'}`}>
-          {repostsCount}
-        </span>
-      </button>
+        {/* 3. Repost Button */}
+        <button
+          type="button"
+          onClick={handleRepostToggle}
+          className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer select-none ${
+            isReposted ? 'text-emerald-500' : 'text-slate-600 hover:text-slate-900'
+          }`}
+          aria-label={`Post ulang postingan. ${repostsCount} posting ulang`}
+        >
+          <Repeat2 className={`w-4.5 h-4.5 stroke-[2] ${isReposted ? 'text-emerald-500' : ''}`} />
+          <span className={`font-normal text-[13.5px] ${isReposted ? 'text-emerald-500 font-medium' : 'text-slate-700'}`}>
+            {repostsCount}
+          </span>
+        </button>
 
-      {/* 4. Send / Share Button */}
-      <button
-        type="button"
-        onClick={handleShare}
-        className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer text-slate-600 hover:text-slate-900 select-none"
-        aria-label="Bagikan postingan"
-        title="Bagikan / Kirim"
-      >
-        <Send className="w-4 h-4 stroke-[1.8] text-slate-600" />
-      </button>
+        {/* 4. Send / Share Button */}
+        <button
+          type="button"
+          onClick={handleShare}
+          className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer text-slate-600 hover:text-slate-900 select-none"
+          aria-label="Bagikan postingan"
+          title="Bagikan / Kirim"
+        >
+          <Send className="w-4 h-4 stroke-[1.8] text-slate-600" />
+        </button>
+      </div>
 
       {/* 5. Stock Indicator (Icon + Number) - ONLY FOR PRODUCT POSTS */}
       {item.postType !== 'thread' && !!item.price && item.price > 0 && item.stock !== undefined && item.stock > 0 && (

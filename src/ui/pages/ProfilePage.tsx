@@ -11,7 +11,6 @@ import {
   Repeat2,
   Package,
   Star,
-  GraduationCap,
 } from 'lucide-react';
 import { MarketPostCard } from '../components/marketplace/MarketPostCard';
 import { MarketBottomNav } from '../components/marketplace/MarketBottomNav';
@@ -196,12 +195,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 )}
               </div>
 
-              <div className="flex items-center gap-2 text-[16px] mt-1">
-                <span className="font-normal text-slate-900">@{profileData.username}</span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-[#1d64ec] border border-blue-100">
-                  <GraduationCap className="w-3 h-3" />
-                  <span>{profileData.classGroup}</span>
-                </span>
+              <div className="flex items-center text-[16px] mt-0.5">
+                <span className="font-normal text-slate-900">{profileData.username}</span>
               </div>
             </div>
 

@@ -15,9 +15,10 @@ import type { MarketPostWithSeller } from '@/types/supabase';
 
 interface HomePageProps {
   onSelectPost?: (post: MarketPostItem) => void;
+  onNavigateToProfile?: (username: string) => void;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
+export const HomePage: React.FC<HomePageProps> = ({ onSelectPost, onNavigateToProfile }) => {
   const [feedTab, setFeedTab] = useState<'for-you' | 'latest'>('for-you');
   const [bottomNavTab, setBottomNavTab] = useState('home');
   const [searchQuery, setSearchQuery] = useState('');
@@ -277,6 +278,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
               item={item}
               onAddToCart={handleAddToCart}
               onPostClick={onSelectPost}
+              onUserClick={(username) => onNavigateToProfile?.(username)}
             />
           ))
         ) : (
@@ -308,7 +310,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
       {/* Market 5-Icon Bottom Navigation (1-Tap Direct Trigger) */}
       <MarketBottomNav
         activeTab={bottomNavTab}
-        onTabChange={(tab) => setBottomNavTab(tab)}
+        onTabChange={(tab) => {
+          if (tab === 'profile') {
+            onNavigateToProfile?.(profile?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn');
+          } else {
+            setBottomNavTab(tab);
+          }
+        }}
         onPostClick={() => {
           setSelectedPostMode('thread');
           setIsCreateModalOpen(true);

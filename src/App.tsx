@@ -4,12 +4,12 @@ import { OnboardingScreen } from '@/ui/components/onboarding/OnboardingScreen';
 import { PwaLandingPage } from '@/ui/components/pwa/PwaLandingPage';
 import { HomePage } from '@/ui/pages/HomePage';
 import { PostDetailPage } from '@/ui/pages/PostDetailPage';
+import { ProfilePage } from '@/ui/pages/ProfilePage';
 import { MarketPostItem } from '@/types/marketFeed';
-
 import { useAuth } from '@/ui/hooks/useAuth';
 
 export function App() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
   const [currentRoute, setCurrentRoute] = useState<string>(window.location.pathname);
   const [selectedPost, setSelectedPost] = useState<MarketPostItem | null>(null);
@@ -38,10 +38,36 @@ export function App() {
   // Check routes
   const isDownloadRoute = currentRoute === '/download' || window.location.hash === '#download';
   const isOnboardingRoute = currentRoute === '/onboarding' || window.location.hash === '#onboarding';
+  
+  // Dynamic Route Check: /@username or #@username or /profile
+  const isProfileRoute = currentRoute.startsWith('/@') || currentRoute === '/profile' || window.location.hash.startsWith('#@');
+  
+  let targetProfileUsername = 'radityarayhannnn';
+  if (currentRoute.startsWith('/@')) {
+    targetProfileUsername = decodeURIComponent(currentRoute.slice(2).split('/')[0]);
+  } else if (window.location.hash.startsWith('#@')) {
+    targetProfileUsername = decodeURIComponent(window.location.hash.slice(2).split('/')[0]);
+  } else if (currentRoute === '/profile') {
+    targetProfileUsername = profile?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn';
+  }
+
+  const myUsername = profile?.full_name?.toLowerCase().replace(/\s+/g, '') || user?.user_metadata?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn';
+  const isViewingOtherUserProfile = isProfileRoute && targetProfileUsername !== myUsername && targetProfileUsername !== 'me';
 
   const navigateToWeb = () => {
     window.history.pushState({}, '', '/');
     setCurrentRoute('/');
+  };
+
+  const navigateToHome = () => {
+    window.history.pushState({}, '', '/');
+    setCurrentRoute('/');
+  };
+
+  const navigateToProfile = (username: string) => {
+    const clean = username.replace(/^@/, '');
+    window.history.pushState({}, '', `/@${clean}`);
+    setCurrentRoute(`/@${clean}`);
   };
 
   const handleOnboardingComplete = () => {
@@ -56,8 +82,27 @@ export function App() {
         <PwaLandingPage onProceedToWeb={navigateToWeb} />
       ) : hasCompletedOnboarding && !isOnboardingRoute ? (
         <div className="relative min-h-screen">
-          {/* Main Feed HomePage (Always kept in DOM so scroll position is NEVER reset) */}
-          <HomePage onSelectPost={(post) => setSelectedPost(post)} />
+          {/* Main Feed HomePage (Always preserved in DOM so scroll position is never lost) */}
+          <div className={isProfileRoute ? 'hidden' : 'block'}>
+            <HomePage
+              onSelectPost={(post) => setSelectedPost(post)}
+              onNavigateToProfile={navigateToProfile}
+            />
+          </div>
+
+          {/* Profile Page (Dynamic Route /@username) */}
+          {isProfileRoute && (
+            <ProfilePage
+              username={targetProfileUsername}
+              onBack={isViewingOtherUserProfile ? () => window.history.back() : undefined}
+              onSelectPost={(post) => setSelectedPost(post)}
+              onNavigateTab={(tab) => {
+                if (tab === 'home') {
+                  navigateToHome();
+                }
+              }}
+            />
+          )}
 
           {/* Slide-over Detail Page Layer (Slides Right-to-Left on Open, Left-to-Right on Close) */}
           <AnimatePresence>

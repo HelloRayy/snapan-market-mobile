@@ -35,13 +35,16 @@ interface MarketPostCardProps {
   onAddToCart?: (item: MarketPostItem) => void;
   onPostClick?: (item: MarketPostItem) => void;
   onTopicClick?: (topic: string) => void;
+  onUserClick?: (username: string) => void;
   variant?: 'feed' | 'detail';
 }
 
 export const MarketPostCard: React.FC<MarketPostCardProps> = ({
   item,
+  onAddToCart: _onAddToCart,
   onPostClick,
   onTopicClick,
+  onUserClick,
   variant = 'feed',
 }) => {
   const [isLiked, setIsLiked] = useState(item.isLiked || false);
@@ -271,7 +274,13 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           {/* Top Header Row: Profile Picture + Name + Class/Timestamp + More Options (...) */}
           <div className="flex items-center justify-between gap-2 min-w-0">
             <div className="flex items-center gap-2.5 min-w-0 flex-1 overflow-hidden">
-              <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onUserClick?.(item.seller.username || item.seller.name);
+                }}
+                className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 cursor-pointer active:scale-95 transition-transform"
+              >
                 <img
                   src={item.seller.avatar}
                   alt={item.seller.name}
@@ -280,7 +289,13 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               </div>
 
               <div className="flex items-center gap-1 min-w-0 flex-1 overflow-hidden">
-                <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-1 max-w-[45%]">
+                <span
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onUserClick?.(item.seller.username || item.seller.name);
+                  }}
+                  className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-1 max-w-[45%] cursor-pointer"
+                >
                   {item.seller.name}
                 </span>
 
@@ -349,7 +364,13 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
         <div className="flex gap-3 items-start min-w-0">
           {/* Left Column: Avatar + Profile Click Zone */}
           <div className="flex flex-col items-center shrink-0">
-            <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 cursor-pointer active:scale-95 transition-transform">
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                onUserClick?.(item.seller.username || item.seller.name);
+              }}
+              className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 cursor-pointer active:scale-95 transition-transform"
+            >
               <img
                 src={item.seller.avatar}
                 alt={item.seller.name}
@@ -363,7 +384,13 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             {/* Header Row: Name + Verified + (Topic OR Class) + Timestamp + More Options (...) */}
             <div className="flex items-center justify-between gap-2 min-w-0">
               <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
-                <span className="font-semibold text-[15.5px] text-slate-900 truncate hover:underline shrink-1 max-w-[45%]">
+                <span
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onUserClick?.(item.seller.username || item.seller.name);
+                  }}
+                  className="font-semibold text-[15.5px] text-slate-900 truncate hover:underline shrink-1 max-w-[45%] cursor-pointer"
+                >
                   {item.seller.name}
                 </span>
                 {item.seller.isVerified && (

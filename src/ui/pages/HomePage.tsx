@@ -229,7 +229,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
 
       {/* Scrollable Tab Switcher ("Untuk Anda" & "Terbaru") - Sticky top-0 under safe-area */}
       <div
-        className="sticky top-0 z-30 w-full border-b border-neutral-200/80 select-none bg-white/95 backdrop-blur-xl"
+        className="sticky top-0 z-30 w-full border-b border-neutral-200/80 select-none bg-white"
         style={{
           paddingTop: 'env(safe-area-inset-top, 0px)',
         }}

@@ -7,6 +7,7 @@ import { PostDetailPage } from '@/ui/pages/PostDetailPage';
 import { ProfilePage } from '@/ui/pages/ProfilePage';
 import { MarketPostItem } from '@/types/marketFeed';
 import { useAuth } from '@/ui/hooks/useAuth';
+import { Agentation } from 'agentation';
 
 export function App() {
   const { user, profile } = useAuth();
@@ -185,6 +186,8 @@ export function App() {
       ) : (
         <OnboardingScreen onComplete={handleOnboardingComplete} />
       )}
+      {/* Dev Mode Only: Agentation UI Annotation & Feedback Tool */}
+      {import.meta.env.DEV && <Agentation />}
     </div>
   );
 }

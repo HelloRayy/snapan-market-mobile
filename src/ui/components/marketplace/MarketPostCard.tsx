@@ -280,7 +280,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               </div>
 
               <div className="flex items-center gap-1 min-w-0 flex-1 overflow-hidden">
-                <span className="font-medium text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[65%]">
+                <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[65%]">
                   {item.seller.name}
                 </span>
 
@@ -308,7 +308,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                         e.stopPropagation();
                         onTopicClick?.(item.topicTag!);
                       }}
-                      className={`font-medium text-[14px] transition-colors cursor-pointer ${
+                      className={`font-bold text-[14px] transition-colors cursor-pointer ${
                         item.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-900 hover:text-[#1d64ec] hover:underline'
                       }`}
                     >
@@ -363,7 +363,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             {/* Header Row: Name + Verified + (Topic OR Class) + Timestamp + More Options (...) */}
             <div className="flex items-center justify-between gap-2 min-w-0">
               <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
-                <span className="font-medium text-[15.5px] text-slate-900 truncate hover:underline shrink-0 max-w-[65%]">
+                <span className="font-semibold text-[15.5px] text-slate-900 truncate hover:underline shrink-0 max-w-[65%]">
                   {item.seller.name}
                 </span>
                 {item.seller.isVerified && (
@@ -390,7 +390,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                         e.stopPropagation();
                         onTopicClick?.(item.topicTag!);
                       }}
-                      className={`font-medium text-[14.5px] transition-colors cursor-pointer ${
+                      className={`font-bold text-[14.5px] transition-colors cursor-pointer ${
                         item.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-900 hover:text-[#1d64ec] hover:underline'
                       }`}
                     >

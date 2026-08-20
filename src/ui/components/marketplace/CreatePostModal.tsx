@@ -243,7 +243,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                       <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2.5] shrink-0" />
                       {selectedTopic ? (
                         <span
-                          className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md font-medium text-[13px] ${
+                          className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md font-bold text-[13px] ${
                             selectedTopic.isOfficial
                               ? 'bg-blue-50 text-[#1d64ec]'
                               : 'bg-neutral-100 text-slate-900'

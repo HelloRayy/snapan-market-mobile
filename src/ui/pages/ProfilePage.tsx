@@ -170,13 +170,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
       {/* 2. Main Content Area */}
       <main className="w-full max-w-[590px] mx-auto px-4 pt-4 space-y-4">
-        {/* STUDENT ID & MERCHANT CARD (Original Snapan Identity) */}
-        <section className="bg-white border border-neutral-200/90 rounded-3xl p-4.5 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] space-y-4 relative overflow-hidden">
-          {/* Top Brand Gradient Highlight Rim */}
-          <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-[#1d64ec] via-[#3b82f6] to-[#60a5fa]" />
-
+        {/* STUDENT ID & MERCHANT HEADER */}
+        <section className="space-y-3.5 pt-1">
           {/* Card Top Header Line: School ID & Active Badge */}
-          <div className="flex items-center justify-between text-xs font-semibold border-b border-neutral-100 pb-2.5 pt-0.5">
+          <div className="flex items-center justify-between text-xs font-semibold border-b border-neutral-100 pb-2">
             <div className="flex items-center gap-1.5 text-neutral-500">
               <GraduationCap className="w-3.5 h-3.5 text-[#1d64ec]" />
               <span className="tracking-tight uppercase">SMKN 8 Jakarta · ID Siswa & Seller</span>
@@ -191,7 +188,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           <div className="flex items-center gap-3.5">
             {/* Avatar with Ring */}
             <div className="relative shrink-0">
-              <div className="w-[68px] h-[68px] rounded-full overflow-hidden border-2 border-white shadow-md ring-2 ring-neutral-200/80 bg-neutral-100">
+              <div className="w-[68px] h-[68px] rounded-full overflow-hidden border border-neutral-200 shadow-2xs bg-neutral-100">
                 <img
                   src={profileData.avatar}
                   alt={profileData.name}
@@ -218,30 +215,30 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           </div>
 
           {/* Card Bio Text */}
-          <p className="text-[14px] sm:text-[14.5px] text-slate-800 leading-normal font-normal whitespace-pre-line">
+          <p className="text-[14.5px] sm:text-[15px] text-slate-800 leading-normal font-normal whitespace-pre-line">
             {profileData.bio}
           </p>
 
           {/* Card Bottom Stats: Followers + Sold + Rating */}
-          <div className="border-t border-neutral-100 pt-3 flex items-center justify-between text-[13px] text-neutral-500 font-normal flex-wrap gap-2">
+          <div className="flex items-center justify-between text-[13.5px] text-neutral-500 font-normal flex-wrap gap-2 pt-0.5">
             {/* Followers with Mini Avatar Stack */}
             <div className="flex items-center gap-1.5">
               <div className="flex items-center shrink-0">
-                <div className="w-[17px] h-[17px] rounded-full overflow-hidden border border-white bg-neutral-200 z-30">
+                <div className="w-[17px] h-[17px] rounded-full overflow-hidden border border-white bg-neutral-200 z-30 shadow-2xs">
                   <img
                     src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&q=80"
                     alt="Follower 1"
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="w-[17px] h-[17px] rounded-full overflow-hidden border border-white bg-neutral-200 -ml-1.5 z-20">
+                <div className="w-[17px] h-[17px] rounded-full overflow-hidden border border-white bg-neutral-200 -ml-1.5 z-20 shadow-2xs">
                   <img
                     src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=60&q=80"
                     alt="Follower 2"
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="w-[17px] h-[17px] rounded-full overflow-hidden border border-white bg-neutral-200 -ml-1.5 z-10">
+                <div className="w-[17px] h-[17px] rounded-full overflow-hidden border border-white bg-neutral-200 -ml-1.5 z-10 shadow-2xs">
                   <img
                     src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&q=80"
                     alt="Follower 3"

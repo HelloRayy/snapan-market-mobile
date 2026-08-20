@@ -22,7 +22,12 @@ export const StickyBuyBar: React.FC<StickyBuyBarProps> = ({
     }).format(val);
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto z-50 font-gt-standard select-none">
+    <div
+      className="fixed left-4 right-4 max-w-md mx-auto z-40 font-gt-standard select-none transition-all duration-200 ease-out"
+      style={{
+        bottom: 'max(1rem, calc(env(safe-area-inset-bottom, 0px) + 8px))',
+      }}
+    >
       {/* Floating White Pill Dock Container (Identical to Home Bottom Nav Style) */}
       <div className="bg-white/95 backdrop-blur-xl border border-neutral-200/80 p-1.5 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.12)] flex items-center gap-2">
         {/* Left Kumo Secondary Button: Icon Only "Tanya" */}

@@ -21,7 +21,6 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   const [comments, setComments] = useState<PostComment[]>(post.comments || []);
   const [replyToUser, setReplyToUser] = useState<string | null>(null);
   const [isBuySheetOpen, setIsBuySheetOpen] = useState(false);
-  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -33,7 +32,6 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
     setComments(post.comments || []);
     setReplyToUser(null);
     setIsBuySheetOpen(false);
-    setIsInputFocused(false);
   }, [post.id, post.comments]);
 
   const handleAddComment = (content: string) => {
@@ -129,7 +127,6 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
             replyToUser={replyToUser}
             onSubmitComment={handleAddComment}
             isInline={true}
-            onFocusChange={(focused) => setIsInputFocused(focused)}
           />
 
           {/* Comment List */}
@@ -154,7 +151,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
 
       {/* Floating Pill Buy Bar & Modal (ONLY for Marketplace Product Posts, NOT for Utas) */}
       {(post.postType === 'product' || (post.postType !== 'thread' && !!post.price && post.price > 0)) && (
-        <div className={`transition-all duration-200 ${isInputFocused ? 'opacity-0 pointer-events-none translate-y-10' : 'opacity-100 translate-y-0'}`}>
+        <>
           <StickyBuyBar
             price={post.price || 0}
             stockCount={post.stock || 1}
@@ -168,7 +165,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
             post={post}
             onClose={() => setIsBuySheetOpen(false)}
           />
-        </div>
+        </>
       )}
     </div>
   );

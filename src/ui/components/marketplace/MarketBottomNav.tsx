@@ -6,12 +6,14 @@ interface MarketBottomNavProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   onPostClick?: () => void;
+  userAvatar?: string;
 }
 
 export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   activeTab,
   onTabChange,
   onPostClick,
+  userAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
 }) => {
   const [isVisible, setIsVisible] = useState(true);
   const lastScrollY = useRef(0);
@@ -100,6 +102,7 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
 
             // Solid Icon Filling on Active State
             const isHeart = item.id === 'activity';
+            const isProfile = item.id === 'profile';
             const iconFillClass = isActive
               ? isHeart
                 ? 'fill-rose-500 text-rose-500 stroke-[2]'
@@ -132,9 +135,25 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
                 )}
 
                 <div className="relative z-10 flex items-center justify-center">
-                  <Icon
-                    className={`w-5 h-5 transition-all ${iconFillClass}`}
-                  />
+                  {isProfile ? (
+                    <div
+                      className={`w-[22px] h-[22px] rounded-full overflow-hidden transition-all ${
+                        isActive
+                          ? 'ring-2 ring-slate-900 border border-white scale-105'
+                          : 'border border-neutral-300/90 opacity-75 group-hover:opacity-100'
+                      }`}
+                    >
+                      <img
+                        src={userAvatar}
+                        alt="Profil"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <Icon
+                      className={`w-5 h-5 transition-all ${iconFillClass}`}
+                    />
+                  )}
                   {item.hasBadge && (
                     <span className="absolute -top-1 -right-2.5 min-w-[14px] h-[14px] px-1 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center leading-none ring-2 ring-white">
                       1

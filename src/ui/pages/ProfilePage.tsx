@@ -520,6 +520,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       {!onBack && (
         <MarketBottomNav
           activeTab="profile"
+          userAvatar={profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80'}
           onTabChange={(tab) => onNavigateTab?.(tab)}
           onPostClick={() => onNavigateTab?.('post')}
         />

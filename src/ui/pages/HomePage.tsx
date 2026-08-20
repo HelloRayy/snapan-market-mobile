@@ -310,6 +310,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost, onNavigateToPr
       {/* Market 5-Icon Bottom Navigation (1-Tap Direct Trigger) */}
       <MarketBottomNav
         activeTab={bottomNavTab}
+        userAvatar={profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80'}
         onTabChange={(tab) => {
           if (tab === 'profile') {
             onNavigateToProfile?.(profile?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn');

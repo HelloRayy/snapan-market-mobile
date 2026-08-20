@@ -10,9 +10,7 @@ import {
   Grid,
   Repeat2,
   Package,
-  ShoppingBag,
   Star,
-  Tag,
   GraduationCap,
 } from 'lucide-react';
 import { MarketPostCard } from '../components/marketplace/MarketPostCard';
@@ -183,140 +181,99 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       </header>
 
       {/* 2. Main Content Area */}
-      <main className="max-w-xl mx-auto px-4 pt-3.5 space-y-4">
-        {/* STUDENT MERCHANT CARD (Original Snapan Card Identity) */}
-        <section className="bg-white border border-neutral-200/90 rounded-3xl p-4.5 sm:p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] relative overflow-hidden space-y-4">
-          {/* Top Brand Inset Rim Highlight */}
-          <div className="absolute inset-x-0 top-0 h-[3.5px] bg-gradient-to-r from-[#1d64ec] via-[#3b82f6] to-[#60a5fa]" />
-
-          {/* Card Row 1: Avatar + Name + Class Badge */}
-          <div className="flex items-start justify-between gap-3 pt-1">
-            <div className="flex items-center gap-3.5 min-w-0 flex-1">
-              {/* Avatar with Online/Verified Indicator Ring */}
-              <div className="relative shrink-0">
-                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-md ring-2 ring-neutral-200/80 bg-neutral-100">
-                  <img
-                    src={profileData.avatar}
-                    alt={profileData.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                {/* Active Student Badge Dot */}
-                <div
-                  className="absolute bottom-0 right-0 w-4.5 h-4.5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center shadow-xs"
-                  title="Siswa Aktif Terverifikasi"
-                >
-                  <div className="w-1.5 h-1.5 bg-white rounded-full" />
-                </div>
+      <main className="max-w-xl mx-auto px-4 pt-4 space-y-4">
+        {/* TOP IDENTITY SECTION: Left Name/Username + Right Big Avatar */}
+        <section className="space-y-3 pt-1">
+          {/* Row 1: Name + Username (Left) vs Avatar (Right) */}
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-0.5 flex-1 min-w-0">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <h1 className="font-bold text-[24px] sm:text-[26px] text-slate-900 tracking-tight leading-tight truncate">
+                  {profileData.name}
+                </h1>
+                {profileData.isVerified && (
+                  <ClickableVerifiedBadge sellerName={profileData.name} className="w-5 h-5 shrink-0" />
+                )}
               </div>
 
-              {/* Name & Class Info */}
-              <div className="space-y-0.5 min-w-0 flex-1">
-                <div className="flex items-center gap-1.5 min-w-0">
-                  <h1 className="font-bold text-lg sm:text-xl text-slate-900 tracking-tight truncate">
-                    {profileData.name}
-                  </h1>
-                  {profileData.isVerified && (
-                    <ClickableVerifiedBadge sellerName={profileData.name} className="w-4.5 h-4.5 shrink-0" />
-                  )}
-                </div>
+              <div className="flex items-center gap-2 text-[14.5px]">
+                <span className="font-normal text-slate-900">@{profileData.username}</span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-[#1d64ec] border border-blue-100">
+                  <GraduationCap className="w-3 h-3" />
+                  <span>{profileData.classGroup}</span>
+                </span>
+              </div>
+            </div>
 
-                <div className="flex items-center gap-2 flex-wrap text-xs">
-                  <span className="font-semibold text-slate-900">@{profileData.username}</span>
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-[#1d64ec] border border-blue-100">
-                    <GraduationCap className="w-3 h-3" />
-                    <span>{profileData.classGroup}</span>
-                  </span>
-                </div>
+            {/* Large Circular Avatar on Right */}
+            <div className="relative shrink-0">
+              <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-full overflow-hidden border border-neutral-200 shadow-sm bg-neutral-100">
+                <img
+                  src={profileData.avatar}
+                  alt={profileData.name}
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
           </div>
 
-          {/* Card Row 2: Bio Text */}
-          <p className="text-[14px] text-slate-800 leading-relaxed font-normal whitespace-pre-line">
+          {/* Row 2: Bio Text */}
+          <p className="text-[14.5px] sm:text-[15px] text-slate-900 leading-normal font-normal whitespace-pre-line">
             {profileData.bio}
           </p>
 
-          {/* Card Row 3: Skill & Interest Chips Bar (Interactive) */}
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-1 text-[11.5px] font-bold text-neutral-400 uppercase tracking-wider">
-              <Tag className="w-3 h-3 text-[#1d64ec]" />
-              <span>Keahlian & Minat</span>
-            </div>
-            <div className="flex items-center gap-1.5 flex-wrap">
-              {profileData.skills.map((skill, idx) => {
-                const isSelected = selectedSkillFilter === skill;
-                return (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setSelectedSkillFilter(isSelected ? null : skill)}
-                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-bold transition-all cursor-pointer select-none active:scale-95 ${
-                      isSelected
-                        ? 'bg-[#1d64ec] text-white shadow-xs'
-                        : 'bg-neutral-100/90 text-slate-700 hover:bg-neutral-200/80 border border-neutral-200/50'
-                    }`}
-                  >
-                    <span>{skill}</span>
-                  </button>
-                );
-              })}
-            </div>
+          {/* Row 3: Skill / Community Topics Chips */}
+          <div className="flex items-center gap-1.5 flex-wrap pt-1">
+            {profileData.skills.map((skill, idx) => {
+              const isSelected = selectedSkillFilter === skill;
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setSelectedSkillFilter(isSelected ? null : skill)}
+                  className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[12.5px] font-semibold transition-all cursor-pointer select-none active:scale-95 ${
+                    isSelected
+                      ? 'bg-[#1d64ec] text-white shadow-xs'
+                      : 'bg-neutral-100 text-slate-800 hover:bg-neutral-200/80 border border-neutral-200/50'
+                  }`}
+                >
+                  <span>{skill}</span>
+                </button>
+              );
+            })}
           </div>
 
-          {/* Card Row 4: Marketplace Reputation Mini-Dashboard (4 Columns) */}
-          <div className="grid grid-cols-4 gap-1.5 py-2.5 px-3 bg-neutral-50/90 rounded-2xl border border-neutral-200/70 text-center">
-            {/* 1. Postingan */}
-            <div className="space-y-0.5">
-              <div className="flex items-center justify-center gap-1 text-slate-900 font-bold text-[14px]">
-                <Package className="w-3.5 h-3.5 text-neutral-500" />
-                <span>{profileData.activeProductsCount}</span>
-              </div>
-              <span className="text-[10.5px] font-medium text-neutral-400 block">Postingan</span>
-            </div>
-
-            {/* 2. Terjual */}
-            <div className="space-y-0.5 border-l border-neutral-200/80">
-              <div className="flex items-center justify-center gap-1 text-slate-900 font-bold text-[14px]">
-                <ShoppingBag className="w-3.5 h-3.5 text-[#1d64ec]" />
-                <span>{profileData.soldCount}</span>
-              </div>
-              <span className="text-[10.5px] font-medium text-neutral-400 block">Terjual</span>
-            </div>
-
-            {/* 3. Rating */}
-            <div className="space-y-0.5 border-l border-neutral-200/80">
-              <div className="flex items-center justify-center gap-1 text-amber-600 font-bold text-[14px]">
-                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                <span>{profileData.rating}</span>
-              </div>
-              <span className="text-[10.5px] font-medium text-neutral-400 block">Rating Toko</span>
-            </div>
-
-            {/* 4. Pengikut */}
-            <div className="space-y-0.5 border-l border-neutral-200/80">
-              <div className="text-slate-900 font-bold text-[14px]">
-                {profileData.followersCount}
-              </div>
-              <span className="text-[10.5px] font-medium text-neutral-400 block">Pengikut</span>
-            </div>
+          {/* Row 4: Stats & Followers Summary */}
+          <div className="flex items-center gap-2 text-[13.5px] text-neutral-500 font-normal pt-1">
+            <span>
+              <strong className="text-slate-900 font-semibold">{profileData.followersCount}</strong> pengikut
+            </span>
+            <span>·</span>
+            <span>
+              <strong className="text-slate-900 font-semibold">{profileData.soldCount}</strong> produk terjual
+            </span>
+            <span>·</span>
+            <span className="flex items-center gap-1 text-amber-600 font-semibold">
+              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+              <span>{profileData.rating} rating</span>
+            </span>
           </div>
 
-          {/* Card Row 5: Action Buttons */}
-          <div className="flex items-center gap-2 pt-0.5">
+          {/* Row 5: Action Buttons */}
+          <div className="flex items-center gap-2 pt-2">
             {isOwnProfile ? (
               <>
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(true)}
-                  className="flex-1 h-9 rounded-xl border border-neutral-200 bg-white font-bold text-[13px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center shadow-2xs"
+                  className="flex-1 h-9 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center"
                 >
                   Edit profil
                 </button>
                 <button
                   type="button"
                   onClick={handleShareProfile}
-                  className="flex-1 h-9 rounded-xl border border-neutral-200 bg-white font-bold text-[13px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center shadow-2xs"
+                  className="flex-1 h-9 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center"
                 >
                   Bagikan profil
                 </button>
@@ -332,35 +289,30 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                       followersCount: isFollowing ? prev.followersCount - 1 : prev.followersCount + 1,
                     }));
                   }}
-                  className={`flex-1 h-9 rounded-xl font-bold text-[13px] transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-[0.98] shadow-xs ${
+                  className={`flex-1 h-9 rounded-xl font-bold text-[13.5px] transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-[0.98] ${
                     isFollowing
                       ? 'border border-neutral-300 bg-white text-slate-900 hover:bg-neutral-50'
-                      : 'relative bg-[#1d64ec] text-white border border-[#154ec1] overflow-hidden'
+                      : 'bg-[#18181b] text-white hover:bg-black'
                   }`}
                 >
-                  {!isFollowing && (
-                    <span className="absolute inset-0 bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] pointer-events-none" />
+                  {isFollowing ? (
+                    <>
+                      <UserCheck className="w-4 h-4" />
+                      <span>Mengikuti</span>
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="w-4 h-4" />
+                      <span>Ikuti</span>
+                    </>
                   )}
-                  <span className="relative z-10 flex items-center gap-1.5">
-                    {isFollowing ? (
-                      <>
-                        <UserCheck className="w-4 h-4" />
-                        <span>Mengikuti</span>
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus className="w-4 h-4 text-white" />
-                        <span>Ikuti Toko</span>
-                      </>
-                    )}
-                  </span>
                 </button>
                 <button
                   type="button"
                   onClick={() => {
                     alert(`Fitur chat langsung dengan @${profileData.username} akan segera hadir!`);
                   }}
-                  className="flex-1 h-9 rounded-xl border border-neutral-200 bg-white font-bold text-[13px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+                  className="flex-1 h-9 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <MessageCircle className="w-4 h-4 text-slate-700" />
                   <span>Pesan</span>

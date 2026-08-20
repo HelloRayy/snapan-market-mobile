@@ -484,15 +484,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                         alt="Media"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                       />
-                      {/* Multi-image indicator badge if post has multiple images */}
-                      {item.post.images && item.post.images.length > 1 && (
-                        <div className="absolute top-1.5 right-1.5 bg-black/60 backdrop-blur-xs text-white p-1 rounded-md">
-                          <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
-                            <rect x="3" y="3" width="14" height="14" rx="2" fill="none" stroke="currentColor" strokeWidth="2"/>
-                            <path d="M7 7h12a2 2 0 0 1 2 2v12" fill="none" stroke="currentColor" strokeWidth="2"/>
-                          </svg>
-                        </div>
-                      )}
                     </div>
                   ))}
                 </div>

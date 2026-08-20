@@ -32,11 +32,11 @@ export interface MarketPostItem {
   title?: string;
   seller: SellerProfile;
   caption: string;
-  price: number;
+  price?: number;
   originalPrice?: number;
-  category: 'Kantin' | 'Fashion' | 'Jasa DKV/PPLG' | 'Elektronik' | 'Lainnya';
+  category?: 'Kantin' | 'Fashion' | 'Jasa DKV/PPLG' | 'Elektronik' | 'Lainnya';
   images: string[];
-  stock: number;
+  stock?: number;
   locationTag?: string; // e.g. 'Kantin Depan', 'Gedung PPLG', 'Parkiran Belakang'
   topicTag?: string; // e.g. 'frontend', 'PJBL', 'html-css'
   isOfficialTopic?: boolean; // true = Official Blue Dropdown Topic, false = Custom User Topic

@@ -244,8 +244,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
         <Send className="w-4 h-4 stroke-[1.8] text-slate-600" />
       </button>
 
-      {/* 5. Stock Indicator (Icon + Number) */}
-      {item.stock !== undefined && (
+      {/* 5. Stock Indicator (Icon + Number) - ONLY FOR PRODUCT POSTS */}
+      {item.postType !== 'thread' && !!item.price && item.price > 0 && item.stock !== undefined && item.stock > 0 && (
         <div className="flex items-center gap-1.5 min-h-[36px] px-1.5 py-1 text-slate-500 hover:text-slate-700 transition-colors select-none ml-auto" title={`Stok tersisa ${item.stock}`}>
           <Box className="w-4 h-4 stroke-[2] text-slate-500" />
           <span className="font-normal text-[13.5px] text-slate-700">{item.stock}</span>

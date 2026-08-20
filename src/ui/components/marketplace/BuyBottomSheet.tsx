@@ -96,7 +96,7 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
     const sellerName = post.seller.name;
     const itemTitle = cleanTitle;
     
-    const message = `Halo ${sellerName}, saya tertarik dengan *${itemTitle}* (${formatRupiah(post.price)}) di Snapan Market.\n\nBisa minta info ketersediaan & janjian COD di sekolah? Terima kasih!`;
+    const message = `Halo ${sellerName}, saya tertarik dengan *${itemTitle}* (${formatRupiah(post.price ?? 0)}) di Snapan Market.\n\nBisa minta info ketersediaan & janjian COD di sekolah? Terima kasih!`;
 
     const waNumber = '6281234567890';
     const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
@@ -257,7 +257,7 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
 
             {/* Right Price */}
             <span className="relative z-10 font-medium text-sm text-white/95 tracking-tight shrink-0">
-              {formatRupiah(post.price)}
+              {formatRupiah(post.price ?? 0)}
             </span>
           </button>
 

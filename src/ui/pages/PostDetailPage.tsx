@@ -149,21 +149,24 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         </section>
       </main>
 
-      {/* Floating Pill Buy Bar (Exact Reference Match) */}
-      <StickyBuyBar
-        price={post.price || 150000}
-        stockCount={post.stock || 5}
-        onBuyClick={handleBuyClick}
-        onChatClick={handleChatClick}
-      />
+      {/* Floating Pill Buy Bar & Modal (ONLY for Marketplace Product Posts, NOT for Utas) */}
+      {(post.postType === 'product' || (post.postType !== 'thread' && !!post.price && post.price > 0)) && (
+        <>
+          <StickyBuyBar
+            price={post.price || 0}
+            stockCount={post.stock || 1}
+            onBuyClick={handleBuyClick}
+            onChatClick={handleChatClick}
+          />
 
-      {/* Interactive Buy Bottom Sheet Modal (Synced to active post.id) */}
-      <BuyBottomSheet
-        key={post.id}
-        isOpen={isBuySheetOpen}
-        post={post}
-        onClose={() => setIsBuySheetOpen(false)}
-      />
+          <BuyBottomSheet
+            key={post.id}
+            isOpen={isBuySheetOpen}
+            post={post}
+            onClose={() => setIsBuySheetOpen(false)}
+          />
+        </>
+      )}
     </div>
   );
 };

@@ -10,7 +10,6 @@ import {
   Grid,
   Repeat2,
   Package,
-  Star,
 } from 'lucide-react';
 import { MarketPostCard } from '../components/marketplace/MarketPostCard';
 import { MarketBottomNav } from '../components/marketplace/MarketBottomNav';
@@ -206,20 +205,39 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             {profileData.bio}
           </p>
 
-          {/* Row 3: Stats & Followers Summary */}
-          <div className="flex items-center gap-2 text-[13.5px] text-neutral-500 font-normal pt-1">
-            <span>
-              <strong className="text-slate-900 font-semibold">{profileData.followersCount}</strong> pengikut
-            </span>
-            <span>·</span>
-            <span>
-              <strong className="text-slate-900 font-semibold">{profileData.soldCount}</strong> produk terjual
-            </span>
-            <span>·</span>
-            <span className="flex items-center gap-1 text-amber-600 font-semibold">
-              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-              <span>{profileData.rating} rating</span>
-            </span>
+          {/* Row 3: Follower Avatar Stack & Stats */}
+          <div className="flex items-center gap-2 text-[14px] text-neutral-500 font-normal pt-0.5">
+            {/* 3 Overlapping Mini Avatars Stack */}
+            <div className="flex items-center shrink-0">
+              <div className="w-[19px] h-[19px] rounded-full overflow-hidden border border-white bg-neutral-200 z-30 shadow-2xs">
+                <img
+                  src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&q=80"
+                  alt="Follower 1"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="w-[19px] h-[19px] rounded-full overflow-hidden border border-white bg-neutral-200 -ml-1.5 z-20 shadow-2xs">
+                <img
+                  src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=60&q=80"
+                  alt="Follower 2"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="w-[19px] h-[19px] rounded-full overflow-hidden border border-white bg-neutral-200 -ml-1.5 z-10 shadow-2xs">
+                <img
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&q=80"
+                  alt="Follower 3"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+
+            {/* Follower Stats Text */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span>{profileData.followersCount} pengikut</span>
+              <span>·</span>
+              <span>22,4 rb tayangan terbaru</span>
+            </div>
           </div>
 
           {/* Row 5: Action Buttons */}

@@ -66,9 +66,12 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
       animate={{ y: isVisible ? 0 : '120%' }}
       transition={{ type: 'spring', stiffness: 350, damping: 32 }}
       className="fixed bottom-0 left-0 right-0 z-50 font-gt-standard select-none bg-white/95 backdrop-blur-xl border-t border-neutral-200/80 shadow-[0_-4px_24px_rgba(0,0,0,0.04)]"
+      style={{
+        paddingBottom: 'max(0.75rem, calc(env(safe-area-inset-bottom, 0px) + 8px))',
+      }}
     >
-      {/* Edge-to-Edge Safe-Area Compliant Inner Container */}
-      <nav className="max-w-md mx-auto px-2 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-center justify-around relative">
+      {/* Edge-to-Edge Safe-Area Compliant Inner Container (Strict Apple HIG & Android Navigation Guidelines) */}
+      <nav className="max-w-md mx-auto px-2 pt-2 flex items-center justify-around relative">
         <LayoutGroup id="market-bottom-nav-group">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -81,7 +84,7 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
                   <button
                     type="button"
                     onClick={onPostClick || (() => onTabChange('post'))}
-                    className="absolute -top-4.5 w-12 h-12 rounded-full bg-[#1d64ec] hover:bg-[#154ec1] border-2 border-white active:scale-90 text-white flex items-center justify-center shadow-[0_8px_20px_rgba(29,100,236,0.38)] ring-4 ring-white/90 transition-all cursor-pointer z-10 overflow-hidden group"
+                    className="absolute -top-5 w-12 h-12 rounded-full bg-[#1d64ec] hover:bg-[#154ec1] border-2 border-white active:scale-90 text-white flex items-center justify-center shadow-[0_8px_20px_rgba(29,100,236,0.38)] ring-4 ring-white/90 transition-all cursor-pointer z-10 overflow-hidden group"
                     aria-label="Jual Produk Baru"
                     title="Jual Produk Baru"
                   >
@@ -138,7 +141,7 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
                     </span>
                   )}
                 </div>
-                <span className={`text-[10.5px] mt-0.5 leading-none relative z-10 ${isActive ? 'font-semibold text-slate-900' : 'font-normal text-neutral-400'}`}>
+                <span className={`text-[11px] mt-0.5 leading-none relative z-10 ${isActive ? 'font-semibold text-slate-900' : 'font-normal text-neutral-400'}`}>
                   {item.label}
                 </span>
               </button>

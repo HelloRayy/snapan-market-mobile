@@ -192,10 +192,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       <main className="w-full max-w-[590px] mx-auto px-4 pt-4 space-y-4">
         {/* PROFILE HEADER */}
         <section className="space-y-3.5 pt-1">
-          {/* Row 1: Name + Handle on Left vs Avatar on Right */}
-          <div className="flex items-start justify-between gap-4">
+          {/* Row 1: Name + Handle on Left vs Avatar on Right (Vertically Centered with Margin Bottom for Desc) */}
+          <div className="flex items-center justify-between gap-4 mb-3.5">
             {/* Name, Handle, and Class on Left */}
-            <div className="min-w-0 flex-1 pt-0.5">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 min-w-0">
                 <h1 className="font-bold text-[22px] sm:text-[24px] text-slate-900 tracking-tight leading-tight truncate">
                   {profileData.name}

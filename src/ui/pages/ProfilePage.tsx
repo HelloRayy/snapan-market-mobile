@@ -136,7 +136,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     <div className="min-h-screen bg-white text-slate-ink pb-28 font-gt-standard select-none">
       {/* 1. Top Bar Header */}
       <header
-        className="sticky top-0 z-30 bg-white border-b border-neutral-200/80 px-4 h-14 flex items-center justify-between max-w-xl mx-auto"
+        className="sticky top-0 z-30 bg-white border-b border-neutral-200/80 px-4 h-14 flex items-center justify-between max-w-[590px] mx-auto"
         style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
       >
         {onBack ? (
@@ -181,12 +181,12 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       </header>
 
       {/* 2. Main Content Area */}
-      <main className="max-w-xl mx-auto px-4 pt-4 space-y-4">
-        {/* TOP IDENTITY SECTION: Left Name/Username + Right Big Avatar */}
+      <main className="w-full max-w-[590px] mx-auto px-4 pt-4 space-y-4">
+        {/* TOP IDENTITY SECTION: Exact Threads Layout */}
         <section className="space-y-3 pt-1">
-          {/* Row 1: Name + Username (Left) vs Avatar (Right) */}
+          {/* Row 1: Name + Username (Left, 56.6px flex) vs Avatar (Right) */}
           <div className="flex items-start justify-between gap-4">
-            <div className="space-y-0.5 flex-1 min-w-0">
+            <div className="flex flex-col items-start min-h-[56.6px] justify-center flex-1 min-w-0">
               <div className="flex items-center gap-1.5 min-w-0">
                 <h1 className="font-bold text-[24px] sm:text-[26px] text-slate-900 tracking-tight leading-tight truncate">
                   {profileData.name}
@@ -196,7 +196,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 )}
               </div>
 
-              <div className="flex items-center gap-2 text-[14.5px]">
+              <div className="flex items-center gap-2 text-[14.5px] mt-0.5">
                 <span className="font-normal text-slate-900">@{profileData.username}</span>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-[#1d64ec] border border-blue-100">
                   <GraduationCap className="w-3 h-3" />
@@ -205,9 +205,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               </div>
             </div>
 
-            {/* Large Circular Avatar on Right */}
+            {/* Large Circular Avatar on Right (Threads 72-84px standard) */}
             <div className="relative shrink-0">
-              <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-full overflow-hidden border border-neutral-200 shadow-sm bg-neutral-100">
+              <div className="w-[74px] h-[74px] sm:w-[84px] sm:h-[84px] rounded-full overflow-hidden border border-neutral-200/90 shadow-2xs bg-neutral-100">
                 <img
                   src={profileData.avatar}
                   alt={profileData.name}
@@ -218,7 +218,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           </div>
 
           {/* Row 2: Bio Text */}
-          <p className="text-[14.5px] sm:text-[15px] text-slate-900 leading-normal font-normal whitespace-pre-line">
+          <p className="text-[14.5px] sm:text-[15px] text-slate-900 leading-relaxed font-normal whitespace-pre-line">
             {profileData.bio}
           </p>
 
@@ -324,7 +324,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
         {/* 3. 4-Tab Sliding Underline Switcher (Utas, Balasan, Media, Diposting Ulang) */}
         <div className="border-b border-neutral-200/80 pt-1 -mx-4 px-4 bg-white sticky top-14 z-20">
-          <div className="flex items-center justify-between text-center relative max-w-xl mx-auto">
+          <div className="flex items-center justify-between text-center relative max-w-[590px] mx-auto">
             <button
               type="button"
               onClick={() => setActiveTab('threads')}

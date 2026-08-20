@@ -216,7 +216,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost, onNavigateToPr
     return () => observer.disconnect();
   }, [isLoadingMore, page]);
 
-  // Smart Scroll Header Visibility State (16px threshold as requested)
+  // Smart Scroll Header Visibility State (24px threshold as requested)
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const lastScrollY = useRef(0);
 
@@ -228,10 +228,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost, onNavigateToPr
       // Always show if near the top of the feed (< 50px)
       if (currentScrollY < 50) {
         setIsHeaderVisible(true);
-      } else if (scrollDiff > 16) {
+      } else if (scrollDiff > 24) {
         // Scrolling DOWN -> hide top bar
         setIsHeaderVisible(false);
-      } else if (scrollDiff < -16) {
+      } else if (scrollDiff < -24) {
         // Scrolling UP -> reveal top bar
         setIsHeaderVisible(true);
       }

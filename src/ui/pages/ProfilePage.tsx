@@ -49,7 +49,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   // Follow Toggle state (for viewing other users)
   const [isFollowing, setIsFollowing] = useState(false);
 
-  // Smart Scroll Header Visibility State (16px threshold as requested)
+  // Smart Scroll Header Visibility State (24px threshold as requested)
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const lastScrollY = useRef(0);
 
@@ -61,10 +61,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       // Always show if near the top (< 50px)
       if (currentScrollY < 50) {
         setIsHeaderVisible(true);
-      } else if (scrollDiff > 16) {
+      } else if (scrollDiff > 24) {
         // Scrolling DOWN -> hide top bar
         setIsHeaderVisible(false);
-      } else if (scrollDiff < -16) {
+      } else if (scrollDiff < -24) {
         // Scrolling UP -> reveal top bar
         setIsHeaderVisible(true);
       }

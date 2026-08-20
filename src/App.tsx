@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { OnboardingScreen } from '@/ui/components/onboarding/OnboardingScreen';
 import { PwaLandingPage } from '@/ui/components/pwa/PwaLandingPage';
@@ -37,6 +37,10 @@ export function App() {
 
   const [currentRoute, setCurrentRoute] = useState<string>(window.location.pathname);
   const [selectedPost, setSelectedPost] = useState<MarketPostItem | null>(null);
+
+  // Scroll Restoration: Preserve home feed scroll, reset non-home routes to top
+  const homeScrollYRef = useRef<number>(0);
+  const prevRouteRef = useRef<string>(window.location.pathname);
 
   // Sync route with window location & localStorage/Supabase session check
   useEffect(() => {
@@ -77,6 +81,28 @@ export function App() {
   const myUsername = profile?.full_name?.toLowerCase().replace(/\s+/g, '') || user?.user_metadata?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn';
   const isViewingOtherUserProfile = isProfileRoute && targetProfileUsername !== myUsername && targetProfileUsername !== 'me';
 
+  // Route-based Scroll Management: Reset on new non-home routes, restore when returning to Home
+  useEffect(() => {
+    const prevRoute = prevRouteRef.current;
+    const isCurrentHome = !isProfileRoute && !isDownloadRoute && !isOnboardingRoute;
+    const wasPrevHome = prevRoute === '/' || (!prevRoute.startsWith('/@') && prevRoute !== '/profile' && !prevRoute.startsWith('#@') && prevRoute !== '/download' && prevRoute !== '/onboarding');
+
+    if (wasPrevHome && !isCurrentHome) {
+      // Leaving Home -> Reset scroll to top (0, 0) for new route
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    } else if (!wasPrevHome && isCurrentHome) {
+      // Returning to Home -> Restore previously saved home scroll position
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: homeScrollYRef.current, left: 0, behavior: 'instant' });
+      });
+    } else if (!isCurrentHome) {
+      // Switching between non-home routes -> Reset scroll to top
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+
+    prevRouteRef.current = currentRoute;
+  }, [currentRoute, isProfileRoute, isDownloadRoute, isOnboardingRoute]);
+
   const navigateToWeb = () => {
     window.history.pushState({}, '', '/');
     setCurrentRoute('/');
@@ -88,6 +114,8 @@ export function App() {
   };
 
   const navigateToProfile = (username: string) => {
+    // Record current home scroll position before navigating away
+    homeScrollYRef.current = window.scrollY;
     const clean = username.replace(/^@/, '');
     window.history.pushState({}, '', `/@${clean}`);
     setCurrentRoute(`/@${clean}`);

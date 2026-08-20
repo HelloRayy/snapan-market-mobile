@@ -4,13 +4,16 @@ import {
   Settings,
   Share2,
   Globe,
-  Sparkles,
   MessageCircle,
   UserPlus,
   UserCheck,
   Grid,
   Repeat2,
   Package,
+  ShoppingBag,
+  Star,
+  Tag,
+  GraduationCap,
 } from 'lucide-react';
 import { MarketPostCard } from '../components/marketplace/MarketPostCard';
 import { MarketBottomNav } from '../components/marketplace/MarketBottomNav';
@@ -50,29 +53,51 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   // Follow Toggle state (for viewing other users)
   const [isFollowing, setIsFollowing] = useState(false);
 
+  // Selected Skill Filter
+  const [selectedSkillFilter, setSelectedSkillFilter] = useState<string | null>(null);
+
   // Current logged in user info
-  const currentUsername = profile?.full_name?.toLowerCase().replace(/\s+/g, '') || user?.user_metadata?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn';
+  const currentUsername =
+    profile?.full_name?.toLowerCase().replace(/\s+/g, '') ||
+    user?.user_metadata?.full_name?.toLowerCase().replace(/\s+/g, '') ||
+    'radityarayhannnn';
   const cleanTargetUsername = username.replace(/^@/, '').toLowerCase();
-  const isOwnProfile = cleanTargetUsername === currentUsername || cleanTargetUsername === 'radityarayhannnn' || cleanTargetUsername === 'me';
+  const isOwnProfile =
+    cleanTargetUsername === currentUsername ||
+    cleanTargetUsername === 'radityarayhannnn' ||
+    cleanTargetUsername === 'me';
 
   // Profile Data (Customized or Mocked for target user)
   const [profileData, setProfileData] = useState({
-    name: isOwnProfile ? (profile?.full_name || 'Raditya Rayhan') : (cleanTargetUsername === 'faizintifada' ? 'Faiz Intifada' : cleanTargetUsername === 'raymondchin' ? 'Raymond Chin' : cleanTargetUsername),
+    name: isOwnProfile
+      ? (profile?.full_name || 'Raditya Rayhan')
+      : cleanTargetUsername === 'faizintifada'
+      ? 'Faiz Intifada'
+      : cleanTargetUsername === 'raymondchin'
+      ? 'Raymond Chin'
+      : cleanTargetUsername,
     username: cleanTargetUsername,
     avatar: isOwnProfile
       ? (profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80')
-      : (cleanTargetUsername === 'faizintifada'
-          ? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&q=80'
-          : cleanTargetUsername === 'raymondchin'
-          ? 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&q=80'
-          : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&q=80'),
+      : cleanTargetUsername === 'faizintifada'
+      ? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&q=80'
+      : cleanTargetUsername === 'raymondchin'
+      ? 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&q=80'
+      : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&q=80',
     classGroup: isOwnProfile ? (profile?.class_group || 'XII PPLG 1') : 'XII PPLG 2 · SMKN 8',
     bio: isOwnProfile
       ? 'Web Developer & UI Enthusiast. Sedia jasa pembuatan landing page PWA & merchandise kelas! 🚀✨'
       : 'Siswa aktif SMKN 8 Jakarta. Suka coding, fotografi & sharing proyek sekolah.',
     followersCount: isOwnProfile ? 142 : 289,
     followingCount: isOwnProfile ? 98 : 140,
+    soldCount: isOwnProfile ? 24 : 42,
+    activeProductsCount: isOwnProfile ? 6 : 9,
+    rating: 4.9,
+    ratingCount: 18,
     isVerified: true,
+    skills: isOwnProfile
+      ? ['💻 Web PWA', '🎨 UI/UX', '👕 Preloved', '⚡ Joki Coding', '🍱 Kuliner']
+      : ['📱 Flutter', '🎨 Figma', '📷 Fotografi', '💼 Project PJBL'],
   });
 
   // Filter posts matching this profile
@@ -83,10 +108,19 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   );
 
   // Fallback if no specific posts found: show sample posts
-  const displayPosts = userPosts.length > 0 ? userPosts : MOCK_MARKET_POSTS.slice(0, 2);
+  const basePosts = userPosts.length > 0 ? userPosts : MOCK_MARKET_POSTS.slice(0, 2);
+
+  // Filter by selected skill if active
+  const displayPosts = selectedSkillFilter
+    ? basePosts.filter((p) =>
+        p.caption.toLowerCase().includes(selectedSkillFilter.toLowerCase()) ||
+        p.topicTag?.toLowerCase().includes(selectedSkillFilter.toLowerCase()) ||
+        p.category?.toLowerCase().includes(selectedSkillFilter.toLowerCase())
+      )
+    : basePosts;
 
   // Extract all media images for Media Tab
-  const mediaImages = displayPosts.flatMap((p) => p.images || []);
+  const mediaImages = basePosts.flatMap((p) => p.images || []);
 
   const handleShareProfile = () => {
     if (navigator.share) {
@@ -118,8 +152,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           </button>
         ) : (
           <div className="flex items-center gap-1.5 text-slate-700">
-            <Globe className="w-4 h-4 text-neutral-400" />
-            <span className="text-xs font-semibold text-neutral-500">snapan-market.id</span>
+            <Globe className="w-4 h-4 text-[#1d64ec]" />
+            <span className="text-xs font-semibold text-slate-800 tracking-tight">snapan-market.id</span>
           </div>
         )}
 
@@ -128,7 +162,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           <button
             type="button"
             onClick={handleShareProfile}
-            className="w-9 h-9 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-700 transition-colors cursor-pointer"
+            className="w-9 h-9 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-700 transition-colors cursor-pointer active:scale-95"
             aria-label="Bagikan Profil"
           >
             <Share2 className="w-4.5 h-4.5 stroke-[1.8]" />
@@ -139,7 +173,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             <button
               type="button"
               onClick={() => setIsSettingsOpen(true)}
-              className="w-9 h-9 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-700 transition-colors cursor-pointer"
+              className="w-9 h-9 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-700 transition-colors cursor-pointer active:scale-95"
               aria-label="Pengaturan Akun"
             >
               <Settings className="w-4.5 h-4.5 stroke-[1.8]" />
@@ -148,124 +182,197 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         </div>
       </header>
 
-      {/* 2. Main Profile Info Section */}
-      <main className="max-w-xl mx-auto px-4 pt-4 space-y-4">
-        {/* Name, Username, and Avatar Row */}
-        <div className="flex items-start justify-between gap-4">
-          <div className="space-y-1 flex-1 min-w-0">
-            <div className="flex items-center gap-1.5">
-              <h1 className="font-bold text-2xl text-slate-900 tracking-tight truncate">
-                {profileData.name}
-              </h1>
-              {profileData.isVerified && (
-                <ClickableVerifiedBadge sellerName={profileData.name} className="w-5 h-5" />
-              )}
-            </div>
+      {/* 2. Main Content Area */}
+      <main className="max-w-xl mx-auto px-4 pt-3.5 space-y-4">
+        {/* STUDENT MERCHANT CARD (Original Snapan Card Identity) */}
+        <section className="bg-white border border-neutral-200/90 rounded-3xl p-4.5 sm:p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] relative overflow-hidden space-y-4">
+          {/* Top Brand Inset Rim Highlight */}
+          <div className="absolute inset-x-0 top-0 h-[3.5px] bg-gradient-to-r from-[#1d64ec] via-[#3b82f6] to-[#60a5fa]" />
 
-            <div className="flex items-center gap-2 text-[14px]">
-              <span className="font-semibold text-slate-900">@{profileData.username}</span>
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-neutral-100 text-neutral-600">
-                {profileData.classGroup}
-              </span>
+          {/* Card Row 1: Avatar + Name + Class Badge */}
+          <div className="flex items-start justify-between gap-3 pt-1">
+            <div className="flex items-center gap-3.5 min-w-0 flex-1">
+              {/* Avatar with Online/Verified Indicator Ring */}
+              <div className="relative shrink-0">
+                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-md ring-2 ring-neutral-200/80 bg-neutral-100">
+                  <img
+                    src={profileData.avatar}
+                    alt={profileData.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                {/* Active Student Badge Dot */}
+                <div
+                  className="absolute bottom-0 right-0 w-4.5 h-4.5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center shadow-xs"
+                  title="Siswa Aktif Terverifikasi"
+                >
+                  <div className="w-1.5 h-1.5 bg-white rounded-full" />
+                </div>
+              </div>
+
+              {/* Name & Class Info */}
+              <div className="space-y-0.5 min-w-0 flex-1">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <h1 className="font-bold text-lg sm:text-xl text-slate-900 tracking-tight truncate">
+                    {profileData.name}
+                  </h1>
+                  {profileData.isVerified && (
+                    <ClickableVerifiedBadge sellerName={profileData.name} className="w-4.5 h-4.5 shrink-0" />
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap text-xs">
+                  <span className="font-semibold text-slate-900">@{profileData.username}</span>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-[#1d64ec] border border-blue-100">
+                    <GraduationCap className="w-3 h-3" />
+                    <span>{profileData.classGroup}</span>
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Large Profile Picture */}
-          <div className="w-18 h-18 rounded-full overflow-hidden border-2 border-neutral-200/90 shadow-sm shrink-0 bg-neutral-100">
-            <img
-              src={profileData.avatar}
-              alt={profileData.name}
-              className="w-full h-full object-cover"
-            />
+          {/* Card Row 2: Bio Text */}
+          <p className="text-[14px] text-slate-800 leading-relaxed font-normal whitespace-pre-line">
+            {profileData.bio}
+          </p>
+
+          {/* Card Row 3: Skill & Interest Chips Bar (Interactive) */}
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-1 text-[11.5px] font-bold text-neutral-400 uppercase tracking-wider">
+              <Tag className="w-3 h-3 text-[#1d64ec]" />
+              <span>Keahlian & Minat</span>
+            </div>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {profileData.skills.map((skill, idx) => {
+                const isSelected = selectedSkillFilter === skill;
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setSelectedSkillFilter(isSelected ? null : skill)}
+                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-bold transition-all cursor-pointer select-none active:scale-95 ${
+                      isSelected
+                        ? 'bg-[#1d64ec] text-white shadow-xs'
+                        : 'bg-neutral-100/90 text-slate-700 hover:bg-neutral-200/80 border border-neutral-200/50'
+                    }`}
+                  >
+                    <span>{skill}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
 
-        {/* Bio Text */}
-        <p className="text-[14.5px] text-slate-800 leading-snug font-normal whitespace-pre-line">
-          {profileData.bio}
-        </p>
+          {/* Card Row 4: Marketplace Reputation Mini-Dashboard (4 Columns) */}
+          <div className="grid grid-cols-4 gap-1.5 py-2.5 px-3 bg-neutral-50/90 rounded-2xl border border-neutral-200/70 text-center">
+            {/* 1. Postingan */}
+            <div className="space-y-0.5">
+              <div className="flex items-center justify-center gap-1 text-slate-900 font-bold text-[14px]">
+                <Package className="w-3.5 h-3.5 text-neutral-500" />
+                <span>{profileData.activeProductsCount}</span>
+              </div>
+              <span className="text-[10.5px] font-medium text-neutral-400 block">Postingan</span>
+            </div>
 
-        {/* Follower Stats & Badges */}
-        <div className="flex items-center gap-4 text-[13.5px] text-neutral-500 font-medium">
-          <span>
-            <strong className="text-slate-900 font-bold">{profileData.followersCount}</strong> pengikut
-          </span>
-          <span>·</span>
-          <span>
-            <strong className="text-slate-900 font-bold">{profileData.followingCount}</strong> mengikuti
-          </span>
-          <span>·</span>
-          <span className="text-[#1d64ec] font-semibold flex items-center gap-1">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>SMKN 8 Jakarta</span>
-          </span>
-        </div>
+            {/* 2. Terjual */}
+            <div className="space-y-0.5 border-l border-neutral-200/80">
+              <div className="flex items-center justify-center gap-1 text-slate-900 font-bold text-[14px]">
+                <ShoppingBag className="w-3.5 h-3.5 text-[#1d64ec]" />
+                <span>{profileData.soldCount}</span>
+              </div>
+              <span className="text-[10.5px] font-medium text-neutral-400 block">Terjual</span>
+            </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2 pt-1">
-          {isOwnProfile ? (
-            <>
-              <button
-                type="button"
-                onClick={() => setIsEditModalOpen(true)}
-                className="flex-1 h-9 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center"
-              >
-                Edit profil
-              </button>
-              <button
-                type="button"
-                onClick={handleShareProfile}
-                className="flex-1 h-9 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center"
-              >
-                Bagikan profil
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsFollowing(!isFollowing);
-                  setProfileData((prev) => ({
-                    ...prev,
-                    followersCount: isFollowing ? prev.followersCount - 1 : prev.followersCount + 1,
-                  }));
-                }}
-                className={`flex-1 h-9 rounded-xl font-bold text-[13.5px] transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-[0.98] ${
-                  isFollowing
-                    ? 'border border-neutral-300 bg-white text-slate-900 hover:bg-neutral-50'
-                    : 'bg-[#18181b] text-white hover:bg-black'
-                }`}
-              >
-                {isFollowing ? (
-                  <>
-                    <UserCheck className="w-4 h-4" />
-                    <span>Mengikuti</span>
-                  </>
-                ) : (
-                  <>
-                    <UserPlus className="w-4 h-4" />
-                    <span>Ikuti</span>
-                  </>
-                )}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  alert(`Fitur chat langsung dengan @${profileData.username} akan segera hadir!`);
-                }}
-                className="flex-1 h-9 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-1.5"
-              >
-                <MessageCircle className="w-4 h-4 text-slate-700" />
-                <span>Pesan</span>
-              </button>
-            </>
-          )}
-        </div>
+            {/* 3. Rating */}
+            <div className="space-y-0.5 border-l border-neutral-200/80">
+              <div className="flex items-center justify-center gap-1 text-amber-600 font-bold text-[14px]">
+                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                <span>{profileData.rating}</span>
+              </div>
+              <span className="text-[10.5px] font-medium text-neutral-400 block">Rating Toko</span>
+            </div>
+
+            {/* 4. Pengikut */}
+            <div className="space-y-0.5 border-l border-neutral-200/80">
+              <div className="text-slate-900 font-bold text-[14px]">
+                {profileData.followersCount}
+              </div>
+              <span className="text-[10.5px] font-medium text-neutral-400 block">Pengikut</span>
+            </div>
+          </div>
+
+          {/* Card Row 5: Action Buttons */}
+          <div className="flex items-center gap-2 pt-0.5">
+            {isOwnProfile ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(true)}
+                  className="flex-1 h-9 rounded-xl border border-neutral-200 bg-white font-bold text-[13px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center shadow-2xs"
+                >
+                  Edit profil
+                </button>
+                <button
+                  type="button"
+                  onClick={handleShareProfile}
+                  className="flex-1 h-9 rounded-xl border border-neutral-200 bg-white font-bold text-[13px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center shadow-2xs"
+                >
+                  Bagikan profil
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsFollowing(!isFollowing);
+                    setProfileData((prev) => ({
+                      ...prev,
+                      followersCount: isFollowing ? prev.followersCount - 1 : prev.followersCount + 1,
+                    }));
+                  }}
+                  className={`flex-1 h-9 rounded-xl font-bold text-[13px] transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-[0.98] shadow-xs ${
+                    isFollowing
+                      ? 'border border-neutral-300 bg-white text-slate-900 hover:bg-neutral-50'
+                      : 'relative bg-[#1d64ec] text-white border border-[#154ec1] overflow-hidden'
+                  }`}
+                >
+                  {!isFollowing && (
+                    <span className="absolute inset-0 bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] pointer-events-none" />
+                  )}
+                  <span className="relative z-10 flex items-center gap-1.5">
+                    {isFollowing ? (
+                      <>
+                        <UserCheck className="w-4 h-4" />
+                        <span>Mengikuti</span>
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="w-4 h-4 text-white" />
+                        <span>Ikuti Toko</span>
+                      </>
+                    )}
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    alert(`Fitur chat langsung dengan @${profileData.username} akan segera hadir!`);
+                  }}
+                  className="flex-1 h-9 rounded-xl border border-neutral-200 bg-white font-bold text-[13px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+                >
+                  <MessageCircle className="w-4 h-4 text-slate-700" />
+                  <span>Pesan</span>
+                </button>
+              </>
+            )}
+          </div>
+        </section>
 
         {/* 3. 4-Tab Sliding Underline Switcher (Utas, Balasan, Media, Diposting Ulang) */}
-        <div className="border-b border-neutral-200/80 pt-2 -mx-4 px-4">
-          <div className="flex items-center justify-between text-center relative">
+        <div className="border-b border-neutral-200/80 pt-1 -mx-4 px-4 bg-white sticky top-14 z-20">
+          <div className="flex items-center justify-between text-center relative max-w-xl mx-auto">
             <button
               type="button"
               onClick={() => setActiveTab('threads')}
@@ -322,6 +429,20 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
         {/* 4. Tab Content Area */}
         <div className="-mx-4">
+          {/* Active Skill Filter Chip Indicator */}
+          {selectedSkillFilter && (
+            <div className="px-4 py-2 bg-blue-50/80 border-b border-blue-100 flex items-center justify-between text-xs text-[#1d64ec]">
+              <span>Memfilter postingan: <strong>{selectedSkillFilter}</strong></span>
+              <button
+                type="button"
+                onClick={() => setSelectedSkillFilter(null)}
+                className="font-bold hover:underline cursor-pointer"
+              >
+                ✕ Hapus Filter
+              </button>
+            </div>
+          )}
+
           {/* TAB 1: UTAS & JUALAN (Unified Feed) */}
           {activeTab === 'threads' && (
             <div>

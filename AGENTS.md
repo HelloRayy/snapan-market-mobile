@@ -37,9 +37,12 @@ Repositori ini dikembangkan menggunakan **Multi-Laptop Workstation Setup**:
   - `src/services/api/` (Setup Supabase Client & API Service Functions)
   - `src/types/supabase.ts` (Update interface tipe data Supabase sesuai skema tabel terbaru)
   - `.env.example` (Konfigurasi environment variable backend)
-- **Aturan Laptop B**:
-  - Setiap ada perubahan skema database / tabel baru di Supabase, **WAJIB** memperbarui script SQL di `/docs/supabase-guide.md` dan men-generate/memperbarui `src/types/supabase.ts`.
-  - Kemudian lakukan `git commit` dan `git push` agar Laptop A bisa melakukan `git pull` untuk mendapatkan kontrak tipe data terbaru.
+- **SOP 5-Langkah Wajib AI Agent Laptop B**:
+  1. **Tulis SQL & RLS**: Catat skema tabel baru & Row Level Security (RLS) di `/docs/supabase-guide.md`.
+  2. **Update Type Contract**: Tambahkan interface Row/Insert/Update di `src/types/supabase.ts`.
+  3. **Buat API Service**: Buat/update fungsi query di `src/services/api/<feature>Service.ts` dengan return type yang ketat.
+  4. **Type Check**: Jalankan `npx tsc --noEmit && npm run build` untuk memastikan 0 error.
+  5. **Push ke Git**: Lakukan `git commit` & `git push` agar Laptop A bisa langsung `git pull`.
 
 ---
 

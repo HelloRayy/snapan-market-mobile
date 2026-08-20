@@ -50,3 +50,24 @@ export interface MarketPostItem {
   isSaved?: boolean;
   comments?: PostComment[];
 }
+
+export interface UserReplyThread {
+  id: string;
+  parentPost: MarketPostItem;
+  reply: {
+    id: string;
+    content: string;
+    timestamp: string;
+    likesCount: number;
+    isLiked?: boolean;
+    repostsCount?: number;
+    isReposted?: boolean;
+    user: {
+      name: string;
+      username: string;
+      avatar: string;
+      classGroup?: string;
+      isVerified?: boolean;
+    };
+  };
+}

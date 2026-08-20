@@ -12,12 +12,13 @@ import {
   Package,
 } from 'lucide-react';
 import { MarketPostCard } from '../components/marketplace/MarketPostCard';
+import { ReplyThreadCard } from '../components/marketplace/ReplyThreadCard';
 import { MarketBottomNav } from '../components/marketplace/MarketBottomNav';
 import { EditProfileModal } from '../components/profile/EditProfileModal';
 import { SettingsBottomSheet } from '../components/profile/SettingsBottomSheet';
 import { MediaLightboxModal } from '../components/marketplace/MediaLightboxModal';
 import { ClickableVerifiedBadge } from '../components/marketplace/VerifiedBadgeModal';
-import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
+import { MOCK_MARKET_POSTS, MOCK_USER_REPLIES } from '@/data/mockMarketData';
 import { MarketPostItem } from '@/types/marketFeed';
 import { useAuth } from '../hooks/useAuth';
 
@@ -441,30 +442,24 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </div>
           )}
 
-          {/* TAB 2: BALASAN (Replies) */}
+          {/* TAB 2: BALASAN (Connected Thread Chain Replies) */}
           {activeTab === 'replies' && (
-            <div className="divide-y divide-neutral-100">
-              <div className="p-4 space-y-2">
-                <div className="flex items-center gap-2 text-xs text-neutral-400">
-                  <span>Membalas ke</span>
-                  <span className="font-bold text-[#1d64ec]">@faizintifada</span>
-                  <span>· 2j lalu</span>
+            <div className="divide-y divide-neutral-200">
+              {MOCK_USER_REPLIES.length > 0 ? (
+                MOCK_USER_REPLIES.map((thread) => (
+                  <ReplyThreadCard
+                    key={thread.id}
+                    thread={thread}
+                    onPostClick={onSelectPost}
+                  />
+                ))
+              ) : (
+                <div className="py-16 text-center text-neutral-400 space-y-1">
+                  <Package className="w-8 h-8 mx-auto text-neutral-300" />
+                  <p className="font-semibold text-sm text-slate-800">Belum ada balasan</p>
+                  <p className="text-xs">Balasan kamu pada utas orang lain akan muncul di sini.</p>
                 </div>
-                <p className="text-[14.5px] text-slate-900">
-                  Keren banget idenya! Bisa custom warna atau ukuran ga bro?
-                </p>
-              </div>
-
-              <div className="p-4 space-y-2">
-                <div className="flex items-center gap-2 text-xs text-neutral-400">
-                  <span>Membalas ke</span>
-                  <span className="font-bold text-[#1d64ec]">@kantin_smkn8</span>
-                  <span>· 1h lalu</span>
-                </div>
-                <p className="text-[14.5px] text-slate-900">
-                  Siang ini masih ready paket nasi ayam gepreknya?
-                </p>
-              </div>
+              )}
             </div>
           )}
 

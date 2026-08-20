@@ -1,4 +1,4 @@
-import { MarketPostItem } from '@/types/marketFeed';
+import { MarketPostItem, UserReplyThread } from '@/types/marketFeed';
 
 export const MOCK_MARKET_POSTS: MarketPostItem[] = [
   {
@@ -249,4 +249,125 @@ export const MOCK_MARKET_POSTS: MarketPostItem[] = [
     timestamp: '6j lalu',
     isLiked: false,
   }
+];
+
+export const MOCK_USER_REPLIES: UserReplyThread[] = [
+  {
+    id: 'reply-thread-1',
+    parentPost: {
+      id: 'parent-wildan-1',
+      postType: 'thread',
+      seller: {
+        id: 'user-wildan',
+        name: 'wildanlazuardi',
+        username: 'wildanlazuardi',
+        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&q=80',
+        classGroup: 'XII DKV 1',
+        isVerified: true,
+      },
+      caption: 'Masi ga percaya pegang project ini 😭🙏🇮🇩',
+      images: [
+        'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&q=80',
+      ],
+      likesCount: 81,
+      commentsCount: 31,
+      repostsCount: 2,
+      timestamp: '3d',
+      isLiked: false,
+    },
+    reply: {
+      id: 'reply-1',
+      content: 'udah proper mas buat sekelas ai generated👍',
+      timestamp: '1d',
+      likesCount: 12,
+      isLiked: false,
+      repostsCount: 0,
+      user: {
+        name: 'radityarayhannnn',
+        username: 'radityarayhannnn',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+        classGroup: 'XII PPLG 1',
+        isVerified: true,
+      },
+    },
+  },
+  {
+    id: 'reply-thread-2',
+    parentPost: {
+      id: 'parent-faiz-1',
+      postType: 'thread',
+      seller: {
+        id: 'user-faiz',
+        name: 'Faiz Intifada',
+        username: 'faizintifada',
+        avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=200&q=80',
+        classGroup: 'XII PPLG 2',
+        isVerified: false,
+      },
+      caption: 'Lagi open order jasa 3D Modeling Blender buat tugas akhir / portofolio mockup! Bisa animasi render kilat 360 derajat 🚀🖥️',
+      images: [
+        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80',
+      ],
+      likesCount: 128,
+      commentsCount: 14,
+      repostsCount: 5,
+      timestamp: '2j lalu',
+      isLiked: true,
+    },
+    reply: {
+      id: 'reply-2',
+      content: 'Keren banget idenya! Bisa custom warna atau ukuran mockup ga bro? Mau buat project PWA kita nanti 🔥',
+      timestamp: '2j lalu',
+      likesCount: 4,
+      isLiked: false,
+      repostsCount: 0,
+      user: {
+        name: 'radityarayhannnn',
+        username: 'radityarayhannnn',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+        classGroup: 'XII PPLG 1',
+        isVerified: true,
+      },
+    },
+  },
+  {
+    id: 'reply-thread-3',
+    parentPost: {
+      id: 'parent-kantin-1',
+      postType: 'product',
+      seller: {
+        id: 'user-kantin',
+        name: 'Kantin SMKN 8',
+        username: 'kantin_smkn8',
+        avatar: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=200&q=80',
+        classGroup: 'Kantin Sekolah',
+        isVerified: true,
+      },
+      caption: 'Paket Spesial Nasi Ayam Geprek Sambal Bawang + Es Teh Manis Jumbo cuma 15k khusus jam istirahat pertama & kedua! 🍗🔥',
+      price: 15000,
+      images: [
+        'https://images.unsplash.com/photo-1562967914-608f82629710?w=800&q=80',
+      ],
+      likesCount: 94,
+      commentsCount: 8,
+      repostsCount: 1,
+      timestamp: '1h lalu',
+      isLiked: false,
+    },
+    reply: {
+      id: 'reply-3',
+      content: 'Siang ini masih ready paket nasi ayam gepreknya bu? Mau pesan 3 porsi buat anak lab PPLG 🍗',
+      timestamp: '1h lalu',
+      likesCount: 2,
+      isLiked: false,
+      repostsCount: 0,
+      user: {
+        name: 'radityarayhannnn',
+        username: 'radityarayhannnn',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+        classGroup: 'XII PPLG 1',
+        isVerified: true,
+      },
+    },
+  },
 ];

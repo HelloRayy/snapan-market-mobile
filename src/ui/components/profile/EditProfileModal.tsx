@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Camera, Sparkles } from 'lucide-react';
+import { X, Camera } from 'lucide-react';
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -123,12 +123,6 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 placeholder="Tulis bio singkat atau keahlian/jualan kamu..."
                 className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-200 focus:outline-none focus:border-[#1d64ec] text-sm text-slate-900 bg-neutral-50/50 resize-none"
               />
-            </div>
-
-            {/* Quick Helper */}
-            <div className="p-3 bg-blue-50/60 rounded-xl border border-blue-100 flex items-start gap-2 text-xs text-blue-800">
-              <Sparkles className="w-4 h-4 shrink-0 text-[#1d64ec] mt-0.5" />
-              <span>Profil kamu dapat dilihat oleh seluruh siswa & guru di Snapan Market Mobile.</span>
             </div>
           </form>
         </motion.div>

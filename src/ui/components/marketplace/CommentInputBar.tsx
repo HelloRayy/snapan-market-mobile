@@ -1,18 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
 
 interface CommentInputBarProps {
   replyToUser?: string | null;
   onSubmitComment: (text: string) => void;
   isInline?: boolean;
+  onFocusChange?: (isFocused: boolean) => void;
 }
 
 export const CommentInputBar: React.FC<CommentInputBarProps> = ({
   replyToUser,
   onSubmitComment,
   isInline = false,
+  onFocusChange,
 }) => {
   const [text, setText] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-focus and scroll smoothly into view when replying to a user
+  useEffect(() => {
+    if (replyToUser) {
+      inputRef.current?.focus();
+      setTimeout(() => {
+        inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 150);
+    }
+  }, [replyToUser]);
+
+  const handleFocus = () => {
+    onFocusChange?.(true);
+    // Smooth scroll into visible center above mobile keyboard
+    setTimeout(() => {
+      inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 150);
+  };
+
+  const handleBlur = () => {
+    onFocusChange?.(false);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,10 +64,13 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
 
         {/* Input Text Field with min-w-0 for responsive auto-adjusting flex width */}
         <input
+          ref={inputRef}
           id="comment-input-field"
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           placeholder={replyToUser ? `Balas @${replyToUser}...` : 'Ketik komentar / tanya produk...'}
           className="flex-1 min-w-0 bg-neutral-100 hover:bg-neutral-100/80 focus:bg-white border border-transparent focus:border-[#1d64ec] rounded-full px-3.5 sm:px-4 h-10 text-[13.5px] sm:text-[14px] text-slate-900 placeholder:text-neutral-400 focus:outline-none transition-all shadow-2xs"
         />

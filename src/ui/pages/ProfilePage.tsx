@@ -255,25 +255,25 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             {profileData.bio}
           </p>
 
-          {/* Row 3: Cohesive Left-Aligned Follower & Market Stats */}
-          <div className="flex items-center gap-1.5 text-[13.5px] text-neutral-500 font-normal flex-wrap pt-0.5">
-            {/* Mini Avatar Stack */}
-            <div className="flex items-center shrink-0 mr-1">
-              <div className="w-[18px] h-[18px] rounded-full overflow-hidden border border-white bg-neutral-200 z-30 shadow-2xs">
+          {/* Row 3: Cohesive Left-Aligned Follower & Market Stats (Apple HIG Standard) */}
+          <div className="flex items-center gap-2 text-[14.5px] text-neutral-500 font-normal flex-wrap pt-0.5 select-none">
+            {/* 3-Avatar Overlapping Stack (20x20px with crisp ring) */}
+            <div className="flex items-center -space-x-1.5 shrink-0">
+              <div className="w-5 h-5 rounded-full overflow-hidden ring-2 ring-white bg-neutral-200 z-30 shadow-2xs">
                 <img
                   src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&q=80"
                   alt="Follower 1"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="w-[18px] h-[18px] rounded-full overflow-hidden border border-white bg-neutral-200 -ml-1.5 z-20 shadow-2xs">
+              <div className="w-5 h-5 rounded-full overflow-hidden ring-2 ring-white bg-neutral-200 z-20 shadow-2xs">
                 <img
                   src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=60&q=80"
                   alt="Follower 2"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="w-[18px] h-[18px] rounded-full overflow-hidden border border-white bg-neutral-200 -ml-1.5 z-10 shadow-2xs">
+              <div className="w-5 h-5 rounded-full overflow-hidden ring-2 ring-white bg-neutral-200 z-10 shadow-2xs">
                 <img
                   src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&q=80"
                   alt="Follower 3"
@@ -282,14 +282,32 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               </div>
             </div>
 
-            <span><strong className="text-slate-900 font-semibold">{profileData.followersCount}</strong> pengikut</span>
-            <span>·</span>
-            <span><strong className="text-slate-900 font-semibold">{profileData.soldCount}</strong> terjual</span>
-            <span>·</span>
-            <span className="flex items-center gap-1">
-              <span>⭐</span>
-              <span><strong className="text-slate-900 font-semibold">{profileData.rating}</strong> (18)</span>
+            {/* Follower Stats */}
+            <span className="hover:underline cursor-pointer">
+              <strong className="text-slate-900 font-semibold">{profileData.followersCount}</strong> pengikut
             </span>
+
+            {/* Conditional Seller Stats (Only when seller has sold items / mode jualan) */}
+            {profileData.soldCount > 0 ? (
+              <>
+                <span className="text-neutral-300">·</span>
+                <span>
+                  <strong className="text-slate-900 font-semibold">{profileData.soldCount}</strong> terjual
+                </span>
+                <span className="text-neutral-300">·</span>
+                <span className="flex items-center gap-1">
+                  <span>⭐</span>
+                  <span>
+                    <strong className="text-slate-900 font-semibold">{profileData.rating}</strong> (18)
+                  </span>
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="text-neutral-300">·</span>
+                <span>22,4 rb tayangan</span>
+              </>
+            )}
           </div>
         </section>
 

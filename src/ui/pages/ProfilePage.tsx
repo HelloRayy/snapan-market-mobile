@@ -172,33 +172,33 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         {/* PROFILE HEADER */}
         <section className="space-y-3.5 pt-1">
 
-          {/* Card Middle Row: Avatar + Name + Class Info */}
-          <div className="flex items-center gap-3.5">
-            {/* Avatar with Ring */}
+          {/* Profile Row: Name on Left, Avatar on Far Right (Full Width justify-between) */}
+          <div className="flex items-center justify-between gap-4 min-h-[84px]">
+            {/* Name, Handle, and Class on Left */}
+            <div className="flex flex-col items-start justify-center flex-1 min-w-0">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <h1 className="font-bold text-[24px] text-slate-900 tracking-tight leading-tight truncate">
+                  {profileData.name}
+                </h1>
+                {profileData.isVerified && (
+                  <ClickableVerifiedBadge sellerName={profileData.name} className="w-5 h-5 shrink-0" />
+                )}
+              </div>
+
+              <p className="text-[16px] text-neutral-500 font-normal mt-0.5">
+                @{profileData.username} · <span className="font-semibold text-slate-700">{profileData.classGroup}</span>
+              </p>
+            </div>
+
+            {/* Avatar on Far Right (84x84px) */}
             <div className="relative shrink-0">
-              <div className="w-[68px] h-[68px] rounded-full overflow-hidden border border-neutral-200 shadow-2xs bg-neutral-100">
+              <div className="w-[84px] h-[84px] rounded-full overflow-hidden border border-neutral-200/90 shadow-2xs bg-neutral-100">
                 <img
                   src={profileData.avatar}
                   alt={profileData.name}
                   className="w-full h-full object-cover"
                 />
               </div>
-            </div>
-
-            {/* Name, Handle, and Class */}
-            <div className="space-y-0.5 min-w-0 flex-1">
-              <div className="flex items-center gap-1.5 min-w-0">
-                <h1 className="font-bold text-[21px] sm:text-[23px] text-slate-900 tracking-tight leading-tight truncate">
-                  {profileData.name}
-                </h1>
-                {profileData.isVerified && (
-                  <ClickableVerifiedBadge sellerName={profileData.name} className="w-4.5 h-4.5 shrink-0" />
-                )}
-              </div>
-
-              <p className="text-[14px] text-neutral-500 font-normal">
-                @{profileData.username} · <span className="font-semibold text-slate-700">{profileData.classGroup}</span>
-              </p>
             </div>
           </div>
 

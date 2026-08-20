@@ -38,29 +38,13 @@ export function App() {
   const [currentRoute, setCurrentRoute] = useState<string>(window.location.pathname);
   const [selectedPost, setSelectedPost] = useState<MarketPostItem | null>(null);
 
+  // Double-Back to Exit Toast State
+  const [showExitToast, setShowExitToast] = useState(false);
+  const lastBackPressTimeRef = useRef<number>(0);
+
   // Scroll Restoration: Preserve home feed scroll, reset non-home routes to top
   const homeScrollYRef = useRef<number>(0);
   const prevRouteRef = useRef<string>(window.location.pathname);
-
-  // Sync route with window location & localStorage/Supabase session check
-  useEffect(() => {
-    const handlePopState = () => {
-      setCurrentRoute(window.location.pathname);
-    };
-
-    const isExplicitOnboardingRoute =
-      window.location.pathname === '/onboarding' || window.location.hash === '#onboarding';
-
-    if (isExplicitOnboardingRoute) {
-      setHasCompletedOnboarding(false);
-    } else if (user) {
-      localStorage.setItem('snapan_has_onboarded', 'true');
-      setHasCompletedOnboarding(true);
-    }
-
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [user]);
 
   // Check routes
   const isDownloadRoute = currentRoute === '/download' || window.location.hash === '#download';
@@ -80,6 +64,60 @@ export function App() {
 
   const myUsername = profile?.full_name?.toLowerCase().replace(/\s+/g, '') || user?.user_metadata?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn';
   const isViewingOtherUserProfile = isProfileRoute && targetProfileUsername !== myUsername && targetProfileUsername !== 'me';
+
+  // Initialize Root History Guard for Standalone PWA
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (!window.history.state || !window.history.state.isSnapanRoot) {
+      window.history.replaceState({ isSnapanRoot: true, route: window.location.pathname }, '', window.location.pathname);
+    }
+  }, []);
+
+  // PopState & PWA System Back Button Listener
+  useEffect(() => {
+    const handlePopState = () => {
+      const hash = window.location.hash;
+
+      // 1. If currently a Post Detail layer is open, close it cleanly
+      if (selectedPost && !hash.startsWith('#post-')) {
+        setSelectedPost(null);
+        return;
+      }
+
+      // 2. Update route state
+      const nextRoute = window.location.pathname;
+      setCurrentRoute(nextRoute);
+
+      // 3. Double-Back to Exit Protection when at Root Home
+      const nextIsRoot = nextRoute === '/' && !hash.startsWith('#@') && !hash.startsWith('#post-');
+      if (nextIsRoot && !selectedPost) {
+        const now = Date.now();
+        if (now - lastBackPressTimeRef.current < 2000) {
+          // Double back within 2s -> Allow OS to exit PWA
+          window.history.back();
+        } else {
+          // First back press -> Push root guard state back and show confirmation toast
+          lastBackPressTimeRef.current = now;
+          window.history.pushState({ isSnapanRoot: true, route: '/' }, '', '/');
+          setShowExitToast(true);
+          setTimeout(() => setShowExitToast(false), 2000);
+        }
+      }
+    };
+
+    const isExplicitOnboardingRoute =
+      window.location.pathname === '/onboarding' || window.location.hash === '#onboarding';
+
+    if (isExplicitOnboardingRoute) {
+      setHasCompletedOnboarding(false);
+    } else if (user) {
+      localStorage.setItem('snapan_has_onboarded', 'true');
+      setHasCompletedOnboarding(true);
+    }
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [user, selectedPost]);
 
   // Route-based Scroll Management: Reset on new non-home routes, restore when returning to Home
   useEffect(() => {
@@ -104,12 +142,12 @@ export function App() {
   }, [currentRoute, isProfileRoute, isDownloadRoute, isOnboardingRoute]);
 
   const navigateToWeb = () => {
-    window.history.pushState({}, '', '/');
+    window.history.pushState({ route: '/' }, '', '/');
     setCurrentRoute('/');
   };
 
   const navigateToHome = () => {
-    window.history.pushState({}, '', '/');
+    window.history.pushState({ route: '/' }, '', '/');
     setCurrentRoute('/');
   };
 
@@ -117,8 +155,29 @@ export function App() {
     // Record current home scroll position before navigating away
     homeScrollYRef.current = window.scrollY;
     const clean = username.replace(/^@/, '');
-    window.history.pushState({}, '', `/@${clean}`);
+    window.history.pushState({ type: 'profile', username: clean }, '', `/@${clean}`);
     setCurrentRoute(`/@${clean}`);
+  };
+
+  const handleOpenPostDetail = (post: MarketPostItem) => {
+    // Record home scroll before opening detail
+    if (!isProfileRoute) {
+      homeScrollYRef.current = window.scrollY;
+    }
+    window.history.pushState(
+      { layer: 'post-detail', postId: post.id },
+      '',
+      `${window.location.pathname}#post-${post.id}`
+    );
+    setSelectedPost(post);
+  };
+
+  const handleClosePostDetail = () => {
+    if (window.location.hash.startsWith('#post-')) {
+      window.history.back();
+    } else {
+      setSelectedPost(null);
+    }
   };
 
   const handleOnboardingComplete = () => {
@@ -136,7 +195,7 @@ export function App() {
           {/* Main Feed HomePage (Always preserved in DOM so scroll position is never lost) */}
           <div className={isProfileRoute ? 'hidden' : 'block'}>
             <HomePage
-              onSelectPost={(post) => setSelectedPost(post)}
+              onSelectPost={handleOpenPostDetail}
               onNavigateToProfile={navigateToProfile}
             />
           </div>
@@ -146,7 +205,7 @@ export function App() {
             <ProfilePage
               username={targetProfileUsername}
               onBack={isViewingOtherUserProfile ? () => window.history.back() : undefined}
-              onSelectPost={(post) => setSelectedPost(post)}
+              onSelectPost={handleOpenPostDetail}
               onNavigateTab={(tab) => {
                 if (tab === 'home') {
                   navigateToHome();
@@ -176,8 +235,23 @@ export function App() {
               >
                 <PostDetailPage
                   post={selectedPost}
-                  onBack={() => setSelectedPost(null)}
+                  onBack={handleClosePostDetail}
                 />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Native Double-Back to Exit Confirmation Toast */}
+          <AnimatePresence>
+            {showExitToast && (
+              <motion.div
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+                className="fixed bottom-20 inset-x-0 mx-auto w-fit z-50 pointer-events-none px-4 py-2 bg-slate-900/90 backdrop-blur-md text-white text-xs font-medium rounded-full shadow-lg flex items-center gap-1.5"
+              >
+                <span>Tekan sekali lagi untuk keluar</span>
               </motion.div>
             )}
           </AnimatePresence>

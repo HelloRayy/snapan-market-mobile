@@ -10,7 +10,31 @@ import { useAuth } from '@/ui/hooks/useAuth';
 
 export function App() {
   const { user, profile } = useAuth();
-  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
+
+  // Synchronously compute onboarding completion from localStorage / Supabase session to prevent 1-frame splash flash
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    const isExplicitOnboardingRoute =
+      window.location.pathname === '/onboarding' || window.location.hash === '#onboarding';
+    if (isExplicitOnboardingRoute) return false;
+
+    // 1. Check explicit onboarding completion flag
+    const savedOnboarded = localStorage.getItem('snapan_has_onboarded');
+    if (savedOnboarded === 'true') return true;
+
+    // 2. Check if user already has an active Supabase auth session saved in localStorage
+    try {
+      const hasSupabaseAuth = Object.keys(localStorage).some(
+        (key) => key.startsWith('sb-') && key.endsWith('-auth-token')
+      );
+      if (hasSupabaseAuth) return true;
+    } catch {
+      // Safe fallback
+    }
+
+    return false;
+  });
+
   const [currentRoute, setCurrentRoute] = useState<string>(window.location.pathname);
   const [selectedPost, setSelectedPost] = useState<MarketPostItem | null>(null);
 
@@ -20,15 +44,14 @@ export function App() {
       setCurrentRoute(window.location.pathname);
     };
 
-    const isExplicitOnboardingRoute = window.location.pathname === '/onboarding' || window.location.hash === '#onboarding';
-    
+    const isExplicitOnboardingRoute =
+      window.location.pathname === '/onboarding' || window.location.hash === '#onboarding';
+
     if (isExplicitOnboardingRoute) {
       setHasCompletedOnboarding(false);
-    } else {
-      const savedOnboarded = localStorage.getItem('snapan_has_onboarded');
-      if (savedOnboarded === 'true' || user) {
-        setHasCompletedOnboarding(true);
-      }
+    } else if (user) {
+      localStorage.setItem('snapan_has_onboarded', 'true');
+      setHasCompletedOnboarding(true);
     }
 
     window.addEventListener('popstate', handlePopState);

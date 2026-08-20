@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Search, Store, X, User } from 'lucide-react';
+import { Search, Store, X, Menu } from 'lucide-react';
 
 interface MarketHeaderProps {
   cartCount?: number;
   cartTotal?: number;
   onSearchChange?: (query: string) => void;
+  onMenuClick?: () => void;
   onProfileClick?: () => void;
   userAvatar?: string;
 }
@@ -13,12 +14,11 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
   cartCount: _cartCount = 0,
   cartTotal: _cartTotal = 0,
   onSearchChange,
+  onMenuClick,
   onProfileClick,
-  userAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop',
 }) => {
   const [showSearchInput, setShowSearchInput] = useState(false);
   const [searchValue, setSearchValue] = useState('');
-  const [avatarError, setAvatarError] = useState(false);
 
   const handleSearchChange = (val: string) => {
     setSearchValue(val);
@@ -32,30 +32,17 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
         paddingTop: 'env(safe-area-inset-top, 0px)',
       }}
     >
-      {/* Top Main Bar: [ Left: Profile Avatar ] --- [ Center: Store Logo ] --- [ Right: Search Toggle ] */}
+      {/* Top Main Bar: [ Left: Menu Icon ] --- [ Center: Store Logo ] --- [ Right: Search Toggle ] */}
       <div className="max-w-xl mx-auto px-4 h-14 flex items-center justify-between gap-3 relative select-none">
-        {/* Left Side: User Profile Avatar Button */}
+        {/* Left Side: Hamburger Menu Button (for Drawer) */}
         <div className="flex items-center">
           <button
             type="button"
-            onClick={onProfileClick}
-            className="group relative flex items-center justify-center p-0.5 rounded-full hover:ring-2 hover:ring-blue-500/20 active:scale-95 transition-all duration-200 cursor-pointer"
-            aria-label="Buka Profil Pengguna"
+            onClick={onMenuClick || onProfileClick}
+            className="w-10 h-10 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
+            aria-label="Buka Menu Drawer"
           >
-            <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-300/80 shadow-2xs bg-neutral-100 flex items-center justify-center group-hover:border-[#1d64ec] transition-colors">
-              {!avatarError && userAvatar ? (
-                <img
-                  src={userAvatar}
-                  alt="Foto Profil Pengguna"
-                  onError={() => setAvatarError(true)}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <User className="w-5 h-5 text-slate-700" />
-              )}
-            </div>
-            {/* Online Green Active Indicator Badge */}
-            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
+            <Menu className="w-5 h-5 stroke-[2.25]" />
           </button>
         </div>
 

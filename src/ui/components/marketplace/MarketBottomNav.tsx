@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Home, Send, Plus, Heart, User } from 'lucide-react';
 import { motion, LayoutGroup } from 'framer-motion';
 
@@ -13,6 +13,45 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   onTabChange,
   onPostClick,
 }) => {
+  const [isVisible, setIsVisible] = useState(true);
+  const lastScrollY = useRef(0);
+  const scrollTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Auto-Hide / Show on Scroll Behavior
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const scrollDiff = currentScrollY - lastScrollY.current;
+
+      // Always show if near the top of the feed (< 50px)
+      if (currentScrollY < 50) {
+        setIsVisible(true);
+      } else if (scrollDiff > 8) {
+        // Scrolling DOWN -> hide bottom nav (motion goes down)
+        setIsVisible(false);
+      } else if (scrollDiff < -8) {
+        // Scrolling UP -> show bottom nav (motion comes up)
+        setIsVisible(true);
+      }
+
+      lastScrollY.current = currentScrollY;
+
+      // When user STOPS scrolling -> show bottom nav smoothly
+      if (scrollTimeout.current) {
+        clearTimeout(scrollTimeout.current);
+      }
+      scrollTimeout.current = setTimeout(() => {
+        setIsVisible(true);
+      }, 700);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+    };
+  }, []);
+
   const navItems = [
     { id: 'home', label: 'Home', icon: Home },
     { id: 'messages', label: 'Pesan', icon: Send, hasBadge: true },
@@ -22,7 +61,12 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 font-gt-standard select-none bg-white/95 backdrop-blur-xl border-t border-neutral-200/80 shadow-[0_-4px_24px_rgba(0,0,0,0.04)]">
+    <motion.div
+      initial={{ y: 0 }}
+      animate={{ y: isVisible ? 0 : '120%' }}
+      transition={{ type: 'spring', stiffness: 350, damping: 32 }}
+      className="fixed bottom-0 left-0 right-0 z-50 font-gt-standard select-none bg-white/95 backdrop-blur-xl border-t border-neutral-200/80 shadow-[0_-4px_24px_rgba(0,0,0,0.04)]"
+    >
       {/* Edge-to-Edge Safe-Area Compliant Inner Container */}
       <nav className="max-w-md mx-auto px-2 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-center justify-around relative">
         <LayoutGroup id="market-bottom-nav-group">
@@ -102,6 +146,6 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
           })}
         </LayoutGroup>
       </nav>
-    </div>
+    </motion.div>
   );
 };

@@ -27,7 +27,7 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
 
   return (
     <header
-      className="relative w-full z-30 transition-all duration-200 font-gt-standard bg-[#fafafa]"
+      className="relative w-full z-30 transition-all duration-200 font-gt-standard bg-white"
       style={{
         paddingTop: 'env(safe-area-inset-top, 0px)',
       }}

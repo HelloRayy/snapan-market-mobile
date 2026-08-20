@@ -137,10 +137,10 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
                 <div className="relative z-10 flex items-center justify-center">
                   {isProfile ? (
                     <div
-                      className={`w-[22px] h-[22px] rounded-full overflow-hidden transition-all ${
+                      className={`w-[23px] h-[23px] rounded-full overflow-hidden transition-all ${
                         isActive
-                          ? 'ring-2 ring-slate-900 border border-white scale-105'
-                          : 'border border-neutral-300/90 opacity-75 group-hover:opacity-100'
+                          ? 'scale-105 shadow-2xs'
+                          : 'opacity-70 group-hover:opacity-100'
                       }`}
                     >
                       <img

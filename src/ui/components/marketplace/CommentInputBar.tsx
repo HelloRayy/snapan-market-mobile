@@ -48,7 +48,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
 
   const containerClasses = isInline
     ? 'w-full min-w-0 bg-white py-2.5 font-gt-standard mb-1'
-    : 'fixed bottom-0 left-0 right-0 max-w-xl mx-auto bg-white/95 backdrop-blur-md border-t border-neutral-200 px-4 py-2.5 z-40 font-gt-standard shadow-lg';
+    : 'fixed bottom-0 left-0 right-0 max-w-xl mx-auto bg-white border-t border-neutral-200/80 px-4 py-2.5 z-40 font-gt-standard shadow-md';
 
   return (
     <div className={containerClasses}>

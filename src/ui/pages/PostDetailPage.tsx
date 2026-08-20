@@ -85,13 +85,24 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   };
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-pure-white pb-36 font-gt-standard">
+    <div
+      ref={containerRef}
+      className="h-full w-full overflow-y-auto overscroll-contain bg-white pb-36 font-gt-standard"
+      style={{
+        WebkitOverflowScrolling: 'touch',
+      }}
+    >
       {/* Top Header Bar: [Left: ← Back Button] --- [Center: Postingan] --- [Right: Spacer] */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-neutral-200 px-4 h-14 flex items-center justify-between max-w-xl mx-auto">
+      <header
+        className="sticky top-0 left-0 right-0 z-40 bg-white border-b border-neutral-200/80 px-4 h-14 flex items-center justify-between max-w-xl mx-auto"
+        style={{
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+        }}
+      >
         <button
           type="button"
           onClick={onBack}
-          className="w-9 h-9 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-95"
+          className="w-10 h-10 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
           aria-label="Kembali ke Feed Utama"
         >
           <ArrowLeft className="w-5 h-5 stroke-[2.25]" />
@@ -100,11 +111,11 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         <h1 className="font-semibold text-base text-slate-900">Postingan</h1>
 
         {/* Spacer for center title balance */}
-        <div className="w-9 h-9 pointer-events-none" />
+        <div className="w-10 h-10 pointer-events-none" />
       </header>
 
       {/* Main Content Area */}
-      <main className="max-w-xl mx-auto pt-16">
+      <main className="max-w-xl mx-auto pt-0">
         {/* Focused Main Post Card */}
         <MarketPostCard
           item={post}

@@ -104,16 +104,24 @@ export function App() {
             />
           )}
 
-          {/* Slide-over Detail Page Layer (Slides Right-to-Left on Open, Left-to-Right on Close) */}
+          {/* Slide-over Detail Page Layer (Silky 60-120fps GPU Hardware-Accelerated iOS Motion) */}
           <AnimatePresence>
             {selectedPost && (
               <motion.div
                 key={selectedPost.id}
-                initial={{ x: '100%' }}
-                animate={{ x: 0 }}
-                exit={{ x: '100%' }}
-                transition={{ type: 'tween', duration: 0.20, ease: [0.25, 1, 0.5, 1] }}
-                className="fixed inset-0 z-50 bg-white overflow-y-auto"
+                initial={{ transform: 'translate3d(100%, 0, 0)' }}
+                animate={{ transform: 'translate3d(0%, 0, 0)' }}
+                exit={{ transform: 'translate3d(100%, 0, 0)' }}
+                transition={{
+                  duration: 0.22,
+                  ease: [0.32, 0.72, 0, 1], // Native iOS page push ease curve
+                }}
+                style={{
+                  willChange: 'transform',
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                }}
+                className="fixed inset-0 z-50 bg-white overflow-hidden transform-gpu"
               >
                 <PostDetailPage
                   post={selectedPost}

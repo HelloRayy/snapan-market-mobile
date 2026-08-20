@@ -50,9 +50,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   // Follow Toggle state (for viewing other users)
   const [isFollowing, setIsFollowing] = useState(false);
 
-  // Selected Skill Filter
-  const [selectedSkillFilter, setSelectedSkillFilter] = useState<string | null>(null);
-
   // Current logged in user info
   const currentUsername =
     profile?.full_name?.toLowerCase().replace(/\s+/g, '') ||
@@ -106,15 +103,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
   // Fallback if no specific posts found: show sample posts
   const basePosts = userPosts.length > 0 ? userPosts : MOCK_MARKET_POSTS.slice(0, 2);
-
-  // Filter by selected skill if active
-  const displayPosts = selectedSkillFilter
-    ? basePosts.filter((p) =>
-        p.caption.toLowerCase().includes(selectedSkillFilter.toLowerCase()) ||
-        p.topicTag?.toLowerCase().includes(selectedSkillFilter.toLowerCase()) ||
-        p.category?.toLowerCase().includes(selectedSkillFilter.toLowerCase())
-      )
-    : basePosts;
+  const displayPosts = basePosts;
 
   // Extract all media images for Media Tab
   const mediaImages = basePosts.flatMap((p) => p.images || []);
@@ -217,28 +206,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             {profileData.bio}
           </p>
 
-          {/* Row 3: Skill / Community Topics Chips */}
-          <div className="flex items-center gap-1.5 flex-wrap pt-1">
-            {profileData.skills.map((skill, idx) => {
-              const isSelected = selectedSkillFilter === skill;
-              return (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setSelectedSkillFilter(isSelected ? null : skill)}
-                  className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[12.5px] font-semibold transition-all cursor-pointer select-none active:scale-95 ${
-                    isSelected
-                      ? 'bg-[#1d64ec] text-white shadow-xs'
-                      : 'bg-neutral-100 text-slate-800 hover:bg-neutral-200/80 border border-neutral-200/50'
-                  }`}
-                >
-                  <span>{skill}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Row 4: Stats & Followers Summary */}
+          {/* Row 3: Stats & Followers Summary */}
           <div className="flex items-center gap-2 text-[13.5px] text-neutral-500 font-normal pt-1">
             <span>
               <strong className="text-slate-900 font-semibold">{profileData.followersCount}</strong> pengikut
@@ -376,20 +344,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
         {/* 4. Tab Content Area */}
         <div className="-mx-4">
-          {/* Active Skill Filter Chip Indicator */}
-          {selectedSkillFilter && (
-            <div className="px-4 py-2 bg-blue-50/80 border-b border-blue-100 flex items-center justify-between text-xs text-[#1d64ec]">
-              <span>Memfilter postingan: <strong>{selectedSkillFilter}</strong></span>
-              <button
-                type="button"
-                onClick={() => setSelectedSkillFilter(null)}
-                className="font-bold hover:underline cursor-pointer"
-              >
-                ✕ Hapus Filter
-              </button>
-            </div>
-          )}
-
           {/* TAB 1: UTAS & JUALAN (Unified Feed) */}
           {activeTab === 'threads' && (
             <div>

@@ -348,9 +348,9 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
 
             {/* 5. Stock Indicator (if product) */}
             {parentPost.postType !== 'thread' && !!parentPost.price && parentPost.price > 0 && parentPost.stock !== undefined && parentPost.stock > 0 && (
-              <div className="flex items-center gap-1.5 min-h-[36px] px-1.5 py-1 text-slate-500 select-none ml-auto">
-                <Box className="w-4 h-4 stroke-[2] text-slate-500" />
-                <span className="font-normal text-[13.5px] text-slate-700">{parentPost.stock}</span>
+              <div className="flex items-center gap-1.5 min-h-[36px] px-2 py-1 text-neutral-500 bg-neutral-100/80 rounded-lg text-[12.5px] select-none ml-auto" title={`Stok tersisa ${parentPost.stock}`}>
+                <Box className="w-3.5 h-3.5 stroke-[2] text-neutral-500" />
+                <span className="font-normal text-slate-600">Sisa stok: <strong className="font-semibold text-slate-900">{parentPost.stock}</strong></span>
               </div>
             )}
           </div>

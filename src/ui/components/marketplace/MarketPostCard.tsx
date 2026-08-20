@@ -251,11 +251,11 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
         </button>
       </div>
 
-      {/* 5. Stock Indicator (Icon + Number) - ONLY FOR PRODUCT POSTS */}
+      {/* 5. Stock Indicator (Icon + Label + Number) - ONLY FOR PRODUCT POSTS */}
       {item.postType !== 'thread' && !!item.price && item.price > 0 && item.stock !== undefined && item.stock > 0 && (
-        <div className="flex items-center gap-1.5 min-h-[36px] px-1.5 py-1 text-slate-500 hover:text-slate-700 transition-colors select-none ml-auto" title={`Stok tersisa ${item.stock}`}>
-          <Box className="w-4 h-4 stroke-[2] text-slate-500" />
-          <span className="font-normal text-[13.5px] text-slate-700">{item.stock}</span>
+        <div className="flex items-center gap-1.5 min-h-[36px] px-2 py-1 text-neutral-500 bg-neutral-100/80 rounded-lg text-[12.5px] select-none ml-auto" title={`Stok tersisa ${item.stock}`}>
+          <Box className="w-3.5 h-3.5 stroke-[2] text-neutral-500" />
+          <span className="font-normal text-slate-600">Sisa stok: <strong className="font-semibold text-slate-900">{item.stock}</strong></span>
         </div>
       )}
     </div>

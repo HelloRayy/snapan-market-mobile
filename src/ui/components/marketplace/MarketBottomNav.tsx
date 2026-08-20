@@ -22,9 +22,9 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   ];
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto z-50 font-gt-standard select-none">
-      {/* Floating White Pill Dock Container */}
-      <nav className="bg-white/95 backdrop-blur-xl border border-neutral-200/80 p-1.5 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.12)] flex items-center justify-around relative">
+    <div className="fixed bottom-0 left-0 right-0 z-50 font-gt-standard select-none bg-white/95 backdrop-blur-xl border-t border-neutral-200/80 shadow-[0_-4px_24px_rgba(0,0,0,0.04)]">
+      {/* Edge-to-Edge Safe-Area Compliant Inner Container */}
+      <nav className="max-w-md mx-auto px-2 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-center justify-around relative">
         <LayoutGroup id="market-bottom-nav-group">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -33,11 +33,11 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
             // Center Plus Action Button: Elevated Kumo Primary Electric Blue Floating FAB
             if (item.isAction) {
               return (
-                <div key={item.id} className="relative flex items-center justify-center shrink-0 w-11 h-9">
+                <div key={item.id} className="relative flex items-center justify-center shrink-0 w-12 h-10">
                   <button
                     type="button"
                     onClick={onPostClick || (() => onTabChange('post'))}
-                    className="absolute -top-5 w-11.5 h-11.5 rounded-full bg-[#1d64ec] hover:bg-[#154ec1] border border-[#154ec1] active:scale-90 text-white flex items-center justify-center shadow-[0_8px_20px_rgba(29,100,236,0.4)] ring-4 ring-white transition-all cursor-pointer z-10 overflow-hidden group"
+                    className="absolute -top-4.5 w-12 h-12 rounded-full bg-[#1d64ec] hover:bg-[#154ec1] border-2 border-white active:scale-90 text-white flex items-center justify-center shadow-[0_8px_20px_rgba(29,100,236,0.38)] ring-4 ring-white/90 transition-all cursor-pointer z-10 overflow-hidden group"
                     aria-label="Jual Produk Baru"
                     title="Jual Produk Baru"
                   >
@@ -45,7 +45,7 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
                     <span className="absolute inset-0 rounded-full bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.4)] group-hover:from-[#2563eb] transition-all pointer-events-none" />
 
                     {/* Plus Icon */}
-                    <Plus className="w-5.5 h-5.5 stroke-[2.5] text-white relative z-10" />
+                    <Plus className="w-6 h-6 stroke-[2.5] text-white relative z-10" />
                   </button>
                 </div>
               );
@@ -64,7 +64,7 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
                 key={item.id}
                 type="button"
                 onClick={() => onTabChange(item.id)}
-                className={`flex flex-col items-center justify-center px-4 py-1.5 rounded-full transition-colors duration-200 cursor-pointer active:scale-95 relative ${
+                className={`flex flex-col items-center justify-center px-3.5 py-1 rounded-full transition-colors duration-200 cursor-pointer active:scale-95 relative ${
                   isActive
                     ? 'text-slate-900 font-semibold'
                     : 'bg-transparent text-neutral-400 hover:text-slate-900 font-normal'

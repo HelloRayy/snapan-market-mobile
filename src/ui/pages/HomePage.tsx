@@ -229,8 +229,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost }) => {
 
       {/* Main Threads Feed Container (0px padding, no purple gap) */}
       <main className="max-w-xl mx-auto divide-y divide-neutral-200 pt-0">
-        {/* Scrollable Tab Switcher ("Untuk Anda" & "Terbaru") - Sticky top-14 under header */}
-        <div className="sticky top-14 z-30 flex items-center border-b border-neutral-200 select-none bg-[#fafafa]/90 backdrop-blur-md">
+        {/* Scrollable Tab Switcher ("Untuk Anda" & "Terbaru") - Sticky top-0 under safe-area */}
+        <div
+          className="sticky top-0 z-30 flex items-center border-b border-neutral-200 select-none bg-[#fafafa]/90 backdrop-blur-md shadow-2xs"
+          style={{
+            paddingTop: 'env(safe-area-inset-top, 0px)',
+          }}
+        >
           {/* Smooth Sliding Bar (No Kedut/Flicker, Pure Slide) */}
           <div
             className={`absolute bottom-0 left-0 w-1/2 h-[2px] bg-slate-900 transition-transform duration-200 cubic-bezier(0.25,1,0.5,1) ${

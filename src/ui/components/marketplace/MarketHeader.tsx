@@ -18,21 +18,7 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
 }) => {
   const [showSearchInput, setShowSearchInput] = useState(false);
   const [searchValue, setSearchValue] = useState('');
-  const [isScrolled, setIsScrolled] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
-
-  // Scroll listener for dynamic frosted glass blur & opacity
-  React.useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const handleSearchChange = (val: string) => {
     setSearchValue(val);
@@ -41,11 +27,10 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
 
   return (
     <header
-      className={`sticky top-0 w-full z-40 transition-all duration-200 cubic-bezier(0.25,1,0.5,1) font-gt-standard ${
-        isScrolled
-          ? 'bg-[#fafafa]/85 backdrop-blur-xl'
-          : 'bg-[#fafafa]/90 backdrop-blur-md'
-      }`}
+      className="relative w-full z-30 transition-all duration-200 font-gt-standard bg-[#fafafa]"
+      style={{
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+      }}
     >
       {/* Top Main Bar: [ Left: Profile Avatar ] --- [ Center: Store Logo ] --- [ Right: Search Toggle ] */}
       <div className="max-w-xl mx-auto px-4 h-14 flex items-center justify-between gap-3 relative select-none">

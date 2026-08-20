@@ -5,6 +5,7 @@ import { PwaLandingPage } from '@/ui/components/pwa/PwaLandingPage';
 import { HomePage } from '@/ui/pages/HomePage';
 import { PostDetailPage } from '@/ui/pages/PostDetailPage';
 import { ProfilePage } from '@/ui/pages/ProfilePage';
+import { NavigationDrawer } from '@/ui/components/navigation/NavigationDrawer';
 import { MarketPostItem } from '@/types/marketFeed';
 import { useAuth } from '@/ui/hooks/useAuth';
 
@@ -37,6 +38,7 @@ export function App() {
 
   const [currentRoute, setCurrentRoute] = useState<string>(window.location.pathname);
   const [selectedPost, setSelectedPost] = useState<MarketPostItem | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
 
   // Double-Back to Exit Toast State
   const [showExitToast, setShowExitToast] = useState(false);
@@ -78,19 +80,25 @@ export function App() {
     const handlePopState = () => {
       const hash = window.location.hash;
 
-      // 1. If currently a Post Detail layer is open, close it cleanly
+      // 1. If currently Drawer is open, close it cleanly
+      if (isDrawerOpen) {
+        setIsDrawerOpen(false);
+        return;
+      }
+
+      // 2. If currently a Post Detail layer is open, close it cleanly
       if (selectedPost && !hash.startsWith('#post-')) {
         setSelectedPost(null);
         return;
       }
 
-      // 2. Update route state
+      // 3. Update route state
       const nextRoute = window.location.pathname;
       setCurrentRoute(nextRoute);
 
-      // 3. Double-Back to Exit Protection when at Root Home
+      // 4. Double-Back to Exit Protection when at Root Home
       const nextIsRoot = nextRoute === '/' && !hash.startsWith('#@') && !hash.startsWith('#post-');
-      if (nextIsRoot && !selectedPost) {
+      if (nextIsRoot && !selectedPost && !isDrawerOpen) {
         const now = Date.now();
         if (now - lastBackPressTimeRef.current < 2000) {
           // Double back within 2s -> Allow OS to exit PWA
@@ -117,7 +125,7 @@ export function App() {
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [user, selectedPost]);
+  }, [user, selectedPost, isDrawerOpen]);
 
   // Route-based Scroll Management: Reset on new non-home routes, restore when returning to Home
   useEffect(() => {
@@ -159,6 +167,19 @@ export function App() {
     setCurrentRoute(`/@${clean}`);
   };
 
+  const handleOpenDrawer = () => {
+    window.history.pushState({ layer: 'drawer' }, '', window.location.pathname + window.location.hash);
+    setIsDrawerOpen(true);
+  };
+
+  const handleCloseDrawer = () => {
+    if (window.history.state?.layer === 'drawer') {
+      window.history.back();
+    } else {
+      setIsDrawerOpen(false);
+    }
+  };
+
   const handleOpenPostDetail = (post: MarketPostItem) => {
     // Record home scroll before opening detail
     if (!isProfileRoute) {
@@ -197,6 +218,7 @@ export function App() {
             <HomePage
               onSelectPost={handleOpenPostDetail}
               onNavigateToProfile={navigateToProfile}
+              onOpenMenu={handleOpenDrawer}
             />
           </div>
 
@@ -206,6 +228,7 @@ export function App() {
               username={targetProfileUsername}
               onBack={isViewingOtherUserProfile ? () => window.history.back() : undefined}
               onSelectPost={handleOpenPostDetail}
+              onOpenMenu={handleOpenDrawer}
               onNavigateTab={(tab) => {
                 if (tab === 'home') {
                   navigateToHome();
@@ -213,6 +236,18 @@ export function App() {
               }}
             />
           )}
+
+          {/* Side Navigation Drawer (Sliding from Left with Backdrop Blur) */}
+          <NavigationDrawer
+            isOpen={isDrawerOpen}
+            onClose={handleCloseDrawer}
+            onNavigateHome={navigateToHome}
+            onNavigateProfile={navigateToProfile}
+            onNavigateDownload={() => {
+              setCurrentRoute('/download');
+              window.history.pushState({}, '', '/download');
+            }}
+          />
 
           {/* Slide-over Detail Page Layer (Silky 60-120fps GPU Hardware-Accelerated iOS Motion) */}
           <AnimatePresence>

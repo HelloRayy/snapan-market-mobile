@@ -28,6 +28,7 @@ interface ProfilePageProps {
   onSelectPost?: (post: MarketPostItem) => void;
   onAddToCart?: (post: MarketPostItem) => void;
   onNavigateTab?: (tab: string) => void;
+  onOpenMenu?: () => void;
 }
 
 export const ProfilePage: React.FC<ProfilePageProps> = ({
@@ -36,6 +37,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   onSelectPost,
   onAddToCart,
   onNavigateTab,
+  onOpenMenu,
 }) => {
   const { user, profile } = useAuth();
 
@@ -185,9 +187,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             ) : (
               <button
                 type="button"
-                onClick={() => setIsSettingsOpen(true)}
+                onClick={onOpenMenu || (() => setIsSettingsOpen(true))}
                 className="w-10 h-10 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
-                aria-label="Menu Pengaturan"
+                aria-label="Menu Pengaturan & Sidebar"
               >
                 <Menu className="w-5 h-5 stroke-[2.25]" />
               </button>

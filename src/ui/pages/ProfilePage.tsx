@@ -185,7 +185,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         {/* TOP IDENTITY SECTION: Exact Threads Layout */}
         <section className="space-y-3 pt-1">
           {/* Row 1: Name + Username (Left, vertically centered with Avatar) vs Avatar (Right) */}
-          <div className="flex items-center justify-between gap-4 min-h-[74px] sm:min-h-[84px]">
+          <div className="flex items-center justify-between gap-4 min-h-[84px]">
             <div className="flex flex-col items-start justify-center flex-1 min-w-0">
               <div className="flex items-center gap-1.5 min-w-0">
                 <h1 className="font-bold text-[24px] sm:text-[26px] text-slate-900 tracking-tight leading-tight truncate">
@@ -205,9 +205,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               </div>
             </div>
 
-            {/* Large Circular Avatar on Right (Threads 72-84px standard) */}
+            {/* Large Circular Avatar on Right (Exact 84x84px standard) */}
             <div className="relative shrink-0">
-              <div className="w-[74px] h-[74px] sm:w-[84px] sm:h-[84px] rounded-full overflow-hidden border border-neutral-200/90 shadow-2xs bg-neutral-100">
+              <div className="w-[84px] h-[84px] rounded-full overflow-hidden border border-neutral-200/90 shadow-2xs bg-neutral-100">
                 <img
                   src={profileData.avatar}
                   alt={profileData.name}

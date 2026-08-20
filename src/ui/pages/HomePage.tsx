@@ -100,8 +100,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost, onNavigateToPr
     const activeSellerAvatar = profile?.avatar_url || user?.user_metadata?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80';
     const activeSellerClass = profile?.class_group || 'XII PPLG 1';
 
+    const isProduct = newPostData.postType === 'product';
+
     const createdPost: MarketPostItem = {
       id: `post-user-${Date.now()}`,
+      postType: isProduct ? 'product' : 'thread',
       seller: {
         id: activeSellerId,
         name: activeSellerName,
@@ -111,11 +114,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost, onNavigateToPr
         username: activeSellerName.toLowerCase().replace(/\s+/g, ''),
       },
       caption: newPostData.caption || '',
-      price: newPostData.price || 50000,
-      category: newPostData.category || 'Jasa DKV/PPLG',
-      images: newPostData.images && newPostData.images.length > 0 ? newPostData.images : ['https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80'],
-      stock: newPostData.stock || 1,
-      locationTag: newPostData.locationTag || 'Lab PPLG',
+      price: isProduct ? (newPostData.price ?? 50000) : undefined,
+      originalPrice: isProduct ? newPostData.originalPrice : undefined,
+      category: isProduct ? (newPostData.category || 'Jasa DKV/PPLG') : undefined,
+      images: newPostData.images || [],
+      stock: isProduct ? (newPostData.stock ?? 1) : undefined,
+      locationTag: isProduct ? newPostData.locationTag : undefined,
       topicTag: newPostData.topicTag,
       isOfficialTopic: newPostData.isOfficialTopic,
       topicIcon: newPostData.topicIcon,

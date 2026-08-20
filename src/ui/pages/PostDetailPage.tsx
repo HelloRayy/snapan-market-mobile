@@ -160,8 +160,8 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         </section>
       </main>
 
-      {/* Floating Pill Buy Bar & Modal (ONLY for Marketplace Product Posts, NOT for Utas) */}
-      {(post.postType === 'product' || (post.postType !== 'thread' && !!post.price && post.price > 0)) && (
+      {/* Floating Pill Buy Bar & Modal (ONLY for Marketplace Product Posts, NEVER for Utas) */}
+      {post.postType === 'product' && !!post.price && post.price > 0 && (
         <>
           <StickyBuyBar
             price={post.price || 0}

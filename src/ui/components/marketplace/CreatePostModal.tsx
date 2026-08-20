@@ -122,17 +122,22 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
   const handleSubmit = () => {
     if (!canPost) return;
 
-    const parsedPrice = priceInput ? parseInt(priceInput.replace(/\D/g, ''), 10) : (postMode === 'product' ? 50000 : 0);
-    const parsedStock = stockInput ? parseInt(stockInput, 10) : (postMode === 'product' ? 1 : 0);
+    const isProductMode = postMode === 'product';
+    const parsedPrice = isProductMode
+      ? (priceInput ? parseInt(priceInput.replace(/\D/g, ''), 10) : 50000)
+      : undefined;
+    const parsedStock = isProductMode
+      ? (stockInput ? parseInt(stockInput, 10) : 1)
+      : undefined;
 
     const newPost: Partial<MarketPostItem> = {
       postType: postMode,
-      title: postMode === 'product' ? (productTitle || caption.slice(0, 30)) : undefined,
+      title: isProductMode ? (productTitle || caption.slice(0, 30)) : undefined,
       caption: caption || productTitle,
       images,
       price: parsedPrice,
       stock: parsedStock,
-      locationTag: locationInput || (postMode === 'product' ? 'Lab PPLG' : undefined),
+      locationTag: isProductMode ? (locationInput || 'Lab PPLG') : undefined,
       topicTag: selectedTopic ? selectedTopic.name : undefined,
       isOfficialTopic: selectedTopic ? selectedTopic.isOfficial : false,
       topicIcon: selectedTopic?.icon || (selectedTopic?.isOfficial ? 'threads' : undefined),

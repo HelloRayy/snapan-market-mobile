@@ -97,7 +97,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
           <ArrowLeft className="w-5 h-5 stroke-[2.25]" />
         </button>
 
-        <h1 className="font-semibold text-base text-slate-900">Postingan</h1>
+        <h1 className="font-medium text-base text-slate-900">Postingan</h1>
 
         {/* Spacer for center title balance */}
         <div className="w-9 h-9 pointer-events-none" />
@@ -116,7 +116,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         <section id="comments-section" className="px-4 pt-2">
           {/* Section Divider Header */}
           <div className="py-2.5 flex items-center justify-between">
-            <h2 className="font-semibold text-sm text-slate-900">
+            <h2 className="font-medium text-sm text-slate-900">
               Komentar ({comments.length})
             </h2>
             <span className="text-xs text-neutral-400">Urutkan dari Terbaru</span>

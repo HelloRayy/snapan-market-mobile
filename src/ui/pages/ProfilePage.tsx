@@ -9,7 +9,6 @@ import {
   UserPlus,
   UserCheck,
   Grid,
-  Repeat2,
   Package,
 } from 'lucide-react';
 import { MarketPostCard } from '../components/marketplace/MarketPostCard';
@@ -39,8 +38,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 }) => {
   const { user, profile } = useAuth();
 
-  // Active Tab state: 'threads' | 'replies' | 'media' | 'reposts'
-  const [activeTab, setActiveTab] = useState<'threads' | 'replies' | 'media' | 'reposts'>('threads');
+  // Active Tab state: 'threads' | 'replies' | 'media'
+  const [activeTab, setActiveTab] = useState<'threads' | 'replies' | 'media'>('threads');
 
   // Modals state
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -327,59 +326,48 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           )}
         </div>
 
-        {/* 3. 4-Tab Sliding Underline Switcher (Utas, Balasan, Media, Diposting Ulang) */}
-        <div className="border-b border-neutral-200/80 pt-1 -mx-4 px-4 bg-white sticky top-14 z-20">
-          <div className="flex items-center justify-between text-center relative max-w-[590px] mx-auto">
+        {/* 3. 3-Tab Sliding Switcher (Utas, Balasan, Media) with Smooth Hardware-Accelerated Motion */}
+        <div className="border-b border-neutral-200/80 -mx-4 px-4 bg-white sticky top-14 z-20 select-none">
+          <div className="max-w-[590px] mx-auto flex items-center relative">
+            {/* Smooth Sliding Underline Bar across 3 Tabs (w-1/3) */}
+            <div
+              className={`absolute bottom-0 left-0 w-1/3 h-[2px] bg-slate-900 transition-transform duration-200 cubic-bezier(0.25,1,0.5,1) ${
+                activeTab === 'threads'
+                  ? 'translate-x-0'
+                  : activeTab === 'replies'
+                  ? 'translate-x-full'
+                  : 'translate-x-[200%]'
+              }`}
+            />
+
             <button
               type="button"
               onClick={() => setActiveTab('threads')}
-              className={`flex-1 py-3 text-[14px] transition-colors relative cursor-pointer ${
+              className={`flex-1 py-3 text-[14px] text-center relative cursor-pointer transition-colors ${
                 activeTab === 'threads' ? 'font-bold text-slate-900' : 'font-medium text-neutral-400 hover:text-slate-700'
               }`}
             >
-              <span>Utas</span>
-              {activeTab === 'threads' && (
-                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-slate-900" />
-              )}
+              Utas
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab('replies')}
-              className={`flex-1 py-3 text-[14px] transition-colors relative cursor-pointer ${
+              className={`flex-1 py-3 text-[14px] text-center relative cursor-pointer transition-colors ${
                 activeTab === 'replies' ? 'font-bold text-slate-900' : 'font-medium text-neutral-400 hover:text-slate-700'
               }`}
             >
-              <span>Balasan</span>
-              {activeTab === 'replies' && (
-                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-slate-900" />
-              )}
+              Balasan
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab('media')}
-              className={`flex-1 py-3 text-[14px] transition-colors relative cursor-pointer ${
+              className={`flex-1 py-3 text-[14px] text-center relative cursor-pointer transition-colors ${
                 activeTab === 'media' ? 'font-bold text-slate-900' : 'font-medium text-neutral-400 hover:text-slate-700'
               }`}
             >
-              <span>Media</span>
-              {activeTab === 'media' && (
-                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-slate-900" />
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('reposts')}
-              className={`flex-1 py-3 text-[14px] transition-colors relative cursor-pointer ${
-                activeTab === 'reposts' ? 'font-bold text-slate-900' : 'font-medium text-neutral-400 hover:text-slate-700'
-              }`}
-            >
-              <span>Diposting ulang</span>
-              {activeTab === 'reposts' && (
-                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-slate-900" />
-              )}
+              Media
             </button>
           </div>
         </div>
@@ -448,7 +436,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                     >
                       <img
                         src={imgUrl}
-                        alt={`Media ${idx}`}
+                        alt="Media"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                       />
                     </div>
@@ -461,21 +449,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                   <p className="text-xs">Foto dari postingan akan tampil dalam galeri ini.</p>
                 </div>
               )}
-            </div>
-          )}
-
-          {/* TAB 4: DIPOSTING ULANG (Reposts) */}
-          {activeTab === 'reposts' && (
-            <div>
-              <div className="px-4 py-2 bg-neutral-50/70 border-b border-neutral-100 flex items-center gap-2 text-xs text-neutral-500">
-                <Repeat2 className="w-4 h-4 text-emerald-600" />
-                <span>{profileData.name} memposting ulang</span>
-              </div>
-              <MarketPostCard
-                item={MOCK_MARKET_POSTS[1]}
-                onAddToCart={onAddToCart}
-                onPostClick={onSelectPost}
-              />
             </div>
           )}
         </div>

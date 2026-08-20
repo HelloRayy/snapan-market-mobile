@@ -269,8 +269,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
         /* DETAIL PAGE VARIANT: Single column, caption & images aligned full-width with top header avatar */
         <div className="space-y-2.5">
           {/* Top Header Row: Profile Picture + Name + Class/Timestamp + More Options (...) */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2.5 min-w-0 flex-1 overflow-hidden">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex items-start gap-2.5 min-w-0 flex-1">
               <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
                 <img
                   src={item.seller.avatar}
@@ -279,8 +279,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 />
               </div>
 
-              <div className="flex items-center gap-1 min-w-0 flex-1 overflow-hidden">
-                <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[65%]">
+              <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 min-w-0 flex-1 pt-0.5">
+                <span className="font-semibold text-[15px] text-slate-900 hover:underline shrink-0">
                   {item.seller.name}
                 </span>
 
@@ -289,7 +289,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 )}
 
                 {item.topicTag ? (
-                  <div className="flex items-center gap-1 shrink-0 ml-0.5">
+                  <div className="inline-flex items-center gap-1 shrink-0">
                     {/* Larger Chevron Arrow Separator */}
                     <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2.5] shrink-0" />
 
@@ -316,7 +316,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                     </button>
                   </div>
                 ) : (
-                  <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
+                  <span className="text-[13.5px] font-normal text-neutral-400">
                     {item.seller.classGroup}
                   </span>
                 )}
@@ -326,7 +326,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             <button
               type="button"
               onClick={(e) => e.stopPropagation()}
-              className="text-slate-500 hover:text-slate-900 p-1.5 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
+              className="text-slate-500 hover:text-slate-900 p-1.5 rounded-full hover:bg-neutral-100 transition-colors shrink-0 self-start"
               aria-label="Opsi postingan"
             >
               <MoreHorizontal className="w-4 h-4" />
@@ -361,9 +361,9 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           {/* Right Column: Content starting directly under Name */}
           <div className="flex-1 min-w-0 space-y-1 overflow-visible">
             {/* Header Row: Name + Verified + (Topic OR Class) + Timestamp + More Options (...) */}
-            <div className="flex items-center justify-between gap-2 min-w-0">
-              <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
-                <span className="font-semibold text-[15.5px] text-slate-900 truncate hover:underline shrink-0 max-w-[65%]">
+            <div className="flex items-start justify-between gap-2 min-w-0">
+              <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 min-w-0 flex-1">
+                <span className="font-semibold text-[15.5px] text-slate-900 hover:underline shrink-0">
                   {item.seller.name}
                 </span>
                 {item.seller.isVerified && (
@@ -371,7 +371,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 )}
 
                 {item.topicTag ? (
-                  <div className="flex items-center gap-1 shrink-0 ml-0.5">
+                  <div className="inline-flex items-center gap-1 shrink-0">
                     {/* Larger Chevron Arrow Separator */}
                     <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2.5] shrink-0" />
 
@@ -398,13 +398,13 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                     </button>
                   </div>
                 ) : (
-                  <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
+                  <span className="text-[13.5px] font-normal text-neutral-400">
                     {item.seller.classGroup}
                   </span>
                 )}
               </div>
 
-              <div className="flex items-center gap-2 shrink-0 ml-auto">
+              <div className="flex items-center gap-2 shrink-0 ml-auto self-start pt-0.5">
                 <span className="text-[14px] font-normal text-neutral-400 whitespace-nowrap">{item.timestamp}</span>
                 <button
                   type="button"

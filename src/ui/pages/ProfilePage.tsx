@@ -188,7 +188,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           <div className="flex items-center justify-between gap-4 min-h-[84px]">
             <div className="flex flex-col items-start justify-center flex-1 min-w-0">
               <div className="flex items-center gap-1.5 min-w-0">
-                <h1 className="font-bold text-[24px] sm:text-[26px] text-slate-900 tracking-tight leading-tight truncate">
+                <h1 className="font-bold text-[24px] text-slate-900 tracking-tight leading-tight truncate">
                   {profileData.name}
                 </h1>
                 {profileData.isVerified && (
@@ -196,7 +196,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 )}
               </div>
 
-              <div className="flex items-center gap-2 text-[14.5px] mt-1">
+              <div className="flex items-center gap-2 text-[16px] mt-1">
                 <span className="font-normal text-slate-900">@{profileData.username}</span>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-[#1d64ec] border border-blue-100">
                   <GraduationCap className="w-3 h-3" />

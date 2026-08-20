@@ -3,7 +3,8 @@ import {
   ArrowLeft,
   Settings,
   Share2,
-  Globe,
+  Menu,
+  Store,
   MessageCircle,
   UserPlus,
   UserCheck,
@@ -121,49 +122,69 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
   return (
     <div className="min-h-screen bg-white text-slate-ink pb-28 font-gt-standard select-none">
-      {/* 1. Top Bar Header */}
+      {/* 1. Top Bar Header (Identical layout as Homepage) */}
       <header
-        className="sticky top-0 z-30 bg-white border-b border-neutral-200/80 px-4 h-14 flex items-center justify-between max-w-[590px] mx-auto"
+        className="sticky top-0 z-30 bg-white border-b border-neutral-200/80 font-gt-standard select-none"
         style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
       >
-        {onBack ? (
-          <button
-            type="button"
-            onClick={onBack}
-            className="w-9 h-9 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-95"
-            aria-label="Kembali"
-          >
-            <ArrowLeft className="w-5 h-5 stroke-[2.25]" />
-          </button>
-        ) : (
-          <div className="flex items-center gap-1.5 text-slate-700">
-            <Globe className="w-4 h-4 text-[#1d64ec]" />
-            <span className="text-xs font-semibold text-slate-800 tracking-tight">snapan-market.id</span>
+        <div className="w-full max-w-[590px] mx-auto px-4 h-14 flex items-center justify-between relative">
+          {/* Left Side: Back button or Hamburger Menu */}
+          <div className="flex items-center">
+            {onBack ? (
+              <button
+                type="button"
+                onClick={onBack}
+                className="w-10 h-10 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
+                aria-label="Kembali"
+              >
+                <ArrowLeft className="w-5 h-5 stroke-[2.25]" />
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsSettingsOpen(true)}
+                className="w-10 h-10 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
+                aria-label="Menu Pengaturan"
+              >
+                <Menu className="w-5 h-5 stroke-[2.25]" />
+              </button>
+            )}
           </div>
-        )}
 
-        <div className="flex items-center gap-2">
-          {/* Quick Share */}
-          <button
-            type="button"
-            onClick={handleShareProfile}
-            className="w-9 h-9 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-700 transition-colors cursor-pointer active:scale-95"
-            aria-label="Bagikan Profil"
-          >
-            <Share2 className="w-4.5 h-4.5 stroke-[1.8]" />
-          </button>
-
-          {/* Settings / Menu */}
-          {isOwnProfile && (
+          {/* Center: Store / App Logo (Exact rounded square store logo as Homepage) */}
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
             <button
               type="button"
-              onClick={() => setIsSettingsOpen(true)}
-              className="w-9 h-9 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-700 transition-colors cursor-pointer active:scale-95"
-              aria-label="Pengaturan Akun"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-xs hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+              aria-label="Snapan Market Logo"
             >
-              <Settings className="w-4.5 h-4.5 stroke-[1.8]" />
+              <Store className="w-5 h-5 text-white stroke-[2.25]" />
             </button>
-          )}
+          </div>
+
+          {/* Right Side: Quick Share & Settings */}
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={handleShareProfile}
+              className="w-10 h-10 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
+              aria-label="Bagikan Profil"
+            >
+              <Share2 className="w-5 h-5 stroke-[1.8]" />
+            </button>
+
+            {isOwnProfile && (
+              <button
+                type="button"
+                onClick={() => setIsSettingsOpen(true)}
+                className="w-10 h-10 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
+                aria-label="Pengaturan Akun"
+              >
+                <Settings className="w-5 h-5 stroke-[1.8]" />
+              </button>
+            )}
+          </div>
         </div>
       </header>
 

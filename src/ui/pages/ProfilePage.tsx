@@ -296,22 +296,13 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         {/* Action Buttons */}
         <div className="flex items-center gap-2 pt-1">
           {isOwnProfile ? (
-            <>
-              <button
-                type="button"
-                onClick={() => setIsEditModalOpen(true)}
-                className="flex-1 h-9 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center"
-              >
-                Edit profil
-              </button>
-              <button
-                type="button"
-                onClick={handleShareProfile}
-                className="flex-1 h-9 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center"
-              >
-                Bagikan ID
-              </button>
-            </>
+            <button
+              type="button"
+              onClick={() => setIsEditModalOpen(true)}
+              className="w-full h-9 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center"
+            >
+              Edit profil
+            </button>
           ) : (
             <>
               <button

@@ -28,7 +28,7 @@ export const FormattedText: React.FC<FormattedTextProps> = ({
       {parts.map((part, index) => {
         if (!part) return null;
 
-        // 1. @mention Tag (Bold and Brand Blue like WhatsApp/Threads)
+        // 1. @mention Tag (Brand Blue with Medium font-weight like WhatsApp/Threads)
         if (part.startsWith('@')) {
           const username = part.slice(1);
           return (
@@ -40,7 +40,7 @@ export const FormattedText: React.FC<FormattedTextProps> = ({
                   onMentionClick(username);
                 }
               }}
-              className="font-bold text-[#1d64ec] hover:underline cursor-pointer select-text"
+              className="font-medium text-[#1d64ec] hover:underline cursor-pointer select-text"
             >
               {part}
             </span>

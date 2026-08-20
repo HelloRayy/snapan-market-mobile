@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, FileText, MoreHorizontal, Image as ImageIcon, MapPin, PartyPopper, AlignLeft, Music, ShoppingBag, Sparkles } from 'lucide-react';
+import { X, FileText, MoreHorizontal, Image as ImageIcon, MapPin, PartyPopper, AlignLeft, Music, ShoppingBag, Sparkles, ChevronRight } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 
 // Custom Threads 3-Dot Topic Icon
@@ -240,7 +240,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                       onClick={() => setShowTopicDropdown(!showTopicDropdown)}
                       className="flex items-center gap-1 text-[13px] font-normal transition-all cursor-pointer"
                     >
-                      <span className="text-neutral-400 font-normal">›</span>
+                      <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2.5] shrink-0" />
                       {selectedTopic ? (
                         <span
                           className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md font-bold text-[13px] ${

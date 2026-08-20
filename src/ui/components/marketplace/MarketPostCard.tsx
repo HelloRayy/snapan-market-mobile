@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, MoreHorizontal, Box, Repeat2, Send, PartyPopper } from 'lucide-react';
+import { Heart, MoreHorizontal, Box, Repeat2, Send, PartyPopper, ChevronRight } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { MediaLightboxModal } from './MediaLightboxModal';
 import { ClickableVerifiedBadge } from './VerifiedBadgeModal';
@@ -285,9 +285,9 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 )}
 
                 {item.topicTag ? (
-                  <div className="flex items-center gap-1.5 shrink-0 ml-0.5">
-                    {/* Always render chevron separator › */}
-                    <span className="text-neutral-400 font-normal text-[13.5px]">›</span>
+                  <div className="flex items-center gap-1 shrink-0 ml-0.5">
+                    {/* Larger Chevron Arrow Separator */}
+                    <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2.5] shrink-0" />
 
                     {/* Render special blue icon if official topic */}
                     {item.isOfficialTopic && (
@@ -367,9 +367,9 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 )}
 
                 {item.topicTag ? (
-                  <div className="flex items-center gap-1.5 shrink-0 ml-0.5">
-                    {/* Always render chevron separator › */}
-                    <span className="text-neutral-400 font-normal text-[14px]">›</span>
+                  <div className="flex items-center gap-1 shrink-0 ml-0.5">
+                    {/* Larger Chevron Arrow Separator */}
+                    <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2.5] shrink-0" />
 
                     {/* Render special blue icon if official topic */}
                     {item.isOfficialTopic && (

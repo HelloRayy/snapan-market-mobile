@@ -210,9 +210,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               </p>
             </div>
 
-            {/* Avatar on Far Right (76x76px) */}
+            {/* Avatar on Far Right (44x44px) */}
             <div className="relative shrink-0">
-              <div className="w-[76px] h-[76px] rounded-full overflow-hidden border border-neutral-200 shadow-2xs bg-neutral-100">
+              <div className="w-[44px] h-[44px] rounded-full overflow-hidden border border-neutral-200 shadow-2xs bg-neutral-100">
                 <img
                   src={profileData.avatar}
                   alt={profileData.name}

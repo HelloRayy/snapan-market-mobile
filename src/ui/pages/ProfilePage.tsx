@@ -132,8 +132,13 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const basePosts = userPosts.length > 0 ? userPosts : MOCK_MARKET_POSTS.slice(0, 2);
   const displayPosts = basePosts;
 
-  // Extract all media images for Media Tab
-  const mediaImages = basePosts.flatMap((p) => p.images || []);
+  // Extract all media items linked to their parent post for Media Tab
+  const mediaItems = basePosts.flatMap((post) =>
+    (post.images || []).map((imgUrl) => ({
+      imgUrl,
+      post,
+    }))
+  );
 
   const handleShareProfile = () => {
     if (navigator.share) {
@@ -463,22 +468,31 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </div>
           )}
 
-          {/* TAB 3: MEDIA (3-Column Grid) */}
+          {/* TAB 3: MEDIA (3-Column Vertical 3:4 Aspect Ratio Grid) */}
           {activeTab === 'media' && (
             <div className="p-1">
-              {mediaImages.length > 0 ? (
-                <div className="grid grid-cols-3 gap-1">
-                  {mediaImages.map((imgUrl, idx) => (
+              {mediaItems.length > 0 ? (
+                <div className="grid grid-cols-3 gap-1 sm:gap-1.5">
+                  {mediaItems.map((item, idx) => (
                     <div
                       key={idx}
-                      onClick={() => setLightboxImage(imgUrl)}
-                      className="aspect-square bg-neutral-100 overflow-hidden relative group cursor-pointer"
+                      onClick={() => onSelectPost?.(item.post)}
+                      className="aspect-[3/4] bg-neutral-100 overflow-hidden relative group cursor-pointer active:opacity-80 transition-all rounded-xs sm:rounded-sm shadow-2xs"
                     >
                       <img
-                        src={imgUrl}
+                        src={item.imgUrl}
                         alt="Media"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                       />
+                      {/* Multi-image indicator badge if post has multiple images */}
+                      {item.post.images && item.post.images.length > 1 && (
+                        <div className="absolute top-1.5 right-1.5 bg-black/60 backdrop-blur-xs text-white p-1 rounded-md">
+                          <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
+                            <rect x="3" y="3" width="14" height="14" rx="2" fill="none" stroke="currentColor" strokeWidth="2"/>
+                            <path d="M7 7h12a2 2 0 0 1 2 2v12" fill="none" stroke="currentColor" strokeWidth="2"/>
+                          </svg>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

@@ -149,17 +149,20 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
 
     if (parentPost.images.length === 1) {
       return (
-        <div className="mt-1.5 rounded-2xl border border-neutral-200/80 overflow-hidden bg-neutral-100 max-h-[360px]">
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            setSelectedImageIndex(0);
+            setIsLightboxOpen(true);
+          }}
+          className="relative w-full rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[340px] aspect-[16/10] mt-2.5 cursor-pointer touch-pan-y"
+        >
           <img
             src={parentPost.images[0]}
-            alt={parentPost.title || 'Foto Utas'}
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedImageIndex(0);
-              setIsLightboxOpen(true);
-            }}
-            className="w-full h-auto max-h-[360px] object-cover hover:scale-[1.01] transition-transform duration-200 cursor-pointer"
+            alt={parentPost.title || parentPost.caption}
+            className="w-full h-full object-cover hover:scale-[1.01] transition-transform duration-300 pointer-events-none"
           />
+          <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
         </div>
       );
     }
@@ -171,9 +174,10 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
         onMouseLeave={handleMouseLeaveOrUp}
         onMouseUp={handleMouseLeaveOrUp}
         onMouseMove={handleMouseMove}
-        className="flex gap-2 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory pt-1.5 cursor-grab active:cursor-grabbing select-none"
+        onClick={(e) => e.stopPropagation()}
+        className="flex gap-2.5 overflow-x-auto no-scrollbar scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none touch-pan-x touch-pan-y -mr-4 pr-4 w-[calc(100%+16px)]"
       >
-        {parentPost.images.map((img, idx) => (
+        {parentPost.images.map((imgUrl, idx) => (
           <div
             key={idx}
             onClick={(e) => {
@@ -181,13 +185,14 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
               setSelectedImageIndex(idx);
               setIsLightboxOpen(true);
             }}
-            className="relative shrink-0 w-[82%] sm:w-[320px] aspect-[4/3] rounded-2xl overflow-hidden border border-neutral-200/80 bg-neutral-100 snap-start group"
+            className="relative shrink-0 w-[82%] sm:w-[75%] rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[340px] aspect-[3/4] cursor-pointer"
           >
             <img
-              src={img}
-              alt={`Foto ${idx + 1}`}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none"
+              src={imgUrl}
+              alt={`${parentPost.caption} - ${idx + 1}`}
+              className="w-full h-full object-cover pointer-events-none"
             />
+            <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
           </div>
         ))}
       </div>
@@ -195,7 +200,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
   };
 
   return (
-    <article className="w-full border-b border-neutral-200 bg-pure-white font-gt-standard select-none px-4 py-3.5 hover:bg-neutral-50/40 transition-colors">
+    <article className="w-full border-b border-neutral-200 bg-pure-white font-gt-standard select-none px-4 py-3.5 hover:bg-neutral-50/40 transition-colors overflow-visible">
       {/* 1. PARENT POST SECTION WITH THREAD LINE */}
       <div className="flex gap-3 items-start min-w-0">
         {/* Left Column: Parent Avatar + Continuous Thread Line */}

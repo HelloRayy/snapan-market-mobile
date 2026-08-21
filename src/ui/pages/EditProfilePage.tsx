@@ -314,20 +314,16 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
             {/* 1-Line Seamless Badges + Input Flow */}
             <div className="flex items-center flex-wrap gap-1.5 min-h-[36px]">
               {activeTags.map((tag, idx) => (
-                <div
+                <button
                   key={idx}
-                  className="inline-flex items-center gap-1.5 py-1 px-3 bg-neutral-100/90 text-slate-800 hover:bg-neutral-200/70 text-[13px] font-medium rounded-full border border-neutral-200/80 transition-all select-none group"
+                  type="button"
+                  onClick={() => handleRemoveTag(tag)}
+                  className="inline-flex items-center gap-1.5 py-1 px-3 bg-neutral-100/90 hover:bg-rose-50 hover:border-rose-200/80 hover:text-rose-600 text-slate-800 text-[13px] font-medium rounded-full border border-neutral-200/80 transition-all select-none cursor-pointer active:scale-95 group shadow-2xs"
+                  title={`Ketuk untuk menghapus ${tag}`}
                 >
                   <span>{tag}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveTag(tag)}
-                    className="text-neutral-400 hover:text-rose-600 transition-colors cursor-pointer -mr-0.5"
-                    title="Hapus"
-                  >
-                    <X className="w-3 h-3 stroke-[2.2]" />
-                  </button>
-                </div>
+                  <X className="w-3 h-3 stroke-[2.2] text-neutral-400 group-hover:text-rose-600 transition-colors -mr-0.5" />
+                </button>
               ))}
 
               {/* Clean 1-Line Inline Input */}

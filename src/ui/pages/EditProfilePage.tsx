@@ -46,9 +46,8 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
   const [interests, setInterests] = useState(initialData.interests || '💻 Web PWA, 🎨 UI/UX, 👕 Preloved, ⚡ Joki Coding, 🍱 Kuliner');
   const [link, setLink] = useState(initialData.link || 'https://instagram.com/' + initialData.username.replace(/^@/, ''));
   
-  // Signature Threads Toggles
-  const [showInstagramBadge, setShowInstagramBadge] = useState(true);
-  const [showViewCounts, setShowViewCounts] = useState(true);
+  // Signature Profile Toggles
+  const [showSalesStats, setShowSalesStats] = useState(true);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [customTagInput, setCustomTagInput] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -375,58 +374,26 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
             />
           </div>
 
-          {/* Row 7: Podcast */}
-          <div className="py-4 border-b border-neutral-200/80">
-            <div className="flex items-center justify-between">
-              <label className="text-[14px] font-semibold text-slate-900">
-                Podcast
-              </label>
-              <ChevronRight className="w-4 h-4 text-neutral-400 shrink-0" />
-            </div>
-            <p className="mt-0.5 text-[15px] font-normal text-neutral-400 select-none">
-              + Tautan ke podcast Anda
-            </p>
-          </div>
-
-          {/* Row 8: Toggle - Tampilkan lencana Instagram */}
+          {/* Row 7: Toggle - Tampilkan statistik penjualan */}
           <div className="flex items-center justify-between py-4 border-b border-neutral-200/80 select-none">
             <span className="text-[14.5px] font-semibold text-slate-900">
-              Tampilkan lencana Instagram
+              Tampilkan statistik penjualan
             </span>
             <div
-              onClick={() => setShowInstagramBadge(!showInstagramBadge)}
+              onClick={() => setShowSalesStats(!showSalesStats)}
               className={`w-10 h-6 rounded-full p-0.5 transition-colors duration-200 flex items-center shrink-0 cursor-pointer ${
-                showInstagramBadge ? 'bg-[#101010]' : 'bg-neutral-300'
+                showSalesStats ? 'bg-[#1d64ec]' : 'bg-neutral-300'
               }`}
             >
               <div
                 className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-200 transform-gpu ${
-                  showInstagramBadge ? 'translate-x-4' : 'translate-x-0'
+                  showSalesStats ? 'translate-x-4' : 'translate-x-0'
                 }`}
               />
             </div>
           </div>
 
-          {/* Row 9: Toggle - Tampilkan tayangan terbaru */}
-          <div className="flex items-center justify-between py-4 border-b border-neutral-200/80 select-none">
-            <span className="text-[14.5px] font-semibold text-slate-900">
-              Tampilkan tayangan terbaru
-            </span>
-            <div
-              onClick={() => setShowViewCounts(!showViewCounts)}
-              className={`w-10 h-6 rounded-full p-0.5 transition-colors duration-200 flex items-center shrink-0 cursor-pointer ${
-                showViewCounts ? 'bg-[#101010]' : 'bg-neutral-300'
-              }`}
-            >
-              <div
-                className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-200 transform-gpu ${
-                  showViewCounts ? 'translate-x-4' : 'translate-x-0'
-                }`}
-              />
-            </div>
-          </div>
-
-          {/* Row 10: Privasi profil */}
+          {/* Row 8: Privasi profil */}
           <div className="flex items-center justify-between py-4 select-none">
             <span className="text-[14.5px] font-semibold text-slate-900">
               Privasi profil

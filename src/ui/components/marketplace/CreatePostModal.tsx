@@ -404,18 +404,18 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     <span className="truncate max-w-[120px]">{locationInput || 'Lokasi COD'}</span>
                   </button>
 
-                  {/* 3. Community Topic Pill */}
+                  {/* 3. Sell Product Mode Toggle Pill */}
                   <button
                     type="button"
-                    onClick={() => setShowTopicDropdown(!showTopicDropdown)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12.5px] font-semibold transition-all cursor-pointer active:scale-95 ${
-                      selectedTopic
-                        ? 'bg-blue-50 text-[#1d64ec] border border-blue-200'
-                        : 'bg-neutral-100/90 hover:bg-neutral-200/80 text-slate-800'
+                    onClick={() => setPostMode(postMode === 'product' ? 'thread' : 'product')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12.5px] transition-all cursor-pointer active:scale-95 ${
+                      postMode === 'product'
+                        ? 'bg-blue-50 text-[#1d64ec] border border-blue-200 shadow-2xs font-bold'
+                        : 'bg-neutral-100/90 hover:bg-neutral-200/80 text-slate-800 font-semibold'
                     }`}
                   >
-                    <Sparkles className="w-3.5 h-3.5 stroke-[2]" />
-                    <span className="truncate max-w-[120px]">{selectedTopic ? selectedTopic.name : 'Pilih Topik'}</span>
+                    <ShoppingBag className={`w-3.5 h-3.5 stroke-[2] ${postMode === 'product' ? 'text-[#1d64ec]' : 'text-slate-700'}`} />
+                    <span>{postMode === 'product' ? 'Mode Jual Aktif' : 'Jual Produk'}</span>
                   </button>
                 </div>
               </div>

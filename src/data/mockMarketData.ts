@@ -21,6 +21,10 @@ export const MOCK_MARKET_POSTS: MarketPostItem[] = [
     isOfficialTopic: true,
     topicIcon: 'threads',
     totalThreadParts: 2,
+    musicTrack: {
+      title: 'Void Inside',
+      artist: 'Phelian',
+    },
     threadChain: [
       {
         id: 'chain-1-2',
@@ -230,6 +234,10 @@ export const MOCK_MARKET_POSTS: MarketPostItem[] = [
     locationTag: 'Parkiran Belakang TJKT',
     topicTag: 'PrelovedOutfit',
     isOfficialTopic: false,
+    musicTrack: {
+      title: 'Birds of a Feather',
+      artist: 'Billie Eilish',
+    },
     likesCount: 54,
     commentsCount: 12,
     repostsCount: 2,

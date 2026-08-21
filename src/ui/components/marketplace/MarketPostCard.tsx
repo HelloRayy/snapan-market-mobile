@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, MoreHorizontal, Box, Repeat2, Send, PartyPopper, ChevronRight } from 'lucide-react';
+import { Heart, MoreHorizontal, Box, Repeat2, Send, PartyPopper, ChevronRight, Play, Pause } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { MediaLightboxModal } from './MediaLightboxModal';
@@ -77,6 +77,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
 
+  const [isPlayingMusic, setIsPlayingMusic] = useState(false);
+
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!scrollContainerRef.current) return;
     setIsMouseDown(true);
@@ -141,6 +143,46 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
         showToast('Tautan disalin ke papan klip');
       }
     }
+  };
+
+  // Music Pill Component (Threads style music audio track)
+  const renderMusicTrack = () => {
+    if (!item.musicTrack) return null;
+
+    return (
+      <div className="pt-1.5 pb-0.5">
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsPlayingMusic(!isPlayingMusic);
+          }}
+          className="inline-flex items-center gap-2 py-1 px-2.5 rounded-full bg-neutral-100/90 hover:bg-neutral-200/90 active:scale-95 transition-all text-slate-800 cursor-pointer select-none border border-neutral-200/60 shadow-2xs group"
+        >
+          {/* Play/Pause Button Circle */}
+          <div className="w-5 h-5 rounded-full bg-slate-900 text-white flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
+            {isPlayingMusic ? (
+              <Pause className="w-2.5 h-2.5 fill-current" />
+            ) : (
+              <Play className="w-2.5 h-2.5 fill-current ml-0.5" />
+            )}
+          </div>
+
+          {/* Music Title + Artist */}
+          <span className="text-[13px] font-medium text-slate-800 group-hover:text-slate-900 truncate max-w-[200px] sm:max-w-[280px]">
+            {item.musicTrack.title} <span className="text-neutral-400 font-normal">·</span> {item.musicTrack.artist}
+          </span>
+
+          {/* Animated sound wave bars when playing */}
+          {isPlayingMusic && (
+            <div className="flex items-center gap-0.5 ml-0.5">
+              <span className="w-0.5 h-2.5 bg-[#1d64ec] rounded-full animate-pulse" />
+              <span className="w-0.5 h-3.5 bg-[#1d64ec] rounded-full animate-pulse delay-75" />
+              <span className="w-0.5 h-2 bg-[#1d64ec] rounded-full animate-pulse delay-150" />
+            </div>
+          )}
+        </div>
+      </div>
+    );
   };
 
   // Content Snippets used in both variants
@@ -398,6 +440,9 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             )}
           </p>
 
+          {/* Music Track Player Bar */}
+          {renderMusicTrack()}
+
           {/* Product Images: Full Width */}
           {renderImages(true)}
 
@@ -500,6 +545,9 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 </span>
               )}
             </p>
+
+            {/* Music Track Player Bar */}
+            {renderMusicTrack()}
 
             {/* Product Images */}
             {renderImages(false)}

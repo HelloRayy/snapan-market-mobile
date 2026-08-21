@@ -110,6 +110,22 @@ html, body {
   }
 }
 
+@keyframes page-zoom-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.965);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@utility animate-page-zoom {
+  animation: page-zoom-in 0.18s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  will-change: transform, opacity;
+}
+
 @utility animate-page-slide {
   animation: page-slide-in-right 0.24s cubic-bezier(0.32, 0.72, 0, 1) forwards;
   will-change: transform;

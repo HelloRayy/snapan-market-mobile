@@ -248,13 +248,13 @@ export function App() {
             }}
           />
 
-          {/* Slide-over Detail Page Layer (Pure GPU Hardware-Accelerated 120fps Native Compositor) */}
+          {/* Detail Page Layer (Threads/Instagram Subtle Scale Zoom & Fade In) */}
           {selectedPost && (
             <div
               key={selectedPost.id}
-              className="fixed inset-0 z-50 bg-white overflow-hidden transform-gpu animate-page-slide"
+              className="fixed inset-0 z-50 bg-white overflow-hidden transform-gpu animate-page-zoom"
               style={{
-                willChange: 'transform',
+                willChange: 'transform, opacity',
                 backfaceVisibility: 'hidden',
                 WebkitBackfaceVisibility: 'hidden',
               }}

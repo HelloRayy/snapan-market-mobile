@@ -587,7 +587,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   </div>
                 )}
 
-                {/* Ergonomic & Touch-Friendly Action Toolbar (Clean 1 Single Row) */}
+                {/* Ergonomic & Touch-Friendly Action Toolbar: [ 1. Foto ] -> [ 2. Jual Barang ] -> [ 3. Titik COD ] */}
                 <div className="flex items-center flex-wrap gap-2 pt-2.5 select-none">
                   {/* 1. Add Image Pill */}
                   <button
@@ -599,21 +599,10 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     <span>{images.length > 0 ? `Foto (${images.length})` : 'Foto'}</span>
                   </button>
 
-                  {/* 2. COD Location Pill (If in product mode or has location) */}
-                  {postMode === 'product' && (
-                    <button
-                      type="button"
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 text-[#1d64ec] border border-blue-200 text-[12.5px] font-semibold transition-all cursor-pointer active:scale-95"
-                    >
-                      <MapPin className="w-4 h-4 stroke-[2]" />
-                      <span className="truncate max-w-[120px]">{locationInput || 'Titik COD'}</span>
-                    </button>
-                  )}
-
-                  {/* 3. "Jual" Toggle Pill (Short Copy, No Icon, Seamless 1-Row) */}
+                  {/* 2. "Jual Barang" Toggle Switch Pill */}
                   <div
                     onClick={() => setPostMode(postMode === 'product' ? 'thread' : 'product')}
-                    className={`inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full border transition-all cursor-pointer select-none active:scale-95 ${
+                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all cursor-pointer select-none active:scale-95 ${
                       postMode === 'product'
                         ? 'bg-blue-50/90 border-blue-200 text-[#1d64ec] font-bold shadow-2xs'
                         : 'bg-neutral-100/90 hover:bg-neutral-200/80 border-neutral-200/80 text-slate-800 font-semibold'
@@ -632,9 +621,20 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                       />
                     </div>
 
-                    {/* Short Copy: Jual */}
-                    <span className="text-[12.5px] leading-none">Jual</span>
+                    {/* Clear & Direct UX Copy */}
+                    <span className="text-[12.5px] leading-none">Jual Barang</span>
                   </div>
+
+                  {/* 3. COD Location Pill (Appears next to Jual Barang when in product mode) */}
+                  {postMode === 'product' && (
+                    <button
+                      type="button"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 text-[#1d64ec] border border-blue-200 text-[12.5px] font-semibold transition-all cursor-pointer active:scale-95 animate-in fade-in zoom-in-95 duration-150"
+                    >
+                      <MapPin className="w-4 h-4 stroke-[2]" />
+                      <span className="truncate max-w-[120px]">{locationInput || 'Titik COD'}</span>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

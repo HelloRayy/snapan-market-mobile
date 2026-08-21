@@ -759,7 +759,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  placeholder="Contoh: Hoodie Erigo L / Keyboard Mechanical..."
+                  placeholder="Tulis nama barang atau jasa..."
                   value={productTitle}
                   onChange={(e) => setProductTitle(e.target.value)}
                   className="w-full px-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white font-semibold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs"
@@ -781,7 +781,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     type="text"
                     inputMode="numeric"
                     pattern="[0-9]*"
-                    placeholder="Contoh: 50.000"
+                    placeholder="Masukkan nominal harga..."
                     value={priceInput}
                     onChange={(e) => {
                       const raw = e.target.value.replace(/[^0-9]/g, '');
@@ -806,7 +806,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 </label>
                 <textarea
                   rows={4}
-                  placeholder="Kondisi barang, kelengkapan, minus, atau alasan jual..."
+                  placeholder="Tulis kondisi barang, kelengkapan, atau alasan jual..."
                   value={productDescription}
                   onChange={(e) => setProductDescription(e.target.value)}
                   className="w-full min-h-[96px] px-3.5 py-2.5 text-[14px] leading-relaxed rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs resize-none"
@@ -863,7 +863,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   <MapPin className="absolute left-3 top-3 w-3.5 h-3.5 text-neutral-400 pointer-events-none" />
                   <input
                     type="text"
-                    placeholder="Atau ketik lokasi lain (contoh: Ruang OSIS, Kelas XII DKV 2)..."
+                    placeholder="Atau tulis titik temu lainnya..."
                     value={locationInput}
                     onChange={(e) => setLocationInput(e.target.value)}
                     className="w-full pl-8 pr-3 py-2 text-[12.5px] rounded-xl border border-neutral-200 focus:outline-none focus:border-[#1d64ec] bg-neutral-50/70 text-slate-900 placeholder:text-neutral-400 transition-all font-normal"

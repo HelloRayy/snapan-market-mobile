@@ -42,19 +42,22 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs font-gt-standard animate-backdrop-fade">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-neutral-200 transform-gpu animate-toast-pop">
           {/* Header */}
-          <div className="px-5 py-4 flex items-center justify-between border-b border-neutral-100">
+          <div className="px-5 py-4 flex items-center justify-between border-b border-neutral-100 relative select-none">
             <button
               type="button"
               onClick={onClose}
-              className="p-1 -ml-1 text-slate-500 hover:text-slate-900 rounded-full hover:bg-neutral-100 transition-colors"
+              className="p-1 -ml-1 text-slate-500 hover:text-slate-900 rounded-full hover:bg-neutral-100 transition-colors z-10"
+              aria-label="Tutup"
             >
               <X className="w-5 h-5" />
             </button>
-            <h2 className="text-base font-bold text-slate-900">Edit Profil</h2>
+            <h2 className="absolute left-1/2 -translate-x-1/2 text-[15.5px] font-bold text-slate-900 pointer-events-none">
+              Edit Profil
+            </h2>
             <button
               type="button"
               onClick={handleSubmit}
-              className="text-sm font-bold text-[#1d64ec] hover:underline cursor-pointer"
+              className="text-sm font-bold text-[#1d64ec] hover:underline cursor-pointer z-10"
             >
               Selesai
             </button>

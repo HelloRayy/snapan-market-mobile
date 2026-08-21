@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, FileText, MoreHorizontal, Image as ImageIcon, MapPin, PartyPopper, ShoppingBag, Sparkles, ChevronRight, Send, Bookmark, Trash2, Pencil } from 'lucide-react';
+import { X, FileText, MoreHorizontal, Image as ImageIcon, MapPin, PartyPopper, ShoppingBag, Sparkles, ChevronRight, Send, Bookmark, Trash2, Pencil, ArrowLeft } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 
 // Custom Threads 3-Dot Topic Icon
@@ -928,73 +928,103 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
           </div>
         )}
 
-        {/* Saved Drafts List Bottom Sheet */}
+        {/* Saved Drafts Full Page Screen (Matching Threads Reference Design) */}
         {showDraftsSheet && (
-          <div
-            className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs animate-backdrop-fade"
-            onClick={() => setShowDraftsSheet(false)}
-          >
-            <div
-              className="w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl space-y-4 border border-neutral-100 transform-gpu animate-sheet-slide sm:animate-page-zoom font-gt-standard max-h-[80vh] flex flex-col"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between border-b border-neutral-100 pb-3 shrink-0">
-                <div className="flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-[#1d64ec] stroke-[2]" />
-                  <h3 className="font-bold text-[16.5px] text-slate-900">Draf Tersimpan</h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowDraftsSheet(false)}
-                  className="p-1 rounded-full text-slate-400 hover:text-slate-700 hover:bg-neutral-100 transition-colors cursor-pointer"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+          <div className="fixed inset-0 z-[70] bg-white flex flex-col font-gt-standard overflow-hidden transform-gpu animate-page-zoom">
+            {/* Top Bar Header: [ < Back ] --- [ Drafts ] --- [ Spacer ] */}
+            <div className="px-4 h-14 flex items-center justify-between border-b border-neutral-200/80 bg-white shrink-0">
+              <button
+                type="button"
+                onClick={() => setShowDraftsSheet(false)}
+                className="p-2 -ml-2 text-slate-800 hover:opacity-70 active:scale-95 transition-all cursor-pointer rounded-full"
+                title="Kembali"
+              >
+                <ArrowLeft className="w-5 h-5 stroke-[2]" />
+              </button>
 
-              {/* Body */}
-              <div className="overflow-y-auto flex-1 py-1">
-                {savedDraft ? (
-                  <div
-                    onClick={() => handleApplyDraft(savedDraft)}
-                    className="group relative p-4 rounded-2xl border border-neutral-200/90 hover:border-[#1d64ec] bg-neutral-50/60 hover:bg-blue-50/30 transition-all cursor-pointer space-y-2.5 active:scale-[0.99]"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <p className="text-[14px] text-slate-900 font-medium line-clamp-2 leading-relaxed">
-                        {savedDraft.caption || savedDraft.productTitle || '(Draf tanpa teks)'}
-                      </p>
+              <h2 className="text-[16px] font-bold text-slate-900 tracking-tight">
+                Drafts
+              </h2>
+
+              <div className="w-8" />
+            </div>
+
+            {/* Full-Page Drafts List */}
+            <div className="flex-1 overflow-y-auto divide-y divide-neutral-100 max-w-lg mx-auto w-full">
+              {savedDraft ? (
+                <div
+                  onClick={() => handleApplyDraft(savedDraft)}
+                  className="p-4 hover:bg-neutral-50 active:bg-neutral-100/70 transition-colors cursor-pointer flex gap-3 items-start"
+                >
+                  {/* Avatar */}
+                  <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 mt-0.5">
+                    <img
+                      src={currentUser.avatar}
+                      alt={currentUser.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  {/* Content Column */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span className="font-bold text-[14.5px] text-slate-900 truncate">
+                          {currentUser.username}
+                        </span>
+                        <span className="text-[13px] text-neutral-400 font-normal shrink-0">
+                          1m
+                        </span>
+                      </div>
+
                       <button
                         type="button"
                         onClick={handleDeleteDraft}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors shrink-0 cursor-pointer"
+                        className="text-neutral-400 hover:text-rose-600 p-1.5 -mr-1 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer"
                         title="Hapus Draf"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
 
-                    <div className="flex items-center justify-between text-[11.5px] text-neutral-400 pt-1 border-t border-neutral-100">
-                      <span className="flex items-center gap-1.5">
-                        {savedDraft.postMode === 'product' ? '🏷️ Mode Jualan' : '💬 Utas'}
-                        {savedDraft.subThreads?.length > 0 && ` · ${savedDraft.subThreads.length + 1} bagian`}
-                        {savedDraft.images?.length > 0 && ` · ${savedDraft.images.length} foto`}
-                      </span>
-                      <span className="text-[#1d64ec] font-semibold">Ketuk untuk memuat ↗</span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="py-10 text-center space-y-2">
-                    <div className="w-12 h-12 rounded-2xl bg-neutral-100 text-neutral-400 flex items-center justify-center mx-auto">
-                      <FileText className="w-6 h-6 stroke-[1.5]" />
-                    </div>
-                    <p className="text-[14.5px] font-bold text-slate-800">Belum ada draf tersimpan</p>
-                    <p className="text-[12.5px] text-neutral-400 max-w-xs mx-auto">
-                      Saat kamu membatalkan pembuatan utas dan memilih "Simpan Draf", draf kamu akan muncul di sini.
+                    {/* Draft text snippet */}
+                    <p className="text-[14px] text-slate-800 font-normal mt-1 leading-relaxed whitespace-pre-wrap line-clamp-3">
+                      {savedDraft.caption || savedDraft.productTitle || '(Draf tanpa teks)'}
                     </p>
+
+                    {/* Badges if multi-thread / product / images */}
+                    {(savedDraft.subThreads?.length > 0 || savedDraft.images?.length > 0 || savedDraft.postMode === 'product') && (
+                      <div className="flex items-center gap-2 mt-2.5">
+                        {savedDraft.postMode === 'product' && (
+                          <span className="text-[11px] font-semibold text-[#1d64ec] bg-blue-50 px-2 py-0.5 rounded-md">
+                            Mode Jualan
+                          </span>
+                        )}
+                        {savedDraft.subThreads?.length > 0 && (
+                          <span className="text-[11.5px] font-semibold text-neutral-500 bg-neutral-100 px-1.5 py-0.5 rounded-md tabular-nums">
+                            {savedDraft.subThreads.length + 1} Utas
+                          </span>
+                        )}
+                        {savedDraft.images?.length > 0 && (
+                          <span className="text-[11.5px] font-semibold text-neutral-500 bg-neutral-100 px-1.5 py-0.5 rounded-md tabular-nums">
+                            {savedDraft.images.length} Foto
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
+                </div>
+              ) : (
+                <div className="py-24 text-center space-y-3 px-4">
+                  <div className="w-14 h-14 rounded-2xl bg-neutral-100 text-neutral-400 flex items-center justify-center mx-auto">
+                    <FileText className="w-7 h-7 stroke-[1.5]" />
+                  </div>
+                  <h3 className="font-bold text-[16px] text-slate-900">Belum Ada Draf</h3>
+                  <p className="text-[13px] text-neutral-500 max-w-xs mx-auto">
+                    Saat kamu membuat utas dan memilih "Simpan Draf", postingan draf akan tersimpan di sini.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}

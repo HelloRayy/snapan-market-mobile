@@ -43,13 +43,13 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
 
       lastScrollY.current = currentScrollY;
 
-      // When user STOPS scrolling -> wait delay (1.0s) before sliding navbar back up
+      // When user STOPS scrolling -> wait delay (0.5s) before sliding navbar back up
       if (scrollTimeout.current) {
         clearTimeout(scrollTimeout.current);
       }
       scrollTimeout.current = setTimeout(() => {
         setIsVisible(true);
-      }, 1000); // 1.0s idle delay before navbar rises up
+      }, 500); // 0.5s idle delay before navbar rises up
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });

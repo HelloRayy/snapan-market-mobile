@@ -18,9 +18,11 @@ import { SettingsBottomSheet } from '../components/profile/SettingsBottomSheet';
 import { MediaLightboxModal } from '../components/marketplace/MediaLightboxModal';
 import { ClickableVerifiedBadge } from '../components/marketplace/VerifiedBadgeModal';
 import { SnapanLogotype } from '../components/marketplace/MarketHeader';
+import { CreatePostModal } from '../components/marketplace/CreatePostModal';
 import { MOCK_MARKET_POSTS, MOCK_USER_REPLIES } from '@/data/mockMarketData';
 import { MarketPostItem } from '@/types/marketFeed';
 import { useAuth } from '../hooks/useAuth';
+import { createMarketPost } from '@/services/api/marketPostsService';
 
 interface ProfilePageProps {
   username?: string;
@@ -52,6 +54,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedPostMode, setSelectedPostMode] = useState<'thread' | 'product'>('thread');
+  const [createdPosts, setCreatedPosts] = useState<MarketPostItem[]>([]);
 
   // Follow Toggle state (for viewing other users)
   const [isFollowing, setIsFollowing] = useState(false);
@@ -111,7 +116,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
   // Fallback if no specific posts found: show sample posts
   const basePosts = userPosts.length > 0 ? userPosts : MOCK_MARKET_POSTS.slice(0, 2);
-  const displayPosts = basePosts.filter((p) => {
+  const allUserPosts = isOwnProfile ? [...createdPosts, ...basePosts] : basePosts;
+  const displayPosts = allUserPosts.filter((p) => {
     if (!searchQuery) return true;
     return p.caption.toLowerCase().includes(searchQuery.toLowerCase());
   });
@@ -126,7 +132,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   });
 
   // Extract all media items linked to their parent post for Media Tab
-  const mediaItems = basePosts.flatMap((post) =>
+  const mediaItems = allUserPosts.flatMap((post) =>
     (post.images || []).map((imgUrl) => ({
       imgUrl,
       post,
@@ -135,6 +141,58 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     if (!searchQuery) return true;
     return m.post.caption.toLowerCase().includes(searchQuery.toLowerCase());
   });
+
+  const handleCreatePost = async (newPostData: Partial<MarketPostItem>) => {
+    const activeSellerId = profile?.id || user?.id || 'current-user-id';
+    const activeSellerName = profile?.full_name || user?.user_metadata?.full_name || 'Raditya Rayhan';
+    const activeSellerUsername = profileData.username || 'radityarayhannnn';
+
+    const createdItem: MarketPostItem = {
+      id: `post-user-${Date.now()}`,
+      caption: newPostData.caption || '',
+      title: newPostData.title,
+      postType: newPostData.postType || 'thread',
+      price: newPostData.price ?? 0,
+      category: newPostData.category || 'Lainnya',
+      images: newPostData.images || [],
+      stock: newPostData.stock ?? 1,
+      locationTag: newPostData.locationTag,
+      topicTag: newPostData.topicTag,
+      isOfficialTopic: newPostData.isOfficialTopic,
+      topicIcon: newPostData.topicIcon,
+      threadChain: newPostData.threadChain,
+      totalThreadParts: newPostData.totalThreadParts,
+      likesCount: 0,
+      commentsCount: 0,
+      repostsCount: 0,
+      timestamp: 'Baru saja',
+      isLiked: false,
+      seller: {
+        id: activeSellerId,
+        name: activeSellerName,
+        avatar: profileData.avatar,
+        classGroup: profileData.classGroup,
+        isVerified: true,
+        username: activeSellerUsername,
+      },
+    };
+
+    setCreatedPosts((prev) => [createdItem, ...prev]);
+
+    try {
+      await createMarketPost({
+        seller_id: activeSellerId,
+        caption: newPostData.caption || '',
+        price: newPostData.price ?? 0,
+        category: newPostData.category || 'Lainnya',
+        images: newPostData.images || [],
+        stock: newPostData.stock ?? 1,
+        location_tag: newPostData.locationTag || undefined,
+      });
+    } catch (err) {
+      console.warn('Supabase post creation fallback to local state:', err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white text-slate-ink pb-28 font-gt-standard select-none">
@@ -532,10 +590,28 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         <MarketBottomNav
           activeTab="profile"
           userAvatar={profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80'}
-          onTabChange={(tab) => onNavigateTab?.(tab)}
-          onPostClick={() => onNavigateTab?.('post')}
+          onTabChange={(tab) => {
+            if (tab === 'post') {
+              setSelectedPostMode('thread');
+              setIsCreateModalOpen(true);
+            } else {
+              onNavigateTab?.(tab);
+            }
+          }}
+          onPostClick={() => {
+            setSelectedPostMode('thread');
+            setIsCreateModalOpen(true);
+          }}
         />
       )}
+
+      {/* Create New Post Full-Screen Modal */}
+      <CreatePostModal
+        isOpen={isCreateModalOpen}
+        initialMode={selectedPostMode}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmitPost={handleCreatePost}
+      />
     </div>
   );
 };

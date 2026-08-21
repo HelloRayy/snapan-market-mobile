@@ -613,10 +613,10 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     )}
                   </div>
 
-                  {/* 3. "Jadikan Jualan" Toggle Box (Exact Reference Design from Threads & Image) */}
+                  {/* 3. "Jadikan Jualan" Toggle Box (Clean Switch + Label Only) */}
                   <div
                     onClick={() => setPostMode(postMode === 'product' ? 'thread' : 'product')}
-                    className={`inline-flex items-center gap-3 py-2 px-3.5 rounded-2xl border transition-all cursor-pointer select-none active:scale-[0.98] w-fit ${
+                    className={`inline-flex items-center gap-2.5 py-1.5 px-3 rounded-2xl border transition-all cursor-pointer select-none active:scale-[0.98] w-fit ${
                       postMode === 'product'
                         ? 'bg-blue-50/90 border-blue-200/90 shadow-2xs'
                         : 'bg-neutral-50/90 hover:bg-neutral-100/90 border-neutral-200/80'
@@ -624,26 +624,21 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   >
                     {/* Toggle Switch Track */}
                     <div
-                      className={`w-10 h-6 rounded-full p-0.5 transition-colors duration-200 flex items-center shrink-0 ${
+                      className={`w-9 h-5 rounded-full p-0.5 transition-colors duration-200 flex items-center shrink-0 ${
                         postMode === 'product' ? 'bg-[#101010]' : 'bg-neutral-300'
                       }`}
                     >
                       <div
-                        className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-200 transform-gpu ${
+                        className={`w-4 h-4 rounded-full bg-white shadow-md transition-transform duration-200 transform-gpu ${
                           postMode === 'product' ? 'translate-x-4' : 'translate-x-0'
                         }`}
                       />
                     </div>
 
-                    {/* Text Label & Subtitle */}
-                    <div className="flex flex-col text-left">
-                      <div className="flex items-center gap-1.5 text-[13.5px] font-bold text-slate-900 leading-tight">
-                        <ShoppingBag className="w-3.5 h-3.5 text-slate-800 stroke-[2.2]" />
-                        <span>Jadikan Jualan</span>
-                      </div>
-                      <span className="text-[11.5px] text-neutral-500 font-normal leading-tight mt-0.5">
-                        Bisa pasang harga & titik COD
-                      </span>
+                    {/* Label Only */}
+                    <div className="flex items-center gap-1.5 text-[13.5px] font-bold text-slate-900 leading-none">
+                      <ShoppingBag className="w-3.5 h-3.5 text-slate-800 stroke-[2.2]" />
+                      <span>Jadikan Jualan</span>
                     </div>
                   </div>
                 </div>

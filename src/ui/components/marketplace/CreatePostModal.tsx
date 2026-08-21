@@ -587,57 +587,65 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   </div>
                 )}
 
-                {/* Ergonomic & Touch-Friendly Action Toolbar (Pills) */}
-                <div className="flex items-center flex-wrap gap-2 pt-2.5 select-none">
-                  {/* 1. Add Image Pill */}
-                  <button
-                    type="button"
-                    onClick={handleAddDummyImage}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100/90 hover:bg-neutral-200/80 active:scale-95 text-slate-800 text-[12.5px] font-semibold transition-all cursor-pointer"
-                  >
-                    <ImageIcon className="w-4 h-4 text-slate-700 stroke-[2]" />
-                    <span>{images.length > 0 ? `Foto (${images.length})` : 'Foto'}</span>
-                  </button>
+                {/* Ergonomic & Touch-Friendly Action Toolbar with Signature "Jadikan Jualan" Toggle */}
+                <div className="flex flex-col gap-2.5 pt-3 select-none">
+                  {/* Action Pills Row: Foto & Lokasi */}
+                  <div className="flex items-center flex-wrap gap-2">
+                    {/* 1. Add Image Pill */}
+                    <button
+                      type="button"
+                      onClick={handleAddDummyImage}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100/90 hover:bg-neutral-200/80 active:scale-95 text-slate-800 text-[12.5px] font-semibold transition-all cursor-pointer"
+                    >
+                      <ImageIcon className="w-4 h-4 text-slate-700 stroke-[2]" />
+                      <span>{images.length > 0 ? `Foto (${images.length})` : 'Foto'}</span>
+                    </button>
 
-                  {/* 2. COD Location Pill */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (postMode !== 'product') setPostMode('product');
-                    }}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12.5px] font-semibold transition-all cursor-pointer active:scale-95 ${
-                      locationInput
-                        ? 'bg-blue-50 text-[#1d64ec] border border-blue-200'
-                        : 'bg-neutral-100/90 hover:bg-neutral-200/80 text-slate-800'
-                    }`}
-                  >
-                    <MapPin className="w-4 h-4 stroke-[2]" />
-                    <span className="truncate max-w-[120px]">{locationInput || 'Lokasi COD'}</span>
-                  </button>
+                    {/* 2. COD Location Pill (If in product mode or has location) */}
+                    {postMode === 'product' && (
+                      <button
+                        type="button"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 text-[#1d64ec] border border-blue-200 text-[12.5px] font-semibold transition-all cursor-pointer active:scale-95"
+                      >
+                        <MapPin className="w-4 h-4 stroke-[2]" />
+                        <span className="truncate max-w-[120px]">{locationInput || 'Titik COD'}</span>
+                      </button>
+                    )}
+                  </div>
 
-                  {/* 3. Sell Product Mode Toggle Switch Button */}
-                  <button
-                    type="button"
+                  {/* 3. "Jadikan Jualan" Toggle Box (Exact Reference Design from Threads & Image) */}
+                  <div
                     onClick={() => setPostMode(postMode === 'product' ? 'thread' : 'product')}
-                    className={`flex items-center gap-2 pl-3 pr-1.5 py-1 rounded-full text-[12.5px] transition-all cursor-pointer select-none active:scale-95 border ${
+                    className={`inline-flex items-center gap-3 py-2 px-3.5 rounded-2xl border transition-all cursor-pointer select-none active:scale-[0.98] w-fit ${
                       postMode === 'product'
-                        ? 'bg-blue-50/90 text-[#1d64ec] border-blue-300 shadow-2xs font-bold'
-                        : 'bg-neutral-100/90 hover:bg-neutral-200/80 border-neutral-200/80 text-slate-800 font-semibold'
+                        ? 'bg-blue-50/90 border-blue-200/90 shadow-2xs'
+                        : 'bg-neutral-50/90 hover:bg-neutral-100/90 border-neutral-200/80'
                     }`}
                   >
-                    <span>Jual Produk</span>
+                    {/* Toggle Switch Track */}
                     <div
-                      className={`w-7 h-4 rounded-full p-0.5 transition-colors duration-200 flex items-center shrink-0 ${
-                        postMode === 'product' ? 'bg-[#1d64ec]' : 'bg-neutral-300'
+                      className={`w-10 h-6 rounded-full p-0.5 transition-colors duration-200 flex items-center shrink-0 ${
+                        postMode === 'product' ? 'bg-[#101010]' : 'bg-neutral-300'
                       }`}
                     >
                       <div
-                        className={`w-3 h-3 rounded-full bg-white shadow-xs transition-transform duration-200 transform-gpu ${
-                          postMode === 'product' ? 'translate-x-3' : 'translate-x-0'
+                        className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-200 transform-gpu ${
+                          postMode === 'product' ? 'translate-x-4' : 'translate-x-0'
                         }`}
                       />
                     </div>
-                  </button>
+
+                    {/* Text Label & Subtitle */}
+                    <div className="flex flex-col text-left">
+                      <div className="flex items-center gap-1.5 text-[13.5px] font-bold text-slate-900 leading-tight">
+                        <ShoppingBag className="w-3.5 h-3.5 text-slate-800 stroke-[2.2]" />
+                        <span>Jadikan Jualan</span>
+                      </div>
+                      <span className="text-[11.5px] text-neutral-500 font-normal leading-tight mt-0.5">
+                        Bisa pasang harga & titik COD
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

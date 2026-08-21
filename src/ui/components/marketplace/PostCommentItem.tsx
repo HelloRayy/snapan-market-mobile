@@ -110,69 +110,85 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       onClick={(e) => e.stopPropagation()}
-      className="flex items-center gap-4 text-slate-500 pt-2 text-[13px]"
+      className="flex items-center text-slate-600 font-normal pt-1.5 -ml-2 text-[13px] select-none"
     >
-      {/* Like Button */}
-      <motion.button
-        type="button"
-        whileTap={{ scale: 0.88 }}
-        whileHover={{ scale: 1.04 }}
-        transition={{ type: "spring", stiffness: 400, damping: 17 }}
-        onClick={(e) => {
-          e.stopPropagation();
-          onLike?.();
-        }}
-        className={`flex items-center gap-1 hover:opacity-80 transition-colors cursor-pointer select-none ${
-          liked ? 'text-rose-500' : 'text-slate-500 hover:text-slate-900'
-        }`}
-      >
-        <motion.div
-          animate={liked ? { scale: [1, 1.35, 0.95, 1], rotate: [0, -12, 12, 0] } : { scale: 1, rotate: 0 }}
-          transition={{ duration: 0.35, ease: "easeOut" }}
-        >
-          <Heart className={`w-4 h-4 stroke-[1.75] ${liked ? 'fill-rose-500 text-rose-500' : ''}`} />
-        </motion.div>
-        {count > 0 && <span className="font-normal text-slate-600">{count}</span>}
-      </motion.button>
+      {/* 1. Suka (Like) Slot */}
+      <div className="flex items-center justify-center font-normal cursor-pointer transition-all">
+        <div className="flex items-stretch font-normal cursor-pointer transition-all">
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.88 }}
+            whileHover={{ scale: 1.04 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onLike?.();
+            }}
+            className={`flex items-center justify-center gap-1 px-2.5 py-1 rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 transition-all cursor-pointer select-none ${
+              liked ? 'text-rose-500' : 'text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <motion.div
+              animate={liked ? { scale: [1, 1.35, 0.95, 1], rotate: [0, -12, 12, 0] } : { scale: 1, rotate: 0 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+            >
+              <Heart className={`w-4 h-4 stroke-[1.75] ${liked ? 'fill-rose-500 text-rose-500' : ''}`} />
+            </motion.div>
+            {count > 0 && <span className="font-normal text-slate-600 tabular-nums">{count}</span>}
+          </motion.button>
+        </div>
+      </div>
 
-      {/* Reply Button */}
-      <motion.button
-        type="button"
-        whileTap={{ scale: 0.88 }}
-        whileHover={{ scale: 1.04 }}
-        transition={{ type: "spring", stiffness: 400, damping: 17 }}
-        onClick={(e) => {
-          e.stopPropagation();
-          onReply?.();
-        }}
-        className="flex items-center gap-1 hover:text-slate-900 transition-colors cursor-pointer text-slate-500 select-none"
-      >
-        <SmoothCommentIcon className="w-4 h-4 stroke-[1.75]" />
-      </motion.button>
+      {/* 2. Balas (Comment) Slot */}
+      <div className="flex items-center justify-center font-normal cursor-pointer transition-all">
+        <div className="flex items-stretch font-normal cursor-pointer transition-all">
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.88 }}
+            whileHover={{ scale: 1.04 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onReply?.();
+            }}
+            className="flex items-center justify-center px-2.5 py-1 rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 hover:text-slate-900 transition-all cursor-pointer text-slate-500 select-none"
+          >
+            <SmoothCommentIcon className="w-4 h-4 stroke-[1.75]" />
+          </motion.button>
+        </div>
+      </div>
 
-      {/* Repost Button */}
-      <motion.button
-        type="button"
-        whileTap={{ scale: 0.88 }}
-        whileHover={{ scale: 1.04 }}
-        transition={{ type: "spring", stiffness: 400, damping: 17 }}
-        onClick={(e) => e.stopPropagation()}
-        className="hover:text-slate-900 transition-colors cursor-pointer text-slate-500 select-none"
-      >
-        <Repeat className="w-4 h-4 stroke-[1.75]" />
-      </motion.button>
+      {/* 3. Posting Ulang (Repost) Slot */}
+      <div className="flex items-center justify-center font-normal cursor-pointer transition-all">
+        <div className="flex items-stretch font-normal cursor-pointer transition-all">
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.88 }}
+            whileHover={{ scale: 1.04 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center justify-center px-2.5 py-1 rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 hover:text-slate-900 transition-all cursor-pointer text-slate-500 select-none"
+          >
+            <Repeat className="w-4 h-4 stroke-[1.75]" />
+          </motion.button>
+        </div>
+      </div>
 
-      {/* Share Button */}
-      <motion.button
-        type="button"
-        whileTap={{ scale: 0.88 }}
-        whileHover={{ scale: 1.08 }}
-        transition={{ type: "spring", stiffness: 400, damping: 17 }}
-        onClick={(e) => e.stopPropagation()}
-        className="hover:text-slate-900 transition-colors cursor-pointer text-slate-500 select-none"
-      >
-        <Send className="w-4 h-4 stroke-[1.75]" />
-      </motion.button>
+      {/* 4. Bagikan (Share) Slot */}
+      <div className="flex items-center justify-center font-normal cursor-pointer transition-all">
+        <div className="flex items-stretch px-0.5 font-normal cursor-pointer transition-all">
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.88 }}
+            whileHover={{ scale: 1.08 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center justify-center p-1.5 rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 hover:text-slate-900 transition-all cursor-pointer text-slate-500 select-none"
+          >
+            <Send className="w-4 h-4 stroke-[1.75]" />
+          </motion.button>
+        </div>
+      </div>
     </motion.div>
   );
 

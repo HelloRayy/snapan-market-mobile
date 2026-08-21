@@ -200,100 +200,122 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
   const renderActionBar = () => (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="pt-1 flex items-center justify-between text-slate-600 -ml-1 pr-1 max-w-full"
+      className="pt-1 flex items-center justify-between text-slate-700 font-normal -ml-2 select-none max-w-full"
     >
-      {/* Left Action Buttons Cluster (Compact Threads-Style Spacing with Motion) */}
-      <div className="flex items-center gap-1 sm:gap-2">
-        {/* 1. Like Button */}
-        <motion.button
-          type="button"
-          whileTap={{ scale: 0.88 }}
-          whileHover={{ scale: 1.04 }}
-          transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          onClick={handleLikeToggle}
-          className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 transition-colors cursor-pointer select-none ${
-            isLiked ? 'text-rose-500' : 'text-slate-600 hover:text-slate-900'
-          }`}
-          aria-label={`Sukai postingan. ${likesCount} suka`}
-        >
-          <motion.div
-            animate={isLiked ? { scale: [1, 1.35, 0.95, 1], rotate: [0, -12, 12, 0] } : { scale: 1, rotate: 0 }}
-            transition={{ duration: 0.35, ease: "easeOut" }}
-          >
-            <Heart className={`w-4.5 h-4.5 stroke-[2] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-          </motion.div>
-          <motion.span
-            key={likesCount}
-            initial={{ opacity: 0.8, y: -2 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.15 }}
-            className={`font-normal text-[13.5px] ${isLiked ? 'text-rose-500 font-medium' : 'text-slate-700'}`}
-          >
-            {likesCount}
-          </motion.span>
-        </motion.button>
+      {/* Left Action Buttons Container (Threads Nested Flex Layout) */}
+      <div className="flex items-center text-slate-700 text-sm font-normal cursor-pointer transition-all">
+        {/* 1. Suka (Like) Slot */}
+        <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer transition-all">
+          <div className="flex items-stretch font-normal cursor-pointer transition-all">
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.88 }}
+              whileHover={{ scale: 1.04 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              onClick={handleLikeToggle}
+              className={`flex items-center justify-center gap-1.5 px-2.5 py-1.5 min-h-[34px] rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 cursor-pointer transition-all select-none ${
+                isLiked ? 'text-rose-500' : 'text-slate-600 hover:text-slate-900'
+              }`}
+              aria-label={`Sukai postingan. ${likesCount} suka`}
+            >
+              <motion.div
+                animate={isLiked ? { scale: [1, 1.35, 0.95, 1], rotate: [0, -12, 12, 0] } : { scale: 1, rotate: 0 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+              >
+                <Heart className={`w-4.5 h-4.5 stroke-[2] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+              </motion.div>
+              {likesCount > 0 && (
+                <motion.span
+                  key={likesCount}
+                  initial={{ opacity: 0.8, y: -2 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className={`font-normal text-[13.5px] tabular-nums ${isLiked ? 'text-rose-500 font-medium' : 'text-slate-700'}`}
+                >
+                  {likesCount}
+                </motion.span>
+              )}
+            </motion.button>
+          </div>
+        </div>
 
-        {/* 2. Comment Button */}
-        <motion.button
-          type="button"
-          whileTap={{ scale: 0.88 }}
-          whileHover={{ scale: 1.04 }}
-          transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onPostClick?.(item);
-          }}
-          className="flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 transition-colors cursor-pointer text-slate-600 hover:text-slate-900 select-none"
-          aria-label={`Komentar postingan. ${item.commentsCount} komentar`}
-        >
-          <SmoothCommentIcon className="w-4.5 h-4.5 stroke-[2]" />
-          <span className="font-normal text-[13.5px] text-slate-700">{item.commentsCount}</span>
-        </motion.button>
+        {/* 2. Balas (Comment) Slot */}
+        <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer transition-all">
+          <div className="flex items-stretch font-normal cursor-pointer transition-all">
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.88 }}
+              whileHover={{ scale: 1.04 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onPostClick?.(item);
+              }}
+              className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 min-h-[34px] rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 cursor-pointer transition-all text-slate-600 hover:text-slate-900 select-none"
+              aria-label={`Komentar postingan. ${item.commentsCount} komentar`}
+            >
+              <SmoothCommentIcon className="w-4.5 h-4.5 stroke-[2]" />
+              {item.commentsCount > 0 && (
+                <span className="font-normal text-[13.5px] text-slate-700 tabular-nums">{item.commentsCount}</span>
+              )}
+            </motion.button>
+          </div>
+        </div>
 
-        {/* 3. Repost Button */}
-        <motion.button
-          type="button"
-          whileTap={{ scale: 0.88 }}
-          whileHover={{ scale: 1.04 }}
-          transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          onClick={handleRepostToggle}
-          className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 transition-colors cursor-pointer select-none ${
-            isReposted ? 'text-emerald-500' : 'text-slate-600 hover:text-slate-900'
-          }`}
-          aria-label={`Post ulang postingan. ${repostsCount} posting ulang`}
-        >
-          <motion.div
-            animate={isReposted ? { rotate: [0, 180], scale: [1, 1.25, 1] } : { rotate: 0, scale: 1 }}
-            transition={{ duration: 0.35, ease: "easeOut" }}
-          >
-            <Repeat2 className={`w-4.5 h-4.5 stroke-[2] ${isReposted ? 'text-emerald-500' : ''}`} />
-          </motion.div>
-          <span className={`font-normal text-[13.5px] ${isReposted ? 'text-emerald-500 font-medium' : 'text-slate-700'}`}>
-            {repostsCount}
-          </span>
-        </motion.button>
+        {/* 3. Posting Ulang (Repost) Slot */}
+        <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer transition-all">
+          <div className="flex items-stretch font-normal cursor-pointer transition-all">
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.88 }}
+              whileHover={{ scale: 1.04 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              onClick={handleRepostToggle}
+              className={`flex items-center justify-center gap-1.5 px-2.5 py-1.5 min-h-[34px] rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 cursor-pointer transition-all select-none ${
+                isReposted ? 'text-emerald-500' : 'text-slate-600 hover:text-slate-900'
+              }`}
+              aria-label={`Post ulang postingan. ${repostsCount} posting ulang`}
+            >
+              <motion.div
+                animate={isReposted ? { rotate: [0, 180], scale: [1, 1.25, 1] } : { rotate: 0, scale: 1 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+              >
+                <Repeat2 className={`w-4.5 h-4.5 stroke-[2] ${isReposted ? 'text-emerald-500' : ''}`} />
+              </motion.div>
+              {repostsCount > 0 && (
+                <span className={`font-normal text-[13.5px] tabular-nums ${isReposted ? 'text-emerald-500 font-medium' : 'text-slate-700'}`}>
+                  {repostsCount}
+                </span>
+              )}
+            </motion.button>
+          </div>
+        </div>
 
-        {/* 4. Send / Share Button */}
-        <motion.button
-          type="button"
-          whileTap={{ scale: 0.88 }}
-          whileHover={{ scale: 1.08 }}
-          transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          onClick={handleShare}
-          className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 transition-colors cursor-pointer text-slate-600 hover:text-slate-900 select-none"
-          aria-label="Bagikan postingan"
-          title="Bagikan / Kirim"
-        >
-          <Send className="w-4 h-4 stroke-[1.8] text-slate-600" />
-        </motion.button>
+        {/* 4. Bagikan (Share) Slot */}
+        <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer transition-all">
+          <div className="flex items-stretch px-1 font-normal cursor-pointer transition-all">
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.88 }}
+              whileHover={{ scale: 1.08 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              onClick={handleShare}
+              className="flex items-center justify-center p-2 rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 cursor-pointer transition-all text-slate-600 hover:text-slate-900 select-none"
+              aria-label="Bagikan postingan"
+              title="Bagikan / Kirim"
+            >
+              <Send className="w-4 h-4 stroke-[1.8] text-slate-600" />
+            </motion.button>
+          </div>
+        </div>
       </div>
 
       {/* 5. Stock Indicator (Icon + Label + Number) - ONLY FOR PRODUCT POSTS */}
       {item.postType !== 'thread' && !!item.price && item.price > 0 && item.stock !== undefined && item.stock > 0 && (
-        <div className="flex items-center gap-1.5 min-h-[36px] px-2 py-1 text-neutral-500 bg-neutral-100/80 rounded-lg text-[12.5px] select-none ml-auto" title={`Stok tersisa ${item.stock}`}>
+        <div className="flex items-center gap-1.5 min-h-[34px] px-2.5 py-1 text-neutral-500 bg-neutral-100/80 rounded-lg text-[12.5px] select-none ml-auto" title={`Stok tersisa ${item.stock}`}>
           <Box className="w-3.5 h-3.5 stroke-[2] text-neutral-500" />
           <span className="font-normal text-slate-600">Sisa stok: <strong className="font-semibold text-slate-900">{item.stock}</strong></span>
         </div>

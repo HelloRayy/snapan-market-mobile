@@ -352,9 +352,9 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
                 </div>
               ))}
 
-              {/* Add Custom Tag Pill */}
+              {/* Add Custom Tag Pill (Seamlessly Harmonized with Badge Style) */}
               {isAddingCustomTag ? (
-                <div className="inline-flex items-center gap-1 py-1 px-2.5 bg-white rounded-[45px] border border-[#0055d6] shadow-xs">
+                <div className="inline-flex items-center gap-1.5 py-1.5 px-3 bg-blue-50/90 rounded-[45px] border border-blue-300 shadow-2xs">
                   <input
                     ref={customTagInputRef}
                     type="text"
@@ -369,22 +369,24 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
                         setIsAddingCustomTag(false);
                       }
                     }}
-                    placeholder="Ketik minat baru..."
-                    className="text-[13px] text-slate-900 bg-transparent focus:outline-none w-32 placeholder:text-neutral-400"
+                    placeholder="Ketik minat..."
+                    className="text-[13px] font-semibold text-[#0055d6] bg-transparent focus:outline-none w-24 placeholder:text-blue-400/80"
                   />
                   <button
                     type="button"
                     onClick={() => handleAddTag(customTagInput)}
-                    className="w-5 h-5 rounded-full bg-[#0055d6] text-white flex items-center justify-center text-xs font-bold cursor-pointer"
+                    className="w-4 h-4 rounded-full bg-[#0055d6] hover:bg-[#0041a8] text-white flex items-center justify-center text-[10px] font-bold cursor-pointer transition-colors active:scale-90"
+                    title="Tambahkan minat"
                   >
-                    +
+                    <Check className="w-2.5 h-2.5 stroke-[3]" />
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsAddingCustomTag(false)}
-                    className="text-neutral-400 hover:text-slate-800 text-xs px-0.5 cursor-pointer"
+                    className="w-4 h-4 rounded-full text-blue-400 hover:text-rose-600 hover:bg-rose-100 flex items-center justify-center transition-colors cursor-pointer active:scale-90"
+                    title="Batal"
                   >
-                    <X className="w-3 h-3" />
+                    <X className="w-2.5 h-2.5 stroke-[2.5]" />
                   </button>
                 </div>
               ) : (

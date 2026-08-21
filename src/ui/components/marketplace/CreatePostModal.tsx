@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, FileText, MoreHorizontal, Image as ImageIcon, MapPin, PartyPopper, ShoppingBag, Sparkles, ChevronRight, Send } from 'lucide-react';
+import { X, FileText, MoreHorizontal, Image as ImageIcon, MapPin, PartyPopper, ShoppingBag, Sparkles, ChevronRight, Send, Bookmark, Trash2, Pencil } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 
 // Custom Threads 3-Dot Topic Icon
@@ -853,33 +853,36 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 </p>
               </div>
 
-              {/* Action Buttons with Safe UX Order: Simpan Draf -> Buang -> Lanjutkan Mengedit */}
+              {/* Action Buttons with Safe UX Order & Informative Icons */}
               <div className="space-y-2 pt-1">
                 {/* 1. Simpan Draf (Paling Aman - Safe Default) */}
                 <button
                   type="button"
                   onClick={handleSaveDraft}
-                  className="w-full py-3 rounded-2xl bg-neutral-100 hover:bg-neutral-200/80 text-slate-900 font-bold text-[14px] transition-colors active:scale-98 cursor-pointer"
+                  className="w-full py-3 rounded-2xl bg-neutral-100 hover:bg-neutral-200/80 text-slate-900 font-bold text-[14px] transition-colors active:scale-98 cursor-pointer flex items-center justify-center gap-2"
                 >
-                  Simpan Draf
+                  <Bookmark className="w-4 h-4 text-slate-700 stroke-[2] shrink-0" />
+                  <span>Simpan Draf</span>
                 </button>
 
                 {/* 2. Buang (Destructive Action - Sadar) */}
                 <button
                   type="button"
                   onClick={handleDiscard}
-                  className="w-full py-3 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[14px] transition-colors active:scale-98 cursor-pointer"
+                  className="w-full py-3 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[14px] transition-colors active:scale-98 cursor-pointer flex items-center justify-center gap-2"
                 >
-                  Buang
+                  <Trash2 className="w-4 h-4 text-rose-600 stroke-[2] shrink-0" />
+                  <span>Buang Postingan</span>
                 </button>
 
                 {/* 3. Lanjutkan Mengedit (Batal Keluar) */}
                 <button
                   type="button"
                   onClick={handleContinueEditing}
-                  className="w-full py-2.5 rounded-2xl text-slate-500 hover:text-slate-900 font-semibold text-[13.5px] transition-colors active:scale-98 cursor-pointer"
+                  className="w-full py-2.5 rounded-2xl text-slate-500 hover:text-slate-900 font-semibold text-[13.5px] transition-colors active:scale-98 cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  Lanjutkan Mengedit
+                  <Pencil className="w-3.5 h-3.5 text-slate-400 stroke-[2] shrink-0" />
+                  <span>Lanjutkan Mengedit</span>
                 </button>
               </div>
             </div>

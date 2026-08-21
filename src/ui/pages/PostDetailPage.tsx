@@ -6,7 +6,6 @@ import { PostCommentItem } from '../components/marketplace/PostCommentItem';
 import { CommentInputBar } from '../components/marketplace/CommentInputBar';
 import { StickyBuyBar } from '../components/marketplace/StickyBuyBar';
 import { BuyBottomSheet } from '../components/marketplace/BuyBottomSheet';
-import { CommentDetailPage } from '../components/marketplace/CommentDetailPage';
 import { useAuth } from '../hooks/useAuth';
 
 interface PostDetailPageProps {
@@ -23,7 +22,6 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   const { profile } = useAuth();
   const [comments, setComments] = useState<PostComment[]>(post.comments || []);
   const [replyToCommentId, setReplyToCommentId] = useState<string | null>(null);
-  const [focusedComment, setFocusedComment] = useState<PostComment | null>(null);
   const [isBuySheetOpen, setIsBuySheetOpen] = useState(false);
 
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -35,7 +33,6 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
     }
     setComments(post.comments || []);
     setReplyToCommentId(null);
-    setFocusedComment(null);
     setIsBuySheetOpen(false);
   }, [post.id, post.comments]);
 
@@ -199,7 +196,6 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
                   onReplyClick={handleReplyClick}
                   onCancelReply={() => setReplyToCommentId(null)}
                   onSubmitReply={(cid, text) => handleAddComment(text, cid)}
-                  onOpenCommentDetail={(c) => setFocusedComment(c)}
                 />
               ))}
 
@@ -213,7 +209,6 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
                   onReplyClick={handleReplyClick}
                   onCancelReply={() => setReplyToCommentId(null)}
                   onSubmitReply={(cid, text) => handleAddComment(text, cid)}
-                  onOpenCommentDetail={(c) => setFocusedComment(c)}
                 />
               ))}
             </div>
@@ -243,21 +238,6 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
             onClose={() => setIsBuySheetOpen(false)}
           />
         </>
-      )}
-
-      {/* Threads-style Sub-Thread Comment Detail Modal / Fullscreen Sub-Page */}
-      {focusedComment && (
-        <CommentDetailPage
-          parentPost={post}
-          focusedComment={focusedComment}
-          onBack={() => setFocusedComment(null)}
-          onUpdateComment={(updated) => {
-            setFocusedComment(updated);
-            setComments((prev) =>
-              prev.map((c) => (c.id === updated.id ? updated : c))
-            );
-          }}
-        />
       )}
     </div>
   );

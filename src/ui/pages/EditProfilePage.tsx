@@ -5,7 +5,6 @@ import {
   ChevronRight,
   Check,
   X,
-  Sparkles,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -34,17 +33,6 @@ const PRESET_AVATARS = [
   'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&q=80',
 ];
 
-const SUGGESTED_INTERESTS = [
-  '💻 Web PWA',
-  '🎨 UI/UX',
-  '👕 Preloved',
-  '⚡ Joki Coding',
-  '🍱 Kuliner',
-  '🤖 AI Threads',
-  '📱 Mobile App',
-  '💼 PJBL',
-];
-
 export const EditProfilePage: React.FC<EditProfilePageProps> = ({
   initialData,
   onBack,
@@ -62,12 +50,10 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
   const [showInstagramBadge, setShowInstagramBadge] = useState(true);
   const [showViewCounts, setShowViewCounts] = useState(true);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
-  const [isAddingCustomTag, setIsAddingCustomTag] = useState(false);
   const [customTagInput, setCustomTagInput] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const customTagInputRef = useRef<HTMLInputElement>(null);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -90,7 +76,6 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
     const nextTags = [...activeTags, cleanTag];
     setInterests(nextTags.join(', '));
     setCustomTagInput('');
-    setIsAddingCustomTag(false);
     showToast(`Ditambahkan: ${cleanTag}`);
   };
 
@@ -140,13 +125,6 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
     setLink(initialData.link || '');
     onBack();
   };
-
-  // Focus custom tag input when opened
-  useEffect(() => {
-    if (isAddingCustomTag) {
-      customTagInputRef.current?.focus();
-    }
-  }, [isAddingCustomTag]);
 
   // Android / iOS Hardware Back Integration
   useEffect(() => {
@@ -322,103 +300,64 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
             />
           </div>
 
-          {/* Row 5: Minat (Interactive Signature Rounded-[45px] Badges) */}
+          {/* Row 5: Minat (Simple & Clean 1-Line Tag Input with Signature UI Colors) */}
           <div className="py-4 border-b border-neutral-200/80">
-            <div className="flex items-center justify-between mb-1.5">
+            <div className="flex items-center justify-between mb-2">
               <label className="text-[14px] font-semibold text-slate-900">
                 Minat
               </label>
-              <span className="text-[12px] text-neutral-400 font-normal">
-                {activeTags.length} dipilih
+              <span className="text-[11.5px] text-neutral-400 font-normal">
+                Pisahkan dengan koma / enter
               </span>
             </div>
 
-            {/* Active Interest Badges (WCAG Compliant High Contrast) */}
-            <div className="flex items-center flex-wrap gap-1.5 pt-1 pb-1.5 select-none">
+            {/* 1-Line Seamless Badges + Input Flow */}
+            <div className="flex items-center flex-wrap gap-1.5 min-h-[36px]">
               {activeTags.map((tag, idx) => (
                 <div
                   key={idx}
-                  className="inline-flex items-center gap-1.5 py-1.5 px-3 bg-blue-50/90 hover:bg-blue-100/80 text-[#0055d6] text-[13px] font-semibold rounded-[45px] border border-blue-200/80 group transition-all"
+                  className="inline-flex items-center gap-1.5 py-1 px-3 bg-neutral-100/90 text-slate-800 hover:bg-neutral-200/70 text-[13px] font-medium rounded-full border border-neutral-200/80 transition-all select-none group"
                 >
                   <span>{tag}</span>
                   <button
                     type="button"
                     onClick={() => handleRemoveTag(tag)}
-                    className="w-3.5 h-3.5 rounded-full hover:bg-rose-100 hover:text-rose-600 text-blue-400 hover:text-rose-600 flex items-center justify-center transition-colors cursor-pointer"
-                    title="Hapus minat"
+                    className="text-neutral-400 hover:text-rose-600 transition-colors cursor-pointer -mr-0.5"
+                    title="Hapus"
                   >
-                    <X className="w-2.5 h-2.5 stroke-[2.5]" />
+                    <X className="w-3 h-3 stroke-[2.2]" />
                   </button>
                 </div>
               ))}
 
-              {/* Add Custom Tag Pill (Seamlessly Harmonized with Badge Style) */}
-              {isAddingCustomTag ? (
-                <div className="inline-flex items-center gap-1.5 py-1.5 px-3 bg-blue-50/90 rounded-[45px] border border-blue-300 shadow-2xs">
-                  <input
-                    ref={customTagInputRef}
-                    type="text"
-                    maxLength={25}
-                    value={customTagInput}
-                    onChange={(e) => setCustomTagInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleAddTag(customTagInput);
-                      } else if (e.key === 'Escape') {
-                        setIsAddingCustomTag(false);
-                      }
-                    }}
-                    placeholder="Ketik minat..."
-                    className="text-[13px] font-semibold text-[#0055d6] bg-transparent focus:outline-none w-24 placeholder:text-blue-400/80"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleAddTag(customTagInput)}
-                    className="w-4 h-4 rounded-full bg-[#0055d6] hover:bg-[#0041a8] text-white flex items-center justify-center text-[10px] font-bold cursor-pointer transition-colors active:scale-90"
-                    title="Tambahkan minat"
-                  >
-                    <Check className="w-2.5 h-2.5 stroke-[3]" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setIsAddingCustomTag(false)}
-                    className="w-4 h-4 rounded-full text-blue-400 hover:text-rose-600 hover:bg-rose-100 flex items-center justify-center transition-colors cursor-pointer active:scale-90"
-                    title="Batal"
-                  >
-                    <X className="w-2.5 h-2.5 stroke-[2.5]" />
-                  </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setIsAddingCustomTag(true)}
-                  className="inline-flex items-center justify-center gap-x-1 py-1.5 px-3 bg-neutral-100 hover:bg-neutral-200/80 text-slate-700 hover:text-slate-900 text-[13px] font-bold rounded-[45px] border border-neutral-200/90 cursor-pointer transition-all active:scale-95 shadow-2xs"
-                  title="Tambah Minat Baru"
-                >
-                  <span>+</span>
-                </button>
-              )}
-            </div>
-
-            {/* Quick Suggestions Pills */}
-            <div className="pt-2">
-              <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
-                <Sparkles className="w-3 h-3 text-[#0055d6]" />
-                <span>Rekomendasi Minat:</span>
-              </div>
-              <div className="flex items-center flex-wrap gap-1.5">
-                {SUGGESTED_INTERESTS.filter((s) => !activeTags.includes(s)).slice(0, 6).map((suggested, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => handleAddTag(suggested)}
-                    className="inline-flex items-center gap-1 py-1 px-2.5 bg-white hover:bg-blue-50/80 text-slate-700 hover:text-[#0055d6] text-[12px] font-medium rounded-full border border-dashed border-neutral-300 hover:border-blue-300 transition-all cursor-pointer active:scale-95"
-                  >
-                    <span>+ {suggested}</span>
-                  </button>
-                ))}
-              </div>
+              {/* Clean 1-Line Inline Input */}
+              <input
+                type="text"
+                value={customTagInput}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val.includes(',') || val.includes('\n')) {
+                    const parts = val.split(/[,\\n]/);
+                    parts.forEach((p) => handleAddTag(p));
+                    setCustomTagInput('');
+                  } else {
+                    setCustomTagInput(val);
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (customTagInput.trim()) {
+                      handleAddTag(customTagInput);
+                      setCustomTagInput('');
+                    }
+                  } else if (e.key === 'Backspace' && !customTagInput && activeTags.length > 0) {
+                    handleRemoveTag(activeTags[activeTags.length - 1]);
+                  }
+                }}
+                placeholder="+ Tambah minat..."
+                className="text-[13.5px] text-slate-900 placeholder:text-neutral-400 bg-transparent focus:outline-none min-w-[120px] flex-1 py-1"
+              />
             </div>
           </div>
 

@@ -372,12 +372,12 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             )}
           </div>
 
-          {/* Row 4: Bakat & Minat Badges (WCAG Compliant High-Contrast Aesthetic) */}
+          {/* Row 4: Bakat & Minat Badges (Signature Light UI Colors) */}
           <div className="flex items-center flex-wrap gap-1.5 pt-1.5 pb-0.5 select-none">
             {profileData.tags.map((tag, idx) => (
               <div
                 key={idx}
-                className="inline-flex items-center justify-center gap-x-1 py-1.5 px-3 bg-blue-50/90 hover:bg-blue-100/80 text-[#0055d6] hover:text-[#0041a8] text-[13px] font-semibold rounded-[45px] border border-blue-200/80 cursor-pointer transition-all active:scale-95 shadow-2xs"
+                className="inline-flex items-center justify-center gap-x-1 py-1 px-3 bg-neutral-100/90 hover:bg-neutral-200/70 text-slate-800 text-[13px] font-medium rounded-full border border-neutral-200/80 cursor-pointer transition-all active:scale-95 shadow-2xs"
               >
                 <span>{tag}</span>
               </div>
@@ -390,7 +390,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                   window.history.pushState({ layer: 'edit-profile' }, '', window.location.pathname + '#edit-profile');
                   setIsEditScreenOpen(true);
                 }}
-                className="inline-flex items-center justify-center gap-x-1 py-1.5 px-3 bg-neutral-100 hover:bg-neutral-200/80 text-slate-700 hover:text-slate-900 text-[13px] font-bold rounded-[45px] border border-neutral-200/90 cursor-pointer transition-all active:scale-95 shadow-2xs"
+                className="inline-flex items-center justify-center gap-x-1 py-1 px-2.5 bg-neutral-100/90 hover:bg-neutral-200/80 text-slate-600 hover:text-slate-900 text-[13px] font-semibold rounded-full border border-neutral-200/80 cursor-pointer transition-all active:scale-95 shadow-2xs"
                 title="Tambah / Ubah Minat"
               >
                 <span>+</span>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, FileText, MoreHorizontal, Image as ImageIcon, MapPin, PartyPopper, AlignLeft, Music, ShoppingBag, Sparkles, ChevronRight } from 'lucide-react';
+import { X, FileText, MoreHorizontal, Image as ImageIcon, MapPin, PartyPopper, ShoppingBag, Sparkles, ChevronRight } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 
 // Custom Threads 3-Dot Topic Icon
@@ -9,19 +9,6 @@ const ThreadsTopicIcon: React.FC<{ className?: string }> = ({ className = "w-3.5
     <circle cx="6" cy="16" r="3" />
     <circle cx="15" cy="12" r="3" />
   </svg>
-);
-
-// Custom Threads Document Icon with Option Dot
-const ThreadsDocOptionIcon: React.FC<{ className?: string }> = ({ className = "w-[19px] h-[19px] text-neutral-400" }) => (
-  <div className="relative inline-flex items-center justify-center">
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-      <polyline points="14 2 14 8 20 8" />
-      <line x1="8" y1="12" x2="16" y2="12" />
-      <line x1="8" y1="16" x2="13" y2="16" />
-    </svg>
-    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-white ring-1 ring-neutral-400" />
-  </div>
 );
 
 interface TopicOption {
@@ -389,72 +376,55 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   </div>
                 )}
 
-                {/* Action Icons Bar */}
-                <div className="flex items-center gap-3.5 pt-1.5 text-neutral-400 select-none">
+                {/* Ergonomic & Touch-Friendly Action Toolbar (Pills) */}
+                <div className="flex items-center flex-wrap gap-2 pt-2.5 select-none">
+                  {/* 1. Add Image Pill */}
                   <button
                     type="button"
                     onClick={handleAddDummyImage}
-                    className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
-                    title="Tambah Foto / Media"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100/90 hover:bg-neutral-200/80 active:scale-95 text-slate-800 text-[12.5px] font-semibold transition-all cursor-pointer"
                   >
-                    <ImageIcon className="w-[19px] h-[19px] stroke-[1.6]" />
+                    <ImageIcon className="w-4 h-4 text-slate-700 stroke-[2]" />
+                    <span>{images.length > 0 ? `Foto (${images.length})` : 'Foto'}</span>
                   </button>
+
+                  {/* 2. COD Location Pill */}
                   <button
                     type="button"
-                    className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
-                    title="Tambah GIF"
-                  >
-                    <span className="border border-neutral-400/80 rounded-[5px] px-1 py-[1px] text-[10px] font-extrabold text-neutral-500 leading-none inline-block">
-                      GIF
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
-                    title="Buat Polling"
-                  >
-                    <AlignLeft className="w-[19px] h-[19px] stroke-[1.8]" />
-                  </button>
-                  <button
-                    type="button"
-                    className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
-                    title="Opsi Postingan"
-                  >
-                    <ThreadsDocOptionIcon className="w-[19px] h-[19px]" />
-                  </button>
-                  <button
-                    type="button"
-                    className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
-                    title="Tag Lokasi"
-                  >
-                    <MapPin className="w-[19px] h-[19px] stroke-[1.6]" />
-                  </button>
-                  <button
-                    type="button"
-                    className="p-0.5 text-neutral-400 hover:text-slate-900 transition-colors cursor-pointer"
-                    title="Tambah Musik / Audio"
-                  >
-                    <Music className="w-[19px] h-[19px] stroke-[1.6]" />
-                  </button>
-                  {/* Direct Toggle Action Icon in toolbar */}
-                  <button
-                    type="button"
-                    onClick={() => setPostMode(postMode === 'product' ? 'thread' : 'product')}
-                    className={`p-0.5 transition-colors cursor-pointer ${
-                      postMode === 'product' ? 'text-[#1d64ec]' : 'text-neutral-400 hover:text-[#1d64ec]'
+                    onClick={() => {
+                      if (postMode !== 'product') setPostMode('product');
+                    }}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12.5px] font-semibold transition-all cursor-pointer active:scale-95 ${
+                      locationInput
+                        ? 'bg-blue-50 text-[#1d64ec] border border-blue-200'
+                        : 'bg-neutral-100/90 hover:bg-neutral-200/80 text-slate-800'
                     }`}
-                    title={postMode === 'product' ? 'Mode Jualan Aktif' : 'Ubah ke Mode Jualan'}
                   >
-                    <ShoppingBag className="w-[19px] h-[19px] stroke-[1.8]" />
+                    <MapPin className="w-4 h-4 stroke-[2]" />
+                    <span className="truncate max-w-[120px]">{locationInput || 'Lokasi COD'}</span>
+                  </button>
+
+                  {/* 3. Community Topic Pill */}
+                  <button
+                    type="button"
+                    onClick={() => setShowTopicDropdown(!showTopicDropdown)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12.5px] font-semibold transition-all cursor-pointer active:scale-95 ${
+                      selectedTopic
+                        ? 'bg-blue-50 text-[#1d64ec] border border-blue-200'
+                        : 'bg-neutral-100/90 hover:bg-neutral-200/80 text-slate-800'
+                    }`}
+                  >
+                    <Sparkles className="w-3.5 h-3.5 stroke-[2]" />
+                    <span className="truncate max-w-[120px]">{selectedTopic ? selectedTopic.name : 'Pilih Topik'}</span>
                   </button>
                 </div>
               </div>
 
               {/* Faded Prompt Line */}
-              <div className="pt-2.5 text-[13.5px] text-neutral-400 font-normal select-none">
+              <div className="pt-2 text-[13px] text-neutral-400 font-normal select-none">
                 {postMode === 'product'
-                  ? 'Isi rincian barang / jasa yang dijual'
-                  : 'Tambahkan ke thread'}
+                  ? 'Isi rincian barang atau jasa yang ingin dijual di bawah'
+                  : 'Siap dibagikan ke seluruh siswa SMKN 8'}
               </div>
             </div>
           </div>
@@ -546,21 +516,21 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
           )}
         </div>
 
-        {/* Bottom Footer: [ iOS Style Mode Toggle Button ] --- [ Post Button ] */}
-        <div className="px-4 py-3 border-t border-neutral-200/80 bg-white flex items-center justify-between gap-3 shrink-0">
-          {/* Interactive Button Toggle (Mode Switcher) */}
+        {/* Bottom Footer: [ Elegant iOS Style Card Mode Switcher ] --- [ Post Button ] */}
+        <div className="px-4 py-3 pb-[max(0.85rem,calc(env(safe-area-inset-bottom)+8px))] border-t border-neutral-200/80 bg-white flex items-center justify-between gap-3 shrink-0 select-none">
+          {/* Interactive Card Switcher */}
           <button
             type="button"
             onClick={() => setPostMode(postMode === 'product' ? 'thread' : 'product')}
-            className={`flex items-center gap-2.5 px-3 py-1.5 rounded-2xl border transition-all cursor-pointer select-none active:scale-[0.98] ${
+            className={`flex items-center gap-3 px-3.5 py-2 rounded-2xl border transition-all cursor-pointer select-none active:scale-[0.98] ${
               postMode === 'product'
-                ? 'bg-blue-50/90 border-blue-300 text-blue-950 shadow-2xs'
-                : 'bg-neutral-100/90 hover:bg-neutral-200/60 border-neutral-200 text-neutral-600'
+                ? 'bg-blue-50/90 border-blue-300 shadow-2xs text-blue-950'
+                : 'bg-neutral-50 hover:bg-neutral-100/80 border-neutral-200/80 text-slate-800'
             }`}
           >
             {/* iOS-style Animated Toggle Switch */}
             <div
-              className={`w-9 h-5 rounded-full p-0.5 transition-colors duration-200 flex items-center ${
+              className={`w-9 h-5 rounded-full p-0.5 transition-colors duration-200 flex items-center shrink-0 ${
                 postMode === 'product' ? 'bg-[#1d64ec]' : 'bg-neutral-300'
               }`}
             >
@@ -571,14 +541,17 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
               />
             </div>
 
-            <div className="text-left flex flex-col">
-              <span className={`text-[12px] font-bold leading-tight ${
-                postMode === 'product' ? 'text-[#1d64ec]' : 'text-slate-800'
-              }`}>
-                {postMode === 'product' ? 'Mode Jualan Aktif' : 'Jadikan Jualan'}
-              </span>
-              <span className="text-[10px] text-neutral-500 font-normal leading-tight">
-                {postMode === 'product' ? 'Isi harga & stok' : 'Pasang harga & COD'}
+            <div className="text-left flex flex-col min-w-0">
+              <div className="flex items-center gap-1.5">
+                <ShoppingBag className={`w-3.5 h-3.5 shrink-0 ${postMode === 'product' ? 'text-[#1d64ec]' : 'text-neutral-500'}`} />
+                <span className={`text-[12.5px] font-bold leading-tight ${
+                  postMode === 'product' ? 'text-[#1d64ec]' : 'text-slate-800'
+                }`}>
+                  {postMode === 'product' ? 'Mode Jualan Aktif' : 'Jadikan Jualan'}
+                </span>
+              </div>
+              <span className="text-[10.5px] text-neutral-500 font-normal leading-tight mt-0.5">
+                {postMode === 'product' ? 'Pasang harga Rp & info COD' : 'Bisa pasang harga & titik COD'}
               </span>
             </div>
           </button>
@@ -588,7 +561,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
             type="button"
             onClick={handleSubmit}
             disabled={!canPost}
-            className={`px-5 py-2.5 rounded-full font-bold text-[14.5px] transition-all duration-200 cursor-pointer shrink-0 ${
+            className={`px-6 py-2.5 rounded-full font-bold text-[14.5px] transition-all duration-200 cursor-pointer shrink-0 ${
               canPost
                 ? 'bg-slate-900 hover:bg-slate-800 text-white shadow-md active:scale-95'
                 : 'bg-neutral-200 text-neutral-400 cursor-not-allowed'

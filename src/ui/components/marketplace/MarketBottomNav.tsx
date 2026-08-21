@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { Home, Send, Plus, Heart, User } from 'lucide-react';
 
 interface MarketBottomNavProps {
@@ -14,59 +14,6 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   onPostClick,
   userAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
 }) => {
-  const [isVisible, setIsVisible] = useState(true);
-  const lastScrollY = useRef(0);
-  const scrollTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Auto-Hide on Scroll Down & Delayed Reveal on Idle (rAF Throttled for 0% CPU overhead)
-  useEffect(() => {
-    let rAFId: number | null = null;
-
-    const handleScroll = () => {
-      if (rAFId !== null) return;
-
-      rAFId = requestAnimationFrame(() => {
-        rAFId = null;
-        const currentScrollY = window.scrollY;
-        const scrollDiff = currentScrollY - lastScrollY.current;
-
-        // Always show if near the top of the feed (< 50px)
-        if (currentScrollY < 50) {
-          setIsVisible((prev) => (prev ? prev : true));
-          if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
-          lastScrollY.current = currentScrollY;
-          return;
-        }
-
-        // Scrolling DOWN -> hide bottom nav
-        if (scrollDiff > 10) {
-          setIsVisible(false);
-        }
-        // Explicit substantial scroll UP -> reveal bottom nav
-        else if (scrollDiff < -30) {
-          setIsVisible(true);
-        }
-
-        lastScrollY.current = currentScrollY;
-
-        // When user STOPS scrolling -> wait delay (0.5s) before sliding navbar back up
-        if (scrollTimeout.current) {
-          clearTimeout(scrollTimeout.current);
-        }
-        scrollTimeout.current = setTimeout(() => {
-          setIsVisible(true);
-        }, 500); // 0.5s idle delay
-      });
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (rAFId !== null) cancelAnimationFrame(rAFId);
-      if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
-    };
-  }, []);
-
   const navItems = [
     { id: 'home', label: 'Home', icon: Home },
     { id: 'messages', label: 'Pesan', icon: Send, hasBadge: true },
@@ -77,12 +24,9 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-50 font-gt-standard select-none bg-white border-t border-neutral-200/80 shadow-[0_-4px_24px_rgba(0,0,0,0.04)] transition-transform duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] transform-gpu ${
-        isVisible ? 'translate-y-0' : 'translate-y-[120%]'
-      }`}
+      className="fixed bottom-0 left-0 right-0 z-50 font-gt-standard select-none bg-white border-t border-neutral-200/80 shadow-[0_-4px_24px_rgba(0,0,0,0.04)]"
       style={{
         paddingBottom: 'max(0.75rem, calc(env(safe-area-inset-bottom, 0px) + 8px))',
-        willChange: 'transform',
       }}
     >
       {/* Edge-to-Edge Safe-Area Compliant Inner Container (Strict Apple HIG & Android Navigation Guidelines) */}

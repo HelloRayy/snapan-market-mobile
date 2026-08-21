@@ -870,66 +870,47 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
           </button>
         </div>
 
-        {/* Titik COD Modal Dialog Container (Centered Card Dialog matching Reference) */}
+        {/* Titik COD Modal Dialog Container (Search Input + Dynamic Suggestions) */}
         {showLocationModal && (
           <div
             className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-backdrop-fade font-gt-standard select-none"
             onClick={() => setShowLocationModal(false)}
           >
             <div
-              className="w-full max-w-[340px] bg-white rounded-3xl p-5 text-center shadow-2xl space-y-4 border border-neutral-100 transform-gpu animate-page-zoom"
+              className="w-full max-w-[340px] bg-white rounded-3xl p-5 text-left shadow-2xl space-y-3.5 border border-neutral-100 transform-gpu animate-page-zoom"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header Icon + Title */}
-              <div className="space-y-1.5 pt-1">
-                <div className="w-10 h-10 rounded-full bg-blue-50 text-[#1d64ec] flex items-center justify-center mx-auto mb-1.5 shadow-2xs">
-                  <MapPin className="w-5 h-5 stroke-[2.2]" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-blue-50 text-[#1d64ec] flex items-center justify-center shadow-2xs">
+                    <MapPin className="w-4 h-4 stroke-[2.2]" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-[15.5px] text-slate-900 leading-tight">
+                      Titik COD di Sekolah
+                    </h3>
+                    <p className="text-[11.5px] text-neutral-400 font-normal">
+                      SMKN 8 Jakarta
+                    </p>
+                  </div>
                 </div>
-                <h3 className="font-bold text-[17px] text-slate-900 leading-snug">
-                  Titik COD di Sekolah
-                </h3>
-                <p className="text-[13px] text-neutral-500 font-normal leading-relaxed">
-                  Pilih lokasi temu atau tulis ruangan kelas khusus untuk serah-terima barang.
-                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowLocationModal(false)}
+                  className="w-7 h-7 rounded-full hover:bg-neutral-100 flex items-center justify-center text-neutral-400 hover:text-slate-900 transition-colors"
+                >
+                  <X className="w-4 h-4 stroke-[2]" />
+                </button>
               </div>
 
-              {/* 1-Tap Preset Quick Chips */}
-              <div className="flex items-center justify-center gap-1.5 flex-wrap pt-0.5">
-                {[
-                  { name: 'Kantin', emoji: '🍜' },
-                  { name: 'Lab PPLG', emoji: '💻' },
-                  { name: 'Perpustakaan', emoji: '📚' },
-                  { name: 'Depan Gerbang', emoji: '🏫' },
-                  { name: 'Lapangan', emoji: '⚽' },
-                ].map((loc) => {
-                  const isSelected = locationInput === loc.name;
-                  return (
-                    <button
-                      key={loc.name}
-                      type="button"
-                      onClick={() => {
-                        setLocationInput(loc.name);
-                        setShowLocationModal(false);
-                      }}
-                      className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-[12.5px] font-semibold transition-all cursor-pointer select-none active:scale-95 border ${
-                        isSelected
-                          ? 'bg-blue-50 border-blue-400 text-[#1d64ec] shadow-2xs font-bold'
-                          : 'bg-neutral-100/90 hover:bg-neutral-200/80 border-neutral-200/80 text-slate-800'
-                      }`}
-                    >
-                      <span>{loc.emoji}</span>
-                      <span>{loc.name}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Custom Location Input */}
-              <div className="relative pt-1">
-                <MapPin className="absolute left-3.5 top-3.5 w-4 h-4 text-neutral-400 pointer-events-none" />
+              {/* 1. Main Search / Input Field */}
+              <div className="relative">
+                <MapPin className="absolute left-3.5 top-3 w-4 h-4 text-neutral-400 pointer-events-none" />
                 <input
                   type="text"
-                  placeholder="Atau ketik titik temu lainnya..."
+                  autoFocus
+                  placeholder="Ketik lokasi COD (Kantin, Lab, dll)..."
                   value={locationInput}
                   onChange={(e) => setLocationInput(e.target.value)}
                   onKeyDown={(e) => {
@@ -938,22 +919,84 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                       setShowLocationModal(false);
                     }
                   }}
-                  className="w-full pl-9 pr-3.5 py-2.5 text-[13px] rounded-2xl border border-neutral-200 focus:outline-none focus:border-[#1d64ec] bg-neutral-50/70 text-slate-900 placeholder:text-neutral-400 transition-all font-normal"
+                  className="w-full pl-9.5 pr-8 py-2.5 text-[13.5px] rounded-2xl border border-neutral-200 focus:outline-none focus:border-[#1d64ec] focus:ring-2 focus:ring-blue-500/15 bg-neutral-50/70 text-slate-900 placeholder:text-neutral-400 transition-all font-normal"
                 />
+                {locationInput && (
+                  <button
+                    type="button"
+                    onClick={() => setLocationInput('')}
+                    className="absolute right-2.5 top-2.5 w-5 h-5 rounded-full bg-neutral-200/80 hover:bg-neutral-300 text-neutral-600 flex items-center justify-center transition-colors cursor-pointer"
+                  >
+                    <X className="w-3 h-3 stroke-[2.5]" />
+                  </button>
+                )}
               </div>
 
-              {/* Action Buttons */}
-              <div className="space-y-2 pt-1">
-                {/* 1. Selesai / Simpan */}
+              {/* 2. Dynamic Smart Suggestions List */}
+              <div className="space-y-1 pt-0.5">
+                <p className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider px-1">
+                  Rekomendasi Titik COD:
+                </p>
+
+                <div className="max-h-[160px] overflow-y-auto space-y-1 -mx-1 px-1">
+                  {[
+                    { name: 'Kantin Utama', emoji: '🍜', desc: 'Area kantin tengah & meja makan' },
+                    { name: 'Lab PPLG & Komputer', emoji: '💻', desc: 'Lantai 2 gedung jurusan' },
+                    { name: 'Perpustakaan', emoji: '📚', desc: 'Depan lobby perpustakaan' },
+                    { name: 'Depan Gerbang Utama', emoji: '🏫', desc: 'Pos satpam / gerbang sekolah' },
+                    { name: 'Lapangan Olahraga', emoji: '⚽', desc: 'Tribun lapangan tengah' },
+                    { name: 'Gazebo DKV', emoji: '☕', desc: 'Area santai taman belakang' },
+                  ]
+                    .filter((loc) =>
+                      loc.name.toLowerCase().includes(locationInput.toLowerCase()) ||
+                      loc.desc.toLowerCase().includes(locationInput.toLowerCase())
+                    )
+                    .map((loc) => {
+                      const isSelected = locationInput.toLowerCase() === loc.name.toLowerCase();
+                      return (
+                        <button
+                          key={loc.name}
+                          type="button"
+                          onClick={() => {
+                            setLocationInput(loc.name);
+                            setShowLocationModal(false);
+                          }}
+                          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left transition-all cursor-pointer select-none active:scale-[0.99] border ${
+                            isSelected
+                              ? 'bg-blue-50/90 border-blue-200 text-[#1d64ec]'
+                              : 'hover:bg-neutral-100/90 border-transparent text-slate-800'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <span className="text-base shrink-0">{loc.emoji}</span>
+                            <div className="min-w-0">
+                              <p className="font-semibold text-[13px] leading-tight truncate">
+                                {loc.name}
+                              </p>
+                              <p className="text-[11px] text-neutral-400 truncate mt-0.5">
+                                {loc.desc}
+                              </p>
+                            </div>
+                          </div>
+                          {isSelected && (
+                            <span className="text-xs font-bold text-[#1d64ec] shrink-0">✓ Terpilih</span>
+                          )}
+                        </button>
+                      );
+                    })}
+                </div>
+              </div>
+
+              {/* 3. Action Buttons */}
+              <div className="space-y-2 pt-1 border-t border-neutral-100">
                 <button
                   type="button"
                   onClick={() => setShowLocationModal(false)}
-                  className="w-full py-2.5 rounded-2xl bg-[#101010] hover:bg-black text-white font-bold text-[13.5px] transition-colors active:scale-98 cursor-pointer shadow-sm"
+                  className="w-full py-2.5 rounded-2xl bg-[#101010] hover:bg-black text-white font-bold text-[13.5px] transition-colors active:scale-98 cursor-pointer shadow-sm text-center"
                 >
-                  Selesai
+                  {locationInput ? `Gunakan "${locationInput}"` : 'Tutup'}
                 </button>
 
-                {/* 2. Hapus Titik COD (Jika ada yang terpilih) */}
                 {locationInput && (
                   <button
                     type="button"
@@ -961,7 +1004,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                       setLocationInput('');
                       setShowLocationModal(false);
                     }}
-                    className="w-full py-2 rounded-2xl text-rose-600 hover:bg-rose-50 font-semibold text-[13px] transition-colors active:scale-98 cursor-pointer"
+                    className="w-full py-1.5 rounded-2xl text-rose-600 hover:bg-rose-50 font-medium text-[12.5px] transition-colors active:scale-98 cursor-pointer text-center"
                   >
                     Hapus Titik COD
                   </button>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Heart, MoreHorizontal, Box, Repeat2, Send, PartyPopper, ChevronRight } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
@@ -198,61 +199,96 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
   );
 
   const renderActionBar = () => (
-    <div className="pt-1 flex items-center justify-between text-slate-600 -ml-1 pr-1 max-w-full">
-      {/* Left Action Buttons Cluster (Compact Threads-Style Spacing) */}
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className="pt-1 flex items-center justify-between text-slate-600 -ml-1 pr-1 max-w-full"
+    >
+      {/* Left Action Buttons Cluster (Compact Threads-Style Spacing with Motion) */}
       <div className="flex items-center gap-1 sm:gap-2">
         {/* 1. Like Button */}
-        <button
+        <motion.button
           type="button"
+          whileTap={{ scale: 0.88 }}
+          whileHover={{ scale: 1.04 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
           onClick={handleLikeToggle}
-          className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer select-none ${
+          className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 transition-colors cursor-pointer select-none ${
             isLiked ? 'text-rose-500' : 'text-slate-600 hover:text-slate-900'
           }`}
           aria-label={`Sukai postingan. ${likesCount} suka`}
         >
-          <Heart className={`w-4.5 h-4.5 stroke-[2] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-          <span className={`font-normal text-[13.5px] ${isLiked ? 'text-rose-500 font-medium' : 'text-slate-700'}`}>{likesCount}</span>
-        </button>
+          <motion.div
+            animate={isLiked ? { scale: [1, 1.35, 0.95, 1], rotate: [0, -12, 12, 0] } : { scale: 1, rotate: 0 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+          >
+            <Heart className={`w-4.5 h-4.5 stroke-[2] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+          </motion.div>
+          <motion.span
+            key={likesCount}
+            initial={{ opacity: 0.8, y: -2 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.15 }}
+            className={`font-normal text-[13.5px] ${isLiked ? 'text-rose-500 font-medium' : 'text-slate-700'}`}
+          >
+            {likesCount}
+          </motion.span>
+        </motion.button>
 
         {/* 2. Comment Button */}
-        <button
+        <motion.button
           type="button"
+          whileTap={{ scale: 0.88 }}
+          whileHover={{ scale: 1.04 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
           onClick={(e) => {
             e.stopPropagation();
             onPostClick?.(item);
           }}
-          className="flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer text-slate-600 hover:text-slate-900 select-none"
+          className="flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 transition-colors cursor-pointer text-slate-600 hover:text-slate-900 select-none"
           aria-label={`Komentar postingan. ${item.commentsCount} komentar`}
         >
           <SmoothCommentIcon className="w-4.5 h-4.5 stroke-[2]" />
           <span className="font-normal text-[13.5px] text-slate-700">{item.commentsCount}</span>
-        </button>
+        </motion.button>
 
         {/* 3. Repost Button */}
-        <button
+        <motion.button
           type="button"
+          whileTap={{ scale: 0.88 }}
+          whileHover={{ scale: 1.04 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
           onClick={handleRepostToggle}
-          className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer select-none ${
+          className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 transition-colors cursor-pointer select-none ${
             isReposted ? 'text-emerald-500' : 'text-slate-600 hover:text-slate-900'
           }`}
           aria-label={`Post ulang postingan. ${repostsCount} posting ulang`}
         >
-          <Repeat2 className={`w-4.5 h-4.5 stroke-[2] ${isReposted ? 'text-emerald-500' : ''}`} />
+          <motion.div
+            animate={isReposted ? { rotate: [0, 180], scale: [1, 1.25, 1] } : { rotate: 0, scale: 1 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+          >
+            <Repeat2 className={`w-4.5 h-4.5 stroke-[2] ${isReposted ? 'text-emerald-500' : ''}`} />
+          </motion.div>
           <span className={`font-normal text-[13.5px] ${isReposted ? 'text-emerald-500 font-medium' : 'text-slate-700'}`}>
             {repostsCount}
           </span>
-        </button>
+        </motion.button>
 
         {/* 4. Send / Share Button */}
-        <button
+        <motion.button
           type="button"
+          whileTap={{ scale: 0.88 }}
+          whileHover={{ scale: 1.08 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
           onClick={handleShare}
-          className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer text-slate-600 hover:text-slate-900 select-none"
+          className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 transition-colors cursor-pointer text-slate-600 hover:text-slate-900 select-none"
           aria-label="Bagikan postingan"
           title="Bagikan / Kirim"
         >
           <Send className="w-4 h-4 stroke-[1.8] text-slate-600" />
-        </button>
+        </motion.button>
       </div>
 
       {/* 5. Stock Indicator (Icon + Label + Number) - ONLY FOR PRODUCT POSTS */}
@@ -262,7 +298,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           <span className="font-normal text-slate-600">Sisa stok: <strong className="font-semibold text-slate-900">{item.stock}</strong></span>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 
   return (

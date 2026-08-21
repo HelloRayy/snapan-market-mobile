@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { ArrowLeft, Heart, Repeat, Send, BadgeCheck, MoreHorizontal, Crown } from 'lucide-react';
 import { MarketPostItem, PostComment } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
@@ -335,46 +336,72 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
               </div>
             )}
 
-            {/* Action Bar */}
-            <div className="flex items-center gap-5 text-slate-500 pt-3 text-[14px]">
-              <button
+            {/* Action Bar with Motion Animations */}
+            <motion.div
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="flex items-center gap-5 text-slate-500 pt-3 text-[14px]"
+            >
+              {/* Like Button */}
+              <motion.button
                 type="button"
+                whileTap={{ scale: 0.88 }}
+                whileHover={{ scale: 1.04 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 onClick={handleHeroLikeToggle}
-                className={`flex items-center gap-1.5 hover:opacity-80 active:scale-90 transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 hover:opacity-80 transition-colors cursor-pointer select-none ${
                   isHeroLiked ? 'text-rose-500' : 'text-slate-500 hover:text-slate-900'
                 }`}
               >
-                <Heart className={`w-4.5 h-4.5 stroke-[1.75] ${isHeroLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+                <motion.div
+                  animate={isHeroLiked ? { scale: [1, 1.35, 0.95, 1], rotate: [0, -12, 12, 0] } : { scale: 1, rotate: 0 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                >
+                  <Heart className={`w-4.5 h-4.5 stroke-[1.75] ${isHeroLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+                </motion.div>
                 {heroLikesCount > 0 && <span className="font-semibold text-slate-700">{heroLikesCount}</span>}
-              </button>
+              </motion.button>
 
-              <button
+              {/* Comment Button */}
+              <motion.button
                 type="button"
+                whileTap={{ scale: 0.88 }}
+                whileHover={{ scale: 1.04 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 onClick={() => {
                   inputRef.current?.focus();
                 }}
-                className="flex items-center gap-1.5 hover:text-slate-900 active:scale-90 transition-all cursor-pointer text-slate-500"
+                className="flex items-center gap-1.5 hover:text-slate-900 transition-colors cursor-pointer text-slate-500 select-none"
               >
                 <SmoothCommentIcon className="w-4.5 h-4.5 stroke-[1.75]" />
                 {repliesList.length > 0 && (
                   <span className="font-semibold text-slate-700">{repliesList.length}</span>
                 )}
-              </button>
+              </motion.button>
 
-              <button
+              {/* Repost Button */}
+              <motion.button
                 type="button"
-                className="hover:text-slate-900 active:scale-90 transition-all cursor-pointer text-slate-500"
+                whileTap={{ scale: 0.88 }}
+                whileHover={{ scale: 1.04 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                className="hover:text-slate-900 transition-colors cursor-pointer text-slate-500 select-none"
               >
                 <Repeat className="w-4.5 h-4.5 stroke-[1.75]" />
-              </button>
+              </motion.button>
 
-              <button
+              {/* Share Button */}
+              <motion.button
                 type="button"
-                className="hover:text-slate-900 active:scale-90 transition-all cursor-pointer text-slate-500"
+                whileTap={{ scale: 0.88 }}
+                whileHover={{ scale: 1.08 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                className="hover:text-slate-900 transition-colors cursor-pointer text-slate-500 select-none"
               >
                 <Send className="w-4.5 h-4.5 stroke-[1.75]" />
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
           </div>
         </div>
 

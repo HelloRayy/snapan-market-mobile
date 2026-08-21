@@ -21,7 +21,7 @@ const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
 
 interface PostCommentItemProps {
   comment: PostComment;
-  onReplyClick?: (username: string) => void;
+  onReplyClick?: (username: string, commentId?: string) => void;
   isNested?: boolean;
 }
 
@@ -32,6 +32,11 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
 }) => {
   const [isLiked, setIsLiked] = useState(comment.isLiked || false);
   const [likesCount, setLikesCount] = useState(comment.likesCount);
+  const [repliesState, setRepliesState] = useState(comment.replies || []);
+
+  React.useEffect(() => {
+    setRepliesState(comment.replies || []);
+  }, [comment.replies]);
 
   const handleLikeToggle = () => {
     if (isLiked) {
@@ -43,14 +48,23 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
     }
   };
 
-  const hasReplies = comment.replies && comment.replies.length > 0;
+  const handleNestedReplyLike = (replyId: string) => {
+    setRepliesState((prev) =>
+      prev.map((r) => {
+        if (r.id === replyId) {
+          const liked = !r.isLiked;
+          return {
+            ...r,
+            isLiked: liked,
+            likesCount: liked ? r.likesCount + 1 : Math.max(0, r.likesCount - 1),
+          };
+        }
+        return r;
+      })
+    );
+  };
 
-  // Filter to display ONLY 1 top reply (highest likes count or author reply)
-  const topReply = hasReplies
-    ? [...comment.replies!].sort(
-        (a, b) => (b.user.isAuthor ? 1 : 0) - (a.user.isAuthor ? 1 : 0) || b.likesCount - a.likesCount
-      )[0]
-    : null;
+  const hasReplies = repliesState.length > 0;
 
   const renderActionBar = (
     liked: boolean,
@@ -100,8 +114,8 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
 
   return (
     <div className={`w-full ${isNested ? 'pt-3.5 pl-0' : 'py-3.5 border-b border-neutral-200'}`}>
-      {!topReply ? (
-        /* SINGLE COMMENT (NO REPLIES): 2-Column Threads Layout matching reference */
+      {!hasReplies ? (
+        /* SINGLE COMMENT (NO REPLIES): 2-Column Threads Layout */
         <div className="flex items-start gap-3">
           {/* Left Column: Avatar (36x36px) */}
           <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 mt-0.5">
@@ -112,7 +126,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
             />
           </div>
 
-          {/* Right Column: Header (Username + Timestamp + Options) + Content + Action Bar */}
+          {/* Right Column: Header + Content + Action Bar */}
           <div className="flex-1 min-w-0 space-y-1">
             {/* Header Row: Username + Verified + Timestamp + Options (...) */}
             <div className="flex items-center justify-between gap-2">
@@ -148,7 +162,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
               </button>
             </div>
 
-            {/* Comment Content (Aligned with Username Column) */}
+            {/* Comment Content */}
             <p className="text-[15px] text-slate-900 font-normal leading-snug break-words">
               <FormattedText text={comment.content} />
               {comment.threadPart && comment.totalParts && (
@@ -158,7 +172,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
               )}
             </p>
 
-            {/* Attached Images in Comment (e.g. from chained thread) */}
+            {/* Attached Images in Comment */}
             {comment.images && comment.images.length > 0 && (
               <div className="pt-2">
                 {comment.images.length === 1 ? (
@@ -189,17 +203,17 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
               </div>
             )}
 
-            {/* Action Bar (Aligned with Username Column) */}
+            {/* Action Bar */}
             {renderActionBar(
               isLiked,
               likesCount,
               handleLikeToggle,
-              () => onReplyClick?.(comment.user.username || comment.user.name)
+              () => onReplyClick?.(comment.user.username || comment.user.name, comment.id)
             )}
           </div>
         </div>
       ) : (
-        /* THREAD COMMENT WITH TOP REPLY: Indented child reply + dynamic L-shaped curved connecting line (└─) */
+        /* THREAD COMMENT WITH NESTED REPLIES: Indented child replies + dynamic L-shaped curved connecting line (└─) */
         <div className="space-y-3">
           {/* Parent Comment Row */}
           <div className="flex items-start gap-3">
@@ -213,7 +227,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 />
               </div>
 
-              {/* Dynamic 2px Vertical Line: Stretches 100% height of Person A row regardless of caption length! */}
+              {/* Dynamic 2px Vertical Line */}
               <div className="w-[2px] flex-1 bg-[#d1d5db] mt-1 mb-0 rounded-full" />
             </div>
 
@@ -259,70 +273,74 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 isLiked,
                 likesCount,
                 handleLikeToggle,
-                () => onReplyClick?.(comment.user.username || comment.user.name)
+                () => onReplyClick?.(comment.user.username || comment.user.name, comment.id)
               )}
             </div>
           </div>
 
-          {/* Child Reply Row (Indented right with ml-7) */}
-          <div className="flex items-start gap-3 ml-7 relative">
-            {/* L-Shaped Elbow Curve: Seamlessly picks up vertical line from Person A above and curves right into Person B left center (18px) */}
-            <div className="absolute -left-[11px] -top-3.5 h-[32px] w-[12px] border-l-2 border-b-2 border-[#d1d5db] rounded-bl-xl pointer-events-none z-0" />
+          {/* Child Replies List (Indented right with ml-7) */}
+          <div className="space-y-3.5">
+            {repliesState.map((reply, idx) => (
+              <div key={reply.id || idx} className="flex items-start gap-3 ml-7 relative">
+                {/* L-Shaped Elbow Curve (└─) */}
+                <div className="absolute -left-[11px] -top-3.5 h-[32px] w-[12px] border-l-2 border-b-2 border-[#d1d5db] rounded-bl-xl pointer-events-none z-0" />
 
-            {/* Left Child Avatar (36x36px) */}
-            <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 z-10 bg-white">
-              <img
-                src={topReply.user.avatar}
-                alt={topReply.user.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            {/* Right Child Content */}
-            <div className="flex-1 min-w-0 space-y-1">
-              <div className="flex items-center justify-between gap-2 min-w-0">
-                <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
-                  <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
-                    {topReply.user.username || topReply.user.name}
-                  </span>
-
-                  {topReply.user.isVerified && (
-                    <BadgeCheck className="w-[17px] h-[17px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified User" />
-                  )}
-
-                  {topReply.user.isAuthor && (
-                    <span className="relative inline-flex items-center gap-1 px-2 py-0.5 rounded-[6px] text-[11px] font-medium text-white bg-[#18181b] border border-black/40 shadow-2xs overflow-hidden shrink-0 select-none">
-                      <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
-                      <Crown className="w-3 h-3 text-white fill-white relative z-10 shrink-0" />
-                      <span className="relative z-10 leading-none">Pembuat Utas</span>
-                    </span>
-                  )}
-
-                  <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
-                    {topReply.timestamp}
-                  </span>
+                {/* Left Child Avatar (36x36px) */}
+                <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 z-10 bg-white">
+                  <img
+                    src={reply.user.avatar}
+                    alt={reply.user.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
 
-                <button
-                  type="button"
-                  className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
-                  aria-label="Opsi komentar"
-                >
-                  <MoreHorizontal className="w-4 h-4" />
-                </button>
+                {/* Right Child Content */}
+                <div className="flex-1 min-w-0 space-y-1">
+                  <div className="flex items-center justify-between gap-2 min-w-0">
+                    <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+                      <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
+                        {reply.user.username || reply.user.name}
+                      </span>
+
+                      {reply.user.isVerified && (
+                        <BadgeCheck className="w-[17px] h-[17px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified User" />
+                      )}
+
+                      {reply.user.isAuthor && (
+                        <span className="relative inline-flex items-center gap-1 px-2 py-0.5 rounded-[6px] text-[11px] font-medium text-white bg-[#18181b] border border-black/40 shadow-2xs overflow-hidden shrink-0 select-none">
+                          <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
+                          <Crown className="w-3 h-3 text-white fill-white relative z-10 shrink-0" />
+                          <span className="relative z-10 leading-none">Pembuat Utas</span>
+                        </span>
+                      )}
+
+                      <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
+                        {reply.timestamp}
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
+                      aria-label="Opsi komentar"
+                    >
+                      <MoreHorizontal className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <p className="text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5">
+                    <FormattedText text={reply.content} />
+                  </p>
+
+                  {renderActionBar(
+                    reply.isLiked || false,
+                    reply.likesCount,
+                    () => handleNestedReplyLike(reply.id),
+                    () => onReplyClick?.(reply.user.username || reply.user.name, comment.id)
+                  )}
+                </div>
               </div>
-
-              <p className="text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5">
-                <FormattedText text={topReply.content} />
-              </p>
-
-              {renderActionBar(
-                topReply.isLiked || false,
-                topReply.likesCount,
-                undefined,
-                () => onReplyClick?.(topReply.user.username || topReply.user.name)
-              )}
-            </div>
+            ))}
           </div>
         </div>
       )}

@@ -6,6 +6,7 @@ import { PostCommentItem } from '../components/marketplace/PostCommentItem';
 import { CommentInputBar } from '../components/marketplace/CommentInputBar';
 import { StickyBuyBar } from '../components/marketplace/StickyBuyBar';
 import { BuyBottomSheet } from '../components/marketplace/BuyBottomSheet';
+import { useAuth } from '../hooks/useAuth';
 
 interface PostDetailPageProps {
   post: MarketPostItem;
@@ -18,46 +19,96 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   onBack,
   onAddToCart,
 }) => {
+  const { profile } = useAuth();
   const [comments, setComments] = useState<PostComment[]>(post.comments || []);
   const [replyToUser, setReplyToUser] = useState<string | null>(null);
+  const [replyToCommentId, setReplyToCommentId] = useState<string | null>(null);
   const [isBuySheetOpen, setIsBuySheetOpen] = useState(false);
 
   const containerRef = React.useRef<HTMLDivElement>(null);
 
-  // Sync comments & reset scroll of detail page container on post prop change
+  // Smooth reset & scroll to top when opening post detail
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = 0;
     }
     setComments(post.comments || []);
     setReplyToUser(null);
+    setReplyToCommentId(null);
     setIsBuySheetOpen(false);
   }, [post.id, post.comments]);
 
   const handleAddComment = (content: string) => {
+    const isPostAuthor =
+      (profile?.id || 'current-user') === post.seller.id ||
+      post.seller.username === 'radityarayhannnn' ||
+      post.seller.username === profile?.full_name?.toLowerCase().replace(/\s+/g, '');
+
     const newComment: PostComment = {
       id: `comment-${Date.now()}`,
       postId: post.id,
       user: {
-        id: 'user-current',
-        name: 'Rinia Safitri',
-        username: 'rinia2812',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
-        classGroup: 'XII DKV 2',
-        isVerified: false,
+        id: profile?.id || 'user-current',
+        name: profile?.full_name || 'Raditya Rayhan',
+        username: profile?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn',
+        avatar: profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+        classGroup: profile?.class_group || 'XII PPLG 1',
+        isVerified: true,
+        isAuthor: isPostAuthor,
       },
-      content: replyToUser ? `@${replyToUser} ${content}` : content,
+      content: content,
       timestamp: 'Baru saja',
       likesCount: 0,
       isLiked: false,
     };
 
-    setComments((prev) => [newComment, ...prev]);
+    if (replyToCommentId) {
+      // Nest directly inside the target parent comment!
+      setComments((prev) =>
+        prev.map((c) => {
+          if (c.id === replyToCommentId) {
+            return {
+              ...c,
+              replies: [...(c.replies || []), newComment],
+            };
+          }
+          return c;
+        })
+      );
+    } else if (replyToUser && replyToUser !== post.seller.username && replyToUser !== post.seller.name) {
+      // Find matching parent comment by username
+      const foundIndex = comments.findIndex(
+        (c) =>
+          c.user.username?.toLowerCase() === replyToUser.toLowerCase() ||
+          c.user.name.toLowerCase() === replyToUser.toLowerCase()
+      );
+      if (foundIndex !== -1) {
+        setComments((prev) =>
+          prev.map((c, idx) => {
+            if (idx === foundIndex) {
+              return {
+                ...c,
+                replies: [...(c.replies || []), newComment],
+              };
+            }
+            return c;
+          })
+        );
+      } else {
+        setComments((prev) => [newComment, ...prev]);
+      }
+    } else {
+      // Regular root-level comment to post
+      setComments((prev) => [newComment, ...prev]);
+    }
+
     setReplyToUser(null);
+    setReplyToCommentId(null);
   };
 
-  const handleReplyClick = (username: string) => {
+  const handleReplyClick = (username: string, commentId?: string) => {
     setReplyToUser(username);
+    setReplyToCommentId(commentId || null);
     const inputEl = document.getElementById('comment-input-field');
     if (inputEl) {
       inputEl.focus();
@@ -67,6 +118,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   const handleChatClick = () => {
     const sellerUsername = post.seller.username || post.seller.name;
     setReplyToUser(sellerUsername);
+    setReplyToCommentId(null);
     const commentsSection = document.getElementById('comments-section');
     if (commentsSection) {
       commentsSection.scrollIntoView({ behavior: 'smooth' });
@@ -137,6 +189,10 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
           <CommentInputBar
             replyToUser={replyToUser}
             targetAuthor={post.seller.username || post.seller.name}
+            onCancelReply={() => {
+              setReplyToUser(null);
+              setReplyToCommentId(null);
+            }}
             onSubmitComment={handleAddComment}
             isInline={true}
           />

@@ -4,6 +4,7 @@ import { Send } from 'lucide-react';
 interface CommentInputBarProps {
   replyToUser?: string | null;
   targetAuthor?: string;
+  onCancelReply?: () => void;
   onSubmitComment: (text: string) => void;
   isInline?: boolean;
   onFocusChange?: (isFocused: boolean) => void;
@@ -12,6 +13,7 @@ interface CommentInputBarProps {
 export const CommentInputBar: React.FC<CommentInputBarProps> = ({
   replyToUser,
   targetAuthor,
+  onCancelReply,
   onSubmitComment,
   isInline = false,
   onFocusChange,
@@ -49,11 +51,26 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
   };
 
   const containerClasses = isInline
-    ? 'w-full min-w-0 bg-white py-2.5 font-gt-standard mb-1'
+    ? 'w-full min-w-0 bg-white py-2 font-gt-standard mb-1'
     : 'fixed bottom-0 left-0 right-0 max-w-xl mx-auto bg-white border-t border-neutral-200/80 px-4 py-2.5 z-40 font-gt-standard shadow-md';
 
   return (
     <div className={containerClasses}>
+      {replyToUser && (
+        <div className="flex items-center justify-between px-1 pb-1.5 text-[12px] text-neutral-500 animate-in fade-in duration-150 select-none">
+          <span className="flex items-center gap-1">
+            <span>Membalas</span>
+            <strong className="text-[#1d64ec] font-semibold">@{replyToUser.replace(/^@/, '')}</strong>
+          </span>
+          <button
+            type="button"
+            onClick={onCancelReply}
+            className="text-neutral-400 hover:text-rose-500 text-[11.5px] font-medium transition-colors cursor-pointer"
+          >
+            Batal
+          </button>
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="flex items-center gap-2 w-full min-w-0">
         {/* Current User Avatar */}
         <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-neutral-200 shadow-2xs">

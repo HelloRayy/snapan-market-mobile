@@ -13,7 +13,7 @@ import {
 import { MarketPostCard } from '../components/marketplace/MarketPostCard';
 import { ReplyThreadCard } from '../components/marketplace/ReplyThreadCard';
 import { MarketBottomNav } from '../components/marketplace/MarketBottomNav';
-import { EditProfileModal } from '../components/profile/EditProfileModal';
+import { EditProfilePage, EditProfileData } from './EditProfilePage';
 import { SettingsBottomSheet } from '../components/profile/SettingsBottomSheet';
 import { MediaLightboxModal } from '../components/marketplace/MediaLightboxModal';
 import { ClickableVerifiedBadge } from '../components/marketplace/VerifiedBadgeModal';
@@ -50,8 +50,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [showSearchInput, setShowSearchInput] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Modals state
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  // Modals & Standalone Screen state
+  const [isEditScreenOpen, setIsEditScreenOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -378,7 +378,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           {isOwnProfile ? (
             <button
               type="button"
-              onClick={() => setIsEditModalOpen(true)}
+              onClick={() => {
+                window.history.pushState({ layer: 'edit-profile' }, '', window.location.pathname + '#edit-profile');
+                setIsEditScreenOpen(true);
+              }}
               className="w-full h-9 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center"
             >
               Edit profil
@@ -551,30 +554,54 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         </div>
       </main>
 
-      {/* Edit Profile Modal */}
-      <EditProfileModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        initialName={profileData.name}
-        initialBio={profileData.bio}
-        initialClassGroup={profileData.classGroup}
-        initialAvatar={profileData.avatar}
-        onSave={(data) => {
-          setProfileData((prev) => ({
-            ...prev,
-            name: data.name,
-            bio: data.bio,
-            classGroup: data.classGroup,
-            avatar: data.avatar,
-          }));
-        }}
-      />
+      {/* Standalone Edit Profile Screen */}
+      {isEditScreenOpen && (
+        <EditProfilePage
+          initialData={{
+            name: profileData.name,
+            username: profileData.username,
+            bio: profileData.bio,
+            classGroup: profileData.classGroup,
+            avatar: profileData.avatar,
+            interests: profileData.tags.join(', '),
+            link: 'https://instagram.com/' + profileData.username,
+          }}
+          onBack={() => {
+            if (window.location.hash.startsWith('#edit-profile')) {
+              window.history.back();
+            } else {
+              setIsEditScreenOpen(false);
+            }
+          }}
+          onSave={(data: EditProfileData) => {
+            setProfileData((prev) => ({
+              ...prev,
+              name: data.name,
+              username: data.username,
+              bio: data.bio,
+              classGroup: data.classGroup,
+              avatar: data.avatar,
+              tags: data.interests
+                ? data.interests.split(',').map((t) => t.trim()).filter(Boolean)
+                : prev.tags,
+            }));
+            if (window.location.hash.startsWith('#edit-profile')) {
+              window.history.back();
+            } else {
+              setIsEditScreenOpen(false);
+            }
+          }}
+        />
+      )}
 
       {/* Settings Bottom Sheet */}
       <SettingsBottomSheet
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
-        onEditProfileClick={() => setIsEditModalOpen(true)}
+        onEditProfileClick={() => {
+          window.history.pushState({ layer: 'edit-profile' }, '', window.location.pathname + '#edit-profile');
+          setIsEditScreenOpen(true);
+        }}
       />
 
       {/* Lightbox Modal */}

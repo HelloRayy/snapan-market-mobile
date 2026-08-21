@@ -1,13 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   ArrowLeft,
-  Pencil,
   Plus,
-  MapPin,
-  Sparkles,
-  Link2,
+  ChevronRight,
   Check,
-  AtSign,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -46,8 +42,12 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
   const [bio, setBio] = useState(initialData.bio);
   const [classGroup, setClassGroup] = useState(initialData.classGroup);
   const [avatar, setAvatar] = useState(initialData.avatar);
-  const [interests, setInterests] = useState(initialData.interests || 'AI Threads, Design, UI/UX, Web Dev');
+  const [interests, setInterests] = useState(initialData.interests || 'AI Threads, Design Threads, UIUX Design');
   const [link, setLink] = useState(initialData.link || 'https://instagram.com/' + initialData.username.replace(/^@/, ''));
+  
+  // Signature Threads Toggles
+  const [showInstagramBadge, setShowInstagramBadge] = useState(true);
+  const [showViewCounts, setShowViewCounts] = useState(true);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -132,125 +132,117 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
         <div className="w-10" />
       </header>
 
-      {/* Main Content Form */}
-      <main className="flex-1 max-w-[520px] w-full mx-auto px-5 pt-5 pb-32 space-y-4">
-        {/* 1. Center Avatar Circle + Badge */}
-        <div className="flex flex-col items-center justify-center py-3">
-          <div className="relative group">
-            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white shadow-lg ring-4 ring-neutral-100/90 bg-neutral-100">
-              <img
-                src={avatar}
-                alt={name}
-                className="w-full h-full object-cover"
+      {/* Main Content Form (Clean Threads Border-Bottom Divider Layout) */}
+      <main className="flex-1 max-w-[540px] w-full mx-auto px-5 pt-3 pb-32">
+        <div className="space-y-0 text-slate-900">
+          {/* Row 1: Nama & Avatar on Right */}
+          <div className="flex items-center justify-between py-4 border-b border-neutral-200/80">
+            <div className="flex-1 pr-4">
+              <label className="block text-[14px] font-semibold text-slate-900">
+                Nama
+              </label>
+              <input
+                type="text"
+                value={name}
+                maxLength={50}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Rayyy"
+                className="w-full mt-0.5 text-[15.5px] font-normal text-slate-900 bg-transparent focus:outline-none placeholder:text-neutral-400"
               />
             </div>
 
-            {/* Black Circle Plus/Edit Badge */}
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-[#101010] hover:bg-black text-white flex items-center justify-center shadow-md border-2 border-white active:scale-95 transition-all cursor-pointer"
-              title="Ganti foto profil"
-              aria-label="Ganti foto profil"
-            >
-              <Plus className="w-4 h-4 stroke-[2.5]" />
-            </button>
+            {/* Avatar on Right with Camera/Plus Badge */}
+            <div className="flex flex-col items-center shrink-0">
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="relative group cursor-pointer"
+              >
+                <div className="w-13 h-13 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs bg-neutral-100 active:scale-95 transition-transform">
+                  <img
+                    src={avatar}
+                    alt={name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
 
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleFileChange}
-            />
+                <div className="absolute -bottom-0.5 -right-0.5 w-5.5 h-5.5 rounded-full bg-[#101010] text-white flex items-center justify-center border-2 border-white shadow-2xs">
+                  <Plus className="w-3 h-3 stroke-[2.5]" />
+                </div>
+              </div>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+            </div>
           </div>
 
-          {/* Quick Avatar Suggestions Switcher */}
-          <div className="flex items-center gap-2 mt-3.5">
+          {/* Quick Preset Avatars Picker Dropdown */}
+          <div className="py-2 border-b border-neutral-200/80">
             <button
               type="button"
               onClick={() => setShowAvatarPicker(!showAvatarPicker)}
-              className="text-[12px] font-semibold text-[#1d64ec] hover:underline cursor-pointer"
+              className="text-[12px] font-semibold text-[#1d64ec] hover:underline cursor-pointer flex items-center justify-between w-full py-1"
             >
-              {showAvatarPicker ? 'Tutup Pilihan Avatar' : 'Pilih dari Preset Avatar'}
+              <span>{showAvatarPicker ? 'Tutup Pilihan Avatar' : '⚡ Ganti dengan Preset Avatar'}</span>
+              <ChevronRight className={`w-3.5 h-3.5 text-[#1d64ec] transition-transform ${showAvatarPicker ? 'rotate-90' : ''}`} />
             </button>
+
+            {showAvatarPicker && (
+              <motion.div
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2.5 pt-2 pb-2 overflow-x-auto max-w-full scrollbar-none"
+              >
+                {PRESET_AVATARS.map((pic, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      setAvatar(pic);
+                      showToast('Preset avatar dipilih! ✨');
+                    }}
+                    className={`relative w-10 h-10 rounded-full overflow-hidden border-2 transition-all cursor-pointer shrink-0 ${
+                      avatar === pic ? 'border-[#1d64ec] ring-2 ring-[#1d64ec]/30 scale-105' : 'border-neutral-200 hover:opacity-80'
+                    }`}
+                  >
+                    <img src={pic} alt={`Preset ${idx + 1}`} className="w-full h-full object-cover" />
+                    {avatar === pic && (
+                      <div className="absolute inset-0 bg-[#1d64ec]/30 flex items-center justify-center">
+                        <Check className="w-3 h-3 text-white stroke-[3]" />
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </motion.div>
+            )}
           </div>
 
-          {showAvatarPicker && (
-            <motion.div
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2.5 pt-2.5 overflow-x-auto max-w-full pb-1 scrollbar-none"
-            >
-              {PRESET_AVATARS.map((pic, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => {
-                    setAvatar(pic);
-                    showToast('Preset avatar dipilih! ✨');
-                  }}
-                  className={`relative w-11 h-11 rounded-full overflow-hidden border-2 transition-all cursor-pointer shrink-0 ${
-                    avatar === pic ? 'border-[#1d64ec] ring-2 ring-[#1d64ec]/30 scale-105' : 'border-neutral-200 hover:opacity-80'
-                  }`}
-                >
-                  <img src={pic} alt={`Preset ${idx + 1}`} className="w-full h-full object-cover" />
-                  {avatar === pic && (
-                    <div className="absolute inset-0 bg-[#1d64ec]/30 flex items-center justify-center">
-                      <Check className="w-3.5 h-3.5 text-white stroke-[3]" />
-                    </div>
-                  )}
-                </button>
-              ))}
-            </motion.div>
-          )}
-        </div>
-
-        {/* 2. Field Cards (Rounded Containers with Labels & Icons) */}
-        <div className="space-y-3 pt-1">
-          {/* Card 1: Full Name */}
-          <div className="rounded-[18px] bg-neutral-50/90 border border-neutral-200/80 px-4 py-3 focus-within:border-slate-800 focus-within:bg-white transition-all shadow-2xs">
-            <div className="flex items-center justify-between">
-              <label className="text-[12px] font-semibold text-slate-500 uppercase tracking-wider">
-                Full Name
-              </label>
-              <Pencil className="w-3.5 h-3.5 text-neutral-400 stroke-[1.75]" />
-            </div>
-            <input
-              type="text"
-              value={name}
-              maxLength={50}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Jane Cooper"
-              className="w-full mt-0.5 text-[15.5px] font-medium text-slate-900 bg-transparent focus:outline-none placeholder:text-neutral-400"
-            />
-          </div>
-
-          {/* Card 2: Nickname / Username */}
-          <div className="rounded-[18px] bg-neutral-50/90 border border-neutral-200/80 px-4 py-3 focus-within:border-slate-800 focus-within:bg-white transition-all shadow-2xs">
-            <div className="flex items-center justify-between">
-              <label className="text-[12px] font-semibold text-slate-500 uppercase tracking-wider">
-                Nickname / Username
-              </label>
-              <AtSign className="w-3.5 h-3.5 text-neutral-400 stroke-[1.75]" />
-            </div>
+          {/* Row 2: Nama pengguna */}
+          <div className="py-4 border-b border-neutral-200/80">
+            <label className="block text-[14px] font-semibold text-slate-900">
+              Nama pengguna
+            </label>
             <div className="flex items-center mt-0.5">
-              <span className="text-[15.5px] font-medium text-slate-400 mr-0.5 select-none">@</span>
+              <span className="text-[15.5px] font-normal text-slate-400 mr-0.5 select-none">@</span>
               <input
                 type="text"
                 value={username}
                 maxLength={30}
                 onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9._]/g, ''))}
                 placeholder="radityarayhannnn"
-                className="w-full text-[15.5px] font-medium text-slate-900 bg-transparent focus:outline-none placeholder:text-neutral-400"
+                className="w-full text-[15.5px] font-normal text-slate-900 bg-transparent focus:outline-none placeholder:text-neutral-400"
               />
             </div>
           </div>
 
-          {/* Card 3: Bio */}
-          <div className="rounded-[18px] bg-neutral-50/90 border border-neutral-200/80 px-4 py-3 focus-within:border-slate-800 focus-within:bg-white transition-all shadow-2xs">
+          {/* Row 3: Bio */}
+          <div className="py-4 border-b border-neutral-200/80">
             <div className="flex items-center justify-between">
-              <label className="text-[12px] font-semibold text-slate-500 uppercase tracking-wider">
+              <label className="text-[14px] font-semibold text-slate-900">
                 Bio
               </label>
               <span className="text-[11px] text-neutral-400 tabular-nums">
@@ -262,54 +254,51 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
               maxLength={150}
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              placeholder="Tuliskan bio, keahlian, atau jualan kamu..."
-              className="w-full mt-0.5 text-[15px] font-normal text-slate-900 bg-transparent focus:outline-none resize-none leading-relaxed placeholder:text-neutral-400"
+              placeholder="16 y/o.&#10;Frontend Developer & UI/UX Designer.&#10;Passionate about creating intuitive interfaces and exploring AI."
+              className="w-full mt-1 text-[15px] font-normal text-slate-900 bg-transparent focus:outline-none resize-none leading-relaxed placeholder:text-neutral-400"
             />
           </div>
 
-          {/* Card 4: Kelas & Jurusan / Lokasi */}
-          <div className="rounded-[18px] bg-neutral-50/90 border border-neutral-200/80 px-4 py-3 focus-within:border-slate-800 focus-within:bg-white transition-all shadow-2xs">
-            <div className="flex items-center justify-between">
-              <label className="text-[12px] font-semibold text-slate-500 uppercase tracking-wider">
-                Kelas & Jurusan
-              </label>
-              <MapPin className="w-3.5 h-3.5 text-neutral-400 stroke-[1.75]" />
-            </div>
+          {/* Row 4: Kelas & Jurusan */}
+          <div className="py-4 border-b border-neutral-200/80">
+            <label className="block text-[14px] font-semibold text-slate-900">
+              Kelas & Jurusan
+            </label>
             <input
               type="text"
               value={classGroup}
               maxLength={40}
               onChange={(e) => setClassGroup(e.target.value)}
-              placeholder="Contoh: XII PPLG 1"
-              className="w-full mt-0.5 text-[15.5px] font-medium text-slate-900 bg-transparent focus:outline-none placeholder:text-neutral-400"
+              placeholder="XII PPLG 1"
+              className="w-full mt-0.5 text-[15.5px] font-normal text-slate-900 bg-transparent focus:outline-none placeholder:text-neutral-400"
             />
           </div>
 
-          {/* Card 5: Minat / Keahlian (Threads Topics) */}
-          <div className="rounded-[18px] bg-neutral-50/90 border border-neutral-200/80 px-4 py-3 focus-within:border-slate-800 focus-within:bg-white transition-all shadow-2xs">
+          {/* Row 5: Minat */}
+          <div className="py-4 border-b border-neutral-200/80">
             <div className="flex items-center justify-between">
-              <label className="text-[12px] font-semibold text-slate-500 uppercase tracking-wider">
-                Minat & Topik Utas
+              <label className="text-[14px] font-semibold text-slate-900">
+                Minat
               </label>
-              <Sparkles className="w-3.5 h-3.5 text-neutral-400 stroke-[1.75]" />
+              <ChevronRight className="w-4 h-4 text-neutral-400 shrink-0" />
             </div>
             <input
               type="text"
               value={interests}
               maxLength={80}
               onChange={(e) => setInterests(e.target.value)}
-              placeholder="Contoh: AI Threads, UI/UX, Web Dev, Preloved"
-              className="w-full mt-0.5 text-[15.5px] font-medium text-slate-900 bg-transparent focus:outline-none placeholder:text-neutral-400"
+              placeholder="AI Threads, Design Threads, UIUX Design"
+              className="w-full mt-0.5 text-[15.5px] font-normal text-slate-900 bg-transparent focus:outline-none placeholder:text-neutral-400"
             />
           </div>
 
-          {/* Card 6: Tautan / Link WhatsApp */}
-          <div className="rounded-[18px] bg-neutral-50/90 border border-neutral-200/80 px-4 py-3 focus-within:border-slate-800 focus-within:bg-white transition-all shadow-2xs">
+          {/* Row 6: Tautan */}
+          <div className="py-4 border-b border-neutral-200/80">
             <div className="flex items-center justify-between">
-              <label className="text-[12px] font-semibold text-slate-500 uppercase tracking-wider">
-                Tautan / WhatsApp
+              <label className="text-[14px] font-semibold text-slate-900">
+                Tautan
               </label>
-              <Link2 className="w-3.5 h-3.5 text-neutral-400 stroke-[1.75]" />
+              <ChevronRight className="w-4 h-4 text-neutral-400 shrink-0" />
             </div>
             <input
               type="text"
@@ -317,8 +306,79 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
               maxLength={100}
               onChange={(e) => setLink(e.target.value)}
               placeholder="https://wa.me/628123456789 atau https://instagram.com/..."
-              className="w-full mt-0.5 text-[15.5px] font-medium text-slate-900 bg-transparent focus:outline-none placeholder:text-neutral-400"
+              className="w-full mt-0.5 text-[15.5px] font-normal text-slate-900 bg-transparent focus:outline-none placeholder:text-neutral-400"
             />
+          </div>
+
+          {/* Row 7: Podcast */}
+          <div className="py-4 border-b border-neutral-200/80">
+            <div className="flex items-center justify-between">
+              <label className="text-[14px] font-semibold text-slate-900">
+                Podcast
+              </label>
+              <ChevronRight className="w-4 h-4 text-neutral-400 shrink-0" />
+            </div>
+            <p className="mt-0.5 text-[15px] font-normal text-neutral-400 select-none">
+              + Tautan ke podcast Anda
+            </p>
+          </div>
+
+          {/* Row 8: Toggle - Tampilkan lencana Instagram */}
+          <div className="flex items-center justify-between py-4 border-b border-neutral-200/80 select-none">
+            <span className="text-[14.5px] font-semibold text-slate-900">
+              Tampilkan lencana Instagram
+            </span>
+            <div
+              onClick={() => setShowInstagramBadge(!showInstagramBadge)}
+              className={`w-10 h-6 rounded-full p-0.5 transition-colors duration-200 flex items-center shrink-0 cursor-pointer ${
+                showInstagramBadge ? 'bg-[#101010]' : 'bg-neutral-300'
+              }`}
+            >
+              <div
+                className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-200 transform-gpu ${
+                  showInstagramBadge ? 'translate-x-4' : 'translate-x-0'
+                }`}
+              />
+            </div>
+          </div>
+
+          {/* Row 9: Toggle - Tampilkan tayangan terbaru */}
+          <div className="py-4 border-b border-neutral-200/80 select-none">
+            <div className="flex items-center justify-between">
+              <span className="text-[14.5px] font-semibold text-slate-900">
+                Tampilkan tayangan terbaru
+              </span>
+              <div
+                onClick={() => setShowViewCounts(!showViewCounts)}
+                className={`w-10 h-6 rounded-full p-0.5 transition-colors duration-200 flex items-center shrink-0 cursor-pointer ${
+                  showViewCounts ? 'bg-[#101010]' : 'bg-neutral-300'
+                }`}
+              >
+                <div
+                  className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-200 transform-gpu ${
+                    showViewCounts ? 'translate-x-4' : 'translate-x-0'
+                  }`}
+                />
+              </div>
+            </div>
+            <p className="text-[12px] text-neutral-400 mt-1 font-normal leading-normal">
+              Ini akan menjadi publik di profil Anda saat Anda mendapatkan 10rb+ tayangan terbaru.
+            </p>
+          </div>
+
+          {/* Row 10: Privasi profil */}
+          <div className="py-4 select-none">
+            <div className="flex items-center justify-between">
+              <span className="text-[14.5px] font-semibold text-slate-900">
+                Privasi profil
+              </span>
+              <span className="text-[13.5px] text-neutral-400 flex items-center gap-0.5 font-normal">
+                Publik <ChevronRight className="w-3.5 h-3.5" />
+              </span>
+            </div>
+            <p className="text-[12px] text-neutral-400 mt-1 font-normal leading-normal">
+              Jika Anda mengubah ke privat, hanya pengikut yang disetujui yang dapat melihat thread &amp; produk Anda.
+            </p>
           </div>
         </div>
       </main>
@@ -328,7 +388,7 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
         className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-neutral-100 px-5 py-3.5 shadow-lg"
         style={{ paddingBottom: 'max(14px, env(safe-area-inset-bottom, 14px))' }}
       >
-        <div className="max-w-[520px] mx-auto flex items-center gap-3">
+        <div className="max-w-[540px] mx-auto flex items-center gap-3">
           {/* Discard Button (Left - Kumo UI Secondary Pill) */}
           <button
             type="button"

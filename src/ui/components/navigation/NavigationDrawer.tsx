@@ -12,6 +12,7 @@ import {
   LogOut,
   ChevronRight,
   PlusCircle,
+  MessageCircle,
 } from 'lucide-react';
 import { useAuth } from '@/ui/hooks/useAuth';
 import { useCartStore } from '@/ui/store/cartStore';
@@ -148,6 +149,23 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 >
                   <User className="w-4.5 h-4.5 text-slate-600 stroke-[2]" />
                   <span>Profil Akun Saya</span>
+                </button>
+
+                {/* Pesan & Obrolan with Red Notification Badge */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                  }}
+                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-medium text-slate-800 hover:bg-neutral-100 active:bg-neutral-200/80 transition-colors cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <MessageCircle className="w-4.5 h-4.5 text-slate-600 stroke-[2]" />
+                    <span>Pesan Masuk</span>
+                  </div>
+                  <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-[#ff3040] text-white text-[11px] font-bold flex items-center justify-center shadow-xs">
+                    1
+                  </span>
                 </button>
 
                 {onOpenCreateModal && (

@@ -103,7 +103,7 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
                   />
                 )}
                 {item.hasBadge && (
-                  <span className="absolute -top-1 -right-2.5 min-w-[14px] h-[14px] px-1 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center leading-none ring-2 ring-white">
+                  <span className="absolute -top-1.5 -right-3 min-w-[16px] h-[16px] px-1 rounded-full bg-[#ff3040] text-white text-[9.5px] font-bold flex items-center justify-center leading-none ring-2 ring-white shadow-xs">
                     1
                   </span>
                 )}

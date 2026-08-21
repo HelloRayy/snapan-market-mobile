@@ -311,25 +311,35 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
           {/* Child Replies List (Indented right with ml-7) */}
           <div className="space-y-3.5">
             {repliesState.map((reply, idx) => {
+              const isFirstChild = idx === 0;
               const isLastChild = idx === repliesState.length - 1 && !isReplying;
 
               return (
                 <div key={reply.id || idx} className="flex items-start gap-3 ml-7 relative">
-                  {/* Continuous Vertical Line to Next Child (if more replies follow below) */}
-                  {!isLastChild && (
-                    <div className="absolute -left-[11px] -top-3.5 -bottom-3.5 w-[2px] bg-[#d1d5db] pointer-events-none z-0" />
+                  {/* First reply gets the initial L-Curve (└─) from Parent */}
+                  {isFirstChild && (
+                    <div className="absolute -left-[11px] -top-3.5 h-[32px] w-[12px] border-l-2 border-b-2 border-[#d1d5db] rounded-bl-xl pointer-events-none z-0" />
                   )}
 
-                  {/* L-Shaped Elbow Curve (└─) into this avatar */}
-                  <div className="absolute -left-[11px] -top-3.5 h-[32px] w-[12px] border-l-2 border-b-2 border-[#d1d5db] rounded-bl-xl pointer-events-none z-0" />
+                  {/* Left Column: Avatar + Straight Vertical Line Between Sub-Replies */}
+                  <div className="flex flex-col items-center shrink-0 self-stretch z-10">
+                    {/* For 2nd, 3rd, ... replies: Straight line entering top of avatar from previous reply */}
+                    {!isFirstChild && (
+                      <div className="w-[2px] h-3.5 bg-[#d1d5db] -mt-3.5 shrink-0" />
+                    )}
 
-                  {/* Left Child Avatar (36x36px) */}
-                  <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 z-10 bg-white">
-                    <img
-                      src={reply.user.avatar}
-                      alt={reply.user.name}
-                      className="w-full h-full object-cover"
-                    />
+                    <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 bg-white">
+                      <img
+                        src={reply.user.avatar}
+                        alt={reply.user.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+
+                    {/* Straight vertical line continuing under avatar to subsequent replies */}
+                    {!isLastChild && (
+                      <div className="w-[2px] flex-1 bg-[#d1d5db] mt-1 -mb-3.5 rounded-full" />
+                    )}
                   </div>
 
                   {/* Right Child Content */}
@@ -381,19 +391,26 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
               );
             })}
 
-            {/* INLINE IN-PLACE SUB-REPLY INPUT (Positioned directly in branch at 'aduh bro' position) */}
+            {/* INLINE IN-PLACE SUB-REPLY INPUT (Straight line below last reply) */}
             {isReplying && (
               <div className="flex items-start gap-3 ml-7 relative pt-0.5 animate-in fade-in slide-in-from-top-1 duration-150">
-                {/* L-Shaped Elbow Curve (└─) */}
-                <div className="absolute -left-[11px] -top-3.5 h-[32px] w-[12px] border-l-2 border-b-2 border-[#d1d5db] rounded-bl-xl pointer-events-none z-0" />
+                {/* If no existing replies, initial L-Curve from Parent; else straight line from previous avatar */}
+                {repliesState.length === 0 ? (
+                  <div className="absolute -left-[11px] -top-3.5 h-[32px] w-[12px] border-l-2 border-b-2 border-[#d1d5db] rounded-bl-xl pointer-events-none z-0" />
+                ) : null}
 
                 {/* Left Child Avatar */}
-                <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 z-10 bg-white mt-0.5">
-                  <img
-                    src={currentUserAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80'}
-                    alt="Profil Saya"
-                    className="w-full h-full object-cover"
-                  />
+                <div className="flex flex-col items-center shrink-0 z-10">
+                  {repliesState.length > 0 && (
+                    <div className="w-[2px] h-3.5 bg-[#d1d5db] -mt-3.5 shrink-0" />
+                  )}
+                  <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 bg-white mt-0.5">
+                    <img
+                      src={currentUserAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80'}
+                      alt="Profil Saya"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 </div>
 
                 {/* Right Inline Form */}

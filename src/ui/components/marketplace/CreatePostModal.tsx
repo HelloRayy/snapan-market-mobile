@@ -194,6 +194,12 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     };
 
     onSubmitPost?.(newPost);
+    try {
+      localStorage.removeItem('snapan_thread_draft');
+    } catch (e) {
+      // ignore
+    }
+
     // Reset form state
     setCaption('');
     setSubThreads([]);
@@ -207,6 +213,86 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     onClose();
   };
 
+  const [showDiscardAlert, setShowDiscardAlert] = useState(false);
+
+  const handleCancelClick = () => {
+    const hasContent =
+      caption.trim().length > 0 ||
+      images.length > 0 ||
+      productTitle.trim().length > 0 ||
+      subThreads.some((st) => st.caption.trim().length > 0 || st.images.length > 0);
+
+    if (hasContent) {
+      setShowDiscardAlert(true);
+    } else {
+      handleDirectClose();
+    }
+  };
+
+  const handleDirectClose = () => {
+    setShowDiscardAlert(false);
+    onClose();
+  };
+
+  const handleDiscard = () => {
+    setCaption('');
+    setSubThreads([]);
+    setProductTitle('');
+    setPriceInput('');
+    setStockInput('');
+    setLocationInput('');
+    setImages([]);
+    setSelectedTopic(null);
+    setShowDiscardAlert(false);
+    onClose();
+  };
+
+  const handleSaveDraft = () => {
+    try {
+      const draft = {
+        caption,
+        subThreads,
+        productTitle,
+        priceInput,
+        stockInput,
+        locationInput,
+        images,
+        selectedTopic,
+        postMode,
+        savedAt: new Date().toISOString(),
+      };
+      localStorage.setItem('snapan_thread_draft', JSON.stringify(draft));
+    } catch (e) {
+      // ignore
+    }
+    setShowDiscardAlert(false);
+    onClose();
+  };
+
+  const handleContinueEditing = () => {
+    setShowDiscardAlert(false);
+  };
+
+  const handleRestoreDraft = () => {
+    try {
+      const saved = localStorage.getItem('snapan_thread_draft');
+      if (saved) {
+        const draft = JSON.parse(saved);
+        if (draft.caption) setCaption(draft.caption);
+        if (draft.subThreads) setSubThreads(draft.subThreads);
+        if (draft.productTitle) setProductTitle(draft.productTitle);
+        if (draft.priceInput) setPriceInput(draft.priceInput);
+        if (draft.stockInput) setStockInput(draft.stockInput);
+        if (draft.locationInput) setLocationInput(draft.locationInput);
+        if (draft.images) setImages(draft.images);
+        if (draft.selectedTopic) setSelectedTopic(draft.selectedTopic);
+        if (draft.postMode) setPostMode(draft.postMode);
+      }
+    } catch (e) {
+      // ignore
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -218,7 +304,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
         <div className="px-4 h-14 flex items-center justify-between border-b border-neutral-200/80 bg-white shrink-0">
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleCancelClick}
             className="text-[15px] font-medium text-slate-900 hover:opacity-75 active:scale-95 transition-all cursor-pointer"
           >
             Batal
@@ -235,8 +321,9 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
           <div className="flex items-center gap-3">
             <button
               type="button"
+              onClick={handleRestoreDraft}
               className="text-slate-600 hover:text-slate-900 transition-colors p-1 cursor-pointer"
-              title="Draft"
+              title="Buka Draf Tersimpan"
             >
               <FileText className="w-5 h-5 stroke-[1.8]" />
             </button>
@@ -746,6 +833,55 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
             <span className="relative z-10">Post</span>
           </button>
         </div>
+
+        {/* Discard Confirmation Alert Modal (Cancel / Save Draft / Continue) */}
+        {showDiscardAlert && (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-backdrop-fade">
+            <div
+              className="w-full max-w-[320px] bg-white rounded-3xl p-5 text-center shadow-2xl space-y-4 border border-neutral-100 transform-gpu animate-page-zoom font-gt-standard"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="space-y-1.5 pt-1">
+                <h3 className="font-bold text-[17px] text-slate-900 leading-snug">
+                  Buang postingan?
+                </h3>
+                <p className="text-[13px] text-neutral-500 font-normal leading-relaxed">
+                  Jika kamu keluar sekarang, editan kamu tidak akan diposting.
+                </p>
+              </div>
+
+              {/* Action Buttons: Buang (Cancel) | Simpan Draf (Save Draft) | Lanjutkan (Continue) */}
+              <div className="space-y-2 pt-1">
+                {/* 1. Buang / Discard (Destructive Red) */}
+                <button
+                  type="button"
+                  onClick={handleDiscard}
+                  className="w-full py-3 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[14px] transition-all active:scale-98 cursor-pointer"
+                >
+                  Buang
+                </button>
+
+                {/* 2. Simpan Draf / Save Draft */}
+                <button
+                  type="button"
+                  onClick={handleSaveDraft}
+                  className="w-full py-3 rounded-2xl bg-neutral-100 hover:bg-neutral-200/80 text-slate-900 font-bold text-[14px] transition-all active:scale-98 cursor-pointer"
+                >
+                  Simpan Draf
+                </button>
+
+                {/* 3. Lanjutkan Mengedit / Continue Editing */}
+                <button
+                  type="button"
+                  onClick={handleContinueEditing}
+                  className="w-full py-2.5 rounded-2xl text-slate-500 hover:text-slate-900 font-semibold text-[13.5px] transition-all active:scale-98 cursor-pointer"
+                >
+                  Lanjutkan Mengedit
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
   );
 };

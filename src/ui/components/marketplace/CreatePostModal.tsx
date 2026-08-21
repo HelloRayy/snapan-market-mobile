@@ -247,6 +247,31 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     onClose();
   };
 
+  const [showDraftsSheet, setShowDraftsSheet] = useState(false);
+  const [savedDraft, setSavedDraft] = useState<any>(() => {
+    try {
+      const saved = localStorage.getItem('snapan_thread_draft');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const refreshSavedDraft = () => {
+    try {
+      const saved = localStorage.getItem('snapan_thread_draft');
+      setSavedDraft(saved ? JSON.parse(saved) : null);
+    } catch {
+      setSavedDraft(null);
+    }
+  };
+
+  React.useEffect(() => {
+    if (isOpen) {
+      refreshSavedDraft();
+    }
+  }, [isOpen]);
+
   const handleSaveDraft = () => {
     try {
       const draft = {
@@ -262,6 +287,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
         savedAt: new Date().toISOString(),
       };
       localStorage.setItem('snapan_thread_draft', JSON.stringify(draft));
+      refreshSavedDraft();
     } catch (e) {
       // ignore
     }
@@ -273,22 +299,27 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     setShowDiscardAlert(false);
   };
 
-  const handleRestoreDraft = () => {
+  const handleApplyDraft = (draft: any) => {
+    if (draft) {
+      if (draft.caption !== undefined) setCaption(draft.caption);
+      if (draft.subThreads !== undefined) setSubThreads(draft.subThreads);
+      if (draft.productTitle !== undefined) setProductTitle(draft.productTitle);
+      if (draft.priceInput !== undefined) setPriceInput(draft.priceInput);
+      if (draft.stockInput !== undefined) setStockInput(draft.stockInput);
+      if (draft.locationInput !== undefined) setLocationInput(draft.locationInput);
+      if (draft.images !== undefined) setImages(draft.images);
+      if (draft.selectedTopic !== undefined) setSelectedTopic(draft.selectedTopic);
+      if (draft.postMode !== undefined) setPostMode(draft.postMode);
+    }
+    setShowDraftsSheet(false);
+  };
+
+  const handleDeleteDraft = (e: React.MouseEvent) => {
+    e.stopPropagation();
     try {
-      const saved = localStorage.getItem('snapan_thread_draft');
-      if (saved) {
-        const draft = JSON.parse(saved);
-        if (draft.caption) setCaption(draft.caption);
-        if (draft.subThreads) setSubThreads(draft.subThreads);
-        if (draft.productTitle) setProductTitle(draft.productTitle);
-        if (draft.priceInput) setPriceInput(draft.priceInput);
-        if (draft.stockInput) setStockInput(draft.stockInput);
-        if (draft.locationInput) setLocationInput(draft.locationInput);
-        if (draft.images) setImages(draft.images);
-        if (draft.selectedTopic) setSelectedTopic(draft.selectedTopic);
-        if (draft.postMode) setPostMode(draft.postMode);
-      }
-    } catch (e) {
+      localStorage.removeItem('snapan_thread_draft');
+      setSavedDraft(null);
+    } catch {
       // ignore
     }
   };
@@ -318,18 +349,26 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
             )}
           </h2>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {/* Draft Icon Button with Active Indicator Dot */}
             <button
               type="button"
-              onClick={handleRestoreDraft}
-              className="text-slate-600 hover:text-slate-900 transition-colors p-1 cursor-pointer"
-              title="Buka Draf Tersimpan"
+              onClick={() => {
+                refreshSavedDraft();
+                setShowDraftsSheet(true);
+              }}
+              className="relative text-slate-600 hover:text-slate-900 transition-colors p-1.5 rounded-full hover:bg-neutral-100 cursor-pointer"
+              title="Lihat Draf Tersimpan"
             >
               <FileText className="w-5 h-5 stroke-[1.8]" />
+              {savedDraft && (
+                <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-[#1d64ec] border-2 border-white" />
+              )}
             </button>
+
             <button
               type="button"
-              className="text-slate-600 hover:text-slate-900 transition-colors p-1 cursor-pointer"
+              className="text-slate-600 hover:text-slate-900 transition-colors p-1.5 rounded-full hover:bg-neutral-100 cursor-pointer"
               title="Opsi"
             >
               <MoreHorizontal className="w-5 h-5 stroke-[1.8]" />
@@ -884,6 +923,77 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   <Pencil className="w-3.5 h-3.5 text-slate-400 stroke-[2] shrink-0" />
                   <span>Lanjutkan Mengedit</span>
                 </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Saved Drafts List Bottom Sheet */}
+        {showDraftsSheet && (
+          <div
+            className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs animate-backdrop-fade"
+            onClick={() => setShowDraftsSheet(false)}
+          >
+            <div
+              className="w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl space-y-4 border border-neutral-100 transform-gpu animate-sheet-slide sm:animate-page-zoom font-gt-standard max-h-[80vh] flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between border-b border-neutral-100 pb-3 shrink-0">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-[#1d64ec] stroke-[2]" />
+                  <h3 className="font-bold text-[16.5px] text-slate-900">Draf Tersimpan</h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowDraftsSheet(false)}
+                  className="p-1 rounded-full text-slate-400 hover:text-slate-700 hover:bg-neutral-100 transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="overflow-y-auto flex-1 py-1">
+                {savedDraft ? (
+                  <div
+                    onClick={() => handleApplyDraft(savedDraft)}
+                    className="group relative p-4 rounded-2xl border border-neutral-200/90 hover:border-[#1d64ec] bg-neutral-50/60 hover:bg-blue-50/30 transition-all cursor-pointer space-y-2.5 active:scale-[0.99]"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="text-[14px] text-slate-900 font-medium line-clamp-2 leading-relaxed">
+                        {savedDraft.caption || savedDraft.productTitle || '(Draf tanpa teks)'}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={handleDeleteDraft}
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors shrink-0 cursor-pointer"
+                        title="Hapus Draf"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11.5px] text-neutral-400 pt-1 border-t border-neutral-100">
+                      <span className="flex items-center gap-1.5">
+                        {savedDraft.postMode === 'product' ? '🏷️ Mode Jualan' : '💬 Utas'}
+                        {savedDraft.subThreads?.length > 0 && ` · ${savedDraft.subThreads.length + 1} bagian`}
+                        {savedDraft.images?.length > 0 && ` · ${savedDraft.images.length} foto`}
+                      </span>
+                      <span className="text-[#1d64ec] font-semibold">Ketuk untuk memuat ↗</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="py-10 text-center space-y-2">
+                    <div className="w-12 h-12 rounded-2xl bg-neutral-100 text-neutral-400 flex items-center justify-center mx-auto">
+                      <FileText className="w-6 h-6 stroke-[1.5]" />
+                    </div>
+                    <p className="text-[14.5px] font-bold text-slate-800">Belum ada draf tersimpan</p>
+                    <p className="text-[12.5px] text-neutral-400 max-w-xs mx-auto">
+                      Saat kamu membatalkan pembuatan utas dan memilih "Simpan Draf", draf kamu akan muncul di sini.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

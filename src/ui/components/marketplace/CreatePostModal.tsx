@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, FileText, MoreHorizontal, Image as ImageIcon, MapPin, PartyPopper, ShoppingBag, Sparkles, ChevronRight } from 'lucide-react';
+import { X, FileText, MoreHorizontal, Image as ImageIcon, MapPin, PartyPopper, ShoppingBag, Sparkles, ChevronRight, Send } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 
 // Custom Threads 3-Dot Topic Icon
@@ -814,12 +814,12 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
             </div>
           </button>
 
-          {/* Post Action Button (Kumo UI Primary Pill Button) */}
+          {/* Post Action Button (Kumo UI Primary Pill Button with Send Icon) */}
           <button
             type="button"
             onClick={handleSubmit}
             disabled={!canPost}
-            className={`group relative overflow-hidden px-6 py-2.5 rounded-full font-bold text-[14.5px] select-none transition-all duration-150 shrink-0 ${
+            className={`group relative overflow-hidden px-5 py-2.5 rounded-full font-bold text-[14px] select-none transition-all duration-150 shrink-0 inline-flex items-center gap-1.5 ${
               canPost
                 ? 'bg-[#0f141c] text-white border border-black/40 shadow-md shadow-slate-900/20 active:scale-95 cursor-pointer hover:bg-black'
                 : 'bg-neutral-100 text-neutral-400 border border-neutral-200 cursor-not-allowed opacity-60'
@@ -830,7 +830,10 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
               <span className="absolute inset-0 rounded-full bg-gradient-to-b from-neutral-600/50 to-transparent shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] group-hover:from-neutral-500/50 transition-all pointer-events-none" />
             )}
 
-            <span className="relative z-10">Post</span>
+            <span className="relative z-10 flex items-center gap-1.5">
+              <span>Post</span>
+              <Send className="w-3.5 h-3.5 stroke-[2.2] transition-transform duration-150 group-hover:translate-x-0.5" />
+            </span>
           </button>
         </div>
 

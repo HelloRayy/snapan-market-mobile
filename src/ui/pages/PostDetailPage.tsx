@@ -136,6 +136,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
           {/* In-Page Inline Comment Input Field (under Komentar Header) */}
           <CommentInputBar
             replyToUser={replyToUser}
+            targetAuthor={post.seller.username || post.seller.name}
             onSubmitComment={handleAddComment}
             isInline={true}
           />

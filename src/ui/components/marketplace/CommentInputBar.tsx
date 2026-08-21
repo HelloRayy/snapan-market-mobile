@@ -3,6 +3,7 @@ import { Send } from 'lucide-react';
 
 interface CommentInputBarProps {
   replyToUser?: string | null;
+  targetAuthor?: string;
   onSubmitComment: (text: string) => void;
   isInline?: boolean;
   onFocusChange?: (isFocused: boolean) => void;
@@ -10,6 +11,7 @@ interface CommentInputBarProps {
 
 export const CommentInputBar: React.FC<CommentInputBarProps> = ({
   replyToUser,
+  targetAuthor,
   onSubmitComment,
   isInline = false,
   onFocusChange,
@@ -71,7 +73,13 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
           onChange={(e) => setText(e.target.value)}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          placeholder={replyToUser ? `Balas @${replyToUser}...` : 'Ketik komentar / tanya produk...'}
+          placeholder={
+            replyToUser
+              ? `Balas @${replyToUser.replace(/^@/, '')}...`
+              : targetAuthor
+              ? `Balas postingan @${targetAuthor.replace(/^@/, '')}...`
+              : 'Balas postingan...'
+          }
           className="flex-1 min-w-0 bg-neutral-100 hover:bg-neutral-100/80 focus:bg-white border border-transparent focus:border-[#1d64ec] rounded-full px-3.5 sm:px-4 h-10 text-[13.5px] sm:text-[14px] text-slate-900 placeholder:text-neutral-400 focus:outline-none transition-all shadow-2xs"
         />
 

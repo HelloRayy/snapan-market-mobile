@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, FileText, MoreHorizontal, Image as ImageIcon, MapPin, PartyPopper, ShoppingBag, Sparkles, ChevronRight, Send, Bookmark, Trash2, Pencil, ArrowLeft } from 'lucide-react';
+import { X, FileText, MoreHorizontal, Image as ImageIcon, MapPin, PartyPopper, Sparkles, ChevronRight, Send, Bookmark, Trash2, Pencil, ArrowLeft } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 
 // Custom Threads 3-Dot Topic Icon
@@ -258,6 +258,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
   };
 
   const [showDraftsSheet, setShowDraftsSheet] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
   const [savedDraft, setSavedDraft] = useState<any>(() => {
     try {
       const saved = localStorage.getItem('snapan_thread_draft');
@@ -625,13 +626,18 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     <span className="text-[12.5px] leading-none">Jual Barang</span>
                   </div>
 
-                  {/* 3. COD Location Pill (Appears next to Jual Barang when in product mode) */}
+                  {/* 3. COD Location Pill (Click opens Titik COD Modal Dialog) */}
                   {postMode === 'product' && (
                     <button
                       type="button"
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 text-[#1d64ec] border border-blue-200 text-[12.5px] font-semibold transition-all cursor-pointer active:scale-95 animate-in fade-in zoom-in-95 duration-150"
+                      onClick={() => setShowLocationModal(true)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12.5px] font-semibold transition-all cursor-pointer active:scale-95 animate-in fade-in zoom-in-95 duration-150 border ${
+                        locationInput
+                          ? 'bg-blue-50 text-[#1d64ec] border-blue-300 font-bold shadow-2xs'
+                          : 'bg-neutral-100/90 text-slate-700 hover:bg-neutral-200/80 border-neutral-200/80'
+                      }`}
                     >
-                      <MapPin className="w-4 h-4 stroke-[2]" />
+                      <MapPin className={`w-3.5 h-3.5 stroke-[2] ${locationInput ? 'text-[#1d64ec]' : 'text-slate-600'}`} />
                       <span className="truncate max-w-[120px]">{locationInput || 'Titik COD'}</span>
                     </button>
                   )}
@@ -828,107 +834,18 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   } focus:outline-none focus:ring-4 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs resize-none`}
                 />
               </div>
-
-              {/* Field 4: Lokasi COD di Sekolah (1-Tap Quick Chips + Custom Input) */}
-              <div className="space-y-2 pt-0.5">
-                <div className="flex items-center justify-between">
-                  <label className="block text-[12.5px] font-bold text-slate-800">
-                    Titik COD di Sekolah
-                  </label>
-                  {locationInput && (
-                    <button
-                      type="button"
-                      onClick={() => setLocationInput('')}
-                      className="text-[11px] text-neutral-400 hover:text-rose-500 transition-colors cursor-pointer"
-                    >
-                      Hapus
-                    </button>
-                  )}
-                </div>
-
-                {/* 1-Tap Preset Location Chips */}
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  {[
-                    { name: 'Kantin', emoji: '🍜' },
-                    { name: 'Lab PPLG / Komputer', emoji: '💻' },
-                    { name: 'Perpustakaan', emoji: '📚' },
-                    { name: 'Depan Gerbang', emoji: '🏫' },
-                    { name: 'Lapangan', emoji: '⚽' },
-                  ].map((loc) => {
-                    const isSelected = locationInput === loc.name;
-                    return (
-                      <button
-                        key={loc.name}
-                        type="button"
-                        onClick={() => setLocationInput(isSelected ? '' : loc.name)}
-                        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[12px] font-semibold transition-all cursor-pointer select-none active:scale-95 border ${
-                          isSelected
-                            ? 'bg-blue-50 border-blue-400 text-[#1d64ec] shadow-2xs'
-                            : 'bg-neutral-50 hover:bg-neutral-100/90 border-neutral-200 text-slate-700'
-                        }`}
-                      >
-                        <span>{loc.emoji}</span>
-                        <span>{loc.name}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Optional Custom Input if user wants specific classroom / room */}
-                <div className="relative pt-0.5">
-                  <MapPin className="absolute left-3 top-3 w-3.5 h-3.5 text-neutral-400 pointer-events-none" />
-                  <input
-                    type="text"
-                    placeholder="Atau tulis titik temu lainnya..."
-                    value={locationInput}
-                    onChange={(e) => setLocationInput(e.target.value)}
-                    className="w-full pl-8 pr-3 py-2 text-[12.5px] rounded-xl border border-neutral-200 focus:outline-none focus:border-[#1d64ec] bg-neutral-50/70 text-slate-900 placeholder:text-neutral-400 transition-all font-normal"
-                  />
-                </div>
-              </div>
             </div>
           )}
         </div>
 
-        {/* Bottom Footer: [ Elegant iOS Style Card Mode Switcher ] --- [ Post Button ] */}
+        {/* Bottom Footer: [ Mode Indicator / Mini Hint ] --- [ Post Button ] */}
         <div className="px-4 py-3 pb-[max(0.85rem,calc(env(safe-area-inset-bottom)+8px))] border-t border-neutral-200/80 bg-white flex items-center justify-between gap-3 shrink-0 select-none">
-          {/* Interactive Card Switcher */}
-          <button
-            type="button"
-            onClick={() => setPostMode(postMode === 'product' ? 'thread' : 'product')}
-            className={`flex items-center gap-3 px-3.5 py-2 rounded-2xl border transition-all cursor-pointer select-none active:scale-[0.98] ${
-              postMode === 'product'
-                ? 'bg-blue-50/90 border-blue-300 shadow-2xs text-blue-950'
-                : 'bg-neutral-50 hover:bg-neutral-100/80 border-neutral-200/80 text-slate-800'
-            }`}
-          >
-            {/* iOS-style Animated Toggle Switch */}
-            <div
-              className={`w-9 h-5 rounded-full p-0.5 transition-colors duration-200 flex items-center shrink-0 ${
-                postMode === 'product' ? 'bg-[#1d64ec]' : 'bg-neutral-300'
-              }`}
-            >
-              <div
-                className={`w-4 h-4 rounded-full bg-white shadow-xs transition-transform duration-200 transform-gpu ${
-                  postMode === 'product' ? 'translate-x-4' : 'translate-x-0'
-                }`}
-              />
-            </div>
-
-            <div className="text-left flex flex-col min-w-0">
-              <div className="flex items-center gap-1.5">
-                <ShoppingBag className={`w-3.5 h-3.5 shrink-0 ${postMode === 'product' ? 'text-[#1d64ec]' : 'text-neutral-500'}`} />
-                <span className={`text-[12.5px] font-bold leading-tight ${
-                  postMode === 'product' ? 'text-[#1d64ec]' : 'text-slate-800'
-                }`}>
-                  {postMode === 'product' ? 'Mode Jualan Aktif' : 'Jadikan Jualan'}
-                </span>
-              </div>
-              <span className="text-[10.5px] text-neutral-500 font-normal leading-tight mt-0.5">
-                {postMode === 'product' ? 'Pasang harga Rp & info COD' : 'Bisa pasang harga & titik COD'}
-              </span>
-            </div>
-          </button>
+          {/* Left: Mode Indicator / Mini Hint */}
+          <div className="flex items-center gap-2">
+            <span className="text-[12px] text-neutral-400 font-medium">
+              {postMode === 'product' ? '🛍️ Mode Jualan Aktif' : '💬 Utas Publik'}
+            </span>
+          </div>
 
           {/* Post Action Button (Kumo UI Primary Pill Button with Send Icon) */}
           <button
@@ -952,6 +869,107 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
             </span>
           </button>
         </div>
+
+        {/* Titik COD Modal Dialog Container (Centered Card Dialog matching Reference) */}
+        {showLocationModal && (
+          <div
+            className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-backdrop-fade font-gt-standard select-none"
+            onClick={() => setShowLocationModal(false)}
+          >
+            <div
+              className="w-full max-w-[340px] bg-white rounded-3xl p-5 text-center shadow-2xl space-y-4 border border-neutral-100 transform-gpu animate-page-zoom"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header Icon + Title */}
+              <div className="space-y-1.5 pt-1">
+                <div className="w-10 h-10 rounded-full bg-blue-50 text-[#1d64ec] flex items-center justify-center mx-auto mb-1.5 shadow-2xs">
+                  <MapPin className="w-5 h-5 stroke-[2.2]" />
+                </div>
+                <h3 className="font-bold text-[17px] text-slate-900 leading-snug">
+                  Titik COD di Sekolah
+                </h3>
+                <p className="text-[13px] text-neutral-500 font-normal leading-relaxed">
+                  Pilih lokasi temu atau tulis ruangan kelas khusus untuk serah-terima barang.
+                </p>
+              </div>
+
+              {/* 1-Tap Preset Quick Chips */}
+              <div className="flex items-center justify-center gap-1.5 flex-wrap pt-0.5">
+                {[
+                  { name: 'Kantin', emoji: '🍜' },
+                  { name: 'Lab PPLG', emoji: '💻' },
+                  { name: 'Perpustakaan', emoji: '📚' },
+                  { name: 'Depan Gerbang', emoji: '🏫' },
+                  { name: 'Lapangan', emoji: '⚽' },
+                ].map((loc) => {
+                  const isSelected = locationInput === loc.name;
+                  return (
+                    <button
+                      key={loc.name}
+                      type="button"
+                      onClick={() => {
+                        setLocationInput(loc.name);
+                        setShowLocationModal(false);
+                      }}
+                      className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-[12.5px] font-semibold transition-all cursor-pointer select-none active:scale-95 border ${
+                        isSelected
+                          ? 'bg-blue-50 border-blue-400 text-[#1d64ec] shadow-2xs font-bold'
+                          : 'bg-neutral-100/90 hover:bg-neutral-200/80 border-neutral-200/80 text-slate-800'
+                      }`}
+                    >
+                      <span>{loc.emoji}</span>
+                      <span>{loc.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Custom Location Input */}
+              <div className="relative pt-1">
+                <MapPin className="absolute left-3.5 top-3.5 w-4 h-4 text-neutral-400 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Atau ketik titik temu lainnya..."
+                  value={locationInput}
+                  onChange={(e) => setLocationInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      setShowLocationModal(false);
+                    }
+                  }}
+                  className="w-full pl-9 pr-3.5 py-2.5 text-[13px] rounded-2xl border border-neutral-200 focus:outline-none focus:border-[#1d64ec] bg-neutral-50/70 text-slate-900 placeholder:text-neutral-400 transition-all font-normal"
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="space-y-2 pt-1">
+                {/* 1. Selesai / Simpan */}
+                <button
+                  type="button"
+                  onClick={() => setShowLocationModal(false)}
+                  className="w-full py-2.5 rounded-2xl bg-[#101010] hover:bg-black text-white font-bold text-[13.5px] transition-colors active:scale-98 cursor-pointer shadow-sm"
+                >
+                  Selesai
+                </button>
+
+                {/* 2. Hapus Titik COD (Jika ada yang terpilih) */}
+                {locationInput && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLocationInput('');
+                      setShowLocationModal(false);
+                    }}
+                    className="w-full py-2 rounded-2xl text-rose-600 hover:bg-rose-50 font-semibold text-[13px] transition-colors active:scale-98 cursor-pointer"
+                  >
+                    Hapus Titik COD
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Discard Confirmation Alert Modal (Save Draft -> Discard -> Continue Editing) */}
         {showDiscardAlert && (

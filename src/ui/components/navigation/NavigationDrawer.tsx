@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
   Home,
@@ -57,32 +56,25 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     }
   };
 
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-50 overflow-hidden font-gt-standard">
-          {/* Backdrop Blur Overlay */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.22, ease: 'easeOut' }}
-            onClick={onClose}
-            className="absolute inset-0 bg-black/60 backdrop-blur-xs cursor-pointer"
-          />
+  if (!isOpen) return null;
 
-          {/* Drawer Slide-Over Panel from Left */}
-          <motion.aside
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
-            transition={{ type: 'tween', duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-            className="absolute top-0 bottom-0 left-0 w-[84%] max-w-[320px] bg-white shadow-2xl flex flex-col z-10 select-none overflow-hidden"
-            style={{
-              paddingTop: 'env(safe-area-inset-top, 0px)',
-              paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-            }}
-          >
+  return (
+    <div className="fixed inset-0 z-50 overflow-hidden font-gt-standard">
+      {/* Backdrop Blur Overlay */}
+      <div
+        onClick={onClose}
+        className="absolute inset-0 bg-black/60 backdrop-blur-xs cursor-pointer animate-backdrop-fade"
+      />
+
+      {/* Drawer Slide-Over Panel from Left (GPU Accelerated) */}
+      <aside
+        className="absolute top-0 bottom-0 left-0 w-[84%] max-w-[320px] bg-white shadow-2xl flex flex-col z-10 select-none overflow-hidden transform-gpu animate-drawer-slide"
+        style={{
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+          willChange: 'transform',
+        }}
+      >
             {/* 1. Header: Close Button & App Title */}
             <div className="p-4 flex items-center justify-between border-b border-neutral-100">
               <div className="flex items-center gap-2">
@@ -272,9 +264,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 </p>
               </div>
             </div>
-          </motion.aside>
+          </aside>
         </div>
-      )}
-    </AnimatePresence>
   );
 };

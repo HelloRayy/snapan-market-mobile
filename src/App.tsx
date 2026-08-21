@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
 import { OnboardingScreen } from '@/ui/components/onboarding/OnboardingScreen';
 import { PwaLandingPage } from '@/ui/components/pwa/PwaLandingPage';
 import { HomePage } from '@/ui/pages/HomePage';
@@ -249,47 +248,30 @@ export function App() {
             }}
           />
 
-          {/* Slide-over Detail Page Layer (Silky 60-120fps GPU Hardware-Accelerated iOS Motion) */}
-          <AnimatePresence>
-            {selectedPost && (
-              <motion.div
-                key={selectedPost.id}
-                initial={{ transform: 'translate3d(100%, 0, 0)' }}
-                animate={{ transform: 'translate3d(0%, 0, 0)' }}
-                exit={{ transform: 'translate3d(100%, 0, 0)' }}
-                transition={{
-                  duration: 0.22,
-                  ease: [0.32, 0.72, 0, 1], // Native iOS page push ease curve
-                }}
-                style={{
-                  willChange: 'transform',
-                  backfaceVisibility: 'hidden',
-                  WebkitBackfaceVisibility: 'hidden',
-                }}
-                className="fixed inset-0 z-50 bg-white overflow-hidden transform-gpu"
-              >
-                <PostDetailPage
-                  post={selectedPost}
-                  onBack={handleClosePostDetail}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Slide-over Detail Page Layer (Pure GPU Hardware-Accelerated 120fps Native Compositor) */}
+          {selectedPost && (
+            <div
+              key={selectedPost.id}
+              className="fixed inset-0 z-50 bg-white overflow-hidden transform-gpu animate-page-slide"
+              style={{
+                willChange: 'transform',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
+              }}
+            >
+              <PostDetailPage
+                post={selectedPost}
+                onBack={handleClosePostDetail}
+              />
+            </div>
+          )}
 
           {/* Native Double-Back to Exit Confirmation Toast */}
-          <AnimatePresence>
-            {showExitToast && (
-              <motion.div
-                initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                transition={{ duration: 0.18, ease: 'easeOut' }}
-                className="fixed bottom-20 inset-x-0 mx-auto w-fit z-50 pointer-events-none px-4 py-2 bg-slate-900/90 backdrop-blur-md text-white text-xs font-medium rounded-full shadow-lg flex items-center gap-1.5"
-              >
-                <span>Tekan sekali lagi untuk keluar</span>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {showExitToast && (
+            <div className="fixed bottom-20 inset-x-0 mx-auto w-fit z-50 pointer-events-none px-4 py-2 bg-slate-900/90 backdrop-blur-md text-white text-xs font-medium rounded-full shadow-lg flex items-center gap-1.5 animate-toast-pop">
+              <span>Tekan sekali lagi untuk keluar</span>
+            </div>
+          )}
         </div>
       ) : (
         <OnboardingScreen onComplete={handleOnboardingComplete} />

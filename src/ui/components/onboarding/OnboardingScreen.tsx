@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronRight, LogIn } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
 import { Slide1Visual } from './Slide1Visual';
 import { Slide2Visual } from './Slide2Visual';
 import { Slide3Visual } from './Slide3Visual';
@@ -13,33 +12,8 @@ interface OnboardingScreenProps {
   onComplete: () => void;
 }
 
-const slideVariants = {
-  enter: (direction: number) => ({
-    x: direction > 0 ? 280 : -280,
-    opacity: 0,
-    scale: 0.96,
-  }),
-  center: {
-    x: 0,
-    opacity: 1,
-    scale: 1,
-  },
-  exit: (direction: number) => ({
-    x: direction < 0 ? 280 : -280,
-    opacity: 0,
-    scale: 0.96,
-  }),
-};
-
-const slideTransition = {
-  type: 'spring' as const,
-  stiffness: 280,
-  damping: 28,
-  mass: 0.8,
-};
-
 export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
-  const [[currentSlide, direction], setSlideState] = useState([0, 0]);
+  const [[currentSlide], setSlideState] = useState([0, 0]);
 
   // Outer Screen Container Ref for Scroll Reset
   const screenContainerRef = useRef<HTMLDivElement>(null);
@@ -162,22 +136,15 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
       ) : (
         /* Slide Standard Onboarding (Slide 1 - 4) */
         <>
-          {/* Top Visual Carousel Viewport (Framermotion Direction-Aware Spring Slide Motion) */}
+          {/* Top Visual Carousel Viewport (GPU Hardware-Accelerated Animation) */}
           <div className="w-full max-w-sm mx-auto pt-2 overflow-hidden min-h-[280px] flex items-center justify-center relative">
-            <AnimatePresence initial={false} custom={direction} mode="popLayout">
-              <motion.div
-                key={currentSlide}
-                custom={direction}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={slideTransition}
-                className="w-full shrink-0 flex justify-center"
-              >
-                {current.visual}
-              </motion.div>
-            </AnimatePresence>
+            <div
+              key={currentSlide}
+              className="w-full shrink-0 flex justify-center transform-gpu animate-toast-pop"
+              style={{ willChange: 'transform, opacity' }}
+            >
+              {current.visual}
+            </div>
           </div>
 
           {/* Middle Text & Pagination Dots */}
@@ -197,27 +164,20 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
               ))}
             </div>
 
-            {/* Dynamic Staggered Text Direction-Aware Slide Transition */}
+            {/* Dynamic Staggered Text Slide Transition */}
             <div className="space-y-2 overflow-hidden">
-              <AnimatePresence initial={false} custom={direction} mode="popLayout">
-                <motion.div
-                  key={currentSlide}
-                  custom={direction}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={slideTransition}
-                  className="space-y-2"
-                >
-                  <h2 className="text-2xl font-bold tracking-tight text-slate-ink leading-snug font-shopify-sans">
-                    {current.title}
-                  </h2>
-                  <p className="text-sm text-ash-veil leading-relaxed font-normal font-gt-standard">
-                    {current.description}
-                  </p>
-                </motion.div>
-              </AnimatePresence>
+              <div
+                key={currentSlide}
+                className="space-y-2 transform-gpu animate-toast-pop"
+                style={{ willChange: 'transform, opacity' }}
+              >
+                <h2 className="text-2xl font-bold tracking-tight text-slate-ink leading-snug font-shopify-sans">
+                  {current.title}
+                </h2>
+                <p className="text-sm text-ash-veil leading-relaxed font-normal font-gt-standard">
+                  {current.description}
+                </p>
+              </div>
             </div>
           </div>
 

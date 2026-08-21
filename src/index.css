@@ -66,15 +66,31 @@ html, body {
   animation: shake-h 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
-/* Native Bottom Sheet Slide-Up & Backdrop Animations */
-@keyframes sheet-slide-up {
+/* Native High-Performance GPU Compositor Animations (60-120fps Zero-Jank) */
+@keyframes page-slide-in-right {
   0% {
-    transform: translateY(100%);
-    opacity: 0.8;
+    transform: translate3d(100%, 0, 0);
   }
   100% {
-    transform: translateY(0);
-    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes drawer-slide-in-left {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes sheet-slide-up {
+  0% {
+    transform: translate3d(0, 100%, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -83,12 +99,40 @@ html, body {
   100% { opacity: 1; }
 }
 
+@keyframes toast-pop-in {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@utility animate-page-slide {
+  animation: page-slide-in-right 0.24s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  will-change: transform;
+}
+
+@utility animate-drawer-slide {
+  animation: drawer-slide-in-left 0.24s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  will-change: transform;
+}
+
 @utility animate-sheet-slide {
-  animation: sheet-slide-up 0.36s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  animation: sheet-slide-up 0.24s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  will-change: transform;
 }
 
 @utility animate-backdrop-fade {
-  animation: backdrop-fade-in 0.28s ease-out forwards;
+  animation: backdrop-fade-in 0.2s ease-out forwards;
+  will-change: opacity;
+}
+
+@utility animate-toast-pop {
+  animation: toast-pop-in 0.18s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  will-change: transform, opacity;
 }
 
 /* Safe Area Inset Support for Edge-to-Edge Fullscreen PWA */

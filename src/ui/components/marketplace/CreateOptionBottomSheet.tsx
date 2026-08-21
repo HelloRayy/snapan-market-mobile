@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquarePlus, ShoppingBag, X } from 'lucide-react';
 
 interface CreateOptionBottomSheetProps {
@@ -16,22 +15,18 @@ export const CreateOptionBottomSheet: React.FC<CreateOptionBottomSheetProps> = (
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-xs transition-opacity duration-200">
-        {/* Backdrop overlay click to close */}
-        <div
-          className="absolute inset-0 cursor-pointer"
-          onClick={onClose}
-        />
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-xs animate-backdrop-fade">
+      {/* Backdrop overlay click to close */}
+      <div
+        className="absolute inset-0 cursor-pointer"
+        onClick={onClose}
+      />
 
-        {/* Half-Screen Bottom Sheet Container */}
-        <motion.div
-          initial={{ y: '100%' }}
-          animate={{ y: 0 }}
-          exit={{ y: '100%' }}
-          transition={{ type: 'spring', stiffness: 350, damping: 32 }}
-          className="relative z-10 w-full max-w-lg bg-white rounded-t-3xl shadow-2xl p-5 pb-12 pb-[max(3rem,env(safe-area-inset-bottom))] font-gt-standard border-t border-neutral-200/80 flex flex-col space-y-4"
-        >
+      {/* Half-Screen Bottom Sheet Container (GPU Accelerated) */}
+      <div
+        className="relative z-10 w-full max-w-lg bg-white rounded-t-3xl shadow-2xl p-5 pb-12 pb-[max(3rem,env(safe-area-inset-bottom))] font-gt-standard border-t border-neutral-200/80 flex flex-col space-y-4 transform-gpu animate-sheet-slide"
+        style={{ willChange: 'transform' }}
+      >
           {/* Top Handle Drag Indicator */}
           <div className="w-12 h-1 bg-neutral-300 rounded-full mx-auto mb-1 shrink-0" />
 
@@ -107,8 +102,7 @@ export const CreateOptionBottomSheet: React.FC<CreateOptionBottomSheetProps> = (
               </div>
             </button>
           </div>
-        </motion.div>
+        </div>
       </div>
-    </AnimatePresence>
   );
 };

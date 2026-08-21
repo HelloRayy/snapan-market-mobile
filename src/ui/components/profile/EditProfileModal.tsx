@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { X, Camera } from 'lucide-react';
 
 interface EditProfileModalProps {
@@ -40,15 +39,8 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   };
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm font-gt-standard">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ duration: 0.2 }}
-          className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-neutral-200"
-        >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs font-gt-standard animate-backdrop-fade">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-neutral-200 transform-gpu animate-toast-pop">
           {/* Header */}
           <div className="px-5 py-4 flex items-center justify-between border-b border-neutral-100">
             <button
@@ -125,8 +117,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
               />
             </div>
           </form>
-        </motion.div>
+        </div>
       </div>
-    </AnimatePresence>
   );
 };

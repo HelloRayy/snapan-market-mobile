@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { X, LogOut, ShieldCheck, Share2, Smartphone } from 'lucide-react';
 import { useAuth } from '@/ui/hooks/useAuth';
 
@@ -29,25 +28,18 @@ export const SettingsBottomSheet: React.FC<SettingsBottomSheetProps> = ({
   };
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm font-gt-standard">
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="absolute inset-0"
-        />
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs font-gt-standard animate-backdrop-fade">
+      {/* Backdrop */}
+      <div
+        onClick={onClose}
+        className="absolute inset-0 cursor-pointer"
+      />
 
-        {/* Modal Container */}
-        <motion.div
-          initial={{ y: '100%' }}
-          animate={{ y: 0 }}
-          exit={{ y: '100%' }}
-          transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-          className="relative w-full max-w-lg bg-white rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl z-10 space-y-4 max-h-[85vh] overflow-y-auto"
-        >
+      {/* Modal Container (GPU Accelerated) */}
+      <div
+        className="relative w-full max-w-lg bg-white rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl z-10 space-y-4 max-h-[85vh] overflow-y-auto transform-gpu animate-sheet-slide"
+        style={{ willChange: 'transform' }}
+      >
           {/* Header */}
           <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
             <h3 className="font-bold text-base text-slate-900">Pengaturan & Akun</h3>
@@ -152,8 +144,7 @@ export const SettingsBottomSheet: React.FC<SettingsBottomSheetProps> = ({
             <p className="font-semibold text-slate-700">Snapan Market Mobile v0.1.0 (PWA)</p>
             <p>Platform Marketplace & Komunitas Siswa SMKN 8 Jakarta</p>
           </div>
-        </motion.div>
+        </div>
       </div>
-    </AnimatePresence>
   );
 };

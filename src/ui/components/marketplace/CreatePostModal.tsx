@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { X, FileText, MoreHorizontal, Image as ImageIcon, MapPin, PartyPopper, AlignLeft, Music, ShoppingBag, Sparkles, ChevronRight } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 
@@ -159,14 +158,10 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
-        transition={{ type: 'tween', duration: 0.22, ease: [0.25, 1, 0.5, 1] }}
-        className="fixed inset-0 z-50 bg-white flex flex-col font-gt-standard overflow-hidden"
-      >
+    <div
+      className="fixed inset-0 z-50 bg-white flex flex-col font-gt-standard overflow-hidden transform-gpu animate-sheet-slide"
+      style={{ willChange: 'transform' }}
+    >
         {/* Top Bar Header: [ Batal ] --- [ Title ] --- [ Draft & Options ] */}
         <div className="px-4 h-14 flex items-center justify-between border-b border-neutral-200/80 bg-white shrink-0">
           <button
@@ -350,11 +345,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
 
                 {/* Smart Intent Auto-Detection Banner (Prompt beralih ke Mode Jual jika terdeteksi kata jualan) */}
                 {isSellingKeywordDetected && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="my-2 p-2 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-between gap-2"
-                  >
+                  <div className="my-2 p-2 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-between gap-2 transform-gpu animate-toast-pop">
                     <div className="flex items-center gap-1.5 text-[12px] font-semibold text-[#1d64ec]">
                       <Sparkles className="w-3.5 h-3.5 shrink-0" />
                       <span>Terdeteksi ingin jualan?</span>
@@ -366,7 +357,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     >
                       Aktifkan Mode Jual 🛍️
                     </button>
-                  </motion.div>
+                  </div>
                 )}
 
                 {/* Uploaded Images Gallery */}
@@ -472,11 +463,9 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
 
           {/* 2. Bottom Section (ONLY for Product Mode): Seller Form Inputs */}
           {postMode === 'product' && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-              className="mt-4 space-y-3.5 w-full pt-3 border-t border-neutral-100"
+            <div
+              className="mt-4 space-y-3.5 w-full pt-3 border-t border-neutral-100 transform-gpu animate-sheet-slide"
+              style={{ willChange: 'transform' }}
             >
               {/* Field 1: Judul Produk / Jasa */}
               <div className="space-y-1">
@@ -555,7 +544,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   ))}
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
         </div>
 
@@ -577,11 +566,9 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 postMode === 'product' ? 'bg-[#1d64ec]' : 'bg-neutral-300'
               }`}
             >
-              <motion.div
-                layout
-                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                className={`w-4 h-4 rounded-full bg-white shadow-xs ${
-                  postMode === 'product' ? 'ml-auto' : 'mr-auto'
+              <div
+                className={`w-4 h-4 rounded-full bg-white shadow-xs transition-transform duration-200 transform-gpu ${
+                  postMode === 'product' ? 'translate-x-4' : 'translate-x-0'
                 }`}
               />
             </div>
@@ -612,7 +599,6 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
             Post
           </button>
         </div>
-      </motion.div>
-    </AnimatePresence>
+      </div>
   );
 };

@@ -727,18 +727,23 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
             </div>
           </button>
 
-          {/* Post Action Button */}
+          {/* Post Action Button (Kumo UI Primary Pill Button) */}
           <button
             type="button"
             onClick={handleSubmit}
             disabled={!canPost}
-            className={`px-6 py-2.5 rounded-full font-bold text-[14.5px] transition-all duration-200 cursor-pointer shrink-0 ${
+            className={`group relative overflow-hidden px-6 py-2.5 rounded-full font-bold text-[14.5px] select-none transition-all duration-150 shrink-0 ${
               canPost
-                ? 'bg-slate-900 hover:bg-slate-800 text-white shadow-md active:scale-95'
-                : 'bg-neutral-200 text-neutral-400 cursor-not-allowed'
+                ? 'bg-[#0f141c] text-white border border-black/40 shadow-md shadow-slate-900/20 active:scale-95 cursor-pointer hover:bg-black'
+                : 'bg-neutral-100 text-neutral-400 border border-neutral-200 cursor-not-allowed opacity-60'
             }`}
           >
-            Post
+            {/* Kumo Inset Top Rim Highlight Gradient */}
+            {canPost && (
+              <span className="absolute inset-0 rounded-full bg-gradient-to-b from-neutral-600/50 to-transparent shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] group-hover:from-neutral-500/50 transition-all pointer-events-none" />
+            )}
+
+            <span className="relative z-10">Post</span>
           </button>
         </div>
       </div>

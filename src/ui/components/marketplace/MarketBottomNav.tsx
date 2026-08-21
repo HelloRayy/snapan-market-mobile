@@ -18,7 +18,7 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   const lastScrollY = useRef(0);
   const scrollTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Auto-Hide / Show on Scroll Behavior
+  // Auto-Hide on Scroll Down & Delayed Reveal on Idle / Scroll Stop Behavior
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -27,23 +27,29 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
       // Always show if near the top of the feed (< 50px)
       if (currentScrollY < 50) {
         setIsVisible(true);
-      } else if (scrollDiff > 8) {
-        // Scrolling DOWN -> hide bottom nav (motion goes down)
+        if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+        lastScrollY.current = currentScrollY;
+        return;
+      }
+
+      // Scrolling DOWN -> immediately hide bottom nav (navbar down)
+      if (scrollDiff > 10) {
         setIsVisible(false);
-      } else if (scrollDiff > -8) {
-        // Scrolling UP -> show bottom nav (motion comes up)
+      }
+      // Explicit substantial scroll UP -> reveal bottom nav
+      else if (scrollDiff < -30) {
         setIsVisible(true);
       }
 
       lastScrollY.current = currentScrollY;
 
-      // When user STOPS scrolling -> show bottom nav smoothly
+      // When user STOPS scrolling -> wait delay (1.5s) before sliding navbar back up
       if (scrollTimeout.current) {
         clearTimeout(scrollTimeout.current);
       }
       scrollTimeout.current = setTimeout(() => {
         setIsVisible(true);
-      }, 700);
+      }, 1500); // 1.5s idle delay before navbar rises up
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });

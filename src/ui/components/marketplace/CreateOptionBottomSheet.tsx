@@ -65,14 +65,14 @@ export const CreateOptionBottomSheet: React.FC<CreateOptionBottomSheetProps> = (
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-[15px] text-slate-900 group-hover:text-[#1d64ec] transition-colors">
-                    💬 Utas / Status Biasa
+                    Utas Baru
                   </span>
                   <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-neutral-200/80 text-neutral-600">
                     Sosial
                   </span>
                 </div>
                 <p className="text-[12.5px] text-neutral-500 leading-snug mt-0.5">
-                  Bagikan ide, cerita, foto random, atau diskusi seputar sekolah tanpa memasang harga.
+                  Bagikan ide, cerita, foto kegiatan, atau diskusi komunitas sekolah.
                 </p>
               </div>
             </button>
@@ -90,14 +90,14 @@ export const CreateOptionBottomSheet: React.FC<CreateOptionBottomSheetProps> = (
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-[15px] text-slate-900 group-hover:text-[#1d64ec] transition-colors">
-                    🛍️ Jual Barang / Jasa
+                    Jual Produk atau Jasa
                   </span>
                   <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-blue-100 text-[#1d64ec]">
                     Marketplace
                   </span>
                 </div>
                 <p className="text-[12.5px] text-neutral-500 leading-snug mt-0.5">
-                  Jual barang bekas/preloved, makanan kantin, atau buka jasa DKV/PPLG dengan tombol order WhatsApp & harga Rp.
+                  Pasang harga, stok, dan lokasi COD untuk produk kantin, preloved, atau jasa tugas.
                 </p>
               </div>
             </button>

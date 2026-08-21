@@ -174,11 +174,9 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
 
           <h2 className="text-[15.5px] font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
             {postMode === 'product' ? (
-              <span className="text-[#1d64ec] flex items-center gap-1">
-                🛍️ Jual Produk Baru
-              </span>
+              <span className="text-[#1d64ec]">Jual Produk</span>
             ) : (
-              <span>💬 Utas Baru</span>
+              <span>Utas Baru</span>
             )}
           </h2>
 
@@ -345,17 +343,17 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
 
                 {/* Smart Intent Auto-Detection Banner (Prompt beralih ke Mode Jual jika terdeteksi kata jualan) */}
                 {isSellingKeywordDetected && (
-                  <div className="my-2 p-2 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-between gap-2 transform-gpu animate-toast-pop">
+                  <div className="my-2 p-2.5 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-between gap-2 transform-gpu animate-toast-pop">
                     <div className="flex items-center gap-1.5 text-[12px] font-semibold text-[#1d64ec]">
                       <Sparkles className="w-3.5 h-3.5 shrink-0" />
-                      <span>Terdeteksi ingin jualan?</span>
+                      <span>Ingin memasang harga jual?</span>
                     </div>
                     <button
                       type="button"
                       onClick={() => setPostMode('product')}
                       className="px-2.5 py-1 rounded-lg bg-[#1d64ec] text-white text-[11px] font-bold hover:bg-[#154ec1] transition-colors cursor-pointer shadow-2xs active:scale-95 shrink-0"
                     >
-                      Aktifkan Mode Jual 🛍️
+                      Beralih ke Jual
                     </button>
                   </div>
                 )}

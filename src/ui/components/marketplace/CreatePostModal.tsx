@@ -437,12 +437,17 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                       )}
                     </button>
 
-                    {/* Dropdown Popover Overlay */}
+                    {/* Dropdown Popover Overlay with Click-Away Backdrop & Safe Screen Positioning */}
                     {showTopicDropdown && (
-                      <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-2xl shadow-xl border border-neutral-200 z-50 p-2 animate-in fade-in slide-in-from-top-2 duration-150">
-                        <div className="px-3 py-1.5 text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
-                          Recent / Populer
-                        </div>
+                      <>
+                        <div
+                          className="fixed inset-0 z-40"
+                          onClick={() => setShowTopicDropdown(false)}
+                        />
+                        <div className="absolute top-full -right-6 sm:right-auto sm:left-0 mt-1.5 w-64 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-neutral-200/90 z-50 p-2 transform-gpu animate-in fade-in slide-in-from-top-2 duration-150 font-gt-standard">
+                          <div className="px-3 py-1.5 text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                            Recent / Populer
+                          </div>
 
                         <div className="space-y-0.5">
                           {PRESET_TOPICS.map((topic) => (
@@ -496,7 +501,8 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                           </p>
                         </div>
                       </div>
-                    )}
+                    </>
+                  )}
                   </div>
 
                   {/* Thread Page Counter Badge (e.g. 1/2) if multi-thread exists */}

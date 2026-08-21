@@ -6,15 +6,16 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export type Database = {
+export interface Database {
   public: {
     Tables: {
       profiles: {
         Row: {
           id: string
           full_name: string
+          username: string | null
           avatar_url: string | null
-          class_group: string | null
+          class_group: string
           is_verified: boolean
           role: 'buyer' | 'seller' | 'admin'
           created_at: string
@@ -22,8 +23,9 @@ export type Database = {
         Insert: {
           id: string
           full_name: string
+          username?: string | null
           avatar_url?: string | null
-          class_group?: string | null
+          class_group?: string
           is_verified?: boolean
           role?: 'buyer' | 'seller' | 'admin'
           created_at?: string
@@ -31,8 +33,9 @@ export type Database = {
         Update: {
           id?: string
           full_name?: string
+          username?: string | null
           avatar_url?: string | null
-          class_group?: string | null
+          class_group?: string
           is_verified?: boolean
           role?: 'buyer' | 'seller' | 'admin'
           created_at?: string
@@ -205,40 +208,64 @@ export type Database = {
         Row: {
           id: string
           seller_id: string
+          post_type: 'thread' | 'product'
+          title: string | null
           caption: string
+          description: string | null
+          price: number
+          original_price: number | null
+          category: string
           images: string[]
           is_video: boolean
           stock: number
-          price?: number
-          original_price?: number | null
-          category?: string
-          location_tag?: string | null
+          location_tag: string | null
+          topic_tag: string | null
+          is_official_topic: boolean
+          topic_icon: string | null
+          likes_count: number
+          comments_count: number
           created_at: string
         }
         Insert: {
           id?: string
           seller_id: string
+          post_type?: 'thread' | 'product'
+          title?: string | null
           caption: string
-          images?: string[]
-          is_video?: boolean
-          stock?: number
+          description?: string | null
           price?: number
           original_price?: number | null
           category?: string
+          images?: string[]
+          is_video?: boolean
+          stock?: number
           location_tag?: string | null
+          topic_tag?: string | null
+          is_official_topic?: boolean
+          topic_icon?: string | null
+          likes_count?: number
+          comments_count?: number
           created_at?: string
         }
         Update: {
           id?: string
           seller_id?: string
+          post_type?: 'thread' | 'product'
+          title?: string | null
           caption?: string
-          images?: string[]
-          is_video?: boolean
-          stock?: number
+          description?: string | null
           price?: number
           original_price?: number | null
           category?: string
+          images?: string[]
+          is_video?: boolean
+          stock?: number
           location_tag?: string | null
+          topic_tag?: string | null
+          is_official_topic?: boolean
+          topic_icon?: string | null
+          likes_count?: number
+          comments_count?: number
           created_at?: string
         }
         Relationships: [
@@ -289,21 +316,36 @@ export type Database = {
           id: string
           post_id: string
           user_id: string
+          parent_comment_id: string | null
           content: string
+          images: string[]
+          thread_part: number
+          total_parts: number
+          likes_count: number
           created_at: string
         }
         Insert: {
           id?: string
           post_id: string
           user_id: string
+          parent_comment_id?: string | null
           content: string
+          images?: string[]
+          thread_part?: number
+          total_parts?: number
+          likes_count?: number
           created_at?: string
         }
         Update: {
           id?: string
           post_id?: string
           user_id?: string
+          parent_comment_id?: string | null
           content?: string
+          images?: string[]
+          thread_part?: number
+          total_parts?: number
+          likes_count?: number
           created_at?: string
         }
         Relationships: [
@@ -316,6 +358,46 @@ export type Database = {
           },
           {
             foreignKeyName: "post_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_comments_parent_comment_id_fkey"
+            columns: ["parent_comment_id"]
+            isOneToOne: false
+            referencedRelation: "post_comments"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      comment_likes: {
+        Row: {
+          comment_id: string
+          user_id: string
+          created_at: string
+        }
+        Insert: {
+          comment_id: string
+          user_id: string
+          created_at?: string
+        }
+        Update: {
+          comment_id?: string
+          user_id?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_likes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "post_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comment_likes_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -388,6 +470,7 @@ export type Review = Database['public']['Tables']['reviews']['Row']
 export type MarketPost = Database['public']['Tables']['market_posts']['Row']
 export type PostLike = Database['public']['Tables']['post_likes']['Row']
 export type PostComment = Database['public']['Tables']['post_comments']['Row']
+export type CommentLike = Database['public']['Tables']['comment_likes']['Row']
 export type CartItem = Database['public']['Tables']['cart_items']['Row']
 
 // Extended UI Types matching Frontend Components
@@ -400,6 +483,9 @@ export type MarketPostWithSeller = MarketPost & {
 
 export type PostCommentWithUser = PostComment & {
   user: Profile
+  likes_count?: number
+  is_liked_by_user?: boolean
+  replies?: PostCommentWithUser[]
 }
 
 export type CartItemWithPost = CartItem & {

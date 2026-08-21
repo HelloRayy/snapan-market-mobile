@@ -1,8 +1,8 @@
 import { supabase } from './supabase';
-import type { MarketPostWithSeller, PostCommentWithUser } from '@/types/supabase';
+import type { MarketPostWithSeller } from '@/types/supabase';
 
 /**
- * Fetch semua postingan feed jualan beserta detail seller
+ * Fetch semua postingan feed jualan & sosial beserta detail seller, jumlah suka, dan jumlah komentar
  */
 export async function getMarketPosts(currentUserId?: string): Promise<MarketPostWithSeller[]> {
   const { data: posts, error: postsError } = await supabase
@@ -51,18 +51,21 @@ export async function getMarketPosts(currentUserId?: string): Promise<MarketPost
   return posts.map((post) => ({
     ...post,
     seller: post.seller as unknown as MarketPostWithSeller['seller'],
-    likes_count: likesMap[post.id] || 0,
-    comments_count: commentsMap[post.id] || 0,
+    likes_count: likesMap[post.id] || post.likes_count || 0,
+    comments_count: commentsMap[post.id] || post.comments_count || 0,
     is_liked_by_user: !!userLikesMap[post.id]
   }));
 }
 
 /**
- * Buat postingan jualan baru di feed
+ * Buat postingan jualan/utas baru di feed
  */
 export async function createMarketPost(payload: {
   seller_id: string;
+  post_type?: 'thread' | 'product';
   caption: string;
+  title?: string;
+  description?: string;
   images?: string[];
   is_video?: boolean;
   stock?: number;
@@ -70,19 +73,28 @@ export async function createMarketPost(payload: {
   original_price?: number;
   category?: string;
   location_tag?: string;
+  topic_tag?: string;
+  is_official_topic?: boolean;
+  topic_icon?: string;
 }) {
   const { data, error } = await supabase
     .from('market_posts')
     .insert({
       seller_id: payload.seller_id,
+      post_type: payload.post_type || 'thread',
       caption: payload.caption,
+      title: payload.title,
+      description: payload.description,
       images: payload.images || [],
       is_video: payload.is_video || false,
       stock: payload.stock ?? 1,
       price: payload.price ?? 0,
       original_price: payload.original_price,
       category: payload.category || 'Umum',
-      location_tag: payload.location_tag || 'SMKN 8'
+      location_tag: payload.location_tag || 'SMKN 8',
+      topic_tag: payload.topic_tag,
+      is_official_topic: payload.is_official_topic || false,
+      topic_icon: payload.topic_icon || 'threads'
     })
     .select()
     .single();
@@ -100,7 +112,6 @@ export async function createMarketPost(payload: {
  */
 export async function togglePostLike(postId: string, userId: string, isLiked: boolean) {
   if (isLiked) {
-    // Unlike
     const { error } = await supabase
       .from('post_likes')
       .delete()
@@ -112,7 +123,6 @@ export async function togglePostLike(postId: string, userId: string, isLiked: bo
       throw error;
     }
   } else {
-    // Like
     const { error } = await supabase
       .from('post_likes')
       .insert({
@@ -125,50 +135,4 @@ export async function togglePostLike(postId: string, userId: string, isLiked: bo
       throw error;
     }
   }
-}
-
-/**
- * Fetch komentar postingan beserta profil komentator
- */
-export async function getPostComments(postId: string): Promise<PostCommentWithUser[]> {
-  const { data, error } = await supabase
-    .from('post_comments')
-    .select(`
-      *,
-      user:profiles!post_comments_user_id_fkey(*)
-    `)
-    .eq('post_id', postId)
-    .order('created_at', { ascending: true });
-
-  if (error) {
-    console.error(`Error fetching comments for post ${postId}:`, error.message);
-    throw error;
-  }
-
-  return (data || []).map((c) => ({
-    ...c,
-    user: c.user as unknown as PostCommentWithUser['user']
-  }));
-}
-
-/**
- * Tambah komentar pada postingan
- */
-export async function addPostComment(postId: string, userId: string, content: string) {
-  const { data, error } = await supabase
-    .from('post_comments')
-    .insert({
-      post_id: postId,
-      user_id: userId,
-      content
-    })
-    .select()
-    .single();
-
-  if (error) {
-    console.error('Error adding post comment:', error.message);
-    throw error;
-  }
-
-  return data;
 }

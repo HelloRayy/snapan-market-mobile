@@ -14,10 +14,10 @@ Dokumen spesifikasi ini mengatur arsitektur navigasi, struktur data, antarmuka U
 
 ## 🏗️ 2. Architectural Design & Component Boundaries
 
-### File Structure Changes:
+### File Structure Changes:x
 
 - **[NEW] `src/ui/pages/PostDetailPage.tsx`**: Halaman utama detail postingan & daftar komentar thread.
-- **[NEW] `src/ui/components/marketplace/ThreadCommentItem.tsx`**: Komponen balasan komentar individual dengan dukungan garis penghubung vertikal (`|`), avatar 36px, badge "Pembuat" / "Penjual", tombol Like & Balas.
+- **[NEW] `src/ui/components/marketplace/ThreadCommentItem.tsx`**: Komponen balasan komentar individual dengan dukungan garis penghubung vertikal (`|`), avatar 36px, badge "Pembuat" / "Penjual", tombol Like & Balas.  
 - **[NEW] `src/ui/components/marketplace/CommentInputBar.tsx`**: Baris input balasan melayang di bagian bawah dengan avatar user & tombol "Kirim".
 - **[MODIFY] `src/types/marketFeed.ts`**: Menambahkan interface `ThreadComment`.
 - **[MODIFY] `src/data/mockMarketData.ts`**: Menambahkan mock data komentar bersarang per postingan.
@@ -74,3 +74,7 @@ export interface ThreadComment {
 2. **Manual Navigation & Interaction Testing**:
    - Klik post di Feed ➔ Masuk `PostDetailPage` ➔ Klik `←` Kembali ke Feed.
    - Ketik komentar baru ➔ Tambah ke daftar komentar secara instan (*optimistic update*).
+
+
+
+jambon kedut kedut

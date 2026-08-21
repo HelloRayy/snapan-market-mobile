@@ -336,21 +336,27 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
 
           {/* Child Replies List (Indented right with ml-7) */}
           <div className="space-y-3.5">
-            {(repliesState.length > 1 && !isExpanded && !isReplying
+            {(repliesState.length > 1 && !isExpanded && !isReplying && !onOpenCommentDetail
               ? repliesState.slice(0, 1)
               : repliesState
             ).map((reply, idx) => {
               const isFirstChild = idx === 0;
               const isLastChild =
-                (repliesState.length > 1 && !isExpanded && !isReplying
+                (repliesState.length > 1 && !isExpanded && !isReplying && !onOpenCommentDetail
                   ? true
                   : idx === repliesState.length - 1) && !isReplying;
 
               return (
                 <div
                   key={reply.id || idx}
-                  onClick={() => setIsExpanded(true)}
-                  className="flex items-start gap-3 ml-7 relative w-full cursor-pointer"
+                  onClick={() => {
+                    if (onOpenCommentDetail) {
+                      onOpenCommentDetail(reply);
+                    } else {
+                      setIsExpanded(true);
+                    }
+                  }}
+                  className="flex items-start gap-3 ml-7 relative w-full cursor-pointer hover:opacity-95 active:scale-[0.99] transition-all"
                 >
                   {/* First reply gets the initial L-Curve (└─) from Parent */}
                   {isFirstChild && (

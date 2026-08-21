@@ -151,6 +151,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       id: `post-user-${Date.now()}`,
       caption: newPostData.caption || '',
       title: newPostData.title,
+      description: newPostData.description,
       postType: newPostData.postType || 'thread',
       price: newPostData.price ?? 0,
       category: newPostData.category || 'Lainnya',

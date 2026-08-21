@@ -187,7 +187,8 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     const newPost: Partial<MarketPostItem> = {
       postType: postMode,
       title: isProductMode ? (productTitle || caption.slice(0, 30)) : undefined,
-      caption: caption || productDescription || productTitle,
+      description: isProductMode ? (productDescription || undefined) : undefined,
+      caption: caption || productTitle,
       images,
       price: parsedPrice,
       stock: parsedStock,

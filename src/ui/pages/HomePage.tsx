@@ -115,6 +115,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost, onNavigateToPr
         username: activeSellerName.toLowerCase().replace(/\s+/g, ''),
       },
       caption: newPostData.caption || '',
+      title: newPostData.title,
+      description: newPostData.description,
       price: isProduct ? (newPostData.price ?? 50000) : undefined,
       originalPrice: isProduct ? newPostData.originalPrice : undefined,
       category: isProduct ? (newPostData.category || 'Jasa DKV/PPLG') : undefined,

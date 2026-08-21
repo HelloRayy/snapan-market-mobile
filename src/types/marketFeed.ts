@@ -45,6 +45,7 @@ export interface MarketPostItem {
   id: string;
   postType?: 'thread' | 'product'; // 'thread' = Utas Sosial Biasa, 'product' = Barang / Jasa Jualan
   title?: string;
+  description?: string; // Deskripsi singkat/spesifikasi khusus produk yang tampil di Bottom Sheet
   seller: SellerProfile;
   caption: string;
   price?: number;

@@ -222,14 +222,16 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
           )}
         </div>
 
-        {/* 3. Detail Produk (Nama Barang & Deskripsi Singkat) */}
-        <div className="space-y-1">
+        {/* 3. Detail Produk (Nama Barang & Deskripsi Singkat Saja) */}
+        <div className="space-y-1.5">
           <h3 className="font-bold text-lg text-slate-900 leading-snug">
-            {titleText}
+            {post.title || titleText}
           </h3>
-          <p className="text-xs text-neutral-500 font-normal leading-relaxed line-clamp-2">
-            {rawCaption}
-          </p>
+          {(post.description || (post.caption && post.caption !== post.title)) && (
+            <p className="text-[13px] text-neutral-600 font-normal leading-relaxed line-clamp-4 whitespace-pre-line">
+              {post.description || post.caption}
+            </p>
+          )}
         </div>
 
         {/* 4. Tombol Bottom Action (WhatsApp Checkout & Pricing) */}

@@ -735,87 +735,107 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
             </div>
           )}
 
-          {/* 2. Bottom Section (ONLY for Product Mode): Seller Form Inputs */}
+          {/* 2. Bottom Section (ONLY for Product Mode): Zero-Friction Seller Form Inputs */}
           {postMode === 'product' && (
             <div
-              className="mt-4 space-y-3.5 w-full pt-3 border-t border-neutral-100 transform-gpu animate-sheet-slide"
+              className="mt-4 space-y-4 w-full pt-3 border-t border-neutral-100 transform-gpu animate-sheet-slide"
               style={{ willChange: 'transform' }}
             >
-              {/* Field 1: Judul Produk / Jasa */}
+              {/* Field 1: Nama / Judul Barang */}
               <div className="space-y-1">
-                <label className="block text-[12px] font-bold text-slate-800">
-                  Judul Produk / Jasa <span className="text-rose-500">*</span>
+                <label className="block text-[12.5px] font-bold text-slate-800">
+                  Nama Barang / Jasa <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
-                  placeholder="Nama barang / jasa..."
+                  placeholder="Contoh: Hoodie Erigo L / Keyboard Mechanical..."
                   value={productTitle}
                   onChange={(e) => setProductTitle(e.target.value)}
                   className="w-full px-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white font-semibold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs"
                 />
               </div>
 
-              {/* 2-Column Grid: Harga (Rp) & Stok / Slot */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="block text-[12px] font-bold text-slate-800">
-                    Harga (Rp) <span className="text-rose-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3.5 top-2.5 text-[13.5px] font-bold text-neutral-400">Rp</span>
-                    <input
-                      type="text"
-                      placeholder="50.000"
-                      value={priceInput}
-                      onChange={(e) => setPriceInput(e.target.value)}
-                      className="w-full pl-10 pr-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white font-bold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="block text-[12px] font-bold text-slate-800">
-                    Stok / Slot
-                  </label>
+              {/* Field 2: Harga (Rp) */}
+              <div className="space-y-1">
+                <label className="block text-[12.5px] font-bold text-slate-800">
+                  Harga (Rp) <span className="text-rose-500">*</span>
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-2.5 text-[13.5px] font-bold text-neutral-400">Rp</span>
                   <input
                     type="text"
-                    placeholder="1"
-                    value={stockInput}
-                    onChange={(e) => setStockInput(e.target.value)}
-                    className="w-full px-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs"
+                    inputMode="numeric"
+                    placeholder="50.000"
+                    value={priceInput}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/[^0-9]/g, '');
+                      if (!raw) {
+                        setPriceInput('');
+                        return;
+                      }
+                      const formatted = new Intl.NumberFormat('id-ID').format(Number(raw));
+                      setPriceInput(formatted);
+                    }}
+                    className="w-full pl-10 pr-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white font-bold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs"
                   />
                 </div>
               </div>
 
-              {/* Field 4: Lokasi COD di Sekolah */}
-              <div className="space-y-1">
-                <label className="block text-[12px] font-bold text-slate-800">
-                  Lokasi COD di Sekolah
-                </label>
-                <input
-                  type="text"
-                  placeholder="Contoh: Lab PPLG 1 / Kantin"
-                  value={locationInput}
-                  onChange={(e) => setLocationInput(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs"
-                />
-              </div>
-
-              {/* Field 5: Kategori Barang / Jasa Chips */}
-              <div className="space-y-1.5 pt-0.5">
-                <label className="block text-[12px] font-bold text-slate-800">
-                  Kategori Barang / Jasa
-                </label>
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  {['Jasa DKV/PPLG', 'Preloved / Bekas', 'Baru', 'Kantin'].map((cat) => (
+              {/* Field 3: Lokasi COD di Sekolah (1-Tap Quick Chips + Custom Input) */}
+              <div className="space-y-2 pt-0.5">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[12.5px] font-bold text-slate-800">
+                    Titik COD di Sekolah
+                  </label>
+                  {locationInput && (
                     <button
-                      key={cat}
                       type="button"
-                      className="px-3 py-1.5 rounded-xl border border-neutral-200 hover:border-blue-400 bg-neutral-50 hover:bg-blue-50 text-[12px] font-semibold text-slate-700 hover:text-[#1d64ec] transition-colors cursor-pointer"
+                      onClick={() => setLocationInput('')}
+                      className="text-[11px] text-neutral-400 hover:text-rose-500 transition-colors cursor-pointer"
                     >
-                      {cat}
+                      Hapus
                     </button>
-                  ))}
+                  )}
+                </div>
+
+                {/* 1-Tap Preset Location Chips */}
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {[
+                    { name: 'Kantin', emoji: '🍜' },
+                    { name: 'Lab PPLG / Komputer', emoji: '💻' },
+                    { name: 'Perpustakaan', emoji: '📚' },
+                    { name: 'Depan Gerbang', emoji: '🏫' },
+                    { name: 'Lapangan', emoji: '⚽' },
+                  ].map((loc) => {
+                    const isSelected = locationInput === loc.name;
+                    return (
+                      <button
+                        key={loc.name}
+                        type="button"
+                        onClick={() => setLocationInput(isSelected ? '' : loc.name)}
+                        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[12px] font-semibold transition-all cursor-pointer select-none active:scale-95 border ${
+                          isSelected
+                            ? 'bg-blue-50 border-blue-400 text-[#1d64ec] shadow-2xs'
+                            : 'bg-neutral-50 hover:bg-neutral-100/90 border-neutral-200 text-slate-700'
+                        }`}
+                      >
+                        <span>{loc.emoji}</span>
+                        <span>{loc.name}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Optional Custom Input if user wants specific classroom / room */}
+                <div className="relative pt-0.5">
+                  <MapPin className="absolute left-3 top-3 w-3.5 h-3.5 text-neutral-400 pointer-events-none" />
+                  <input
+                    type="text"
+                    placeholder="Atau ketik lokasi lain (contoh: Ruang OSIS, Kelas XII DKV 2)..."
+                    value={locationInput}
+                    onChange={(e) => setLocationInput(e.target.value)}
+                    className="w-full pl-8 pr-3 py-2 text-[12.5px] rounded-xl border border-neutral-200 focus:outline-none focus:border-[#1d64ec] bg-neutral-50/70 text-slate-900 placeholder:text-neutral-400 transition-all font-normal"
+                  />
                 </div>
               </div>
             </div>

@@ -832,12 +832,12 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
 
             <span className="relative z-10 flex items-center gap-1.5">
               <span>Post</span>
-              <Send className="w-3.5 h-3.5 stroke-[2.2] transition-transform duration-150 group-hover:translate-x-0.5" />
+              <Send className="w-3.5 h-3.5 stroke-[2.2]" />
             </span>
           </button>
         </div>
 
-        {/* Discard Confirmation Alert Modal (Cancel / Save Draft / Continue) */}
+        {/* Discard Confirmation Alert Modal (Save Draft -> Discard -> Continue Editing) */}
         {showDiscardAlert && (
           <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-backdrop-fade">
             <div
@@ -853,31 +853,31 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 </p>
               </div>
 
-              {/* Action Buttons: Buang (Cancel) | Simpan Draf (Save Draft) | Lanjutkan (Continue) */}
+              {/* Action Buttons with Safe UX Order: Simpan Draf -> Buang -> Lanjutkan Mengedit */}
               <div className="space-y-2 pt-1">
-                {/* 1. Buang / Discard (Destructive Red) */}
-                <button
-                  type="button"
-                  onClick={handleDiscard}
-                  className="w-full py-3 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[14px] transition-all active:scale-98 cursor-pointer"
-                >
-                  Buang
-                </button>
-
-                {/* 2. Simpan Draf / Save Draft */}
+                {/* 1. Simpan Draf (Paling Aman - Safe Default) */}
                 <button
                   type="button"
                   onClick={handleSaveDraft}
-                  className="w-full py-3 rounded-2xl bg-neutral-100 hover:bg-neutral-200/80 text-slate-900 font-bold text-[14px] transition-all active:scale-98 cursor-pointer"
+                  className="w-full py-3 rounded-2xl bg-neutral-100 hover:bg-neutral-200/80 text-slate-900 font-bold text-[14px] transition-colors active:scale-98 cursor-pointer"
                 >
                   Simpan Draf
                 </button>
 
-                {/* 3. Lanjutkan Mengedit / Continue Editing */}
+                {/* 2. Buang (Destructive Action - Sadar) */}
+                <button
+                  type="button"
+                  onClick={handleDiscard}
+                  className="w-full py-3 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[14px] transition-colors active:scale-98 cursor-pointer"
+                >
+                  Buang
+                </button>
+
+                {/* 3. Lanjutkan Mengedit (Batal Keluar) */}
                 <button
                   type="button"
                   onClick={handleContinueEditing}
-                  className="w-full py-2.5 rounded-2xl text-slate-500 hover:text-slate-900 font-semibold text-[13.5px] transition-all active:scale-98 cursor-pointer"
+                  className="w-full py-2.5 rounded-2xl text-slate-500 hover:text-slate-900 font-semibold text-[13.5px] transition-colors active:scale-98 cursor-pointer"
                 >
                   Lanjutkan Mengedit
                 </button>

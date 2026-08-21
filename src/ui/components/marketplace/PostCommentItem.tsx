@@ -150,7 +150,12 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
         /* SINGLE COMMENT (NO REPLIES & NOT CURRENTLY REPLYING): 2-Column Threads Layout */
         <div className="flex items-start gap-3">
           {/* Left Column: Avatar (36x36px) */}
-          <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 mt-0.5">
+          <div
+            onClick={() => onOpenCommentDetail?.(comment)}
+            className={`w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 mt-0.5 ${
+              onOpenCommentDetail ? 'cursor-pointer hover:opacity-90 active:scale-95 transition-all' : ''
+            }`}
+          >
             <img
               src={comment.user.avatar}
               alt={comment.user.name}
@@ -162,7 +167,12 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
           <div className="flex-1 min-w-0 space-y-1">
             {/* Header Row: Username + Verified + Timestamp + Options (...) */}
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+              <div
+                onClick={() => onOpenCommentDetail?.(comment)}
+                className={`flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden ${
+                  onOpenCommentDetail ? 'cursor-pointer' : ''
+                }`}
+              >
                 <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
                   {comment.user.username || comment.user.name}
                 </span>

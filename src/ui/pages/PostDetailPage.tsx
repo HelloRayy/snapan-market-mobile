@@ -199,6 +199,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
                   onReplyClick={handleReplyClick}
                   onCancelReply={() => setReplyToCommentId(null)}
                   onSubmitReply={(cid, text) => handleAddComment(text, cid)}
+                  onOpenCommentDetail={(c) => setFocusedComment(c)}
                 />
               ))}
 

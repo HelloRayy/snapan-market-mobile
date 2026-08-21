@@ -798,11 +798,11 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   Deskripsi Singkat
                 </label>
                 <textarea
-                  rows={2}
+                  rows={4}
                   placeholder="Kondisi barang, kelengkapan, minus, atau alasan jual..."
                   value={productDescription}
                   onChange={(e) => setProductDescription(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs resize-none"
+                  className="w-full min-h-[96px] px-3.5 py-2.5 text-[14px] leading-relaxed rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs resize-none"
                 />
               </div>
 

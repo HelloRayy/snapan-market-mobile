@@ -368,7 +368,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         </div>
 
         {/* 3. 3-Tab Sliding Switcher (Utas, Balasan, Media) with Smooth Hardware-Accelerated Motion */}
-        <div className="border-b border-neutral-200/80 -mx-4 px-4 bg-white sticky top-14 z-20 select-none">
+        <div
+          className="border-b border-neutral-200/80 -mx-4 px-4 bg-white sticky z-20 select-none"
+          style={{ top: 'calc(3.5rem + env(safe-area-inset-top, 0px))' }}
+        >
           <div className="max-w-[590px] mx-auto flex items-center relative">
             {/* Smooth Sliding Underline Bar across 3 Tabs (w-1/3) */}
             <div

@@ -772,11 +772,16 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   Harga (Rp) <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-2.5 text-[13.5px] font-bold text-neutral-400">Rp</span>
+                  {priceInput && (
+                    <span className="absolute left-3.5 top-2.5 text-[13.5px] font-bold text-slate-900 pointer-events-none select-none">
+                      Rp
+                    </span>
+                  )}
                   <input
                     type="text"
                     inputMode="numeric"
-                    placeholder="50.000"
+                    pattern="[0-9]*"
+                    placeholder="Contoh: 50.000"
                     value={priceInput}
                     onChange={(e) => {
                       const raw = e.target.value.replace(/[^0-9]/g, '');
@@ -787,7 +792,9 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                       const formatted = new Intl.NumberFormat('id-ID').format(Number(raw));
                       setPriceInput(formatted);
                     }}
-                    className="w-full pl-10 pr-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white font-bold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs"
+                    className={`w-full ${
+                      priceInput ? 'pl-10 font-bold text-slate-900' : 'pl-3.5 font-normal text-slate-900'
+                    } pr-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs`}
                   />
                 </div>
               </div>

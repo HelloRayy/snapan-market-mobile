@@ -412,42 +412,32 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
           </div>
 
           {/* Row 9: Toggle - Tampilkan tayangan terbaru */}
-          <div className="py-4 border-b border-neutral-200/80 select-none">
-            <div className="flex items-center justify-between">
-              <span className="text-[14.5px] font-semibold text-slate-900">
-                Tampilkan tayangan terbaru
-              </span>
+          <div className="flex items-center justify-between py-4 border-b border-neutral-200/80 select-none">
+            <span className="text-[14.5px] font-semibold text-slate-900">
+              Tampilkan tayangan terbaru
+            </span>
+            <div
+              onClick={() => setShowViewCounts(!showViewCounts)}
+              className={`w-10 h-6 rounded-full p-0.5 transition-colors duration-200 flex items-center shrink-0 cursor-pointer ${
+                showViewCounts ? 'bg-[#101010]' : 'bg-neutral-300'
+              }`}
+            >
               <div
-                onClick={() => setShowViewCounts(!showViewCounts)}
-                className={`w-10 h-6 rounded-full p-0.5 transition-colors duration-200 flex items-center shrink-0 cursor-pointer ${
-                  showViewCounts ? 'bg-[#101010]' : 'bg-neutral-300'
+                className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-200 transform-gpu ${
+                  showViewCounts ? 'translate-x-4' : 'translate-x-0'
                 }`}
-              >
-                <div
-                  className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-200 transform-gpu ${
-                    showViewCounts ? 'translate-x-4' : 'translate-x-0'
-                  }`}
-                />
-              </div>
+              />
             </div>
-            <p className="text-[12px] text-neutral-400 mt-1 font-normal leading-normal">
-              Ini akan menjadi publik di profil Anda saat Anda mendapatkan 10rb+ tayangan terbaru.
-            </p>
           </div>
 
           {/* Row 10: Privasi profil */}
-          <div className="py-4 select-none">
-            <div className="flex items-center justify-between">
-              <span className="text-[14.5px] font-semibold text-slate-900">
-                Privasi profil
-              </span>
-              <span className="text-[13.5px] text-neutral-400 flex items-center gap-0.5 font-normal">
-                Publik <ChevronRight className="w-3.5 h-3.5" />
-              </span>
-            </div>
-            <p className="text-[12px] text-neutral-400 mt-1 font-normal leading-normal">
-              Jika Anda mengubah ke privat, hanya pengikut yang disetujui yang dapat melihat thread &amp; produk Anda.
-            </p>
+          <div className="flex items-center justify-between py-4 select-none">
+            <span className="text-[14.5px] font-semibold text-slate-900">
+              Privasi profil
+            </span>
+            <span className="text-[13.5px] text-neutral-400 flex items-center gap-0.5 font-normal">
+              Publik <ChevronRight className="w-3.5 h-3.5" />
+            </span>
           </div>
         </div>
       </main>

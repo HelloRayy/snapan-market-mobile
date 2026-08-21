@@ -140,7 +140,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     <div className="min-h-screen bg-white text-slate-ink pb-28 font-gt-standard select-none">
       {/* 1. Top Bar Header: [ Left: Menu Icon ] --- [ Center: Logo Mark ] --- [ Right: Search Toggle ] */}
       <header
-        className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-neutral-200/80 font-gt-standard select-none transition-colors"
+        className="sticky top-0 z-30 bg-white/95 backdrop-blur-md font-gt-standard select-none transition-colors"
         style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
       >
         <div className="w-full max-w-[590px] mx-auto px-4 h-14 flex items-center justify-between relative select-none">

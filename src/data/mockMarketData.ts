@@ -20,6 +20,20 @@ export const MOCK_MARKET_POSTS: MarketPostItem[] = [
     topicTag: 'frontend',
     isOfficialTopic: true,
     topicIcon: 'threads',
+    totalThreadParts: 2,
+    threadChain: [
+      {
+        id: 'chain-1-2',
+        partNumber: 2,
+        totalParts: 2,
+        caption: 'Requirement: Paham React/Next.js, Tailwind CSS, dan siap ketemuan di Lab PPLG 1 pas jam istirahat. Budget kolaborasi fleksibel! 💻✨',
+        images: ['https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80'],
+        timestamp: '55m lalu',
+        likesCount: 28,
+        commentsCount: 1,
+        isLiked: false,
+      }
+    ],
     likesCount: 466,
     commentsCount: 2,
     repostsCount: 9,

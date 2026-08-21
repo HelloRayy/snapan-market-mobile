@@ -160,31 +160,37 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
       ? (stockInput ? parseInt(stockInput, 10) : 1)
       : undefined;
 
-    // Combine main thread and all chained sub-threads
-    const validSubCaptions = subThreads
-      .map((st) => st.caption.trim())
-      .filter((c) => c.length > 0);
+    // Sub-threads as structured continuation items (Part 2, 3, etc.)
+    const validSubThreads = subThreads.filter(
+      (st) => st.caption.trim().length > 0 || st.images.length > 0
+    );
+    const totalParts = 1 + validSubThreads.length;
 
-    const combinedCaption = validSubCaptions.length > 0
-      ? [caption, ...validSubCaptions].filter(Boolean).join('\n\n')
-      : (caption || productTitle);
-
-    const allImages = [
-      ...images,
-      ...subThreads.flatMap((st) => st.images)
-    ];
+    const threadChainItems = validSubThreads.map((st, idx) => ({
+      id: st.id,
+      partNumber: idx + 2,
+      totalParts,
+      caption: st.caption,
+      images: st.images,
+      timestamp: 'Baru saja',
+      likesCount: 0,
+      commentsCount: 0,
+      isLiked: false,
+    }));
 
     const newPost: Partial<MarketPostItem> = {
       postType: postMode,
       title: isProductMode ? (productTitle || caption.slice(0, 30)) : undefined,
-      caption: combinedCaption,
-      images: allImages,
+      caption: caption || productTitle,
+      images,
       price: parsedPrice,
       stock: parsedStock,
       locationTag: isProductMode ? (locationInput || 'Lab PPLG') : undefined,
       topicTag: selectedTopic ? selectedTopic.name : undefined,
       isOfficialTopic: selectedTopic ? selectedTopic.isOfficial : false,
       topicIcon: selectedTopic?.icon || (selectedTopic?.isOfficial ? 'threads' : undefined),
+      threadChain: threadChainItems.length > 0 ? threadChainItems : undefined,
+      totalThreadParts: totalParts > 1 ? totalParts : undefined,
     };
 
     onSubmitPost?.(newPost);

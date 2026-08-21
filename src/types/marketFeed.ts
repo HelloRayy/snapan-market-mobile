@@ -26,6 +26,18 @@ export interface PostComment {
   replies?: PostComment[]; // Nested replies
 }
 
+export interface ThreadChainItem {
+  id: string;
+  partNumber: number; // e.g. 2, 3
+  totalParts: number; // e.g. 3
+  caption: string;
+  images?: string[];
+  timestamp?: string;
+  likesCount?: number;
+  commentsCount?: number;
+  isLiked?: boolean;
+}
+
 export interface MarketPostItem {
   id: string;
   postType?: 'thread' | 'product'; // 'thread' = Utas Sosial Biasa, 'product' = Barang / Jasa Jualan
@@ -49,6 +61,8 @@ export interface MarketPostItem {
   isReposted?: boolean;
   isSaved?: boolean;
   comments?: PostComment[];
+  threadChain?: ThreadChainItem[]; // Chained author thread continuation items (e.g. part 2/3, 3/3 in comments section)
+  totalThreadParts?: number; // e.g. 3 (so part 1 shows "1/3")
 }
 
 export interface UserReplyThread {

@@ -199,7 +199,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     <div className="min-h-screen bg-white text-slate-ink pb-28 font-gt-standard select-none">
       {/* 1. Top Bar Header: [ Left: Menu Icon ] --- [ Center: Logo Mark ] --- [ Right: Search Toggle ] */}
       <header
-        className="sticky top-0 z-30 bg-white font-gt-standard select-none transition-colors"
+        className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-100 font-gt-standard select-none transition-colors"
         style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
       >
         <div className="w-full max-w-[590px] mx-auto px-4 h-14 flex items-center justify-between relative select-none">
@@ -319,23 +319,23 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
           {/* Row 3: Cohesive Left-Aligned Follower & Market Stats (Apple HIG Standard) */}
           <div className="flex items-center gap-2 text-[14.5px] text-neutral-500 font-normal flex-wrap pt-0.5 select-none">
-            {/* 3-Avatar Overlapping Stack (20x20px with crisp ring) */}
-            <div className="flex items-center -space-x-1.5 shrink-0">
-              <div className="w-5 h-5 rounded-full overflow-hidden ring-2 ring-white bg-neutral-200 z-30 shadow-2xs">
+            {/* 3-Avatar Overlapping Stack (20x20px with crisp ring, isolated stacking context) */}
+            <div className="flex items-center -space-x-1.5 shrink-0 isolate">
+              <div className="w-5 h-5 rounded-full overflow-hidden ring-2 ring-white bg-neutral-200 z-[3] shadow-2xs">
                 <img
                   src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&q=80"
                   alt="Follower 1"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="w-5 h-5 rounded-full overflow-hidden ring-2 ring-white bg-neutral-200 z-20 shadow-2xs">
+              <div className="w-5 h-5 rounded-full overflow-hidden ring-2 ring-white bg-neutral-200 z-[2] shadow-2xs">
                 <img
                   src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=60&q=80"
                   alt="Follower 2"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="w-5 h-5 rounded-full overflow-hidden ring-2 ring-white bg-neutral-200 z-10 shadow-2xs">
+              <div className="w-5 h-5 rounded-full overflow-hidden ring-2 ring-white bg-neutral-200 z-[1] shadow-2xs">
                 <img
                   src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&q=80"
                   alt="Follower 3"

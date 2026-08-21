@@ -4,6 +4,8 @@ import {
   Plus,
   ChevronRight,
   Check,
+  X,
+  Sparkles,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -32,6 +34,17 @@ const PRESET_AVATARS = [
   'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&q=80',
 ];
 
+const SUGGESTED_INTERESTS = [
+  '💻 Web PWA',
+  '🎨 UI/UX',
+  '👕 Preloved',
+  '⚡ Joki Coding',
+  '🍱 Kuliner',
+  '🤖 AI Threads',
+  '📱 Mobile App',
+  '💼 PJBL',
+];
+
 export const EditProfilePage: React.FC<EditProfilePageProps> = ({
   initialData,
   onBack,
@@ -42,20 +55,48 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
   const [bio, setBio] = useState(initialData.bio);
   const [classGroup, setClassGroup] = useState(initialData.classGroup);
   const [avatar, setAvatar] = useState(initialData.avatar);
-  const [interests, setInterests] = useState(initialData.interests || 'AI Threads, Design Threads, UIUX Design');
+  const [interests, setInterests] = useState(initialData.interests || '💻 Web PWA, 🎨 UI/UX, 👕 Preloved, ⚡ Joki Coding, 🍱 Kuliner');
   const [link, setLink] = useState(initialData.link || 'https://instagram.com/' + initialData.username.replace(/^@/, ''));
   
   // Signature Threads Toggles
   const [showInstagramBadge, setShowInstagramBadge] = useState(true);
   const [showViewCounts, setShowViewCounts] = useState(true);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const [isAddingCustomTag, setIsAddingCustomTag] = useState(false);
+  const [customTagInput, setCustomTagInput] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const customTagInputRef = useRef<HTMLInputElement>(null);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 2500);
+  };
+
+  // Convert comma-separated string to tag array
+  const activeTags = interests
+    .split(',')
+    .map((t) => t.trim())
+    .filter(Boolean);
+
+  const handleAddTag = (tagToAdd: string) => {
+    const cleanTag = tagToAdd.trim();
+    if (!cleanTag) return;
+    if (activeTags.includes(cleanTag)) {
+      showToast('Minat ini sudah ada di profil kamu');
+      return;
+    }
+    const nextTags = [...activeTags, cleanTag];
+    setInterests(nextTags.join(', '));
+    setCustomTagInput('');
+    setIsAddingCustomTag(false);
+    showToast(`Ditambahkan: ${cleanTag}`);
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    const nextTags = activeTags.filter((t) => t !== tagToRemove);
+    setInterests(nextTags.join(', '));
   };
 
   // Handle Local Photo File Selection
@@ -99,6 +140,13 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
     setLink(initialData.link || '');
     onBack();
   };
+
+  // Focus custom tag input when opened
+  useEffect(() => {
+    if (isAddingCustomTag) {
+      customTagInputRef.current?.focus();
+    }
+  }, [isAddingCustomTag]);
 
   // Android / iOS Hardware Back Integration
   useEffect(() => {
@@ -212,7 +260,7 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
                     <img src={pic} alt={`Preset ${idx + 1}`} className="w-full h-full object-cover" />
                     {avatar === pic && (
                       <div className="absolute inset-0 bg-[#1d64ec]/30 flex items-center justify-center">
-                        <Check className="w-3 h-3 text-white stroke-[3]" />
+                        <Check className="w-3.5 h-3.5 text-white stroke-[3]" />
                       </div>
                     )}
                   </button>
@@ -274,22 +322,102 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
             />
           </div>
 
-          {/* Row 5: Minat */}
+          {/* Row 5: Minat (Interactive Signature Rounded-[45px] Badges) */}
           <div className="py-4 border-b border-neutral-200/80">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-1.5">
               <label className="text-[14px] font-semibold text-slate-900">
                 Minat
               </label>
-              <ChevronRight className="w-4 h-4 text-neutral-400 shrink-0" />
+              <span className="text-[12px] text-neutral-400 font-normal">
+                {activeTags.length} dipilih
+              </span>
             </div>
-            <input
-              type="text"
-              value={interests}
-              maxLength={80}
-              onChange={(e) => setInterests(e.target.value)}
-              placeholder="AI Threads, Design Threads, UIUX Design"
-              className="w-full mt-0.5 text-[15.5px] font-normal text-slate-900 bg-transparent focus:outline-none placeholder:text-neutral-400"
-            />
+
+            {/* Active Interest Badges */}
+            <div className="flex items-center flex-wrap gap-1.5 pt-1 pb-1.5 select-none">
+              {activeTags.map((tag, idx) => (
+                <div
+                  key={idx}
+                  className="inline-flex items-center gap-1.5 py-1.5 px-3 bg-neutral-100/90 hover:bg-blue-50/80 text-[#18a3fe] text-[13px] font-semibold rounded-[45px] border border-neutral-200/80 group transition-all"
+                >
+                  <span>{tag}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveTag(tag)}
+                    className="w-3.5 h-3.5 rounded-full hover:bg-rose-100 hover:text-rose-600 text-neutral-400 flex items-center justify-center transition-colors cursor-pointer"
+                    title="Hapus minat"
+                  >
+                    <X className="w-2.5 h-2.5 stroke-[2.5]" />
+                  </button>
+                </div>
+              ))}
+
+              {/* Add Custom Tag Pill */}
+              {isAddingCustomTag ? (
+                <div className="inline-flex items-center gap-1 py-1 px-2.5 bg-white rounded-[45px] border border-[#1d64ec] shadow-xs">
+                  <input
+                    ref={customTagInputRef}
+                    type="text"
+                    maxLength={25}
+                    value={customTagInput}
+                    onChange={(e) => setCustomTagInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddTag(customTagInput);
+                      } else if (e.key === 'Escape') {
+                        setIsAddingCustomTag(false);
+                      }
+                    }}
+                    placeholder="Ketik minat baru..."
+                    className="text-[13px] text-slate-900 bg-transparent focus:outline-none w-32 placeholder:text-neutral-400"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleAddTag(customTagInput)}
+                    className="w-5 h-5 rounded-full bg-[#1d64ec] text-white flex items-center justify-center text-xs font-bold cursor-pointer"
+                  >
+                    +
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsAddingCustomTag(false)}
+                    className="text-neutral-400 hover:text-slate-800 text-xs px-0.5 cursor-pointer"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setIsAddingCustomTag(true)}
+                  className="inline-flex items-center justify-center gap-x-1 py-1.5 px-3 bg-neutral-100/90 hover:bg-neutral-200/80 text-[#777777] hover:text-slate-900 text-[13px] font-semibold rounded-[45px] border border-neutral-200/80 cursor-pointer transition-all active:scale-95 shadow-2xs"
+                  title="Tambah Minat Baru"
+                >
+                  <span>+</span>
+                </button>
+              )}
+            </div>
+
+            {/* Quick Suggestions Pills */}
+            <div className="pt-2">
+              <div className="flex items-center gap-1 text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mb-1.5">
+                <Sparkles className="w-3 h-3 text-[#1d64ec]" />
+                <span>Rekomendasi Minat:</span>
+              </div>
+              <div className="flex items-center flex-wrap gap-1.5">
+                {SUGGESTED_INTERESTS.filter((s) => !activeTags.includes(s)).slice(0, 6).map((suggested, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => handleAddTag(suggested)}
+                    className="inline-flex items-center gap-1 py-1 px-2.5 bg-neutral-50 hover:bg-blue-50/60 text-slate-700 hover:text-[#18a3fe] text-[12px] font-medium rounded-full border border-dashed border-neutral-300 hover:border-blue-300 transition-all cursor-pointer active:scale-95"
+                  >
+                    <span>+ {suggested}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Row 6: Tautan */}

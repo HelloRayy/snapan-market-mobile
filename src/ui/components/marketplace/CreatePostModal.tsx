@@ -950,7 +950,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
             </div>
 
             {/* Full-Page Drafts List */}
-            <div className="flex-1 overflow-y-auto max-w-lg mx-auto w-full">
+            <div className="flex-1 overflow-y-auto max-w-lg mx-auto w-full flex flex-col">
               {savedDraft ? (
                 <div
                   onClick={() => handleApplyDraft(savedDraft)}
@@ -1015,12 +1015,12 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   </div>
                 </div>
               ) : (
-                <div className="py-24 text-center space-y-3 px-4">
-                  <div className="w-14 h-14 rounded-2xl bg-neutral-100 text-neutral-400 flex items-center justify-center mx-auto">
+                <div className="flex-1 flex flex-col items-center justify-center text-center space-y-3 px-4 pb-14">
+                  <div className="w-14 h-14 rounded-2xl bg-neutral-100 text-neutral-400 flex items-center justify-center mx-auto shadow-2xs">
                     <FileText className="w-7 h-7 stroke-[1.5]" />
                   </div>
-                  <h3 className="font-bold text-[16px] text-slate-900">Belum Ada Draf</h3>
-                  <p className="text-[13px] text-neutral-500 max-w-xs mx-auto">
+                  <h3 className="font-bold text-[17px] text-slate-900">Belum Ada Draf</h3>
+                  <p className="text-[13.5px] text-neutral-500 max-w-xs mx-auto leading-relaxed">
                     Saat kamu membuat utas dan memilih "Simpan Draf", postingan draf akan tersimpan di sini.
                   </p>
                 </div>

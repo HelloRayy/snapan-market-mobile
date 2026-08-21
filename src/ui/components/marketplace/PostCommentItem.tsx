@@ -195,14 +195,19 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
             </div>
 
             {/* Comment Content */}
-            <p className="text-[15px] text-slate-900 font-normal leading-snug break-words">
-              <FormattedText text={comment.content} />
-              {comment.threadPart && comment.totalParts && (
-                <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11.5px] tabular-nums select-none ml-1.5 align-middle">
-                  {comment.threadPart}/{comment.totalParts}
-                </span>
-              )}
-            </p>
+            <div
+              onClick={() => onOpenCommentDetail?.(comment)}
+              className={onOpenCommentDetail ? 'cursor-pointer' : ''}
+            >
+              <p className="text-[15px] text-slate-900 font-normal leading-snug break-words">
+                <FormattedText text={comment.content} />
+                {comment.threadPart && comment.totalParts && (
+                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11.5px] tabular-nums select-none ml-1.5 align-middle">
+                    {comment.threadPart}/{comment.totalParts}
+                  </span>
+                )}
+              </p>
+            </div>
 
             {/* Attached Images in Comment */}
             {comment.images && comment.images.length > 0 && (
@@ -297,9 +302,14 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 </button>
               </div>
 
-              <p className="text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5">
-                <FormattedText text={comment.content} />
-              </p>
+              <div
+                onClick={() => onOpenCommentDetail?.(comment)}
+                className={onOpenCommentDetail ? 'cursor-pointer' : ''}
+              >
+                <p className="text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5">
+                  <FormattedText text={comment.content} />
+                </p>
+              </div>
 
               {renderActionBar(
                 isLiked,
@@ -384,14 +394,14 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                       </button>
                     </div>
 
-                    <p
-                      onClick={() => onOpenCommentDetail?.(comment)}
-                      className={`text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5 ${
-                        onOpenCommentDetail ? 'cursor-pointer' : ''
-                      }`}
+                    <div
+                      onClick={() => onOpenCommentDetail?.(reply)}
+                      className={onOpenCommentDetail ? 'cursor-pointer' : ''}
                     >
-                      <FormattedText text={reply.content} />
-                    </p>
+                      <p className="text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5">
+                        <FormattedText text={reply.content} />
+                      </p>
+                    </div>
 
                     {renderActionBar(
                       reply.isLiked || false,

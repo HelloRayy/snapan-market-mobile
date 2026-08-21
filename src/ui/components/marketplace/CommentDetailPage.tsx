@@ -35,23 +35,30 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
   onUpdateComment,
 }) => {
   const { profile } = useAuth();
-  const [commentData, setCommentData] = useState<PostComment>(focusedComment);
-  const [isHeroLiked, setIsHeroLiked] = useState(focusedComment.isLiked || false);
-  const [heroLikesCount, setHeroLikesCount] = useState(focusedComment.likesCount);
+  const [commentStack, setCommentStack] = useState<PostComment[]>([focusedComment]);
   const [replyInputText, setReplyInputText] = useState('');
   const [replyToCommentId, setReplyToCommentId] = useState<string | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const activeComment = commentStack[commentStack.length - 1] || focusedComment;
+  const parentContext = commentStack.length > 1 ? commentStack[commentStack.length - 2] : null;
+
+  const [isHeroLiked, setIsHeroLiked] = useState(activeComment.isLiked || false);
+  const [heroLikesCount, setHeroLikesCount] = useState(activeComment.likesCount);
+
   useEffect(() => {
-    setCommentData(focusedComment);
-    setIsHeroLiked(focusedComment.isLiked || false);
-    setHeroLikesCount(focusedComment.likesCount);
+    setCommentStack([focusedComment]);
+  }, [focusedComment]);
+
+  useEffect(() => {
+    setIsHeroLiked(activeComment.isLiked || false);
+    setHeroLikesCount(activeComment.likesCount);
     if (containerRef.current) {
       containerRef.current.scrollTop = 0;
     }
-  }, [focusedComment]);
+  }, [activeComment]);
 
   const handleHeroLikeToggle = () => {
     const nextLiked = !isHeroLiked;
@@ -60,12 +67,22 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
     setHeroLikesCount(nextCount);
 
     const updated = {
-      ...commentData,
+      ...activeComment,
       isLiked: nextLiked,
       likesCount: nextCount,
     };
-    setCommentData(updated);
+    setCommentStack((prev) =>
+      prev.map((c, i) => (i === prev.length - 1 ? updated : c))
+    );
     onUpdateComment?.(updated);
+  };
+
+  const handleBack = () => {
+    if (commentStack.length > 1) {
+      setCommentStack((prev) => prev.slice(0, -1));
+    } else {
+      onBack();
+    }
   };
 
   const handleAddDirectReply = (e: React.FormEvent) => {
@@ -93,11 +110,13 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
     };
 
     const updatedComment: PostComment = {
-      ...commentData,
-      replies: [...(commentData.replies || []), newReply],
+      ...activeComment,
+      replies: [...(activeComment.replies || []), newReply],
     };
 
-    setCommentData(updatedComment);
+    setCommentStack((prev) =>
+      prev.map((c, i) => (i === prev.length - 1 ? updatedComment : c))
+    );
     onUpdateComment?.(updatedComment);
     setReplyInputText('');
   };
@@ -124,8 +143,8 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
     };
 
     const updatedComment: PostComment = {
-      ...commentData,
-      replies: (commentData.replies || []).map((r) => {
+      ...activeComment,
+      replies: (activeComment.replies || []).map((r) => {
         if (r.id === targetChildId) {
           return {
             ...r,
@@ -136,7 +155,9 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
       }),
     };
 
-    setCommentData(updatedComment);
+    setCommentStack((prev) =>
+      prev.map((c, i) => (i === prev.length - 1 ? updatedComment : c))
+    );
     onUpdateComment?.(updatedComment);
     setReplyToCommentId(null);
   };
@@ -144,7 +165,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
   const userAvatar =
     profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80';
 
-  const repliesList = commentData.replies || [];
+  const repliesList = activeComment.replies || [];
 
   return (
     <div
@@ -163,7 +184,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
       >
         <button
           type="button"
-          onClick={onBack}
+          onClick={handleBack}
           className="w-10 h-10 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
           aria-label="Kembali"
         >
@@ -177,14 +198,14 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
 
       {/* Main Content Area */}
       <main className="max-w-xl mx-auto px-4 pt-3 space-y-4">
-        {/* 1. Parent Context Snippet (P1 - Connected via Vertical Line to P2) */}
+        {/* 1. Parent Context Snippet (Connected via Vertical Line down to Active Comment) */}
         <div className="flex items-start gap-3 relative">
-          {/* Left Avatar + Vertical Connector Line down to P2 */}
+          {/* Left Avatar + Vertical Connector Line down to Active Hero */}
           <div className="flex flex-col items-center shrink-0 self-stretch">
             <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 bg-white">
               <img
-                src={parentPost.seller.avatar}
-                alt={parentPost.seller.name}
+                src={parentContext ? parentContext.user.avatar : parentPost.seller.avatar}
+                alt={parentContext ? parentContext.user.name : parentPost.seller.name}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -195,44 +216,52 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
           <div className="flex-1 min-w-0 pb-1">
             <div className="flex items-center gap-1.5 min-w-0">
               <span className="font-semibold text-[14.5px] text-slate-900 truncate">
-                {parentPost.seller.username || parentPost.seller.name}
+                {parentContext
+                  ? parentContext.user.username || parentContext.user.name
+                  : parentPost.seller.username || parentPost.seller.name}
               </span>
-              {parentPost.seller.isVerified && (
+              {(parentContext ? parentContext.user.isVerified : parentPost.seller.isVerified) && (
                 <BadgeCheck className="w-4 h-4 text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" />
               )}
             </div>
             <p className="text-[13.5px] text-neutral-500 font-normal line-clamp-2 leading-relaxed pt-0.5">
-              {parentPost.title ? `${parentPost.title} • ` : ''}
-              {parentPost.caption}
+              {parentContext ? (
+                parentContext.content
+              ) : (
+                <>
+                  {parentPost.title ? `${parentPost.title} • ` : ''}
+                  {parentPost.caption}
+                </>
+              )}
             </p>
           </div>
         </div>
 
-        {/* 2. Hero Focused Comment Card (P2 - The Centerpiece) */}
+        {/* 2. Hero Focused Comment Card (Active Focused Item) */}
         <div className="pt-0 space-y-2 border-b border-neutral-200/80 pb-4">
           <div className="flex items-start gap-3">
-            {/* P2 Avatar (Hero size 40x40px) */}
+            {/* Avatar (Hero size 40x40px) */}
             <div className="w-10 h-10 rounded-full overflow-hidden border border-neutral-200 shadow-2xs shrink-0 bg-white">
               <img
-                src={commentData.user.avatar}
-                alt={commentData.user.name}
+                src={activeComment.user.avatar}
+                alt={activeComment.user.name}
                 className="w-full h-full object-cover"
               />
             </div>
 
-            {/* P2 Author Info */}
+            {/* Author Info */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
                   <span className="font-bold text-[15.5px] text-slate-900 truncate">
-                    {commentData.user.username || commentData.user.name}
+                    {activeComment.user.username || activeComment.user.name}
                   </span>
 
-                  {commentData.user.isVerified && (
+                  {activeComment.user.isVerified && (
                     <BadgeCheck className="w-[17px] h-[17px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" />
                   )}
 
-                  {commentData.user.isAuthor && (
+                  {activeComment.user.isAuthor && (
                     <span className="relative inline-flex items-center gap-1 px-2 py-0.5 rounded-[6px] text-[11px] font-medium text-white bg-[#18181b] border border-black/40 shadow-2xs overflow-hidden shrink-0 select-none">
                       <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
                       <Crown className="w-3 h-3 text-white fill-white relative z-10 shrink-0" />
@@ -241,7 +270,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                   )}
 
                   <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
-                    {commentData.timestamp}
+                    {activeComment.timestamp}
                   </span>
                 </div>
 
@@ -258,15 +287,15 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
           {/* Large Focused Comment Text */}
           <div className="pl-0 pt-1">
             <p className="text-[16px] text-slate-900 font-normal leading-relaxed break-words">
-              <FormattedText text={commentData.content} />
+              <FormattedText text={activeComment.content} />
             </p>
 
             {/* Attached Images */}
-            {commentData.images && commentData.images.length > 0 && (
+            {activeComment.images && activeComment.images.length > 0 && (
               <div className="pt-3">
                 <div className="relative w-full rounded-2xl overflow-hidden border border-black/10 shadow-2xs max-h-[320px] aspect-[16/10] bg-neutral-100">
                   <img
-                    src={commentData.images[0]}
+                    src={activeComment.images[0]}
                     alt="Attachment"
                     className="w-full h-full object-cover"
                   />
@@ -315,7 +344,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
           </div>
         </div>
 
-        {/* 3. Reply Input Bar into P2 */}
+        {/* 3. Reply Input Bar into Active Hero Comment */}
         <form
           onSubmit={handleAddDirectReply}
           className="flex items-center gap-2.5 bg-neutral-100 focus-within:bg-white focus-within:border-[#1d64ec] border border-neutral-200/80 rounded-full px-4 py-2 transition-all shadow-2xs"
@@ -329,7 +358,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
             type="text"
             value={replyInputText}
             onChange={(e) => setReplyInputText(e.target.value)}
-            placeholder={`Balas @${commentData.user.username || commentData.user.name}...`}
+            placeholder={`Balas @${activeComment.user.username || activeComment.user.name}...`}
             className="flex-1 min-w-0 bg-transparent text-[14px] text-slate-900 placeholder:text-neutral-400 focus:outline-none"
           />
 
@@ -346,7 +375,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
           </button>
         </form>
 
-        {/* 4. Sub-Replies List (P3 & P4) */}
+        {/* 4. Sub-Replies List (P3, P4, etc.) */}
         <div className="pt-2 space-y-2">
           <div className="flex items-center justify-between pb-1">
             <h2 className="font-semibold text-sm text-slate-900">
@@ -366,6 +395,9 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                   onReplyClick={(_username, cid) => setReplyToCommentId(cid || null)}
                   onCancelReply={() => setReplyToCommentId(null)}
                   onSubmitReply={handleNestedReplySubmit}
+                  onOpenCommentDetail={(clickedReply) => {
+                    setCommentStack((prev) => [...prev, clickedReply]);
+                  }}
                 />
               ))}
             </div>

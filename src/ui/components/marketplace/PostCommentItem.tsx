@@ -310,67 +310,76 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
 
           {/* Child Replies List (Indented right with ml-7) */}
           <div className="space-y-3.5">
-            {repliesState.map((reply, idx) => (
-              <div key={reply.id || idx} className="flex items-start gap-3 ml-7 relative">
-                {/* L-Shaped Elbow Curve (└─) */}
-                <div className="absolute -left-[11px] -top-3.5 h-[32px] w-[12px] border-l-2 border-b-2 border-[#d1d5db] rounded-bl-xl pointer-events-none z-0" />
+            {repliesState.map((reply, idx) => {
+              const isLastChild = idx === repliesState.length - 1 && !isReplying;
 
-                {/* Left Child Avatar (36x36px) */}
-                <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 z-10 bg-white">
-                  <img
-                    src={reply.user.avatar}
-                    alt={reply.user.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+              return (
+                <div key={reply.id || idx} className="flex items-start gap-3 ml-7 relative">
+                  {/* Continuous Vertical Line to Next Child (if more replies follow below) */}
+                  {!isLastChild && (
+                    <div className="absolute -left-[11px] -top-3.5 -bottom-3.5 w-[2px] bg-[#d1d5db] pointer-events-none z-0" />
+                  )}
 
-                {/* Right Child Content */}
-                <div className="flex-1 min-w-0 space-y-1">
-                  <div className="flex items-center justify-between gap-2 min-w-0">
-                    <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
-                      <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
-                        {reply.user.username || reply.user.name}
-                      </span>
+                  {/* L-Shaped Elbow Curve (└─) into this avatar */}
+                  <div className="absolute -left-[11px] -top-3.5 h-[32px] w-[12px] border-l-2 border-b-2 border-[#d1d5db] rounded-bl-xl pointer-events-none z-0" />
 
-                      {reply.user.isVerified && (
-                        <BadgeCheck className="w-[17px] h-[17px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified User" />
-                      )}
-
-                      {reply.user.isAuthor && (
-                        <span className="relative inline-flex items-center gap-1 px-2 py-0.5 rounded-[6px] text-[11px] font-medium text-white bg-[#18181b] border border-black/40 shadow-2xs overflow-hidden shrink-0 select-none">
-                          <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
-                          <Crown className="w-3 h-3 text-white fill-white relative z-10 shrink-0" />
-                          <span className="relative z-10 leading-none">Pembuat Utas</span>
-                        </span>
-                      )}
-
-                      <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
-                        {reply.timestamp}
-                      </span>
-                    </div>
-
-                    <button
-                      type="button"
-                      className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
-                      aria-label="Opsi komentar"
-                    >
-                      <MoreHorizontal className="w-4 h-4" />
-                    </button>
+                  {/* Left Child Avatar (36x36px) */}
+                  <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 z-10 bg-white">
+                    <img
+                      src={reply.user.avatar}
+                      alt={reply.user.name}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
 
-                  <p className="text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5">
-                    <FormattedText text={reply.content} />
-                  </p>
+                  {/* Right Child Content */}
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <div className="flex items-center justify-between gap-2 min-w-0">
+                      <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+                        <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
+                          {reply.user.username || reply.user.name}
+                        </span>
 
-                  {renderActionBar(
-                    reply.isLiked || false,
-                    reply.likesCount,
-                    () => handleNestedReplyLike(reply.id),
-                    () => onReplyClick?.(reply.user.username || reply.user.name, comment.id)
-                  )}
+                        {reply.user.isVerified && (
+                          <BadgeCheck className="w-[17px] h-[17px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified User" />
+                        )}
+
+                        {reply.user.isAuthor && (
+                          <span className="relative inline-flex items-center gap-1 px-2 py-0.5 rounded-[6px] text-[11px] font-medium text-white bg-[#18181b] border border-black/40 shadow-2xs overflow-hidden shrink-0 select-none">
+                            <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
+                            <Crown className="w-3 h-3 text-white fill-white relative z-10 shrink-0" />
+                            <span className="relative z-10 leading-none">Pembuat Utas</span>
+                          </span>
+                        )}
+
+                        <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
+                          {reply.timestamp}
+                        </span>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
+                        aria-label="Opsi komentar"
+                      >
+                        <MoreHorizontal className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <p className="text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5">
+                      <FormattedText text={reply.content} />
+                    </p>
+
+                    {renderActionBar(
+                      reply.isLiked || false,
+                      reply.likesCount,
+                      () => handleNestedReplyLike(reply.id),
+                      () => onReplyClick?.(reply.user.username || reply.user.name, comment.id)
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {/* INLINE IN-PLACE SUB-REPLY INPUT (Positioned directly in branch at 'aduh bro' position) */}
             {isReplying && (

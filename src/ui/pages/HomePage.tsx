@@ -231,31 +231,41 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost, onNavigateToPr
     return () => observer.disconnect();
   }, [isLoadingMore, page]);
 
-  // Smart Scroll Header Visibility State (24px threshold as requested)
+  // Smart Scroll Header Visibility State (rAF Throttled for 0% CPU spike)
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const lastScrollY = useRef(0);
 
   useEffect(() => {
+    let rAFId: number | null = null;
+
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const scrollDiff = currentScrollY - lastScrollY.current;
+      if (rAFId !== null) return;
 
-      // Always show if near the top of the feed (< 50px)
-      if (currentScrollY < 50) {
-        setIsHeaderVisible(true);
-      } else if (scrollDiff > 24) {
-        // Scrolling DOWN -> hide top bar
-        setIsHeaderVisible(false);
-      } else if (scrollDiff < -24) {
-        // Scrolling UP -> reveal top bar
-        setIsHeaderVisible(true);
-      }
+      rAFId = requestAnimationFrame(() => {
+        rAFId = null;
+        const currentScrollY = window.scrollY;
+        const scrollDiff = currentScrollY - lastScrollY.current;
 
-      lastScrollY.current = currentScrollY;
+        // Always show if near the top of the feed (< 50px)
+        if (currentScrollY < 50) {
+          setIsHeaderVisible((prev) => (prev ? prev : true));
+        } else if (scrollDiff > 24) {
+          // Scrolling DOWN -> hide top bar
+          setIsHeaderVisible(false);
+        } else if (scrollDiff < -24) {
+          // Scrolling UP -> reveal top bar
+          setIsHeaderVisible(true);
+        }
+
+        lastScrollY.current = currentScrollY;
+      });
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rAFId !== null) cancelAnimationFrame(rAFId);
+    };
   }, []);
 
   return (

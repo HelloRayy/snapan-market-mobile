@@ -154,6 +154,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           <img
             src={item.images[0]}
             alt={item.caption}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover hover:scale-[1.01] transition-transform duration-300 pointer-events-none"
           />
           <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
@@ -183,6 +185,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               <img
                 src={imgUrl}
                 alt={`${item.caption} - ${idx + 1}`}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover pointer-events-none"
               />
               <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
@@ -374,6 +378,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               <img
                 src={item.seller.avatar}
                 alt={item.seller.name}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover"
               />
             </div>

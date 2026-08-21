@@ -18,43 +18,51 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   const lastScrollY = useRef(0);
   const scrollTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Auto-Hide on Scroll Down & Delayed Reveal on Idle / Scroll Stop Behavior
+  // Auto-Hide on Scroll Down & Delayed Reveal on Idle (rAF Throttled for 0% CPU overhead)
   useEffect(() => {
+    let rAFId: number | null = null;
+
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const scrollDiff = currentScrollY - lastScrollY.current;
+      if (rAFId !== null) return;
 
-      // Always show if near the top of the feed (< 50px)
-      if (currentScrollY < 50) {
-        setIsVisible(true);
-        if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+      rAFId = requestAnimationFrame(() => {
+        rAFId = null;
+        const currentScrollY = window.scrollY;
+        const scrollDiff = currentScrollY - lastScrollY.current;
+
+        // Always show if near the top of the feed (< 50px)
+        if (currentScrollY < 50) {
+          setIsVisible((prev) => (prev ? prev : true));
+          if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+          lastScrollY.current = currentScrollY;
+          return;
+        }
+
+        // Scrolling DOWN -> hide bottom nav
+        if (scrollDiff > 10) {
+          setIsVisible(false);
+        }
+        // Explicit substantial scroll UP -> reveal bottom nav
+        else if (scrollDiff < -30) {
+          setIsVisible(true);
+        }
+
         lastScrollY.current = currentScrollY;
-        return;
-      }
 
-      // Scrolling DOWN -> immediately hide bottom nav (navbar down)
-      if (scrollDiff > 10) {
-        setIsVisible(false);
-      }
-      // Explicit substantial scroll UP -> reveal bottom nav
-      else if (scrollDiff < -30) {
-        setIsVisible(true);
-      }
-
-      lastScrollY.current = currentScrollY;
-
-      // When user STOPS scrolling -> wait delay (0.5s) before sliding navbar back up
-      if (scrollTimeout.current) {
-        clearTimeout(scrollTimeout.current);
-      }
-      scrollTimeout.current = setTimeout(() => {
-        setIsVisible(true);
-      }, 500); // 0.5s idle delay before navbar rises up
+        // When user STOPS scrolling -> wait delay (0.5s) before sliding navbar back up
+        if (scrollTimeout.current) {
+          clearTimeout(scrollTimeout.current);
+        }
+        scrollTimeout.current = setTimeout(() => {
+          setIsVisible(true);
+        }, 500); // 0.5s idle delay
+      });
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      if (rAFId !== null) cancelAnimationFrame(rAFId);
       if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
     };
   }, []);

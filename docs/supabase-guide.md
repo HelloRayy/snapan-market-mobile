@@ -39,6 +39,7 @@ Jalankan script berikut di **Supabase Dashboard -> SQL Editor**:
 create table if not exists public.profiles (
   id uuid references auth.users on delete cascade primary key,
   full_name text not null,
+  username text unique,
   avatar_url text,
   class_group text default 'Siswa Snapan',
   is_verified boolean default false,
@@ -50,10 +51,11 @@ create table if not exists public.profiles (
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id, full_name, avatar_url)
+  insert into public.profiles (id, full_name, username, avatar_url)
   values (
     new.id,
     coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', 'Pengguna Baru'),
+    coalesce(new.raw_user_meta_data->>'username', lower(replace(coalesce(new.raw_user_meta_data->>'full_name', 'user'), ' ', ''))),
     coalesce(new.raw_user_meta_data->>'avatar_url', new.raw_user_meta_data->>'picture', '')
   );
   return new;
@@ -66,21 +68,32 @@ create or replace trigger on_auth_user_created
 
 
 -- ========================================================
--- 2. TABEL MARKET POSTS (Postingan Jualan Feed)
+-- 2. TABEL MARKET POSTS (Utas Sosial & Produk Jualan)
 -- ========================================================
 create table if not exists public.market_posts (
   id uuid default gen_random_uuid() primary key,
   seller_id uuid references public.profiles(id) on delete cascade not null,
+  post_type text default 'thread' check (post_type in ('thread', 'product')),
+  title text,
   caption text not null,
+  description text,
+  price numeric default 0 check (price >= 0),
+  original_price numeric default 0 check (original_price >= 0),
+  category text default 'Lainnya',
   images text[] default '{}',
-  is_video boolean default false,
   stock integer default 1 check (stock >= 0),
+  location_tag text,
+  topic_tag text,
+  is_official_topic boolean default false,
+  topic_icon text default 'threads',
+  likes_count integer default 0 check (likes_count >= 0),
+  comments_count integer default 0 check (comments_count >= 0),
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
 
 -- ========================================================
--- 3. TABEL POST LIKES (Suka Postingan)
+-- 3. TABEL POST LIKES (Suka Postingan Utama)
 -- ========================================================
 create table if not exists public.post_likes (
   post_id uuid references public.market_posts(id) on delete cascade not null,
@@ -91,19 +104,35 @@ create table if not exists public.post_likes (
 
 
 -- ========================================================
--- 4. TABEL POST COMMENTS (Komentar Postingan)
+-- 4. TABEL POST COMMENTS & SUB-THREADS (Komentar Bersarang P2, P3, P4)
 -- ========================================================
 create table if not exists public.post_comments (
   id uuid default gen_random_uuid() primary key,
   post_id uuid references public.market_posts(id) on delete cascade not null,
   user_id uuid references public.profiles(id) on delete cascade not null,
+  parent_comment_id uuid references public.post_comments(id) on delete cascade,
   content text not null,
+  images text[] default '{}',
+  thread_part integer default 1,
+  total_parts integer default 1,
+  likes_count integer default 0 check (likes_count >= 0),
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
 
 -- ========================================================
--- 5. TABEL CART ITEMS (Keranjang Belanja User)
+-- 5. TABEL COMMENT LIKES (Suka Komentar & Balasan)
+-- ========================================================
+create table if not exists public.comment_likes (
+  comment_id uuid references public.post_comments(id) on delete cascade not null,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  primary key (comment_id, user_id)
+);
+
+
+-- ========================================================
+-- 6. TABEL CART ITEMS (Keranjang Belanja)
 -- ========================================================
 create table if not exists public.cart_items (
   id uuid default gen_random_uuid() primary key,
@@ -116,35 +145,41 @@ create table if not exists public.cart_items (
 
 
 -- ========================================================
--- 🛡️ ROW LEVEL SECURITY (RLS) POLICIES
+-- 7. ROW LEVEL SECURITY (RLS) POLICIES
 -- ========================================================
 alter table public.profiles enable row level security;
 alter table public.market_posts enable row level security;
 alter table public.post_likes enable row level security;
 alter table public.post_comments enable row level security;
+alter table public.comment_likes enable row level security;
 alter table public.cart_items enable row level security;
 
--- Profiles: Siapa saja bisa baca, user hanya bisa edit profile sendiri
-create policy "Profiles viewable by everyone" on public.profiles for select using (true);
+-- Profiles
+create policy "Public profiles are viewable by everyone" on public.profiles for select using (true);
 create policy "Users can update own profile" on public.profiles for update using (auth.uid() = id);
 
--- Market Posts: Siapa saja bisa baca, seller terautentikasi bisa posting/edit
+-- Market Posts
 create policy "Market posts viewable by everyone" on public.market_posts for select using (true);
-create policy "Sellers can insert own posts" on public.market_posts for insert with check (auth.uid() = seller_id);
-create policy "Sellers can update own posts" on public.market_posts for update using (auth.uid() = seller_id);
+create policy "Users can insert posts" on public.market_posts for insert with check (auth.uid() = seller_id);
+create policy "Users can update own posts" on public.market_posts for update using (auth.uid() = seller_id);
+create policy "Users can delete own posts" on public.market_posts for delete using (auth.uid() = seller_id);
 
--- Post Likes: Publik bisa lihat, user terautentikasi bisa toggle like
-create policy "Likes viewable by everyone" on public.post_likes for select using (true);
-create policy "Users can like posts" on public.post_likes for insert with check (auth.uid() = user_id);
-create policy "Users can unlike posts" on public.post_likes for delete using (auth.uid() = user_id);
+-- Post Likes
+create policy "Post likes viewable by everyone" on public.post_likes for select using (true);
+create policy "Users can toggle own post like" on public.post_likes for all using (auth.uid() = user_id);
 
--- Post Comments: Publik bisa lihat, user terautentikasi bisa memberi komentar
+-- Post Comments
 create policy "Comments viewable by everyone" on public.post_comments for select using (true);
 create policy "Users can insert comments" on public.post_comments for insert with check (auth.uid() = user_id);
+create policy "Users can delete own comments" on public.post_comments for delete using (auth.uid() = user_id);
 
--- Cart Items: User hanya bisa kelola keranjang miliknya sendiri
-create policy "Users view own cart" on public.cart_items for select using (auth.uid() = user_id);
-create policy "Users add to own cart" on public.cart_items for insert with check (auth.uid() = user_id);
-create policy "Users modify own cart" on public.cart_items for update using (auth.uid() = user_id);
-create policy "Users remove from own cart" on public.cart_items for delete using (auth.uid() = user_id);
+-- Comment Likes
+create policy "Comment likes viewable by everyone" on public.comment_likes for select using (true);
+create policy "Users can toggle own comment like" on public.comment_likes for all using (auth.uid() = user_id);
+
+-- Cart Items
+create policy "Users can view own cart items" on public.cart_items for select using (auth.uid() = user_id);
+create policy "Users can insert own cart items" on public.cart_items for insert with check (auth.uid() = user_id);
+create policy "Users can update own cart items" on public.cart_items for update using (auth.uid() = user_id);
+create policy "Users can delete own cart items" on public.cart_items for delete using (auth.uid() = user_id);
 ```

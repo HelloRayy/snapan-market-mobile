@@ -333,18 +333,18 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
               </span>
             </div>
 
-            {/* Active Interest Badges */}
+            {/* Active Interest Badges (WCAG Compliant High Contrast) */}
             <div className="flex items-center flex-wrap gap-1.5 pt-1 pb-1.5 select-none">
               {activeTags.map((tag, idx) => (
                 <div
                   key={idx}
-                  className="inline-flex items-center gap-1.5 py-1.5 px-3 bg-neutral-100/90 hover:bg-blue-50/80 text-[#18a3fe] text-[13px] font-semibold rounded-[45px] border border-neutral-200/80 group transition-all"
+                  className="inline-flex items-center gap-1.5 py-1.5 px-3 bg-blue-50/90 hover:bg-blue-100/80 text-[#0055d6] text-[13px] font-semibold rounded-[45px] border border-blue-200/80 group transition-all"
                 >
                   <span>{tag}</span>
                   <button
                     type="button"
                     onClick={() => handleRemoveTag(tag)}
-                    className="w-3.5 h-3.5 rounded-full hover:bg-rose-100 hover:text-rose-600 text-neutral-400 flex items-center justify-center transition-colors cursor-pointer"
+                    className="w-3.5 h-3.5 rounded-full hover:bg-rose-100 hover:text-rose-600 text-blue-400 hover:text-rose-600 flex items-center justify-center transition-colors cursor-pointer"
                     title="Hapus minat"
                   >
                     <X className="w-2.5 h-2.5 stroke-[2.5]" />
@@ -354,7 +354,7 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
 
               {/* Add Custom Tag Pill */}
               {isAddingCustomTag ? (
-                <div className="inline-flex items-center gap-1 py-1 px-2.5 bg-white rounded-[45px] border border-[#1d64ec] shadow-xs">
+                <div className="inline-flex items-center gap-1 py-1 px-2.5 bg-white rounded-[45px] border border-[#0055d6] shadow-xs">
                   <input
                     ref={customTagInputRef}
                     type="text"
@@ -375,7 +375,7 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
                   <button
                     type="button"
                     onClick={() => handleAddTag(customTagInput)}
-                    className="w-5 h-5 rounded-full bg-[#1d64ec] text-white flex items-center justify-center text-xs font-bold cursor-pointer"
+                    className="w-5 h-5 rounded-full bg-[#0055d6] text-white flex items-center justify-center text-xs font-bold cursor-pointer"
                   >
                     +
                   </button>
@@ -391,7 +391,7 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsAddingCustomTag(true)}
-                  className="inline-flex items-center justify-center gap-x-1 py-1.5 px-3 bg-neutral-100/90 hover:bg-neutral-200/80 text-[#777777] hover:text-slate-900 text-[13px] font-semibold rounded-[45px] border border-neutral-200/80 cursor-pointer transition-all active:scale-95 shadow-2xs"
+                  className="inline-flex items-center justify-center gap-x-1 py-1.5 px-3 bg-neutral-100 hover:bg-neutral-200/80 text-slate-700 hover:text-slate-900 text-[13px] font-bold rounded-[45px] border border-neutral-200/90 cursor-pointer transition-all active:scale-95 shadow-2xs"
                   title="Tambah Minat Baru"
                 >
                   <span>+</span>
@@ -401,8 +401,8 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
 
             {/* Quick Suggestions Pills */}
             <div className="pt-2">
-              <div className="flex items-center gap-1 text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mb-1.5">
-                <Sparkles className="w-3 h-3 text-[#1d64ec]" />
+              <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                <Sparkles className="w-3 h-3 text-[#0055d6]" />
                 <span>Rekomendasi Minat:</span>
               </div>
               <div className="flex items-center flex-wrap gap-1.5">
@@ -411,7 +411,7 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
                     key={idx}
                     type="button"
                     onClick={() => handleAddTag(suggested)}
-                    className="inline-flex items-center gap-1 py-1 px-2.5 bg-neutral-50 hover:bg-blue-50/60 text-slate-700 hover:text-[#18a3fe] text-[12px] font-medium rounded-full border border-dashed border-neutral-300 hover:border-blue-300 transition-all cursor-pointer active:scale-95"
+                    className="inline-flex items-center gap-1 py-1 px-2.5 bg-white hover:bg-blue-50/80 text-slate-700 hover:text-[#0055d6] text-[12px] font-medium rounded-full border border-dashed border-neutral-300 hover:border-blue-300 transition-all cursor-pointer active:scale-95"
                   >
                     <span>+ {suggested}</span>
                   </button>

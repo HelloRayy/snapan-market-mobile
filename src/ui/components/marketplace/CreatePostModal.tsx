@@ -331,25 +331,28 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
       className="fixed inset-0 z-50 bg-white flex flex-col font-gt-standard overflow-hidden transform-gpu animate-sheet-slide"
       style={{ willChange: 'transform' }}
     >
-        {/* Top Bar Header: [ Batal ] --- [ Title ] --- [ Draft & Options ] */}
-        <div className="px-4 h-14 flex items-center justify-between border-b border-neutral-200/80 bg-white shrink-0">
+        {/* Top Bar Header: [ Batal ] --- [ Title (Dead Centered to Screen) ] --- [ Draft & Options ] */}
+        <div className="relative px-4 h-14 flex items-center justify-between border-b border-neutral-200/80 bg-white shrink-0">
           <button
             type="button"
             onClick={handleCancelClick}
-            className="text-[15px] font-medium text-slate-900 hover:opacity-75 active:scale-95 transition-all cursor-pointer"
+            className="text-[15px] font-medium text-slate-900 hover:opacity-75 active:scale-95 transition-all cursor-pointer z-10"
           >
             Batal
           </button>
 
-          <h2 className="text-[15.5px] font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
-            {postMode === 'product' ? (
-              <span className="text-[#1d64ec]">Jual Produk</span>
-            ) : (
-              <span>Utas Baru</span>
-            )}
-          </h2>
+          {/* Absolute Dead Center to Screen */}
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
+            <h2 className="text-[15.5px] font-bold text-slate-900 tracking-tight flex items-center gap-1.5 pointer-events-auto select-none">
+              {postMode === 'product' ? (
+                <span className="text-[#1d64ec]">Jual Produk</span>
+              ) : (
+                <span>Utas Baru</span>
+              )}
+            </h2>
+          </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 z-10">
             {/* Draft Icon Button with Active Indicator Dot */}
             <button
               type="button"

@@ -76,6 +76,15 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+  const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    if (el.clientWidth > 0) {
+      const idx = Math.round(el.scrollLeft / (el.clientWidth * 0.82));
+      setCurrentCarouselIndex(Math.min(Math.max(0, idx), (item.images?.length || 1) - 1));
+    }
+  };
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!scrollContainerRef.current) return;
@@ -143,56 +152,75 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
     }
   };
 
-  // Content Snippets used in both variants
+  // Content Snippets used in both variants (Threads picture styling + rounded-[18px])
   const renderImages = (isDetail: boolean) => (
     <>
       {item.images && item.images.length === 1 && (
         <div
           onClick={(e) => handleImageClick(e, 0)}
           onPointerDown={(e) => e.stopPropagation()}
-          className="relative w-full rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[340px] aspect-[16/10] mt-2.5 cursor-pointer touch-pan-y"
+          className="relative w-full rounded-[18px] overflow-hidden border border-black/[0.08] shadow-[0_1px_3px_rgba(0,0,0,0.06)] bg-neutral-100 max-h-[380px] aspect-[16/10] mt-2.5 cursor-pointer touch-pan-y"
         >
-          <img
-            src={item.images[0]}
-            alt={item.caption}
-            loading="lazy"
-            decoding="async"
-            className="w-full h-full object-cover hover:scale-[1.01] transition-transform duration-300 pointer-events-none"
-          />
-          <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
+          <picture className="block w-full h-full text-[#385898] text-base font-normal cursor-pointer">
+            <img
+              src={item.images[0]}
+              alt={item.caption}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover hover:scale-[1.01] transition-transform duration-300 pointer-events-none"
+            />
+          </picture>
+          <div className="absolute inset-0 rounded-[18px] ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
         </div>
       )}
 
       {item.images && item.images.length > 1 && (
-        <div
-          ref={scrollContainerRef}
-          onMouseDown={handleMouseDown}
-          onMouseLeave={handleMouseLeaveOrUp}
-          onMouseUp={handleMouseLeaveOrUp}
-          onMouseMove={handleMouseMove}
-          onClick={(e) => e.stopPropagation()}
-          onPointerDown={(e) => e.stopPropagation()}
-          className={`flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none touch-pan-x touch-pan-y ${
-            isDetail ? '-mx-4 px-4' : '-ml-[68px] pl-[68px] -mr-4 pr-4 w-[calc(100%+84px)]'
-          }`}
-        >
-          {item.images.map((imgUrl, idx) => (
-            <div
-              key={idx}
-              onClick={(e) => handleImageClick(e, idx)}
-              onPointerDown={(e) => e.stopPropagation()}
-              className="relative shrink-0 w-[82%] sm:w-[75%] rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[340px] aspect-[3/4] cursor-pointer"
-            >
-              <img
-                src={imgUrl}
-                alt={`${item.caption} - ${idx + 1}`}
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover pointer-events-none"
+        <div className="relative mt-2.5">
+          <div
+            ref={scrollContainerRef}
+            onScroll={handleScroll}
+            onMouseDown={handleMouseDown}
+            onMouseLeave={handleMouseLeaveOrUp}
+            onMouseUp={handleMouseLeaveOrUp}
+            onMouseMove={handleMouseMove}
+            onClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+            className={`flex gap-2.5 overflow-x-auto scrollbar-none snap-x snap-mandatory cursor-grab active:cursor-grabbing select-none touch-pan-x touch-pan-y ${
+              isDetail ? '-mx-4 px-4' : '-ml-[68px] pl-[68px] -mr-4 pr-4 w-[calc(100%+84px)]'
+            }`}
+          >
+            {item.images.map((imgUrl, idx) => (
+              <div
+                key={idx}
+                onClick={(e) => handleImageClick(e, idx)}
+                onPointerDown={(e) => e.stopPropagation()}
+                className="relative shrink-0 w-[82%] sm:w-[75%] snap-center rounded-[18px] overflow-hidden border border-black/[0.08] shadow-[0_1px_3px_rgba(0,0,0,0.06)] bg-neutral-100 max-h-[380px] aspect-[3/4] cursor-pointer"
+              >
+                <picture className="block w-full h-full text-[#385898] text-base font-normal cursor-pointer">
+                  <img
+                    src={imgUrl}
+                    alt={`${item.caption} - ${idx + 1}`}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover pointer-events-none"
+                  />
+                </picture>
+                <div className="absolute inset-0 rounded-[18px] ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
+              </div>
+            ))}
+          </div>
+
+          {/* Dots / Pagination Indicator */}
+          <div className="flex items-center justify-center gap-1.5 pt-2 select-none">
+            {item.images.map((_, dotIdx) => (
+              <span
+                key={dotIdx}
+                className={`h-1.5 rounded-full transition-all duration-200 ${
+                  dotIdx === currentCarouselIndex ? 'bg-[#1d64ec] w-4' : 'bg-neutral-300 w-1.5'
+                }`}
               />
-              <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
     </>

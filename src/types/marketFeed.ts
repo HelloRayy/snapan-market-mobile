@@ -24,6 +24,9 @@ export interface PostComment {
   likesCount: number;
   isLiked?: boolean;
   replies?: PostComment[]; // Nested replies
+  threadPart?: number; // e.g. 2, 3
+  totalParts?: number; // e.g. 3
+  images?: string[]; // Attached images in comment/thread
 }
 
 export interface ThreadChainItem {

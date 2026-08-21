@@ -151,7 +151,43 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
             {/* Comment Content (Aligned with Username Column) */}
             <p className="text-[15px] text-slate-900 font-normal leading-snug break-words">
               <FormattedText text={comment.content} />
+              {comment.threadPart && comment.totalParts && (
+                <span className="text-[13px] font-bold text-neutral-400 tabular-nums ml-2 select-none inline-block">
+                  {comment.threadPart}/{comment.totalParts}
+                </span>
+              )}
             </p>
+
+            {/* Attached Images in Comment (e.g. from chained thread) */}
+            {comment.images && comment.images.length > 0 && (
+              <div className="pt-2">
+                {comment.images.length === 1 ? (
+                  <div className="relative w-full rounded-2xl overflow-hidden border border-black/10 shadow-2xs max-h-[300px] aspect-[16/10] bg-neutral-100">
+                    <img
+                      src={comment.images[0]}
+                      alt="Attachment"
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex gap-2 overflow-x-auto py-1 scrollbar-none">
+                    {comment.images.map((img, idx) => (
+                      <div key={idx} className="relative w-44 h-32 rounded-2xl overflow-hidden border border-black/10 shadow-2xs shrink-0 bg-neutral-100">
+                        <img
+                          src={img}
+                          alt="Attachment"
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Action Bar (Aligned with Username Column) */}
             {renderActionBar(

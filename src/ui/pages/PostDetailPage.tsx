@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, MessageSquare } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { MarketPostItem, PostComment } from '@/types/marketFeed';
 import { MarketPostCard } from '../components/marketplace/MarketPostCard';
 import { PostCommentItem } from '../components/marketplace/PostCommentItem';
 import { CommentInputBar } from '../components/marketplace/CommentInputBar';
 import { StickyBuyBar } from '../components/marketplace/StickyBuyBar';
 import { BuyBottomSheet } from '../components/marketplace/BuyBottomSheet';
-import { FormattedText } from '@/ui/components/ui/FormattedText';
-import { ClickableVerifiedBadge } from '@/ui/components/marketplace/VerifiedBadgeModal';
 
 interface PostDetailPageProps {
   post: MarketPostItem;
@@ -125,81 +123,12 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
           variant="detail"
         />
 
-        {/* Author Multi-Thread Continuations (e.g. 2/2, 3/3 in comments/thread section) */}
-        {post.threadChain && post.threadChain.length > 0 && (
-          <div className="border-t border-neutral-100 divide-y divide-neutral-100">
-            {post.threadChain.map((chain) => (
-              <div key={chain.id} className="p-4 flex gap-3 items-start bg-white">
-                {/* Left Column: Avatar */}
-                <div className="flex flex-col items-center shrink-0">
-                  <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
-                    <img
-                      src={post.seller.avatar}
-                      alt={post.seller.name}
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-
-                {/* Right Column: Content */}
-                <div className="flex-1 min-w-0 space-y-1.5">
-                  {/* Header: Name + Verified + Part Counter (e.g. 2/2) + Timestamp */}
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                      <span className="font-semibold text-[15px] text-slate-900 truncate">
-                        {post.seller.name}
-                      </span>
-                      {post.seller.isVerified && (
-                        <ClickableVerifiedBadge sellerName={post.seller.name} className="w-4 h-4 shrink-0" />
-                      )}
-                      <span className="text-[12px] font-bold text-neutral-400 tabular-nums select-none ml-1">
-                        {chain.partNumber}/{chain.totalParts}
-                      </span>
-                    </div>
-                    <span className="text-[13px] text-neutral-400 shrink-0">{chain.timestamp || 'Baru saja'}</span>
-                  </div>
-
-                  {/* Caption Text */}
-                  <p className="text-[15px] text-slate-900 font-normal leading-snug break-words">
-                    <FormattedText text={chain.caption} />
-                  </p>
-
-                  {/* Attached Images (if any) */}
-                  {chain.images && chain.images.length > 0 && (
-                    <div className="flex gap-2 overflow-x-auto py-1 scrollbar-none">
-                      {chain.images.map((img, idx) => (
-                        <div key={idx} className="relative w-48 h-36 rounded-2xl overflow-hidden border border-black/10 shadow-2xs shrink-0">
-                          <img src={img} alt="Attachment" className="w-full h-full object-cover" />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Minimal Action Bar */}
-                  <div className="flex items-center gap-4 pt-1 text-slate-500 text-xs">
-                    <button
-                      type="button"
-                      onClick={() => handleReplyClick(post.seller.username || post.seller.name)}
-                      className="flex items-center gap-1 hover:text-slate-900 transition-colors cursor-pointer"
-                    >
-                      <MessageSquare className="w-4 h-4 stroke-[1.8]" />
-                      <span>Balas</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Comments Section */}
+        {/* Comments Section (Includes Author Thread Continuations 2/N, 3/N at top) */}
         <section id="comments-section" className="px-4 pt-2">
           {/* Section Divider Header */}
           <div className="py-2.5 flex items-center justify-between">
             <h2 className="font-semibold text-sm text-slate-900">
-              Komentar ({comments.length})
+              Komentar ({post.threadChain && post.threadChain.length > 0 ? comments.length + post.threadChain.length : comments.length})
             </h2>
             <span className="text-xs text-neutral-400">Urutkan dari Terbaru</span>
           </div>
@@ -211,9 +140,38 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
             isInline={true}
           />
 
-          {/* Comment List */}
-          {comments.length > 0 ? (
+          {/* Combined Comment List: Author Thread Continuations + General Comments */}
+          {(post.threadChain && post.threadChain.length > 0) || comments.length > 0 ? (
             <div className="divide-y divide-neutral-200">
+              {/* 1. Author Thread Continuation Comments (Part 2, Part 3, etc.) */}
+              {post.threadChain?.map((chain) => (
+                <PostCommentItem
+                  key={chain.id}
+                  comment={{
+                    id: chain.id,
+                    postId: post.id,
+                    user: {
+                      id: post.seller.id,
+                      name: post.seller.name,
+                      username: post.seller.username || post.seller.name,
+                      avatar: post.seller.avatar,
+                      classGroup: post.seller.classGroup,
+                      isVerified: post.seller.isVerified,
+                      isAuthor: true,
+                    },
+                    content: chain.caption,
+                    images: chain.images,
+                    threadPart: chain.partNumber,
+                    totalParts: chain.totalParts,
+                    timestamp: chain.timestamp || 'Baru saja',
+                    likesCount: chain.likesCount || 0,
+                    isLiked: chain.isLiked || false,
+                  }}
+                  onReplyClick={handleReplyClick}
+                />
+              ))}
+
+              {/* 2. General Comments from Other Users */}
               {comments.map((comment) => (
                 <PostCommentItem
                   key={comment.id}

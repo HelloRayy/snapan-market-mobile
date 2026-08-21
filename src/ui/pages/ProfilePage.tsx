@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ArrowLeft,
   Menu,
@@ -56,35 +56,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   // Follow Toggle state (for viewing other users)
   const [isFollowing, setIsFollowing] = useState(false);
 
-  // Smart Scroll Header Visibility State (24px threshold as requested)
-  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
-  const lastScrollY = useRef(0);
-
   const cleanTargetUsername = username.replace(/^@/, '').toLowerCase();
   const isViewingOtherUserProfile = cleanTargetUsername !== 'radityarayhannnn' && cleanTargetUsername !== 'me';
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const scrollDiff = currentScrollY - lastScrollY.current;
-
-      // Always show if near the top (< 50px)
-      if (currentScrollY < 50) {
-        setIsHeaderVisible(true);
-      } else if (scrollDiff > 24) {
-        // Scrolling DOWN -> hide top bar
-        setIsHeaderVisible(false);
-      } else if (scrollDiff < -24) {
-        // Scrolling UP -> reveal top bar immediately
-        setIsHeaderVisible(true);
-      }
-
-      lastScrollY.current = currentScrollY;
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Sync follow state
   useEffect(() => {
@@ -167,9 +140,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     <div className="min-h-screen bg-white text-slate-ink pb-28 font-gt-standard select-none">
       {/* 1. Top Bar Header: [ Left: Menu Icon ] --- [ Center: Logo Mark ] --- [ Right: Search Toggle ] */}
       <header
-        className={`sticky top-0 z-30 bg-white font-gt-standard select-none transition-all duration-200 ease-[cubic-bezier(0.25,1,0.5,1)] ${
-          isHeaderVisible ? 'opacity-100 border-b border-neutral-200/80' : 'max-h-0 opacity-0 pointer-events-none overflow-hidden'
-        }`}
+        className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-neutral-200/80 font-gt-standard select-none transition-colors"
         style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
       >
         <div className="w-full max-w-[590px] mx-auto px-4 h-14 flex items-center justify-between relative select-none">
@@ -397,14 +368,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         </div>
 
         {/* 3. 3-Tab Sliding Switcher (Utas, Balasan, Media) with Smooth Hardware-Accelerated Motion */}
-        <div
-          className={`border-b border-neutral-200/80 -mx-4 px-4 bg-white sticky z-20 select-none transition-[top] duration-200 ease-[cubic-bezier(0.25,1,0.5,1)] ${
-            isHeaderVisible ? 'top-14' : 'top-0'
-          }`}
-          style={{
-            paddingTop: isHeaderVisible ? 0 : 'env(safe-area-inset-top, 0px)',
-          }}
-        >
+        <div className="border-b border-neutral-200/80 -mx-4 px-4 bg-white/95 backdrop-blur-md sticky top-14 z-20 select-none">
           <div className="max-w-[590px] mx-auto flex items-center relative">
             {/* Smooth Sliding Underline Bar across 3 Tabs (w-1/3) */}
             <div

@@ -52,6 +52,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
 }) => {
   const [postMode, setPostMode] = useState<'thread' | 'product'>(initialMode);
   const [caption, setCaption] = useState('');
+  const [subThreads, setSubThreads] = useState<{ id: string; caption: string; images: string[] }[]>([]);
   const [productTitle, setProductTitle] = useState('');
   const [priceInput, setPriceInput] = useState<string>('');
   const [stockInput, setStockInput] = useState<string>('');
@@ -85,6 +86,49 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     setImages(images.filter((_, i) => i !== index));
   };
 
+  // Sub-Thread Chaining Handlers (Tambahkan ke Utas)
+  const handleAddSubThread = () => {
+    setSubThreads((prev) => [
+      ...prev,
+      { id: `subthread-${Date.now()}`, caption: '', images: [] }
+    ]);
+  };
+
+  const handleUpdateSubThreadCaption = (id: string, text: string) => {
+    setSubThreads((prev) =>
+      prev.map((st) => (st.id === id ? { ...st, caption: text } : st))
+    );
+  };
+
+  const handleRemoveSubThread = (id: string) => {
+    setSubThreads((prev) => prev.filter((st) => st.id !== id));
+  };
+
+  const handleAddSubThreadImage = (id: string) => {
+    const dummyPics = [
+      'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80',
+      'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800&q=80',
+      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80',
+    ];
+    setSubThreads((prev) =>
+      prev.map((st) =>
+        st.id === id
+          ? { ...st, images: [...st.images, dummyPics[st.images.length % dummyPics.length]] }
+          : st
+      )
+    );
+  };
+
+  const handleRemoveSubThreadImage = (id: string, imgIndex: number) => {
+    setSubThreads((prev) =>
+      prev.map((st) =>
+        st.id === id
+          ? { ...st, images: st.images.filter((_, i) => i !== imgIndex) }
+          : st
+      )
+    );
+  };
+
   const handleSelectTopic = (topic: TopicOption) => {
     setSelectedTopic(topic);
     setShowTopicDropdown(false);
@@ -103,7 +147,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     }
   };
 
-  const canPost = caption.trim().length > 0 || images.length > 0 || productTitle.trim().length > 0;
+  const canPost = caption.trim().length > 0 || images.length > 0 || productTitle.trim().length > 0 || subThreads.some(st => st.caption.trim().length > 0);
 
   const handleSubmit = () => {
     if (!canPost) return;
@@ -116,11 +160,25 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
       ? (stockInput ? parseInt(stockInput, 10) : 1)
       : undefined;
 
+    // Combine main thread and all chained sub-threads
+    const validSubCaptions = subThreads
+      .map((st) => st.caption.trim())
+      .filter((c) => c.length > 0);
+
+    const combinedCaption = validSubCaptions.length > 0
+      ? [caption, ...validSubCaptions].filter(Boolean).join('\n\n')
+      : (caption || productTitle);
+
+    const allImages = [
+      ...images,
+      ...subThreads.flatMap((st) => st.images)
+    ];
+
     const newPost: Partial<MarketPostItem> = {
       postType: postMode,
       title: isProductMode ? (productTitle || caption.slice(0, 30)) : undefined,
-      caption: caption || productTitle,
-      images,
+      caption: combinedCaption,
+      images: allImages,
       price: parsedPrice,
       stock: parsedStock,
       locationTag: isProductMode ? (locationInput || 'Lab PPLG') : undefined,
@@ -132,6 +190,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     onSubmitPost?.(newPost);
     // Reset form state
     setCaption('');
+    setSubThreads([]);
     setProductTitle('');
     setPriceInput('');
     setStockInput('');
@@ -189,7 +248,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
         <div className="p-4 overflow-y-auto flex-1 relative max-w-lg mx-auto w-full">
           {/* 1. Top Section: Avatar + Username + Caption + Images + Action Icons (Threads 2-Column Aligned) */}
           <div className="flex gap-2.5 items-start">
-            {/* Left Column: Avatar (Top) + Vertical Connector Line + Small Avatar (Bottom) */}
+            {/* Left Column: Avatar (Top) + Vertical Connector Line */}
             <div className="flex flex-col items-center shrink-0 w-8 self-stretch py-0.5">
               <div className="w-8 h-8 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
                 <img
@@ -199,15 +258,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 />
               </div>
 
-              <div className="w-[1.5px] bg-neutral-200 flex-1 my-1 min-h-[10px]" />
-
-              <div className="w-4 h-4 rounded-full overflow-hidden border border-neutral-200/80 opacity-60 shrink-0">
-                <img
-                  src={currentUser.avatar}
-                  alt={currentUser.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              <div className="w-[1.5px] bg-neutral-200 flex-1 my-1 min-h-[14px]" />
             </div>
 
             {/* Right Column: Username + Topic Selector + Caption Textarea + Images Gallery + Action Icons */}
@@ -429,15 +480,106 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   </button>
                 </div>
               </div>
-
-              {/* Faded Prompt Line */}
-              <div className="pt-2 text-[13px] text-neutral-400 font-normal select-none">
-                {postMode === 'product'
-                  ? 'Isi rincian barang atau jasa yang ingin dijual di bawah'
-                  : 'Siap dibagikan ke seluruh siswa SMKN 8'}
-              </div>
             </div>
           </div>
+
+          {/* 2. Chained Sub-Threads (Utas Bersambung 2 Halaman/Bagian) */}
+          {subThreads.map((st) => (
+            <div key={st.id} className="flex gap-2.5 items-start mt-2.5 pt-2 border-t border-neutral-100/80 transform-gpu animate-toast-pop">
+              {/* Left Column: Avatar + Connector Line */}
+              <div className="flex flex-col items-center shrink-0 w-8 self-stretch py-0.5">
+                <div className="w-8 h-8 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
+                  <img
+                    src={currentUser.avatar}
+                    alt={currentUser.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="w-[1.5px] bg-neutral-200 flex-1 my-1 min-h-[14px]" />
+              </div>
+
+              {/* Right Column: Sub-Thread Content */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-[14.5px] text-slate-900">
+                    {currentUser.username}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveSubThread(st.id)}
+                    className="w-6 h-6 rounded-full hover:bg-neutral-100 flex items-center justify-center text-neutral-400 hover:text-slate-700 transition-colors cursor-pointer"
+                    title="Hapus sambungan utas"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                <textarea
+                  rows={1}
+                  placeholder="Lanjutkan utasmu..."
+                  value={st.caption}
+                  onChange={(e) => {
+                    handleUpdateSubThreadCaption(st.id, e.target.value);
+                    e.target.style.height = 'auto';
+                    e.target.style.height = `${e.target.scrollHeight}px`;
+                  }}
+                  className="w-full mt-1 text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none resize-none bg-transparent leading-snug overflow-hidden"
+                />
+
+                {/* Sub-Thread Images */}
+                {st.images.length > 0 && (
+                  <div className="flex items-center gap-2 overflow-x-auto py-1.5 scrollbar-none">
+                    {st.images.map((img, imgIdx) => (
+                      <div key={imgIdx} className="relative w-20 h-20 rounded-2xl overflow-hidden border border-neutral-200 shrink-0">
+                        <img src={img} alt="Attachment" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSubThreadImage(st.id, imgIdx)}
+                          className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center cursor-pointer"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Sub-Thread Action Pill */}
+                <div className="flex items-center gap-2 pt-1.5 select-none">
+                  <button
+                    type="button"
+                    onClick={() => handleAddSubThreadImage(st.id)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100/90 hover:bg-neutral-200/80 active:scale-95 text-slate-800 text-[12px] font-semibold transition-all cursor-pointer"
+                  >
+                    <ImageIcon className="w-3.5 h-3.5 text-slate-700 stroke-[2]" />
+                    <span>{st.images.length > 0 ? `Foto (${st.images.length})` : 'Foto'}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* 3. Bottom Interactive "Tambahkan ke utas" Chaining Button (Hanya di mode Utas) */}
+          {postMode === 'thread' && (
+            <div className="flex gap-2.5 items-center mt-2 pt-1 select-none">
+              <div className="flex flex-col items-center shrink-0 w-8">
+                <div className="w-4 h-4 rounded-full overflow-hidden border border-neutral-200/80 opacity-60 shrink-0">
+                  <img
+                    src={currentUser.avatar}
+                    alt={currentUser.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleAddSubThread}
+                className="py-1 text-left text-[14px] text-neutral-400 hover:text-slate-800 active:text-slate-900 active:scale-95 transition-all cursor-pointer select-none font-normal"
+              >
+                Tambahkan ke utas
+              </button>
+            </div>
+          )}
 
           {/* 2. Bottom Section (ONLY for Product Mode): Seller Form Inputs */}
           {postMode === 'product' && (

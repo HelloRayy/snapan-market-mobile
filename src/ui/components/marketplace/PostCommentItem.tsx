@@ -21,22 +21,44 @@ const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
 
 interface PostCommentItemProps {
   comment: PostComment;
+  currentUserAvatar?: string;
+  activeReplyingCommentId?: string | null;
   onReplyClick?: (username: string, commentId?: string) => void;
+  onCancelReply?: () => void;
+  onSubmitReply?: (commentId: string, text: string) => void;
   isNested?: boolean;
 }
 
 export const PostCommentItem: React.FC<PostCommentItemProps> = ({
   comment,
+  currentUserAvatar,
+  activeReplyingCommentId,
   onReplyClick,
+  onCancelReply,
+  onSubmitReply,
   isNested = false,
 }) => {
   const [isLiked, setIsLiked] = useState(comment.isLiked || false);
   const [likesCount, setLikesCount] = useState(comment.likesCount);
   const [repliesState, setRepliesState] = useState(comment.replies || []);
+  const [replyDraftText, setReplyDraftText] = useState('');
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const isReplying = activeReplyingCommentId === comment.id;
 
   React.useEffect(() => {
     setRepliesState(comment.replies || []);
   }, [comment.replies]);
+
+  React.useEffect(() => {
+    if (isReplying) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    } else {
+      setReplyDraftText('');
+    }
+  }, [isReplying]);
 
   const handleLikeToggle = () => {
     if (isLiked) {
@@ -64,7 +86,15 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
     );
   };
 
+  const handleInlineSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!replyDraftText.trim()) return;
+    onSubmitReply?.(comment.id, replyDraftText.trim());
+    setReplyDraftText('');
+  };
+
   const hasReplies = repliesState.length > 0;
+  const isThreadConnected = hasReplies || isReplying;
 
   const renderActionBar = (
     liked: boolean,
@@ -114,8 +144,8 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
 
   return (
     <div className={`w-full ${isNested ? 'pt-3.5 pl-0' : 'py-3.5 border-b border-neutral-200'}`}>
-      {!hasReplies ? (
-        /* SINGLE COMMENT (NO REPLIES): 2-Column Threads Layout */
+      {!isThreadConnected ? (
+        /* SINGLE COMMENT (NO REPLIES & NOT CURRENTLY REPLYING): 2-Column Threads Layout */
         <div className="flex items-start gap-3">
           {/* Left Column: Avatar (36x36px) */}
           <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 mt-0.5">
@@ -213,7 +243,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
           </div>
         </div>
       ) : (
-        /* THREAD COMMENT WITH NESTED REPLIES: Indented child replies + dynamic L-shaped curved connecting line (└─) */
+        /* THREAD COMMENT WITH CONNECTED BRANCH (REPLIES OR CURRENTLY TYPING INLINE REPLY) */
         <div className="space-y-3">
           {/* Parent Comment Row */}
           <div className="flex items-start gap-3">
@@ -341,6 +371,61 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 </div>
               </div>
             ))}
+
+            {/* INLINE IN-PLACE SUB-REPLY INPUT (Positioned directly in branch at 'aduh bro' position) */}
+            {isReplying && (
+              <div className="flex items-start gap-3 ml-7 relative pt-0.5 animate-in fade-in slide-in-from-top-1 duration-150">
+                {/* L-Shaped Elbow Curve (└─) */}
+                <div className="absolute -left-[11px] -top-3.5 h-[32px] w-[12px] border-l-2 border-b-2 border-[#d1d5db] rounded-bl-xl pointer-events-none z-0" />
+
+                {/* Left Child Avatar */}
+                <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 z-10 bg-white mt-0.5">
+                  <img
+                    src={currentUserAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80'}
+                    alt="Profil Saya"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                {/* Right Inline Form */}
+                <form
+                  onSubmit={handleInlineSubmit}
+                  className="flex-1 min-w-0 flex items-center gap-2 bg-neutral-100 focus-within:bg-white focus-within:border-[#1d64ec] border border-neutral-200/80 rounded-full px-3.5 py-1.5 transition-all shadow-2xs"
+                >
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={replyDraftText}
+                    onChange={(e) => setReplyDraftText(e.target.value)}
+                    placeholder={`Balas @${comment.user.username || comment.user.name}...`}
+                    className="flex-1 min-w-0 bg-transparent text-[13.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none"
+                    autoFocus
+                  />
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={onCancelReply}
+                      className="text-[12px] font-medium text-neutral-400 hover:text-rose-500 px-1 py-0.5 cursor-pointer transition-colors"
+                    >
+                      Batal
+                    </button>
+
+                    <button
+                      type="submit"
+                      disabled={!replyDraftText.trim()}
+                      className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
+                        replyDraftText.trim()
+                          ? 'bg-[#18181b] text-white shadow-xs active:scale-95 cursor-pointer'
+                          : 'bg-neutral-200 text-neutral-400 cursor-not-allowed'
+                      }`}
+                    >
+                      Kirim
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
           </div>
         </div>
       )}

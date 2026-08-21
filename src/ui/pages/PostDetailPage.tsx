@@ -21,7 +21,6 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
 }) => {
   const { profile } = useAuth();
   const [comments, setComments] = useState<PostComment[]>(post.comments || []);
-  const [replyToUser, setReplyToUser] = useState<string | null>(null);
   const [replyToCommentId, setReplyToCommentId] = useState<string | null>(null);
   const [isBuySheetOpen, setIsBuySheetOpen] = useState(false);
 
@@ -33,12 +32,12 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
       containerRef.current.scrollTop = 0;
     }
     setComments(post.comments || []);
-    setReplyToUser(null);
     setReplyToCommentId(null);
     setIsBuySheetOpen(false);
   }, [post.id, post.comments]);
 
-  const handleAddComment = (content: string) => {
+  const handleAddComment = (content: string, specificCommentId?: string) => {
+    const targetParentId = specificCommentId || replyToCommentId;
     const isPostAuthor =
       (profile?.id || 'current-user') === post.seller.id ||
       post.seller.username === 'radityarayhannnn' ||
@@ -62,11 +61,11 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
       isLiked: false,
     };
 
-    if (replyToCommentId) {
+    if (targetParentId) {
       // Nest directly inside the target parent comment!
       setComments((prev) =>
         prev.map((c) => {
-          if (c.id === replyToCommentId) {
+          if (c.id === targetParentId) {
             return {
               ...c,
               replies: [...(c.replies || []), newComment],
@@ -75,49 +74,19 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
           return c;
         })
       );
-    } else if (replyToUser && replyToUser !== post.seller.username && replyToUser !== post.seller.name) {
-      // Find matching parent comment by username
-      const foundIndex = comments.findIndex(
-        (c) =>
-          c.user.username?.toLowerCase() === replyToUser.toLowerCase() ||
-          c.user.name.toLowerCase() === replyToUser.toLowerCase()
-      );
-      if (foundIndex !== -1) {
-        setComments((prev) =>
-          prev.map((c, idx) => {
-            if (idx === foundIndex) {
-              return {
-                ...c,
-                replies: [...(c.replies || []), newComment],
-              };
-            }
-            return c;
-          })
-        );
-      } else {
-        setComments((prev) => [newComment, ...prev]);
-      }
     } else {
       // Regular root-level comment to post
       setComments((prev) => [newComment, ...prev]);
     }
 
-    setReplyToUser(null);
     setReplyToCommentId(null);
   };
 
-  const handleReplyClick = (username: string, commentId?: string) => {
-    setReplyToUser(username);
+  const handleReplyClick = (_username: string, commentId?: string) => {
     setReplyToCommentId(commentId || null);
-    const inputEl = document.getElementById('comment-input-field');
-    if (inputEl) {
-      inputEl.focus();
-    }
   };
 
   const handleChatClick = () => {
-    const sellerUsername = post.seller.username || post.seller.name;
-    setReplyToUser(sellerUsername);
     setReplyToCommentId(null);
     const commentsSection = document.getElementById('comments-section');
     if (commentsSection) {
@@ -135,6 +104,9 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
     setIsBuySheetOpen(true);
     onAddToCart?.(post);
   };
+
+  const userAvatar =
+    profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80';
 
   return (
     <div
@@ -185,15 +157,10 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
             <span className="text-xs text-neutral-400">Urutkan dari Terbaru</span>
           </div>
 
-          {/* In-Page Inline Comment Input Field (under Komentar Header) */}
+          {/* In-Page Inline Comment Input Field for Root Comments to Post */}
           <CommentInputBar
-            replyToUser={replyToUser}
             targetAuthor={post.seller.username || post.seller.name}
-            onCancelReply={() => {
-              setReplyToUser(null);
-              setReplyToCommentId(null);
-            }}
-            onSubmitComment={handleAddComment}
+            onSubmitComment={(text) => handleAddComment(text)}
             isInline={true}
           />
 
@@ -224,7 +191,11 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
                     likesCount: chain.likesCount || 0,
                     isLiked: chain.isLiked || false,
                   }}
+                  currentUserAvatar={userAvatar}
+                  activeReplyingCommentId={replyToCommentId}
                   onReplyClick={handleReplyClick}
+                  onCancelReply={() => setReplyToCommentId(null)}
+                  onSubmitReply={(cid, text) => handleAddComment(text, cid)}
                 />
               ))}
 
@@ -233,7 +204,11 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
                 <PostCommentItem
                   key={comment.id}
                   comment={comment}
+                  currentUserAvatar={userAvatar}
+                  activeReplyingCommentId={replyToCommentId}
                   onReplyClick={handleReplyClick}
+                  onCancelReply={() => setReplyToCommentId(null)}
+                  onSubmitReply={(cid, text) => handleAddComment(text, cid)}
                 />
               ))}
             </div>

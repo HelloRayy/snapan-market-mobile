@@ -323,28 +323,30 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
         </div>
       </main>
 
-      {/* Floating Bottom Dual Action CTA (Sticky Bar) */}
+      {/* Floating Bottom Dual Action CTA (Sticky Bar with Kumo UI Styling) */}
       <footer
         className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-neutral-100 px-5 py-3.5 shadow-lg"
         style={{ paddingBottom: 'max(14px, env(safe-area-inset-bottom, 14px))' }}
       >
         <div className="max-w-[520px] mx-auto flex items-center gap-3">
-          {/* Discard Button (Left) */}
+          {/* Discard Button (Left - Kumo UI Secondary Pill) */}
           <button
             type="button"
             onClick={handleDiscard}
-            className="flex-1 py-3.5 px-5 rounded-full border border-neutral-300 bg-white hover:bg-neutral-100 active:scale-95 text-slate-800 font-bold text-[15px] transition-all text-center cursor-pointer shadow-2xs"
+            className="relative flex items-center justify-center flex-1 h-12 px-5 rounded-full text-slate-800 font-bold text-[15px] bg-white border border-neutral-200/90 shadow-2xs hover:bg-neutral-50 active:scale-[0.98] transition-all overflow-hidden cursor-pointer select-none"
           >
-            Discard
+            <span className="absolute inset-0 rounded-full bg-gradient-to-b from-white/90 to-neutral-50/50 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9)] pointer-events-none" />
+            <span className="relative z-10">Discard</span>
           </button>
 
-          {/* Save Button (Right) */}
+          {/* Save Button (Right - Kumo UI Primary Dark Pill) */}
           <button
             type="button"
             onClick={handleSave}
-            className="flex-1 py-3.5 px-5 rounded-full bg-[#101010] hover:bg-black active:scale-95 text-white font-bold text-[15px] transition-all text-center cursor-pointer shadow-md"
+            className="relative flex items-center justify-center flex-1 h-12 px-5 rounded-full text-white font-bold text-[15px] bg-[#101010] hover:bg-black border border-black/90 shadow-md shadow-black/20 active:scale-[0.98] transition-all overflow-hidden cursor-pointer select-none"
           >
-            Save
+            <span className="absolute inset-0 rounded-full bg-gradient-to-b from-white/20 to-transparent shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
+            <span className="relative z-10">Save</span>
           </button>
         </div>
       </footer>

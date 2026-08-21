@@ -363,6 +363,13 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                       </div>
                     )}
                   </div>
+
+                  {/* Thread Page Counter Badge (e.g. 1/2) if multi-thread exists */}
+                  {subThreads.length > 0 && (
+                    <span className="text-[12px] font-bold text-neutral-400 tabular-nums ml-1 select-none">
+                      1/{1 + subThreads.length}
+                    </span>
+                  )}
                 </div>
 
                 {/* Caption Textarea (Fit height, auto-expanding on Enter!) */}
@@ -483,9 +490,9 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
             </div>
           </div>
 
-          {/* 2. Chained Sub-Threads (Utas Bersambung 2 Halaman/Bagian) */}
-          {subThreads.map((st) => (
-            <div key={st.id} className="flex gap-2.5 items-start mt-2.5 pt-2 border-t border-neutral-100/80 transform-gpu animate-toast-pop">
+          {/* 2. Chained Sub-Threads (Utas Bersambung) */}
+          {subThreads.map((st, index) => (
+            <div key={st.id} className="flex gap-2.5 items-start mt-2 transform-gpu animate-toast-pop">
               {/* Left Column: Avatar + Connector Line */}
               <div className="flex flex-col items-center shrink-0 w-8 self-stretch py-0.5">
                 <div className="w-8 h-8 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
@@ -501,22 +508,28 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
               {/* Right Column: Sub-Thread Content */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-[14.5px] text-slate-900">
-                    {currentUser.username}
-                  </span>
+                  <div className="flex items-center gap-1.5 leading-none">
+                    <span className="font-bold text-[14.5px] text-slate-900">
+                      {currentUser.username}
+                    </span>
+                    <span className="text-[12px] font-bold text-neutral-400 tabular-nums select-none">
+                      {index + 2}/{1 + subThreads.length}
+                    </span>
+                  </div>
+
                   <button
                     type="button"
                     onClick={() => handleRemoveSubThread(st.id)}
-                    className="w-6 h-6 rounded-full hover:bg-neutral-100 flex items-center justify-center text-neutral-400 hover:text-slate-700 transition-colors cursor-pointer"
+                    className="w-6 h-6 rounded-full hover:bg-neutral-100 flex items-center justify-center text-neutral-400 hover:text-slate-800 transition-colors cursor-pointer"
                     title="Hapus sambungan utas"
                   >
-                    <X className="w-3.5 h-3.5" />
+                    <X className="w-4 h-4 stroke-[2]" />
                   </button>
                 </div>
 
                 <textarea
                   rows={1}
-                  placeholder="Lanjutkan utasmu..."
+                  placeholder="Say more..."
                   value={st.caption}
                   onChange={(e) => {
                     handleUpdateSubThreadCaption(st.id, e.target.value);

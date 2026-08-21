@@ -404,18 +404,28 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     <span className="truncate max-w-[120px]">{locationInput || 'Lokasi COD'}</span>
                   </button>
 
-                  {/* 3. Sell Product Mode Toggle Pill */}
+                  {/* 3. Sell Product Mode Toggle Switch Button */}
                   <button
                     type="button"
                     onClick={() => setPostMode(postMode === 'product' ? 'thread' : 'product')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12.5px] transition-all cursor-pointer active:scale-95 ${
+                    className={`flex items-center gap-2 pl-3 pr-1.5 py-1 rounded-full text-[12.5px] transition-all cursor-pointer select-none active:scale-95 border ${
                       postMode === 'product'
-                        ? 'bg-blue-50 text-[#1d64ec] border border-blue-200 shadow-2xs font-bold'
-                        : 'bg-neutral-100/90 hover:bg-neutral-200/80 text-slate-800 font-semibold'
+                        ? 'bg-blue-50/90 text-[#1d64ec] border-blue-300 shadow-2xs font-bold'
+                        : 'bg-neutral-100/90 hover:bg-neutral-200/80 border-neutral-200/80 text-slate-800 font-semibold'
                     }`}
                   >
-                    <ShoppingBag className={`w-3.5 h-3.5 stroke-[2] ${postMode === 'product' ? 'text-[#1d64ec]' : 'text-slate-700'}`} />
-                    <span>{postMode === 'product' ? 'Mode Jual Aktif' : 'Jual Produk'}</span>
+                    <span>Jual Produk</span>
+                    <div
+                      className={`w-7 h-4 rounded-full p-0.5 transition-colors duration-200 flex items-center shrink-0 ${
+                        postMode === 'product' ? 'bg-[#1d64ec]' : 'bg-neutral-300'
+                      }`}
+                    >
+                      <div
+                        className={`w-3 h-3 rounded-full bg-white shadow-xs transition-transform duration-200 transform-gpu ${
+                          postMode === 'product' ? 'translate-x-3' : 'translate-x-0'
+                        }`}
+                      />
+                    </div>
                   </button>
                 </div>
               </div>

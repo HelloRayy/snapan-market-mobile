@@ -802,15 +802,33 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
 
               {/* Field 3: Deskripsi Singkat / Rincian Barang */}
               <div className="space-y-1">
-                <label className="block text-[12.5px] font-bold text-slate-800">
-                  Deskripsi Singkat
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="block text-[12.5px] font-bold text-slate-800">
+                    Deskripsi Singkat
+                  </label>
+                  {250 - productDescription.length <= 30 && (
+                    <span
+                      className={`text-[11.5px] font-semibold transition-colors ${
+                        productDescription.length >= 250 ? 'text-rose-600 font-bold' : 'text-rose-500'
+                      }`}
+                    >
+                      {productDescription.length >= 250
+                        ? 'Batas maksimal tercapai'
+                        : `Sisa ${250 - productDescription.length} karakter`}
+                    </span>
+                  )}
+                </div>
                 <textarea
                   rows={4}
+                  maxLength={250}
                   placeholder="Tulis kondisi barang, kelengkapan, atau alasan jual..."
                   value={productDescription}
                   onChange={(e) => setProductDescription(e.target.value)}
-                  className="w-full min-h-[96px] px-3.5 py-2.5 text-[14px] leading-relaxed rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs resize-none"
+                  className={`w-full min-h-[96px] px-3.5 py-2.5 text-[14px] leading-relaxed rounded-xl border ${
+                    productDescription.length >= 250
+                      ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-500/10'
+                      : 'border-neutral-300 focus:border-[#1d64ec] focus:ring-blue-500/10'
+                  } focus:outline-none focus:ring-4 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs resize-none`}
                 />
               </div>
 

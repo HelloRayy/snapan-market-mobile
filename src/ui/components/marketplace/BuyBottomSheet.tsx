@@ -127,7 +127,7 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
           transition: isDragging ? 'none' : 'transform 0.18s cubic-bezier(0.25, 1, 0.5, 1)',
           willChange: 'transform, opacity',
         }}
-        className="relative w-full max-w-md bg-white text-slate-900 rounded-t-[20px] p-5 pb-7 z-10 shadow-[0_-12px_50px_rgba(0,0,0,0.15)] space-y-4 border-t border-neutral-100 transform-gpu animate-page-zoom"
+        className="relative w-full max-w-md bg-white text-slate-900 rounded-t-[24px] px-5 pt-5 pb-6 z-10 shadow-[0_-12px_50px_rgba(0,0,0,0.15)] border-t border-neutral-100 max-h-[88vh] flex flex-col transform-gpu animate-page-zoom"
       >
         {/* Floating Close X Button Floating Above Card Center (Kumo UI Style) */}
         <button
@@ -143,99 +143,102 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
           <X className="w-4 h-4 stroke-[2.2] text-slate-800 relative z-10" />
         </button>
 
-        {/* 1. Header Penjual (Avatar + Nama + Badge Kelas & Slot Tersisa) with Drag Gesture */}
-        <div
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          className="flex items-center justify-between gap-3 pt-0.5 cursor-grab active:cursor-grabbing touch-pan-y"
-        >
-          <div className="flex items-center gap-3 min-w-0">
-            {/* Avatar Penjual */}
-            <img
-              src={post.seller.avatar}
-              alt={post.seller.name}
-              className="w-11 h-11 rounded-full object-cover border border-neutral-200 shrink-0 shadow-2xs"
-            />
-
-            <div className="flex flex-col min-w-0 space-y-1">
-              <div className="flex items-center gap-1.5">
-                <span className="font-bold text-base text-slate-900 truncate">
-                  {post.seller.name}
-                </span>
-                {post.seller.isVerified && (
-                  <ClickableVerifiedBadge sellerName={post.seller.name} className="w-[17px] h-[17px]" />
-                )}
-              </div>
-
-              {/* Badges: Kelas & Slot/Stok */}
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="px-2 py-0.5 rounded-md text-[10.5px] font-semibold bg-neutral-100 text-slate-700 border border-neutral-200/80">
-                  {post.seller.classGroup}
-                </span>
-                <span className="px-2 py-0.5 rounded-md text-[10.5px] font-semibold bg-amber-50 text-amber-700 border border-amber-200/80">
-                  {stockBadgeText}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 2. Main Product Image (Replaces QR Code in Reference Image) */}
-        <div className="relative rounded-2xl overflow-hidden border border-neutral-200/80 bg-neutral-50 group shadow-2xs">
+        {/* Scrollable Modal Content Body */}
+        <div className="overflow-y-auto overscroll-contain space-y-3.5 pr-0.5 scrollbar-none flex-1 pb-1">
+          {/* 1. Header Penjual (Avatar + Nama + Badge Kelas & Slot Tersisa) with Drag Gesture */}
           <div
-            className="w-full h-52 overflow-x-auto flex snap-x snap-mandatory scrollbar-none"
-            onScroll={(e) => {
-              const scrollLeft = e.currentTarget.scrollLeft;
-              const width = e.currentTarget.clientWidth;
-              if (width > 0) {
-                setActiveImageIndex(Math.round(scrollLeft / width));
-              }
-            }}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            className="flex items-center justify-between gap-3 pt-0.5 cursor-grab active:cursor-grabbing touch-pan-y"
           >
-            {images.map((img, idx) => (
+            <div className="flex items-center gap-3 min-w-0">
+              {/* Avatar Penjual */}
               <img
-                key={idx}
-                src={img}
-                alt={`${post.caption} - Preview ${idx + 1}`}
-                className="w-full h-full object-cover shrink-0 snap-center"
+                src={post.seller.avatar}
+                alt={post.seller.name}
+                className="w-11 h-11 rounded-full object-cover border border-neutral-200 shrink-0 shadow-2xs"
               />
-            ))}
-          </div>
 
-          {/* Pagination Dot Indicator */}
-          {images.length > 1 && (
-            <div className="absolute bottom-2.5 left-0 right-0 flex justify-center pointer-events-none">
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20">
-                {images.map((_, idx) => (
-                  <div
-                    key={idx}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                      idx === activeImageIndex
-                        ? 'w-4 bg-white'
-                        : 'w-1.5 bg-white/50'
-                    }`}
-                  />
-                ))}
+              <div className="flex flex-col min-w-0 space-y-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-bold text-base text-slate-900 truncate">
+                    {post.seller.name}
+                  </span>
+                  {post.seller.isVerified && (
+                    <ClickableVerifiedBadge sellerName={post.seller.name} className="w-[17px] h-[17px]" />
+                  )}
+                </div>
+
+                {/* Badges: Kelas & Slot/Stok */}
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="px-2 py-0.5 rounded-md text-[10.5px] font-semibold bg-neutral-100 text-slate-700 border border-neutral-200/80">
+                    {post.seller.classGroup}
+                  </span>
+                  <span className="px-2 py-0.5 rounded-md text-[10.5px] font-semibold bg-amber-50 text-amber-700 border border-amber-200/80">
+                    {stockBadgeText}
+                  </span>
+                </div>
               </div>
             </div>
-          )}
+          </div>
+
+          {/* 2. Main Product Image (Replaces QR Code in Reference Image) */}
+          <div className="relative rounded-2xl overflow-hidden border border-neutral-200/80 bg-neutral-50 group shadow-2xs">
+            <div
+              className="w-full h-44 sm:h-52 overflow-x-auto flex snap-x snap-mandatory scrollbar-none"
+              onScroll={(e) => {
+                const scrollLeft = e.currentTarget.scrollLeft;
+                const width = e.currentTarget.clientWidth;
+                if (width > 0) {
+                  setActiveImageIndex(Math.round(scrollLeft / width));
+                }
+              }}
+            >
+              {images.map((img, idx) => (
+                <img
+                  key={idx}
+                  src={img}
+                  alt={`${post.caption} - Preview ${idx + 1}`}
+                  className="w-full h-full object-cover shrink-0 snap-center"
+                />
+              ))}
+            </div>
+
+            {/* Pagination Dot Indicator */}
+            {images.length > 1 && (
+              <div className="absolute bottom-2.5 left-0 right-0 flex justify-center pointer-events-none">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20">
+                  {images.map((_, idx) => (
+                    <div
+                      key={idx}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${
+                        idx === activeImageIndex
+                          ? 'w-4 bg-white'
+                          : 'w-1.5 bg-white/50'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 3. Detail Produk (Nama Barang & Deskripsi Singkat Saja) */}
+          <div className="space-y-1.5 pt-0.5">
+            <h3 className="font-bold text-lg text-slate-900 leading-snug">
+              {post.title || titleText}
+            </h3>
+            {(post.description || (post.caption && post.caption !== post.title)) && (
+              <p className="text-[13.5px] text-neutral-600 font-normal leading-relaxed whitespace-pre-line break-words">
+                {post.description || post.caption}
+              </p>
+            )}
+          </div>
         </div>
 
-        {/* 3. Detail Produk (Nama Barang & Deskripsi Singkat Saja) */}
-        <div className="space-y-1.5">
-          <h3 className="font-bold text-lg text-slate-900 leading-snug">
-            {post.title || titleText}
-          </h3>
-          {(post.description || (post.caption && post.caption !== post.title)) && (
-            <p className="text-[13px] text-neutral-600 font-normal leading-relaxed line-clamp-4 whitespace-pre-line">
-              {post.description || post.caption}
-            </p>
-          )}
-        </div>
-
-        {/* 4. Tombol Bottom Action (WhatsApp Checkout & Pricing) */}
-        <div className="pt-1 space-y-2">
+        {/* 4. Tombol Bottom Action (WhatsApp Checkout & Pricing) - Anchored at bottom */}
+        <div className="pt-3 space-y-2 shrink-0 border-t border-neutral-100/80 bg-white">
           <button
             type="button"
             onClick={handleWhatsAppCheckout}

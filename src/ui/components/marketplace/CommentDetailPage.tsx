@@ -1,0 +1,382 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { ArrowLeft, Heart, Repeat, Send, BadgeCheck, MoreHorizontal, Crown } from 'lucide-react';
+import { MarketPostItem, PostComment } from '@/types/marketFeed';
+import { FormattedText } from '@/ui/components/ui/FormattedText';
+import { PostCommentItem } from './PostCommentItem';
+import { useAuth } from '@/ui/hooks/useAuth';
+
+// Custom Smooth Rounded Lucide-Family Comment Icon
+const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.75"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-.8 2.5c-.25.78.47 1.5 1.25 1.25l2.5-.8a2 2 0 0 1 1.1.09 10 10 0 1 0-4.144-4.207Z" />
+  </svg>
+);
+
+interface CommentDetailPageProps {
+  parentPost: MarketPostItem;
+  focusedComment: PostComment;
+  onBack: () => void;
+  onUpdateComment?: (updatedComment: PostComment) => void;
+}
+
+export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
+  parentPost,
+  focusedComment,
+  onBack,
+  onUpdateComment,
+}) => {
+  const { profile } = useAuth();
+  const [commentData, setCommentData] = useState<PostComment>(focusedComment);
+  const [isHeroLiked, setIsHeroLiked] = useState(focusedComment.isLiked || false);
+  const [heroLikesCount, setHeroLikesCount] = useState(focusedComment.likesCount);
+  const [replyInputText, setReplyInputText] = useState('');
+  const [replyToCommentId, setReplyToCommentId] = useState<string | null>(null);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setCommentData(focusedComment);
+    setIsHeroLiked(focusedComment.isLiked || false);
+    setHeroLikesCount(focusedComment.likesCount);
+    if (containerRef.current) {
+      containerRef.current.scrollTop = 0;
+    }
+  }, [focusedComment]);
+
+  const handleHeroLikeToggle = () => {
+    const nextLiked = !isHeroLiked;
+    const nextCount = nextLiked ? heroLikesCount + 1 : Math.max(0, heroLikesCount - 1);
+    setIsHeroLiked(nextLiked);
+    setHeroLikesCount(nextCount);
+
+    const updated = {
+      ...commentData,
+      isLiked: nextLiked,
+      likesCount: nextCount,
+    };
+    setCommentData(updated);
+    onUpdateComment?.(updated);
+  };
+
+  const handleAddDirectReply = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!replyInputText.trim()) return;
+
+    const newReply: PostComment = {
+      id: `comment-${Date.now()}`,
+      postId: parentPost.id,
+      user: {
+        id: profile?.id || 'user-current',
+        name: profile?.full_name || 'Raditya Rayhan',
+        username: profile?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn',
+        avatar: profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+        classGroup: profile?.class_group || 'XII PPLG 1',
+        isVerified: true,
+        isAuthor:
+          (profile?.id || 'current-user') === parentPost.seller.id ||
+          parentPost.seller.username === 'radityarayhannnn',
+      },
+      content: replyInputText.trim(),
+      timestamp: 'Baru saja',
+      likesCount: 0,
+      isLiked: false,
+    };
+
+    const updatedComment: PostComment = {
+      ...commentData,
+      replies: [...(commentData.replies || []), newReply],
+    };
+
+    setCommentData(updatedComment);
+    onUpdateComment?.(updatedComment);
+    setReplyInputText('');
+  };
+
+  const handleNestedReplySubmit = (targetChildId: string, text: string) => {
+    const newNestedReply: PostComment = {
+      id: `comment-${Date.now()}`,
+      postId: parentPost.id,
+      user: {
+        id: profile?.id || 'user-current',
+        name: profile?.full_name || 'Raditya Rayhan',
+        username: profile?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn',
+        avatar: profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+        classGroup: profile?.class_group || 'XII PPLG 1',
+        isVerified: true,
+        isAuthor:
+          (profile?.id || 'current-user') === parentPost.seller.id ||
+          parentPost.seller.username === 'radityarayhannnn',
+      },
+      content: text,
+      timestamp: 'Baru saja',
+      likesCount: 0,
+      isLiked: false,
+    };
+
+    const updatedComment: PostComment = {
+      ...commentData,
+      replies: (commentData.replies || []).map((r) => {
+        if (r.id === targetChildId) {
+          return {
+            ...r,
+            replies: [...(r.replies || []), newNestedReply],
+          };
+        }
+        return r;
+      }),
+    };
+
+    setCommentData(updatedComment);
+    onUpdateComment?.(updatedComment);
+    setReplyToCommentId(null);
+  };
+
+  const userAvatar =
+    profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80';
+
+  const repliesList = commentData.replies || [];
+
+  return (
+    <div
+      ref={containerRef}
+      className="fixed inset-0 z-50 overflow-y-auto overscroll-contain bg-white pb-32 font-gt-standard animate-in slide-in-from-right duration-200"
+      style={{
+        WebkitOverflowScrolling: 'touch',
+      }}
+    >
+      {/* Top Header Bar: [Left: ← Back] --- [Center: Utas Komentar] --- [Right: Spacer] */}
+      <header
+        className="sticky top-0 left-0 right-0 z-40 bg-white border-b border-neutral-200/80 px-4 h-14 flex items-center justify-between max-w-xl mx-auto"
+        style={{
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+        }}
+      >
+        <button
+          type="button"
+          onClick={onBack}
+          className="w-10 h-10 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
+          aria-label="Kembali"
+        >
+          <ArrowLeft className="w-5 h-5 stroke-[2.25]" />
+        </button>
+
+        <h1 className="font-semibold text-base text-slate-900">Utas Komentar</h1>
+
+        <div className="w-10 h-10 pointer-events-none" />
+      </header>
+
+      {/* Main Content Area */}
+      <main className="max-w-xl mx-auto px-4 pt-3 space-y-4">
+        {/* 1. Parent Context Snippet (P1 - Connected via Vertical Line to P2) */}
+        <div className="flex items-start gap-3 relative">
+          {/* Left Avatar + Vertical Connector Line down to P2 */}
+          <div className="flex flex-col items-center shrink-0 self-stretch">
+            <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 bg-white">
+              <img
+                src={parentPost.seller.avatar}
+                alt={parentPost.seller.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="w-[2px] flex-1 bg-[#d1d5db] mt-1.5 -mb-3 rounded-full" />
+          </div>
+
+          {/* Right Snippet Content */}
+          <div className="flex-1 min-w-0 pb-1">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="font-semibold text-[14.5px] text-slate-900 truncate">
+                {parentPost.seller.username || parentPost.seller.name}
+              </span>
+              {parentPost.seller.isVerified && (
+                <BadgeCheck className="w-4 h-4 text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" />
+              )}
+            </div>
+            <p className="text-[13.5px] text-neutral-500 font-normal line-clamp-2 leading-relaxed pt-0.5">
+              {parentPost.title ? `${parentPost.title} • ` : ''}
+              {parentPost.caption}
+            </p>
+          </div>
+        </div>
+
+        {/* 2. Hero Focused Comment Card (P2 - The Centerpiece) */}
+        <div className="pt-0 space-y-2 border-b border-neutral-200/80 pb-4">
+          <div className="flex items-start gap-3">
+            {/* P2 Avatar (Hero size 40x40px) */}
+            <div className="w-10 h-10 rounded-full overflow-hidden border border-neutral-200 shadow-2xs shrink-0 bg-white">
+              <img
+                src={commentData.user.avatar}
+                alt={commentData.user.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            {/* P2 Author Info */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+                  <span className="font-bold text-[15.5px] text-slate-900 truncate">
+                    {commentData.user.username || commentData.user.name}
+                  </span>
+
+                  {commentData.user.isVerified && (
+                    <BadgeCheck className="w-[17px] h-[17px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" />
+                  )}
+
+                  {commentData.user.isAuthor && (
+                    <span className="relative inline-flex items-center gap-1 px-2 py-0.5 rounded-[6px] text-[11px] font-medium text-white bg-[#18181b] border border-black/40 shadow-2xs overflow-hidden shrink-0 select-none">
+                      <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
+                      <Crown className="w-3 h-3 text-white fill-white relative z-10 shrink-0" />
+                      <span className="relative z-10 leading-none">Pembuat Utas</span>
+                    </span>
+                  )}
+
+                  <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
+                    {commentData.timestamp}
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Large Focused Comment Text */}
+          <div className="pl-0 pt-1">
+            <p className="text-[16px] text-slate-900 font-normal leading-relaxed break-words">
+              <FormattedText text={commentData.content} />
+            </p>
+
+            {/* Attached Images */}
+            {commentData.images && commentData.images.length > 0 && (
+              <div className="pt-3">
+                <div className="relative w-full rounded-2xl overflow-hidden border border-black/10 shadow-2xs max-h-[320px] aspect-[16/10] bg-neutral-100">
+                  <img
+                    src={commentData.images[0]}
+                    alt="Attachment"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Action Bar */}
+            <div className="flex items-center gap-5 text-slate-500 pt-3 text-[14px]">
+              <button
+                type="button"
+                onClick={handleHeroLikeToggle}
+                className={`flex items-center gap-1.5 hover:opacity-80 active:scale-90 transition-all cursor-pointer ${
+                  isHeroLiked ? 'text-rose-500' : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                <Heart className={`w-4.5 h-4.5 stroke-[1.75] ${isHeroLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+                {heroLikesCount > 0 && <span className="font-semibold text-slate-700">{heroLikesCount}</span>}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => inputRef.current?.focus()}
+                className="flex items-center gap-1.5 hover:text-slate-900 active:scale-90 transition-all cursor-pointer text-slate-500"
+              >
+                <SmoothCommentIcon className="w-4.5 h-4.5 stroke-[1.75]" />
+                {repliesList.length > 0 && (
+                  <span className="font-semibold text-slate-700">{repliesList.length}</span>
+                )}
+              </button>
+
+              <button
+                type="button"
+                className="hover:text-slate-900 active:scale-90 transition-all cursor-pointer text-slate-500"
+              >
+                <Repeat className="w-4.5 h-4.5 stroke-[1.75]" />
+              </button>
+
+              <button
+                type="button"
+                className="hover:text-slate-900 active:scale-90 transition-all cursor-pointer text-slate-500"
+              >
+                <Send className="w-4.5 h-4.5 stroke-[1.75]" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* 3. Reply Input Bar into P2 */}
+        <form
+          onSubmit={handleAddDirectReply}
+          className="flex items-center gap-2.5 bg-neutral-100 focus-within:bg-white focus-within:border-[#1d64ec] border border-neutral-200/80 rounded-full px-4 py-2 transition-all shadow-2xs"
+        >
+          <div className="w-7 h-7 rounded-full overflow-hidden border border-neutral-200 shrink-0">
+            <img src={userAvatar} alt="Profil Saya" className="w-full h-full object-cover" />
+          </div>
+
+          <input
+            ref={inputRef}
+            type="text"
+            value={replyInputText}
+            onChange={(e) => setReplyInputText(e.target.value)}
+            placeholder={`Balas @${commentData.user.username || commentData.user.name}...`}
+            className="flex-1 min-w-0 bg-transparent text-[14px] text-slate-900 placeholder:text-neutral-400 focus:outline-none"
+          />
+
+          <button
+            type="submit"
+            disabled={!replyInputText.trim()}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shrink-0 ${
+              replyInputText.trim()
+                ? 'bg-[#18181b] text-white shadow-xs active:scale-95 cursor-pointer'
+                : 'bg-neutral-200 text-neutral-400 cursor-not-allowed'
+            }`}
+          >
+            Kirim
+          </button>
+        </form>
+
+        {/* 4. Sub-Replies List (P3 & P4) */}
+        <div className="pt-2 space-y-2">
+          <div className="flex items-center justify-between pb-1">
+            <h2 className="font-semibold text-sm text-slate-900">
+              Balasan ({repliesList.length})
+            </h2>
+            <span className="text-xs text-neutral-400">Urutkan dari Terlama</span>
+          </div>
+
+          {repliesList.length > 0 ? (
+            <div className="divide-y divide-neutral-200">
+              {repliesList.map((reply) => (
+                <PostCommentItem
+                  key={reply.id}
+                  comment={reply}
+                  currentUserAvatar={userAvatar}
+                  activeReplyingCommentId={replyToCommentId}
+                  onReplyClick={(_username, cid) => setReplyToCommentId(cid || null)}
+                  onCancelReply={() => setReplyToCommentId(null)}
+                  onSubmitReply={handleNestedReplySubmit}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="py-10 text-center space-y-1">
+              <p className="text-slate-600 font-medium text-sm">Belum ada balasan</p>
+              <p className="text-neutral-400 text-xs">Jadilah yang pertama membalas!</p>
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  );
+};

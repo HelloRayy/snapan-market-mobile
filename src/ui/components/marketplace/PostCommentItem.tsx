@@ -26,6 +26,7 @@ interface PostCommentItemProps {
   onReplyClick?: (username: string, commentId?: string) => void;
   onCancelReply?: () => void;
   onSubmitReply?: (commentId: string, text: string) => void;
+  onOpenCommentDetail?: (comment: PostComment) => void;
   isNested?: boolean;
 }
 
@@ -36,6 +37,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
   onReplyClick,
   onCancelReply,
   onSubmitReply,
+  onOpenCommentDetail,
   isNested = false,
 }) => {
   const [isLiked, setIsLiked] = useState(comment.isLiked || false);
@@ -310,9 +312,15 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
 
           {/* Child Replies List (Indented right with ml-7) */}
           <div className="space-y-3.5">
-            {repliesState.map((reply, idx) => {
+            {(onOpenCommentDetail && repliesState.length > 1
+              ? repliesState.slice(0, 1)
+              : repliesState
+            ).map((reply, idx) => {
               const isFirstChild = idx === 0;
-              const isLastChild = idx === repliesState.length - 1 && !isReplying;
+              const isLastChild =
+                (onOpenCommentDetail && repliesState.length > 1
+                  ? true
+                  : idx === repliesState.length - 1) && !isReplying;
 
               return (
                 <div key={reply.id || idx} className="flex items-start gap-3 ml-7 relative">
@@ -337,7 +345,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                     </div>
 
                     {/* Straight vertical line continuing under avatar to subsequent replies */}
-                    {!isLastChild && (
+                    {(!isLastChild || (onOpenCommentDetail && repliesState.length > 1)) && (
                       <div className="w-[2px] flex-1 bg-[#d1d5db] mt-1 -mb-3.5 rounded-full" />
                     )}
                   </div>
@@ -376,7 +384,12 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                       </button>
                     </div>
 
-                    <p className="text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5">
+                    <p
+                      onClick={() => onOpenCommentDetail?.(comment)}
+                      className={`text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5 ${
+                        onOpenCommentDetail ? 'cursor-pointer' : ''
+                      }`}
+                    >
                       <FormattedText text={reply.content} />
                     </p>
 
@@ -390,6 +403,33 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 </div>
               );
             })}
+
+            {/* Threads-style "Show replies" Stacked Avatar Button */}
+            {onOpenCommentDetail && repliesState.length > 1 && (
+              <div className="flex items-center gap-3 ml-7 relative pt-0.5">
+                <div className="flex flex-col items-center shrink-0 z-10">
+                  <div className="w-[2px] h-3 bg-[#d1d5db] -mt-3.5 shrink-0" />
+                  <div className="flex -space-x-1.5 shrink-0 py-0.5">
+                    {repliesState.slice(1, 4).map((r, i) => (
+                      <img
+                        key={i}
+                        src={r.user.avatar}
+                        alt={r.user.name}
+                        className="w-4.5 h-4.5 rounded-full object-cover border border-white shadow-2xs bg-white"
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => onOpenCommentDetail?.(comment)}
+                  className="text-[13px] font-normal text-neutral-400 hover:text-slate-900 transition-colors py-0.5 cursor-pointer text-left flex items-center gap-1.5 active:scale-95"
+                >
+                  <span>Lihat {repliesState.length - 1} balasan lainnya</span>
+                </button>
+              </div>
+            )}
 
             {/* INLINE IN-PLACE SUB-REPLY INPUT (Straight line below last reply) */}
             {isReplying && (

@@ -104,11 +104,17 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
     onLike?: () => void,
     onReply?: () => void
   ) => (
-    <div className="flex items-center gap-4 text-slate-500 pt-2 text-[13px]">
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className="flex items-center gap-4 text-slate-500 pt-2 text-[13px]"
+    >
       {/* Like Button */}
       <button
         type="button"
-        onClick={onLike}
+        onClick={(e) => {
+          e.stopPropagation();
+          onLike?.();
+        }}
         className={`flex items-center gap-1 hover:opacity-80 active:scale-90 transition-all cursor-pointer ${
           liked ? 'text-rose-500' : 'text-slate-500 hover:text-slate-900'
         }`}
@@ -120,7 +126,10 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
       {/* Reply Button */}
       <button
         type="button"
-        onClick={onReply}
+        onClick={(e) => {
+          e.stopPropagation();
+          onReply?.();
+        }}
         className="flex items-center gap-1 hover:text-slate-900 active:scale-90 transition-all cursor-pointer text-slate-500"
       >
         <SmoothCommentIcon className="w-4 h-4 stroke-[1.75]" />
@@ -129,6 +138,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
       {/* Repost Button */}
       <button
         type="button"
+        onClick={(e) => e.stopPropagation()}
         className="hover:text-slate-900 active:scale-90 transition-all cursor-pointer text-slate-500"
       >
         <Repeat className="w-4 h-4 stroke-[1.75]" />
@@ -137,6 +147,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
       {/* Share Button */}
       <button
         type="button"
+        onClick={(e) => e.stopPropagation()}
         className="hover:text-slate-900 active:scale-90 transition-all cursor-pointer text-slate-500"
       >
         <Send className="w-4 h-4 stroke-[1.75]" />
@@ -147,15 +158,13 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
   return (
     <div className={`w-full ${isNested ? 'pt-3.5 pl-0' : 'py-3.5 border-b border-neutral-200'}`}>
       {!isThreadConnected ? (
-        /* SINGLE COMMENT (NO REPLIES & NOT CURRENTLY REPLYING): 2-Column Threads Layout */
-        <div className="flex items-start gap-3">
+        /* SINGLE COMMENT (NO REPLIES & NOT CURRENTLY REPLYING): Entire Card is Clickable Trigger */
+        <div
+          onClick={() => onOpenCommentDetail?.(comment)}
+          className={`flex items-start gap-3 w-full ${onOpenCommentDetail ? 'cursor-pointer' : ''}`}
+        >
           {/* Left Column: Avatar (36x36px) */}
-          <div
-            onClick={() => onOpenCommentDetail?.(comment)}
-            className={`w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 mt-0.5 ${
-              onOpenCommentDetail ? 'cursor-pointer hover:opacity-90 active:scale-95 transition-all' : ''
-            }`}
-          >
+          <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 mt-0.5">
             <img
               src={comment.user.avatar}
               alt={comment.user.name}
@@ -167,12 +176,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
           <div className="flex-1 min-w-0 space-y-1">
             {/* Header Row: Username + Verified + Timestamp + Options (...) */}
             <div className="flex items-center justify-between gap-2">
-              <div
-                onClick={() => onOpenCommentDetail?.(comment)}
-                className={`flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden ${
-                  onOpenCommentDetail ? 'cursor-pointer' : ''
-                }`}
-              >
+              <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
                 <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
                   {comment.user.username || comment.user.name}
                 </span>
@@ -197,6 +201,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
               {/* Option (...) Icon */}
               <button
                 type="button"
+                onClick={(e) => e.stopPropagation()}
                 className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
                 aria-label="Opsi komentar"
               >
@@ -205,10 +210,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
             </div>
 
             {/* Comment Content */}
-            <div
-              onClick={() => onOpenCommentDetail?.(comment)}
-              className={onOpenCommentDetail ? 'cursor-pointer' : ''}
-            >
+            <div>
               <p className="text-[15px] text-slate-900 font-normal leading-snug break-words">
                 <FormattedText text={comment.content} />
                 {comment.threadPart && comment.totalParts && (
@@ -262,10 +264,13 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
       ) : (
         /* THREAD COMMENT WITH CONNECTED BRANCH (REPLIES OR CURRENTLY TYPING INLINE REPLY) */
         <div className="space-y-3">
-          {/* Parent Comment Row */}
-          <div className="flex items-start gap-3">
-            {/* Left Parent Column: Avatar (36x36px) + Dynamic Vertical Connecting Line */}
-            <div className="flex flex-col items-center shrink-0 self-stretch">
+          {/* Parent Comment Row (Full Row Clickable Trigger) */}
+          <div
+            onClick={() => onOpenCommentDetail?.(comment)}
+            className={`flex items-start gap-3 relative w-full ${onOpenCommentDetail ? 'cursor-pointer' : ''}`}
+          >
+            {/* Left Column: Avatar + Continuous Branch Line */}
+            <div className="flex flex-col items-center shrink-0 self-stretch z-10">
               <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 bg-white">
                 <img
                   src={comment.user.avatar}
@@ -274,8 +279,8 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 />
               </div>
 
-              {/* Dynamic 2px Vertical Line */}
-              <div className="w-[2px] flex-1 bg-[#d1d5db] mt-1 mb-0 rounded-full" />
+              {/* Vertical branch line extending down to connect child replies */}
+              <div className="w-[2px] flex-1 bg-[#d1d5db] mt-1 -mb-3.5 rounded-full" />
             </div>
 
             {/* Right Parent Content */}
@@ -305,6 +310,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
 
                 <button
                   type="button"
+                  onClick={(e) => e.stopPropagation()}
                   className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
                   aria-label="Opsi komentar"
                 >
@@ -312,10 +318,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 </button>
               </div>
 
-              <div
-                onClick={() => onOpenCommentDetail?.(comment)}
-                className={onOpenCommentDetail ? 'cursor-pointer' : ''}
-              >
+              <div>
                 <p className="text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5">
                   <FormattedText text={comment.content} />
                 </p>
@@ -343,7 +346,11 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                   : idx === repliesState.length - 1) && !isReplying;
 
               return (
-                <div key={reply.id || idx} className="flex items-start gap-3 ml-7 relative">
+                <div
+                  key={reply.id || idx}
+                  onClick={() => onOpenCommentDetail?.(reply)}
+                  className={`flex items-start gap-3 ml-7 relative w-full ${onOpenCommentDetail ? 'cursor-pointer' : ''}`}
+                >
                   {/* First reply gets the initial L-Curve (└─) from Parent */}
                   {isFirstChild && (
                     <div className="absolute -left-[11px] -top-3.5 h-[32px] w-[12px] border-l-2 border-b-2 border-[#d1d5db] rounded-bl-xl pointer-events-none z-0" />
@@ -397,6 +404,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
 
                       <button
                         type="button"
+                        onClick={(e) => e.stopPropagation()}
                         className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
                         aria-label="Opsi komentar"
                       >
@@ -404,10 +412,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                       </button>
                     </div>
 
-                    <div
-                      onClick={() => onOpenCommentDetail?.(reply)}
-                      className={onOpenCommentDetail ? 'cursor-pointer' : ''}
-                    >
+                    <div>
                       <p className="text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5">
                         <FormattedText text={reply.content} />
                       </p>

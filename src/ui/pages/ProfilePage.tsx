@@ -371,6 +371,32 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               </>
             )}
           </div>
+
+          {/* Row 4: Bakat & Minat Badges (Signature Threads Style) */}
+          <div className="flex items-center flex-wrap gap-1.5 pt-1.5 pb-0.5 select-none">
+            {profileData.tags.map((tag, idx) => (
+              <div
+                key={idx}
+                className="inline-flex items-center justify-center gap-x-1 py-1.5 px-3 bg-neutral-100/90 hover:bg-blue-50/80 text-[#18a3fe] hover:text-[#0b8ce4] text-[13px] font-semibold rounded-[45px] border border-neutral-200/80 hover:border-blue-200 cursor-pointer transition-all active:scale-95 shadow-2xs"
+              >
+                <span>{tag}</span>
+              </div>
+            ))}
+
+            {/* The "+" Button to Add / Edit Interests (for Own Profile) */}
+            {isOwnProfile && (
+              <div
+                onClick={() => {
+                  window.history.pushState({ layer: 'edit-profile' }, '', window.location.pathname + '#edit-profile');
+                  setIsEditScreenOpen(true);
+                }}
+                className="inline-flex items-center justify-center gap-x-1 py-1.5 px-3 bg-neutral-100/90 hover:bg-neutral-200/80 text-[#777777] hover:text-slate-900 text-[13px] font-semibold rounded-[45px] border border-neutral-200/80 cursor-pointer transition-all active:scale-95 shadow-2xs"
+                title="Tambah / Ubah Minat"
+              >
+                <span>+</span>
+              </div>
+            )}
+          </div>
         </section>
 
         {/* Action Buttons */}
@@ -382,12 +408,13 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 window.history.pushState({ layer: 'edit-profile' }, '', window.location.pathname + '#edit-profile');
                 setIsEditScreenOpen(true);
               }}
-              className="w-full h-9 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center"
+              className="w-full h-10 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center shadow-2xs"
             >
               Edit profil
             </button>
           ) : (
-            <>
+            <div className="flex gap-x-2.5 w-full items-center select-none">
+              {/* Tombol 1: Ikuti / Mengikuti (Kumo UI Primary Solid) */}
               <button
                 type="button"
                 onClick={() => {
@@ -397,35 +424,34 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                     followersCount: isFollowing ? prev.followersCount - 1 : prev.followersCount + 1,
                   }));
                 }}
-                className={`flex-1 h-9 rounded-xl font-bold text-[13.5px] transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-[0.98] ${
+                className={`relative flex items-center justify-center flex-1 h-10 px-4 rounded-xl font-bold text-[14px] transition-all overflow-hidden cursor-pointer select-none active:scale-[0.98] ${
                   isFollowing
-                    ? 'border border-neutral-300 bg-white text-slate-900 hover:bg-neutral-50'
-                    : 'bg-[#18181b] text-white hover:bg-black'
+                    ? 'bg-white text-slate-800 border border-neutral-200/90 shadow-2xs hover:bg-neutral-50'
+                    : 'bg-[#101010] text-white border border-black/90 shadow-md shadow-black/20 hover:bg-black'
                 }`}
               >
-                {isFollowing ? (
-                  <>
-                    <UserCheck className="w-4 h-4" />
-                    <span>Mengikuti</span>
-                  </>
-                ) : (
-                  <>
-                    <UserPlus className="w-4 h-4" />
-                    <span>Ikuti Toko</span>
-                  </>
-                )}
+                <span className="absolute inset-0 rounded-xl bg-gradient-to-b from-white/20 to-transparent shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
+                <span className="relative z-10 flex items-center gap-1.5">
+                  {isFollowing ? <UserCheck className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
+                  <span>{isFollowing ? 'Mengikuti' : 'Ikuti'}</span>
+                </span>
               </button>
+
+              {/* Tombol 2: Kirim Pesan (Kumo UI Secondary Outline) */}
               <button
                 type="button"
                 onClick={() => {
                   alert(`Fitur chat langsung dengan @${profileData.username} akan segera hadir!`);
                 }}
-                className="flex-1 h-9 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                className="relative flex items-center justify-center flex-1 h-10 px-4 rounded-xl font-bold text-[14px] bg-white text-slate-800 border border-neutral-200/90 shadow-2xs hover:bg-neutral-50 transition-all overflow-hidden cursor-pointer select-none active:scale-[0.98]"
               >
-                <MessageCircle className="w-4 h-4 text-slate-700" />
-                <span>Pesan</span>
+                <span className="absolute inset-0 rounded-xl bg-gradient-to-b from-white/90 to-neutral-50/50 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9)] pointer-events-none" />
+                <span className="relative z-10 flex items-center gap-1.5">
+                  <MessageCircle className="w-4 h-4 text-slate-700 stroke-[1.8]" />
+                  <span>Kirim pesan</span>
+                </span>
               </button>
-            </>
+            </div>
           )}
         </div>
 

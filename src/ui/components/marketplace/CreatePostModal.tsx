@@ -950,11 +950,11 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
             </div>
 
             {/* Full-Page Drafts List */}
-            <div className="flex-1 overflow-y-auto divide-y divide-neutral-100 max-w-lg mx-auto w-full">
+            <div className="flex-1 overflow-y-auto max-w-lg mx-auto w-full">
               {savedDraft ? (
                 <div
                   onClick={() => handleApplyDraft(savedDraft)}
-                  className="p-4 hover:bg-neutral-50 active:bg-neutral-100/70 transition-colors cursor-pointer flex gap-3 items-start"
+                  className="p-4 hover:bg-neutral-50 active:bg-neutral-100/70 transition-colors cursor-pointer flex gap-3 items-start border-b border-neutral-100"
                 >
                   {/* Avatar */}
                   <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 mt-0.5">

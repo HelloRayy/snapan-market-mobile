@@ -372,7 +372,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
 
                   {/* Thread Page Counter Badge (e.g. 1/2) if multi-thread exists */}
                   {subThreads.length > 0 && (
-                    <span className="text-[12px] font-bold text-neutral-400 tabular-nums ml-1 select-none">
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11.5px] tabular-nums select-none ml-1">
                       1/{1 + subThreads.length}
                     </span>
                   )}
@@ -518,7 +518,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     <span className="font-bold text-[14.5px] text-slate-900">
                       {currentUser.username}
                     </span>
-                    <span className="text-[12px] font-bold text-neutral-400 tabular-nums select-none">
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11.5px] tabular-nums select-none">
                       {index + 2}/{1 + subThreads.length}
                     </span>
                   </div>

@@ -356,7 +356,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           <p className="text-[15px] text-slate-900 font-normal leading-snug break-words">
             <FormattedText text={item.caption} />
             {item.totalThreadParts && item.totalThreadParts > 1 && (
-              <span className="text-[13px] font-bold text-neutral-400 tabular-nums ml-2 select-none inline-block">
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11.5px] tabular-nums select-none ml-1.5 align-middle">
                 1/{item.totalThreadParts}
               </span>
             )}
@@ -459,7 +459,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             <p className="text-[16px] text-slate-900 font-normal leading-snug break-words">
               <FormattedText text={item.caption} />
               {item.totalThreadParts && item.totalThreadParts > 1 && (
-                <span className="text-[13px] font-bold text-neutral-400 tabular-nums ml-2 select-none inline-block">
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11.5px] tabular-nums select-none ml-1.5 align-middle">
                   1/{item.totalThreadParts}
                 </span>
               )}

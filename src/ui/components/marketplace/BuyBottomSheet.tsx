@@ -107,34 +107,27 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
 
   const images = post.images && post.images.length > 0 ? post.images : ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80'];
 
+  if (!isOpen) return null;
+
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-end justify-center font-gt-standard transition-all duration-200 ${
-        isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-      }`}
+      className="fixed inset-0 z-50 flex items-end justify-center font-gt-standard pointer-events-auto"
     >
       {/* Dark Backdrop Overlay */}
       <div
         onClick={onClose}
-        className={`absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-200 ${
-          isOpen ? 'opacity-100' : 'opacity-0'
-        }`}
+        className="absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-180 animate-backdrop-fade"
         onTouchMove={(e) => e.preventDefault()}
       />
 
-      {/* Bottom Sheet White Card - Reduced Corner Radius & Floating Close Button */}
+      {/* Bottom Sheet White Card - GPU Accelerated Subtle Zoom-In (matching HomePage -> DetailPage transition) */}
       <div
         style={{
-          transform: !isOpen
-            ? 'translateY(100%)'
-            : dragY > 0
-            ? `translateY(${dragY}px)`
-            : 'translateY(0%)',
-          transition: isDragging
-            ? 'none'
-            : 'transform 0.20s cubic-bezier(0.25, 1, 0.5, 1)',
+          transform: dragY > 0 ? `translate3d(0, ${dragY}px, 0)` : undefined,
+          transition: isDragging ? 'none' : 'transform 0.18s cubic-bezier(0.25, 1, 0.5, 1)',
+          willChange: 'transform, opacity',
         }}
-        className="relative w-full max-w-md bg-white text-slate-900 rounded-t-[20px] p-5 pb-7 z-10 shadow-[0_-12px_50px_rgba(0,0,0,0.15)] space-y-4 border-t border-neutral-100 will-change-transform"
+        className="relative w-full max-w-md bg-white text-slate-900 rounded-t-[20px] p-5 pb-7 z-10 shadow-[0_-12px_50px_rgba(0,0,0,0.15)] space-y-4 border-t border-neutral-100 transform-gpu animate-page-zoom"
       >
         {/* Floating Close X Button Floating Above Card Center (Kumo UI Style) */}
         <button

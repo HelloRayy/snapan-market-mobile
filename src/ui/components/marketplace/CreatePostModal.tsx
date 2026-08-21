@@ -410,12 +410,12 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     <button
                       type="button"
                       onClick={() => setShowTopicDropdown(!showTopicDropdown)}
-                      className="flex items-center gap-1 text-[13px] font-normal transition-all cursor-pointer"
+                      className="flex items-center gap-1 text-[14.5px] transition-all cursor-pointer"
                     >
-                      <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2.5] shrink-0" />
+                      <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2] shrink-0" />
                       {selectedTopic ? (
                         <span
-                          className={`flex items-center gap-1 font-bold text-[14px] hover:opacity-80 transition-opacity ${
+                          className={`flex items-center gap-1 font-bold text-[14.5px] hover:opacity-80 transition-opacity ${
                             selectedTopic.isOfficial
                               ? 'text-[#1d64ec]'
                               : 'text-slate-900'
@@ -431,7 +431,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                           <span>{selectedTopic.name}</span>
                         </span>
                       ) : (
-                        <span className="text-neutral-400 hover:text-neutral-600 font-normal text-[14px] transition-colors">
+                        <span className="text-neutral-400 hover:text-neutral-600 font-normal text-[14.5px] transition-colors">
                           Community or topic
                         </span>
                       )}

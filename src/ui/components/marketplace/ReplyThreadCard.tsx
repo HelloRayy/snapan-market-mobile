@@ -245,8 +245,8 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
 
               {parentPost.topicTag ? (
                 <div className="flex items-center gap-1 shrink-1 min-w-0 overflow-hidden ml-0.5">
-                  {/* Larger Chevron Arrow Separator */}
-                  <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2.5] shrink-0" />
+                  {/* Subtle Grey Chevron Arrow Separator */}
+                  <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2] shrink-0" />
 
                   {/* Render special blue icon if official topic */}
                   {parentPost.isOfficialTopic && (

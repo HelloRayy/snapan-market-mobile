@@ -309,8 +309,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
                 {item.topicTag ? (
                   <div className="flex items-center gap-1 shrink-1 min-w-0 overflow-hidden ml-0.5">
-                    {/* Larger Chevron Arrow Separator */}
-                    <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2.5] shrink-0" />
+                    {/* Subtle Grey Chevron Arrow Separator */}
+                    <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2] shrink-0" />
 
                     {/* Render special blue icon if official topic */}
                     {item.isOfficialTopic && (
@@ -327,7 +327,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                         e.stopPropagation();
                         onTopicClick?.(item.topicTag!);
                       }}
-                      className={`font-bold text-[14px] transition-colors cursor-pointer truncate max-w-[140px] sm:max-w-[220px] ${
+                      className={`font-bold text-[14.5px] transition-colors cursor-pointer truncate max-w-[140px] sm:max-w-[220px] ${
                         item.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-900 hover:text-[#1d64ec] hover:underline'
                       }`}
                     >

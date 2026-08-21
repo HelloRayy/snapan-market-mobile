@@ -77,7 +77,7 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-50 font-gt-standard select-none bg-white/95 backdrop-blur-xl border-t border-neutral-200/80 shadow-[0_-4px_24px_rgba(0,0,0,0.04)] transition-transform duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] transform-gpu ${
+      className={`fixed bottom-0 left-0 right-0 z-50 font-gt-standard select-none bg-white border-t border-neutral-200/80 shadow-[0_-4px_24px_rgba(0,0,0,0.04)] transition-transform duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] transform-gpu ${
         isVisible ? 'translate-y-0' : 'translate-y-[120%]'
       }`}
       style={{

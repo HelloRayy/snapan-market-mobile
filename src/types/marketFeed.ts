@@ -67,12 +67,6 @@ export interface MarketPostItem {
   comments?: PostComment[];
   threadChain?: ThreadChainItem[]; // Chained author thread continuation items (e.g. part 2/3, 3/3 in comments section)
   totalThreadParts?: number; // e.g. 3 (so part 1 shows "1/3")
-  musicTrack?: {
-    title: string;
-    artist: string;
-    audioUrl?: string;
-    duration?: number;
-  };
 }
 
 export interface UserReplyThread {

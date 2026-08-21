@@ -124,6 +124,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost, onNavigateToPr
       topicTag: newPostData.topicTag,
       isOfficialTopic: newPostData.isOfficialTopic,
       topicIcon: newPostData.topicIcon,
+      threadChain: newPostData.threadChain,
+      totalThreadParts: newPostData.totalThreadParts,
       likesCount: 0,
       commentsCount: 0,
       repostsCount: 0,

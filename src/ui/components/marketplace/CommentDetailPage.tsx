@@ -326,12 +326,15 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
             {/* Attached Images */}
             {activeComment.images && activeComment.images.length > 0 && (
               <div className="pt-3">
-                <div className="relative w-full rounded-2xl overflow-hidden border border-black/10 shadow-2xs max-h-[320px] aspect-[16/10] bg-neutral-100">
-                  <img
-                    src={activeComment.images[0]}
-                    alt="Attachment"
-                    className="w-full h-full object-cover"
-                  />
+                <div className="relative w-full rounded-[18px] overflow-hidden border border-black/10 shadow-2xs max-h-[420px] aspect-[4/5] sm:aspect-[16/10] bg-neutral-100">
+                  <picture className="block w-full h-full cursor-pointer">
+                    <img
+                      src={activeComment.images[0]}
+                      alt="Attachment"
+                      className="w-full h-full object-cover select-none"
+                    />
+                  </picture>
+                  <div className="absolute inset-0 rounded-[18px] ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
                 </div>
               </div>
             )}

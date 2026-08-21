@@ -155,14 +155,16 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
             setSelectedImageIndex(0);
             setIsLightboxOpen(true);
           }}
-          className="relative w-full rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[340px] aspect-[16/10] mt-2.5 cursor-pointer touch-pan-y"
+          className="relative w-full rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[420px] aspect-[4/5] sm:aspect-[16/10] mt-2.5 cursor-pointer touch-pan-y"
         >
-          <img
-            src={parentPost.images[0]}
-            alt={parentPost.title || parentPost.caption}
-            className="w-full h-full object-cover hover:scale-[1.01] transition-transform duration-300 pointer-events-none"
-          />
-          <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
+          <picture className="block w-full h-full cursor-pointer">
+            <img
+              src={parentPost.images[0]}
+              alt={parentPost.title || parentPost.caption}
+              className="w-full h-full object-cover hover:scale-[1.01] transition-transform duration-300 pointer-events-none select-none"
+            />
+          </picture>
+          <div className="absolute inset-0 rounded-[18px] ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
         </div>
       );
     }
@@ -185,14 +187,16 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
               setSelectedImageIndex(idx);
               setIsLightboxOpen(true);
             }}
-            className="relative shrink-0 w-[82%] sm:w-[75%] rounded-2xl overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[340px] aspect-[3/4] cursor-pointer"
+            className="relative shrink-0 w-[82%] sm:w-[75%] rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[380px] aspect-[3/4] cursor-pointer"
           >
-            <img
-              src={imgUrl}
-              alt={`${parentPost.caption} - ${idx + 1}`}
-              className="w-full h-full object-cover pointer-events-none"
-            />
-            <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
+            <picture className="block w-full h-full cursor-pointer">
+              <img
+                src={imgUrl}
+                alt={`${parentPost.caption} - ${idx + 1}`}
+                className="w-full h-full object-cover pointer-events-none select-none"
+              />
+            </picture>
+            <div className="absolute inset-0 rounded-[18px] ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
           </div>
         ))}
       </div>

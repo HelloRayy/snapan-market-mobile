@@ -17,15 +17,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <Card className="group flex flex-col justify-between hover:border-neutral-300 transition-all duration-300 hover:shadow-md">
-      <div className="relative aspect-square w-full bg-neutral-100 overflow-hidden rounded-2xl">
-        <picture className="block w-full h-full text-[#385898] text-base font-normal">
-          <img
-            src={product.images[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80'}
-            alt={product.name}
-            className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-            loading="lazy"
-          />
-        </picture>
+      <div className="relative aspect-square w-full bg-neutral-100 overflow-hidden">
+        <img
+          src={product.images[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80'}
+          alt={product.name}
+          className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+          loading="lazy"
+        />
         {product.originalPrice && product.originalPrice > product.price && (
           <Badge variant="rose" className="absolute top-2 left-2">
             Diskon {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%

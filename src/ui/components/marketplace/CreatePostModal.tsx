@@ -54,6 +54,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
   const [caption, setCaption] = useState('');
   const [subThreads, setSubThreads] = useState<{ id: string; caption: string; images: string[] }[]>([]);
   const [productTitle, setProductTitle] = useState('');
+  const [productDescription, setProductDescription] = useState('');
   const [priceInput, setPriceInput] = useState<string>('');
   const [stockInput, setStockInput] = useState<string>('');
   const [locationInput, setLocationInput] = useState<string>('');
@@ -147,7 +148,12 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     }
   };
 
-  const canPost = caption.trim().length > 0 || images.length > 0 || productTitle.trim().length > 0 || subThreads.some(st => st.caption.trim().length > 0);
+  const canPost =
+    caption.trim().length > 0 ||
+    images.length > 0 ||
+    productTitle.trim().length > 0 ||
+    productDescription.trim().length > 0 ||
+    subThreads.some((st) => st.caption.trim().length > 0);
 
   const handleSubmit = () => {
     if (!canPost) return;
@@ -181,11 +187,11 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     const newPost: Partial<MarketPostItem> = {
       postType: postMode,
       title: isProductMode ? (productTitle || caption.slice(0, 30)) : undefined,
-      caption: caption || productTitle,
+      caption: caption || productDescription || productTitle,
       images,
       price: parsedPrice,
       stock: parsedStock,
-      locationTag: isProductMode ? (locationInput || 'Lab PPLG') : undefined,
+      locationTag: isProductMode ? (locationInput || 'Kantin') : undefined,
       topicTag: selectedTopic ? selectedTopic.name : undefined,
       isOfficialTopic: selectedTopic ? selectedTopic.isOfficial : false,
       topicIcon: selectedTopic?.icon || (selectedTopic?.isOfficial ? 'threads' : undefined),
@@ -204,6 +210,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     setCaption('');
     setSubThreads([]);
     setProductTitle('');
+    setProductDescription('');
     setPriceInput('');
     setStockInput('');
     setLocationInput('');
@@ -220,6 +227,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
       caption.trim().length > 0 ||
       images.length > 0 ||
       productTitle.trim().length > 0 ||
+      productDescription.trim().length > 0 ||
       subThreads.some((st) => st.caption.trim().length > 0 || st.images.length > 0);
 
     if (hasContent) {
@@ -238,6 +246,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     setCaption('');
     setSubThreads([]);
     setProductTitle('');
+    setProductDescription('');
     setPriceInput('');
     setStockInput('');
     setLocationInput('');
@@ -278,6 +287,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
         caption,
         subThreads,
         productTitle,
+        productDescription,
         priceInput,
         stockInput,
         locationInput,
@@ -304,6 +314,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
       if (draft.caption !== undefined) setCaption(draft.caption);
       if (draft.subThreads !== undefined) setSubThreads(draft.subThreads);
       if (draft.productTitle !== undefined) setProductTitle(draft.productTitle);
+      if (draft.productDescription !== undefined) setProductDescription(draft.productDescription);
       if (draft.priceInput !== undefined) setPriceInput(draft.priceInput);
       if (draft.stockInput !== undefined) setStockInput(draft.stockInput);
       if (draft.locationInput !== undefined) setLocationInput(draft.locationInput);
@@ -781,7 +792,21 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 </div>
               </div>
 
-              {/* Field 3: Lokasi COD di Sekolah (1-Tap Quick Chips + Custom Input) */}
+              {/* Field 3: Deskripsi Singkat / Rincian Barang */}
+              <div className="space-y-1">
+                <label className="block text-[12.5px] font-bold text-slate-800">
+                  Deskripsi Singkat
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="Kondisi barang, kelengkapan, minus, atau alasan jual..."
+                  value={productDescription}
+                  onChange={(e) => setProductDescription(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs resize-none"
+                />
+              </div>
+
+              {/* Field 4: Lokasi COD di Sekolah (1-Tap Quick Chips + Custom Input) */}
               <div className="space-y-2 pt-0.5">
                 <div className="flex items-center justify-between">
                   <label className="block text-[12.5px] font-bold text-slate-800">

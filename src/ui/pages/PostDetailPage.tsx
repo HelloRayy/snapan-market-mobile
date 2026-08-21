@@ -245,7 +245,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         </>
       )}
 
-      {/* Fullscreen Thread Detail Page with Full Root Post Scrollable Above! */}
+      {/* Threads-style Sub-Thread Comment Detail Modal / Fullscreen Sub-Page */}
       {focusedComment && (
         <CommentDetailPage
           parentPost={post}

@@ -43,7 +43,6 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
   const [isLiked, setIsLiked] = useState(comment.isLiked || false);
   const [likesCount, setLikesCount] = useState(comment.likesCount);
   const [repliesState, setRepliesState] = useState(comment.replies || []);
-  const [isExpanded, setIsExpanded] = useState(false);
   const [replyDraftText, setReplyDraftText] = useState('');
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -159,10 +158,14 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
   return (
     <div className={`w-full ${isNested ? 'pt-3.5 pl-0' : 'py-3.5 border-b border-neutral-200'}`}>
       {!isThreadConnected ? (
-        /* SINGLE COMMENT (NO REPLIES & NOT CURRENTLY REPLYING): Entire Card is Clickable Trigger */
+        /* SINGLE COMMENT (NO REPLIES & NOT CURRENTLY REPLYING): Entire Card is Clickable Trigger with Tactile Feedback */
         <div
           onClick={() => onOpenCommentDetail?.(comment)}
-          className={`flex items-start gap-3 w-full ${onOpenCommentDetail ? 'cursor-pointer' : ''}`}
+          className={`flex items-start gap-3 w-full -mx-2 px-2 py-1.5 rounded-2xl ${
+            onOpenCommentDetail
+              ? 'cursor-pointer active:bg-neutral-100/70 active:scale-[0.995] transition-all duration-75'
+              : ''
+          }`}
         >
           {/* Left Column: Avatar (36x36px) */}
           <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 mt-0.5">
@@ -265,10 +268,14 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
       ) : (
         /* THREAD COMMENT WITH CONNECTED BRANCH (REPLIES OR CURRENTLY TYPING INLINE REPLY) */
         <div className="space-y-3">
-          {/* Parent Comment Row (Full Row Clickable Trigger) */}
+          {/* Parent Comment Row (Full Row Clickable Trigger with Tactile Feedback) */}
           <div
             onClick={() => onOpenCommentDetail?.(comment)}
-            className={`flex items-start gap-3 relative w-full ${onOpenCommentDetail ? 'cursor-pointer' : ''}`}
+            className={`flex items-start gap-3 relative w-full -mx-2 px-2 py-1.5 rounded-2xl ${
+              onOpenCommentDetail
+                ? 'cursor-pointer active:bg-neutral-100/70 active:scale-[0.995] transition-all duration-75'
+                : ''
+            }`}
           >
             {/* Left Column: Avatar + Continuous Branch Line */}
             <div className="flex flex-col items-center shrink-0 self-stretch z-10">
@@ -336,27 +343,25 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
 
           {/* Child Replies List (Indented right with ml-7) */}
           <div className="space-y-3.5">
-            {(repliesState.length > 1 && !isExpanded && !isReplying && !onOpenCommentDetail
+            {(onOpenCommentDetail && repliesState.length > 1
               ? repliesState.slice(0, 1)
               : repliesState
             ).map((reply, idx) => {
               const isFirstChild = idx === 0;
               const isLastChild =
-                (repliesState.length > 1 && !isExpanded && !isReplying && !onOpenCommentDetail
+                (onOpenCommentDetail && repliesState.length > 1
                   ? true
                   : idx === repliesState.length - 1) && !isReplying;
 
               return (
                 <div
                   key={reply.id || idx}
-                  onClick={() => {
-                    if (onOpenCommentDetail) {
-                      onOpenCommentDetail(reply);
-                    } else {
-                      setIsExpanded(true);
-                    }
-                  }}
-                  className="flex items-start gap-3 ml-7 relative w-full cursor-pointer hover:opacity-95 active:scale-[0.99] transition-all"
+                  onClick={() => onOpenCommentDetail?.(reply)}
+                  className={`flex items-start gap-3 ml-7 relative w-full -mx-2 px-2 py-1.5 rounded-2xl ${
+                    onOpenCommentDetail
+                      ? 'cursor-pointer active:bg-neutral-100/70 active:scale-[0.995] transition-all duration-75'
+                      : ''
+                  }`}
                 >
                   {/* First reply gets the initial L-Curve (└─) from Parent */}
                   {isFirstChild && (
@@ -379,7 +384,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                     </div>
 
                     {/* Straight vertical line continuing under avatar to subsequent replies */}
-                    {(!isLastChild || (repliesState.length > 1 && !isExpanded)) && (
+                    {(!isLastChild || (onOpenCommentDetail && repliesState.length > 1)) && (
                       <div className="w-[2px] flex-1 bg-[#d1d5db] mt-1 -mb-3.5 rounded-full" />
                     )}
                   </div>
@@ -436,8 +441,8 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
               );
             })}
 
-            {/* Threads-style "Show replies" Stacked Avatar Button (Expands in place in same page) */}
-            {repliesState.length > 1 && !isExpanded && !isReplying && (
+            {/* Threads-style "Show replies" Stacked Avatar Button */}
+            {onOpenCommentDetail && repliesState.length > 1 && (
               <div className="flex items-center gap-3 ml-7 relative pt-0.5">
                 <div className="flex flex-col items-center shrink-0 z-10">
                   <div className="w-[2px] h-3 bg-[#d1d5db] -mt-3.5 shrink-0" />
@@ -455,10 +460,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
 
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsExpanded(true);
-                  }}
+                  onClick={() => onOpenCommentDetail?.(comment)}
                   className="text-[13px] font-normal text-neutral-400 hover:text-slate-900 transition-colors py-0.5 cursor-pointer text-left flex items-center gap-1.5 active:scale-95"
                 >
                   <span>Lihat {repliesState.length - 1} balasan lainnya</span>

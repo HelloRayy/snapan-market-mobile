@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, Heart, Repeat, Send, BadgeCheck, MoreHorizontal, Crown } from 'lucide-react';
 import { MarketPostItem, PostComment } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
-import { MarketPostCard } from './MarketPostCard';
 import { PostCommentItem } from './PostCommentItem';
 import { useAuth } from '@/ui/hooks/useAuth';
 
@@ -41,11 +40,10 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
   const [replyToCommentId, setReplyToCommentId] = useState<string | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const heroCardRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const activeComment = commentStack[commentStack.length - 1] || focusedComment;
-  const parentChain = commentStack.slice(0, -1);
+  const parentContext = commentStack.length > 1 ? commentStack[commentStack.length - 2] : null;
 
   const [isHeroLiked, setIsHeroLiked] = useState(activeComment.isLiked || false);
   const [heroLikesCount, setHeroLikesCount] = useState(activeComment.likesCount);
@@ -57,12 +55,28 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
   useEffect(() => {
     setIsHeroLiked(activeComment.isLiked || false);
     setHeroLikesCount(activeComment.likesCount);
-    // Smooth scroll down to the focused hero comment so viewport starts on it (Image 1),
-    // but user can scroll UP all the way to reveal the full original post (Image 2/3)!
-    setTimeout(() => {
-      heroCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 150);
+    if (containerRef.current) {
+      containerRef.current.scrollTop = 0;
+    }
   }, [activeComment]);
+
+  // OPTIMIZATION 1: Hardware Back Button & Mobile Swipe Back History Integration (popstate)
+  useEffect(() => {
+    window.history.pushState({ modal: 'comment-detail', depth: commentStack.length }, '');
+
+    const handlePopState = () => {
+      if (commentStack.length > 1) {
+        setCommentStack((prev) => prev.slice(0, -1));
+      } else {
+        onBack();
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [commentStack.length, onBack]);
 
   const handleHeroLikeToggle = () => {
     const nextLiked = !isHeroLiked;
@@ -82,11 +96,20 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
   };
 
   const handleBack = () => {
-    if (commentStack.length > 1) {
-      setCommentStack((prev) => prev.slice(0, -1));
-    } else {
-      onBack();
-    }
+    window.history.back();
+  };
+
+  // OPTIMIZATION 3: Smart Auto-Mention & Auto-Focus on 💬 Action Click
+  const handleReplyToUser = (targetUsername: string, targetCommentId?: string) => {
+    const mentionPrefix = `@${targetUsername} `;
+    setReplyInputText(mentionPrefix);
+    setReplyToCommentId(targetCommentId || null);
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+        inputRef.current.setSelectionRange(mentionPrefix.length, mentionPrefix.length);
+      }
+    }, 50);
   };
 
   const handleAddDirectReply = (e: React.FormEvent) => {
@@ -123,6 +146,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
     );
     onUpdateComment?.(updatedComment);
     setReplyInputText('');
+    setReplyToCommentId(null);
   };
 
   const handleNestedReplySubmit = (targetChildId: string, text: string) => {
@@ -174,12 +198,12 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-50 overflow-y-auto overscroll-contain bg-white pb-36 font-gt-standard animate-in slide-in-from-right-3 duration-200"
+      className="fixed inset-0 z-50 overflow-y-auto overscroll-contain bg-white pb-32 font-gt-standard animate-in slide-in-from-right-3 duration-200"
       style={{
         WebkitOverflowScrolling: 'touch',
       }}
     >
-      {/* Top Header Bar: [Left: ← Back] --- [Center: Thread] --- [Right: Spacer] */}
+      {/* Top Header Bar: [Left: ← Back] --- [Center: Utas Komentar] --- [Right: Spacer] */}
       <header
         className="sticky top-0 left-0 right-0 z-40 bg-white border-b border-neutral-200/80 px-4 h-14 flex items-center justify-between max-w-xl mx-auto"
         style={{
@@ -195,49 +219,66 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
           <ArrowLeft className="w-5 h-5 stroke-[2.25]" />
         </button>
 
-        <h1 className="font-semibold text-base text-slate-900">Thread</h1>
+        <h1 className="font-semibold text-base text-slate-900">Utas Komentar</h1>
 
         <div className="w-10 h-10 pointer-events-none" />
       </header>
 
-      {/* Main Content Area: Continuous scroll from Full Root Post -> Parents -> Focused Hero -> Replies */}
-      <main className="max-w-xl mx-auto pt-0">
-        {/* 1. Full Original Root Post at Top (Scroll UP to see completely!) */}
-        <div className="border-b border-neutral-200/60 pb-1">
-          <MarketPostCard
-            item={parentPost}
-            variant="detail"
-          />
-        </div>
-
-        {/* 2. Ancestor Comment Chain (if drilling deep) */}
-        {parentChain.length > 0 && (
-          <div className="px-4 divide-y divide-neutral-200">
-            {parentChain.map((ancestor) => (
-              <PostCommentItem
-                key={ancestor.id}
-                comment={ancestor}
-                currentUserAvatar={userAvatar}
-                onReplyClick={(_u, cid) => setReplyToCommentId(cid || null)}
-                onSubmitReply={handleNestedReplySubmit}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* 3. Hero Focused Comment Card (The Target in Viewport) */}
-        <div
-          ref={heroCardRef}
-          className="px-4 pt-3 space-y-2 border-b border-neutral-200/80 pb-4 bg-neutral-50/40"
-        >
-          <div className="flex items-start gap-3">
-            {/* Avatar (Hero size 40x40px) */}
-            <div className="w-10 h-10 rounded-full overflow-hidden border border-neutral-200 shadow-2xs shrink-0 bg-white">
+      {/* Main Content Area */}
+      <main className="max-w-xl mx-auto px-4 pt-3 space-y-4">
+        {/* OPTIMIZATION 4: Pixel-Perfect Context Header (Connected via Vertical Line down to Hero Avatar with 0 Gap) */}
+        <div className="flex items-start gap-3 relative">
+          {/* Left Avatar + Continuous Vertical Line */}
+          <div className="flex flex-col items-center shrink-0 self-stretch">
+            <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 bg-white z-10">
               <img
-                src={activeComment.user.avatar}
-                alt={activeComment.user.name}
+                src={parentContext ? parentContext.user.avatar : parentPost.seller.avatar}
+                alt={parentContext ? parentContext.user.name : parentPost.seller.name}
                 className="w-full h-full object-cover"
               />
+            </div>
+            {/* Continuous line passing down with 0 gap into hero */}
+            <div className="w-[2px] flex-1 bg-[#d1d5db] mt-1 -mb-2 rounded-full z-0" />
+          </div>
+
+          {/* Right Snippet Content */}
+          <div className="flex-1 min-w-0 pb-3">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="font-semibold text-[14.5px] text-slate-900 truncate">
+                {parentContext
+                  ? parentContext.user.username || parentContext.user.name
+                  : parentPost.seller.username || parentPost.seller.name}
+              </span>
+              {(parentContext ? parentContext.user.isVerified : parentPost.seller.isVerified) && (
+                <BadgeCheck className="w-4 h-4 text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" />
+              )}
+            </div>
+            <p className="text-[13.5px] text-neutral-500 font-normal line-clamp-2 leading-relaxed pt-0.5">
+              {parentContext ? (
+                parentContext.content
+              ) : (
+                <>
+                  {parentPost.title ? `${parentPost.title} • ` : ''}
+                  {parentPost.caption}
+                </>
+              )}
+            </p>
+          </div>
+        </div>
+
+        {/* 2. Hero Focused Comment Card (Active Focused Item) */}
+        <div className="pt-0 space-y-2 border-b border-neutral-200/80 pb-4">
+          <div className="flex items-start gap-3">
+            {/* Avatar Column with line coming in from top */}
+            <div className="flex flex-col items-center shrink-0 self-stretch">
+              <div className="w-[2px] h-2 bg-[#d1d5db] -mt-2 shrink-0 z-0" />
+              <div className="w-10 h-10 rounded-full overflow-hidden border border-neutral-200 shadow-2xs shrink-0 bg-white z-10">
+                <img
+                  src={activeComment.user.avatar}
+                  alt={activeComment.user.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
 
             {/* Author Info */}
@@ -309,7 +350,9 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
 
               <button
                 type="button"
-                onClick={() => inputRef.current?.focus()}
+                onClick={() => {
+                  inputRef.current?.focus();
+                }}
                 className="flex items-center gap-1.5 hover:text-slate-900 active:scale-90 transition-all cursor-pointer text-slate-500"
               >
                 <SmoothCommentIcon className="w-4.5 h-4.5 stroke-[1.75]" />
@@ -383,7 +426,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                   comment={reply}
                   currentUserAvatar={userAvatar}
                   activeReplyingCommentId={replyToCommentId}
-                  onReplyClick={(_username, cid) => setReplyToCommentId(cid || null)}
+                  onReplyClick={(username, cid) => handleReplyToUser(username, cid)}
                   onCancelReply={() => setReplyToCommentId(null)}
                   onSubmitReply={handleNestedReplySubmit}
                   onOpenCommentDetail={(clickedReply) => {

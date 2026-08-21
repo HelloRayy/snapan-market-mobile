@@ -415,10 +415,10 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                       <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2.5] shrink-0" />
                       {selectedTopic ? (
                         <span
-                          className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md font-bold text-[13px] ${
+                          className={`flex items-center gap-1 font-bold text-[14px] hover:opacity-80 transition-opacity ${
                             selectedTopic.isOfficial
-                              ? 'bg-blue-50 text-[#1d64ec]'
-                              : 'bg-neutral-100 text-slate-900'
+                              ? 'text-[#1d64ec]'
+                              : 'text-slate-900'
                           }`}
                         >
                           {selectedTopic.isOfficial && (
@@ -431,7 +431,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                           <span>{selectedTopic.name}</span>
                         </span>
                       ) : (
-                        <span className="bg-neutral-100 hover:bg-neutral-200/80 text-neutral-500 font-medium px-1.5 py-0.5 rounded-md text-[13px] transition-colors">
+                        <span className="text-neutral-400 hover:text-neutral-600 font-normal text-[14px] transition-colors">
                           Community or topic
                         </span>
                       )}

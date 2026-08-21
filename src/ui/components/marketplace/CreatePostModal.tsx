@@ -336,11 +336,18 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     }
   };
 
+  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const target = e.currentTarget;
+    setTimeout(() => {
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 250);
+  };
+
   if (!isOpen) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-white flex flex-col font-gt-standard overflow-hidden transform-gpu animate-sheet-slide"
+      className="fixed inset-0 z-50 bg-white flex flex-col font-gt-standard overflow-hidden transform-gpu animate-sheet-slide h-[100dvh] max-h-[100dvh]"
       style={{ willChange: 'transform' }}
     >
         {/* Top Bar Header: [ Batal ] --- [ Title (Dead Centered to Screen) ] --- [ Draft & Options ] */}
@@ -391,8 +398,8 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
           </div>
         </div>
 
-        {/* Form Scrollable Body */}
-        <div className="p-4 overflow-y-auto flex-1 relative max-w-lg mx-auto w-full">
+        {/* Form Scrollable Body (Adaptive padding to avoid mobile keyboard & sticky footer overlap) */}
+        <div className="p-4 pb-48 overflow-y-auto flex-1 relative max-w-lg mx-auto w-full overscroll-contain scroll-pb-40 scrollbar-none">
           {/* 1. Top Section: Avatar + Username + Caption + Images + Action Icons (Threads 2-Column Aligned) */}
           <div className="flex gap-2.5 items-start">
             {/* Left Column: Avatar (Top) + Vertical Connector Line */}
@@ -531,6 +538,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   rows={1}
                   placeholder={postMode === 'product' ? 'Tulis deskripsi atau rincian jualan...' : 'Apa yang baru?'}
                   value={caption}
+                  onFocus={handleInputFocus}
                   onChange={(e) => {
                     setCaption(e.target.value);
                     e.target.style.height = 'auto';
@@ -670,6 +678,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   rows={1}
                   placeholder="Say more..."
                   value={st.caption}
+                  onFocus={handleInputFocus}
                   onChange={(e) => {
                     handleUpdateSubThreadCaption(st.id, e.target.value);
                     e.target.style.height = 'auto';
@@ -748,6 +757,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   type="text"
                   placeholder="Tulis nama barang atau jasa..."
                   value={productTitle}
+                  onFocus={handleInputFocus}
                   onChange={(e) => setProductTitle(e.target.value)}
                   className="w-full px-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white font-semibold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs"
                 />
@@ -770,6 +780,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     pattern="[0-9]*"
                     placeholder="Masukkan nominal harga..."
                     value={priceInput}
+                    onFocus={handleInputFocus}
                     onChange={(e) => {
                       const raw = e.target.value.replace(/[^0-9]/g, '');
                       if (!raw) {
@@ -809,6 +820,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   maxLength={250}
                   placeholder="Tulis kondisi barang, kelengkapan, atau alasan jual..."
                   value={productDescription}
+                  onFocus={handleInputFocus}
                   onChange={(e) => setProductDescription(e.target.value)}
                   className={`w-full min-h-[96px] px-3.5 py-2.5 text-[14px] leading-relaxed rounded-xl border ${
                     productDescription.length >= 250
@@ -841,6 +853,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     type="text"
                     placeholder="Ketik titik temu COD (Kantin, Lab, dll)..."
                     value={locationInput}
+                    onFocus={handleInputFocus}
                     onChange={(e) => setLocationInput(e.target.value)}
                     className="w-full pl-9.5 pr-8 py-2.5 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs font-normal"
                   />

@@ -655,7 +655,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                           </span>
                         ) : (
                           <span className="text-neutral-400 hover:text-neutral-600 font-normal text-[14px] h-[21px] leading-snug flex items-center">
-                            Pilih topik obrolan
+                            Komunitas atau topik
                           </span>
                         )}
                       </button>

@@ -429,28 +429,30 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     <button
                       type="button"
                       onClick={() => setShowTopicDropdown(!showTopicDropdown)}
-                      className="flex items-center gap-1 text-[14.5px] transition-all cursor-pointer"
+                      className="flex items-center gap-x-1 text-base h-[21px] leading-snug transition-all cursor-pointer select-none"
                     >
-                      <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2] shrink-0" />
+                      <span className="h-[21px] leading-snug flex items-center">
+                        <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2] shrink-0" />
+                      </span>
                       {selectedTopic ? (
                         <span
-                          className={`flex items-center gap-1 font-bold text-[14.5px] hover:opacity-80 transition-opacity ${
+                          className={`flex items-center gap-x-1 font-semibold text-base h-[21px] leading-snug hover:opacity-80 transition-opacity ${
                             selectedTopic.isOfficial
-                              ? 'text-[#1d64ec]'
+                              ? 'text-[#18a3fe]'
                               : 'text-slate-900'
                           }`}
                         >
                           {selectedTopic.isOfficial && (
                             selectedTopic.icon === 'party-popper' ? (
-                              <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
+                              <PartyPopper className="w-3.5 h-3.5 text-[#18a3fe] stroke-[2.2] shrink-0" />
                             ) : (
-                              <ThreadsTopicIcon />
+                              <ThreadsTopicIcon className="w-3.5 h-3.5 text-[#18a3fe] fill-current shrink-0" />
                             )
                           )}
-                          <span>{selectedTopic.name}</span>
+                          <span className="leading-snug">{selectedTopic.name}</span>
                         </span>
                       ) : (
-                        <span className="text-neutral-400 hover:text-neutral-600 font-normal text-[14.5px] transition-colors">
+                        <span className="text-neutral-400 hover:text-neutral-600 font-normal text-base h-[21px] leading-snug flex items-center">
                           Community or topic
                         </span>
                       )}

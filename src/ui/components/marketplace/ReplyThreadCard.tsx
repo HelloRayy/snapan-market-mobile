@@ -248,16 +248,18 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
               )}
 
               {parentPost.topicTag ? (
-                <div className="flex items-center gap-1 shrink-1 min-w-0 overflow-hidden ml-0.5">
+                <div className="flex items-center gap-x-1 shrink-1 min-w-0 overflow-hidden ml-0.5 h-[21px] leading-snug">
                   {/* Subtle Grey Chevron Arrow Separator */}
-                  <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2] shrink-0" />
+                  <span className="h-[21px] leading-snug flex items-center">
+                    <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2] shrink-0" />
+                  </span>
 
                   {/* Render special blue icon if official topic */}
                   {parentPost.isOfficialTopic && (
                     parentPost.topicIcon === 'presentation' || parentPost.topicIcon === 'party-popper' ? (
-                      <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
+                      <PartyPopper className="w-3.5 h-3.5 text-[#18a3fe] stroke-[2.2] shrink-0" />
                     ) : (
-                      <ThreadsTopicIcon />
+                      <ThreadsTopicIcon className="w-3.5 h-3.5 text-[#18a3fe] fill-current shrink-0" />
                     )
                   )}
 
@@ -267,11 +269,11 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
                       e.stopPropagation();
                       onTopicClick?.(parentPost.topicTag!);
                     }}
-                    className={`font-bold text-[14.5px] transition-colors cursor-pointer truncate max-w-[135px] sm:max-w-[200px] ${
-                      parentPost.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-900 hover:text-[#1d64ec] hover:underline'
+                    className={`font-semibold text-base h-[21px] leading-snug transition-colors cursor-pointer truncate max-w-[135px] sm:max-w-[200px] flex items-center ${
+                      parentPost.isOfficialTopic ? 'text-[#18a3fe] hover:underline' : 'text-slate-900 hover:underline'
                     }`}
                   >
-                    {parentPost.topicTag}
+                    <span className="leading-snug">{parentPost.topicTag}</span>
                   </button>
                 </div>
               ) : (

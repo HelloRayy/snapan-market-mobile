@@ -447,6 +447,8 @@ export const SearchPage: React.FC<SearchPageProps> = ({
               type="button"
               onClick={handleExecuteSearch}
               className="w-full flex items-center justify-between py-3.5 pr-2 pl-1 border-b border-neutral-100 hover:bg-neutral-50/70 active:bg-neutral-100/70 transition-colors cursor-pointer text-left leading-snug group"
+              title="Lanjutkan"
+              aria-label="Lanjutkan"
             >
               <div className="flex items-center gap-3 min-w-0">
                 <Search className="w-4.5 h-4.5 text-neutral-400 shrink-0 stroke-[2.2]" />
@@ -455,9 +457,8 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                 </span>
               </div>
 
-              <div className="flex items-center gap-1 text-[#1d64ec] font-medium text-[13.5px] shrink-0">
-                <span>Lanjutkan</span>
-                <ChevronRight className="w-4 h-4 stroke-[2.2] group-hover:translate-x-0.5 transition-transform" />
+              <div className="flex items-center justify-center h-4 w-4 text-neutral-400 group-hover:text-slate-700 transition-colors shrink-0">
+                <ChevronRight className="w-4.5 h-4.5 stroke-[2] group-hover:translate-x-0.5 transition-transform" />
               </div>
             </button>
 

@@ -352,11 +352,14 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
               <Send className="w-4 h-4 stroke-[1.8] text-slate-600" />
             </button>
 
-            {/* 5. Stock Indicator (if product) */}
+            {/* 5. Stock Indicator: Compact Inline Pill [ 📦 3 ] (Zero-Wrap Guaranteed) */}
             {parentPost.postType !== 'thread' && !!parentPost.price && parentPost.price > 0 && parentPost.stock !== undefined && parentPost.stock > 0 && (
-              <div className="flex items-center gap-1.5 min-h-[36px] px-2 py-1 text-neutral-500 bg-neutral-100/80 rounded-lg text-[12.5px] select-none ml-auto" title={`Stok tersisa ${parentPost.stock}`}>
-                <Box className="w-3.5 h-3.5 stroke-[2] text-neutral-500" />
-                <span className="font-normal text-slate-600">Sisa stok: <strong className="font-semibold text-slate-900">{parentPost.stock}</strong></span>
+              <div
+                className="flex items-center gap-1 min-h-[26px] px-2 py-0.5 text-neutral-600 bg-neutral-100/90 border border-neutral-200/60 rounded-full text-[12px] select-none ml-auto shrink-0 whitespace-nowrap font-medium transition-colors"
+                title={`Sisa stok: ${parentPost.stock} item`}
+              >
+                <Box className="w-3.5 h-3.5 stroke-[1.8] text-neutral-500 shrink-0" />
+                <span className="font-semibold text-slate-800 tabular-nums tracking-tight whitespace-nowrap">{parentPost.stock}</span>
               </div>
             )}
           </div>

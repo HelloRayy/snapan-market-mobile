@@ -336,11 +336,14 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
         </div>
       </div>
 
-      {/* 5. Stock Indicator (Icon + Label + Number) - ONLY FOR PRODUCT POSTS */}
+      {/* 5. Stock Indicator: Compact Inline Pill [ 📦 3 ] (Zero-Wrap Guaranteed) */}
       {item.postType !== 'thread' && !!item.price && item.price > 0 && item.stock !== undefined && item.stock > 0 && (
-        <div className="flex items-center gap-1 min-h-[28px] px-2 py-0.5 text-neutral-500 bg-neutral-100/80 rounded-md text-[11.5px] select-none ml-auto" title={`Stok tersisa ${item.stock}`}>
-          <Box className="w-3 h-3 stroke-[1.8] text-neutral-500" />
-          <span className="font-normal text-slate-600">Sisa stok: <strong className="font-semibold text-slate-900">{item.stock}</strong></span>
+        <div
+          className="flex items-center gap-1 min-h-[26px] px-2 py-0.5 text-neutral-600 bg-neutral-100/90 border border-neutral-200/60 rounded-full text-[12px] select-none ml-auto shrink-0 whitespace-nowrap font-medium transition-colors"
+          title={`Sisa stok: ${item.stock} item`}
+        >
+          <Box className="w-3.5 h-3.5 stroke-[1.8] text-neutral-500 shrink-0" />
+          <span className="font-semibold text-slate-800 tabular-nums tracking-tight whitespace-nowrap">{item.stock}</span>
         </div>
       )}
     </motion.div>

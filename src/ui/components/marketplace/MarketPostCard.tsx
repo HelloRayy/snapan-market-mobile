@@ -448,8 +448,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             </div>
           </div>
 
-          {/* Caption Text: Full Width Aligned with Avatar (UX Reading Flow text-[14.5px] sm:text-[15px] leading-snug) */}
-          <div className="text-[14.5px] sm:text-[15px] text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere]">
+          {/* Caption Text: Full Width Aligned with Avatar (UX Reading Flow text-base leading-snug) */}
+          <div className="text-base text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere]">
             <FormattedText text={item.caption} />
             {item.totalThreadParts && item.totalThreadParts > 1 && (
               <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11px] tabular-nums select-none ml-1.5 align-middle">
@@ -569,8 +569,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               </div>
             </div>
 
-            {/* Caption Text: Indented under name (UX Reading Flow text-[14.5px] sm:text-[15px] leading-snug) */}
-            <div className="text-[14.5px] sm:text-[15px] text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere]">
+            {/* Caption Text: Indented under name (UX Reading Flow text-base leading-snug) */}
+            <div className="text-base text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere]">
               <FormattedText text={item.caption} />
               {item.totalThreadParts && item.totalThreadParts > 1 && (
                 <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11px] tabular-nums select-none ml-1.5 align-middle">

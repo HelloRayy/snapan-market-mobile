@@ -321,9 +321,9 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
             </div>
           </div>
 
-          {/* Large Focused Comment Text (UX Reading Flow text-[15px] leading-snug) */}
+          {/* Large Focused Comment Text (UX Reading Flow text-base leading-snug) */}
           <div className="pl-0 pt-1">
-            <div className="text-[15px] text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere]">
+            <div className="text-base text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere]">
               <FormattedText text={activeComment.content} />
             </div>
 

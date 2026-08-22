@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, MoreHorizontal, Box, Repeat2, Send, PartyPopper, ChevronRight } from 'lucide-react';
+import { Heart, MoreHorizontal, Box, Repeat2, Send, PartyPopper, ChevronRight, MapPin } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { MediaLightboxModal } from './MediaLightboxModal';
@@ -426,6 +426,14 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             )}
           </p>
 
+          {/* Location Tag */}
+          {item.locationTag && (
+            <div className="pt-0.5 flex items-center gap-1 text-[13px] text-neutral-400 font-normal leading-snug">
+              <MapPin className="w-3.5 h-3.5 text-neutral-400 stroke-[1.8] shrink-0" />
+              <span className="truncate">{item.locationTag}</span>
+            </div>
+          )}
+
           {/* Product Images: Full Width */}
           {renderImages(true)}
 
@@ -530,6 +538,14 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 </span>
               )}
             </p>
+
+            {/* Location Tag */}
+            {item.locationTag && (
+              <div className="pt-0.5 flex items-center gap-1 text-[13px] text-neutral-400 font-normal leading-snug">
+                <MapPin className="w-3.5 h-3.5 text-neutral-400 stroke-[1.8] shrink-0" />
+                <span className="truncate">{item.locationTag}</span>
+              </div>
+            )}
 
             {/* Product Images */}
             {renderImages(false)}

@@ -392,18 +392,18 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 )}
 
                 {item.topicTag ? (
-                  <div className="flex items-center gap-x-0.5 shrink-1 min-w-0 overflow-hidden ml-0.5 h-[19px] leading-snug">
+                  <div className="flex items-center gap-x-0.5 shrink-1 min-w-0 overflow-hidden ml-0.5 h-[21px] leading-snug">
                     {/* Subtle Grey Chevron Arrow Separator */}
-                    <span className="h-[19px] leading-snug flex items-center">
-                      <ChevronRight className="w-3 h-3 text-neutral-400 stroke-[2] shrink-0" />
+                    <span className="h-[21px] leading-snug flex items-center">
+                      <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2] shrink-0" />
                     </span>
 
                     {/* Render special blue icon if official topic */}
                     {item.isOfficialTopic && (
                       item.topicIcon === 'presentation' || item.topicIcon === 'party-popper' ? (
-                        <PartyPopper className="w-3 h-3 text-[#1d64ec] stroke-[2.2] shrink-0" />
+                        <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
                       ) : (
-                        <ThreadsTopicIcon className="w-3 h-3 text-[#1d64ec] fill-current shrink-0" />
+                        <ThreadsTopicIcon className="w-3.5 h-3.5 text-[#1d64ec] fill-current shrink-0" />
                       )
                     )}
 
@@ -413,15 +413,15 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                         e.stopPropagation();
                         onTopicClick?.(item.topicTag!);
                       }}
-                      className={`font-medium text-[13.5px] h-[19px] leading-snug transition-colors cursor-pointer truncate max-w-[140px] sm:max-w-[220px] flex items-center ${
-                        item.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-700 hover:underline'
+                      className={`font-semibold text-base h-[21px] leading-snug transition-colors cursor-pointer truncate max-w-[140px] sm:max-w-[220px] flex items-center ${
+                        item.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-900 hover:underline'
                       }`}
                     >
                       <span className="leading-snug">{item.topicTag}</span>
                     </button>
                   </div>
                 ) : (
-                  <span className="text-[12.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
+                  <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
                     {item.seller.classGroup}
                   </span>
                 )}
@@ -514,18 +514,18 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 )}
 
                 {item.topicTag ? (
-                  <div className="flex items-center gap-x-0.5 shrink-1 min-w-0 overflow-hidden ml-0.5 h-[19px] leading-snug">
+                  <div className="flex items-center gap-x-0.5 shrink-1 min-w-0 overflow-hidden ml-0.5 h-[21px] leading-snug">
                     {/* Chevron Arrow Separator */}
-                    <span className="h-[19px] leading-snug flex items-center">
-                      <ChevronRight className="w-3 h-3 text-neutral-400 stroke-[2] shrink-0" />
+                    <span className="h-[21px] leading-snug flex items-center">
+                      <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2] shrink-0" />
                     </span>
 
                     {/* Render special blue icon if official topic */}
                     {item.isOfficialTopic && (
                       item.topicIcon === 'presentation' || item.topicIcon === 'party-popper' ? (
-                        <PartyPopper className="w-3 h-3 text-[#1d64ec] stroke-[2.2] shrink-0" />
+                        <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
                       ) : (
-                        <ThreadsTopicIcon className="w-3 h-3 text-[#1d64ec] fill-current shrink-0" />
+                        <ThreadsTopicIcon className="w-3.5 h-3.5 text-[#1d64ec] fill-current shrink-0" />
                       )
                     )}
 
@@ -535,15 +535,15 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                         e.stopPropagation();
                         onTopicClick?.(item.topicTag!);
                       }}
-                      className={`font-medium text-[13.5px] h-[19px] leading-snug transition-colors cursor-pointer truncate max-w-[135px] sm:max-w-[200px] flex items-center ${
-                        item.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-700 hover:underline'
+                      className={`font-semibold text-base h-[21px] leading-snug transition-colors cursor-pointer truncate max-w-[135px] sm:max-w-[200px] flex items-center ${
+                        item.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-900 hover:underline'
                       }`}
                     >
                       <span className="leading-snug">{item.topicTag}</span>
                     </button>
                   </div>
                 ) : (
-                  <span className="text-[12.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
+                  <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
                     {item.seller.classGroup}
                   </span>
                 )}

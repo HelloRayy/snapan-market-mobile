@@ -6,6 +6,7 @@ interface MarketBottomNavProps {
   onTabChange: (tab: string) => void;
   onPostClick?: () => void;
   userAvatar?: string;
+  isVisible?: boolean;
 }
 
 export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
@@ -13,6 +14,7 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   onTabChange,
   onPostClick,
   userAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
+  isVisible = true,
 }) => {
   // Auto-detect virtual keyboard on mobile devices to prevent bottom nav from floating over the keyboard
   const [isKeyboardOpen, setIsKeyboardOpen] = React.useState(false);
@@ -51,7 +53,9 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-50 select-none bg-white/95 backdrop-blur-md border-t border-neutral-200/80 shadow-[0_-2px_12px_rgba(0,0,0,0.03)]"
+      className={`fixed bottom-0 left-0 right-0 z-50 select-none bg-white/95 backdrop-blur-md border-t border-neutral-200/80 shadow-[0_-2px_12px_rgba(0,0,0,0.03)] transition-transform duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] transform-gpu ${
+        isVisible ? 'translate-y-0' : 'translate-y-[130%] pointer-events-none'
+      }`}
       style={{
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}

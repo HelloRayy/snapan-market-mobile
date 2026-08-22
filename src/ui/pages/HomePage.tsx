@@ -147,7 +147,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     // Reset search query and switch to for-you tab so new post is immediately shown
     setSearchQuery('');
     setFeedTab('for-you');
-    setIsHeaderVisible(true);
+    setIsNavVisible(true);
 
     // Smoothly scroll to the very top so the user immediately sees their own post
     setTimeout(() => {
@@ -241,8 +241,8 @@ export const HomePage: React.FC<HomePageProps> = ({
     return () => observer.disconnect();
   }, [isLoadingMore, page]);
 
-  // Smart Scroll Header Visibility State (rAF Throttled for 0% CPU spike)
-  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  // Smart Scroll Header & Bottom Nav Visibility State (rAF Throttled for 0% CPU spike)
+  const [isNavVisible, setIsNavVisible] = useState(true);
   const lastScrollY = useRef(0);
 
   useEffect(() => {
@@ -256,15 +256,15 @@ export const HomePage: React.FC<HomePageProps> = ({
         const currentScrollY = window.scrollY;
         const scrollDiff = currentScrollY - lastScrollY.current;
 
-        // Always show if near the top of the feed (< 50px)
+        // 1. Always show if near the top of the feed (< 50px)
         if (currentScrollY < 50) {
-          setIsHeaderVisible((prev) => (prev ? prev : true));
-        } else if (scrollDiff > 24) {
-          // Scrolling DOWN -> hide top bar
-          setIsHeaderVisible(false);
-        } else if (scrollDiff < -24) {
-          // Scrolling UP -> reveal top bar
-          setIsHeaderVisible(true);
+          setIsNavVisible(true);
+        } else if (scrollDiff > 10) {
+          // Scrolling DOWN -> smoothly hide top bar and bottom nav
+          setIsNavVisible(false);
+        } else if (scrollDiff < -4) {
+          // Scrolling UP SEDIKIT saja -> immediately reveal top bar and bottom nav
+          setIsNavVisible(true);
         }
 
         lastScrollY.current = currentScrollY;
@@ -285,14 +285,14 @@ export const HomePage: React.FC<HomePageProps> = ({
 
       {/* Sticky Top Header (Only the 50px MarketHeader is sticky with smooth auto-hide on scroll) */}
       <div
-        className="sticky top-0 z-30 w-full bg-white select-none transition-all duration-200"
+        className="sticky top-0 z-30 w-full bg-white select-none transition-all duration-300"
         style={{
           paddingTop: 'env(safe-area-inset-top, 0px)',
         }}
       >
         <div
-          className={`transition-all duration-200 ease-[cubic-bezier(0.25,1,0.5,1)] overflow-hidden ${
-            isHeaderVisible ? 'max-h-14 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
+          className={`transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] transform-gpu overflow-hidden ${
+            isNavVisible ? 'max-h-14 opacity-100 translate-y-0' : 'max-h-0 opacity-0 -translate-y-full pointer-events-none'
           }`}
         >
           <MarketHeader
@@ -379,9 +379,10 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </main>
 
-      {/* Market 5-Icon Bottom Navigation (1-Tap Direct Trigger) */}
+      {/* Market 5-Icon Bottom Navigation (1-Tap Direct Trigger with Smart Scroll Auto-Hide) */}
       <MarketBottomNav
         activeTab={bottomNavTab}
+        isVisible={isNavVisible}
         userAvatar={profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80'}
         onTabChange={(tab) => {
           if (tab === 'profile') {

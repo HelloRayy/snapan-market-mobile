@@ -47,6 +47,8 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
   const touchStartXRef = useRef<number>(0);
   const touchStartYRef = useRef<number>(0);
   const isVerticalSwipeRef = useRef<boolean>(false);
+  const isProgrammaticScrollRef = useRef<boolean>(false);
+  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Reset transform state on slide/open change
   useEffect(() => {
@@ -61,6 +63,15 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
       scrollRef.current.scrollLeft = initialIndex * slideWidth;
     }
   }, [isOpen, initialIndex]);
+
+  // Clean up timers on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -77,8 +88,9 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
   if (!isOpen || !images || images.length === 0) return null;
 
   const handleScroll = () => {
-    if (!scrollRef.current) return;
+    if (!scrollRef.current || isProgrammaticScrollRef.current) return;
     const slideWidth = scrollRef.current.offsetWidth;
+    if (!slideWidth) return;
     const index = Math.round(scrollRef.current.scrollLeft / slideWidth);
     if (index !== currentIndex && index >= 0 && index < images.length) {
       setCurrentIndex(index);
@@ -88,13 +100,23 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
 
   const scrollToImage = (index: number) => {
     if (!scrollRef.current) return;
+    const targetIndex = Math.max(0, Math.min(images.length - 1, index));
     const slideWidth = scrollRef.current.offsetWidth;
+    if (!slideWidth) return;
+
+    isProgrammaticScrollRef.current = true;
+    setCurrentIndex(targetIndex);
+    setZoomLevel(1);
+
     scrollRef.current.scrollTo({
-      left: index * slideWidth,
+      left: targetIndex * slideWidth,
       behavior: 'smooth',
     });
-    setCurrentIndex(index);
-    setZoomLevel(1);
+
+    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    scrollTimeoutRef.current = setTimeout(() => {
+      isProgrammaticScrollRef.current = false;
+    }, 450);
   };
 
   // Touch Handlers for Vertical Swipe to Dismiss (Angle-Locked)
@@ -185,11 +207,11 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
               e.stopPropagation();
               scrollToImage(currentIndex - 1);
             }}
-            className="absolute left-3 z-40 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-slate-800 border border-neutral-200/90 shadow-md backdrop-blur-md flex items-center justify-center active:scale-90 transition-all cursor-pointer select-none"
-            aria-label="Foto Sebelumnya"
-            title="Foto Sebelumnya"
+            className="absolute left-3 z-40 flex items-center justify-center bg-white/95 text-slate-800 text-base rounded-full h-11 w-11 leading-snug cursor-pointer border border-neutral-200/90 shadow-md backdrop-blur-md hover:bg-white hover:scale-105 active:scale-90 transition-all select-none"
+            aria-label="Kembali"
+            title="Kembali"
           >
-            <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
+            <ChevronLeft className="w-5 h-5 stroke-[2.2] text-slate-800" />
           </button>
         )}
 
@@ -201,11 +223,11 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
               e.stopPropagation();
               scrollToImage(currentIndex + 1);
             }}
-            className="absolute right-3 z-40 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-slate-800 border border-neutral-200/90 shadow-md backdrop-blur-md flex items-center justify-center active:scale-90 transition-all cursor-pointer select-none"
-            aria-label="Foto Selanjutnya"
-            title="Foto Selanjutnya"
+            className="absolute right-3 z-40 flex items-center justify-center bg-white/95 text-slate-800 text-base rounded-full h-11 w-11 leading-snug cursor-pointer border border-neutral-200/90 shadow-md backdrop-blur-md hover:bg-white hover:scale-105 active:scale-90 transition-all select-none"
+            aria-label="Lanjutkan"
+            title="Lanjutkan"
           >
-            <ChevronRight className="w-5 h-5 stroke-[2.5]" />
+            <ChevronRight className="w-5 h-5 stroke-[2.2] text-slate-800" />
           </button>
         )}
 

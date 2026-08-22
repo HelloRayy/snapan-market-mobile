@@ -9,8 +9,12 @@ import { NavigationDrawer } from '@/ui/components/navigation/NavigationDrawer';
 import { CreatePostModal } from '@/ui/components/marketplace/CreatePostModal';
 import { MarketPostItem } from '@/types/marketFeed';
 import { useAuth } from '@/ui/hooks/useAuth';
+import { useSmoothScroll } from '@/ui/hooks/useSmoothScroll';
 
 export function App() {
+  // Initialize Lenis Kinetic Smooth Scroll Engine (120fps physics)
+  useSmoothScroll();
+
   const { user, profile } = useAuth();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
 

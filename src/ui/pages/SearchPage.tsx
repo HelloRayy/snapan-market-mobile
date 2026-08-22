@@ -250,6 +250,11 @@ export const SearchPage: React.FC<SearchPageProps> = ({
   const handleExecuteSearch = () => {
     if (searchQuery.trim()) {
       setIsSubmitted(true);
+      setIsInputFocused(false);
+      inputRef.current?.blur();
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
     }
   };
 

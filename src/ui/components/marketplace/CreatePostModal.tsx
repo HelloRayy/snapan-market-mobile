@@ -727,21 +727,6 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                         </>
                       )}
                     </div>
-
-                    {/* Tagged Location Badge (If Selected) */}
-                    {selectedLocation && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 border border-blue-100 text-[#1d64ec] text-[11.5px] font-medium animate-toast-pop">
-                        <MapPin className="w-3 h-3 stroke-[2.2]" />
-                        <span>{selectedLocation}</span>
-                        <button
-                          type="button"
-                          onClick={() => setSelectedLocation(null)}
-                          className="hover:text-rose-600 transition-colors ml-0.5 cursor-pointer"
-                        >
-                          <X className="w-2.5 h-2.5" />
-                        </button>
-                      </span>
-                    )}
                   </div>
 
                   {/* Caption Textarea */}
@@ -762,6 +747,22 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     }}
                     className="w-full mt-1 text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none resize-none bg-transparent leading-snug overflow-hidden"
                   />
+
+                  {/* Location Tag (Matching Post Feed Card View Below Caption) */}
+                  {selectedLocation && (
+                    <div className="pt-1 pb-0.5 flex items-center gap-1.5 text-[13px] text-neutral-400 font-normal leading-snug animate-toast-pop select-none">
+                      <MapPin className="w-3.5 h-3.5 text-neutral-400 stroke-[1.8] shrink-0" />
+                      <span className="truncate">{selectedLocation}</span>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedLocation(null)}
+                        className="p-0.5 rounded-full hover:bg-neutral-100 text-neutral-400 hover:text-rose-500 transition-colors ml-0.5 cursor-pointer"
+                        title="Hapus lokasi"
+                      >
+                        <X className="w-3 h-3 stroke-[2]" />
+                      </button>
+                    </div>
+                  )}
 
                   {/* Smart Intent Auto-Detection Banner */}
                   {isSellingKeywordDetected && (

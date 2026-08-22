@@ -223,8 +223,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           onClick={(e) => e.stopPropagation()}
           className={`flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none overscroll-x-contain touch-auto ${
             _isDetail
-              ? '-mx-3.5 pl-0 pr-3.5 w-[calc(100%+28px)] max-w-[calc(100%+28px)]'
-              : '-ml-[62px] -mr-3.5 pl-0 pr-3.5 w-[calc(100%+76px)] max-w-[calc(100%+76px)]'
+              ? '-mx-3.5 pl-3.5 pr-3.5 w-[calc(100%+28px)] max-w-[calc(100%+28px)]'
+              : '-ml-[62px] -mr-3.5 pl-[62px] pr-3.5 w-[calc(100%+76px)] max-w-[calc(100%+76px)]'
           }`}
           style={{ WebkitOverflowScrolling: 'touch', touchAction: 'auto' }}
         >

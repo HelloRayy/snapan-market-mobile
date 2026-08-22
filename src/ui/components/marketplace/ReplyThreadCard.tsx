@@ -204,7 +204,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         onClick={(e) => e.stopPropagation()}
-        className="flex gap-2.5 overflow-x-auto no-scrollbar scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none overscroll-x-contain touch-auto -ml-[64px] -mr-4 pl-0 pr-4 w-[calc(100%+80px)] max-w-[calc(100%+80px)]"
+        className="flex gap-2.5 overflow-x-auto no-scrollbar scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none overscroll-x-contain touch-auto -ml-[64px] -mr-4 pl-[64px] pr-4 w-[calc(100%+80px)] max-w-[calc(100%+80px)]"
         style={{ WebkitOverflowScrolling: 'touch', touchAction: 'auto' }}
       >
         {parentPost.images.map((imgUrl, idx) => (

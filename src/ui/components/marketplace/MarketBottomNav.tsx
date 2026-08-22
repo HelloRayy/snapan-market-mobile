@@ -104,8 +104,8 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
                     />
                   </div>
                 ) : item.isAction ? (
-                  <div className="w-[38px] h-[30px] rounded-[10px] bg-neutral-100 group-hover:bg-neutral-200/90 active:bg-neutral-200 flex items-center justify-center text-slate-900 transition-colors border border-neutral-200/80 shadow-2xs">
-                    <Plus className="w-5 h-5 stroke-[2.2]" />
+                  <div className="relative w-[38px] h-[30px] rounded-[10px] bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] hover:from-[#2563eb] hover:to-[#1a56cc] active:scale-95 flex items-center justify-center text-white transition-all shadow-[inset_0_1px_0_0_rgba(255,255,255,0.45),0_3px_10px_rgba(29,100,236,0.35)] border border-blue-400/40 overflow-hidden">
+                    <Plus className="w-5 h-5 stroke-[2.5] text-white relative z-10" />
                   </div>
                 ) : (
                   <Icon className={`w-[24px] h-[24px] transition-all ${iconFillClass}`} />

@@ -13,9 +13,6 @@ import {
   Heart,
   BarChart2,
   Search,
-  Sparkles,
-  Users,
-  Palette,
 } from 'lucide-react';
 import { useAuth } from '@/ui/hooks/useAuth';
 
@@ -231,68 +228,6 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 <Bookmark className="w-[18px] h-[18px] stroke-[2] text-slate-800" />
               </div>
               <span className="truncate">Tersimpan</span>
-            </button>
-          </div>
-
-          {/* Distinct Spacing Gap Between Cluster 2 & Cluster 3 */}
-          <div className="h-4" />
-
-          {/* Cluster 3: Kustom Feed / Kabar (Sesuai Referensi Threads) */}
-          <div className="flex flex-col gap-y-0.5">
-            <div className="flex items-center justify-between px-3 py-1.5 leading-snug">
-              <span className="text-[13px] font-semibold text-neutral-400 tracking-wide">
-                Kabar
-              </span>
-              <button
-                type="button"
-                className="text-[12px] font-medium text-neutral-400 hover:text-slate-800 cursor-pointer"
-              >
-                Edit
-              </button>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                onNavigateHome();
-                onClose();
-              }}
-              className="flex items-center gap-x-3 h-[34px] w-full px-3 rounded-xl text-[14px] font-normal text-slate-700 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
-            >
-              <Users className="w-4 h-4 text-neutral-400 stroke-[2] shrink-0" />
-              <span className="truncate">Mengikuti</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                if (onNavigateSearch) {
-                  onNavigateSearch();
-                } else {
-                  onNavigateHome();
-                }
-                onClose();
-              }}
-              className="flex items-center gap-x-3 h-[34px] w-full px-3 rounded-xl text-[14px] font-normal text-slate-700 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
-            >
-              <Sparkles className="w-4 h-4 text-amber-500 stroke-[2] shrink-0" />
-              <span className="truncate">PJBL & Karya</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                if (onNavigateSearch) {
-                  onNavigateSearch();
-                } else {
-                  onNavigateHome();
-                }
-                onClose();
-              }}
-              className="flex items-center gap-x-3 h-[34px] w-full px-3 rounded-xl text-[14px] font-normal text-slate-700 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
-            >
-              <Palette className="w-4 h-4 text-indigo-500 stroke-[2] shrink-0" />
-              <span className="truncate">Design Threads</span>
             </button>
           </div>
         </div>

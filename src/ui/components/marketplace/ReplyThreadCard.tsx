@@ -73,26 +73,36 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
   const scrollLeftRef = useRef(0);
   const hasDraggedRef = useRef(false);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
     if (!scrollContainerRef.current) return;
     isMouseDownRef.current = true;
     hasDraggedRef.current = false;
-    startXRef.current = e.pageX - scrollContainerRef.current.offsetLeft;
+    startXRef.current = e.clientX;
     scrollLeftRef.current = scrollContainerRef.current.scrollLeft;
+
+    if (e.pointerType === 'mouse') {
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId);
+      } catch {}
+    }
   };
 
-  const handleMouseLeaveOrUp = () => {
-    isMouseDownRef.current = false;
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!isMouseDownRef.current || !scrollContainerRef.current) return;
-    const x = e.pageX - scrollContainerRef.current.offsetLeft;
-    const walk = (x - startXRef.current) * 1.5;
-    if (Math.abs(walk) > 4) {
+    const dx = e.clientX - startXRef.current;
+    if (Math.abs(dx) > 3) {
       hasDraggedRef.current = true;
-      e.preventDefault();
-      scrollContainerRef.current.scrollLeft = scrollLeftRef.current - walk;
+      scrollContainerRef.current.scrollLeft = scrollLeftRef.current - dx * 1.3;
+    }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    isMouseDownRef.current = false;
+    if (e.pointerType === 'mouse') {
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch {}
     }
   };
 
@@ -183,13 +193,13 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
       <div
         ref={scrollContainerRef}
         data-lenis-prevent
-        onMouseDown={handleMouseDown}
-        onMouseLeave={handleMouseLeaveOrUp}
-        onMouseUp={handleMouseLeaveOrUp}
-        onMouseMove={handleMouseMove}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
         onClick={(e) => e.stopPropagation()}
-        className="flex gap-2.5 overflow-x-auto no-scrollbar scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none overscroll-x-contain touch-pan-x touch-pan-y -ml-[64px] -mr-4 pl-0 pr-4"
-        style={{ WebkitOverflowScrolling: 'touch' }}
+        className="flex gap-2.5 overflow-x-auto no-scrollbar scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none overscroll-x-contain touch-auto -ml-[64px] -mr-4 pl-0 pr-4 w-[calc(100%+80px)] max-w-[calc(100%+80px)]"
+        style={{ WebkitOverflowScrolling: 'touch', touchAction: 'auto' }}
       >
         {parentPost.images.map((imgUrl, idx) => (
           <div

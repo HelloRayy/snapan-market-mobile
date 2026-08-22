@@ -86,33 +86,43 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  // Drag to Scroll Refs for Multi-Image Carousel (Zero-re-render 120 FPS)
+  // Drag to Scroll Refs for Multi-Image Carousel (Zero-re-render 120 FPS + Pointer Capture)
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const isMouseDownRef = React.useRef(false);
   const startXRef = React.useRef(0);
   const scrollLeftRef = React.useRef(0);
   const hasDraggedRef = React.useRef(false);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
     if (!scrollContainerRef.current) return;
     isMouseDownRef.current = true;
     hasDraggedRef.current = false;
-    startXRef.current = e.pageX - scrollContainerRef.current.offsetLeft;
+    startXRef.current = e.clientX;
     scrollLeftRef.current = scrollContainerRef.current.scrollLeft;
+
+    if (e.pointerType === 'mouse') {
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId);
+      } catch {}
+    }
   };
 
-  const handleMouseLeaveOrUp = () => {
-    isMouseDownRef.current = false;
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!isMouseDownRef.current || !scrollContainerRef.current) return;
-    const x = e.pageX - scrollContainerRef.current.offsetLeft;
-    const walk = (x - startXRef.current) * 1.5;
-    if (Math.abs(walk) > 4) {
+    const dx = e.clientX - startXRef.current;
+    if (Math.abs(dx) > 3) {
       hasDraggedRef.current = true;
-      e.preventDefault();
-      scrollContainerRef.current.scrollLeft = scrollLeftRef.current - walk;
+      scrollContainerRef.current.scrollLeft = scrollLeftRef.current - dx * 1.3;
+    }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    isMouseDownRef.current = false;
+    if (e.pointerType === 'mouse') {
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch {}
     }
   };
 
@@ -198,15 +208,17 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
         <div
           ref={scrollContainerRef}
           data-lenis-prevent
-          onMouseDown={handleMouseDown}
-          onMouseLeave={handleMouseLeaveOrUp}
-          onMouseUp={handleMouseLeaveOrUp}
-          onMouseMove={handleMouseMove}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
           onClick={(e) => e.stopPropagation()}
-          className={`flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none overscroll-x-contain touch-pan-x touch-pan-y ${
-            _isDetail ? '-mx-3.5 pl-0 pr-3.5' : '-ml-[60px] -mr-3.5 pl-0 pr-3.5'
+          className={`flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none overscroll-x-contain touch-auto ${
+            _isDetail
+              ? '-mx-3.5 pl-0 pr-3.5 w-[calc(100%+28px)] max-w-[calc(100%+28px)]'
+              : '-ml-[60px] -mr-3.5 pl-0 pr-3.5 w-[calc(100%+74px)] max-w-[calc(100%+74px)]'
           }`}
-          style={{ WebkitOverflowScrolling: 'touch' }}
+          style={{ WebkitOverflowScrolling: 'touch', touchAction: 'auto' }}
         >
           {item.images.map((imgUrl, idx) => (
             <div

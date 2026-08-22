@@ -426,10 +426,10 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             )}
           </p>
 
-          {/* Location Tag */}
+          {/* Location Tag (High WCAG Contrast >= 7.0:1) */}
           {item.locationTag && (
-            <div className="pt-0.5 flex items-center gap-1 text-[13px] text-neutral-400 font-normal leading-snug">
-              <MapPin className="w-3.5 h-3.5 text-neutral-400 stroke-[1.8] shrink-0" />
+            <div className="pt-0.5 flex items-center gap-1.5 text-[13px] text-slate-600 font-medium leading-snug">
+              <MapPin className="w-3.5 h-3.5 text-slate-600 stroke-[2] shrink-0" />
               <span className="truncate">{item.locationTag}</span>
             </div>
           )}
@@ -517,7 +517,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               </div>
 
               <div className="flex items-center gap-1.5 shrink-0 ml-auto">
-                <span className="text-[13.5px] sm:text-[14px] font-normal text-neutral-400 whitespace-nowrap">{item.timestamp}</span>
+                <span className="text-[13.5px] sm:text-[14px] font-normal text-slate-500 whitespace-nowrap">{item.timestamp}</span>
                 <button
                   type="button"
                   onClick={(e) => e.stopPropagation()}
@@ -539,10 +539,10 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               )}
             </p>
 
-            {/* Location Tag */}
+            {/* Location Tag (High WCAG Contrast >= 7.0:1) */}
             {item.locationTag && (
-              <div className="pt-0.5 flex items-center gap-1 text-[13px] text-neutral-400 font-normal leading-snug">
-                <MapPin className="w-3.5 h-3.5 text-neutral-400 stroke-[1.8] shrink-0" />
+              <div className="pt-0.5 flex items-center gap-1.5 text-[13px] text-slate-600 font-medium leading-snug">
+                <MapPin className="w-3.5 h-3.5 text-slate-600 stroke-[2] shrink-0" />
                 <span className="truncate">{item.locationTag}</span>
               </div>
             )}

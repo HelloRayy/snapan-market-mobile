@@ -445,20 +445,20 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
           {/* Searchbar & "Sekitar Sini" (GPS Navigation Button) */}
           <div className="flex items-center gap-x-2.5 pt-3 px-4 leading-snug">
             <div className="flex-1 flex items-center gap-2 py-2 px-3.5 bg-neutral-100/90 rounded-2xl border border-neutral-200/80 leading-snug focus-within:border-[#1d64ec] focus-within:bg-white transition-all">
-              <Search className="w-4 h-4 text-neutral-400 shrink-0" />
+              <Search className="w-4 h-4 text-slate-500 shrink-0" />
               <input
                 type="text"
                 autoFocus
                 placeholder="Cari tempat atau ketik lokasi..."
                 value={locationSearchQuery}
                 onChange={(e) => setLocationSearchQuery(e.target.value)}
-                className="w-full text-[14px] text-slate-900 placeholder:text-neutral-400 bg-transparent focus:outline-none leading-snug"
+                className="w-full text-[14px] text-slate-900 placeholder:text-slate-400 bg-transparent focus:outline-none leading-snug"
               />
               {locationSearchQuery && (
                 <button
                   type="button"
                   onClick={() => setLocationSearchQuery('')}
-                  className="text-neutral-400 hover:text-slate-700"
+                  className="text-slate-400 hover:text-slate-700"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -509,7 +509,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
               </button>
             )}
 
-            <div className="text-[11.5px] font-bold text-neutral-400 uppercase tracking-wider px-1 mb-2">
+            <div className="text-[11.5px] font-bold text-slate-500 uppercase tracking-wider px-1 mb-2">
               Rekomendasi Titik Temu SMKN 8
             </div>
 
@@ -533,13 +533,13 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                         <p className="text-[14px] font-semibold text-slate-900 truncate group-hover:text-[#1d64ec] transition-colors">
                           {place.name}
                         </p>
-                        <p className="text-[12px] text-neutral-400 truncate">
+                        <p className="text-[12px] text-slate-500 truncate">
                           {place.subtitle}
                         </p>
                       </div>
                     </div>
 
-                    <span className="text-[11.5px] text-neutral-400 font-medium shrink-0 ml-2">
+                    <span className="text-[11.5px] text-slate-500 font-semibold shrink-0 ml-2">
                       {place.distance}
                     </span>
                   </button>
@@ -635,7 +635,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                         className="flex items-center gap-x-1 text-base h-[21px] leading-snug transition-all cursor-pointer select-none"
                       >
                         <span className="h-[21px] leading-snug flex items-center">
-                          <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2] shrink-0" />
+                          <ChevronRight className="w-3.5 h-3.5 text-slate-400 stroke-[2] shrink-0" />
                         </span>
                         {selectedTopic ? (
                           <span
@@ -654,7 +654,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                             <span className="leading-snug">{selectedTopic.name}</span>
                           </span>
                         ) : (
-                          <span className="text-neutral-400 hover:text-neutral-600 font-normal text-[14px] h-[21px] leading-snug flex items-center">
+                          <span className="text-slate-500 hover:text-slate-800 font-normal text-[14px] h-[21px] leading-snug flex items-center transition-colors">
                             Komunitas atau topik
                           </span>
                         )}
@@ -668,7 +668,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                             onClick={() => setShowTopicDropdown(false)}
                           />
                           <div className="absolute top-full -right-6 sm:right-auto sm:left-0 mt-1.5 w-64 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-neutral-200/90 z-50 p-2 transform-gpu animate-in fade-in slide-in-from-top-2 duration-150 font-gt-standard">
-                            <div className="px-3 py-1.5 text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                            <div className="px-3 py-1.5 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                               Topik Populer SMKN 8
                             </div>
 
@@ -696,7 +696,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                                         {topic.name}
                                       </div>
                                       {topic.subtitle && (
-                                        <div className="text-[11.5px] text-neutral-400 font-normal truncate">
+                                        <div className="text-[11.5px] text-slate-500 font-normal truncate">
                                           {topic.subtitle}
                                         </div>
                                       )}
@@ -716,9 +716,9 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                                   value={customTopicInput}
                                   onChange={(e) => setCustomTopicInput(e.target.value)}
                                   onKeyDown={handleCustomTopicSubmit}
-                                  className="w-full pl-2.5 pr-11 py-1.5 text-[12.5px] rounded-lg border border-neutral-200 focus:outline-none focus:border-[#1d64ec] bg-neutral-50"
+                                  className="w-full pl-2.5 pr-11 py-1.5 text-[12.5px] rounded-lg border border-neutral-200 focus:outline-none focus:border-[#1d64ec] bg-neutral-50 text-slate-900"
                                 />
-                                <span className="absolute right-2 text-[10px] font-semibold text-neutral-400 pointer-events-none tabular-nums">
+                                <span className="absolute right-2 text-[10px] font-semibold text-slate-400 pointer-events-none tabular-nums">
                                   {customTopicInput.length}/20
                                 </span>
                               </div>
@@ -745,21 +745,21 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                       e.target.style.height = 'auto';
                       e.target.style.height = `${e.target.scrollHeight}px`;
                     }}
-                    className="w-full mt-1 text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none resize-none bg-transparent leading-snug overflow-hidden"
+                    className="w-full mt-1 text-[14.5px] text-slate-900 placeholder:text-slate-400 focus:outline-none resize-none bg-transparent leading-snug overflow-hidden"
                   />
 
-                  {/* Location Tag (Matching Post Feed Card View Below Caption) */}
+                  {/* Location Tag (High WCAG Contrast >= 7.0:1) */}
                   {selectedLocation && (
-                    <div className="pt-1 pb-0.5 flex items-center gap-1.5 text-[13px] text-neutral-400 font-normal leading-snug animate-toast-pop select-none">
-                      <MapPin className="w-3.5 h-3.5 text-neutral-400 stroke-[1.8] shrink-0" />
+                    <div className="pt-1.5 pb-0.5 flex items-center gap-1.5 text-[13px] text-slate-600 font-medium leading-snug animate-toast-pop select-none">
+                      <MapPin className="w-3.5 h-3.5 text-slate-600 stroke-[2] shrink-0" />
                       <span className="truncate">{selectedLocation}</span>
                       <button
                         type="button"
                         onClick={() => setSelectedLocation(null)}
-                        className="p-0.5 rounded-full hover:bg-neutral-100 text-neutral-400 hover:text-rose-500 transition-colors ml-0.5 cursor-pointer"
+                        className="p-0.5 rounded-full hover:bg-neutral-200/80 text-slate-500 hover:text-rose-600 transition-colors ml-0.5 cursor-pointer"
                         title="Hapus lokasi"
                       >
-                        <X className="w-3 h-3 stroke-[2]" />
+                        <X className="w-3 h-3 stroke-[2.2]" />
                       </button>
                     </div>
                   )}
@@ -969,7 +969,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                         className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                           images.length > 0
                             ? 'bg-blue-50 text-[#1d64ec]'
-                            : 'text-neutral-400 hover:text-slate-800 hover:bg-neutral-100'
+                            : 'text-slate-600 hover:text-slate-900 hover:bg-neutral-100'
                         }`}
                         title="Unggah Foto"
                       >
@@ -986,7 +986,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                         className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                           selectedGif || showGifPicker
                             ? 'bg-blue-50 text-[#1d64ec]'
-                            : 'text-neutral-400 hover:text-slate-800 hover:bg-neutral-100'
+                            : 'text-slate-600 hover:text-slate-900 hover:bg-neutral-100'
                         }`}
                         title="Sisipkan GIF"
                       >
@@ -1005,7 +1005,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                         className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                           showEmojiBar
                             ? 'bg-blue-50 text-[#1d64ec]'
-                            : 'text-neutral-400 hover:text-slate-800 hover:bg-neutral-100'
+                            : 'text-slate-600 hover:text-slate-900 hover:bg-neutral-100'
                         }`}
                         title="Sisipkan Emoji"
                       >
@@ -1019,7 +1019,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                         className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                           showPollBuilder
                             ? 'bg-blue-50 text-[#1d64ec]'
-                            : 'text-neutral-400 hover:text-slate-800 hover:bg-neutral-100'
+                            : 'text-slate-600 hover:text-slate-900 hover:bg-neutral-100'
                         }`}
                         title="Buat Jajak Pendapat / Polling"
                       >
@@ -1033,7 +1033,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                         className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                           selectedTopic
                             ? 'bg-blue-50 text-[#1d64ec]'
-                            : 'text-neutral-400 hover:text-slate-800 hover:bg-neutral-100'
+                            : 'text-slate-600 hover:text-slate-900 hover:bg-neutral-100'
                         }`}
                         title="Pilih Topik"
                       >
@@ -1051,7 +1051,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                         className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                           selectedLocation
                             ? 'bg-blue-50 text-[#1d64ec]'
-                            : 'text-neutral-400 hover:text-slate-800 hover:bg-neutral-100'
+                            : 'text-slate-600 hover:text-slate-900 hover:bg-neutral-100'
                         }`}
                         title="Pilih Tempat / Lokasi COD Sekolah"
                       >
@@ -1065,7 +1065,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                         className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                           showVoiceNote
                             ? 'bg-blue-50 text-[#1d64ec]'
-                            : 'text-neutral-400 hover:text-slate-800 hover:bg-neutral-100'
+                            : 'text-slate-600 hover:text-slate-900 hover:bg-neutral-100'
                         }`}
                         title="Rekaman Suara / Audio"
                       >

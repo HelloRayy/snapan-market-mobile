@@ -176,16 +176,16 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
   }, [hasChanges, onBack]);
 
   return (
-    <div className="fixed inset-0 z-[100] bg-white text-slate-900 overflow-y-auto flex flex-col font-gt-standard">
+    <div className="fixed inset-0 z-[100] bg-white text-slate-900 flex flex-col font-gt-standard overflow-hidden">
       {/* Top Header Bar */}
       <header
-        className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-neutral-100 px-4 h-14 flex items-center justify-between"
+        className="shrink-0 z-30 bg-white/95 backdrop-blur-md border-b border-neutral-100 px-4 h-14 flex items-center justify-between"
         style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
       >
         <button
           type="button"
           onClick={handleAttemptExit}
-          className="w-10 h-10 -ml-1 rounded-full hover:bg-neutral-100 active:bg-neutral-200 flex items-center justify-center text-slate-800 transition-all cursor-pointer active:scale-90"
+          className="w-10 h-10 -ml-1 rounded-full hover:bg-neutral-100 active:bg-neutral-200 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-[0.96]"
           aria-label="Kembali"
         >
           <ArrowLeft className="w-5 h-5 stroke-[2.25]" />
@@ -198,8 +198,8 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
         <div className="w-10" />
       </header>
 
-      {/* Main Content Form (Clean Threads Border-Bottom Divider Layout) */}
-      <main className="flex-1 max-w-[540px] w-full mx-auto px-5 pt-3 pb-32">
+      {/* Main Content Form (Smooth Scrollable Area Between Fixed Top & Bottom Bars) */}
+      <main className="flex-1 overflow-y-auto overscroll-contain max-w-[540px] w-full mx-auto px-5 pt-3 pb-6">
         <div className="space-y-0 text-slate-900">
           {/* Row 1: Nama & Avatar on Right */}
           <div className="flex items-center justify-between py-4 border-b border-neutral-200/80">
@@ -451,9 +451,9 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
         </div>
       </main>
 
-      {/* Floating Bottom Dual Action CTA (Sticky Bar with Kumo UI Styling) */}
+      {/* Permanently Fixed Bottom Dual Action CTA Bar */}
       <footer
-        className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-neutral-100 px-5 py-3.5 shadow-lg"
+        className="shrink-0 z-40 bg-white/95 backdrop-blur-md border-t border-neutral-200/80 px-5 py-3.5 shadow-[0_-4px_16px_rgba(0,0,0,0.04)] w-full"
         style={{ paddingBottom: 'max(14px, env(safe-area-inset-bottom, 14px))' }}
       >
         <div className="max-w-[540px] mx-auto flex items-center gap-3">
@@ -461,7 +461,7 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
           <button
             type="button"
             onClick={handleAttemptExit}
-            className="relative flex items-center justify-center flex-1 h-12 px-5 rounded-full text-slate-800 font-bold text-[15px] bg-white border border-neutral-200/90 shadow-2xs hover:bg-neutral-50 active:scale-[0.98] transition-all overflow-hidden cursor-pointer select-none"
+            className="relative flex items-center justify-center flex-1 h-12 px-5 rounded-full text-slate-800 font-bold text-[15px] bg-white border border-neutral-300 shadow-2xs hover:bg-neutral-50 active:scale-[0.97] transition-colors overflow-hidden cursor-pointer select-none"
           >
             <span className="absolute inset-0 rounded-full bg-gradient-to-b from-white/90 to-neutral-50/50 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9)] pointer-events-none" />
             <span className="relative z-10">Discard</span>
@@ -471,7 +471,7 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
           <button
             type="button"
             onClick={handleSave}
-            className="relative flex items-center justify-center flex-1 h-12 px-5 rounded-full text-white font-bold text-[15px] bg-[#101010] hover:bg-black border border-black/90 shadow-md shadow-black/20 active:scale-[0.98] transition-all overflow-hidden cursor-pointer select-none"
+            className="relative flex items-center justify-center flex-1 h-12 px-5 rounded-full text-white font-bold text-[15px] bg-[#101010] hover:bg-black border border-black shadow-md shadow-black/20 active:scale-[0.97] transition-colors overflow-hidden cursor-pointer select-none"
           >
             <span className="absolute inset-0 rounded-full bg-gradient-to-b from-white/20 to-transparent shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
             <span className="relative z-10">Save</span>

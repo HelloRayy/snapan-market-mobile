@@ -4,6 +4,7 @@ import { Heart, Repeat, Send, BadgeCheck, MoreHorizontal, Crown } from 'lucide-r
 import { PostComment } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { formatSmartTimestamp } from '@/utils/formatters';
+import { PostOptionsModal } from './PostOptionsModal';
 
 // Custom Smooth Rounded Lucide-Family Comment Icon
 const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -46,6 +47,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
   const [likesCount, setLikesCount] = useState(comment.likesCount);
   const [repliesState, setRepliesState] = useState(comment.replies || []);
   const [replyDraftText, setReplyDraftText] = useState('');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const isReplying = activeReplyingCommentId === comment.id;
@@ -244,8 +246,11 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
               {/* Option (...) Icon */}
               <button
                 type="button"
-                onClick={(e) => e.stopPropagation()}
-                className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsMenuOpen(true);
+                }}
+                className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer active:scale-[0.96]"
                 aria-label="Opsi komentar"
               >
                 <MoreHorizontal className="w-4 h-4" />
@@ -568,6 +573,16 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
           </div>
         </div>
       )}
+
+      {/* Comment 3-Dot Options Modal */}
+      <PostOptionsModal
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        title="Opsi Komentar"
+        authorName={comment.user.name}
+        authorUsername={comment.user.username}
+        isSaved={false}
+      />
     </div>
   );
 };

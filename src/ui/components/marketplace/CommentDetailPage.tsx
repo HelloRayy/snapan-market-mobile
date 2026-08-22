@@ -5,6 +5,7 @@ import { MarketPostItem, PostComment } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { formatSmartTimestamp } from '@/utils/formatters';
 import { PostCommentItem } from './PostCommentItem';
+import { PostOptionsModal } from './PostOptionsModal';
 import { useAuth } from '@/ui/hooks/useAuth';
 
 // Custom Smooth Rounded Lucide-Family Comment Icon
@@ -38,6 +39,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
 }) => {
   const { profile } = useAuth();
   const [commentStack, setCommentStack] = useState<PostComment[]>([focusedComment]);
+  const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
   const [replyInputText, setReplyInputText] = useState('');
   const [replyToCommentId, setReplyToCommentId] = useState<string | null>(null);
 
@@ -313,7 +315,9 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
 
                 <button
                   type="button"
-                  className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
+                  onClick={() => setIsOptionsModalOpen(true)}
+                  className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer active:scale-[0.96]"
+                  aria-label="Opsi komentar"
                 >
                   <MoreHorizontal className="w-4 h-4" />
                 </button>
@@ -495,6 +499,16 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
           )}
         </div>
       </main>
+
+      {/* Focused Comment 3-Dot Options Modal */}
+      <PostOptionsModal
+        isOpen={isOptionsModalOpen}
+        onClose={() => setIsOptionsModalOpen(false)}
+        title="Opsi Komentar"
+        authorName={activeComment.user.name}
+        authorUsername={activeComment.user.username}
+        isSaved={false}
+      />
     </div>
   );
 };

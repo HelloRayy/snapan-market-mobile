@@ -4,6 +4,7 @@ import { UserReplyThread, MarketPostItem } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { ClickableVerifiedBadge } from './VerifiedBadgeModal';
 import { MediaLightboxModal } from './MediaLightboxModal';
+import { PostOptionsModal } from './PostOptionsModal';
 
 // Custom Threads 3-Dot Topic Icon
 const ThreadsTopicIcon: React.FC<{ className?: string }> = ({ className = "w-3.5 h-3.5 text-[#1d64ec] fill-current shrink-0" }) => (
@@ -56,6 +57,10 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
   const [replyLikesCount, setReplyLikesCount] = useState(reply.likesCount);
   const [replyReposted, setReplyReposted] = useState(reply.isReposted || false);
   const [replyRepostsCount, setReplyRepostsCount] = useState(reply.repostsCount || 0);
+
+  // 3-Dot Options Modal States
+  const [isParentMenuOpen, setIsParentMenuOpen] = useState(false);
+  const [isReplyMenuOpen, setIsReplyMenuOpen] = useState(false);
 
   // Lightbox State
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -287,8 +292,11 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
               <span className="text-[13.5px] sm:text-[14px] font-normal text-neutral-400 whitespace-nowrap">{parentPost.timestamp}</span>
               <button
                 type="button"
-                onClick={(e) => e.stopPropagation()}
-                className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsParentMenuOpen(true);
+                }}
+                className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer active:scale-[0.96]"
                 aria-label="Opsi postingan"
               >
                 <MoreHorizontal className="w-4 h-4" />
@@ -408,8 +416,11 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
               <span className="text-[13.5px] sm:text-[14px] font-normal text-neutral-400 whitespace-nowrap">{reply.timestamp}</span>
               <button
                 type="button"
-                onClick={(e) => e.stopPropagation()}
-                className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsReplyMenuOpen(true);
+                }}
+                className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer active:scale-[0.96]"
                 aria-label="Opsi balasan"
               >
                 <MoreHorizontal className="w-4 h-4" />
@@ -518,6 +529,25 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
           }}
         />
       )}
+
+      {/* Parent Post 3-Dot Options Modal */}
+      <PostOptionsModal
+        isOpen={isParentMenuOpen}
+        onClose={() => setIsParentMenuOpen(false)}
+        authorName={parentPost.seller.name}
+        authorUsername={parentPost.seller.username}
+        isSaved={false}
+      />
+
+      {/* Reply Post 3-Dot Options Modal */}
+      <PostOptionsModal
+        isOpen={isReplyMenuOpen}
+        onClose={() => setIsReplyMenuOpen(false)}
+        title="Opsi Balasan"
+        authorName={reply.user.name}
+        authorUsername={reply.user.username}
+        isSaved={false}
+      />
     </article>
   );
 };

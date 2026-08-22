@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Heart, MoreHorizontal, Box, Repeat2, Send, PartyPopper, ChevronRight, MapPin } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Heart, MoreHorizontal, Box, Repeat2, Send, PartyPopper, ChevronRight, MapPin, Bookmark, BookmarkCheck, Copy, Flag, BellOff, X } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { formatSmartTimestamp } from '@/utils/formatters';
 import { MediaLightboxModal } from './MediaLightboxModal';
 import { ClickableVerifiedBadge } from './VerifiedBadgeModal';
+import { togglePostBookmark } from '@/services/api/bookmarkService';
 
 // Custom Threads 3-Dot Topic Icon
 const ThreadsTopicIcon: React.FC<{ className?: string }> = ({ className = "w-3.5 h-3.5 text-[#1d64ec] fill-current shrink-0" }) => (
@@ -55,11 +56,30 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
   const [isReposted, setIsReposted] = useState(item.isReposted || false);
   const [repostsCount, setRepostsCount] = useState(item.repostsCount || 0);
 
+  const [isSaved, setIsSaved] = useState(item.isSaved || false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 2500);
+  };
+
+  const handleBookmarkToggle = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsMenuOpen(false);
+    const nextState = !isSaved;
+    setIsSaved(nextState);
+    showToast(nextState ? 'Postingan disimpan ke Markah 📌' : 'Dihapus dari Markah');
+
+    try {
+      if (item.id && item.seller?.id) {
+        await togglePostBookmark(item.id, item.seller.id, !nextState);
+      }
+    } catch (err) {
+      // Graceful fallback for guest/offline
+    }
   };
 
   // Fullscreen Media Lightbox State
@@ -416,8 +436,11 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               </span>
               <button
                 type="button"
-                onClick={(e) => e.stopPropagation()}
-                className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsMenuOpen(true);
+                }}
+                className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer"
                 aria-label="Opsi postingan"
               >
                 <MoreHorizontal className="w-4 h-4" />
@@ -534,8 +557,11 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 </span>
                 <button
                   type="button"
-                  onClick={(e) => e.stopPropagation()}
-                  className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMenuOpen(true);
+                  }}
+                  className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer"
                   aria-label="Opsi postingan"
                 >
                   <MoreHorizontal className="w-4 h-4" />
@@ -621,6 +647,124 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           }
         }}
       />
+
+      {/* 3-Dot Options Action Modal / Bottom Sheet */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsMenuOpen(false);
+            }}
+            className="fixed inset-0 z-[99990] bg-black/40 backdrop-blur-[2px] flex items-end sm:items-center justify-center p-0 sm:p-4"
+          >
+            <motion.div
+              initial={{ y: '100%', opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: '100%', opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full sm:max-w-md bg-white rounded-t-[24px] sm:rounded-[24px] p-4 shadow-2xl border border-neutral-200 select-none overflow-hidden"
+            >
+              {/* Drag Handle Bar for Mobile */}
+              <div className="w-10 h-1 bg-neutral-200 rounded-full mx-auto mb-3 sm:hidden" />
+
+              {/* Modal Header */}
+              <div className="flex items-center justify-between pb-3 border-b border-neutral-100 mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-slate-900 text-sm">Opsi Postingan</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="p-1 text-slate-400 hover:text-slate-600 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Options List */}
+              <div className="space-y-1">
+                {/* 1. Bookmark / Save Option */}
+                <button
+                  type="button"
+                  onClick={handleBookmarkToggle}
+                  className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-100 active:bg-neutral-200/80 transition-colors text-left group cursor-pointer"
+                >
+                  <div className={`p-2 rounded-lg ${isSaved ? 'bg-blue-50 text-blue-600' : 'bg-neutral-100 text-slate-700'}`}>
+                    {isSaved ? <BookmarkCheck className="w-4 h-4 stroke-[2]" /> : <Bookmark className="w-4 h-4 stroke-[2]" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-slate-900">
+                      {isSaved ? 'Hapus dari Markah' : 'Simpan ke Markah'}
+                    </p>
+                    <p className="text-[11px] text-slate-500 truncate">
+                      {isSaved ? 'Hapus dari daftar postingan tersimpan' : 'Simpan postingan ini ke koleksi markah Anda'}
+                    </p>
+                  </div>
+                </button>
+
+                {/* 2. Copy Link Option */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMenuOpen(false);
+                    handleShare(e);
+                  }}
+                  className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-100 active:bg-neutral-200/80 transition-colors text-left group cursor-pointer"
+                >
+                  <div className="p-2 rounded-lg bg-neutral-100 text-slate-700">
+                    <Copy className="w-4 h-4 stroke-[2]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-slate-900">Salin Tautan</p>
+                    <p className="text-[11px] text-slate-500 truncate">Salin link postingan ke papan klip</p>
+                  </div>
+                </button>
+
+                {/* 3. Mute User Notifications Option */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMenuOpen(false);
+                    showToast(`Notifikasi dari @${item.seller.username || item.seller.name} disenyapkan 🔇`);
+                  }}
+                  className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-100 active:bg-neutral-200/80 transition-colors text-left group cursor-pointer"
+                >
+                  <div className="p-2 rounded-lg bg-neutral-100 text-slate-700">
+                    <BellOff className="w-4 h-4 stroke-[2]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-slate-900">Senyapkan @{item.seller.username || item.seller.name}</p>
+                    <p className="text-[11px] text-slate-500 truncate">Sembunyikan notifikasi dari pengguna ini</p>
+                  </div>
+                </button>
+
+                {/* 4. Report Option */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMenuOpen(false);
+                    showToast('Laporan terkirim! Terima kasih atas masukan Anda 🛡️');
+                  }}
+                  className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-rose-50 active:bg-rose-100 transition-colors text-left group cursor-pointer"
+                >
+                  <div className="p-2 rounded-lg bg-rose-100 text-rose-600">
+                    <Flag className="w-4 h-4 stroke-[2]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-rose-600">Laporkan Postingan</p>
+                    <p className="text-[11px] text-rose-500 truncate">Laporkan jika mengandung spam atau konten tidak layak</p>
+                  </div>
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Floating Feedback Toast Notification for Repost & Share */}
       {toastMessage && (

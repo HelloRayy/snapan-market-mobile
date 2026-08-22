@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, X, SlidersHorizontal, ArrowLeft, Users, TrendingUp, ShoppingBag, MessageSquare } from 'lucide-react';
+import { Search, X, SlidersHorizontal, ArrowLeft, Users, TrendingUp, MoreHorizontal } from 'lucide-react';
 import { ClickableVerifiedBadge } from '@/ui/components/marketplace/VerifiedBadgeModal';
 import { MarketBottomNav } from '@/ui/components/marketplace/MarketBottomNav';
 import { MarketPostCard } from '@/ui/components/marketplace/MarketPostCard';
@@ -157,14 +157,50 @@ const INITIAL_SUGGESTED_ACCOUNTS: SuggestedAccount[] = [
 ];
 
 const TRENDING_TAGS = [
-  { id: '1', tag: 'MarketDay', posts: '1.2 rb utas' },
-  { id: '2', tag: 'PPLG1', posts: '856 utas' },
-  { id: '3', tag: 'Kantin8', posts: '2.4 rb utas' },
-  { id: '4', tag: 'DesignCollab', posts: '430 utas' },
-  { id: '5', tag: 'UjiKompetensi', posts: '620 utas' },
+  { id: '1', tag: 'vibe coding', posts: '3.4 rb utas' },
+  { id: '2', tag: 'MarketDay', posts: '1.2 rb utas' },
+  { id: '3', tag: 'PPLG1', posts: '856 utas' },
+  { id: '4', tag: 'Kantin8', posts: '2.4 rb utas' },
+  { id: '5', tag: 'DesignCollab', posts: '430 utas' },
 ];
 
-type SearchTab = 'all' | 'accounts' | 'topics' | 'products';
+type SearchTab = 'top' | 'latest' | 'profiles';
+
+// Semantic Tokenized Relevance Scorer
+function calculateTokenScore(query: string, fields: (string | undefined)[], engagementBoost = 0): number {
+  if (!query.trim()) return 0;
+  // Clean tokens (remove punctuation and split)
+  const tokens = query
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s]/gi, ' ')
+    .split(/\s+/)
+    .filter((t) => t.length > 1);
+
+  if (tokens.length === 0) return 0;
+
+  let matchedTokens = 0;
+  let fieldHits = 0;
+
+  for (const token of tokens) {
+    let hasHit = false;
+    for (const field of fields) {
+      if (field && field.toLowerCase().includes(token)) {
+        hasHit = true;
+        fieldHits += 1;
+      }
+    }
+    if (hasHit) {
+      matchedTokens += 1;
+    }
+  }
+
+  if (matchedTokens === 0) return 0;
+
+  // Composite Score: Token Coverage Ratio * 100 + Extra Field Hits + Engagement Boost
+  const coverageRatio = matchedTokens / tokens.length;
+  return coverageRatio * 100 + fieldHits * 5 + engagementBoost;
+}
 
 interface SearchPageProps {
   onBack?: () => void;
@@ -181,7 +217,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
   onSelectPost,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState<SearchTab>('all');
+  const [activeTab, setActiveTab] = useState<SearchTab>('top');
   const [followingMap, setFollowingMap] = useState<Record<string, boolean>>({});
 
   const toggleFollow = (id: string, e: React.MouseEvent) => {
@@ -192,152 +228,164 @@ export const SearchPage: React.FC<SearchPageProps> = ({
     }));
   };
 
-  // Filter Accounts
-  const filteredAccounts = useMemo(() => {
+  // 1. Scored Matching Posts (Tokenized Relevance)
+  const scoredPosts = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+
+    return MOCK_MARKET_POSTS.map((post) => {
+      const fields = [
+        post.caption,
+        post.topicTag,
+        post.category,
+        post.seller.name,
+        post.seller.username,
+        ...(post.threadChain?.map((t) => t.caption) || []),
+      ];
+      const engagement = ((post.likesCount || 0) * 0.05) + ((post.commentsCount || 0) * 0.1);
+      const score = calculateTokenScore(searchQuery, fields, engagement);
+      return { post, score };
+    }).filter((item) => item.score > 0);
+  }, [searchQuery]);
+
+  // Tab 1: Terpopuler (Sorted by Score descending)
+  const popularPosts = useMemo(() => {
+    return [...scoredPosts].sort((a, b) => b.score - a.score).map((item) => item.post);
+  }, [scoredPosts]);
+
+  // Tab 2: Terbaru (Chronological / Recency order among matched posts)
+  const latestPosts = useMemo(() => {
+    return [...scoredPosts].map((item) => item.post);
+  }, [scoredPosts]);
+
+  // Tab 3: Profil (Scored Accounts)
+  const scoredAccounts = useMemo(() => {
     if (!searchQuery.trim()) return INITIAL_SUGGESTED_ACCOUNTS;
-    const q = searchQuery.toLowerCase().trim();
-    return INITIAL_SUGGESTED_ACCOUNTS.filter(
-      (acc) =>
-        acc.username.toLowerCase().includes(q) ||
-        acc.fullName.toLowerCase().includes(q) ||
-        acc.bio.toLowerCase().includes(q)
-    );
-  }, [searchQuery]);
-
-  // Filter Posts (Topics / Social Threads)
-  const filteredTopics = useMemo(() => {
-    if (!searchQuery.trim()) return [];
-    const q = searchQuery.toLowerCase().trim();
-    return MOCK_MARKET_POSTS.filter((post) => {
-      const matchCaption = post.caption.toLowerCase().includes(q);
-      const matchTopic = post.topicTag?.toLowerCase().includes(q);
-      const matchSeller = post.seller.name.toLowerCase().includes(q) || post.seller.username?.toLowerCase().includes(q);
-      return (matchCaption || matchTopic || matchSeller) && post.postType === 'thread';
-    });
-  }, [searchQuery]);
-
-  // Filter Products (Marketplace Items)
-  const filteredProducts = useMemo(() => {
-    if (!searchQuery.trim()) return [];
-    const q = searchQuery.toLowerCase().trim();
-    return MOCK_MARKET_POSTS.filter((post) => {
-      const matchCaption = post.caption.toLowerCase().includes(q);
-      const matchCat = post.category?.toLowerCase().includes(q);
-      const matchSeller = post.seller.name.toLowerCase().includes(q) || post.seller.username?.toLowerCase().includes(q);
-      const isProduct = post.postType === 'product' || (post.price ?? 0) > 0;
-      return (matchCaption || matchCat || matchSeller) && isProduct;
-    });
+    return INITIAL_SUGGESTED_ACCOUNTS.map((account) => {
+      const fields = [account.username, account.fullName, account.bio];
+      const score = calculateTokenScore(searchQuery, fields);
+      return { account, score };
+    })
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map((item) => item.account);
   }, [searchQuery]);
 
   const hasSearchQuery = searchQuery.trim().length > 0;
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-gt-standard pb-24 select-none">
-      {/* Sticky Header with Searchbar */}
+      {/* Sticky Header with Searchbar & Tabs */}
       <header
-        className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-100 px-4 py-2.5 transition-all"
+        className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-100 px-4 pt-2.5 pb-0 transition-all"
         style={{ paddingTop: 'max(0.625rem, env(safe-area-inset-top, 0px))' }}
       >
         <div className="max-w-xl mx-auto w-full">
-          {/* Capsule Search Bar with Integrated Back Arrow (100% Centered & Full Width Symmetry) */}
-          <div className="flex items-center pl-2.5 pr-3 bg-neutral-100/90 text-slate-900 text-base rounded-[22px] h-11 leading-snug border border-neutral-200/70 w-full focus-within:bg-white focus-within:border-slate-400 focus-within:shadow-2xs transition-all">
-            {/* Integrated Back Arrow / Search Icon */}
-            {onBack ? (
-              <button
-                type="button"
-                onClick={onBack}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-700 hover:text-slate-950 hover:bg-neutral-200/70 active:scale-90 transition-all cursor-pointer shrink-0 mr-1"
-                aria-label="Kembali"
-              >
-                <ArrowLeft className="w-4.5 h-4.5 stroke-[2.2]" />
-              </button>
-            ) : (
-              <div className="w-8 h-8 flex items-center justify-center text-neutral-400 shrink-0 mr-1">
-                <Search className="w-4.5 h-4.5 stroke-[2.2]" />
-              </div>
-            )}
+          {/* Top Search Bar Row with 3-Dots Action Button */}
+          <div className="flex items-center gap-2.5 pb-2">
+            {/* Capsule Search Bar with Integrated Back Arrow (100% Centered Symmetry) */}
+            <div className="flex items-center pl-2.5 pr-3 bg-neutral-100/90 text-slate-900 text-base rounded-[22px] h-11 leading-snug border border-neutral-200/70 flex-1 focus-within:bg-white focus-within:border-slate-400 focus-within:shadow-2xs transition-all">
+              {/* Integrated Back Arrow / Search Icon */}
+              {onBack ? (
+                <button
+                  type="button"
+                  onClick={onBack}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-slate-700 hover:text-slate-950 hover:bg-neutral-200/70 active:scale-90 transition-all cursor-pointer shrink-0 mr-1"
+                  aria-label="Kembali"
+                >
+                  <ArrowLeft className="w-4.5 h-4.5 stroke-[2.2]" />
+                </button>
+              ) : (
+                <div className="w-8 h-8 flex items-center justify-center text-neutral-400 shrink-0 mr-1">
+                  <Search className="w-4.5 h-4.5 stroke-[2.2]" />
+                </div>
+              )}
 
-            {/* Search Input Field */}
-            <input
-              type="text"
-              autoFocus
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cari akun, topik, atau produk..."
-              className="bg-transparent text-slate-900 placeholder:text-neutral-400 outline-none flex-1 text-[15px] font-normal leading-snug h-full px-1"
-            />
+              {/* Search Input Field */}
+              <input
+                type="text"
+                autoFocus
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari"
+                className="bg-transparent text-slate-900 placeholder:text-neutral-400 outline-none flex-1 text-[15px] font-normal leading-snug h-full px-1"
+              />
 
-            {/* Right Action: Clear 'X' or Filter Sliders */}
-            {searchQuery ? (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className="w-7 h-7 rounded-full flex items-center justify-center text-neutral-400 hover:text-slate-800 hover:bg-neutral-200/60 active:scale-90 transition-all cursor-pointer shrink-0 ml-1"
-                aria-label="Hapus Pencarian"
-              >
-                <X className="w-4 h-4 stroke-[2.5]" />
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="inline-flex rounded-full h-8 w-8 items-center justify-center text-neutral-400 hover:text-slate-800 hover:bg-neutral-200/60 active:scale-90 transition-all cursor-pointer shrink-0 ml-1"
-                aria-label="Filter Pencarian"
-              >
-                <SlidersHorizontal className="w-4 h-4 stroke-[2]" />
-              </button>
-            )}
+              {/* Right Action: Clear 'X' or Filter Sliders */}
+              {searchQuery ? (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-neutral-400 hover:text-slate-800 hover:bg-neutral-200/60 active:scale-90 transition-all cursor-pointer shrink-0 ml-1"
+                  aria-label="Hapus Pencarian"
+                >
+                  <X className="w-4 h-4 stroke-[2.5]" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="inline-flex rounded-full h-8 w-8 items-center justify-center text-neutral-400 hover:text-slate-800 hover:bg-neutral-200/60 active:scale-90 transition-all cursor-pointer shrink-0 ml-1"
+                  aria-label="Filter Pencarian"
+                >
+                  <SlidersHorizontal className="w-4 h-4 stroke-[2]" />
+                </button>
+              )}
+            </div>
+
+            {/* Right 3-Dots Button (Matching Meta Threads Navigation Header) */}
+            <button
+              type="button"
+              className="w-9 h-9 rounded-full flex items-center justify-center text-slate-700 hover:bg-neutral-100 active:scale-90 transition-all cursor-pointer shrink-0"
+              aria-label="Opsi Lainnya"
+            >
+              <MoreHorizontal className="w-5 h-5 stroke-[2]" />
+            </button>
           </div>
 
-          {/* Dynamic Unified Search Tabs (Only visible when typing a query) */}
+          {/* 3 Main Meta Threads Tabs: Terpopuler | Terbaru | Profil */}
           {hasSearchQuery && (
-            <div className="flex items-center gap-1.5 pt-2.5 overflow-x-auto scrollbar-none">
-              <button
-                type="button"
-                onClick={() => setActiveTab('all')}
-                className={`px-3.5 py-1.5 rounded-full text-[13.5px] font-semibold transition-all cursor-pointer shrink-0 ${
-                  activeTab === 'all'
-                    ? 'bg-slate-900 text-white shadow-2xs'
-                    : 'bg-neutral-100 text-slate-600 hover:bg-neutral-200/70'
-                }`}
-              >
-                Semua
-              </button>
+            <div className="w-full border-t border-neutral-100">
+              <div className="flex items-center relative">
+                {/* Sliding indicator line */}
+                <div
+                  className={`absolute bottom-0 h-[2px] bg-slate-900 transition-all duration-200 cubic-bezier(0.25,1,0.5,1) ${
+                    activeTab === 'top'
+                      ? 'left-0 w-1/3'
+                      : activeTab === 'latest'
+                      ? 'left-1/3 w-1/3'
+                      : 'left-2/3 w-1/3'
+                  }`}
+                />
 
-              <button
-                type="button"
-                onClick={() => setActiveTab('accounts')}
-                className={`px-3.5 py-1.5 rounded-full text-[13.5px] font-semibold transition-all cursor-pointer shrink-0 ${
-                  activeTab === 'accounts'
-                    ? 'bg-slate-900 text-white shadow-2xs'
-                    : 'bg-neutral-100 text-slate-600 hover:bg-neutral-200/70'
-                }`}
-              >
-                Akun ({filteredAccounts.length})
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('top')}
+                  className={`flex-1 py-3 text-[14.5px] text-center transition-colors cursor-pointer ${
+                    activeTab === 'top' ? 'font-bold text-slate-900' : 'font-medium text-neutral-400 hover:text-slate-700'
+                  }`}
+                >
+                  Terpopuler
+                </button>
 
-              <button
-                type="button"
-                onClick={() => setActiveTab('topics')}
-                className={`px-3.5 py-1.5 rounded-full text-[13.5px] font-semibold transition-all cursor-pointer shrink-0 ${
-                  activeTab === 'topics'
-                    ? 'bg-slate-900 text-white shadow-2xs'
-                    : 'bg-neutral-100 text-slate-600 hover:bg-neutral-200/70'
-                }`}
-              >
-                Topik ({filteredTopics.length})
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('latest')}
+                  className={`flex-1 py-3 text-[14.5px] text-center transition-colors cursor-pointer ${
+                    activeTab === 'latest' ? 'font-bold text-slate-900' : 'font-medium text-neutral-400 hover:text-slate-700'
+                  }`}
+                >
+                  Terbaru
+                </button>
 
-              <button
-                type="button"
-                onClick={() => setActiveTab('products')}
-                className={`px-3.5 py-1.5 rounded-full text-[13.5px] font-semibold transition-all cursor-pointer shrink-0 ${
-                  activeTab === 'products'
-                    ? 'bg-slate-900 text-white shadow-2xs'
-                    : 'bg-neutral-100 text-slate-600 hover:bg-neutral-200/70'
-                }`}
-              >
-                Produk ({filteredProducts.length})
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('profiles')}
+                  className={`flex-1 py-3 text-[14.5px] text-center transition-colors cursor-pointer ${
+                    activeTab === 'profiles' ? 'font-bold text-slate-900' : 'font-medium text-neutral-400 hover:text-slate-700'
+                  }`}
+                >
+                  Profil
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -385,7 +433,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
 
               {/* Suggested Accounts List */}
               <div className="divide-y divide-neutral-100 bg-white rounded-2xl border border-neutral-100 shadow-[rgba(0,0,0,0.02)_0px_2px_12px_0px] overflow-hidden">
-                {filteredAccounts.map((account) => {
+                {INITIAL_SUGGESTED_ACCOUNTS.map((account) => {
                   const isFollowing = !!followingMap[account.id];
 
                   return (
@@ -445,129 +493,67 @@ export const SearchPage: React.FC<SearchPageProps> = ({
           </>
         )}
 
-        {/* CASE 2: Active Query State -> Render Search Results based on Active Tab */}
+        {/* CASE 2: Active Query State -> Render based on Active Tab */}
         {hasSearchQuery && (
           <div className="space-y-4">
-            {/* Tab: SEMUA (Top Account + Top Posts/Products) */}
-            {activeTab === 'all' && (
-              <div className="space-y-4">
-                {/* 1. Matched Accounts Section */}
-                {filteredAccounts.length > 0 && (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between px-1">
-                      <span className="text-[13px] font-bold text-neutral-500 uppercase tracking-wide flex items-center gap-1">
-                        <Users className="w-3.5 h-3.5" /> Akun Terkait
-                      </span>
-                      {filteredAccounts.length > 2 && (
-                        <button
-                          type="button"
-                          onClick={() => setActiveTab('accounts')}
-                          className="text-[12.5px] text-[#1d64ec] font-semibold hover:underline cursor-pointer"
-                        >
-                          Lihat semua ({filteredAccounts.length})
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="divide-y divide-neutral-100 bg-white rounded-2xl border border-neutral-100 shadow-[rgba(0,0,0,0.02)_0px_2px_12px_0px] overflow-hidden">
-                      {filteredAccounts.slice(0, 2).map((account) => {
-                        const isFollowing = !!followingMap[account.id];
-                        return (
-                          <div
-                            key={account.id}
-                            onClick={() => onNavigateToProfile(account.username)}
-                            className="flex items-start justify-between gap-3 p-3 hover:bg-neutral-50/80 active:bg-neutral-100 transition-colors cursor-pointer leading-snug"
-                          >
-                            <div className="w-9 h-9 rounded-full overflow-hidden ring-1 ring-neutral-200 shrink-0 mt-0.5">
-                              <img src={account.avatar} alt={account.fullName} className="w-full h-full object-cover" />
-                            </div>
-
-                            <div className="flex-1 min-w-0 pr-1 leading-snug">
-                              <div className="flex items-center gap-1 leading-tight">
-                                <span className="font-bold text-[14px] text-slate-900 truncate">{account.username}</span>
-                                {account.isVerified && <ClickableVerifiedBadge className="w-3 h-3 shrink-0" />}
-                              </div>
-                              <p className="text-[12px] text-neutral-500 truncate leading-tight mt-0.5">{account.fullName}</p>
-                              <p className="text-[12px] text-slate-700 line-clamp-1 mt-0.5">{account.bio}</p>
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={(e) => toggleFollow(account.id, e)}
-                              className={`shrink-0 px-3 py-1 rounded-xl text-[12.5px] font-semibold transition-all active:scale-95 cursor-pointer leading-tight ${
-                                isFollowing
-                                  ? 'border border-neutral-200 text-neutral-400 bg-neutral-50'
-                                  : 'border border-neutral-300 text-slate-900 bg-white shadow-2xs'
-                              }`}
-                            >
-                              {isFollowing ? 'Mengikuti' : 'Ikuti'}
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {/* 2. Matched Topics / Posts */}
-                {filteredTopics.length > 0 && (
-                  <div className="space-y-2">
-                    <span className="text-[13px] font-bold text-neutral-500 uppercase tracking-wide px-1 flex items-center gap-1">
-                      <MessageSquare className="w-3.5 h-3.5" /> Utas & Diskusi
-                    </span>
-                    <div className="space-y-3">
-                      {filteredTopics.map((post) => (
-                        <MarketPostCard
-                          key={post.id}
-                          item={post}
-                          onPostClick={onSelectPost}
-                          onUserClick={(username) => onNavigateToProfile(username || post.seller.username || 'radityarayhannnn')}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* 3. Matched Marketplace Products */}
-                {filteredProducts.length > 0 && (
-                  <div className="space-y-2">
-                    <span className="text-[13px] font-bold text-neutral-500 uppercase tracking-wide px-1 flex items-center gap-1">
-                      <ShoppingBag className="w-3.5 h-3.5" /> Produk & Jajan
-                    </span>
-                    <div className="space-y-3">
-                      {filteredProducts.map((product) => (
-                        <MarketPostCard
-                          key={product.id}
-                          item={product}
-                          onPostClick={onSelectPost}
-                          onUserClick={(username) => onNavigateToProfile(username || product.seller.username || 'radityarayhannnn')}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Empty State for "Semua" */}
-                {filteredAccounts.length === 0 && filteredTopics.length === 0 && filteredProducts.length === 0 && (
+            {/* Tab 1: TERPOPULER (Top Relevance & Engagement) */}
+            {activeTab === 'top' && (
+              <div className="space-y-3">
+                {popularPosts.length > 0 ? (
+                  popularPosts.map((post) => (
+                    <MarketPostCard
+                      key={post.id}
+                      item={post}
+                      onPostClick={onSelectPost}
+                      onUserClick={(username) => onNavigateToProfile(username || post.seller.username || 'radityarayhannnn')}
+                    />
+                  ))
+                ) : (
                   <div className="py-14 text-center text-neutral-400 space-y-2">
                     <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto text-neutral-400">
                       <Search className="w-6 h-6 stroke-[1.8]" />
                     </div>
-                    <p className="font-semibold text-slate-800 text-[15px]">Tidak ada hasil ditemukan</p>
+                    <p className="font-semibold text-slate-800 text-[15px]">Tidak ada utas terpopuler ditemukan</p>
                     <p className="text-xs text-neutral-400 max-w-xs mx-auto">
-                      Tidak ada akun, utas, atau produk yang cocok dengan kata kunci "{searchQuery}"
+                      Coba cari dengan kata kunci lain atau lihat tab Profil
                     </p>
                   </div>
                 )}
               </div>
             )}
 
-            {/* Tab: AKUN */}
-            {activeTab === 'accounts' && (
+            {/* Tab 2: TERBARU (Latest Matching Posts) */}
+            {activeTab === 'latest' && (
+              <div className="space-y-3">
+                {latestPosts.length > 0 ? (
+                  latestPosts.map((post) => (
+                    <MarketPostCard
+                      key={post.id}
+                      item={post}
+                      onPostClick={onSelectPost}
+                      onUserClick={(username) => onNavigateToProfile(username || post.seller.username || 'radityarayhannnn')}
+                    />
+                  ))
+                ) : (
+                  <div className="py-14 text-center text-neutral-400 space-y-2">
+                    <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto text-neutral-400">
+                      <Search className="w-6 h-6 stroke-[1.8]" />
+                    </div>
+                    <p className="font-semibold text-slate-800 text-[15px]">Tidak ada utas terbaru ditemukan</p>
+                    <p className="text-xs text-neutral-400 max-w-xs mx-auto">
+                      Coba cari dengan kata kunci lain
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Tab 3: PROFIL (Matched Accounts) */}
+            {activeTab === 'profiles' && (
               <div className="space-y-2">
-                {filteredAccounts.length > 0 ? (
+                {scoredAccounts.length > 0 ? (
                   <div className="divide-y divide-neutral-100 bg-white rounded-2xl border border-neutral-100 shadow-[rgba(0,0,0,0.02)_0px_2px_12px_0px] overflow-hidden">
-                    {filteredAccounts.map((account) => {
+                    {scoredAccounts.map((account) => {
                       const isFollowing = !!followingMap[account.id];
                       return (
                         <div
@@ -619,50 +605,8 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                   </div>
                 ) : (
                   <div className="py-12 text-center text-neutral-400 space-y-1">
-                    <p className="font-semibold text-slate-700">Tidak ada akun ditemukan</p>
+                    <p className="font-semibold text-slate-700">Tidak ada profil ditemukan</p>
                     <p className="text-xs text-neutral-400">Coba cari dengan username atau nama lain</p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Tab: TOPIK / UTAS */}
-            {activeTab === 'topics' && (
-              <div className="space-y-3">
-                {filteredTopics.length > 0 ? (
-                  filteredTopics.map((post) => (
-                    <MarketPostCard
-                      key={post.id}
-                      item={post}
-                      onPostClick={onSelectPost}
-                      onUserClick={(username) => onNavigateToProfile(username || post.seller.username || 'radityarayhannnn')}
-                    />
-                  ))
-                ) : (
-                  <div className="py-12 text-center text-neutral-400 space-y-1">
-                    <p className="font-semibold text-slate-700">Tidak ada utas ditemukan</p>
-                    <p className="text-xs text-neutral-400">Coba cari dengan kata kunci obrolan lain</p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Tab: PRODUK */}
-            {activeTab === 'products' && (
-              <div className="space-y-3">
-                {filteredProducts.length > 0 ? (
-                  filteredProducts.map((product) => (
-                    <MarketPostCard
-                      key={product.id}
-                      item={product}
-                      onPostClick={onSelectPost}
-                      onUserClick={(username) => onNavigateToProfile(username || product.seller.username || 'radityarayhannnn')}
-                    />
-                  ))
-                ) : (
-                  <div className="py-12 text-center text-neutral-400 space-y-1">
-                    <p className="font-semibold text-slate-700">Tidak ada produk ditemukan</p>
-                    <p className="text-xs text-neutral-400">Coba cari jajanan, buku, atau barang lainnya</p>
                   </div>
                 )}
               </div>

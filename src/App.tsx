@@ -239,6 +239,7 @@ export function App() {
               onBack={() => window.history.back()}
               onNavigateToProfile={navigateToProfile}
               onNavigateHome={navigateToHome}
+              onSelectPost={handleOpenPostDetail}
               onOpenMenu={handleOpenDrawer}
             />
           )}

@@ -1,7 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { Search, X, SlidersHorizontal, ArrowLeft, Users } from 'lucide-react';
+import { Search, X, SlidersHorizontal, ArrowLeft, Users, TrendingUp, ShoppingBag, MessageSquare } from 'lucide-react';
 import { ClickableVerifiedBadge } from '@/ui/components/marketplace/VerifiedBadgeModal';
 import { MarketBottomNav } from '@/ui/components/marketplace/MarketBottomNav';
+import { MarketPostCard } from '@/ui/components/marketplace/MarketPostCard';
+import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
+import { MarketPostItem } from '@/types/marketFeed';
 
 export interface SuggestedAccount {
   id: string;
@@ -153,10 +156,21 @@ const INITIAL_SUGGESTED_ACCOUNTS: SuggestedAccount[] = [
   },
 ];
 
+const TRENDING_TAGS = [
+  { id: '1', tag: 'MarketDay', posts: '1.2 rb utas' },
+  { id: '2', tag: 'PPLG1', posts: '856 utas' },
+  { id: '3', tag: 'Kantin8', posts: '2.4 rb utas' },
+  { id: '4', tag: 'DesignCollab', posts: '430 utas' },
+  { id: '5', tag: 'UjiKompetensi', posts: '620 utas' },
+];
+
+type SearchTab = 'all' | 'accounts' | 'topics' | 'products';
+
 interface SearchPageProps {
   onBack?: () => void;
   onNavigateToProfile: (username: string) => void;
   onNavigateHome: () => void;
+  onSelectPost?: (post: MarketPostItem) => void;
   onOpenMenu?: () => void;
 }
 
@@ -164,8 +178,10 @@ export const SearchPage: React.FC<SearchPageProps> = ({
   onBack,
   onNavigateToProfile,
   onNavigateHome,
+  onSelectPost,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<SearchTab>('all');
   const [followingMap, setFollowingMap] = useState<Record<string, boolean>>({});
 
   const toggleFollow = (id: string, e: React.MouseEvent) => {
@@ -176,6 +192,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
     }));
   };
 
+  // Filter Accounts
   const filteredAccounts = useMemo(() => {
     if (!searchQuery.trim()) return INITIAL_SUGGESTED_ACCOUNTS;
     const q = searchQuery.toLowerCase().trim();
@@ -186,6 +203,33 @@ export const SearchPage: React.FC<SearchPageProps> = ({
         acc.bio.toLowerCase().includes(q)
     );
   }, [searchQuery]);
+
+  // Filter Posts (Topics / Social Threads)
+  const filteredTopics = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const q = searchQuery.toLowerCase().trim();
+    return MOCK_MARKET_POSTS.filter((post) => {
+      const matchCaption = post.caption.toLowerCase().includes(q);
+      const matchTopic = post.topicTag?.toLowerCase().includes(q);
+      const matchSeller = post.seller.name.toLowerCase().includes(q) || post.seller.username?.toLowerCase().includes(q);
+      return (matchCaption || matchTopic || matchSeller) && post.postType === 'thread';
+    });
+  }, [searchQuery]);
+
+  // Filter Products (Marketplace Items)
+  const filteredProducts = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const q = searchQuery.toLowerCase().trim();
+    return MOCK_MARKET_POSTS.filter((post) => {
+      const matchCaption = post.caption.toLowerCase().includes(q);
+      const matchCat = post.category?.toLowerCase().includes(q);
+      const matchSeller = post.seller.name.toLowerCase().includes(q) || post.seller.username?.toLowerCase().includes(q);
+      const isProduct = post.postType === 'product' || (post.price ?? 0) > 0;
+      return (matchCaption || matchCat || matchSeller) && isProduct;
+    });
+  }, [searchQuery]);
+
+  const hasSearchQuery = searchQuery.trim().length > 0;
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-gt-standard pb-24 select-none">
@@ -219,7 +263,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
               autoFocus
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cari"
+              placeholder="Cari akun, topik, atau produk..."
               className="bg-transparent text-slate-900 placeholder:text-neutral-400 outline-none flex-1 text-[15px] font-normal leading-snug h-full px-1"
             />
 
@@ -243,92 +287,388 @@ export const SearchPage: React.FC<SearchPageProps> = ({
               </button>
             )}
           </div>
-        </div>
-      </header>
 
-      {/* Main Container */}
-      <main className="max-w-xl mx-auto px-4 pt-3">
-        {/* Section Heading: "Saran ikuti" */}
-        <div className="flex items-center justify-between pt-2 pb-2 px-1">
-          <h2 className="text-[15px] font-bold text-slate-900 tracking-tight leading-snug">
-            {searchQuery ? `Hasil untuk "${searchQuery}"` : 'Saran ikuti'}
-          </h2>
-          {!searchQuery && (
-            <span className="text-[12.5px] text-neutral-400 font-medium leading-snug flex items-center gap-1">
-              <Users className="w-3.5 h-3.5" />
-              Rekomendasi
-            </span>
-          )}
-        </div>
+          {/* Dynamic Unified Search Tabs (Only visible when typing a query) */}
+          {hasSearchQuery && (
+            <div className="flex items-center gap-1.5 pt-2.5 overflow-x-auto scrollbar-none">
+              <button
+                type="button"
+                onClick={() => setActiveTab('all')}
+                className={`px-3.5 py-1.5 rounded-full text-[13.5px] font-semibold transition-all cursor-pointer shrink-0 ${
+                  activeTab === 'all'
+                    ? 'bg-slate-900 text-white shadow-2xs'
+                    : 'bg-neutral-100 text-slate-600 hover:bg-neutral-200/70'
+                }`}
+              >
+                Semua
+              </button>
 
-        {/* Suggested Accounts List (Reference styling with clean borders, shadows, & light mode) */}
-        <div className="divide-y divide-neutral-100 bg-white rounded-2xl border border-neutral-100 shadow-[rgba(0,0,0,0.02)_0px_2px_12px_0px] overflow-hidden mt-1">
-          {filteredAccounts.length > 0 ? (
-            filteredAccounts.map((account) => {
-              const isFollowing = !!followingMap[account.id];
+              <button
+                type="button"
+                onClick={() => setActiveTab('accounts')}
+                className={`px-3.5 py-1.5 rounded-full text-[13.5px] font-semibold transition-all cursor-pointer shrink-0 ${
+                  activeTab === 'accounts'
+                    ? 'bg-slate-900 text-white shadow-2xs'
+                    : 'bg-neutral-100 text-slate-600 hover:bg-neutral-200/70'
+                }`}
+              >
+                Akun ({filteredAccounts.length})
+              </button>
 
-              return (
-                <div
-                  key={account.id}
-                  onClick={() => onNavigateToProfile(account.username)}
-                  className="flex items-start justify-between gap-3 p-3.5 hover:bg-neutral-50/80 active:bg-neutral-100 transition-colors cursor-pointer leading-snug group"
-                >
-                  {/* Left: Avatar */}
-                  <div className="w-10 h-10 rounded-full overflow-hidden ring-1 ring-neutral-200/80 shrink-0 mt-0.5 shadow-2xs">
-                    <img
-                      src={account.avatar}
-                      alt={account.fullName}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      loading="lazy"
-                    />
-                  </div>
+              <button
+                type="button"
+                onClick={() => setActiveTab('topics')}
+                className={`px-3.5 py-1.5 rounded-full text-[13.5px] font-semibold transition-all cursor-pointer shrink-0 ${
+                  activeTab === 'topics'
+                    ? 'bg-slate-900 text-white shadow-2xs'
+                    : 'bg-neutral-100 text-slate-600 hover:bg-neutral-200/70'
+                }`}
+              >
+                Topik ({filteredTopics.length})
+              </button>
 
-                  {/* Center: Details */}
-                  <div className="flex-1 min-w-0 pr-1 leading-snug">
-                    <div className="flex items-center gap-1 leading-tight">
-                      <span className="font-bold text-[14.5px] text-slate-900 truncate">
-                        {account.username}
-                      </span>
-                      {account.isVerified && (
-                        <ClickableVerifiedBadge className="w-3.5 h-3.5 shrink-0" />
-                      )}
-                    </div>
-
-                    <p className="text-[13px] text-neutral-500 font-normal truncate leading-tight mt-0.5">
-                      {account.fullName}
-                    </p>
-
-                    <p className="text-[13px] text-slate-700 font-normal line-clamp-2 leading-relaxed mt-1">
-                      {account.bio}
-                    </p>
-
-                    <p className="text-[11.5px] text-neutral-400 font-medium leading-tight mt-1.5">
-                      {account.followersCount}
-                    </p>
-                  </div>
-
-                  {/* Right: "Ikuti" / "Mengikuti" Button */}
-                  <button
-                    type="button"
-                    onClick={(e) => toggleFollow(account.id, e)}
-                    className={`shrink-0 px-4 py-1.5 rounded-xl text-[13.5px] font-semibold transition-all active:scale-95 cursor-pointer leading-tight mt-0.5 ${
-                      isFollowing
-                        ? 'border border-neutral-200 text-neutral-400 bg-neutral-50 hover:bg-neutral-100'
-                        : 'border border-neutral-300 text-slate-900 bg-white hover:bg-neutral-100 shadow-2xs'
-                    }`}
-                  >
-                    {isFollowing ? 'Mengikuti' : 'Ikuti'}
-                  </button>
-                </div>
-              );
-            })
-          ) : (
-            <div className="py-12 text-center text-neutral-400 text-sm space-y-1">
-              <p className="font-semibold text-slate-700">Tidak ada akun ditemukan</p>
-              <p className="text-xs text-neutral-400">Coba cari dengan kata kunci lain</p>
+              <button
+                type="button"
+                onClick={() => setActiveTab('products')}
+                className={`px-3.5 py-1.5 rounded-full text-[13.5px] font-semibold transition-all cursor-pointer shrink-0 ${
+                  activeTab === 'products'
+                    ? 'bg-slate-900 text-white shadow-2xs'
+                    : 'bg-neutral-100 text-slate-600 hover:bg-neutral-200/70'
+                }`}
+              >
+                Produk ({filteredProducts.length})
+              </button>
             </div>
           )}
         </div>
+      </header>
+
+      {/* Main Content Area */}
+      <main className="max-w-xl mx-auto px-4 pt-3 space-y-4">
+        {/* CASE 1: Empty Query State -> Trending Tags + Saran Ikuti */}
+        {!hasSearchQuery && (
+          <>
+            {/* Trending Topics / Hastag Populer */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-1.5 text-[13px] font-bold text-slate-800 uppercase tracking-wide px-1">
+                <TrendingUp className="w-4 h-4 text-[#1d64ec]" />
+                <span>Tren Topik Hari Ini</span>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {TRENDING_TAGS.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setSearchQuery(t.tag)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neutral-50 hover:bg-neutral-100 border border-neutral-200/70 text-slate-800 text-[13px] font-medium transition-all active:scale-95 cursor-pointer shadow-2xs"
+                  >
+                    <span className="text-[#1d64ec] font-bold">#</span>
+                    <span>{t.tag}</span>
+                    <span className="text-[11px] text-neutral-400 font-normal">· {t.posts}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Section Heading: "Saran ikuti" */}
+            <div className="space-y-2 pt-2">
+              <div className="flex items-center justify-between px-1">
+                <h2 className="text-[15px] font-bold text-slate-900 tracking-tight leading-snug">
+                  Saran ikuti
+                </h2>
+                <span className="text-[12.5px] text-neutral-400 font-medium leading-snug flex items-center gap-1">
+                  <Users className="w-3.5 h-3.5" />
+                  Rekomendasi
+                </span>
+              </div>
+
+              {/* Suggested Accounts List */}
+              <div className="divide-y divide-neutral-100 bg-white rounded-2xl border border-neutral-100 shadow-[rgba(0,0,0,0.02)_0px_2px_12px_0px] overflow-hidden">
+                {filteredAccounts.map((account) => {
+                  const isFollowing = !!followingMap[account.id];
+
+                  return (
+                    <div
+                      key={account.id}
+                      onClick={() => onNavigateToProfile(account.username)}
+                      className="flex items-start justify-between gap-3 p-3.5 hover:bg-neutral-50/80 active:bg-neutral-100 transition-colors cursor-pointer leading-snug group"
+                    >
+                      <div className="w-10 h-10 rounded-full overflow-hidden ring-1 ring-neutral-200/80 shrink-0 mt-0.5 shadow-2xs">
+                        <img
+                          src={account.avatar}
+                          alt={account.fullName}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          loading="lazy"
+                        />
+                      </div>
+
+                      <div className="flex-1 min-w-0 pr-1 leading-snug">
+                        <div className="flex items-center gap-1 leading-tight">
+                          <span className="font-bold text-[14.5px] text-slate-900 truncate">
+                            {account.username}
+                          </span>
+                          {account.isVerified && (
+                            <ClickableVerifiedBadge className="w-3.5 h-3.5 shrink-0" />
+                          )}
+                        </div>
+
+                        <p className="text-[13px] text-neutral-500 font-normal truncate leading-tight mt-0.5">
+                          {account.fullName}
+                        </p>
+
+                        <p className="text-[13px] text-slate-700 font-normal line-clamp-2 leading-relaxed mt-1">
+                          {account.bio}
+                        </p>
+
+                        <p className="text-[11.5px] text-neutral-400 font-medium leading-tight mt-1.5">
+                          {account.followersCount}
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={(e) => toggleFollow(account.id, e)}
+                        className={`shrink-0 px-4 py-1.5 rounded-xl text-[13.5px] font-semibold transition-all active:scale-95 cursor-pointer leading-tight mt-0.5 ${
+                          isFollowing
+                            ? 'border border-neutral-200 text-neutral-400 bg-neutral-50 hover:bg-neutral-100'
+                            : 'border border-neutral-300 text-slate-900 bg-white hover:bg-neutral-100 shadow-2xs'
+                        }`}
+                      >
+                        {isFollowing ? 'Mengikuti' : 'Ikuti'}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* CASE 2: Active Query State -> Render Search Results based on Active Tab */}
+        {hasSearchQuery && (
+          <div className="space-y-4">
+            {/* Tab: SEMUA (Top Account + Top Posts/Products) */}
+            {activeTab === 'all' && (
+              <div className="space-y-4">
+                {/* 1. Matched Accounts Section */}
+                {filteredAccounts.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between px-1">
+                      <span className="text-[13px] font-bold text-neutral-500 uppercase tracking-wide flex items-center gap-1">
+                        <Users className="w-3.5 h-3.5" /> Akun Terkait
+                      </span>
+                      {filteredAccounts.length > 2 && (
+                        <button
+                          type="button"
+                          onClick={() => setActiveTab('accounts')}
+                          className="text-[12.5px] text-[#1d64ec] font-semibold hover:underline cursor-pointer"
+                        >
+                          Lihat semua ({filteredAccounts.length})
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="divide-y divide-neutral-100 bg-white rounded-2xl border border-neutral-100 shadow-[rgba(0,0,0,0.02)_0px_2px_12px_0px] overflow-hidden">
+                      {filteredAccounts.slice(0, 2).map((account) => {
+                        const isFollowing = !!followingMap[account.id];
+                        return (
+                          <div
+                            key={account.id}
+                            onClick={() => onNavigateToProfile(account.username)}
+                            className="flex items-start justify-between gap-3 p-3 hover:bg-neutral-50/80 active:bg-neutral-100 transition-colors cursor-pointer leading-snug"
+                          >
+                            <div className="w-9 h-9 rounded-full overflow-hidden ring-1 ring-neutral-200 shrink-0 mt-0.5">
+                              <img src={account.avatar} alt={account.fullName} className="w-full h-full object-cover" />
+                            </div>
+
+                            <div className="flex-1 min-w-0 pr-1 leading-snug">
+                              <div className="flex items-center gap-1 leading-tight">
+                                <span className="font-bold text-[14px] text-slate-900 truncate">{account.username}</span>
+                                {account.isVerified && <ClickableVerifiedBadge className="w-3 h-3 shrink-0" />}
+                              </div>
+                              <p className="text-[12px] text-neutral-500 truncate leading-tight mt-0.5">{account.fullName}</p>
+                              <p className="text-[12px] text-slate-700 line-clamp-1 mt-0.5">{account.bio}</p>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={(e) => toggleFollow(account.id, e)}
+                              className={`shrink-0 px-3 py-1 rounded-xl text-[12.5px] font-semibold transition-all active:scale-95 cursor-pointer leading-tight ${
+                                isFollowing
+                                  ? 'border border-neutral-200 text-neutral-400 bg-neutral-50'
+                                  : 'border border-neutral-300 text-slate-900 bg-white shadow-2xs'
+                              }`}
+                            >
+                              {isFollowing ? 'Mengikuti' : 'Ikuti'}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* 2. Matched Topics / Posts */}
+                {filteredTopics.length > 0 && (
+                  <div className="space-y-2">
+                    <span className="text-[13px] font-bold text-neutral-500 uppercase tracking-wide px-1 flex items-center gap-1">
+                      <MessageSquare className="w-3.5 h-3.5" /> Utas & Diskusi
+                    </span>
+                    <div className="space-y-3">
+                      {filteredTopics.map((post) => (
+                        <MarketPostCard
+                          key={post.id}
+                          item={post}
+                          onPostClick={onSelectPost}
+                          onUserClick={(username) => onNavigateToProfile(username || post.seller.username || 'radityarayhannnn')}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. Matched Marketplace Products */}
+                {filteredProducts.length > 0 && (
+                  <div className="space-y-2">
+                    <span className="text-[13px] font-bold text-neutral-500 uppercase tracking-wide px-1 flex items-center gap-1">
+                      <ShoppingBag className="w-3.5 h-3.5" /> Produk & Jajan
+                    </span>
+                    <div className="space-y-3">
+                      {filteredProducts.map((product) => (
+                        <MarketPostCard
+                          key={product.id}
+                          item={product}
+                          onPostClick={onSelectPost}
+                          onUserClick={(username) => onNavigateToProfile(username || product.seller.username || 'radityarayhannnn')}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Empty State for "Semua" */}
+                {filteredAccounts.length === 0 && filteredTopics.length === 0 && filteredProducts.length === 0 && (
+                  <div className="py-14 text-center text-neutral-400 space-y-2">
+                    <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto text-neutral-400">
+                      <Search className="w-6 h-6 stroke-[1.8]" />
+                    </div>
+                    <p className="font-semibold text-slate-800 text-[15px]">Tidak ada hasil ditemukan</p>
+                    <p className="text-xs text-neutral-400 max-w-xs mx-auto">
+                      Tidak ada akun, utas, atau produk yang cocok dengan kata kunci "{searchQuery}"
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Tab: AKUN */}
+            {activeTab === 'accounts' && (
+              <div className="space-y-2">
+                {filteredAccounts.length > 0 ? (
+                  <div className="divide-y divide-neutral-100 bg-white rounded-2xl border border-neutral-100 shadow-[rgba(0,0,0,0.02)_0px_2px_12px_0px] overflow-hidden">
+                    {filteredAccounts.map((account) => {
+                      const isFollowing = !!followingMap[account.id];
+                      return (
+                        <div
+                          key={account.id}
+                          onClick={() => onNavigateToProfile(account.username)}
+                          className="flex items-start justify-between gap-3 p-3.5 hover:bg-neutral-50/80 active:bg-neutral-100 transition-colors cursor-pointer leading-snug group"
+                        >
+                          <div className="w-10 h-10 rounded-full overflow-hidden ring-1 ring-neutral-200/80 shrink-0 mt-0.5 shadow-2xs">
+                            <img
+                              src={account.avatar}
+                              alt={account.fullName}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                              loading="lazy"
+                            />
+                          </div>
+
+                          <div className="flex-1 min-w-0 pr-1 leading-snug">
+                            <div className="flex items-center gap-1 leading-tight">
+                              <span className="font-bold text-[14.5px] text-slate-900 truncate">
+                                {account.username}
+                              </span>
+                              {account.isVerified && <ClickableVerifiedBadge className="w-3.5 h-3.5 shrink-0" />}
+                            </div>
+                            <p className="text-[13px] text-neutral-500 font-normal truncate leading-tight mt-0.5">
+                              {account.fullName}
+                            </p>
+                            <p className="text-[13px] text-slate-700 font-normal line-clamp-2 leading-relaxed mt-1">
+                              {account.bio}
+                            </p>
+                            <p className="text-[11.5px] text-neutral-400 font-medium leading-tight mt-1.5">
+                              {account.followersCount}
+                            </p>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={(e) => toggleFollow(account.id, e)}
+                            className={`shrink-0 px-4 py-1.5 rounded-xl text-[13.5px] font-semibold transition-all active:scale-95 cursor-pointer leading-tight mt-0.5 ${
+                              isFollowing
+                                ? 'border border-neutral-200 text-neutral-400 bg-neutral-50 hover:bg-neutral-100'
+                                : 'border border-neutral-300 text-slate-900 bg-white hover:bg-neutral-100 shadow-2xs'
+                            }`}
+                          >
+                            {isFollowing ? 'Mengikuti' : 'Ikuti'}
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="py-12 text-center text-neutral-400 space-y-1">
+                    <p className="font-semibold text-slate-700">Tidak ada akun ditemukan</p>
+                    <p className="text-xs text-neutral-400">Coba cari dengan username atau nama lain</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Tab: TOPIK / UTAS */}
+            {activeTab === 'topics' && (
+              <div className="space-y-3">
+                {filteredTopics.length > 0 ? (
+                  filteredTopics.map((post) => (
+                    <MarketPostCard
+                      key={post.id}
+                      item={post}
+                      onPostClick={onSelectPost}
+                      onUserClick={(username) => onNavigateToProfile(username || post.seller.username || 'radityarayhannnn')}
+                    />
+                  ))
+                ) : (
+                  <div className="py-12 text-center text-neutral-400 space-y-1">
+                    <p className="font-semibold text-slate-700">Tidak ada utas ditemukan</p>
+                    <p className="text-xs text-neutral-400">Coba cari dengan kata kunci obrolan lain</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Tab: PRODUK */}
+            {activeTab === 'products' && (
+              <div className="space-y-3">
+                {filteredProducts.length > 0 ? (
+                  filteredProducts.map((product) => (
+                    <MarketPostCard
+                      key={product.id}
+                      item={product}
+                      onPostClick={onSelectPost}
+                      onUserClick={(username) => onNavigateToProfile(username || product.seller.username || 'radityarayhannnn')}
+                    />
+                  ))
+                ) : (
+                  <div className="py-12 text-center text-neutral-400 space-y-1">
+                    <p className="font-semibold text-slate-700">Tidak ada produk ditemukan</p>
+                    <p className="text-xs text-neutral-400">Coba cari jajanan, buku, atau barang lainnya</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </main>
 
       {/* Standard PWA Bottom Navigation Bar */}

@@ -162,8 +162,15 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     return p.caption.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
-  // Filtered Replies
+  // Filtered Replies strictly involving this user
   const displayReplies = MOCK_USER_REPLIES.filter((t) => {
+    const isUserReply =
+      t.reply.user.username?.toLowerCase() === cleanTargetUsername ||
+      t.reply.user.name.toLowerCase().replace(/\s+/g, '') === cleanTargetUsername ||
+      (isOwnProfile && (t.reply.user.username === 'radityarayhannnn' || t.reply.user.name === 'Raditya Rayhan'));
+
+    if (!isUserReply && !isOwnProfile) return false;
+
     if (!searchQuery) return true;
     return (
       t.reply.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -582,9 +589,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 ))
               ) : (
                 <div className="py-16 text-center text-neutral-400 space-y-1">
-                  <Package className="w-8 h-8 mx-auto text-neutral-300" />
+                  <MessageCircle className="w-8 h-8 mx-auto text-neutral-300 stroke-[1.75]" />
                   <p className="font-semibold text-sm text-slate-800">Belum ada balasan</p>
-                  <p className="text-xs">Balasan kamu pada utas orang lain akan muncul di sini.</p>
+                  <p className="text-xs">@{cleanTargetUsername} belum membalas utas apa pun.</p>
                 </div>
               )}
             </div>
@@ -611,9 +618,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 </div>
               ) : (
                 <div className="py-16 text-center text-neutral-400 space-y-1">
-                  <Grid className="w-8 h-8 mx-auto text-neutral-300" />
+                  <Grid className="w-8 h-8 mx-auto text-neutral-300 stroke-[1.75]" />
                   <p className="font-semibold text-sm text-slate-800">Belum ada media</p>
-                  <p className="text-xs">Foto dari postingan akan tampil dalam galeri ini.</p>
+                  <p className="text-xs">@{cleanTargetUsername} belum mengunggah foto atau media.</p>
                 </div>
               )}
             </div>

@@ -13,12 +13,14 @@ interface PostDetailPageProps {
   post: MarketPostItem;
   onBack: () => void;
   onAddToCart?: (item: MarketPostItem) => void;
+  onUserClick?: (username: string) => void;
 }
 
 export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   post,
   onBack,
   onAddToCart,
+  onUserClick,
 }) => {
   const { profile } = useAuth();
   const [comments, setComments] = useState<PostComment[]>(post.comments || []);
@@ -148,6 +150,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         <MarketPostCard
           item={post}
           onAddToCart={onAddToCart}
+          onUserClick={onUserClick}
           variant="detail"
         />
 

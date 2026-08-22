@@ -306,6 +306,10 @@ export function App() {
               <PostDetailPage
                 post={selectedPost}
                 onBack={handleClosePostDetail}
+                onUserClick={(uname) => {
+                  handleClosePostDetail();
+                  navigateToProfile(uname);
+                }}
               />
             </div>
           )}

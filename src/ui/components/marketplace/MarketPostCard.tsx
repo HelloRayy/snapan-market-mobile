@@ -547,6 +547,49 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
         initialIndex={selectedImageIndex}
         onClose={() => setIsLightboxOpen(false)}
         caption={item.caption}
+        likesCount={likesCount}
+        repliesCount={item.commentsCount}
+        repostsCount={repostsCount}
+        isLiked={isLiked}
+        isReposted={isReposted}
+        onLike={() => {
+          if (isLiked) {
+            setIsLiked(false);
+            setLikesCount((prev) => prev - 1);
+          } else {
+            setIsLiked(true);
+            setLikesCount((prev) => prev + 1);
+          }
+        }}
+        onComment={() => {
+          setIsLightboxOpen(false);
+          onPostClick?.(item);
+        }}
+        onRepost={() => {
+          if (isReposted) {
+            setIsReposted(false);
+            setRepostsCount((prev) => Math.max(0, prev - 1));
+            showToast('Batal diposting ulang');
+          } else {
+            setIsReposted(true);
+            setRepostsCount((prev) => prev + 1);
+            showToast('Postingan berhasil diposting ulang! 🚀');
+          }
+        }}
+        onShare={() => {
+          const shareUrl = window.location.href;
+          if (navigator.share) {
+            navigator.share({
+              title: item.title || 'Snapan Market',
+              text: `Cek postingan ${item.seller.name} di Snapan Market!`,
+              url: shareUrl,
+            }).catch(() => {});
+          } else {
+            navigator.clipboard.writeText(shareUrl).then(() => {
+              showToast('Tautan postingan berhasil disalin! 📋');
+            }).catch(() => {});
+          }
+        }}
       />
 
       {/* Floating Feedback Toast Notification for Repost & Share */}

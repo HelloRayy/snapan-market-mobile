@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Volume2, VolumeX, Play, Pause } from 'lucide-react';
+import { X, Volume2, VolumeX, Heart, MessageCircle, Repeat2, Send } from 'lucide-react';
 
 interface MediaLightboxModalProps {
   isOpen: boolean;
@@ -8,6 +8,15 @@ interface MediaLightboxModalProps {
   onClose: () => void;
   caption?: string;
   isVideo?: boolean;
+  likesCount?: number;
+  repliesCount?: number;
+  repostsCount?: number;
+  isLiked?: boolean;
+  isReposted?: boolean;
+  onLike?: () => void;
+  onComment?: () => void;
+  onRepost?: () => void;
+  onShare?: () => void;
 }
 
 export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
@@ -17,11 +26,18 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
   onClose,
   caption,
   isVideo = false,
+  likesCount,
+  repliesCount,
+  repostsCount,
+  isLiked = false,
+  isReposted = false,
+  onLike,
+  onComment,
+  onRepost,
+  onShare,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isMuted, setIsMuted] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [playbackSpeed, setPlaybackSpeed] = useState<'1x' | '1.5x' | '2x'>('1x');
   const [zoomLevel, setZoomLevel] = useState<number>(1);
 
   // Drag to dismiss state
@@ -37,7 +53,6 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
     setCurrentIndex(initialIndex);
     setDragY(0);
     setZoomLevel(1);
-    setIsPlaying(true);
   }, [initialIndex, isOpen]);
 
   useEffect(() => {
@@ -131,30 +146,30 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
       onClick={(e) => e.stopPropagation()}
       onPointerDown={(e) => e.stopPropagation()}
       style={{
-        backgroundColor: `rgba(0, 0, 0, ${0.98 * opacity})`,
+        backgroundColor: `rgba(255, 255, 255, ${0.98 * opacity})`,
         transform: `translateY(${dragY}px)`,
         opacity: opacity,
       }}
-      className="fixed inset-0 z-[100] backdrop-blur-2xl flex flex-col justify-between overflow-hidden select-none font-gt-standard text-[#f3f5f7] bg-black"
+      className="fixed inset-0 z-[100] backdrop-blur-2xl flex flex-col justify-between overflow-hidden select-none font-gt-standard text-slate-900 bg-white/95"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Top Bar: Deep Black Circular Close Button + Counter Badge */}
+      {/* Top Bar: Clean Light Circular Close Button + Counter Badge */}
       <div className="relative z-50 flex items-center justify-between px-5 pt-5 pb-2 max-w-xl mx-auto w-full">
-        {/* Top-Left: Circular Dark Button h-11 w-11 */}
+        {/* Top-Left: Circular Button h-11 w-11 */}
         <button
           type="button"
           onClick={handleClose}
-          className="flex items-center justify-center rounded-full h-11 w-11 bg-[#0a0a0a] hover:bg-[#181818] active:scale-90 text-[#f3f5f7] border border-white/10 shadow-lg transition-transform cursor-pointer select-none"
+          className="flex items-center justify-center rounded-full h-11 w-11 bg-white hover:bg-neutral-100 active:scale-90 text-slate-900 border border-neutral-200/90 shadow-xs transition-transform cursor-pointer select-none"
           aria-label="Tutup Media"
         >
-          <X className="w-5 h-5 text-[#f3f5f7] stroke-[2.2]" />
+          <X className="w-5 h-5 text-slate-900 stroke-[2.2]" />
         </button>
 
         {/* Top-Right: Counter Badge for Multi-Image */}
         {images.length > 1 && (
-          <div className="h-9 px-3.5 rounded-full bg-[#0a0a0a]/90 border border-white/10 backdrop-blur-md text-[#f3f5f7] text-xs font-semibold flex items-center shadow-md tabular-nums">
+          <div className="h-9 px-3.5 rounded-full bg-white/95 border border-neutral-200/90 backdrop-blur-md text-slate-800 text-xs font-semibold flex items-center shadow-2xs tabular-nums">
             {currentIndex + 1} / {images.length}
           </div>
         )}
@@ -178,158 +193,141 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
                 style={{
                   transform: zoomLevel > 1 ? `scale(${zoomLevel})` : undefined,
                 }}
-                className="max-h-[82vh] max-w-full h-auto w-auto object-contain rounded-[18px] shadow-2xl pointer-events-none select-none transition-transform duration-300"
+                className="max-h-[82vh] max-w-full h-auto w-auto object-contain rounded-[18px] border border-black/[0.06] shadow-xl pointer-events-none select-none transition-transform duration-300 bg-white"
               />
             </picture>
           </div>
         ))}
       </div>
 
-      {/* Bottom Floating Glass Capsule Bar (Option 1 Threads Control Bar) */}
+      {/* Bottom Floating Glass Capsule Bar (Icon-Only Social & Utility Controls in Light Theme) */}
       <div className="relative z-50 flex items-center justify-center px-4 pb-8 pt-2 max-w-xl mx-auto w-full">
-        <div className="flex items-center gap-x-3 sm:gap-x-4 bg-[#0a0a0a]/90 backdrop-blur-xl border border-white/15 px-5 py-2.5 rounded-full shadow-2xl text-[#f3f5f7] text-[13.5px] sm:text-[14px] font-medium leading-snug select-none">
-          {isVideo ? (
+        <div className="flex items-center gap-x-1.5 sm:gap-x-2 bg-white/95 backdrop-blur-xl border border-neutral-200/90 px-3.5 py-1.5 rounded-full shadow-lg text-slate-700 select-none">
+          {/* 1. Love / Like Button with Count */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onLike?.();
+            }}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full hover:bg-neutral-100/90 active:scale-90 transition-all cursor-pointer ${
+              isLiked ? 'text-rose-500' : 'text-slate-700 hover:text-slate-900'
+            }`}
+            title="Sukai foto"
+          >
+            <Heart className={`w-4 h-4 ${isLiked ? 'fill-current stroke-rose-500' : 'stroke-[2]'}`} />
+            {typeof likesCount === 'number' && (
+              <span className="text-[13px] font-semibold tabular-nums">{likesCount}</span>
+            )}
+          </button>
+
+          {/* 2. Comment Button with Count */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+              onComment?.();
+            }}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full hover:bg-neutral-100/90 active:scale-90 transition-all cursor-pointer text-slate-700 hover:text-slate-900"
+            title="Komentari"
+          >
+            <MessageCircle className="w-4 h-4 stroke-[2]" />
+            {typeof repliesCount === 'number' && (
+              <span className="text-[13px] font-semibold tabular-nums">{repliesCount}</span>
+            )}
+          </button>
+
+          {/* 3. Repost Button with Count */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRepost?.();
+            }}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full hover:bg-neutral-100/90 active:scale-90 transition-all cursor-pointer ${
+              isReposted ? 'text-emerald-500' : 'text-slate-700 hover:text-slate-900'
+            }`}
+            title="Repost"
+          >
+            <Repeat2 className="w-4 h-4 stroke-[2.2]" />
+            {typeof repostsCount === 'number' && (
+              <span className="text-[13px] font-semibold tabular-nums">{repostsCount}</span>
+            )}
+          </button>
+
+          {/* 4. Share Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onShare?.();
+            }}
+            className="flex items-center justify-center p-2 rounded-full hover:bg-neutral-100/90 active:scale-90 transition-all cursor-pointer text-slate-700 hover:text-slate-900"
+            title="Bagikan"
+          >
+            <Send className="w-4 h-4 stroke-[2]" />
+          </button>
+
+          {/* Separator */}
+          <span className="w-px h-4 bg-neutral-200 mx-0.5" />
+
+          {/* 5. Zoom Scale Preset (1x / 1.5x / 2x) */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setZoomLevel((prev) => (prev === 1 ? 1.5 : prev === 1.5 ? 2 : 1));
+            }}
+            className="px-2.5 py-1 rounded-full hover:bg-neutral-100/90 active:scale-90 transition-all cursor-pointer text-xs font-bold text-slate-800 tabular-nums"
+            title="Ubah perbesaran"
+          >
+            {zoomLevel}x
+          </button>
+
+          {/* 6. Multi-image Pagination Dots (if multi images) */}
+          {images.length > 1 && (
             <>
-              {/* 1. Jeda / Putar (Only when isVideo is true) */}
+              <span className="w-px h-4 bg-neutral-200 mx-0.5" />
+              <div className="flex items-center gap-1.5 px-1.5">
+                {images.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      scrollToImage(idx);
+                    }}
+                    className={`cursor-pointer transition-all ${
+                      currentIndex === idx
+                        ? 'w-4 h-1.5 rounded-full bg-slate-900'
+                        : 'w-1.5 h-1.5 rounded-full bg-neutral-300 hover:bg-neutral-400'
+                    }`}
+                    aria-label={`Ke gambar ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* 7. Audio Mute Toggle (if Video) */}
+          {isVideo && (
+            <>
+              <span className="w-px h-4 bg-neutral-200 mx-0.5" />
               <button
                 type="button"
-                onClick={() => setIsPlaying(!isPlaying)}
-                className="flex items-center gap-1.5 hover:text-white active:scale-95 transition-all cursor-pointer"
-              >
-                {isPlaying ? (
-                  <>
-                    <Pause className="w-3.5 h-3.5 fill-current" />
-                    <span>Jeda</span>
-                  </>
-                ) : (
-                  <>
-                    <Play className="w-3.5 h-3.5 fill-current" />
-                    <span>Putar</span>
-                  </>
-                )}
-              </button>
-
-              <span className="w-px h-3.5 bg-white/20" />
-
-              {/* 2. Audio Disenyapkan / Bunyi */}
-              <button
-                type="button"
-                onClick={() => setIsMuted(!isMuted)}
-                className="flex items-center gap-1.5 hover:text-white active:scale-95 transition-all cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsMuted(!isMuted);
+                }}
+                className="p-2 rounded-full hover:bg-neutral-100 active:scale-90 transition-all cursor-pointer text-slate-700 hover:text-slate-900"
               >
                 {isMuted ? (
-                  <>
-                    <VolumeX className="w-4 h-4 text-neutral-400" />
-                    <span className="text-neutral-300">Audio disenyapkan</span>
-                  </>
+                  <VolumeX className="w-4 h-4 text-neutral-400" />
                 ) : (
-                  <>
-                    <Volume2 className="w-4 h-4 text-[#1d64ec]" />
-                    <span className="text-white font-semibold">Audio aktif</span>
-                  </>
+                  <Volume2 className="w-4 h-4 text-[#1d64ec]" />
                 )}
               </button>
-
-              <span className="w-px h-3.5 bg-white/20" />
-
-              {/* 3. Playback Speed */}
-              <button
-                type="button"
-                onClick={() =>
-                  setPlaybackSpeed((prev) => (prev === '1x' ? '1.5x' : prev === '1.5x' ? '2x' : '1x'))
-                }
-                className="font-bold hover:text-white active:scale-95 transition-all cursor-pointer px-1 tabular-nums"
-              >
-                {playbackSpeed}
-              </button>
-
-              <span className="w-px h-3.5 bg-white/20" />
-
-              {/* 4. Kembali */}
-              <button
-                type="button"
-                onClick={() => {
-                  if (currentIndex > 0) scrollToImage(currentIndex - 1);
-                }}
-                disabled={currentIndex === 0}
-                className="hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 transition-all cursor-pointer"
-              >
-                Kembali
-              </button>
-
-              {/* 5. Lanjutkan */}
-              <button
-                type="button"
-                onClick={() => {
-                  if (currentIndex < images.length - 1) scrollToImage(currentIndex + 1);
-                }}
-                disabled={currentIndex === images.length - 1}
-                className="hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 transition-all cursor-pointer"
-              >
-                Lanjutkan
-              </button>
-            </>
-          ) : (
-            /* Foto Biasa: TIDAK ADA tombol Jeda (Sesuai directive: "jika tidak video maka tidak ada jeda") */
-            <>
-              {/* 1. Kembali (Prev Photo) if Multi-Image */}
-              {images.length > 1 && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (currentIndex > 0) scrollToImage(currentIndex - 1);
-                    }}
-                    disabled={currentIndex === 0}
-                    className="hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 transition-all cursor-pointer"
-                  >
-                    Kembali
-                  </button>
-                  <span className="w-px h-3.5 bg-white/20" />
-                </>
-              )}
-
-              {/* 2. Zoom / Skala Preset */}
-              <button
-                type="button"
-                onClick={() => setZoomLevel((prev) => (prev === 1 ? 1.5 : prev === 1.5 ? 2 : 1))}
-                className="font-bold hover:text-white active:scale-95 transition-all cursor-pointer px-1.5 tabular-nums"
-              >
-                {zoomLevel}x
-              </button>
-
-              {/* 3. Pagination Dots & Lanjutkan if Multi-Image */}
-              {images.length > 1 && (
-                <>
-                  <span className="w-px h-3.5 bg-white/20" />
-                  <div className="flex items-center gap-1.5 px-1">
-                    {images.map((_, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => scrollToImage(idx)}
-                        className={`cursor-pointer transition-all ${
-                          currentIndex === idx
-                            ? 'w-5 h-1.5 rounded-full bg-white shadow-xs'
-                            : 'w-1.5 h-1.5 rounded-full bg-white/40 hover:bg-white/70'
-                        }`}
-                        aria-label={`Ke gambar ${idx + 1}`}
-                      />
-                    ))}
-                  </div>
-                  <span className="w-px h-3.5 bg-white/20" />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (currentIndex < images.length - 1) scrollToImage(currentIndex + 1);
-                    }}
-                    disabled={currentIndex === images.length - 1}
-                    className="hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 transition-all cursor-pointer"
-                  >
-                    Lanjutkan
-                  </button>
-                </>
-              )}
             </>
           )}
         </div>

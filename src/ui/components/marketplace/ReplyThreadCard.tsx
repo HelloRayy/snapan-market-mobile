@@ -477,6 +477,42 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
           onClose={() => setIsLightboxOpen(false)}
           images={parentPost.images}
           initialIndex={selectedImageIndex}
+          caption={parentPost.caption}
+          likesCount={parentLikesCount}
+          repliesCount={parentPost.commentsCount}
+          repostsCount={parentRepostsCount}
+          isLiked={parentLiked}
+          isReposted={parentReposted}
+          onLike={() => {
+            if (parentLiked) {
+              setParentLiked(false);
+              setParentLikesCount((prev) => Math.max(0, prev - 1));
+            } else {
+              setParentLiked(true);
+              setParentLikesCount((prev) => prev + 1);
+            }
+          }}
+          onComment={() => {
+            setIsLightboxOpen(false);
+          }}
+          onRepost={() => {
+            if (parentReposted) {
+              setParentReposted(false);
+              setParentRepostsCount((prev) => Math.max(0, prev - 1));
+            } else {
+              setParentReposted(true);
+              setParentRepostsCount((prev) => prev + 1);
+            }
+          }}
+          onShare={() => {
+            if (navigator.share) {
+              navigator.share({
+                title: 'Snapan Market',
+                text: parentPost.caption,
+                url: window.location.href,
+              }).catch(() => {});
+            }
+          }}
         />
       )}
     </article>

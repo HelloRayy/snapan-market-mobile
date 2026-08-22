@@ -208,7 +208,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="pt-1 flex items-center justify-between text-slate-700 font-normal -ml-2 select-none max-w-full"
+      className="pt-1 flex items-center justify-between text-slate-700 font-normal -ml-1.5 select-none max-w-full"
     >
       {/* Left Action Buttons Container (Threads Nested Flex Layout) */}
       <div className="flex items-center text-slate-700 text-sm font-normal cursor-pointer transition-all">
@@ -221,7 +221,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               whileHover={{ scale: 1.04 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
               onClick={handleLikeToggle}
-              className={`flex items-center justify-center gap-1.5 px-2.5 py-1.5 min-h-[34px] rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 cursor-pointer transition-all select-none ${
+              className={`flex items-center justify-center gap-1 px-2 py-1 min-h-[30px] rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 cursor-pointer transition-all select-none ${
                 isLiked ? 'text-rose-500' : 'text-slate-600 hover:text-slate-900'
               }`}
               aria-label={`Sukai postingan. ${likesCount} suka`}
@@ -230,7 +230,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 animate={isLiked ? { scale: [1, 1.35, 0.95, 1], rotate: [0, -12, 12, 0] } : { scale: 1, rotate: 0 }}
                 transition={{ duration: 0.35, ease: "easeOut" }}
               >
-                <Heart className={`w-4.5 h-4.5 stroke-[2] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+                <Heart className={`w-4 h-4 stroke-[1.8] ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
               </motion.div>
               {likesCount > 0 && (
                 <motion.span
@@ -238,7 +238,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                   initial={{ opacity: 0.8, y: -2 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.15 }}
-                  className={`font-normal text-[13.5px] tabular-nums ${isLiked ? 'text-rose-500 font-medium' : 'text-slate-700'}`}
+                  className={`font-normal text-[12.5px] tabular-nums ${isLiked ? 'text-rose-500 font-medium' : 'text-slate-700'}`}
                 >
                   {likesCount}
                 </motion.span>
@@ -259,12 +259,12 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 e.stopPropagation();
                 onPostClick?.(item);
               }}
-              className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 min-h-[34px] rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 cursor-pointer transition-all text-slate-600 hover:text-slate-900 select-none"
+              className="flex items-center justify-center gap-1 px-2 py-1 min-h-[30px] rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 cursor-pointer transition-all text-slate-600 hover:text-slate-900 select-none"
               aria-label={`Komentar postingan. ${item.commentsCount} komentar`}
             >
-              <SmoothCommentIcon className="w-4.5 h-4.5 stroke-[2]" />
+              <SmoothCommentIcon className="w-4 h-4 stroke-[1.8]" />
               {item.commentsCount > 0 && (
-                <span className="font-normal text-[13.5px] text-slate-700 tabular-nums">{item.commentsCount}</span>
+                <span className="font-normal text-[12.5px] text-slate-700 tabular-nums">{item.commentsCount}</span>
               )}
             </motion.button>
           </div>
@@ -279,7 +279,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               whileHover={{ scale: 1.04 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
               onClick={handleRepostToggle}
-              className={`flex items-center justify-center gap-1.5 px-2.5 py-1.5 min-h-[34px] rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 cursor-pointer transition-all select-none ${
+              className={`flex items-center justify-center gap-1 px-2 py-1 min-h-[30px] rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 cursor-pointer transition-all select-none ${
                 isReposted ? 'text-emerald-500' : 'text-slate-600 hover:text-slate-900'
               }`}
               aria-label={`Post ulang postingan. ${repostsCount} posting ulang`}
@@ -288,10 +288,10 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 animate={isReposted ? { rotate: [0, 180], scale: [1, 1.25, 1] } : { rotate: 0, scale: 1 }}
                 transition={{ duration: 0.35, ease: "easeOut" }}
               >
-                <Repeat2 className={`w-4.5 h-4.5 stroke-[2] ${isReposted ? 'text-emerald-500' : ''}`} />
+                <Repeat2 className={`w-4 h-4 stroke-[1.8] ${isReposted ? 'text-emerald-500' : ''}`} />
               </motion.div>
               {repostsCount > 0 && (
-                <span className={`font-normal text-[13.5px] tabular-nums ${isReposted ? 'text-emerald-500 font-medium' : 'text-slate-700'}`}>
+                <span className={`font-normal text-[12.5px] tabular-nums ${isReposted ? 'text-emerald-500 font-medium' : 'text-slate-700'}`}>
                   {repostsCount}
                 </span>
               )}
@@ -301,18 +301,18 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
         {/* 4. Bagikan (Share) Slot */}
         <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer transition-all">
-          <div className="flex items-stretch px-1 font-normal cursor-pointer transition-all">
+          <div className="flex items-stretch px-0.5 font-normal cursor-pointer transition-all">
             <motion.button
               type="button"
               whileTap={{ scale: 0.88 }}
               whileHover={{ scale: 1.08 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
               onClick={handleShare}
-              className="flex items-center justify-center p-2 rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 cursor-pointer transition-all text-slate-600 hover:text-slate-900 select-none"
+              className="flex items-center justify-center p-1.5 rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 cursor-pointer transition-all text-slate-600 hover:text-slate-900 select-none"
               aria-label="Bagikan postingan"
               title="Bagikan / Kirim"
             >
-              <Send className="w-4 h-4 stroke-[1.8] text-slate-600" />
+              <Send className="w-3.5 h-3.5 stroke-[1.8] text-slate-600" />
             </motion.button>
           </div>
         </div>
@@ -320,8 +320,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
       {/* 5. Stock Indicator (Icon + Label + Number) - ONLY FOR PRODUCT POSTS */}
       {item.postType !== 'thread' && !!item.price && item.price > 0 && item.stock !== undefined && item.stock > 0 && (
-        <div className="flex items-center gap-1.5 min-h-[34px] px-2.5 py-1 text-neutral-500 bg-neutral-100/80 rounded-lg text-[12.5px] select-none ml-auto" title={`Stok tersisa ${item.stock}`}>
-          <Box className="w-3.5 h-3.5 stroke-[2] text-neutral-500" />
+        <div className="flex items-center gap-1 min-h-[28px] px-2 py-0.5 text-neutral-500 bg-neutral-100/80 rounded-md text-[11.5px] select-none ml-auto" title={`Stok tersisa ${item.stock}`}>
+          <Box className="w-3 h-3 stroke-[1.8] text-neutral-500" />
           <span className="font-normal text-slate-600">Sisa stok: <strong className="font-semibold text-slate-900">{item.stock}</strong></span>
         </div>
       )}
@@ -332,7 +332,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
     <article
       onClick={() => onPostClick?.(item)}
       className={`w-full border-b border-neutral-200 bg-pure-white hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none overflow-visible feed-card-perf ${
-        variant === 'detail' ? 'px-4 pt-3 pb-3.5' : 'px-4 py-3.5'
+        variant === 'detail' ? 'px-3.5 pt-3 pb-3.5' : 'px-3.5 py-3'
       }`}
     >
       {variant === 'detail' ? (
@@ -340,7 +340,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
         <div className="space-y-2.5">
           {/* Top Header Row: Profile Picture + Name + Class/Timestamp + More Options (...) */}
           <div className="flex items-center justify-between gap-2 min-w-0">
-            <div className="flex items-center gap-2.5 min-w-0 flex-1 overflow-hidden">
+            <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
               <div
                 onClick={(e) => {
                   e.stopPropagation();
@@ -361,28 +361,28 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                     e.stopPropagation();
                     onUserClick?.(item.seller.username || item.seller.name);
                   }}
-                  className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-1 max-w-[45%] cursor-pointer"
+                  className="font-semibold text-[14.5px] text-slate-900 truncate hover:underline shrink-1 max-w-[45%] cursor-pointer"
                 >
                   {item.seller.name}
                 </span>
 
                 {item.seller.isVerified && (
-                  <ClickableVerifiedBadge sellerName={item.seller.name} className="w-[17px] h-[17px] shrink-0" />
+                  <ClickableVerifiedBadge sellerName={item.seller.name} className="w-[16px] h-[16px] shrink-0" />
                 )}
 
                 {item.topicTag ? (
-                  <div className="flex items-center gap-x-1 shrink-1 min-w-0 overflow-hidden ml-0.5 h-[21px] leading-snug">
+                  <div className="flex items-center gap-x-0.5 shrink-1 min-w-0 overflow-hidden ml-0.5 h-[19px] leading-snug">
                     {/* Subtle Grey Chevron Arrow Separator */}
-                    <span className="h-[21px] leading-snug flex items-center">
-                      <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2] shrink-0" />
+                    <span className="h-[19px] leading-snug flex items-center">
+                      <ChevronRight className="w-3 h-3 text-neutral-400 stroke-[2] shrink-0" />
                     </span>
 
                     {/* Render special blue icon if official topic */}
                     {item.isOfficialTopic && (
                       item.topicIcon === 'presentation' || item.topicIcon === 'party-popper' ? (
-                        <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
+                        <PartyPopper className="w-3 h-3 text-[#1d64ec] stroke-[2.2] shrink-0" />
                       ) : (
-                        <ThreadsTopicIcon className="w-3.5 h-3.5 text-[#1d64ec] fill-current shrink-0" />
+                        <ThreadsTopicIcon className="w-3 h-3 text-[#1d64ec] fill-current shrink-0" />
                       )
                     )}
 
@@ -392,24 +392,24 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                         e.stopPropagation();
                         onTopicClick?.(item.topicTag!);
                       }}
-                      className={`font-semibold text-base h-[21px] leading-snug transition-colors cursor-pointer truncate max-w-[140px] sm:max-w-[220px] flex items-center ${
-                        item.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-900 hover:underline'
+                      className={`font-medium text-[13.5px] h-[19px] leading-snug transition-colors cursor-pointer truncate max-w-[140px] sm:max-w-[220px] flex items-center ${
+                        item.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-700 hover:underline'
                       }`}
                     >
                       <span className="leading-snug">{item.topicTag}</span>
                     </button>
                   </div>
                 ) : (
-                  <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
+                  <span className="text-[12.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
                     {item.seller.classGroup}
                   </span>
                 )}
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5 shrink-0 ml-auto">
+            <div className="flex items-center gap-1 shrink-0 ml-auto">
               <span
-                className="text-[13px] sm:text-[13.5px] font-normal text-slate-500 whitespace-nowrap tabular-nums cursor-default select-none"
+                className="text-[12px] sm:text-[12.5px] font-normal text-slate-500 whitespace-nowrap tabular-nums cursor-default select-none"
                 title={formatSmartTimestamp(item.timestamp).full}
               >
                 {formatSmartTimestamp(item.timestamp).display}
@@ -417,7 +417,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               <button
                 type="button"
                 onClick={(e) => e.stopPropagation()}
-                className="text-slate-500 hover:text-slate-900 p-1.5 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
+                className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
                 aria-label="Opsi postingan"
               >
                 <MoreHorizontal className="w-4 h-4" />
@@ -425,11 +425,11 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             </div>
           </div>
 
-          {/* Caption Text: Full Width Aligned with Avatar (UX Reading Flow text-[15.5px] leading-snug) */}
-          <div className="text-[15.5px] sm:text-base text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere]">
+          {/* Caption Text: Full Width Aligned with Avatar (UX Reading Flow text-[14.5px] sm:text-[15px] leading-snug) */}
+          <div className="text-[14.5px] sm:text-[15px] text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere]">
             <FormattedText text={item.caption} />
             {item.totalThreadParts && item.totalThreadParts > 1 && (
-              <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11.5px] tabular-nums select-none ml-1.5 align-middle">
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11px] tabular-nums select-none ml-1.5 align-middle">
                 1/{item.totalThreadParts}
               </span>
             )}
@@ -437,8 +437,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
           {/* Location Tag (High WCAG Contrast >= 7.0:1) */}
           {item.locationTag && (
-            <div className="pt-0.5 flex items-center gap-1.5 text-[13px] text-slate-600 font-medium leading-snug">
-              <MapPin className="w-3.5 h-3.5 text-slate-600 stroke-[2] shrink-0" />
+            <div className="pt-0.5 flex items-center gap-1.5 text-[12px] sm:text-[12.5px] text-slate-600 font-medium leading-snug">
+              <MapPin className="w-3 h-3 text-slate-600 stroke-[2] shrink-0" />
               <span className="truncate">{item.locationTag}</span>
             </div>
           )}
@@ -481,27 +481,27 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                     e.stopPropagation();
                     onUserClick?.(item.seller.username || item.seller.name);
                   }}
-                  className="font-semibold text-[15.5px] text-slate-900 truncate hover:underline shrink-1 max-w-[45%] cursor-pointer"
+                  className="font-semibold text-[14.5px] text-slate-900 truncate hover:underline shrink-1 max-w-[45%] cursor-pointer"
                 >
                   {item.seller.name}
                 </span>
                 {item.seller.isVerified && (
-                  <ClickableVerifiedBadge sellerName={item.seller.name} className="w-[17.5px] h-[17.5px] shrink-0" />
+                  <ClickableVerifiedBadge sellerName={item.seller.name} className="w-[16px] h-[16px] shrink-0" />
                 )}
 
                 {item.topicTag ? (
-                  <div className="flex items-center gap-x-1 shrink-1 min-w-0 overflow-hidden ml-0.5 h-[21px] leading-snug">
+                  <div className="flex items-center gap-x-0.5 shrink-1 min-w-0 overflow-hidden ml-0.5 h-[19px] leading-snug">
                     {/* Chevron Arrow Separator */}
-                    <span className="h-[21px] leading-snug flex items-center">
-                      <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2] shrink-0" />
+                    <span className="h-[19px] leading-snug flex items-center">
+                      <ChevronRight className="w-3 h-3 text-neutral-400 stroke-[2] shrink-0" />
                     </span>
 
                     {/* Render special blue icon if official topic */}
                     {item.isOfficialTopic && (
                       item.topicIcon === 'presentation' || item.topicIcon === 'party-popper' ? (
-                        <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
+                        <PartyPopper className="w-3 h-3 text-[#1d64ec] stroke-[2.2] shrink-0" />
                       ) : (
-                        <ThreadsTopicIcon className="w-3.5 h-3.5 text-[#1d64ec] fill-current shrink-0" />
+                        <ThreadsTopicIcon className="w-3 h-3 text-[#1d64ec] fill-current shrink-0" />
                       )
                     )}
 
@@ -511,23 +511,23 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                         e.stopPropagation();
                         onTopicClick?.(item.topicTag!);
                       }}
-                      className={`font-semibold text-base h-[21px] leading-snug transition-colors cursor-pointer truncate max-w-[135px] sm:max-w-[200px] flex items-center ${
-                        item.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-900 hover:underline'
+                      className={`font-medium text-[13.5px] h-[19px] leading-snug transition-colors cursor-pointer truncate max-w-[135px] sm:max-w-[200px] flex items-center ${
+                        item.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-700 hover:underline'
                       }`}
                     >
                       <span className="leading-snug">{item.topicTag}</span>
                     </button>
                   </div>
                 ) : (
-                  <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
+                  <span className="text-[12.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
                     {item.seller.classGroup}
                   </span>
                 )}
               </div>
 
-              <div className="flex items-center gap-1.5 shrink-0 ml-auto">
+              <div className="flex items-center gap-1 shrink-0 ml-auto">
                 <span
-                  className="text-[13px] sm:text-[13.5px] font-normal text-slate-500 whitespace-nowrap tabular-nums cursor-default select-none"
+                  className="text-[12px] sm:text-[12.5px] font-normal text-slate-500 whitespace-nowrap tabular-nums cursor-default select-none"
                   title={formatSmartTimestamp(item.timestamp).full}
                 >
                   {formatSmartTimestamp(item.timestamp).display}
@@ -543,11 +543,11 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               </div>
             </div>
 
-            {/* Caption Text: Indented under name (UX Reading Flow text-[15.5px] leading-snug) */}
-            <div className="text-[15.5px] sm:text-base text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere]">
+            {/* Caption Text: Indented under name (UX Reading Flow text-[14.5px] sm:text-[15px] leading-snug) */}
+            <div className="text-[14.5px] sm:text-[15px] text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere]">
               <FormattedText text={item.caption} />
               {item.totalThreadParts && item.totalThreadParts > 1 && (
-                <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11.5px] tabular-nums select-none ml-1.5 align-middle">
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11px] tabular-nums select-none ml-1.5 align-middle">
                   1/{item.totalThreadParts}
                 </span>
               )}
@@ -555,8 +555,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
             {/* Location Tag (High WCAG Contrast >= 7.0:1) */}
             {item.locationTag && (
-              <div className="pt-0.5 flex items-center gap-1.5 text-[13px] text-slate-600 font-medium leading-snug">
-                <MapPin className="w-3.5 h-3.5 text-slate-600 stroke-[2] shrink-0" />
+              <div className="pt-0.5 flex items-center gap-1.5 text-[12px] sm:text-[12.5px] text-slate-600 font-medium leading-snug">
+                <MapPin className="w-3 h-3 text-slate-600 stroke-[2] shrink-0" />
                 <span className="truncate">{item.locationTag}</span>
               </div>
             )}

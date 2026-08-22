@@ -3,7 +3,7 @@ import { Search, X, Menu } from 'lucide-react';
 
 // Custom Snapan Logotype Text Header
 export const SnapanLogotype: React.FC<{ className?: string }> = ({
-  className = "text-[18px] font-black tracking-[-0.03em] text-slate-900 select-none",
+  className = "text-[17px] font-black tracking-[-0.03em] text-slate-900 select-none",
 }) => (
   <span className={className}>
     Snapan <span className="text-[#1d64ec]">Market</span>
@@ -45,16 +45,16 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
       style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
     >
       {/* Top Main Bar: [ Left: Menu Icon ] --- [ Center: Logotype Text ] --- [ Right: Search Toggle ] */}
-      <div className="max-w-xl mx-auto px-4 h-14 flex items-center justify-between gap-3 relative select-none">
+      <div className="max-w-xl mx-auto px-3.5 h-[50px] flex items-center justify-between gap-3 relative select-none">
         {/* Left Side: Hamburger Menu Button (for Drawer) */}
         <div className="flex items-center">
           <button
             type="button"
             onClick={onMenuClick || onProfileClick}
-            className="w-10 h-10 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
+            className="w-9 h-9 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
             aria-label="Buka Menu Drawer"
           >
-            <Menu className="w-5 h-5 stroke-[2.25]" />
+            <Menu className="w-4.5 h-4.5 stroke-[2.2]" />
           </button>
         </div>
 
@@ -84,13 +84,13 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
                 }
               }
             }}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-slate-800 hover:bg-neutral-100/90 active:scale-90 transition-all cursor-pointer"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-slate-800 hover:bg-neutral-100/90 active:scale-90 transition-all cursor-pointer"
             aria-label="Cari Akun & Produk"
           >
             {showSearchInput ? (
-              <X className="w-5 h-5 text-slate-900 stroke-[2.25]" />
+              <X className="w-4.5 h-4.5 text-slate-900 stroke-[2.2]" />
             ) : (
-              <Search className="w-5 h-5 text-slate-900 stroke-[2.25]" />
+              <Search className="w-4.5 h-4.5 text-slate-900 stroke-[2.2]" />
             )}
           </button>
         </div>

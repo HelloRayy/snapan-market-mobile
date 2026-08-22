@@ -219,24 +219,24 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
             {/* Header Row: Username + Verified + Timestamp + Options (...) */}
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
-                <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
+                <span className="font-semibold text-[14px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
                   {comment.user.username || comment.user.name}
                 </span>
 
                 {comment.user.isVerified && (
-                  <BadgeCheck className="w-[17px] h-[17px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified User" />
+                  <BadgeCheck className="w-[15px] h-[15px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified User" />
                 )}
 
                 {comment.user.isAuthor && (
-                  <span className="relative inline-flex items-center gap-1 px-2 py-0.5 rounded-[6px] text-[11px] font-medium text-white bg-[#18181b] border border-black/40 shadow-2xs overflow-hidden shrink-0 select-none">
+                  <span className="relative inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[5px] text-[10.5px] font-medium text-white bg-[#18181b] border border-black/40 shadow-2xs overflow-hidden shrink-0 select-none">
                     <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
-                    <Crown className="w-3 h-3 text-white fill-white relative z-10 shrink-0" />
+                    <Crown className="w-2.5 h-2.5 text-white fill-white relative z-10 shrink-0" />
                     <span className="relative z-10 leading-none">Pembuat Utas</span>
                   </span>
                 )}
 
                 <span
-                  className="text-[13px] sm:text-[13.5px] font-normal text-slate-500 truncate min-w-0 shrink tabular-nums cursor-default select-none"
+                  className="text-[12px] sm:text-[12.5px] font-normal text-slate-500 truncate min-w-0 shrink tabular-nums cursor-default select-none"
                   title={formatSmartTimestamp(comment.timestamp).full}
                 >
                   {formatSmartTimestamp(comment.timestamp).display}
@@ -254,11 +254,11 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
               </button>
             </div>
 
-            {/* Comment Content (UX Reading Flow leading-snug text-[15px]) */}
-            <div className="text-[15px] sm:text-[15.5px] text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere] pt-0.5">
+            {/* Comment Content (UX Reading Flow leading-snug text-[14px] sm:text-[14.5px]) */}
+            <div className="text-[14px] sm:text-[14.5px] text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere] pt-0.5">
               <FormattedText text={comment.content} />
               {comment.threadPart && comment.totalParts && (
-                <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11.5px] tabular-nums select-none ml-1.5 align-middle">
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11px] tabular-nums select-none ml-1.5 align-middle">
                   {comment.threadPart}/{comment.totalParts}
                 </span>
               )}
@@ -365,7 +365,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 </button>
               </div>
 
-              <div className="text-[15px] sm:text-[15.5px] text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere] pt-0.5">
+              <div className="text-[14px] sm:text-[14.5px] text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere] pt-0.5">
                 <FormattedText text={comment.content} />
               </div>
 
@@ -379,7 +379,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
           </div>
 
           {/* Child Replies List (Indented right with ml-7) */}
-          <div className="space-y-3.5">
+          <div className="space-y-3">
             {(onOpenCommentDetail && repliesState.length > 1
               ? repliesState.slice(0, 1)
               : repliesState
@@ -430,24 +430,24 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex items-center justify-between gap-2 min-w-0">
                       <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
-                        <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
+                        <span className="font-semibold text-[14px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
                           {reply.user.username || reply.user.name}
                         </span>
 
                         {reply.user.isVerified && (
-                          <BadgeCheck className="w-[17px] h-[17px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified User" />
+                          <BadgeCheck className="w-[15px] h-[15px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified User" />
                         )}
 
                         {reply.user.isAuthor && (
-                          <span className="relative inline-flex items-center gap-1 px-2 py-0.5 rounded-[6px] text-[11px] font-medium text-white bg-[#18181b] border border-black/40 shadow-2xs overflow-hidden shrink-0 select-none">
+                          <span className="relative inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[5px] text-[10.5px] font-medium text-white bg-[#18181b] border border-black/40 shadow-2xs overflow-hidden shrink-0 select-none">
                             <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
-                            <Crown className="w-3 h-3 text-white fill-white relative z-10 shrink-0" />
+                            <Crown className="w-2.5 h-2.5 text-white fill-white relative z-10 shrink-0" />
                             <span className="relative z-10 leading-none">Pembuat Utas</span>
                           </span>
                         )}
 
                         <span
-                          className="text-[13px] sm:text-[13.5px] font-normal text-slate-500 truncate min-w-0 shrink tabular-nums cursor-default select-none"
+                          className="text-[12px] sm:text-[12.5px] font-normal text-slate-500 truncate min-w-0 shrink tabular-nums cursor-default select-none"
                           title={formatSmartTimestamp(reply.timestamp).full}
                         >
                           {formatSmartTimestamp(reply.timestamp).display}
@@ -464,7 +464,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                       </button>
                     </div>
 
-                    <div className="text-[15px] sm:text-[15.5px] text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere] pt-0.5">
+                    <div className="text-[14px] sm:text-[14.5px] text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere] pt-0.5">
                       <FormattedText text={reply.content} />
                     </div>
 

@@ -207,7 +207,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
     >
       {/* Top Header Bar: [Left: ← Back] --- [Center: Utas Komentar] --- [Right: Spacer] */}
       <header
-        className="sticky top-0 left-0 right-0 z-40 bg-white border-b border-neutral-200/80 px-4 h-14 flex items-center justify-between max-w-xl mx-auto"
+        className="sticky top-0 left-0 right-0 z-40 bg-white border-b border-neutral-200/80 px-3.5 h-[50px] flex items-center justify-between max-w-xl mx-auto"
         style={{
           paddingTop: 'env(safe-area-inset-top, 0px)',
         }}
@@ -215,19 +215,19 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
         <button
           type="button"
           onClick={handleBack}
-          className="w-10 h-10 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
+          className="w-9 h-9 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
           aria-label="Kembali"
         >
-          <ArrowLeft className="w-5 h-5 stroke-[2.25]" />
+          <ArrowLeft className="w-4.5 h-4.5 stroke-[2.2]" />
         </button>
 
-        <h1 className="font-semibold text-base text-slate-900">Utas Komentar</h1>
+        <h1 className="font-semibold text-[15px] text-slate-900">Utas Komentar</h1>
 
-        <div className="w-10 h-10 pointer-events-none" />
+        <div className="w-9 h-9 pointer-events-none" />
       </header>
 
       {/* Main Content Area */}
-      <main className="max-w-xl mx-auto px-4 pt-3 space-y-4">
+      <main className="max-w-xl mx-auto px-3.5 pt-3 space-y-4">
         {/* OPTIMIZATION 4: Pixel-Perfect Context Header (Connected via Vertical Line down to Hero Avatar with 0 Gap) */}
         <div className="flex items-start gap-3 relative">
           {/* Left Avatar + Continuous Vertical Line */}
@@ -246,16 +246,16 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
           {/* Right Snippet Content */}
           <div className="flex-1 min-w-0 pb-3">
             <div className="flex items-center gap-1.5 min-w-0">
-              <span className="font-semibold text-[14.5px] text-slate-900 truncate">
+              <span className="font-semibold text-[14px] text-slate-900 truncate">
                 {parentContext
                   ? parentContext.user.username || parentContext.user.name
                   : parentPost.seller.username || parentPost.seller.name}
               </span>
               {(parentContext ? parentContext.user.isVerified : parentPost.seller.isVerified) && (
-                <BadgeCheck className="w-4 h-4 text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" />
+                <BadgeCheck className="w-3.5 h-3.5 text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" />
               )}
             </div>
-            <p className="text-[13.5px] text-neutral-500 font-normal line-clamp-2 leading-relaxed pt-0.5">
+            <p className="text-[13px] text-neutral-500 font-normal line-clamp-2 leading-snug pt-0.5">
               {parentContext ? (
                 parentContext.content
               ) : (
@@ -274,7 +274,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
             {/* Avatar Column with line coming in from top */}
             <div className="flex flex-col items-center shrink-0 self-stretch">
               <div className="w-[2px] h-2 bg-[#d1d5db] -mt-2 shrink-0 z-0" />
-              <div className="w-10 h-10 rounded-full overflow-hidden border border-neutral-200 shadow-2xs shrink-0 bg-white z-10">
+              <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200 shadow-2xs shrink-0 bg-white z-10">
                 <img
                   src={activeComment.user.avatar}
                   alt={activeComment.user.name}
@@ -287,24 +287,24 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
-                  <span className="font-bold text-[15.5px] text-slate-900 truncate">
+                  <span className="font-bold text-[14.5px] text-slate-900 truncate">
                     {activeComment.user.username || activeComment.user.name}
                   </span>
 
                   {activeComment.user.isVerified && (
-                    <BadgeCheck className="w-[17px] h-[17px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" />
+                    <BadgeCheck className="w-[15px] h-[15px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" />
                   )}
 
                   {activeComment.user.isAuthor && (
-                    <span className="relative inline-flex items-center gap-1 px-2 py-0.5 rounded-[6px] text-[11px] font-medium text-white bg-[#18181b] border border-black/40 shadow-2xs overflow-hidden shrink-0 select-none">
+                    <span className="relative inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[5px] text-[10.5px] font-medium text-white bg-[#18181b] border border-black/40 shadow-2xs overflow-hidden shrink-0 select-none">
                       <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
-                      <Crown className="w-3 h-3 text-white fill-white relative z-10 shrink-0" />
+                      <Crown className="w-2.5 h-2.5 text-white fill-white relative z-10 shrink-0" />
                       <span className="relative z-10 leading-none">Pembuat Utas</span>
                     </span>
                   )}
 
                   <span
-                    className="text-[13px] sm:text-[13.5px] font-normal text-slate-500 truncate min-w-0 shrink tabular-nums cursor-default select-none"
+                    className="text-[12px] sm:text-[12.5px] font-normal text-slate-500 truncate min-w-0 shrink tabular-nums cursor-default select-none"
                     title={formatSmartTimestamp(activeComment.timestamp).full}
                   >
                     {formatSmartTimestamp(activeComment.timestamp).display}
@@ -321,9 +321,9 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
             </div>
           </div>
 
-          {/* Large Focused Comment Text (UX Reading Flow text-[16px] leading-snug) */}
+          {/* Large Focused Comment Text (UX Reading Flow text-[15px] leading-snug) */}
           <div className="pl-0 pt-1">
-            <div className="text-[16px] text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere]">
+            <div className="text-[15px] text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere]">
               <FormattedText text={activeComment.content} />
             </div>
 

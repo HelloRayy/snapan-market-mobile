@@ -198,8 +198,11 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
         <div className="w-10" />
       </header>
 
-      {/* Main Content Form (Smooth Scrollable Area Between Fixed Top & Bottom Bars) */}
-      <main className="flex-1 overflow-y-auto overscroll-contain max-w-[540px] w-full mx-auto px-5 pt-3 pb-6">
+      {/* Main Content Form (Smooth Scrollable Area with Lenis Exception and Generous Bottom Breathing Room) */}
+      <main
+        data-lenis-prevent
+        className="flex-1 overflow-y-auto overscroll-contain max-w-[540px] w-full mx-auto px-5 pt-3 pb-28 touch-pan-y"
+      >
         <div className="space-y-0 text-slate-900">
           {/* Row 1: Nama & Avatar on Right */}
           <div className="flex items-center justify-between py-4 border-b border-neutral-200/80">

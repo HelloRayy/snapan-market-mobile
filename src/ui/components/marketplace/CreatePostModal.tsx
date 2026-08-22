@@ -480,7 +480,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
           </div>
 
           {/* Place Results & Suggestions List */}
-          <div className="flex-1 overflow-y-auto px-4 py-3 leading-snug scrollbar-none">
+          <div data-lenis-prevent className="flex-1 overflow-y-auto px-4 py-3 leading-snug scrollbar-none touch-pan-y">
             {/* Custom Input Option if user typed something */}
             {locationSearchQuery.trim() && (
               <button
@@ -602,7 +602,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
           </div>
 
           {/* Form Scrollable Body */}
-          <div className="p-4 pb-48 overflow-y-auto flex-1 relative max-w-lg mx-auto w-full overscroll-contain scroll-pb-40 scrollbar-none">
+          <div data-lenis-prevent className="p-4 pb-48 overflow-y-auto flex-1 relative max-w-lg mx-auto w-full overscroll-contain scroll-pb-40 scrollbar-none touch-pan-y">
             {/* 1. Top Section: Avatar + Username + Caption + Images + Action Icons */}
             <div className="flex gap-2.5 items-start">
               {/* Left Column: Avatar + Connector Line */}

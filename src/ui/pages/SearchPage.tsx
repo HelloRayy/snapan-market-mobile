@@ -194,30 +194,36 @@ export const SearchPage: React.FC<SearchPageProps> = ({
         className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-100 px-4 py-2.5 transition-all"
         style={{ paddingTop: 'max(0.625rem, env(safe-area-inset-top, 0px))' }}
       >
-        <div className="max-w-xl mx-auto flex items-center gap-2.5">
-          {/* Back Button if navigated from another page */}
-          {onBack && (
-            <button
-              type="button"
-              onClick={onBack}
-              className="w-10 h-10 -ml-1 rounded-full flex items-center justify-center text-slate-800 hover:bg-neutral-100 active:scale-90 transition-all cursor-pointer shrink-0"
-              aria-label="Kembali"
-            >
-              <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
-            </button>
-          )}
+        <div className="max-w-xl mx-auto w-full">
+          {/* Capsule Search Bar with Integrated Back Arrow (100% Centered & Full Width Symmetry) */}
+          <div className="flex items-center pl-2.5 pr-3 bg-neutral-100/90 text-slate-900 text-base rounded-[22px] h-11 leading-snug border border-neutral-200/70 w-full focus-within:bg-white focus-within:border-slate-400 focus-within:shadow-2xs transition-all">
+            {/* Integrated Back Arrow / Search Icon */}
+            {onBack ? (
+              <button
+                type="button"
+                onClick={onBack}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-700 hover:text-slate-950 hover:bg-neutral-200/70 active:scale-90 transition-all cursor-pointer shrink-0 mr-1"
+                aria-label="Kembali"
+              >
+                <ArrowLeft className="w-4.5 h-4.5 stroke-[2.2]" />
+              </button>
+            ) : (
+              <div className="w-8 h-8 flex items-center justify-center text-neutral-400 shrink-0 mr-1">
+                <Search className="w-4.5 h-4.5 stroke-[2.2]" />
+              </div>
+            )}
 
-          {/* Capsule Search Bar (Reference: bg-[#1e1e1e] / Light Mode: bg-neutral-100/90 rounded-[22px] h-11) */}
-          <div className="flex items-center px-4 bg-neutral-100/90 text-slate-900 text-base rounded-[22px] h-11 leading-snug border border-neutral-200/70 flex-1 focus-within:bg-white focus-within:border-slate-400 focus-within:shadow-2xs transition-all">
-            <Search className="w-4.5 h-4.5 text-neutral-400 mr-2.5 shrink-0 stroke-[2.2]" />
+            {/* Search Input Field */}
             <input
               type="text"
               autoFocus
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari"
-              className="bg-transparent text-slate-900 placeholder:text-neutral-400 outline-none flex-1 text-[15px] font-normal leading-snug h-full"
+              className="bg-transparent text-slate-900 placeholder:text-neutral-400 outline-none flex-1 text-[15px] font-normal leading-snug h-full px-1"
             />
+
+            {/* Right Action: Clear 'X' or Filter Sliders */}
             {searchQuery ? (
               <button
                 type="button"

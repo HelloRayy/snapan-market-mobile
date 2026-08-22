@@ -25,21 +25,27 @@ Dokumen ini menjelaskan alur kerja dan konfigurasi terpisah antara **Laptop A (K
 
 ---
 
-## 🔄 Alur Kolaborasi & Sinkronisasi Git
+## 🔄 Alur Kolaborasi & Sinkronisasi Git (Aturan Wajib Multi-Workstation)
 
-1. **Laptop B (Backend)** membuat tabel baru atau mengubah skema di Supabase Dashboard.
-2. **Laptop B** memperbarui script SQL di `/docs/supabase-guide.md` dan tipe data di `src/types/supabase.ts`.
-3. **Laptop B** melakukan `git commit` & `git push`:
+1. **Pre-Task (Sebelum Mulai)**: Baik Laptop A maupun Laptop B **WAJIB** menjalankan `git pull origin main` sebelum mulai mengedit/menganalisis kode:
+   ```bash
+   git pull origin main
+   ```
+2. **Laptop B (Backend)** membuat tabel baru atau mengubah skema di Supabase Dashboard.
+3. **Laptop B** memperbarui script SQL di `/docs/supabase-guide.md` dan tipe data di `src/types/supabase.ts`.
+4. **Laptop B** melakukan type-check (`npx tsc --noEmit && npm run build`) lalu auto `git commit` & `git push`:
    ```bash
    git add .
    git commit -m "feat(backend): update database schema for orders table"
    git push origin main
    ```
-4. **Laptop A (Frontend)** melakukan `git pull` untuk menerima tipe data & API contract terbaru:
+5. **Laptop A (Frontend)** melakukan `git pull origin main` untuk menerima tipe data & API contract terbaru.
+6. **Laptop A** membuat/mengupdate komponen UI lalu setelah selesai dan lolos type-check, langsung melakukan auto `git commit` & `git push`:
    ```bash
-   git pull origin main
+   git add .
+   git commit -m "feat(ui): implement orders list page with status badge"
+   git push origin main
    ```
-5. **Laptop A** langsung bisa menggunakan tipe data baru di komponen UI dengan Type Safety penuh tanpa perlu menebak-nebak struktur data.
 
 ---
 

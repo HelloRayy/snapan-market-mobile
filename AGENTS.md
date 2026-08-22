@@ -46,14 +46,37 @@ Repositori ini dikembangkan menggunakan **Multi-Laptop Workstation Setup**:
 
 ---
 
+## 🚨 ATURAN EMAS SINKRONISASI AI AGENT (MANDATORY WORKFLOW)
+
+Setiap AI Agent (Antigravity, Cursor, Claude, Copilot, dll.) **WAJIB MEMATUHI 2 PROTOKOL SINKRONISASI BERIKUT**:
+
+### 1. 📥 PROTOKOL PRE-TASK: `git pull origin main` SEBELUM Mulai
+- **KAPAN**: Sebelum memulai analisis, membuat file baru, atau mengedit fitur apapun.
+- **AKSI**: Jalankan perintah `git pull origin main`.
+- **TUJUAN**: Memastikan repositori lokal 100% up-to-date dengan commit terbaru dari laptop/rekan workstation lain untuk mencegah *merge conflict* dan *outdated context*.
+
+### 2. 🚀 PROTOKOL POST-TASK: Auto `git commit` & `git push` Setelah Selesai
+- **KAPAN**: Segera setelah pekerjaan selesai dan lolos verifikasi build.
+- **URUTAN EKSEKUSI**:
+  1. `npx tsc --noEmit && npm run build` $\rightarrow$ Pastikan **0 Error**.
+  2. `git add .`
+  3. `git commit -m "<type>(<scope>): <deskripsi perubahan>"`
+  4. `git push -u origin main`
+- **TUJUAN**: Menjamin hasil kerja langsung ter-deploy otomatis di Vercel dan siap di-`git pull` oleh workstation lain secara instan.
+
+---
+
 ## 🔄 WORKFLOW KOLABORASI GIT (FRONTEND & BACKEND SYNC)
 
 ```
-[LAPTOP B - BACKEND]                           [LAPTOP A - FRONTEND]
- 1. Buat/Update Tabel di Supabase               1. git pull
- 2. Update SQL Script di /docs/supabase-guide   2. Gunakan tipe dari src/types/supabase.ts
- 3. Update src/types/supabase.ts                3. Buat UI Komponen & Pages di src/ui/
- 4. git commit & push                            4. git commit & push UI
+[SEBELUM MULAI TASK] ───> 📥 git pull origin main (WAJIB SINKRON AWAL)
+                                │
+[LAPTOP B - BACKEND]            │               [LAPTOP A - FRONTEND]
+ 1. Update Skema di Supabase    │                1. Gunakan tipe dari src/types/supabase.ts
+ 2. Update SQL di docs/guide    │                2. Buat/Update UI Komponen & Pages di src/ui/
+ 3. Update src/types/supabase.ts│                3. Lakukan pengujian tampilan & responsive
+                                │
+[SETELAH TASK SELESAI] ─────────┴───────────────> 🚀 Build Check (tsc + vite) -> git commit & push (WAJIB AUTO PUSH)
 ```
 
 ---

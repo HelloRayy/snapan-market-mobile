@@ -283,14 +283,13 @@ export const HomePage: React.FC<HomePageProps> = ({
       <OfflineBanner />
       <InstallBanner />
 
-      {/* Smart Sticky Header Container (Unified Top Bar + Tab Switcher) */}
+      {/* Sticky Top Header (Only the 50px MarketHeader is sticky with smooth auto-hide on scroll) */}
       <div
         className="sticky top-0 z-30 w-full bg-white select-none transition-all duration-200"
         style={{
           paddingTop: 'env(safe-area-inset-top, 0px)',
         }}
       >
-        {/* Top Bar with smooth height & opacity collapse */}
         <div
           className={`transition-all duration-200 ease-[cubic-bezier(0.25,1,0.5,1)] overflow-hidden ${
             isHeaderVisible ? 'max-h-14 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
@@ -304,37 +303,37 @@ export const HomePage: React.FC<HomePageProps> = ({
             onSearchChange={(query) => setSearchQuery(query)}
           />
         </div>
+      </div>
 
-        {/* Scrollable Tab Switcher ("Untuk Anda" & "Terbaru") */}
-        <div className="w-full border-b border-neutral-200/80 bg-white">
-          <div className="max-w-xl mx-auto flex items-center relative">
-            {/* Smooth Sliding Bar (Pure Slide without flicker) */}
-            <div
-              className={`absolute bottom-0 left-0 w-1/2 h-[2px] bg-slate-900 transition-transform duration-200 cubic-bezier(0.25,1,0.5,1) ${
-                feedTab === 'for-you' ? 'translate-x-0' : 'translate-x-full'
-              }`}
-            />
+      {/* Non-Sticky Scrollable Tab Switcher ("Untuk Anda" & "Terbaru" - Scrolls naturally with feed) */}
+      <div className="w-full border-b border-neutral-200/80 bg-white select-none">
+        <div className="max-w-xl mx-auto flex items-center relative">
+          {/* Smooth Sliding Underline Bar */}
+          <div
+            className={`absolute bottom-0 left-0 w-1/2 h-[2px] bg-slate-900 transition-transform duration-200 cubic-bezier(0.25,1,0.5,1) ${
+              feedTab === 'for-you' ? 'translate-x-0' : 'translate-x-full'
+            }`}
+          />
 
-            <button
-              type="button"
-              onClick={() => setFeedTab('for-you')}
-              className={`flex-1 py-3 text-[14px] text-center relative cursor-pointer transition-colors ${
-                feedTab === 'for-you' ? 'text-slate-900 font-bold' : 'text-neutral-400 hover:text-slate-700 font-medium'
-              }`}
-            >
-              Untuk Anda
-            </button>
+          <button
+            type="button"
+            onClick={() => setFeedTab('for-you')}
+            className={`flex-1 py-3 text-[14.5px] text-center relative cursor-pointer transition-colors ${
+              feedTab === 'for-you' ? 'text-slate-900 font-bold' : 'text-neutral-400 hover:text-slate-700 font-medium'
+            }`}
+          >
+            Untuk Anda
+          </button>
 
-            <button
-              type="button"
-              onClick={() => setFeedTab('latest')}
-              className={`flex-1 py-3 text-[14px] text-center relative cursor-pointer transition-colors ${
-                feedTab === 'latest' ? 'text-slate-900 font-bold' : 'text-neutral-400 hover:text-slate-700 font-medium'
-              }`}
-            >
-              Terbaru
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => setFeedTab('latest')}
+            className={`flex-1 py-3 text-[14.5px] text-center relative cursor-pointer transition-colors ${
+              feedTab === 'latest' ? 'text-slate-900 font-bold' : 'text-neutral-400 hover:text-slate-700 font-medium'
+            }`}
+          >
+            Terbaru
+          </button>
         </div>
       </div>
 

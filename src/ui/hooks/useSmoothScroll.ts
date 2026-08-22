@@ -23,7 +23,7 @@ export function resumeSmoothScroll() {
 
 export function useSmoothScroll() {
   useEffect(() => {
-    // Mobile & Desktop Optimized Kinetic Physics Configuration
+    // Mobile Touch & Desktop Kinetic Physics Configuration
     const lenis = new Lenis({
       duration: 1.1,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Apple-style exponential deceleration curve
@@ -31,7 +31,11 @@ export function useSmoothScroll() {
       gestureOrientation: 'vertical',
       smoothWheel: true,
       wheelMultiplier: 0.95,
-      touchMultiplier: 1.15, // Light and responsive touch momentum
+      // 🚀 Explicit Mobile Touch Engine Activation
+      syncTouch: true,
+      syncTouchLerp: 0.085, // Smooth kinetic interpolation on mobile touch
+      touchInertiaExponent: 1.6, // Luxurious mobile touch fling momentum
+      touchMultiplier: 1.25, // Light, responsive, effortless flick feel on phone screens
       infinite: false,
       autoRaf: false,
     });

@@ -17,7 +17,7 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
-    <div className={`relative overflow-hidden bg-neutral-100/90 ${containerClassName}`}>
+    <div className={`relative w-full h-full overflow-hidden bg-neutral-100/90 ${containerClassName}`}>
       {/* Shimmer Gradient Placeholder (Anti-Layout Shift) */}
       <div
         className={`absolute inset-0 bg-gradient-to-r from-neutral-100 via-neutral-200/50 to-neutral-100 transition-opacity duration-300 ${

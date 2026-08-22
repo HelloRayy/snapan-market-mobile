@@ -71,22 +71,22 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
               : 'fill-slate-900 text-slate-900 stroke-[2]'
             : 'stroke-[1.8] text-neutral-400 group-hover:text-slate-700 fill-transparent';
 
-          // Center Plus Action Button: Original Elevated Kumo Primary Electric Blue Floating FAB
+          // Center Plus Action Button: Elevated Kumo Primary Electric Blue Floating FAB (Matching Kumo Pill Theme)
           if (item.isAction) {
             return (
               <div key={item.id} className="relative flex items-center justify-center shrink-0 h-[50px] w-full">
                 <button
                   type="button"
                   onClick={onPostClick || (() => onTabChange('post'))}
-                  className="absolute -top-5 w-12 h-12 rounded-full bg-[#1d64ec] hover:bg-[#154ec1] border-2 border-white active:scale-90 text-white flex items-center justify-center shadow-[0_8px_20px_rgba(29,100,236,0.38)] ring-4 ring-white/90 transition-all cursor-pointer z-10 overflow-hidden group"
+                  className="absolute -top-5 w-12 h-12 rounded-full bg-[#1d64ec] hover:bg-[#154ec1] border border-[#154ec1] active:scale-90 text-white flex items-center justify-center shadow-md shadow-blue-500/30 ring-4 ring-white/95 transition-all cursor-pointer z-10 overflow-hidden group"
                   aria-label="Jual Produk Baru"
                   title="Jual Produk Baru"
                 >
                   {/* Kumo Inset Top Rim Highlight Gradient */}
-                  <span className="absolute inset-0 rounded-full bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.4)] group-hover:from-[#2563eb] transition-all pointer-events-none" />
+                  <span className="absolute inset-0 rounded-full bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] group-hover:from-[#2563eb] transition-all pointer-events-none" />
 
                   {/* Plus Icon */}
-                  <Plus className="w-6 h-6 stroke-[2.5] text-white relative z-10" />
+                  <Plus className="w-6 h-6 stroke-[2.2] text-white relative z-10" />
                 </button>
               </div>
             );

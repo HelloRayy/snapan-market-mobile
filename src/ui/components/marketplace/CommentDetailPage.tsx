@@ -202,7 +202,8 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-50 overflow-y-auto overscroll-contain bg-white pb-32 font-gt-standard animate-in slide-in-from-right-3 duration-200"
+      data-lenis-prevent
+      className="fixed inset-0 z-50 overflow-y-auto overscroll-contain bg-white pb-32 font-gt-standard touch-pan-y animate-in slide-in-from-right-3 duration-200"
       style={{
         WebkitOverflowScrolling: 'touch',
       }}

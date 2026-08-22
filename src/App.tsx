@@ -295,7 +295,8 @@ export function App() {
           {selectedPost && (
             <div
               key={selectedPost.id}
-              className="fixed inset-0 z-50 bg-white overflow-hidden transform-gpu animate-page-zoom"
+              data-lenis-prevent
+              className="fixed inset-0 z-50 bg-white overflow-hidden transform-gpu animate-page-zoom touch-pan-y"
               style={{
                 willChange: 'transform, opacity',
                 backfaceVisibility: 'hidden',

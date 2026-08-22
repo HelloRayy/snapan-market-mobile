@@ -114,7 +114,8 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   return (
     <div
       ref={containerRef}
-      className="h-full w-full overflow-y-auto overscroll-contain bg-white pb-36 font-gt-standard"
+      data-lenis-prevent
+      className="h-full w-full overflow-y-auto overscroll-contain bg-white pb-36 font-gt-standard touch-pan-y"
       style={{
         WebkitOverflowScrolling: 'touch',
       }}

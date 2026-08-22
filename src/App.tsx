@@ -158,6 +158,7 @@ export function App() {
   };
 
   const navigateToHome = () => {
+    window.dispatchEvent(new CustomEvent('snapan:show-nav'));
     window.history.pushState({ route: '/' }, '', '/');
     setCurrentRoute('/');
   };
@@ -206,6 +207,7 @@ export function App() {
   };
 
   const handleClosePostDetail = () => {
+    window.dispatchEvent(new CustomEvent('snapan:show-nav'));
     if (window.location.hash.startsWith('#post-')) {
       window.history.back();
     } else {
@@ -228,6 +230,7 @@ export function App() {
           {/* Main Feed HomePage (Always preserved in DOM so scroll position is never lost) */}
           <div className={isProfileRoute || isSearchRoute ? 'hidden' : 'block'}>
             <HomePage
+              isActive={!isProfileRoute && !isSearchRoute && !selectedPost}
               onSelectPost={handleOpenPostDetail}
               onNavigateToProfile={navigateToProfile}
               onNavigateSearch={navigateToSearch}

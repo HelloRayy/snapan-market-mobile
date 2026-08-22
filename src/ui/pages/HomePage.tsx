@@ -18,6 +18,7 @@ interface HomePageProps {
   onNavigateToProfile?: (username: string) => void;
   onNavigateSearch?: () => void;
   onOpenMenu?: () => void;
+  isActive?: boolean;
 }
 
 export const HomePage: React.FC<HomePageProps> = ({
@@ -25,6 +26,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   onNavigateToProfile,
   onNavigateSearch,
   onOpenMenu,
+  isActive = true,
 }) => {
   const [feedTab, setFeedTab] = useState<'for-you' | 'latest'>('for-you');
   const [bottomNavTab, setBottomNavTab] = useState('home');
@@ -245,6 +247,29 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [isNavVisible, setIsNavVisible] = useState(true);
   const lastScrollY = useRef(0);
   const isTicking = useRef(false);
+
+  // Automatically show Top Header and Bottom Nav whenever user returns to Home route
+  useEffect(() => {
+    if (isActive) {
+      setIsNavVisible(true);
+      lastScrollY.current = Math.max(0, window.scrollY);
+    }
+  }, [isActive]);
+
+  // Global listener for explicit nav reset triggers (popstate, back button, tab switch)
+  useEffect(() => {
+    const handleResetNav = () => {
+      setIsNavVisible(true);
+      lastScrollY.current = Math.max(0, window.scrollY);
+    };
+
+    window.addEventListener('popstate', handleResetNav);
+    window.addEventListener('snapan:show-nav', handleResetNav);
+    return () => {
+      window.removeEventListener('popstate', handleResetNav);
+      window.removeEventListener('snapan:show-nav', handleResetNav);
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {

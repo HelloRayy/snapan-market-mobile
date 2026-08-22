@@ -317,11 +317,11 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
             </div>
           </div>
 
-          {/* Large Focused Comment Text */}
+          {/* Large Focused Comment Text (UX Reading Flow text-[16px] leading-snug) */}
           <div className="pl-0 pt-1">
-            <p className="text-[16px] text-slate-900 font-normal leading-relaxed break-words">
+            <div className="text-[16px] text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere]">
               <FormattedText text={activeComment.content} />
-            </p>
+            </div>
 
             {/* Attached Images */}
             {activeComment.images && activeComment.images.length > 0 && (

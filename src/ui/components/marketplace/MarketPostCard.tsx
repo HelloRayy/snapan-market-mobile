@@ -416,15 +416,15 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             </button>
           </div>
 
-          {/* Caption Text: Full Width Aligned with Avatar */}
-          <p className="text-[15px] text-slate-900 font-normal leading-snug break-words">
+          {/* Caption Text: Full Width Aligned with Avatar (UX Reading Flow text-[15.5px] leading-snug) */}
+          <div className="text-[15.5px] sm:text-base text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere]">
             <FormattedText text={item.caption} />
             {item.totalThreadParts && item.totalThreadParts > 1 && (
               <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11.5px] tabular-nums select-none ml-1.5 align-middle">
                 1/{item.totalThreadParts}
               </span>
             )}
-          </p>
+          </div>
 
           {/* Location Tag (High WCAG Contrast >= 7.0:1) */}
           {item.locationTag && (
@@ -529,15 +529,15 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               </div>
             </div>
 
-            {/* Caption Text: Indented under name */}
-            <p className="text-[16px] text-slate-900 font-normal leading-snug break-words">
+            {/* Caption Text: Indented under name (UX Reading Flow text-[15.5px] leading-snug) */}
+            <div className="text-[15.5px] sm:text-base text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere]">
               <FormattedText text={item.caption} />
               {item.totalThreadParts && item.totalThreadParts > 1 && (
                 <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11.5px] tabular-nums select-none ml-1.5 align-middle">
                   1/{item.totalThreadParts}
                 </span>
               )}
-            </p>
+            </div>
 
             {/* Location Tag (High WCAG Contrast >= 7.0:1) */}
             {item.locationTag && (

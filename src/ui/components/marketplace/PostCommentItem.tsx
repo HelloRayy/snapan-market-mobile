@@ -250,16 +250,14 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
               </button>
             </div>
 
-            {/* Comment Content */}
-            <div>
-              <p className="text-[15px] text-slate-900 font-normal leading-snug break-words">
-                <FormattedText text={comment.content} />
-                {comment.threadPart && comment.totalParts && (
-                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11.5px] tabular-nums select-none ml-1.5 align-middle">
-                    {comment.threadPart}/{comment.totalParts}
-                  </span>
-                )}
-              </p>
+            {/* Comment Content (UX Reading Flow leading-snug text-[15px]) */}
+            <div className="text-[15px] sm:text-[15.5px] text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere] pt-0.5">
+              <FormattedText text={comment.content} />
+              {comment.threadPart && comment.totalParts && (
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11.5px] tabular-nums select-none ml-1.5 align-middle">
+                  {comment.threadPart}/{comment.totalParts}
+                </span>
+              )}
             </div>
 
             {/* Attached Images in Comment */}
@@ -363,10 +361,8 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 </button>
               </div>
 
-              <div>
-                <p className="text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5">
-                  <FormattedText text={comment.content} />
-                </p>
+              <div className="text-[15px] sm:text-[15.5px] text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere] pt-0.5">
+                <FormattedText text={comment.content} />
               </div>
 
               {renderActionBar(
@@ -461,10 +457,8 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                       </button>
                     </div>
 
-                    <div>
-                      <p className="text-[15px] text-slate-900 font-normal leading-snug break-words pt-0.5">
-                        <FormattedText text={reply.content} />
-                      </p>
+                    <div className="text-[15px] sm:text-[15.5px] text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere] pt-0.5">
+                      <FormattedText text={reply.content} />
                     </div>
 
                     {renderActionBar(

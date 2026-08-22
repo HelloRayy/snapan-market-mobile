@@ -56,9 +56,9 @@ export const CreateOptionBottomSheet: React.FC<CreateOptionBottomSheetProps> = (
             <button
               type="button"
               onClick={() => onSelectOption('thread')}
-              className="w-full p-4 rounded-2xl border border-neutral-200 hover:border-slate-400 bg-neutral-50/80 hover:bg-neutral-100/80 transition-all flex items-start gap-3.5 group cursor-pointer active:scale-[0.98] text-left"
+              className="w-full p-4 rounded-2xl border border-neutral-200 hover:border-slate-400 bg-neutral-50/80 hover:bg-neutral-100/80 transition-colors flex items-start gap-3.5 group cursor-pointer active:scale-[0.97] text-left"
             >
-              <div className="w-10 h-10 rounded-2xl bg-white border border-neutral-200 text-slate-900 flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
+              <div className="w-10 h-10 rounded-2xl bg-white border border-neutral-200 text-slate-900 flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform duration-150">
                 <MessageSquarePlus className="w-5 h-5 stroke-[2] text-slate-800" />
               </div>
 
@@ -81,9 +81,9 @@ export const CreateOptionBottomSheet: React.FC<CreateOptionBottomSheetProps> = (
             <button
               type="button"
               onClick={() => onSelectOption('product')}
-              className="w-full p-4 rounded-2xl border border-blue-200 hover:border-blue-500 bg-blue-50/40 hover:bg-blue-50/90 transition-all flex items-start gap-3.5 group cursor-pointer active:scale-[0.98] text-left"
+              className="w-full p-4 rounded-2xl border border-blue-200 hover:border-blue-500 bg-blue-50/40 hover:bg-blue-50/90 transition-colors flex items-start gap-3.5 group cursor-pointer active:scale-[0.97] text-left"
             >
-              <div className="w-10 h-10 rounded-2xl bg-[#1d64ec] text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+              <div className="w-10 h-10 rounded-2xl bg-[#1d64ec] text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform duration-150">
                 <ShoppingBag className="w-5 h-5 stroke-[2]" />
               </div>
 

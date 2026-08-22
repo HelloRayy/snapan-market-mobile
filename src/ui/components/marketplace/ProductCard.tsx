@@ -16,7 +16,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const addItem = useCartStore((state) => state.addItem);
 
   return (
-    <Card className="group flex flex-col justify-between hover:border-neutral-300 transition-all duration-300 hover:shadow-md">
+    <Card className="group flex flex-col justify-between hover:border-neutral-300 transition-colors duration-150">
       <div className="relative aspect-square w-full bg-neutral-100 overflow-hidden">
         <img
           src={product.images[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80'}

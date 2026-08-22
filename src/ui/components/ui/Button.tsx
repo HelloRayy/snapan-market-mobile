@@ -12,20 +12,20 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', isLoading, iconLeft, iconRight, children, disabled, ...props }, ref) => {
     // Cloudflare Kumo UI Base Styles
-    const baseStyles = 'group relative inline-flex items-center justify-center font-semibold select-none border-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 tracking-tight font-shopify-sans overflow-hidden transition-all duration-150';
+    const baseStyles = 'group relative inline-flex items-center justify-center font-semibold select-none border-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 tracking-tight font-shopify-sans overflow-hidden transition-colors duration-150 active:scale-[0.97]';
 
     // Pure Cloudflare Kumo UI Color Variants (Matching User Exact Kumo Secondary Snippet)
     const variants = {
       // Primary: Cloudflare Kumo Gradient Button with Inset Highlight Shadow & Outer Ring Border
-      primary: 'bg-[#1d64ec] text-white border border-[#154ec1] shadow-md shadow-blue-500/20 active:scale-[0.98]',
+      primary: 'bg-[#1d64ec] text-white border border-[#154ec1] shadow-md shadow-blue-500/20',
       // Secondary: Exact Kumo Secondary Button (bg-white/bg-[#f9fafb], ring-kumo-line ring-1, hover:bg-[#f3f4f6], text-[#111827], shadow-xs)
-      secondary: 'bg-white text-[#111827] ring-1 ring-inset ring-[#e5e7eb] shadow-2xs hover:bg-[#f3f4f6] active:scale-[0.98]',
+      secondary: 'bg-white text-[#111827] ring-1 ring-inset ring-[#e5e7eb] shadow-2xs hover:bg-[#f3f4f6]',
       // Outline
-      outline: 'border-2 border-[#1d64ec] bg-white text-[#1d64ec] hover:bg-blue-50 active:scale-[0.98]',
+      outline: 'border-2 border-[#1d64ec] bg-white text-[#1d64ec] hover:bg-blue-50',
       // Ghost
-      ghost: 'text-[#4b5563] hover:bg-[#f3f4f6] hover:text-[#111827] active:scale-[0.98]',
+      ghost: 'text-[#4b5563] hover:bg-[#f3f4f6] hover:text-[#111827]',
       // Danger
-      danger: 'bg-[#dc2626] text-white border border-[#991b1b] shadow-sm active:scale-[0.98]'
+      danger: 'bg-[#dc2626] text-white border border-[#991b1b] shadow-sm'
     };
 
     // Kumo Sizes
@@ -44,7 +44,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {/* Exact Cloudflare Kumo Primary Button Gradient Overlay & Inset Shadow Highlight */}
         {variant === 'primary' && (
-          <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] group-hover:from-[#2563eb] transition-all duration-150 pointer-events-none" />
+          <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] group-hover:from-[#2563eb] transition-opacity duration-150 pointer-events-none" />
         )}
 
         {/* Content Layer (z-10 to stay above gradient overlay) */}

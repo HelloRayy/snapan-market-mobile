@@ -79,7 +79,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full hover:bg-neutral-100 active:bg-neutral-200 flex items-center justify-center text-neutral-400 hover:text-slate-800 active:scale-90 transition-all cursor-pointer leading-snug"
+            className="w-8 h-8 rounded-full hover:bg-neutral-100 active:bg-neutral-200 flex items-center justify-center text-neutral-400 hover:text-slate-800 active:scale-[0.96] transition-colors cursor-pointer leading-snug"
             aria-label="Tutup Menu"
           >
             <X className="w-4.5 h-4.5 stroke-[2]" />
@@ -97,7 +97,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 onNavigateHome();
                 onClose();
               }}
-              className="flex items-center gap-x-3 h-[38px] w-full px-3 rounded-2xl bg-neutral-100/90 text-slate-950 font-bold text-[14.5px] hover:bg-neutral-200/70 active:scale-98 transition-all cursor-pointer leading-snug text-left shadow-2xs"
+              className="flex items-center gap-x-3 h-[38px] w-full px-3 rounded-2xl bg-neutral-100/90 text-slate-950 font-bold text-[14.5px] hover:bg-neutral-200/70 active:scale-[0.98] transition-colors cursor-pointer leading-snug text-left shadow-2xs"
             >
               <div className="w-[18px] h-[18px] flex items-center justify-center shrink-0">
                 <Home className="w-[18px] h-[18px] fill-slate-900 stroke-none" />

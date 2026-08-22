@@ -23,7 +23,7 @@ export const StickyBuyBar: React.FC<StickyBuyBarProps> = ({
 
   return (
     <div
-      className="fixed left-4 right-4 max-w-md mx-auto z-40 font-gt-standard select-none transition-all duration-200 ease-out"
+      className="fixed left-4 right-4 max-w-md mx-auto z-40 font-gt-standard select-none transition-transform duration-200 ease-out"
       style={{
         bottom: 'max(1rem, calc(env(safe-area-inset-bottom, 0px) + 8px))',
       }}
@@ -34,7 +34,7 @@ export const StickyBuyBar: React.FC<StickyBuyBarProps> = ({
         <button
           type="button"
           onClick={onChatClick}
-          className="w-11 h-11 rounded-full bg-white text-[#111827] border border-neutral-200 shadow-2xs hover:bg-neutral-50 active:scale-95 flex items-center justify-center transition-all cursor-pointer shrink-0 select-none"
+          className="w-11 h-11 rounded-full bg-white text-[#111827] border border-neutral-200 shadow-2xs hover:bg-neutral-50 active:bg-neutral-100 active:scale-[0.96] flex items-center justify-center transition-colors cursor-pointer shrink-0 select-none"
           title="Tanyakan ke Penjual / Kolom Komentar"
           aria-label="Tanya Penjual di Komentar"
         >
@@ -45,10 +45,10 @@ export const StickyBuyBar: React.FC<StickyBuyBarProps> = ({
         <button
           type="button"
           onClick={onBuyClick}
-          className="relative inline-flex items-center justify-between flex-1 h-11 px-5 rounded-full text-white font-medium text-[13.5px] bg-[#1d64ec] border border-[#154ec1] shadow-md shadow-blue-500/25 active:scale-[0.98] transition-all cursor-pointer overflow-hidden select-none group"
+          className="relative inline-flex items-center justify-between flex-1 h-11 px-5 rounded-full text-white font-medium text-[13.5px] bg-[#1d64ec] border border-[#154ec1] shadow-md shadow-blue-500/25 active:scale-[0.97] transition-transform duration-75 cursor-pointer overflow-hidden select-none group"
         >
           {/* Kumo Inset Top Rim Highlight Gradient */}
-          <span className="absolute inset-0 rounded-full bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] group-hover:from-[#2563eb] transition-all pointer-events-none" />
+          <span className="absolute inset-0 rounded-full bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] group-hover:from-[#2563eb] transition-opacity duration-150 pointer-events-none" />
 
           {/* Left Label */}
           <span className="relative z-10 flex items-center gap-1.5 shrink-0 font-medium">

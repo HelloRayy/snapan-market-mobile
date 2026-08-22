@@ -51,7 +51,7 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
           <button
             type="button"
             onClick={onMenuClick || onProfileClick}
-            className="w-9 h-9 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
+            className="w-9 h-9 rounded-full hover:bg-neutral-100 active:bg-neutral-200 flex items-center justify-center text-slate-800 transition-colors active:scale-[0.96] cursor-pointer"
             aria-label="Buka Menu Drawer"
           >
             <Menu className="w-4.5 h-4.5 stroke-[2.2]" />
@@ -63,7 +63,7 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
           <button
             type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="flex items-center justify-center hover:opacity-85 active:scale-95 transition-all duration-200 cursor-pointer"
+            className="flex items-center justify-center hover:opacity-85 active:scale-[0.98] transition-transform duration-100 cursor-pointer"
             aria-label="Snapan Market"
           >
             <SnapanLogotype />
@@ -84,7 +84,7 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
                 }
               }
             }}
-            className="w-9 h-9 rounded-full flex items-center justify-center text-slate-800 hover:bg-neutral-100/90 active:scale-90 transition-all cursor-pointer"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-slate-800 hover:bg-neutral-100 active:bg-neutral-200 active:scale-[0.96] transition-colors cursor-pointer"
             aria-label="Cari Akun & Produk"
           >
             {showSearchInput ? (

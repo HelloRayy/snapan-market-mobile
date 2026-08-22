@@ -310,34 +310,34 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
             <button
               type="button"
               onClick={handleParentLike}
-              className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer select-none ${
+              className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-[0.96] transition-colors cursor-pointer select-none ${
                 parentLiked ? 'text-rose-500' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <Heart className={`w-4.5 h-4.5 stroke-[2] ${parentLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-              <span className={`font-normal text-[13.5px] ${parentLiked ? 'text-rose-500 font-medium' : 'text-slate-700'}`}>{parentLikesCount}</span>
+              <span className={`font-normal text-[13.5px] tabular-nums tracking-tight ${parentLiked ? 'text-rose-500 font-medium' : 'text-slate-700'}`}>{parentLikesCount}</span>
             </button>
 
             {/* 2. Comment Button */}
             <button
               type="button"
               onClick={() => onPostClick?.(parentPost)}
-              className="flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer text-slate-600 hover:text-slate-900 select-none"
+              className="flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-[0.96] transition-colors cursor-pointer text-slate-600 hover:text-slate-900 select-none"
             >
               <SmoothCommentIcon className="w-4.5 h-4.5 stroke-[2]" />
-              <span className="font-normal text-[13.5px] text-slate-700">{parentPost.commentsCount}</span>
+              <span className="font-normal text-[13.5px] text-slate-700 tabular-nums tracking-tight">{parentPost.commentsCount}</span>
             </button>
 
             {/* 3. Repost Button */}
             <button
               type="button"
               onClick={handleParentRepost}
-              className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer select-none ${
+              className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-[0.96] transition-colors cursor-pointer select-none ${
                 parentReposted ? 'text-emerald-500' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <Repeat2 className={`w-4.5 h-4.5 stroke-[2] ${parentReposted ? 'text-emerald-500' : ''}`} />
-              <span className={`font-normal text-[13.5px] ${parentReposted ? 'text-emerald-500 font-medium' : 'text-slate-700'}`}>
+              <span className={`font-normal text-[13.5px] tabular-nums tracking-tight ${parentReposted ? 'text-emerald-500 font-medium' : 'text-slate-700'}`}>
                 {parentRepostsCount}
               </span>
             </button>
@@ -346,7 +346,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
             <button
               type="button"
               onClick={(e) => handleShare(e, `Utas dari ${parentPost.seller.name}`, parentPost.caption)}
-              className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer text-slate-600 hover:text-slate-900 select-none"
+              className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-[0.96] transition-colors cursor-pointer text-slate-600 hover:text-slate-900 select-none"
               aria-label="Bagikan postingan"
             >
               <Send className="w-4 h-4 stroke-[1.8] text-slate-600" />
@@ -425,19 +425,19 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
             <button
               type="button"
               onClick={handleReplyLike}
-              className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer select-none ${
+              className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-[0.96] transition-colors cursor-pointer select-none ${
                 replyLiked ? 'text-rose-500' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <Heart className={`w-4.5 h-4.5 stroke-[2] ${replyLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-              <span className={`font-normal text-[13.5px] ${replyLiked ? 'text-rose-500 font-medium' : 'text-slate-700'}`}>{replyLikesCount}</span>
+              <span className={`font-normal text-[13.5px] tabular-nums tracking-tight ${replyLiked ? 'text-rose-500 font-medium' : 'text-slate-700'}`}>{replyLikesCount}</span>
             </button>
 
             {/* Comment */}
             <button
               type="button"
               onClick={() => onPostClick?.(parentPost)}
-              className="flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer text-slate-600 hover:text-slate-900 select-none"
+              className="flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-[0.96] transition-colors cursor-pointer text-slate-600 hover:text-slate-900 select-none"
             >
               <SmoothCommentIcon className="w-4.5 h-4.5 stroke-[2]" />
             </button>
@@ -446,13 +446,13 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
             <button
               type="button"
               onClick={handleReplyRepost}
-              className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer select-none ${
+              className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-[0.96] transition-colors cursor-pointer select-none ${
                 replyReposted ? 'text-emerald-500' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <Repeat2 className={`w-4.5 h-4.5 stroke-[2] ${replyReposted ? 'text-emerald-500' : ''}`} />
               {replyRepostsCount > 0 && (
-                <span className={`font-normal text-[13.5px] ${replyReposted ? 'text-emerald-500 font-medium' : 'text-slate-700'}`}>
+                <span className={`font-normal text-[13.5px] tabular-nums tracking-tight ${replyReposted ? 'text-emerald-500 font-medium' : 'text-slate-700'}`}>
                   {replyRepostsCount}
                 </span>
               )}
@@ -462,7 +462,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
             <button
               type="button"
               onClick={(e) => handleShare(e, `Balasan dari ${reply.user.name}`, reply.content)}
-              className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-95 transition-all cursor-pointer text-slate-600 hover:text-slate-900 select-none"
+              className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-[0.96] transition-colors cursor-pointer text-slate-600 hover:text-slate-900 select-none"
             >
               <Send className="w-4 h-4 stroke-[1.8] text-slate-600" />
             </button>

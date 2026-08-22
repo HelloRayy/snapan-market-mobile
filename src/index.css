@@ -46,6 +46,16 @@ html, body {
   user-select: none;
   -webkit-user-select: none;
   overscroll-behavior-y: none;
+  touch-action: manipulation;
+}
+
+/* 🚀 PWA 120 FPS Feed Performance (Virtual-DOM Offscreen Containment) */
+@utility feed-card-perf {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 320px;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Custom Utilities & Glassmorphism Light */

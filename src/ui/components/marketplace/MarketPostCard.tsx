@@ -331,7 +331,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
   return (
     <article
       onClick={() => onPostClick?.(item)}
-      className={`w-full border-b border-neutral-200 bg-pure-white hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none overflow-visible ${
+      className={`w-full border-b border-neutral-200 bg-pure-white hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none overflow-visible feed-card-perf ${
         variant === 'detail' ? 'px-4 pt-3 pb-3.5' : 'px-4 py-3.5'
       }`}
     >

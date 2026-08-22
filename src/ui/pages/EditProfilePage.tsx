@@ -1,12 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   ArrowLeft,
   Plus,
   ChevronRight,
   Check,
   X,
+  AlertTriangle,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export interface EditProfileData {
   name: string;
@@ -46,9 +47,10 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
   const [interests, setInterests] = useState(initialData.interests || '💻 Web PWA, 🎨 UI/UX, 👕 Preloved, ⚡ Joki Coding, 🍱 Kuliner');
   const [link, setLink] = useState(initialData.link || 'https://instagram.com/' + initialData.username.replace(/^@/, ''));
   
-  // Signature Profile Toggles
+  // Signature Profile Toggles & Dialogs
   const [showSalesStats, setShowSalesStats] = useState(true);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const [showDiscardConfirmModal, setShowDiscardConfirmModal] = useState(false);
   const [customTagInput, setCustomTagInput] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -58,6 +60,28 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 2500);
   };
+
+  // Detect whether any field has been modified compared to initialData
+  const hasChanges = useMemo(() => {
+    const isNameChanged = name.trim() !== (initialData.name || '').trim();
+    const isUsernameChanged =
+      username.trim().toLowerCase() !== (initialData.username || '').replace(/^@/, '').trim().toLowerCase();
+    const isBioChanged = bio.trim() !== (initialData.bio || '').trim();
+    const isClassChanged = classGroup.trim() !== (initialData.classGroup || '').trim();
+    const isAvatarChanged = avatar !== initialData.avatar;
+    const isInterestsChanged = interests.trim() !== (initialData.interests || '').trim();
+    const isLinkChanged = link.trim() !== (initialData.link || '').trim();
+
+    return (
+      isNameChanged ||
+      isUsernameChanged ||
+      isBioChanged ||
+      isClassChanged ||
+      isAvatarChanged ||
+      isInterestsChanged ||
+      isLinkChanged
+    );
+  }, [name, username, bio, classGroup, avatar, interests, link, initialData]);
 
   // Convert comma-separated string to tag array
   const activeTags = interests
@@ -114,7 +138,17 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
     });
   };
 
-  const handleDiscard = () => {
+  // Trigger Confirmation Modal if unsaved changes exist, else proceed to exit
+  const handleAttemptExit = () => {
+    if (hasChanges) {
+      setShowDiscardConfirmModal(true);
+    } else {
+      onBack();
+    }
+  };
+
+  // Force Discard Changes & Exit
+  const handleConfirmDiscard = () => {
     setName(initialData.name);
     setUsername(initialData.username.replace(/^@/, ''));
     setBio(initialData.bio);
@@ -122,17 +156,24 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
     setAvatar(initialData.avatar);
     setInterests(initialData.interests || '');
     setLink(initialData.link || '');
+    setShowDiscardConfirmModal(false);
     onBack();
   };
 
   // Android / iOS Hardware Back Integration
   useEffect(() => {
-    const handlePop = () => {
-      onBack();
+    const handlePop = (e: PopStateEvent) => {
+      if (hasChanges) {
+        e.preventDefault();
+        window.history.pushState(null, '', window.location.href);
+        setShowDiscardConfirmModal(true);
+      } else {
+        onBack();
+      }
     };
     window.addEventListener('popstate', handlePop);
     return () => window.removeEventListener('popstate', handlePop);
-  }, [onBack]);
+  }, [hasChanges, onBack]);
 
   return (
     <div className="fixed inset-0 z-[100] bg-white text-slate-900 overflow-y-auto flex flex-col font-gt-standard">
@@ -143,7 +184,7 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
       >
         <button
           type="button"
-          onClick={onBack}
+          onClick={handleAttemptExit}
           className="w-10 h-10 -ml-1 rounded-full hover:bg-neutral-100 active:bg-neutral-200 flex items-center justify-center text-slate-800 transition-all cursor-pointer active:scale-90"
           aria-label="Kembali"
         >
@@ -304,7 +345,7 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
             />
           </div>
 
-          {/* Row 5: Minat (Simple & Clean 1-Line Tag Input with Signature UI Colors) */}
+          {/* Row 5: Minat */}
           <div className="py-4 border-b border-neutral-200/80">
             <div className="flex items-center justify-between mb-2">
               <label className="text-[14px] font-semibold text-slate-900">
@@ -416,17 +457,17 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
         style={{ paddingBottom: 'max(14px, env(safe-area-inset-bottom, 14px))' }}
       >
         <div className="max-w-[540px] mx-auto flex items-center gap-3">
-          {/* Discard Button (Left - Kumo UI Secondary Pill) */}
+          {/* Discard Button (Left) */}
           <button
             type="button"
-            onClick={handleDiscard}
+            onClick={handleAttemptExit}
             className="relative flex items-center justify-center flex-1 h-12 px-5 rounded-full text-slate-800 font-bold text-[15px] bg-white border border-neutral-200/90 shadow-2xs hover:bg-neutral-50 active:scale-[0.98] transition-all overflow-hidden cursor-pointer select-none"
           >
             <span className="absolute inset-0 rounded-full bg-gradient-to-b from-white/90 to-neutral-50/50 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9)] pointer-events-none" />
             <span className="relative z-10">Discard</span>
           </button>
 
-          {/* Save Button (Right - Kumo UI Primary Dark Pill) */}
+          {/* Save Button (Right) */}
           <button
             type="button"
             onClick={handleSave}
@@ -437,6 +478,64 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
           </button>
         </div>
       </footer>
+
+      {/* Discard Confirmation Modal (Clean Meta Threads / iOS Dialog) */}
+      <AnimatePresence>
+        {showDiscardConfirmModal && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowDiscardConfirmModal(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-xs"
+            />
+
+            {/* Dialog Card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 8 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+              className="relative w-full max-w-xs bg-white rounded-3xl p-5 shadow-2xl border border-neutral-100 z-10 text-center space-y-4 font-gt-standard"
+            >
+              <div className="w-12 h-12 rounded-full bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center mx-auto shadow-2xs">
+                <AlertTriangle className="w-6 h-6 stroke-[2.2]" />
+              </div>
+
+              <div className="space-y-1.5">
+                <h3 className="text-[17px] font-bold text-slate-900 tracking-tight leading-snug">
+                  Buang perubahan?
+                </h3>
+                <p className="text-[13.5px] text-neutral-500 font-normal leading-relaxed">
+                  Jika Anda keluar sekarang, perubahan profil yang baru saja diedit tidak akan disimpan.
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-1">
+                {/* Red Destructive Discard Action */}
+                <button
+                  type="button"
+                  onClick={handleConfirmDiscard}
+                  className="w-full h-11 rounded-2xl bg-rose-600 hover:bg-rose-700 active:scale-98 text-white font-bold text-[14.5px] transition-all cursor-pointer shadow-md shadow-rose-600/20"
+                >
+                  Buang Perubahan
+                </button>
+
+                {/* Secondary Cancel Action */}
+                <button
+                  type="button"
+                  onClick={() => setShowDiscardConfirmModal(false)}
+                  className="w-full h-11 rounded-2xl bg-neutral-100 hover:bg-neutral-200/80 active:scale-98 text-slate-800 font-semibold text-[14.5px] transition-all cursor-pointer"
+                >
+                  Batal & Lanjut Edit
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Floating Feedback Toast */}
       {toastMessage && (

@@ -5,6 +5,8 @@ import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { ClickableVerifiedBadge } from './VerifiedBadgeModal';
 import { MediaLightboxModal } from './MediaLightboxModal';
 import { PostOptionsModal } from './PostOptionsModal';
+import { ProgressiveImage } from '@/ui/components/ui/ProgressiveImage';
+import { triggerHaptic } from '@/utils/haptics';
 
 // Custom Threads 3-Dot Topic Icon
 const ThreadsTopicIcon: React.FC<{ className?: string }> = ({ className = "w-3.5 h-3.5 text-[#1d64ec] fill-current shrink-0" }) => (
@@ -120,9 +122,11 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
   const handleParentRepost = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (parentReposted) {
+      triggerHaptic('light');
       setParentReposted(false);
       setParentRepostsCount((prev) => Math.max(0, prev - 1));
     } else {
+      triggerHaptic('medium');
       setParentReposted(true);
       setParentRepostsCount((prev) => prev + 1);
     }
@@ -131,9 +135,11 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
   const handleReplyLike = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (replyLiked) {
+      triggerHaptic('light');
       setReplyLiked(false);
       setReplyLikesCount((prev) => Math.max(0, prev - 1));
     } else {
+      triggerHaptic('medium');
       setReplyLiked(true);
       setReplyLikesCount((prev) => prev + 1);
     }
@@ -141,6 +147,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
 
   const handleReplyRepost = (e: React.MouseEvent) => {
     e.stopPropagation();
+    triggerHaptic('medium');
     if (replyReposted) {
       setReplyReposted(false);
       setReplyRepostsCount((prev) => Math.max(0, prev - 1));
@@ -152,6 +159,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
 
   const handleShare = (e: React.MouseEvent, title: string, text: string) => {
     e.stopPropagation();
+    triggerHaptic('light');
     if (navigator.share) {
       navigator.share({
         title,
@@ -177,13 +185,11 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
           }}
           className="relative w-full rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[420px] aspect-[4/5] sm:aspect-[16/10] mt-2.5 cursor-pointer touch-pan-y"
         >
-          <picture className="block w-full h-full cursor-pointer">
-            <img
-              src={parentPost.images[0]}
-              alt={parentPost.title || parentPost.caption}
-              className="w-full h-full object-cover hover:scale-[1.01] transition-transform duration-300 pointer-events-none select-none"
-            />
-          </picture>
+          <ProgressiveImage
+            src={parentPost.images[0]}
+            alt={parentPost.title || parentPost.caption}
+            className="w-full h-full object-cover hover:scale-[1.01] transition-transform duration-300 pointer-events-none select-none"
+          />
           <div className="absolute inset-0 rounded-[18px] ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
         </div>
       );
@@ -215,13 +221,11 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
             }}
             className="relative shrink-0 w-[82%] sm:w-[75%] rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[380px] aspect-[3/4] cursor-pointer touch-pan-y"
           >
-            <picture className="block w-full h-full cursor-pointer">
-              <img
-                src={imgUrl}
-                alt={`${parentPost.caption} - ${idx + 1}`}
-                className="w-full h-full object-cover pointer-events-none select-none"
-              />
-            </picture>
+            <ProgressiveImage
+              src={imgUrl}
+              alt={`${parentPost.caption} - ${idx + 1}`}
+              className="w-full h-full object-cover pointer-events-none select-none"
+            />
             <div className="absolute inset-0 rounded-[18px] ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
           </div>
         ))}

@@ -8,6 +8,7 @@ import { MediaLightboxModal } from './MediaLightboxModal';
 import { ClickableVerifiedBadge } from './VerifiedBadgeModal';
 import { togglePostBookmark } from '@/services/api/bookmarkService';
 import { triggerHaptic } from '@/utils/haptics';
+import { ProgressiveImage } from '@/ui/components/ui/ProgressiveImage';
 
 // Custom Threads 3-Dot Topic Icon
 const ThreadsTopicIcon: React.FC<{ className?: string }> = ({ className = "w-3.5 h-3.5 text-[#1d64ec] fill-current shrink-0" }) => (
@@ -167,16 +168,22 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const shareUrl = window.location.href;
-    if (navigator.share) {
+    triggerHaptic('light');
+    const authorHandle = item.seller.username || item.seller.name.toLowerCase().replace(/\s+/g, '') || 'post';
+    const shareUrl = `${window.location.origin}/@${authorHandle.replace(/^@/, '')}/post/${item.id}`;
+    const shareText = item.price
+      ? `🛍️ ${item.caption}\n💰 Rp ${item.price.toLocaleString('id-ID')}\n👤 Penjual: ${item.seller.name} (@${authorHandle})`
+      : `🧵 ${item.caption}\n👤 Oleh: ${item.seller.name} (@${authorHandle})`;
+
+    if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share({
           title: item.title || 'Snapan Market',
-          text: `Cek postingan ${item.seller.name} di Snapan Market!`,
+          text: shareText,
           url: shareUrl,
         });
       } catch (err) {
-        // User cancelled share dialog
+        // User cancelled native share dialog
       }
     } else {
       try {
@@ -196,15 +203,11 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           onClick={(e) => handleImageClick(e, 0)}
           className="relative w-full rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[420px] aspect-[4/5] sm:aspect-[16/10] mt-2.5 cursor-pointer touch-pan-y"
         >
-          <picture className="block w-full h-full cursor-pointer">
-            <img
-              src={item.images[0]}
-              alt={item.caption}
-              loading="lazy"
-              decoding="async"
-              className="w-full h-full object-cover hover:scale-[1.01] transition-transform duration-300 pointer-events-none select-none"
-            />
-          </picture>
+          <ProgressiveImage
+            src={item.images[0]}
+            alt={item.caption}
+            className="w-full h-full object-cover hover:scale-[1.01] transition-transform duration-300 pointer-events-none select-none"
+          />
           <div className="absolute inset-0 rounded-[18px] ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
         </div>
       )}
@@ -231,15 +234,11 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               onClick={(e) => handleImageClick(e, idx)}
               className="relative shrink-0 w-[82%] sm:w-[75%] rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[380px] aspect-[3/4] cursor-pointer touch-pan-y"
             >
-              <picture className="block w-full h-full cursor-pointer">
-                <img
-                  src={imgUrl}
-                  alt={`${item.caption} - ${idx + 1}`}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover pointer-events-none select-none"
-                />
-              </picture>
+              <ProgressiveImage
+                src={imgUrl}
+                alt={`${item.caption} - ${idx + 1}`}
+                className="w-full h-full object-cover pointer-events-none select-none"
+              />
               <div className="absolute inset-0 rounded-[18px] ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
             </div>
           ))}

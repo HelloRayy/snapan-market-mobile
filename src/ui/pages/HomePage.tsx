@@ -14,6 +14,7 @@ import { getMarketPosts, createMarketPost } from '@/services/api/marketPostsServ
 import type { MarketPostWithSeller } from '@/types/supabase';
 import { PullToRefreshIndicator } from '../components/marketplace/PullToRefreshIndicator';
 import { triggerHaptic } from '@/utils/haptics';
+import { saveFeedCache, loadFeedCache } from '@/services/cache/feedCache';
 
 interface HomePageProps {
   onSelectPost?: (post: MarketPostItem) => void;
@@ -38,8 +39,11 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedPostMode, setSelectedPostMode] = useState<'thread' | 'product'>('thread');
 
-  // Items State & Infinite Scroll Loading
-  const [items, setItems] = useState<MarketPostItem[]>(MOCK_MARKET_POSTS);
+  // Items State (Instant 0ms Cache-First Load) & Infinite Scroll Loading
+  const [items, setItems] = useState<MarketPostItem[]>(() => {
+    const cached = loadFeedCache();
+    return cached && cached.length > 0 ? cached : MOCK_MARKET_POSTS;
+  });
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
   const observerTargetRef = useRef<HTMLDivElement>(null);
@@ -90,7 +94,9 @@ export const HomePage: React.FC<HomePageProps> = ({
         setItems((prev) => {
           const existingIds = new Set(mappedPosts.map((mp) => mp.id));
           const filteredMock = prev.filter((item) => !existingIds.has(item.id));
-          return [...mappedPosts, ...filteredMock];
+          const merged = [...mappedPosts, ...filteredMock];
+          saveFeedCache(merged);
+          return merged;
         });
       }
     } catch (err) {

@@ -217,6 +217,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const [visibleSuggestedCount, setVisibleSuggestedCount] = useState(5);
   const [activeTab, setActiveTab] = useState<SearchTab>('top');
   const [followingMap, setFollowingMap] = useState<Record<string, boolean>>({});
   const inputRef = useRef<HTMLInputElement>(null);
@@ -531,9 +532,9 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                 </span>
               </div>
 
-              {/* Suggested Accounts List */}
+              {/* Suggested Accounts List (Limited to top 5 initially for performance) */}
               <div className="divide-y divide-neutral-100 bg-white rounded-2xl border border-neutral-100 shadow-[rgba(0,0,0,0.02)_0px_2px_12px_0px] overflow-hidden">
-                {INITIAL_SUGGESTED_ACCOUNTS.map((account) => {
+                {INITIAL_SUGGESTED_ACCOUNTS.slice(0, visibleSuggestedCount).map((account) => {
                   const isFollowing = !!followingMap[account.id];
 
                   return (
@@ -588,6 +589,23 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                     </div>
                   );
                 })}
+
+                {/* Expand More Suggestions Button */}
+                {visibleSuggestedCount < INITIAL_SUGGESTED_ACCOUNTS.length && (
+                  <div className="p-3 text-center bg-neutral-50/50 hover:bg-neutral-100/80 transition-colors">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setVisibleSuggestedCount((prev) =>
+                          Math.min(prev + 5, INITIAL_SUGGESTED_ACCOUNTS.length)
+                        )
+                      }
+                      className="w-full py-1 text-[13.5px] font-semibold text-[#1d64ec] hover:text-[#154ec1] active:scale-98 transition-all cursor-pointer"
+                    >
+                      Lihat saran lainnya ({INITIAL_SUGGESTED_ACCOUNTS.length - visibleSuggestedCount})
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </>

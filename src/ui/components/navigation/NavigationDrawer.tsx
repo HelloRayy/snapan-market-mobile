@@ -5,7 +5,7 @@ import {
   User,
   Bookmark,
   Store,
-  Smartphone,
+  Download,
   Settings,
   LogOut,
   Plus,
@@ -207,7 +207,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
         {/* 3. Bottom Utility & System Section (Pinned to Bottom with Distinct Separator) */}
         <div className="pt-2.5 pb-3 border-t border-neutral-200/90 bg-white space-y-1 shrink-0 leading-snug">
-          {/* Pasang PWA */}
+          {/* Unduh Aplikasi */}
           <button
             type="button"
             onClick={() => {
@@ -216,8 +216,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             }}
             className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[15px] font-semibold text-emerald-600 hover:bg-emerald-50 active:bg-emerald-100/80 transition-colors cursor-pointer leading-snug text-left"
           >
-            <Smartphone className="w-5 h-5 text-emerald-600 stroke-[2] shrink-0" />
-            <span className="truncate">Pasang Aplikasi PWA</span>
+            <Download className="w-5 h-5 text-emerald-600 stroke-[2.2] shrink-0" />
+            <span className="truncate">Unduh Aplikasi</span>
           </button>
 
           {/* Pengaturan Akun */}

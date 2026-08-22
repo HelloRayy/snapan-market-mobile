@@ -16,10 +16,16 @@ import type { MarketPostWithSeller } from '@/types/supabase';
 interface HomePageProps {
   onSelectPost?: (post: MarketPostItem) => void;
   onNavigateToProfile?: (username: string) => void;
+  onNavigateSearch?: () => void;
   onOpenMenu?: () => void;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ onSelectPost, onNavigateToProfile, onOpenMenu }) => {
+export const HomePage: React.FC<HomePageProps> = ({
+  onSelectPost,
+  onNavigateToProfile,
+  onNavigateSearch,
+  onOpenMenu,
+}) => {
   const [feedTab, setFeedTab] = useState<'for-you' | 'latest'>('for-you');
   const [bottomNavTab, setBottomNavTab] = useState('home');
   const [searchQuery, setSearchQuery] = useState('');
@@ -294,6 +300,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectPost, onNavigateToPr
             cartCount={totalCartItems}
             cartTotal={totalCartPrice}
             onMenuClick={onOpenMenu}
+            onSearchClick={onNavigateSearch}
             onSearchChange={(query) => setSearchQuery(query)}
           />
         </div>

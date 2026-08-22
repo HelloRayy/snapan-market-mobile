@@ -4,6 +4,7 @@ import { PwaLandingPage } from '@/ui/components/pwa/PwaLandingPage';
 import { HomePage } from '@/ui/pages/HomePage';
 import { PostDetailPage } from '@/ui/pages/PostDetailPage';
 import { ProfilePage } from '@/ui/pages/ProfilePage';
+import { SearchPage } from '@/ui/pages/SearchPage';
 import { NavigationDrawer } from '@/ui/components/navigation/NavigationDrawer';
 import { MarketPostItem } from '@/types/marketFeed';
 import { useAuth } from '@/ui/hooks/useAuth';
@@ -50,6 +51,7 @@ export function App() {
   // Check routes
   const isDownloadRoute = currentRoute === '/download' || window.location.hash === '#download';
   const isOnboardingRoute = currentRoute === '/onboarding' || window.location.hash === '#onboarding';
+  const isSearchRoute = currentRoute === '/search' || window.location.hash === '#search';
   
   // Dynamic Route Check: /@username or #@username or /profile
   const isProfileRoute = currentRoute.startsWith('/@') || currentRoute === '/profile' || window.location.hash.startsWith('#@');
@@ -158,6 +160,15 @@ export function App() {
     setCurrentRoute('/');
   };
 
+  const navigateToSearch = () => {
+    // Record current home scroll position before navigating away
+    if (!isProfileRoute && !isSearchRoute) {
+      homeScrollYRef.current = window.scrollY;
+    }
+    window.history.pushState({ route: '/search' }, '', '/search');
+    setCurrentRoute('/search');
+  };
+
   const navigateToProfile = (username: string) => {
     // Record current home scroll position before navigating away
     homeScrollYRef.current = window.scrollY;
@@ -181,7 +192,7 @@ export function App() {
 
   const handleOpenPostDetail = (post: MarketPostItem) => {
     // Record home scroll before opening detail
-    if (!isProfileRoute) {
+    if (!isProfileRoute && !isSearchRoute) {
       homeScrollYRef.current = window.scrollY;
     }
     window.history.pushState(
@@ -213,13 +224,24 @@ export function App() {
       ) : hasCompletedOnboarding && !isOnboardingRoute ? (
         <div className="relative min-h-screen">
           {/* Main Feed HomePage (Always preserved in DOM so scroll position is never lost) */}
-          <div className={isProfileRoute ? 'hidden' : 'block'}>
+          <div className={isProfileRoute || isSearchRoute ? 'hidden' : 'block'}>
             <HomePage
               onSelectPost={handleOpenPostDetail}
               onNavigateToProfile={navigateToProfile}
+              onNavigateSearch={navigateToSearch}
               onOpenMenu={handleOpenDrawer}
             />
           </div>
+
+          {/* Dedicated Search / Explore Single Page */}
+          {isSearchRoute && (
+            <SearchPage
+              onBack={() => window.history.back()}
+              onNavigateToProfile={navigateToProfile}
+              onNavigateHome={navigateToHome}
+              onOpenMenu={handleOpenDrawer}
+            />
+          )}
 
           {/* Profile Page (Dynamic Route /@username) */}
           {isProfileRoute && (
@@ -241,6 +263,7 @@ export function App() {
             isOpen={isDrawerOpen}
             onClose={handleCloseDrawer}
             onNavigateHome={navigateToHome}
+            onNavigateSearch={navigateToSearch}
             onNavigateProfile={navigateToProfile}
             onNavigateDownload={() => {
               setCurrentRoute('/download');

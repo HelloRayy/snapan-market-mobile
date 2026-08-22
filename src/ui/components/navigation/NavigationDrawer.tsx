@@ -20,6 +20,7 @@ interface NavigationDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigateHome: () => void;
+  onNavigateSearch?: () => void;
   onNavigateProfile: (username: string) => void;
   onNavigateDownload: () => void;
   onOpenCreateModal?: () => void;
@@ -29,6 +30,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   isOpen,
   onClose,
   onNavigateHome,
+  onNavigateSearch,
   onNavigateProfile,
   onNavigateDownload,
   onOpenCreateModal,
@@ -118,7 +120,11 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
           <button
             type="button"
             onClick={() => {
-              onNavigateHome();
+              if (onNavigateSearch) {
+                onNavigateSearch();
+              } else {
+                onNavigateHome();
+              }
               onClose();
             }}
             className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[15px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"

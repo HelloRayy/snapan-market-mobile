@@ -17,6 +17,7 @@ interface MarketHeaderProps {
   cartCount?: number;
   cartTotal?: number;
   onSearchChange?: (query: string) => void;
+  onSearchClick?: () => void;
   onMenuClick?: () => void;
   onProfileClick?: () => void;
   userAvatar?: string;
@@ -26,6 +27,7 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
   cartCount: _cartCount = 0,
   cartTotal: _cartTotal = 0,
   onSearchChange,
+  onSearchClick,
   onMenuClick,
   onProfileClick,
 }) => {
@@ -68,18 +70,22 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
           </button>
         </div>
 
-        {/* Right Side: Search Toggle Button */}
+        {/* Right Side: Search Button (Single Page Navigation) */}
         <div className="flex items-center">
           <button
             type="button"
             onClick={() => {
-              setShowSearchInput(!showSearchInput);
-              if (showSearchInput) {
-                handleSearchChange('');
+              if (onSearchClick) {
+                onSearchClick();
+              } else {
+                setShowSearchInput(!showSearchInput);
+                if (showSearchInput) {
+                  handleSearchChange('');
+                }
               }
             }}
             className="w-10 h-10 rounded-full flex items-center justify-center text-slate-800 hover:bg-neutral-100/90 active:scale-90 transition-all cursor-pointer"
-            aria-label="Cari Produk"
+            aria-label="Cari Akun & Produk"
           >
             {showSearchInput ? (
               <X className="w-5 h-5 text-slate-900 stroke-[2.25]" />

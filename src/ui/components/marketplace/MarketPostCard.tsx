@@ -201,7 +201,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
       {item.images && item.images.length === 1 && (
         <div
           onClick={(e) => handleImageClick(e, 0)}
-          className="relative w-full rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[400px] aspect-[4/5] mt-2.5 cursor-pointer touch-pan-y"
+          className="relative w-full rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[420px] aspect-[4/5] sm:aspect-[16/10] mt-2.5 cursor-pointer touch-pan-y"
         >
           <ProgressiveImage
             src={item.images[0]}
@@ -232,7 +232,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             <div
               key={idx}
               onClick={(e) => handleImageClick(e, idx)}
-              className="relative shrink-0 w-[84%] sm:w-[76%] rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[400px] aspect-[4/5] cursor-pointer touch-pan-y"
+              className="relative shrink-0 w-[84%] sm:w-[76%] rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[420px] aspect-[4/5] sm:aspect-[16/10] cursor-pointer touch-pan-y"
             >
               <ProgressiveImage
                 src={imgUrl}

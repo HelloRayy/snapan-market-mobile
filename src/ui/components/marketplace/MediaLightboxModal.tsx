@@ -200,96 +200,95 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
         ))}
       </div>
 
-      {/* Bottom Floating Glass Capsule Bar (Icon-Only Social & Utility Controls in Light Theme) */}
+      {/* Bottom Floating Glass Capsule Bar (Refined UX Order & Layout) */}
       <div className="relative z-50 flex items-center justify-center px-4 pb-8 pt-2 max-w-xl mx-auto w-full">
-        <div className="flex items-center gap-x-1.5 sm:gap-x-2 bg-white/95 backdrop-blur-xl border border-neutral-200/90 px-3.5 py-1.5 rounded-full shadow-lg text-slate-700 select-none">
-          {/* 1. Love / Like Button with Count */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onLike?.();
-            }}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full hover:bg-neutral-100/90 active:scale-90 transition-all cursor-pointer ${
-              isLiked ? 'text-rose-500' : 'text-slate-700 hover:text-slate-900'
-            }`}
-            title="Sukai foto"
-          >
-            <Heart className={`w-4 h-4 ${isLiked ? 'fill-current stroke-rose-500' : 'stroke-[2]'}`} />
-            {typeof likesCount === 'number' && (
-              <span className="text-[13px] font-semibold tabular-nums">{likesCount}</span>
-            )}
-          </button>
+        <div className="flex items-center gap-x-1 sm:gap-x-1.5 bg-white/95 backdrop-blur-xl border border-neutral-200/90 px-3.5 py-1.5 rounded-full shadow-lg text-slate-700 select-none">
+          {/* Group 1: Social Engagement Actions (Love, Comment, Repost, Share) */}
+          <div className="flex items-center gap-x-0.5 sm:gap-x-1">
+            {/* 1. Love / Like */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onLike?.();
+              }}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-neutral-100 active:scale-92 transition-all cursor-pointer group"
+              title="Sukai foto"
+            >
+              <Heart
+                className={`w-4 h-4 transition-transform group-hover:scale-110 ${
+                  isLiked ? 'fill-rose-500 text-rose-500 stroke-rose-500' : 'stroke-[2] text-slate-700'
+                }`}
+              />
+              {typeof likesCount === 'number' && (
+                <span className="text-[13px] font-semibold text-slate-800 tabular-nums leading-none">
+                  {likesCount}
+                </span>
+              )}
+            </button>
 
-          {/* 2. Comment Button with Count */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onClose();
-              onComment?.();
-            }}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full hover:bg-neutral-100/90 active:scale-90 transition-all cursor-pointer text-slate-700 hover:text-slate-900"
-            title="Komentari"
-          >
-            <MessageCircle className="w-4 h-4 stroke-[2]" />
-            {typeof repliesCount === 'number' && (
-              <span className="text-[13px] font-semibold tabular-nums">{repliesCount}</span>
-            )}
-          </button>
+            {/* 2. Comment / Reply */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onClose();
+                onComment?.();
+              }}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-neutral-100 active:scale-92 transition-all cursor-pointer text-slate-700 hover:text-slate-900 group"
+              title="Komentari"
+            >
+              <MessageCircle className="w-4 h-4 stroke-[2] transition-transform group-hover:scale-110" />
+              {typeof repliesCount === 'number' && (
+                <span className="text-[13px] font-semibold text-slate-800 tabular-nums leading-none">
+                  {repliesCount}
+                </span>
+              )}
+            </button>
 
-          {/* 3. Repost Button with Count */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onRepost?.();
-            }}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full hover:bg-neutral-100/90 active:scale-90 transition-all cursor-pointer ${
-              isReposted ? 'text-emerald-500' : 'text-slate-700 hover:text-slate-900'
-            }`}
-            title="Repost"
-          >
-            <Repeat2 className="w-4 h-4 stroke-[2.2]" />
-            {typeof repostsCount === 'number' && (
-              <span className="text-[13px] font-semibold tabular-nums">{repostsCount}</span>
-            )}
-          </button>
+            {/* 3. Repost */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRepost?.();
+              }}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-neutral-100 active:scale-92 transition-all cursor-pointer group"
+              title="Repost"
+            >
+              <Repeat2
+                className={`w-4 h-4 stroke-[2.2] transition-transform group-hover:scale-110 ${
+                  isReposted ? 'text-emerald-500' : 'text-slate-700'
+                }`}
+              />
+              {typeof repostsCount === 'number' && (
+                <span className="text-[13px] font-semibold text-slate-800 tabular-nums leading-none">
+                  {repostsCount}
+                </span>
+              )}
+            </button>
 
-          {/* 4. Share Button */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onShare?.();
-            }}
-            className="flex items-center justify-center p-2 rounded-full hover:bg-neutral-100/90 active:scale-90 transition-all cursor-pointer text-slate-700 hover:text-slate-900"
-            title="Bagikan"
-          >
-            <Send className="w-4 h-4 stroke-[2]" />
-          </button>
+            {/* 4. Share */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onShare?.();
+              }}
+              className="flex items-center justify-center p-2 rounded-full hover:bg-neutral-100 active:scale-92 transition-all cursor-pointer text-slate-700 hover:text-slate-900 group"
+              title="Bagikan"
+            >
+              <Send className="w-4 h-4 stroke-[2] transition-transform group-hover:scale-110" />
+            </button>
+          </div>
 
-          {/* Separator */}
-          <span className="w-px h-4 bg-neutral-200 mx-0.5" />
+          {/* Group 2: Photo Viewport Controls (Divider | Pagination Dots | Zoom Scale) */}
+          <span className="w-px h-4 bg-neutral-200 mx-1 shrink-0" />
 
-          {/* 5. Zoom Scale Preset (1x / 1.5x / 2x) */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setZoomLevel((prev) => (prev === 1 ? 1.5 : prev === 1.5 ? 2 : 1));
-            }}
-            className="px-2.5 py-1 rounded-full hover:bg-neutral-100/90 active:scale-90 transition-all cursor-pointer text-xs font-bold text-slate-800 tabular-nums"
-            title="Ubah perbesaran"
-          >
-            {zoomLevel}x
-          </button>
-
-          {/* 6. Multi-image Pagination Dots (if multi images) */}
-          {images.length > 1 && (
-            <>
-              <span className="w-px h-4 bg-neutral-200 mx-0.5" />
-              <div className="flex items-center gap-1.5 px-1.5">
+          <div className="flex items-center gap-x-1.5 pl-0.5">
+            {/* Multi-image Pagination Dots (Comes BEFORE Zoom for logical navigation order) */}
+            {images.length > 1 && (
+              <div className="flex items-center gap-1 px-1">
                 {images.map((_, idx) => (
                   <button
                     key={idx}
@@ -298,7 +297,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
                       e.stopPropagation();
                       scrollToImage(idx);
                     }}
-                    className={`cursor-pointer transition-all ${
+                    className={`cursor-pointer transition-all duration-200 ${
                       currentIndex === idx
                         ? 'w-4 h-1.5 rounded-full bg-slate-900'
                         : 'w-1.5 h-1.5 rounded-full bg-neutral-300 hover:bg-neutral-400'
@@ -307,20 +306,31 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
                   />
                 ))}
               </div>
-            </>
-          )}
+            )}
 
-          {/* 7. Audio Mute Toggle (if Video) */}
-          {isVideo && (
-            <>
-              <span className="w-px h-4 bg-neutral-200 mx-0.5" />
+            {/* Zoom Scale Pill */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setZoomLevel((prev) => (prev === 1 ? 1.5 : prev === 1.5 ? 2 : 1));
+              }}
+              className="px-2 py-0.5 rounded-full bg-neutral-100 hover:bg-neutral-200 active:scale-92 transition-all cursor-pointer text-[12px] font-bold text-slate-800 tabular-nums leading-none"
+              title="Ubah perbesaran"
+            >
+              {zoomLevel}x
+            </button>
+
+            {/* Audio Mute Toggle (if Video) */}
+            {isVideo && (
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsMuted(!isMuted);
                 }}
-                className="p-2 rounded-full hover:bg-neutral-100 active:scale-90 transition-all cursor-pointer text-slate-700 hover:text-slate-900"
+                className="p-1.5 rounded-full hover:bg-neutral-100 active:scale-92 transition-all cursor-pointer text-slate-700 hover:text-slate-900"
+                title={isMuted ? 'Nyalakan suara' : 'Bisukan'}
               >
                 {isMuted ? (
                   <VolumeX className="w-4 h-4 text-neutral-400" />
@@ -328,8 +338,8 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
                   <Volume2 className="w-4 h-4 text-[#1d64ec]" />
                 )}
               </button>
-            </>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>

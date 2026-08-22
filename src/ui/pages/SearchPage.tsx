@@ -439,30 +439,27 @@ export const SearchPage: React.FC<SearchPageProps> = ({
 
       {/* Main Content Area */}
       <main className="max-w-xl mx-auto px-4 pt-3 space-y-4">
-        {/* STAGE 1: Typing State -> Suggestion Row "Cari [keyword] >" (Exact Competitor UX Reference) */}
+        {/* STAGE 1: Typing State -> Flat Row Suggestion "Cari [keyword] Lanjutkan" */}
         {hasSearchQuery && !isSubmitted && (
-          <div className="space-y-3 pt-1 animate-in fade-in duration-150">
-            {/* Single Suggestion Row (Reference: h-[64.8px] / Light Mode: rounded-2xl shadow-sm border) */}
-            <div
+          <div className="space-y-3 pt-0.5 animate-in fade-in duration-150">
+            {/* Flat Minimalist Suggestion Row matching reference */}
+            <button
+              type="button"
               onClick={handleExecuteSearch}
-              className="flex items-center justify-between px-4 py-3.5 bg-white text-slate-900 rounded-2xl border border-neutral-200/80 shadow-[rgba(0,0,0,0.04)_0px_8px_16px_0px] hover:bg-neutral-50 active:scale-98 transition-all cursor-pointer leading-snug group"
+              className="w-full flex items-center justify-between py-3.5 pr-2 pl-1 border-b border-neutral-100 hover:bg-neutral-50/70 active:bg-neutral-100/70 transition-colors cursor-pointer text-left leading-snug group"
             >
-              <div className="flex items-center gap-3.5 min-w-0">
-                <div className="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center text-slate-700 shrink-0 group-hover:bg-neutral-200/80 transition-colors">
-                  <Search className="w-4.5 h-4.5 stroke-[2.2]" />
-                </div>
-                <span className="font-semibold text-[15px] text-slate-900 truncate">
+              <div className="flex items-center gap-3 min-w-0">
+                <Search className="w-4.5 h-4.5 text-neutral-400 shrink-0 stroke-[2.2]" />
+                <span className="font-semibold text-[15px] text-slate-900 truncate leading-snug">
                   {searchQuery}
                 </span>
               </div>
 
-              <div className="flex items-center gap-1.5 text-neutral-400 shrink-0">
-                <span className="text-[12px] font-medium text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                  Lanjutkan
-                </span>
-                <ChevronRight className="w-4.5 h-4.5 stroke-[2] group-hover:translate-x-0.5 transition-transform" />
+              <div className="flex items-center gap-1 text-[#1d64ec] font-medium text-[13.5px] shrink-0">
+                <span>Lanjutkan</span>
+                <ChevronRight className="w-4 h-4 stroke-[2.2] group-hover:translate-x-0.5 transition-transform" />
               </div>
-            </div>
+            </button>
 
             {/* Direct Matched Accounts (If Any) */}
             {scoredAccounts.length > 0 && (

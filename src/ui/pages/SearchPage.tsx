@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { Search, X, SlidersHorizontal, ArrowLeft, Users, TrendingUp, MoreHorizontal } from 'lucide-react';
+import React, { useState, useMemo, useRef } from 'react';
+import { Search, X, SlidersHorizontal, ArrowLeft, Users, TrendingUp, ChevronRight } from 'lucide-react';
 import { ClickableVerifiedBadge } from '@/ui/components/marketplace/VerifiedBadgeModal';
 import { MarketBottomNav } from '@/ui/components/marketplace/MarketBottomNav';
 import { MarketPostCard } from '@/ui/components/marketplace/MarketPostCard';
@@ -157,11 +157,11 @@ const INITIAL_SUGGESTED_ACCOUNTS: SuggestedAccount[] = [
 ];
 
 const TRENDING_TAGS = [
-  { id: '1', tag: 'vibe coding', posts: '3.4 rb utas' },
-  { id: '2', tag: 'MarketDay', posts: '1.2 rb utas' },
-  { id: '3', tag: 'PPLG1', posts: '856 utas' },
-  { id: '4', tag: 'Kantin8', posts: '2.4 rb utas' },
-  { id: '5', tag: 'DesignCollab', posts: '430 utas' },
+  { id: '1', tag: 'snapandev', posts: '1.8 rb utas' },
+  { id: '2', tag: 'vibe coding', posts: '3.4 rb utas' },
+  { id: '3', tag: 'MarketDay', posts: '1.2 rb utas' },
+  { id: '4', tag: 'PPLG1', posts: '856 utas' },
+  { id: '5', tag: 'Kantin8', posts: '2.4 rb utas' },
 ];
 
 type SearchTab = 'top' | 'latest' | 'profiles';
@@ -169,7 +169,6 @@ type SearchTab = 'top' | 'latest' | 'profiles';
 // Semantic Tokenized Relevance Scorer
 function calculateTokenScore(query: string, fields: (string | undefined)[], engagementBoost = 0): number {
   if (!query.trim()) return 0;
-  // Clean tokens (remove punctuation and split)
   const tokens = query
     .toLowerCase()
     .trim()
@@ -197,7 +196,6 @@ function calculateTokenScore(query: string, fields: (string | undefined)[], enga
 
   if (matchedTokens === 0) return 0;
 
-  // Composite Score: Token Coverage Ratio * 100 + Extra Field Hits + Engagement Boost
   const coverageRatio = matchedTokens / tokens.length;
   return coverageRatio * 100 + fieldHits * 5 + engagementBoost;
 }
@@ -217,8 +215,10 @@ export const SearchPage: React.FC<SearchPageProps> = ({
   onSelectPost,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [activeTab, setActiveTab] = useState<SearchTab>('top');
   const [followingMap, setFollowingMap] = useState<Record<string, boolean>>({});
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const toggleFollow = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -226,6 +226,25 @@ export const SearchPage: React.FC<SearchPageProps> = ({
       ...prev,
       [id]: !prev[id],
     }));
+  };
+
+  const handleQueryChange = (val: string) => {
+    setSearchQuery(val);
+    if (!val.trim()) {
+      setIsSubmitted(false);
+    }
+  };
+
+  const handleCancelSearch = () => {
+    setSearchQuery('');
+    setIsSubmitted(false);
+    inputRef.current?.blur();
+  };
+
+  const handleExecuteSearch = () => {
+    if (searchQuery.trim()) {
+      setIsSubmitted(true);
+    }
   };
 
   // 1. Scored Matching Posts (Tokenized Relevance)
@@ -247,17 +266,17 @@ export const SearchPage: React.FC<SearchPageProps> = ({
     }).filter((item) => item.score > 0);
   }, [searchQuery]);
 
-  // Tab 1: Terpopuler (Sorted by Score descending)
+  // Tab 1: Terpopuler
   const popularPosts = useMemo(() => {
     return [...scoredPosts].sort((a, b) => b.score - a.score).map((item) => item.post);
   }, [scoredPosts]);
 
-  // Tab 2: Terbaru (Chronological / Recency order among matched posts)
+  // Tab 2: Terbaru
   const latestPosts = useMemo(() => {
     return [...scoredPosts].map((item) => item.post);
   }, [scoredPosts]);
 
-  // Tab 3: Profil (Scored Accounts)
+  // Tab 3: Profil
   const scoredAccounts = useMemo(() => {
     if (!searchQuery.trim()) return INITIAL_SUGGESTED_ACCOUNTS;
     return INITIAL_SUGGESTED_ACCOUNTS.map((account) => {
@@ -280,9 +299,9 @@ export const SearchPage: React.FC<SearchPageProps> = ({
         style={{ paddingTop: 'max(0.625rem, env(safe-area-inset-top, 0px))' }}
       >
         <div className="max-w-xl mx-auto w-full">
-          {/* Top Search Bar Row with 3-Dots Action Button */}
-          <div className="flex items-center gap-2.5 pb-2">
-            {/* Capsule Search Bar with Integrated Back Arrow (100% Centered Symmetry) */}
+          {/* Top Search Bar Row */}
+          <div className="flex items-center gap-2 pb-2.5">
+            {/* Capsule Search Bar with Integrated Back Arrow */}
             <div className="flex items-center pl-2.5 pr-3 bg-neutral-100/90 text-slate-900 text-base rounded-[22px] h-11 leading-snug border border-neutral-200/70 flex-1 focus-within:bg-white focus-within:border-slate-400 focus-within:shadow-2xs transition-all">
               {/* Integrated Back Arrow / Search Icon */}
               {onBack ? (
@@ -302,10 +321,16 @@ export const SearchPage: React.FC<SearchPageProps> = ({
 
               {/* Search Input Field */}
               <input
+                ref={inputRef}
                 type="text"
                 autoFocus
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleQueryChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleExecuteSearch();
+                  }
+                }}
                 placeholder="Cari"
                 className="bg-transparent text-slate-900 placeholder:text-neutral-400 outline-none flex-1 text-[15px] font-normal leading-snug h-full px-1"
               />
@@ -314,7 +339,10 @@ export const SearchPage: React.FC<SearchPageProps> = ({
               {searchQuery ? (
                 <button
                   type="button"
-                  onClick={() => setSearchQuery('')}
+                  onClick={() => {
+                    setSearchQuery('');
+                    setIsSubmitted(false);
+                  }}
                   className="w-7 h-7 rounded-full flex items-center justify-center text-neutral-400 hover:text-slate-800 hover:bg-neutral-200/60 active:scale-90 transition-all cursor-pointer shrink-0 ml-1"
                   aria-label="Hapus Pencarian"
                 >
@@ -331,19 +359,21 @@ export const SearchPage: React.FC<SearchPageProps> = ({
               )}
             </div>
 
-            {/* Right 3-Dots Button (Matching Meta Threads Navigation Header) */}
-            <button
-              type="button"
-              className="w-9 h-9 rounded-full flex items-center justify-center text-slate-700 hover:bg-neutral-100 active:scale-90 transition-all cursor-pointer shrink-0"
-              aria-label="Opsi Lainnya"
-            >
-              <MoreHorizontal className="w-5 h-5 stroke-[2]" />
-            </button>
+            {/* "Batal" Button (Shown when user is actively searching / typing) */}
+            {hasSearchQuery && (
+              <button
+                type="button"
+                onClick={handleCancelSearch}
+                className="px-2 py-1 text-[15px] font-medium text-slate-900 hover:text-slate-600 active:scale-95 transition-all cursor-pointer shrink-0"
+              >
+                Batal
+              </button>
+            )}
           </div>
 
-          {/* 3 Main Meta Threads Tabs: Terpopuler | Terbaru | Profil */}
-          {hasSearchQuery && (
-            <div className="w-full border-t border-neutral-100">
+          {/* 3 Main Meta Threads Tabs: Terpopuler | Terbaru | Profil (ONLY shown after search submission) */}
+          {hasSearchQuery && isSubmitted && (
+            <div className="w-full border-t border-neutral-100 animate-in fade-in duration-150">
               <div className="flex items-center relative">
                 {/* Sliding indicator line */}
                 <div
@@ -393,7 +423,59 @@ export const SearchPage: React.FC<SearchPageProps> = ({
 
       {/* Main Content Area */}
       <main className="max-w-xl mx-auto px-4 pt-3 space-y-4">
-        {/* CASE 1: Empty Query State -> Trending Tags + Saran Ikuti */}
+        {/* STAGE 1: Typing State -> Suggestion Row "Cari [keyword] >" (Exact Competitor UX Reference) */}
+        {hasSearchQuery && !isSubmitted && (
+          <div className="space-y-3 pt-1 animate-in fade-in duration-150">
+            {/* Single Suggestion Row (Reference: h-[64.8px] / Light Mode: rounded-2xl shadow-sm border) */}
+            <div
+              onClick={handleExecuteSearch}
+              className="flex items-center justify-between px-4 py-3.5 bg-white text-slate-900 rounded-2xl border border-neutral-200/80 shadow-[rgba(0,0,0,0.04)_0px_8px_16px_0px] hover:bg-neutral-50 active:scale-98 transition-all cursor-pointer leading-snug group"
+            >
+              <div className="flex items-center gap-3.5 min-w-0">
+                <div className="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center text-slate-700 shrink-0 group-hover:bg-neutral-200/80 transition-colors">
+                  <Search className="w-4.5 h-4.5 stroke-[2.2]" />
+                </div>
+                <span className="font-semibold text-[15px] text-slate-900 truncate">
+                  {searchQuery}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1.5 text-neutral-400 shrink-0">
+                <span className="text-[12px] font-medium text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                  Lanjutkan
+                </span>
+                <ChevronRight className="w-4.5 h-4.5 stroke-[2] group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </div>
+
+            {/* Direct Matched Accounts (If Any) */}
+            {scoredAccounts.length > 0 && (
+              <div className="divide-y divide-neutral-100 bg-white rounded-2xl border border-neutral-100 shadow-[rgba(0,0,0,0.02)_0px_2px_12px_0px] overflow-hidden">
+                {scoredAccounts.slice(0, 3).map((account) => (
+                  <div
+                    key={account.id}
+                    onClick={() => onNavigateToProfile(account.username)}
+                    className="flex items-center gap-3 p-3 hover:bg-neutral-50/80 active:bg-neutral-100 transition-colors cursor-pointer leading-snug"
+                  >
+                    <div className="w-9 h-9 rounded-full overflow-hidden ring-1 ring-neutral-200 shrink-0">
+                      <img src={account.avatar} alt={account.fullName} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0 leading-snug">
+                      <div className="flex items-center gap-1 leading-tight">
+                        <span className="font-bold text-[14px] text-slate-900 truncate">{account.username}</span>
+                        {account.isVerified && <ClickableVerifiedBadge className="w-3 h-3 shrink-0" />}
+                      </div>
+                      <p className="text-[12px] text-neutral-500 truncate leading-tight mt-0.5">{account.fullName}</p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-neutral-300 shrink-0" />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* STAGE 2: Empty Query State -> Trending Tags + Saran Ikuti */}
         {!hasSearchQuery && (
           <>
             {/* Trending Topics / Hastag Populer */}
@@ -408,7 +490,10 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                   <button
                     key={t.id}
                     type="button"
-                    onClick={() => setSearchQuery(t.tag)}
+                    onClick={() => {
+                      setSearchQuery(t.tag);
+                      setIsSubmitted(true);
+                    }}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neutral-50 hover:bg-neutral-100 border border-neutral-200/70 text-slate-800 text-[13px] font-medium transition-all active:scale-95 cursor-pointer shadow-2xs"
                   >
                     <span className="text-[#1d64ec] font-bold">#</span>
@@ -493,10 +578,10 @@ export const SearchPage: React.FC<SearchPageProps> = ({
           </>
         )}
 
-        {/* CASE 2: Active Query State -> Render based on Active Tab */}
-        {hasSearchQuery && (
-          <div className="space-y-4">
-            {/* Tab 1: TERPOPULER (Top Relevance & Engagement) */}
+        {/* STAGE 3: Submitted Search Results -> Render based on Active Tab */}
+        {hasSearchQuery && isSubmitted && (
+          <div className="space-y-4 animate-in fade-in duration-200">
+            {/* Tab 1: TERPOPULER */}
             {activeTab === 'top' && (
               <div className="space-y-3">
                 {popularPosts.length > 0 ? (
@@ -522,7 +607,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
               </div>
             )}
 
-            {/* Tab 2: TERBARU (Latest Matching Posts) */}
+            {/* Tab 2: TERBARU */}
             {activeTab === 'latest' && (
               <div className="space-y-3">
                 {latestPosts.length > 0 ? (
@@ -548,7 +633,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
               </div>
             )}
 
-            {/* Tab 3: PROFIL (Matched Accounts) */}
+            {/* Tab 3: PROFIL */}
             {activeTab === 'profiles' && (
               <div className="space-y-2">
                 {scoredAccounts.length > 0 ? (

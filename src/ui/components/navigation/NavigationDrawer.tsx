@@ -13,6 +13,7 @@ import {
   Heart,
   BarChart2,
   Search,
+  Palette,
 } from 'lucide-react';
 import { useAuth } from '@/ui/hooks/useAuth';
 
@@ -23,6 +24,7 @@ interface NavigationDrawerProps {
   onNavigateSearch?: () => void;
   onNavigateProfile: (username: string) => void;
   onNavigateDownload: () => void;
+  onNavigateDesignSystem?: () => void;
   onOpenCreateModal?: () => void;
 }
 
@@ -33,6 +35,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   onNavigateSearch,
   onNavigateProfile,
   onNavigateDownload,
+  onNavigateDesignSystem,
   onOpenCreateModal,
 }) => {
   const { profile, signOut } = useAuth();
@@ -237,6 +240,19 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
           >
             <Download className="w-4.5 h-4.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
             <span className="truncate">Unduh Aplikasi</span>
+          </button>
+
+          {/* Design System & Catalog */}
+          <button
+            type="button"
+            onClick={() => {
+              onNavigateDesignSystem?.();
+              onClose();
+            }}
+            className="flex items-center gap-3 h-[36px] w-full px-3 rounded-xl text-[14.5px] font-medium text-purple-700 hover:text-purple-900 hover:bg-purple-50/80 active:bg-purple-100/70 transition-colors cursor-pointer leading-snug text-left"
+          >
+            <Palette className="w-4.5 h-4.5 text-purple-600 stroke-[2] shrink-0" />
+            <span className="truncate">Design System</span>
           </button>
 
           {/* Pengaturan Akun */}

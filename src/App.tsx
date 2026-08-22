@@ -5,6 +5,7 @@ import { HomePage } from '@/ui/pages/HomePage';
 import { PostDetailPage } from '@/ui/pages/PostDetailPage';
 import { ProfilePage } from '@/ui/pages/ProfilePage';
 import { SearchPage } from '@/ui/pages/SearchPage';
+import { DesignSystemPage } from '@/ui/pages/DesignSystemPage';
 import { NavigationDrawer } from '@/ui/components/navigation/NavigationDrawer';
 import { CreatePostModal } from '@/ui/components/marketplace/CreatePostModal';
 import { MarketPostItem } from '@/types/marketFeed';
@@ -86,6 +87,7 @@ export function App() {
 
   // Dynamic Route Checks
   const isDownloadRoute = currentRoute === '/download' || window.location.hash === '#download';
+  const isDesignSystemRoute = currentRoute === '/design-system' || window.location.pathname === '/design-system' || window.location.hash === '#design-system';
   const isOnboardingRoute = currentRoute === '/onboarding' || window.location.hash === '#onboarding';
   const isSearchRoute = currentRoute === '/search' || window.location.hash === '#search';
   const isPostDetailRoute = currentRoute.includes('/post/') || currentRoute.includes('/postingan/') || window.location.hash.startsWith('#post-');
@@ -283,6 +285,13 @@ export function App() {
       {/* Render Dedicated PWA Download Landing Page if route is /download */}
       {isDownloadRoute ? (
         <PwaLandingPage onProceedToWeb={navigateToWeb} />
+      ) : isDesignSystemRoute ? (
+        <DesignSystemPage
+          onBack={() => {
+            setCurrentRoute('/');
+            window.history.pushState({}, '', '/');
+          }}
+        />
       ) : hasCompletedOnboarding && !isOnboardingRoute ? (
         <div className="relative min-h-screen">
           {/* Main Feed HomePage (Always preserved in DOM so scroll position is never lost) */}
@@ -333,6 +342,10 @@ export function App() {
             onNavigateDownload={() => {
               setCurrentRoute('/download');
               window.history.pushState({}, '', '/download');
+            }}
+            onNavigateDesignSystem={() => {
+              setCurrentRoute('/design-system');
+              window.history.pushState({}, '', '/design-system');
             }}
           />
 

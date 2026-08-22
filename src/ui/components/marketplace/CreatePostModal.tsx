@@ -861,9 +861,9 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     </div>
                   )}
 
-                  {/* Uploaded Images Gallery & GIF Preview */}
+                  {/* Uploaded Images Gallery & GIF Preview (Edge-to-Edge Screen Full Bleed) */}
                   {(images.length > 0 || selectedGif) && (
-                    <div className="flex items-center gap-2 overflow-x-auto py-1.5 scrollbar-none">
+                    <div className="-ml-[52px] pl-[52px] -mr-4 pr-4 w-[calc(100%+68px)] flex items-center gap-2.5 overflow-x-auto py-2 scrollbar-none touch-pan-x select-none">
                       {selectedGif && (
                         <div className="relative w-28 h-24 rounded-2xl overflow-hidden border-2 border-[#1d64ec] shadow-2xs group shrink-0">
                           <img
@@ -907,7 +907,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                       <button
                         type="button"
                         onClick={handleAddDummyImage}
-                        className="w-24 h-24 rounded-2xl border-2 border-dashed border-neutral-300 hover:border-blue-500 bg-neutral-50 hover:bg-blue-50/30 flex flex-col items-center justify-center gap-1 text-neutral-400 hover:text-[#1d64ec] transition-colors shrink-0 cursor-pointer"
+                        className="w-24 h-24 rounded-2xl border-2 border-dashed border-neutral-300 hover:border-blue-500 bg-neutral-50 hover:bg-blue-50/30 flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-[#1d64ec] transition-colors shrink-0 cursor-pointer"
                       >
                         <ImageIcon className="w-5 h-5 stroke-[1.8]" />
                         <span className="text-[11.5px] font-semibold">+ Tambah</span>
@@ -1149,11 +1149,11 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   />
 
                   {st.images.length > 0 && (
-                    <div className="flex items-center gap-2 overflow-x-auto py-1.5 scrollbar-none">
+                    <div className="-ml-[52px] pl-[52px] -mr-4 pr-4 w-[calc(100%+68px)] flex items-center gap-2.5 overflow-x-auto py-2 scrollbar-none touch-pan-x select-none">
                       {st.images.map((img, imgIdx) => (
                         <div
                           key={imgIdx}
-                          className="relative w-20 h-20 rounded-2xl overflow-hidden border border-neutral-200 shrink-0"
+                          className="relative w-20 h-20 rounded-2xl overflow-hidden border border-neutral-200 shadow-2xs shrink-0"
                         >
                           <img src={img} alt="Attachment" className="w-full h-full object-cover" />
                           <button

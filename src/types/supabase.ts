@@ -590,3 +590,18 @@ export type NotificationWithActor = Notification & {
   actor?: Profile | null
   post?: MarketPost | null
 }
+
+export type MarketPostSortBy = 'latest' | 'cheapest' | 'pricy' | 'popular';
+
+export interface MarketPostFilterOptions {
+  query?: string
+  category?: string
+  post_type?: 'thread' | 'product' | 'all'
+  min_price?: number
+  max_price?: number
+  location_tag?: string
+  topic_tag?: string
+  sort_by?: MarketPostSortBy
+  limit?: number
+  offset?: number
+}

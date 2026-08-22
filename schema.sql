@@ -171,3 +171,13 @@ create policy "Users update own notifications" on public.notifications for updat
 create policy "Users delete own notifications" on public.notifications for delete using (auth.uid() = user_id);
 create policy "Authenticated users can create notification" on public.notifications for insert with check (auth.role() = 'authenticated');
 
+
+-- ========================================================
+-- ⚡ INDEXING UNTUK PERFORMA PENCARIAN & FILTERING
+-- ========================================================
+create index if not exists idx_market_posts_category on public.market_posts(category);
+create index if not exists idx_market_posts_post_type on public.market_posts(post_type);
+create index if not exists idx_market_posts_price on public.market_posts(price);
+create index if not exists idx_market_posts_created_at on public.market_posts(created_at desc);
+
+

@@ -145,44 +145,36 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
           {/* Cluster 2: Interaksi Personal & Arsip (Pesan, Aktivitas, Profil, Insight, Tersimpan) */}
           <div className="flex flex-col gap-y-1">
-            {/* 4. Pesan */}
+            {/* 4. Pesan with Overlaid Notification Badge */}
             <button
               type="button"
               onClick={() => {
                 onClose();
               }}
-              className="flex items-center justify-between h-[36px] w-full px-3 rounded-xl text-[14.5px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
+              className="flex items-center gap-x-3 h-[36px] w-full px-3 rounded-xl text-[14.5px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
             >
-              <div className="flex items-center gap-x-3 min-w-0">
-                <div className="w-[18px] h-[18px] flex items-center justify-center shrink-0">
-                  <Send className="w-[17px] h-[17px] stroke-[2] text-slate-800 -rotate-12" />
-                </div>
-                <span className="truncate">Pesan</span>
+              <div className="relative w-[18px] h-[18px] flex items-center justify-center shrink-0">
+                <Send className="w-[17px] h-[17px] stroke-[2] text-slate-800 -rotate-12" />
+                <span className="absolute -top-1 -right-2 min-w-[15px] h-[15px] px-0.5 rounded-full bg-[#ff3040] text-white text-[9.5px] font-bold flex items-center justify-center border-1.5 border-white leading-none shadow-2xs">
+                  1
+                </span>
               </div>
-
-              {/* Badge Pesan Baru */}
-              <div className="flex items-center justify-center bg-[#ff3040] text-white text-[10.5px] font-bold rounded-md h-4 min-w-[16px] px-1 leading-none shadow-2xs">
-                1
-              </div>
+              <span className="truncate">Pesan</span>
             </button>
 
-            {/* 5. Aktivitas */}
+            {/* 5. Aktivitas with Overlaid Red Dot */}
             <button
               type="button"
               onClick={() => {
                 onClose();
               }}
-              className="flex items-center justify-between h-[36px] w-full px-3 rounded-xl text-[14.5px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
+              className="flex items-center gap-x-3 h-[36px] w-full px-3 rounded-xl text-[14.5px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
             >
-              <div className="flex items-center gap-x-3 min-w-0">
-                <div className="w-[18px] h-[18px] flex items-center justify-center shrink-0">
-                  <Heart className="w-[18px] h-[18px] stroke-[2.2] text-slate-800" />
-                </div>
-                <span className="truncate">Aktivitas</span>
+              <div className="relative w-[18px] h-[18px] flex items-center justify-center shrink-0">
+                <Heart className="w-[18px] h-[18px] stroke-[2.2] text-slate-800" />
+                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#ff3040] border-2 border-white" />
               </div>
-
-              {/* Red Dot Notifikasi */}
-              <div className="w-2 h-2 rounded-full bg-[#ff3040] mr-1" />
+              <span className="truncate">Aktivitas</span>
             </button>
 
             {/* 6. Profil */}

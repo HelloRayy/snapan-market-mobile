@@ -184,18 +184,21 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
         {images.map((imgUrl, idx) => (
           <div
             key={idx}
-            className="w-full h-full shrink-0 flex items-center justify-center snap-center p-3 relative overflow-hidden"
+            className="w-full h-full shrink-0 flex items-center justify-center snap-center p-4 relative overflow-hidden"
           >
-            <picture className="max-h-[82vh] max-w-full flex items-center justify-center">
-              <img
-                src={imgUrl}
-                alt={caption || `Media Preview ${idx + 1}`}
-                style={{
-                  transform: zoomLevel > 1 ? `scale(${zoomLevel})` : undefined,
-                }}
-                className="max-h-[82vh] max-w-full h-auto w-auto object-contain rounded-[18px] border border-black/[0.06] shadow-xl pointer-events-none select-none transition-transform duration-300 bg-white"
-              />
-            </picture>
+            <div className="relative max-h-[72vh] w-[88vw] max-w-[420px] aspect-[4/5] rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xl bg-neutral-100 flex items-center justify-center">
+              <picture className="block w-full h-full">
+                <img
+                  src={imgUrl}
+                  alt={caption || `Media Preview ${idx + 1}`}
+                  style={{
+                    transform: zoomLevel > 1 ? `scale(${zoomLevel})` : undefined,
+                  }}
+                  className="w-full h-full object-cover select-none pointer-events-none transition-transform duration-300"
+                />
+              </picture>
+              <div className="absolute inset-0 rounded-[18px] ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
+            </div>
           </div>
         ))}
       </div>

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Volume2, VolumeX, Heart, MessageCircle, Repeat2, Send } from 'lucide-react';
+import { X, Volume2, VolumeX, Heart, MessageCircle, Repeat2, Send, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface MediaLightboxModalProps {
   isOpen: boolean;
@@ -176,31 +176,66 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
       </div>
 
       {/* Main Fullscreen Gallery Slider (Full Width Edge-to-Edge on Mobile) */}
-      <div
-        ref={scrollRef}
-        onScroll={handleScroll}
-        className="flex-1 w-full flex items-center overflow-x-auto snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing touch-pan-x touch-pan-y"
-      >
-        {images.map((imgUrl, idx) => (
-          <div
-            key={idx}
-            className="w-full h-full shrink-0 flex items-center justify-center snap-center p-0 sm:p-4 relative overflow-hidden"
+      <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden">
+        {/* Left Floating Arrow Button (Rendered only if not on first slide: currentIndex > 0) */}
+        {images.length > 1 && currentIndex > 0 && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              scrollToImage(currentIndex - 1);
+            }}
+            className="absolute left-3 z-40 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-slate-800 border border-neutral-200/90 shadow-md backdrop-blur-md flex items-center justify-center active:scale-90 transition-all cursor-pointer select-none"
+            aria-label="Foto Sebelumnya"
+            title="Foto Sebelumnya"
           >
-            <div className="relative w-full sm:max-w-[480px] max-h-[78vh] aspect-[4/5] sm:rounded-[18px] overflow-hidden sm:border sm:border-black/[0.08] sm:shadow-2xl bg-neutral-100 flex items-center justify-center">
-              <picture className="block w-full h-full">
-                <img
-                  src={imgUrl}
-                  alt={caption || `Media Preview ${idx + 1}`}
-                  style={{
-                    transform: zoomLevel > 1 ? `scale(${zoomLevel})` : undefined,
-                  }}
-                  className="w-full h-full object-cover select-none pointer-events-none transition-transform duration-300"
-                />
-              </picture>
-              <div className="hidden sm:block absolute inset-0 rounded-[18px] ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
+            <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
+          </button>
+        )}
+
+        {/* Right Floating Arrow Button (Rendered only if not on last slide: currentIndex < images.length - 1) */}
+        {images.length > 1 && currentIndex < images.length - 1 && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              scrollToImage(currentIndex + 1);
+            }}
+            className="absolute right-3 z-40 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-slate-800 border border-neutral-200/90 shadow-md backdrop-blur-md flex items-center justify-center active:scale-90 transition-all cursor-pointer select-none"
+            aria-label="Foto Selanjutnya"
+            title="Foto Selanjutnya"
+          >
+            <ChevronRight className="w-5 h-5 stroke-[2.5]" />
+          </button>
+        )}
+
+        {/* Scroll Container */}
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="w-full h-full flex items-center overflow-x-auto snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing touch-pan-x touch-pan-y"
+        >
+          {images.map((imgUrl, idx) => (
+            <div
+              key={idx}
+              className="w-full h-full shrink-0 flex items-center justify-center snap-center p-0 sm:p-4 relative overflow-hidden"
+            >
+              <div className="relative w-full sm:max-w-[480px] max-h-[78vh] aspect-[4/5] sm:rounded-[18px] overflow-hidden sm:border sm:border-black/[0.08] sm:shadow-2xl bg-neutral-100 flex items-center justify-center">
+                <picture className="block w-full h-full">
+                  <img
+                    src={imgUrl}
+                    alt={caption || `Media Preview ${idx + 1}`}
+                    style={{
+                      transform: zoomLevel > 1 ? `scale(${zoomLevel})` : undefined,
+                    }}
+                    className="w-full h-full object-cover select-none pointer-events-none transition-transform duration-300"
+                  />
+                </picture>
+                <div className="hidden sm:block absolute inset-0 rounded-[18px] ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* Bottom Floating Glass Capsule Bar (Refined UX Order & Layout) */}

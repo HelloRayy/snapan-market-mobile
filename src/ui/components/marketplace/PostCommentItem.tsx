@@ -118,75 +118,73 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
         <div className="flex items-stretch font-normal cursor-pointer transition-all">
           <motion.button
             type="button"
-            whileTap={{ scale: 0.88 }}
-            whileHover={{ scale: 1.04 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            whileTap={{ scale: 0.94 }}
+            transition={{ duration: 0.1 }}
             onClick={(e) => {
               e.stopPropagation();
               onLike?.();
             }}
-            className={`flex items-center justify-center gap-1 px-2.5 py-1 rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 transition-all cursor-pointer select-none ${
-              liked ? 'text-rose-500' : 'text-slate-500 hover:text-slate-900'
+            className={`flex items-center justify-center gap-1.5 px-2.5 py-1 min-h-[28px] rounded-full transition-colors cursor-pointer select-none ${
+              liked
+                ? 'border border-slate-900 bg-neutral-100/90 text-slate-900 shadow-2xs'
+                : 'hover:bg-neutral-100/80 active:bg-neutral-200/80 text-slate-700 hover:text-slate-900'
             }`}
           >
             <motion.div
-              animate={liked ? { scale: [1, 1.35, 0.95, 1], rotate: [0, -12, 12, 0] } : { scale: 1, rotate: 0 }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
+              animate={liked ? { scale: [1, 1.35, 0.95, 1], rotate: [0, -10, 10, 0] } : { scale: 1, rotate: 0 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
             >
-              <Heart className={`w-4 h-4 stroke-[1.75] ${liked ? 'fill-rose-500 text-rose-500' : ''}`} />
+              <Heart className={`w-3.5 h-3.5 stroke-[1.8] ${liked ? 'fill-rose-500 text-rose-500 stroke-rose-500' : ''}`} />
             </motion.div>
-            {count > 0 && <span className="font-normal text-slate-600 tabular-nums">{count}</span>}
+            {count > 0 && <span className={`font-medium text-[12.5px] tabular-nums tracking-tight ${liked ? 'text-slate-900' : 'text-slate-700'}`}>{count}</span>}
           </motion.button>
         </div>
       </div>
 
       {/* 2. Balas (Comment) Slot */}
-      <div className="flex items-center justify-center font-normal cursor-pointer transition-all">
-        <div className="flex items-stretch font-normal cursor-pointer transition-all">
+      <div className="flex items-center justify-center font-normal cursor-pointer">
+        <div className="flex items-stretch font-normal cursor-pointer">
           <motion.button
             type="button"
-            whileTap={{ scale: 0.88 }}
-            whileHover={{ scale: 1.04 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            whileTap={{ scale: 0.94 }}
+            transition={{ duration: 0.1 }}
             onClick={(e) => {
               e.stopPropagation();
               onReply?.();
             }}
-            className="flex items-center justify-center px-2.5 py-1 rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 hover:text-slate-900 transition-all cursor-pointer text-slate-500 select-none"
+            className="flex items-center justify-center gap-1.5 px-2.5 py-1 min-h-[28px] rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 hover:text-slate-900 transition-colors cursor-pointer text-slate-700 select-none"
           >
-            <SmoothCommentIcon className="w-4 h-4 stroke-[1.75]" />
+            <SmoothCommentIcon className="w-3.5 h-3.5 stroke-[1.8]" />
           </motion.button>
         </div>
       </div>
 
       {/* 3. Posting Ulang (Repost) Slot */}
-      <div className="flex items-center justify-center font-normal cursor-pointer transition-all">
-        <div className="flex items-stretch font-normal cursor-pointer transition-all">
+      <div className="flex items-center justify-center font-normal cursor-pointer">
+        <div className="flex items-stretch font-normal cursor-pointer">
           <motion.button
             type="button"
-            whileTap={{ scale: 0.88 }}
-            whileHover={{ scale: 1.04 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            whileTap={{ scale: 0.94 }}
+            transition={{ duration: 0.1 }}
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center justify-center px-2.5 py-1 rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 hover:text-slate-900 transition-all cursor-pointer text-slate-500 select-none"
+            className="flex items-center justify-center gap-1.5 px-2.5 py-1 min-h-[28px] rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 hover:text-slate-900 transition-colors cursor-pointer text-slate-700 select-none"
           >
-            <Repeat className="w-4 h-4 stroke-[1.75]" />
+            <Repeat className="w-3.5 h-3.5 stroke-[1.8]" />
           </motion.button>
         </div>
       </div>
 
       {/* 4. Bagikan (Share) Slot */}
-      <div className="flex items-center justify-center font-normal cursor-pointer transition-all">
-        <div className="flex items-stretch px-0.5 font-normal cursor-pointer transition-all">
+      <div className="flex items-center justify-center font-normal cursor-pointer">
+        <div className="flex items-stretch px-0.5 font-normal cursor-pointer">
           <motion.button
             type="button"
-            whileTap={{ scale: 0.88 }}
-            whileHover={{ scale: 1.08 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            whileTap={{ scale: 0.94 }}
+            transition={{ duration: 0.1 }}
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center justify-center p-1.5 rounded-[1000px] hover:bg-neutral-100/80 active:bg-neutral-200/80 hover:text-slate-900 transition-all cursor-pointer text-slate-500 select-none"
+            className="flex items-center justify-center p-1.5 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 hover:text-slate-900 transition-colors cursor-pointer text-slate-700 select-none"
           >
-            <Send className="w-4 h-4 stroke-[1.75]" />
+            <Send className="w-3.5 h-3.5 stroke-[1.8]" />
           </motion.button>
         </div>
       </div>

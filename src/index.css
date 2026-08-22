@@ -38,6 +38,8 @@ html, body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-gt-standard);
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'tnum';
+  font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;

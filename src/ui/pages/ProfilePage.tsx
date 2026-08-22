@@ -414,7 +414,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </button>
           ) : (
             <div className="flex gap-x-2.5 w-full items-center select-none">
-              {/* Tombol 1: Ikuti / Mengikuti (Kumo UI Primary Solid) */}
+              {/* Tombol 1: Ikuti / Mengikuti (Full-Width Expanded CTA) */}
               <button
                 type="button"
                 onClick={() => {
@@ -424,31 +424,32 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                     followersCount: isFollowing ? prev.followersCount - 1 : prev.followersCount + 1,
                   }));
                 }}
-                className={`relative flex items-center justify-center flex-1 h-10 px-4 rounded-xl font-bold text-[14px] transition-all overflow-hidden cursor-pointer select-none active:scale-[0.98] ${
+                className={`relative flex items-center justify-center flex-1 h-10 px-5 rounded-xl font-bold text-[14px] transition-colors overflow-hidden cursor-pointer select-none active:scale-[0.96] ${
                   isFollowing
-                    ? 'bg-white text-slate-800 border border-neutral-200/90 shadow-2xs hover:bg-neutral-50'
-                    : 'bg-[#101010] text-white border border-black/90 shadow-md shadow-black/20 hover:bg-black'
+                    ? 'bg-white text-slate-800 border border-neutral-300 shadow-2xs hover:bg-neutral-50'
+                    : 'bg-[#101010] text-white border border-black shadow-md shadow-black/20 hover:bg-black'
                 }`}
               >
                 <span className="absolute inset-0 rounded-xl bg-gradient-to-b from-white/20 to-transparent shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
-                <span className="relative z-10 flex items-center gap-1.5">
-                  {isFollowing ? <UserCheck className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
+                <span className="relative z-10 flex items-center justify-center gap-1.5">
+                  {isFollowing ? <UserCheck className="w-4.5 h-4.5 stroke-[2.2]" /> : <UserPlus className="w-4.5 h-4.5 stroke-[2.2]" />}
                   <span>{isFollowing ? 'Mengikuti' : 'Ikuti'}</span>
                 </span>
               </button>
 
-              {/* Tombol 2: Kirim Pesan (Kumo UI Secondary Outline) */}
+              {/* Tombol 2: Kirim Pesan (Icon Only CTA) */}
               <button
                 type="button"
                 onClick={() => {
                   alert(`Fitur chat langsung dengan @${profileData.username} akan segera hadir!`);
                 }}
-                className="relative flex items-center justify-center flex-1 h-10 px-4 rounded-xl font-bold text-[14px] bg-white text-slate-800 border border-neutral-200/90 shadow-2xs hover:bg-neutral-50 transition-all overflow-hidden cursor-pointer select-none active:scale-[0.98]"
+                className="relative flex items-center justify-center w-10 h-10 shrink-0 rounded-xl bg-white text-slate-800 border border-neutral-300 shadow-2xs hover:bg-neutral-50 transition-colors overflow-hidden cursor-pointer select-none active:scale-[0.96]"
+                title="Kirim pesan"
+                aria-label="Kirim pesan"
               >
                 <span className="absolute inset-0 rounded-xl bg-gradient-to-b from-white/90 to-neutral-50/50 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9)] pointer-events-none" />
-                <span className="relative z-10 flex items-center gap-1.5">
-                  <MessageCircle className="w-4 h-4 text-slate-700 stroke-[1.8]" />
-                  <span>Kirim pesan</span>
+                <span className="relative z-10 flex items-center justify-center">
+                  <MessageCircle className="w-4.5 h-4.5 text-slate-700 stroke-[1.8]" />
                 </span>
               </button>
             </div>

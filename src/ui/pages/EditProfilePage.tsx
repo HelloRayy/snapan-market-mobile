@@ -205,22 +205,27 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
             </div>
           </div>
 
-          {/* Quick Preset Avatars Picker Dropdown */}
-          <div className="py-2 border-b border-neutral-200/80">
+          {/* Quick Preset Avatars Picker Dropdown (Consistent Row Styling) */}
+          <div className="py-4 border-b border-neutral-200/80">
             <button
               type="button"
               onClick={() => setShowAvatarPicker(!showAvatarPicker)}
-              className="text-[12px] font-semibold text-[#1d64ec] hover:underline cursor-pointer flex items-center justify-between w-full py-1"
+              className="w-full flex items-center justify-between select-none cursor-pointer group"
             >
-              <span>{showAvatarPicker ? 'Tutup Pilihan Avatar' : '⚡ Ganti dengan Preset Avatar'}</span>
-              <ChevronRight className={`w-3.5 h-3.5 text-[#1d64ec] transition-transform ${showAvatarPicker ? 'rotate-90' : ''}`} />
+              <span className="text-[14px] font-semibold text-slate-900">
+                Pilihan avatar preset
+              </span>
+              <span className="text-[13.5px] text-neutral-400 flex items-center gap-0.5 font-normal group-hover:text-slate-700 transition-colors">
+                {showAvatarPicker ? 'Tutup' : 'Pilih'}
+                <ChevronRight className={`w-3.5 h-3.5 transition-transform duration-200 ${showAvatarPicker ? 'rotate-90 text-slate-700' : ''}`} />
+              </span>
             </button>
 
             {showAvatarPicker && (
               <motion.div
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2.5 pt-2 pb-2 overflow-x-auto max-w-full scrollbar-none"
+                className="flex items-center gap-2.5 pt-3 pb-1 overflow-x-auto max-w-full scrollbar-none"
               >
                 {PRESET_AVATARS.map((pic, idx) => (
                   <button
@@ -230,14 +235,14 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
                       setAvatar(pic);
                       showToast('Preset avatar dipilih! ✨');
                     }}
-                    className={`relative w-10 h-10 rounded-full overflow-hidden border-2 transition-all cursor-pointer shrink-0 ${
-                      avatar === pic ? 'border-[#1d64ec] ring-2 ring-[#1d64ec]/30 scale-105' : 'border-neutral-200 hover:opacity-80'
+                    className={`relative w-11 h-11 rounded-full overflow-hidden border-2 transition-all cursor-pointer shrink-0 ${
+                      avatar === pic ? 'border-[#101010] ring-2 ring-black/20 scale-105' : 'border-neutral-200 hover:opacity-80'
                     }`}
                   >
                     <img src={pic} alt={`Preset ${idx + 1}`} className="w-full h-full object-cover" />
                     {avatar === pic && (
-                      <div className="absolute inset-0 bg-[#1d64ec]/30 flex items-center justify-center">
-                        <Check className="w-3.5 h-3.5 text-white stroke-[3]" />
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <Check className="w-4 h-4 text-white stroke-[3]" />
                       </div>
                     )}
                   </button>

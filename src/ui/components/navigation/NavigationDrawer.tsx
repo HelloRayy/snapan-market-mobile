@@ -214,9 +214,9 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               onNavigateDownload();
               onClose();
             }}
-            className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[15px] font-semibold text-emerald-600 hover:bg-emerald-50 active:bg-emerald-100/80 transition-colors cursor-pointer leading-snug text-left"
+            className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[15px] font-semibold text-[#1d64ec] hover:bg-blue-50/80 active:bg-blue-100/70 transition-colors cursor-pointer leading-snug text-left"
           >
-            <Download className="w-5 h-5 text-emerald-600 stroke-[2.2] shrink-0" />
+            <Download className="w-5 h-5 text-[#1d64ec] stroke-[2.2] shrink-0" />
             <span className="truncate">Unduh Aplikasi</span>
           </button>
 

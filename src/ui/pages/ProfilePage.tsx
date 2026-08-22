@@ -81,42 +81,82 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     cleanTargetUsername === 'radityarayhannnn' ||
     cleanTargetUsername === 'me';
 
-  // Profile Data
+  // Profile Data state
   const [profileData, setProfileData] = useState({
-    name: isOwnProfile
-      ? (profile?.full_name || 'Raditya Rayhan')
-      : username === 'me'
-      ? (profile?.full_name || 'Raditya Rayhan')
-      : cleanTargetUsername.charAt(0).toUpperCase() + cleanTargetUsername.slice(1),
+    name: 'Raditya Rayhan',
     username: cleanTargetUsername,
-    avatar: isOwnProfile
-      ? (profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80')
-      : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
-    bio: isOwnProfile
-      ? ((profile as { bio?: string } | null)?.bio || 'Building scalable mobile applications & web apps with clean architecture.')
-      : 'Siswa SMKN 8 Jakarta · Jurusan PPLG & DKV.',
-    classGroup: isOwnProfile
-      ? (profile?.class_group || 'XII PPLG 1')
-      : 'XII PPLG 2',
-    tags: isOwnProfile
-      ? ['💻 Web PWA', '🎨 UI/UX', '👕 Preloved', '⚡ Joki Coding', '🍱 Kuliner']
-      : ['📱 Flutter', '🎨 Figma', '📷 Fotografi', '💼 Project PJBL'],
-    followersCount: isOwnProfile ? 142 : 289,
-    soldCount: isOwnProfile ? 24 : 42,
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+    bio: 'Building scalable mobile applications & web apps with clean architecture.',
+    classGroup: 'XII PPLG 1',
+    tags: ['💻 Web PWA', '🎨 UI/UX', '👕 Preloved', '⚡ Joki Coding', '🍱 Kuliner'],
+    followersCount: 142,
+    soldCount: 24,
     rating: 4.9,
     isVerified: true,
   });
 
-  // Filter posts matching this profile
+  // Dynamic Profile Resolver: Automatically resolves seller info from mock data or Supabase profile
+  useEffect(() => {
+    if (isOwnProfile) {
+      setProfileData({
+        name: profile?.full_name || 'Raditya Rayhan',
+        username: 'radityarayhannnn',
+        avatar: profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+        bio: (profile as { bio?: string } | null)?.bio || 'Building scalable mobile applications & web apps with clean architecture.',
+        classGroup: profile?.class_group || 'XII PPLG 1',
+        tags: ['💻 Web PWA', '🎨 UI/UX', '👕 Preloved', '⚡ Joki Coding', '🍱 Kuliner'],
+        followersCount: 142,
+        soldCount: 24,
+        rating: 4.9,
+        isVerified: true,
+      });
+    } else {
+      // Find author in feed items
+      const matchedPost = MOCK_MARKET_POSTS.find(
+        (p) =>
+          p.seller.username?.toLowerCase() === cleanTargetUsername ||
+          p.seller.name.toLowerCase().replace(/\s+/g, '') === cleanTargetUsername
+      );
+
+      if (matchedPost) {
+        setProfileData({
+          name: matchedPost.seller.name,
+          username: matchedPost.seller.username || cleanTargetUsername,
+          avatar: matchedPost.seller.avatar,
+          bio: `Siswa SMKN 8 Jakarta · Jurusan ${matchedPost.seller.classGroup?.split(' ')[1] || 'PPLG'}.`,
+          classGroup: matchedPost.seller.classGroup || 'XII PPLG 2',
+          tags: ['📱 Mobile Dev', '🎨 UI/UX', '📷 Fotografi', '💼 Project PJBL'],
+          followersCount: 289,
+          soldCount: 42,
+          rating: 4.9,
+          isVerified: matchedPost.seller.isVerified || false,
+        });
+      } else {
+        setProfileData({
+          name: cleanTargetUsername.charAt(0).toUpperCase() + cleanTargetUsername.slice(1),
+          username: cleanTargetUsername,
+          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
+          bio: 'Siswa SMKN 8 Jakarta · Jurusan PPLG & DKV.',
+          classGroup: 'XII PPLG 2',
+          tags: ['📱 Flutter', '🎨 Figma', '📷 Fotografi', '💼 Project PJBL'],
+          followersCount: 110,
+          soldCount: 5,
+          rating: 4.8,
+          isVerified: false,
+        });
+      }
+    }
+  }, [cleanTargetUsername, isOwnProfile, profile]);
+
+  // Filter posts strictly matching this profile
   const userPosts = MOCK_MARKET_POSTS.filter(
     (p) =>
       p.seller.username?.toLowerCase() === cleanTargetUsername ||
-      (isOwnProfile && (p.seller.username === 'radityarayhannnn' || p.seller.id === 'user-1'))
+      p.seller.name.toLowerCase().replace(/\s+/g, '') === cleanTargetUsername ||
+      (isOwnProfile && (p.seller.username === 'radityarayhannnn' || p.seller.id === 'user-1' || p.seller.id === 'user-thread-1'))
   );
 
-  // Fallback if no specific posts found: show sample posts
-  const basePosts = userPosts.length > 0 ? userPosts : MOCK_MARKET_POSTS.slice(0, 2);
-  const allUserPosts = isOwnProfile ? [...createdPosts, ...basePosts] : basePosts;
+  const allUserPosts = isOwnProfile ? [...createdPosts, ...userPosts] : userPosts;
   const displayPosts = allUserPosts.filter((p) => {
     if (!searchQuery) return true;
     return p.caption.toLowerCase().includes(searchQuery.toLowerCase());
@@ -196,7 +236,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-ink pb-28 font-gt-standard select-none">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-white text-slate-ink pb-28 font-gt-standard select-none">
       {/* 1. Top Bar Header: [ Left: Menu Icon ] --- [ Center: Logo Mark ] --- [ Right: Search Toggle ] */}
       <header
         className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-100 font-gt-standard select-none transition-colors"
@@ -279,7 +319,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       </header>
 
       {/* 2. Main Content Area */}
-      <main className="w-full max-w-[590px] mx-auto px-4 pt-4 space-y-4">
+      <main className="w-full max-w-[590px] mx-auto px-4 pt-4 space-y-4 overflow-x-hidden">
         {/* PROFILE HEADER */}
         <section className="space-y-3.5 pt-1">
           {/* Row 1: Name + Handle on Left vs Avatar on Right (Vertically Centered with Margin Bottom for Desc) */}

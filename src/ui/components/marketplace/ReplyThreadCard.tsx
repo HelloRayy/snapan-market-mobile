@@ -182,7 +182,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
         onMouseUp={handleMouseLeaveOrUp}
         onMouseMove={handleMouseMove}
         onClick={(e) => e.stopPropagation()}
-        className="flex gap-2.5 overflow-x-auto no-scrollbar scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none touch-pan-x touch-pan-y -ml-[64px] sm:-ml-[68px] pl-[64px] sm:pl-[68px] -mr-4 pr-4 w-[calc(100%+80px)] sm:w-[calc(100%+84px)]"
+        className="flex gap-2.5 overflow-x-auto no-scrollbar scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none touch-pan-x w-full max-w-full rounded-[18px]"
       >
         {parentPost.images.map((imgUrl, idx) => (
           <div
@@ -209,7 +209,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
   };
 
   return (
-    <article className="w-full border-b border-neutral-200 bg-pure-white font-gt-standard select-none px-4 py-3.5 hover:bg-neutral-50/40 transition-colors overflow-visible">
+    <article className="w-full border-b border-neutral-200 bg-pure-white font-gt-standard select-none px-4 py-3.5 hover:bg-neutral-50/40 transition-colors overflow-x-hidden">
       {/* 1. PARENT POST SECTION WITH THREAD LINE */}
       <div className="flex gap-3 items-start min-w-0">
         {/* Left Column: Parent Avatar + Continuous Thread Line */}

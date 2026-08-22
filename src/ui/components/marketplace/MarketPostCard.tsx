@@ -165,7 +165,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
   };
 
   // Content Snippets used in both variants
-  const renderImages = (isDetail: boolean) => (
+  const renderImages = (_isDetail?: boolean) => (
     <>
       {item.images && item.images.length === 1 && (
         <div
@@ -195,9 +195,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           onMouseMove={handleMouseMove}
           onClick={(e) => e.stopPropagation()}
           onPointerDown={(e) => e.stopPropagation()}
-          className={`flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none touch-pan-x touch-pan-y ${
-            isDetail ? '-mx-4 px-4' : '-ml-[68px] pl-[68px] -mr-4 pr-4 w-[calc(100%+84px)]'
-          }`}
+          className="flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none touch-pan-x w-full max-w-full rounded-[18px]"
         >
           {item.images.map((imgUrl, idx) => (
             <div
@@ -352,7 +350,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
   return (
     <article
       onClick={() => onPostClick?.(item)}
-      className={`w-full border-b border-neutral-200 bg-pure-white hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none overflow-visible feed-card-perf ${
+      className={`w-full border-b border-neutral-200 bg-pure-white hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none overflow-x-hidden feed-card-perf ${
         variant === 'detail' ? 'px-3.5 pt-3 pb-3.5' : 'px-3.5 py-3'
       }`}
     >

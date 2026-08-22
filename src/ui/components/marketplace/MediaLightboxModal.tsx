@@ -299,7 +299,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
                     }}
                     className={`cursor-pointer transition-all duration-200 ${
                       currentIndex === idx
-                        ? 'w-4 h-1.5 rounded-full bg-slate-900'
+                        ? 'w-4 h-1.5 rounded-full bg-[#1d64ec] shadow-xs'
                         : 'w-1.5 h-1.5 rounded-full bg-neutral-300 hover:bg-neutral-400'
                     }`}
                     aria-label={`Ke gambar ${idx + 1}`}

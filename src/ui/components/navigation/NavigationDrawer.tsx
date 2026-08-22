@@ -197,11 +197,11 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             <Bookmark className="w-5 h-5 stroke-[2] text-slate-800 shrink-0" />
             <span className="truncate">Tersimpan</span>
           </button>
+        </div>
 
-          {/* Divider */}
-          <div className="pt-2 border-t border-neutral-100 my-1" />
-
-          {/* 9. Pasang PWA */}
+        {/* 3. Bottom Utility & System Section (Pinned to Bottom with Distinct Separator) */}
+        <div className="pt-2.5 pb-3 border-t border-neutral-200/90 bg-white space-y-1 shrink-0 leading-snug">
+          {/* Pasang PWA */}
           <button
             type="button"
             onClick={() => {
@@ -214,7 +214,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             <span className="truncate">Pasang Aplikasi PWA</span>
           </button>
 
-          {/* 10. Pengaturan */}
+          {/* Pengaturan Akun */}
           <button
             type="button"
             onClick={() => {
@@ -226,20 +226,18 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             <Settings className="w-5 h-5 text-slate-800 stroke-[2] shrink-0" />
             <span className="truncate">Pengaturan Akun</span>
           </button>
-        </div>
 
-        {/* 3. Footer: Logout & Version Subtext */}
-        <div className="py-3 border-t border-neutral-100 bg-white space-y-1.5 shrink-0 leading-snug">
+          {/* Keluar Akun */}
           <button
             type="button"
             onClick={handleLogout}
-            className="flex items-center gap-3 h-[38px] w-full px-3 rounded-xl text-[14px] font-semibold text-rose-600 hover:bg-rose-50 active:bg-rose-100/80 transition-colors cursor-pointer leading-snug"
+            className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[14.5px] font-semibold text-rose-600 hover:bg-rose-50 active:bg-rose-100/80 transition-colors cursor-pointer leading-snug text-left"
           >
             <LogOut className="w-4.5 h-4.5 text-rose-600 stroke-[2] shrink-0" />
             <span className="truncate">Keluar Akun</span>
           </button>
 
-          <div className="text-center pt-0.5">
+          <div className="text-center pt-1">
             <p className="text-[11px] text-neutral-400 font-medium leading-tight">
               Snapan Market PWA v0.1.0
             </p>

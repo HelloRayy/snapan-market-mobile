@@ -26,6 +26,14 @@ import {
   CreditCard,
   Loader2,
   RefreshCw,
+  Menu,
+  Home,
+  User,
+  Plus,
+  WifiOff,
+  Download,
+  Trash2,
+  ShieldCheck,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { triggerHaptic, HapticType } from '@/utils/haptics';
@@ -34,7 +42,14 @@ import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { QuantitySelector } from '@/ui/components/marketplace/QuantitySelector';
 import { ProgressiveImage } from '@/ui/components/ui/ProgressiveImage';
 import { MarketPostCard } from '@/ui/components/marketplace/MarketPostCard';
+import { ProductCard } from '@/ui/components/marketplace/ProductCard';
+import { MarketHeader, SnapanLogotype } from '@/ui/components/marketplace/MarketHeader';
+import { CommentInputBar } from '@/ui/components/marketplace/CommentInputBar';
+import { PullToRefreshIndicator } from '@/ui/components/marketplace/PullToRefreshIndicator';
+import { ReplyThreadCard } from '@/ui/components/marketplace/ReplyThreadCard';
 import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
+import { Product } from '@/types/product';
+import { UserReplyThread } from '@/types/marketFeed';
 
 interface DesignSystemPageProps {
   onBack?: () => void;
@@ -157,7 +172,7 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
 // 🎨 Main Design System Dashboard Page Component
 // ---------------------------------------------------------------------------
 export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) => {
-  const [activeSection, setActiveSection] = useState<'tokens' | 'buttons' | 'inputs' | 'badges' | 'cards'>('tokens');
+  const [activeSection, setActiveSection] = useState<'tokens' | 'buttons' | 'inputs' | 'badges' | 'navigation' | 'cards' | 'overlays'>('tokens');
   const [searchQuery, setSearchQuery] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -169,10 +184,13 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
   const [demoBookmark, setDemoBookmark] = useState(false);
   const [demoFollow, setDemoFollow] = useState(false);
   const [demoQuantity, setDemoQuantity] = useState(2);
+  const [demoCheckbox, setDemoCheckbox] = useState(true);
   const [demoTab2, setDemoTab2] = useState<'for-you' | 'latest'>('for-you');
   const [demoTab3, setDemoTab3] = useState<'threads' | 'replies' | 'media'>('threads');
   const [demoSearch, setDemoSearch] = useState('Snapan Market');
+  const [demoBottomNavTab, setDemoBottomNavTab] = useState('home');
   const [imageReloadKey, setImageReloadKey] = useState(1);
+  const [demoPullProgress, setDemoPullProgress] = useState(0.85);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -193,10 +211,53 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
   const navItems = [
     { id: 'tokens', label: 'Design Tokens', icon: Palette, count: 24 },
     { id: 'buttons', label: 'Buttons & Actions', icon: MousePointerClick, count: 8 },
-    { id: 'inputs', label: 'Forms & Inputs', icon: SlidersHorizontal, count: 6 },
-    { id: 'badges', label: 'Badges & Indicators', icon: Tag, count: 7 },
-    { id: 'cards', label: 'Cards & Feeds', icon: CreditCard, count: 3 },
+    { id: 'inputs', label: 'Forms & Inputs', icon: SlidersHorizontal, count: 7 },
+    { id: 'badges', label: 'Badges & Indicators', icon: Tag, count: 8 },
+    { id: 'navigation', label: 'Navigation & App Bars', icon: Menu, count: 6 },
+    { id: 'cards', label: 'Cards & Feeds', icon: CreditCard, count: 5 },
+    { id: 'overlays', label: 'Modals & Overlays', icon: ShieldCheck, count: 4 },
   ] as const;
+
+  // Demo Product Data
+  const demoProduct: Product = {
+    id: 'prod-demo-1',
+    name: 'Gantungan Kunci Akrilik XII PPLG',
+    slug: 'gantungan-kunci-akrilik-pplg',
+    description: 'Gantungan kunci akrilik custom logo jurusan SMK Negeri 1 Panji.',
+    price: 15000,
+    originalPrice: 20000,
+    stock: 8,
+    rating: 4.9,
+    soldCount: 42,
+    category: 'Aksesoris',
+    images: ['https://images.unsplash.com/photo-1589365278144-c9e705f843ba?w=500&q=80'],
+    sellerId: 'sel-1',
+    sellerName: 'Raditya Rayhan',
+    isVerifiedSeller: true,
+    createdAt: new Date().toISOString(),
+  };
+
+  // Demo UserReplyThread Data
+  const demoThread: UserReplyThread = {
+    id: 'thread-demo-1',
+    parentPost: MOCK_MARKET_POSTS[0],
+    reply: {
+      id: 'rep-demo-1',
+      content: 'Bisa COD di depan lab PPLG 1 waktu istirahat pertama gak kak? Mau beli 2 pcs.',
+      timestamp: '15m lalu',
+      likesCount: 4,
+      isLiked: false,
+      repostsCount: 1,
+      isReposted: false,
+      user: {
+        name: 'Nadia Putri',
+        username: 'nadiaputri',
+        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80',
+        classGroup: 'XI DKV 2',
+        isVerified: false,
+      },
+    },
+  };
 
   return (
     <div className="min-h-screen bg-neutral-100/70 text-slate-900 flex font-gt-standard">
@@ -692,6 +753,37 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
                   </button>
                 )}
               </ShowcaseCard>
+
+              {/* 2.6 Destructive Danger Action Button */}
+              <ShowcaseCard
+                id="btn-danger"
+                title="Destructive Danger Button"
+                category="Buttons"
+                description="Tombol aksi berbahaya (hapus postingan / keluar akun) bernuansa merah peringatan."
+                codeSnippet={`<button className="h-10 px-5 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 font-bold text-[13.5px] hover:bg-rose-100 active:scale-[0.97] cursor-pointer">
+  Hapus Postingan
+</button>`}
+                availableStates={['default', 'hover', 'active', 'disabled']}
+              >
+                {(st) => (
+                  <button
+                    type="button"
+                    disabled={st === 'disabled'}
+                    className={`h-10 px-6 rounded-xl border font-bold text-[13.5px] transition-all flex items-center gap-2 cursor-pointer ${
+                      st === 'disabled'
+                        ? 'border-neutral-200 bg-neutral-100 text-neutral-400 cursor-not-allowed'
+                        : st === 'active'
+                        ? 'border-rose-300 bg-rose-200 text-rose-800 scale-[0.97]'
+                        : st === 'hover'
+                        ? 'border-rose-300 bg-rose-100 text-rose-700'
+                        : 'border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100'
+                    }`}
+                  >
+                    <Trash2 className="w-4 h-4 stroke-[2]" />
+                    <span>Hapus Postingan</span>
+                  </button>
+                )}
+              </ShowcaseCard>
             </div>
           )}
 
@@ -792,119 +884,64 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
                 )}
               </ShowcaseCard>
 
-              {/* 3.4 2-Tab Sliding Switcher */}
+              {/* 3.4 Custom Checkbox */}
               <ShowcaseCard
-                id="tab-switcher-2"
-                title="2-Tab Sliding Switcher (Feed)"
-                category="Navigation"
-                description="Tab pengalih 'Untuk Anda' & 'Terbaru' dengan sliding underline bar."
-                codeSnippet={`<div className="max-w-xl mx-auto flex items-center relative border-b border-neutral-200/80">
-  <div className="absolute bottom-0 left-0 w-1/2 h-[2px] bg-slate-900 transition-transform duration-200" />
-  <button onClick={() => setTab('for-you')}>Untuk Anda</button>
-  <button onClick={() => setTab('latest')}>Terbaru</button>
-</div>`}
+                id="input-checkbox"
+                title="Custom Styled Checkbox"
+                category="Forms"
+                description="Checkbox minimalis dengan status checked, unchecked, dan transisi halus."
+                codeSnippet={`<button onClick={() => setChecked(!checked)} className="w-5 h-5 rounded-md border flex items-center justify-center">
+  {checked && <Check className="w-3.5 h-3.5 text-white" />}
+</button>`}
                 availableStates={['default']}
               >
                 {() => (
-                  <div className="w-full max-w-sm border-b border-neutral-200/80 bg-white select-none">
-                    <div className="flex items-center relative">
-                      <div
-                        className={`absolute bottom-0 left-0 w-1/2 h-[2px] bg-slate-900 transition-transform duration-200 ${
-                          demoTab2 === 'for-you' ? 'translate-x-0' : 'translate-x-full'
-                        }`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          triggerHaptic('selection');
-                          setDemoTab2('for-you');
-                        }}
-                        className={`flex-1 py-2.5 text-xs text-center cursor-pointer transition-colors ${
-                          demoTab2 === 'for-you' ? 'text-slate-900 font-bold' : 'text-neutral-400 font-medium'
-                        }`}
-                      >
-                        Untuk Anda
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          triggerHaptic('selection');
-                          setDemoTab2('latest');
-                        }}
-                        className={`flex-1 py-2.5 text-xs text-center cursor-pointer transition-colors ${
-                          demoTab2 === 'latest' ? 'text-slate-900 font-bold' : 'text-neutral-400 font-medium'
-                        }`}
-                      >
-                        Terbaru
-                      </button>
+                  <label className="flex items-center gap-3 cursor-pointer select-none">
+                    <div
+                      onClick={() => {
+                        triggerHaptic('selection');
+                        setDemoCheckbox(!demoCheckbox);
+                      }}
+                      className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
+                        demoCheckbox
+                          ? 'bg-slate-900 border-slate-900 text-white'
+                          : 'bg-white border-neutral-300 hover:border-slate-400'
+                      }`}
+                    >
+                      {demoCheckbox && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                     </div>
-                  </div>
+                    <span className="text-sm font-medium text-slate-800">
+                      Aktifkan notifikasi pesanan baru
+                    </span>
+                  </label>
                 )}
               </ShowcaseCard>
 
-              {/* 3.5 3-Tab Sliding Switcher */}
+              {/* 3.5 Comment Input Bar / Inline Composer */}
               <ShowcaseCard
-                id="tab-switcher-3"
-                title="3-Tab Sliding Switcher (Profile)"
-                category="Navigation"
-                description="Tab pengalih profil 'Utas', 'Balasan', dan 'Media' dengan smooth sliding bar."
-                codeSnippet={`<div className="w-full flex items-center relative border-b">
-  <div className="absolute bottom-0 w-1/3 h-[2px] bg-slate-900 transition-transform" />
-  <button onClick={() => setTab('threads')}>Utas</button>
-  <button onClick={() => setTab('replies')}>Balasan</button>
-  <button onClick={() => setTab('media')}>Media</button>
-</div>`}
+                id="input-comment-bar"
+                title="Comment Input Bar (Inline Composer)"
+                category="Forms"
+                description="Bilah pengetikan komentar dengan tombol kirim dan dukungan reply pill."
+                codeSnippet={`<CommentInputBar
+  isInline={true}
+  replyToUser="radityarayhan"
+  onSubmitComment={(t) => console.log(t)}
+/>`}
                 availableStates={['default']}
               >
                 {() => (
-                  <div className="w-full max-w-sm border-b border-neutral-200/80 bg-white select-none">
-                    <div className="flex items-center relative">
-                      <div
-                        className={`absolute bottom-0 left-0 w-1/3 h-[2px] bg-slate-900 transition-transform duration-200 ${
-                          demoTab3 === 'threads'
-                            ? 'translate-x-0'
-                            : demoTab3 === 'replies'
-                            ? 'translate-x-full'
-                            : 'translate-x-[200%]'
-                        }`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          triggerHaptic('selection');
-                          setDemoTab3('threads');
-                        }}
-                        className={`flex-1 py-2.5 text-xs text-center cursor-pointer transition-colors ${
-                          demoTab3 === 'threads' ? 'text-slate-900 font-bold' : 'text-neutral-400 font-medium'
-                        }`}
-                      >
-                        Utas
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          triggerHaptic('selection');
-                          setDemoTab3('replies');
-                        }}
-                        className={`flex-1 py-2.5 text-xs text-center cursor-pointer transition-colors ${
-                          demoTab3 === 'replies' ? 'text-slate-900 font-bold' : 'text-neutral-400 font-medium'
-                        }`}
-                      >
-                        Balasan
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          triggerHaptic('selection');
-                          setDemoTab3('media');
-                        }}
-                        className={`flex-1 py-2.5 text-xs text-center cursor-pointer transition-colors ${
-                          demoTab3 === 'media' ? 'text-slate-900 font-bold' : 'text-neutral-400 font-medium'
-                        }`}
-                      >
-                        Media
-                      </button>
-                    </div>
+                  <div className="w-full max-w-md">
+                    <CommentInputBar
+                      isInline={true}
+                      replyToUser="radityarayhannnn"
+                      targetAuthor="Raditya"
+                      onCancelReply={() => showToast('Batal membalas')}
+                      onSubmitComment={(t) => {
+                        triggerHaptic('success');
+                        showToast(`Komentar terkirim: "${t}"`);
+                      }}
+                    />
                   </div>
                 )}
               </ShowcaseCard>
@@ -928,7 +965,9 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
                 {() => (
                   <div className="flex items-center gap-3">
                     <ClickableVerifiedBadge sellerName="Raditya Rayhan" className="w-5 h-5" />
-                    <span className="text-xs font-semibold text-slate-900">Penjual Terverifikasi Snapan</span>
+                    <span className="text-xs font-semibold text-slate-900">
+                      Penjual Terverifikasi Snapan (Klik icon centang biru)
+                    </span>
                   </div>
                 )}
               </ShowcaseCard>
@@ -1021,15 +1060,284 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
                   </div>
                 )}
               </ShowcaseCard>
+
+              {/* 4.6 Offline Network Warning Banner */}
+              <ShowcaseCard
+                id="badge-offline"
+                title="Offline Network Warning Banner"
+                category="System Indicators"
+                description="Banner peringatan saat sambungan internet ponsel terputus."
+                codeSnippet={`<div className="flex items-center justify-center gap-2 py-1.5 px-4 bg-slate-900 text-white text-xs font-medium">
+  <WifiOff className="w-3.5 h-3.5 text-amber-400" />
+  <span>Mode Offline: Menampilkan data cache lokal</span>
+</div>`}
+                availableStates={['default']}
+              >
+                {() => (
+                  <div className="w-full max-w-sm rounded-xl overflow-hidden shadow-2xs flex items-center justify-center gap-2 py-2 px-4 bg-slate-900 text-white text-xs font-medium">
+                    <WifiOff className="w-4 h-4 text-amber-400 stroke-[2.2]" />
+                    <span>Mode Offline: Menampilkan cache lokal</span>
+                  </div>
+                )}
+              </ShowcaseCard>
+
+              {/* 4.7 PWA Install Banner */}
+              <ShowcaseCard
+                id="badge-install"
+                title="PWA Install App Banner"
+                category="System Indicators"
+                description="Bilah ajakan pasang aplikasi PWA Snapan ke layar utama (A2HS)."
+                codeSnippet={`<div className="flex items-center justify-between p-3 rounded-2xl bg-blue-50 border border-blue-200 text-blue-900">
+  <span className="text-xs font-bold">Pasang Snapan di Layar Utama</span>
+  <button className="px-3 py-1 bg-blue-600 text-white rounded-lg text-xs font-bold">Pasang</button>
+</div>`}
+                availableStates={['default']}
+              >
+                {() => (
+                  <div className="w-full max-w-md flex items-center justify-between p-3 rounded-2xl bg-blue-50/90 border border-blue-200 text-blue-950 shadow-2xs">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-xs">
+                        <Download className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold leading-tight">Pasang Snapan PWA</p>
+                        <p className="text-[11px] text-blue-700/80">Akses instan 120 FPS tanpa buka browser</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => showToast('Prompt Install PWA dipicu!')}
+                      className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold shadow-xs cursor-pointer"
+                    >
+                      Pasang
+                    </button>
+                  </div>
+                )}
+              </ShowcaseCard>
             </div>
           )}
 
           {/* ================================================================= */}
-          {/* SECTION 5: 🃏 CARDS & FEEDS                                       */}
+          {/* SECTION 5: 🧭 NAVIGATION & APP BARS                               */}
+          {/* ================================================================= */}
+          {activeSection === 'navigation' && (
+            <div className="space-y-8">
+              {/* 5.1 SnapanLogotype Header */}
+              <ShowcaseCard
+                id="nav-logotype"
+                title="Snapan Logotype Text Header"
+                category="Navigation"
+                description="Logotype tipografi resmi Snapan Market dengan aksen biru Threads."
+                codeSnippet={`<SnapanLogotype className="text-xl font-black" />`}
+                availableStates={['default']}
+              >
+                {() => (
+                  <div className="p-4 bg-neutral-50 rounded-2xl border border-neutral-200/80">
+                    <SnapanLogotype className="text-2xl font-black tracking-tight" />
+                  </div>
+                )}
+              </ShowcaseCard>
+
+              {/* 5.2 MarketHeader Component */}
+              <ShowcaseCard
+                id="nav-market-header"
+                title="MarketHeader (Top Main Bar)"
+                category="Navigation"
+                description="Header sticky utama dengan tombol drawer hamburger, logotype tengah, dan pencarian."
+                codeSnippet={`<MarketHeader onMenuClick={() => setDrawerOpen(true)} />`}
+                availableStates={['default']}
+              >
+                {() => (
+                  <div className="w-full max-w-md border border-neutral-200 rounded-2xl overflow-hidden shadow-sm bg-white">
+                    <MarketHeader
+                      onMenuClick={() => showToast('Drawer Samping dibuka')}
+                      onSearchClick={() => showToast('Buka Halaman Cari')}
+                    />
+                  </div>
+                )}
+              </ShowcaseCard>
+
+              {/* 5.3 MarketBottomNav (5-Tab Floating Bar) */}
+              <ShowcaseCard
+                id="nav-bottom-bar"
+                title="MarketBottomNav (5-Tab Mobile Navigation)"
+                category="Navigation"
+                description="Bilah navigasi bawah dengan 5 tab utama (Home, Pesan, Jual/Post, Aktivitas, Profil)."
+                codeSnippet={`<div className="flex items-center justify-around h-14 bg-white/95 border-t border-neutral-200">
+  <button onClick={() => setTab('home')}><Home /></button>
+  <button onClick={() => setTab('messages')}><Send /></button>
+  <button onClick={() => setTab('post')}><Plus /></button>
+  <button onClick={() => setTab('activity')}><Heart /></button>
+  <button onClick={() => setTab('profile')}><User /></button>
+</div>`}
+                availableStates={['default']}
+              >
+                {() => (
+                  <div className="w-full max-w-md bg-white rounded-2xl border border-neutral-200 p-2 shadow-md">
+                    <div className="flex items-center justify-around h-12">
+                      {[
+                        { id: 'home', icon: Home, label: 'Home' },
+                        { id: 'messages', icon: Send, label: 'Pesan', badge: true },
+                        { id: 'post', icon: Plus, label: 'Jual', action: true },
+                        { id: 'activity', icon: Heart, label: 'Aktivitas' },
+                        { id: 'profile', icon: User, label: 'Profil' },
+                      ].map((item) => {
+                        const Icon = item.icon;
+                        const isActive = demoBottomNavTab === item.id;
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => {
+                              triggerHaptic('selection');
+                              setDemoBottomNavTab(item.id);
+                            }}
+                            className={`relative p-2 rounded-xl transition-all cursor-pointer ${
+                              item.action
+                                ? 'bg-slate-900 text-white shadow-sm scale-105'
+                                : isActive
+                                ? 'text-slate-950 font-bold'
+                                : 'text-neutral-400 hover:text-slate-700'
+                            }`}
+                          >
+                            <Icon className="w-5 h-5 stroke-[2]" />
+                            {item.badge && (
+                              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white" />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </ShowcaseCard>
+
+              {/* 5.4 2-Tab & 3-Tab Sliding Switchers */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* 2-Tab */}
+                <ShowcaseCard
+                  id="tab-switcher-2"
+                  title="2-Tab Sliding Switcher"
+                  category="Navigation"
+                  description="Tab pengalih 'Untuk Anda' & 'Terbaru' dengan sliding underline."
+                  codeSnippet={`<div className="flex border-b">
+  <button onClick={() => setTab('for-you')}>Untuk Anda</button>
+  <button onClick={() => setTab('latest')}>Terbaru</button>
+</div>`}
+                  availableStates={['default']}
+                >
+                  {() => (
+                    <div className="w-full max-w-xs border-b border-neutral-200 bg-white">
+                      <div className="flex items-center relative">
+                        <div
+                          className={`absolute bottom-0 left-0 w-1/2 h-[2px] bg-slate-900 transition-transform duration-200 ${
+                            demoTab2 === 'for-you' ? 'translate-x-0' : 'translate-x-full'
+                          }`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            triggerHaptic('selection');
+                            setDemoTab2('for-you');
+                          }}
+                          className={`flex-1 py-2 text-xs text-center cursor-pointer ${
+                            demoTab2 === 'for-you' ? 'text-slate-900 font-bold' : 'text-neutral-400 font-medium'
+                          }`}
+                        >
+                          Untuk Anda
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            triggerHaptic('selection');
+                            setDemoTab2('latest');
+                          }}
+                          className={`flex-1 py-2 text-xs text-center cursor-pointer ${
+                            demoTab2 === 'latest' ? 'text-slate-900 font-bold' : 'text-neutral-400 font-medium'
+                          }`}
+                        >
+                          Terbaru
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </ShowcaseCard>
+
+                {/* 3-Tab */}
+                <ShowcaseCard
+                  id="tab-switcher-3"
+                  title="3-Tab Sliding Switcher"
+                  category="Navigation"
+                  description="Tab pengalih profil 'Utas', 'Balasan', dan 'Media'."
+                  codeSnippet={`<div className="flex border-b">
+  <button onClick={() => setTab('threads')}>Utas</button>
+  <button onClick={() => setTab('replies')}>Balasan</button>
+  <button onClick={() => setTab('media')}>Media</button>
+</div>`}
+                  availableStates={['default']}
+                >
+                  {() => (
+                    <div className="w-full max-w-xs border-b border-neutral-200 bg-white">
+                      <div className="flex items-center relative">
+                        <div
+                          className={`absolute bottom-0 left-0 w-1/3 h-[2px] bg-slate-900 transition-transform duration-200 ${
+                            demoTab3 === 'threads'
+                              ? 'translate-x-0'
+                              : demoTab3 === 'replies'
+                              ? 'translate-x-full'
+                              : 'translate-x-[200%]'
+                          }`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            triggerHaptic('selection');
+                            setDemoTab3('threads');
+                          }}
+                          className={`flex-1 py-2 text-xs text-center cursor-pointer ${
+                            demoTab3 === 'threads' ? 'text-slate-900 font-bold' : 'text-neutral-400 font-medium'
+                          }`}
+                        >
+                          Utas
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            triggerHaptic('selection');
+                            setDemoTab3('replies');
+                          }}
+                          className={`flex-1 py-2 text-xs text-center cursor-pointer ${
+                            demoTab3 === 'replies' ? 'text-slate-900 font-bold' : 'text-neutral-400 font-medium'
+                          }`}
+                        >
+                          Balasan
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            triggerHaptic('selection');
+                            setDemoTab3('media');
+                          }}
+                          className={`flex-1 py-2 text-xs text-center cursor-pointer ${
+                            demoTab3 === 'media' ? 'text-slate-900 font-bold' : 'text-neutral-400 font-medium'
+                          }`}
+                        >
+                          Media
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </ShowcaseCard>
+              </div>
+            </div>
+          )}
+
+          {/* ================================================================= */}
+          {/* SECTION 6: 🃏 CARDS & FEEDS                                       */}
           {/* ================================================================= */}
           {activeSection === 'cards' && (
             <div className="space-y-8">
-              {/* 5.1 ProgressiveImage Shimmer Simulator */}
+              {/* 6.1 ProgressiveImage Shimmer Simulator */}
               <ShowcaseCard
                 id="card-progressive-image"
                 title="ProgressiveImage (Anti-Layout Shift & Fade-In)"
@@ -1068,11 +1376,27 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
                 )}
               </ShowcaseCard>
 
-              {/* 5.2 MarketPostCard Live Feed Item */}
+              {/* 6.2 ProductCard Component */}
+              <ShowcaseCard
+                id="card-product"
+                title="ProductCard (E-Commerce Item)"
+                category="Marketplace Cards"
+                description="Kartu produk dengan foto, harga, status stok, dan tombol beli langsung."
+                codeSnippet={`<ProductCard product={product} />`}
+                availableStates={['default']}
+              >
+                {() => (
+                  <div className="w-64">
+                    <ProductCard product={demoProduct} />
+                  </div>
+                )}
+              </ShowcaseCard>
+
+              {/* 6.3 MarketPostCard Live Single Image Feed */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="font-bold text-sm text-slate-900">
-                    Live Feed Post Card (`MarketPostCard`)
+                    Feed Post Card — Single Image (`MarketPostCard`)
                   </h4>
                   <span className="text-xs text-neutral-500 font-mono">Mobile Viewport Simulation (390px)</span>
                 </div>
@@ -1080,6 +1404,99 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
                   <MarketPostCard item={MOCK_MARKET_POSTS[0]} />
                 </div>
               </div>
+
+              {/* 6.4 MarketPostCard Live Multi-Image Carousel Feed */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-bold text-sm text-slate-900">
+                    Feed Post Card — Multi-Image Carousel (`MarketPostCard`)
+                  </h4>
+                  <span className="text-xs text-neutral-500 font-mono">Edge-to-Edge Carousel Swipe Physics</span>
+                </div>
+                <div className="max-w-[420px] mx-auto bg-white rounded-3xl border border-neutral-200 shadow-xl overflow-hidden">
+                  <MarketPostCard item={MOCK_MARKET_POSTS[1]} />
+                </div>
+              </div>
+
+              {/* 6.5 ReplyThreadCard Component */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-bold text-sm text-slate-900">
+                    Thread Reply Card with Connector Lines (`ReplyThreadCard`)
+                  </h4>
+                  <span className="text-xs text-neutral-500 font-mono">Nested Thread Hierarchy</span>
+                </div>
+                <div className="max-w-[420px] mx-auto bg-white rounded-3xl border border-neutral-200 shadow-xl overflow-hidden">
+                  <ReplyThreadCard thread={demoThread} />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ================================================================= */}
+          {/* SECTION 7: 🪟 MODALS & OVERLAYS                                   */}
+          {/* ================================================================= */}
+          {activeSection === 'overlays' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* 7.1 Verified Badge Tooltip & Modal */}
+              <ShowcaseCard
+                id="modal-verified"
+                title="Verified Badge Info Dialog"
+                category="Dialogs"
+                description="Lencana terverifikasi penjual Snapan dengan tooltip informatif dan portal modal."
+                codeSnippet={`<ClickableVerifiedBadge sellerName="Raditya Rayhan" className="w-5 h-5" />`}
+                availableStates={['default']}
+              >
+                {() => (
+                  <div className="flex items-center gap-3 p-4 bg-neutral-50 rounded-2xl border border-neutral-200">
+                    <ClickableVerifiedBadge sellerName="Raditya Rayhan" className="w-6 h-6" />
+                    <div>
+                      <p className="text-xs font-bold text-slate-900">Klik icon centang biru</p>
+                      <p className="text-[11px] text-neutral-500">Akan memicu modal dialog verifikasi resmi</p>
+                    </div>
+                  </div>
+                )}
+              </ShowcaseCard>
+
+              {/* 7.2 Pull-to-Refresh Indicator */}
+              <ShowcaseCard
+                id="modal-pull-to-refresh"
+                title="Pull-To-Refresh Elastic Spinner"
+                category="Feed Overlays"
+                description="Indikator refresh feed dengan transisi rotasi dan scale elastis."
+                codeSnippet={`<PullToRefreshIndicator
+  pullDistance={50}
+  isRefreshing={false}
+/>`}
+                availableStates={['default']}
+              >
+                {() => (
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="relative w-24 h-16 bg-neutral-50 rounded-2xl border border-neutral-200 flex items-center justify-center">
+                      <PullToRefreshIndicator
+                        pullDistance={demoPullProgress * 60}
+                        isRefreshing={demoPullProgress >= 1}
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setDemoPullProgress(0.5)}
+                        className="px-2.5 py-1 rounded-lg border text-xs font-medium hover:bg-neutral-50 cursor-pointer"
+                      >
+                        Tarik 50%
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDemoPullProgress(1)}
+                        className="px-2.5 py-1 rounded-lg border text-xs font-medium hover:bg-neutral-50 cursor-pointer"
+                      >
+                        Refreshing (100%)
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </ShowcaseCard>
             </div>
           )}
         </div>

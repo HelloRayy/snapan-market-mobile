@@ -170,7 +170,6 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
       {item.images && item.images.length === 1 && (
         <div
           onClick={(e) => handleImageClick(e, 0)}
-          onPointerDown={(e) => e.stopPropagation()}
           className="relative w-full rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[420px] aspect-[4/5] sm:aspect-[16/10] mt-2.5 cursor-pointer touch-pan-y"
         >
           <picture className="block w-full h-full cursor-pointer">
@@ -194,8 +193,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           onMouseUp={handleMouseLeaveOrUp}
           onMouseMove={handleMouseMove}
           onClick={(e) => e.stopPropagation()}
-          onPointerDown={(e) => e.stopPropagation()}
-          className={`flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none touch-pan-x ${
+          className={`flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none touch-pan-x touch-pan-y ${
             _isDetail ? '-mx-3.5 pl-0 pr-3.5' : '-ml-[60px] -mr-3.5 pl-0 pr-3.5'
           }`}
         >
@@ -203,8 +201,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             <div
               key={idx}
               onClick={(e) => handleImageClick(e, idx)}
-              onPointerDown={(e) => e.stopPropagation()}
-              className="relative shrink-0 w-[82%] sm:w-[75%] rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[380px] aspect-[3/4] cursor-pointer"
+              className="relative shrink-0 w-[82%] sm:w-[75%] rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[380px] aspect-[3/4] cursor-pointer touch-pan-y"
             >
               <picture className="block w-full h-full cursor-pointer">
                 <img

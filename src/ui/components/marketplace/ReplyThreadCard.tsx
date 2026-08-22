@@ -182,7 +182,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
         onMouseUp={handleMouseLeaveOrUp}
         onMouseMove={handleMouseMove}
         onClick={(e) => e.stopPropagation()}
-        className="flex gap-2.5 overflow-x-auto no-scrollbar scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none touch-pan-x -ml-[64px] -mr-4 pl-0 pr-4"
+        className="flex gap-2.5 overflow-x-auto no-scrollbar scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none touch-pan-x touch-pan-y -ml-[64px] -mr-4 pl-0 pr-4"
       >
         {parentPost.images.map((imgUrl, idx) => (
           <div
@@ -192,7 +192,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
               setSelectedImageIndex(idx);
               setIsLightboxOpen(true);
             }}
-            className="relative shrink-0 w-[82%] sm:w-[75%] rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[380px] aspect-[3/4] cursor-pointer"
+            className="relative shrink-0 w-[82%] sm:w-[75%] rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[380px] aspect-[3/4] cursor-pointer touch-pan-y"
           >
             <picture className="block w-full h-full cursor-pointer">
               <img

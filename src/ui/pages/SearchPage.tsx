@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Search, X, SlidersHorizontal, ArrowLeft, Users, TrendingUp, ChevronRight } from 'lucide-react';
 import { ClickableVerifiedBadge } from '@/ui/components/marketplace/VerifiedBadgeModal';
 import { MarketBottomNav } from '@/ui/components/marketplace/MarketBottomNav';
@@ -216,9 +216,15 @@ export const SearchPage: React.FC<SearchPageProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState(false);
   const [activeTab, setActiveTab] = useState<SearchTab>('top');
   const [followingMap, setFollowingMap] = useState<Record<string, boolean>>({});
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Auto scroll to top when SearchPage opens
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, []);
 
   const toggleFollow = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -325,6 +331,10 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                 type="text"
                 autoFocus
                 value={searchQuery}
+                onFocus={() => setIsInputFocused(true)}
+                onBlur={() => {
+                  setTimeout(() => setIsInputFocused(false), 200);
+                }}
                 onChange={(e) => handleQueryChange(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
@@ -700,17 +710,19 @@ export const SearchPage: React.FC<SearchPageProps> = ({
         )}
       </main>
 
-      {/* Standard PWA Bottom Navigation Bar */}
-      <MarketBottomNav
-        activeTab="search"
-        onTabChange={(tab) => {
-          if (tab === 'home') {
-            onNavigateHome();
-          } else if (tab === 'profile') {
-            onNavigateToProfile('radityarayhannnn');
-          }
-        }}
-      />
+      {/* Standard PWA Bottom Navigation Bar (Hidden when input is focused or actively typing to prevent floating above keyboard) */}
+      {!isInputFocused && !(hasSearchQuery && !isSubmitted) && (
+        <MarketBottomNav
+          activeTab="search"
+          onTabChange={(tab) => {
+            if (tab === 'home') {
+              onNavigateHome();
+            } else if (tab === 'profile') {
+              onNavigateToProfile('radityarayhannnn');
+            }
+          }}
+        />
+      )}
     </div>
   );
 };

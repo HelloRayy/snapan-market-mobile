@@ -14,6 +14,33 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   onPostClick,
   userAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
 }) => {
+  // Auto-detect virtual keyboard on mobile devices to prevent bottom nav from floating over the keyboard
+  const [isKeyboardOpen, setIsKeyboardOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined' || !window.visualViewport) return;
+
+    const handleViewportChange = () => {
+      if (window.visualViewport) {
+        // Virtual keyboard causes visualViewport height to shrink significantly (> 15% reduction)
+        const isKeyboard = window.visualViewport.height < window.innerHeight * 0.82;
+        setIsKeyboardOpen(isKeyboard);
+      }
+    };
+
+    window.visualViewport.addEventListener('resize', handleViewportChange);
+    window.visualViewport.addEventListener('scroll', handleViewportChange);
+
+    return () => {
+      window.visualViewport?.removeEventListener('resize', handleViewportChange);
+      window.visualViewport?.removeEventListener('scroll', handleViewportChange);
+    };
+  }, []);
+
+  if (isKeyboardOpen) {
+    return null;
+  }
+
   const navItems = [
     { id: 'home', label: 'Home', icon: Home },
     { id: 'messages', label: 'Pesan', icon: Send, hasBadge: true },

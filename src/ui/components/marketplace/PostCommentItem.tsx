@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Heart, Repeat, Send, BadgeCheck, MoreHorizontal, Crown } from 'lucide-react';
 import { PostComment } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
+import { formatSmartTimestamp } from '@/utils/formatters';
 
 // Custom Smooth Rounded Lucide-Family Comment Icon
 const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -234,8 +235,11 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                   </span>
                 )}
 
-                <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
-                  {comment.timestamp}
+                <span
+                  className="text-[13px] sm:text-[13.5px] font-normal text-slate-500 truncate min-w-0 shrink tabular-nums cursor-default select-none"
+                  title={formatSmartTimestamp(comment.timestamp).full}
+                >
+                  {formatSmartTimestamp(comment.timestamp).display}
                 </span>
               </div>
 
@@ -442,8 +446,11 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                           </span>
                         )}
 
-                        <span className="text-[14px] font-normal text-neutral-400 truncate min-w-0 shrink">
-                          {reply.timestamp}
+                        <span
+                          className="text-[13px] sm:text-[13.5px] font-normal text-slate-500 truncate min-w-0 shrink tabular-nums cursor-default select-none"
+                          title={formatSmartTimestamp(reply.timestamp).full}
+                        >
+                          {formatSmartTimestamp(reply.timestamp).display}
                         </span>
                       </div>
 

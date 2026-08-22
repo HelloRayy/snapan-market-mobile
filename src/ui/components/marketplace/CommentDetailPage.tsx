@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Heart, Repeat, Send, BadgeCheck, MoreHorizontal, Crown } from 'lucide-react';
 import { MarketPostItem, PostComment } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
+import { formatSmartTimestamp } from '@/utils/formatters';
 import { PostCommentItem } from './PostCommentItem';
 import { useAuth } from '@/ui/hooks/useAuth';
 
@@ -302,8 +303,11 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                     </span>
                   )}
 
-                  <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
-                    {activeComment.timestamp}
+                  <span
+                    className="text-[13px] sm:text-[13.5px] font-normal text-slate-500 truncate min-w-0 shrink tabular-nums cursor-default select-none"
+                    title={formatSmartTimestamp(activeComment.timestamp).full}
+                  >
+                    {formatSmartTimestamp(activeComment.timestamp).display}
                   </span>
                 </div>
 

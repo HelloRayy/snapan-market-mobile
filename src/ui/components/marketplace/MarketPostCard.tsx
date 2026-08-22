@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Heart, MoreHorizontal, Box, Repeat2, Send, PartyPopper, ChevronRight, MapPin } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
+import { formatSmartTimestamp } from '@/utils/formatters';
 import { MediaLightboxModal } from './MediaLightboxModal';
 import { ClickableVerifiedBadge } from './VerifiedBadgeModal';
 
@@ -406,14 +407,22 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={(e) => e.stopPropagation()}
-              className="text-slate-500 hover:text-slate-900 p-1.5 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
-              aria-label="Opsi postingan"
-            >
-              <MoreHorizontal className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-1.5 shrink-0 ml-auto">
+              <span
+                className="text-[13px] sm:text-[13.5px] font-normal text-slate-500 whitespace-nowrap tabular-nums cursor-default select-none"
+                title={formatSmartTimestamp(item.timestamp).full}
+              >
+                {formatSmartTimestamp(item.timestamp).display}
+              </span>
+              <button
+                type="button"
+                onClick={(e) => e.stopPropagation()}
+                className="text-slate-500 hover:text-slate-900 p-1.5 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
+                aria-label="Opsi postingan"
+              >
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {/* Caption Text: Full Width Aligned with Avatar (UX Reading Flow text-[15.5px] leading-snug) */}
@@ -517,7 +526,12 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               </div>
 
               <div className="flex items-center gap-1.5 shrink-0 ml-auto">
-                <span className="text-[13.5px] sm:text-[14px] font-normal text-slate-500 whitespace-nowrap">{item.timestamp}</span>
+                <span
+                  className="text-[13px] sm:text-[13.5px] font-normal text-slate-500 whitespace-nowrap tabular-nums cursor-default select-none"
+                  title={formatSmartTimestamp(item.timestamp).full}
+                >
+                  {formatSmartTimestamp(item.timestamp).display}
+                </span>
                 <button
                   type="button"
                   onClick={(e) => e.stopPropagation()}

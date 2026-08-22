@@ -34,10 +34,10 @@ Jalankan script berikut di **Supabase Dashboard -> SQL Editor**:
 
 ```sql
 -- ========================================================
--- 1. TABEL PROFILES (Ekstensi dari Auth Users)
+-- 1. TABEL PROFILES (Ekstensi auth.users)
 -- ========================================================
 create table if not exists public.profiles (
-  id uuid references auth.users on delete cascade primary key,
+  id uuid primary key,
   full_name text not null,
   username text unique,
   avatar_url text,
@@ -57,18 +57,20 @@ begin
     coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', 'Pengguna Baru'),
     coalesce(new.raw_user_meta_data->>'username', lower(replace(coalesce(new.raw_user_meta_data->>'full_name', 'user'), ' ', ''))),
     coalesce(new.raw_user_meta_data->>'avatar_url', new.raw_user_meta_data->>'picture', '')
-  );
+  )
+  on conflict (id) do nothing;
   return new;
 end;
 $$ language plpgsql security definer;
 
-create or replace trigger on_auth_user_created
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
 
 
 -- ========================================================
--- 2. TABEL MARKET POSTS (Utas Sosial & Produk Jualan)
+-- 2. TABEL MARKET POSTS (Postingan Feed Jualan & Utas Sosial)
 -- ========================================================
 create table if not exists public.market_posts (
   id uuid default gen_random_uuid() primary key,
@@ -79,10 +81,11 @@ create table if not exists public.market_posts (
   description text,
   price numeric default 0 check (price >= 0),
   original_price numeric default 0 check (original_price >= 0),
-  category text default 'Lainnya',
+  category text default 'Umum',
   images text[] default '{}',
+  is_video boolean default false,
   stock integer default 1 check (stock >= 0),
-  location_tag text,
+  location_tag text default 'SMKN 8',
   topic_tag text,
   is_official_topic boolean default false,
   topic_icon text default 'threads',
@@ -91,9 +94,19 @@ create table if not exists public.market_posts (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
+-- Safe Alter Column untuk tabel market_posts yang sudah terlanjur dibuat versi lama
+alter table public.market_posts add column if not exists post_type text default 'thread' check (post_type in ('thread', 'product'));
+alter table public.market_posts add column if not exists title text;
+alter table public.market_posts add column if not exists description text;
+alter table public.market_posts add column if not exists topic_tag text;
+alter table public.market_posts add column if not exists is_official_topic boolean default false;
+alter table public.market_posts add column if not exists topic_icon text default 'threads';
+alter table public.market_posts add column if not exists likes_count integer default 0 check (likes_count >= 0);
+alter table public.market_posts add column if not exists comments_count integer default 0 check (comments_count >= 0);
+
 
 -- ========================================================
--- 3. TABEL POST LIKES (Suka Postingan Utama)
+-- 3. TABEL POST LIKES (Suka Postingan Utas/Produk)
 -- ========================================================
 create table if not exists public.post_likes (
   post_id uuid references public.market_posts(id) on delete cascade not null,
@@ -104,7 +117,7 @@ create table if not exists public.post_likes (
 
 
 -- ========================================================
--- 4. TABEL POST COMMENTS & SUB-THREADS (Komentar Bersarang P2, P3, P4)
+-- 4. TABEL POST COMMENTS (Komentar & Sub-Thread Bersarang)
 -- ========================================================
 create table if not exists public.post_comments (
   id uuid default gen_random_uuid() primary key,
@@ -119,6 +132,13 @@ create table if not exists public.post_comments (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
+-- Safe Alter Column untuk tabel post_comments versi lama
+alter table public.post_comments add column if not exists parent_comment_id uuid references public.post_comments(id) on delete cascade;
+alter table public.post_comments add column if not exists images text[] default '{}';
+alter table public.post_comments add column if not exists thread_part integer default 1;
+alter table public.post_comments add column if not exists total_parts integer default 1;
+alter table public.post_comments add column if not exists likes_count integer default 0 check (likes_count >= 0);
+
 
 -- ========================================================
 -- 5. TABEL COMMENT LIKES (Suka Komentar & Balasan)
@@ -132,8 +152,7 @@ create table if not exists public.comment_likes (
 
 
 -- ========================================================
--- ========================================================
--- 6. TABEL CART ITEMS (Keranjang Belanja)
+-- 6. TABEL CART ITEMS (Keranjang Belanja User)
 -- ========================================================
 create table if not exists public.cart_items (
   id uuid default gen_random_uuid() primary key,
@@ -173,7 +192,7 @@ create table if not exists public.notifications (
 
 
 -- ========================================================
--- 9. ROW LEVEL SECURITY (RLS) POLICIES
+-- 🛡️ ROW LEVEL SECURITY (RLS) POLICIES
 -- ========================================================
 alter table public.profiles enable row level security;
 alter table public.market_posts enable row level security;
@@ -226,7 +245,7 @@ create policy "Authenticated users create notification" on public.notifications 
 
 
 -- ========================================================
--- 10. INDEXING PERFORMA PENCARIAN & FILTERING
+-- ⚡ INDEXING PERFORMA PENCARIAN & FILTERING
 -- ========================================================
 create index if not exists idx_market_posts_category on public.market_posts(category);
 create index if not exists idx_market_posts_post_type on public.market_posts(post_type);

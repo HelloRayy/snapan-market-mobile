@@ -6,11 +6,13 @@ import { PostDetailPage } from '@/ui/pages/PostDetailPage';
 import { ProfilePage } from '@/ui/pages/ProfilePage';
 import { SearchPage } from '@/ui/pages/SearchPage';
 import { NavigationDrawer } from '@/ui/components/navigation/NavigationDrawer';
+import { CreatePostModal } from '@/ui/components/marketplace/CreatePostModal';
 import { MarketPostItem } from '@/types/marketFeed';
 import { useAuth } from '@/ui/hooks/useAuth';
 
 export function App() {
   const { user, profile } = useAuth();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
 
   // Synchronously compute onboarding completion from localStorage / Supabase session to prevent 1-frame splash flash
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean>(() => {
@@ -266,9 +268,19 @@ export function App() {
             onNavigateHome={navigateToHome}
             onNavigateSearch={navigateToSearch}
             onNavigateProfile={navigateToProfile}
+            onOpenCreateModal={() => setIsCreateModalOpen(true)}
             onNavigateDownload={() => {
               setCurrentRoute('/download');
               window.history.pushState({}, '', '/download');
+            }}
+          />
+
+          {/* Create Post / New Thread Modal Triggered Globally from Sidebar */}
+          <CreatePostModal
+            isOpen={isCreateModalOpen}
+            onClose={() => setIsCreateModalOpen(false)}
+            onSubmitPost={async () => {
+              setIsCreateModalOpen(false);
             }}
           />
 

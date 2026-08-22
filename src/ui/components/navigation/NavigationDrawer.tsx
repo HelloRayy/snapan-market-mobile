@@ -104,19 +104,17 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             </button>
 
             {/* 2. Utas baru */}
-            {onOpenCreateModal && (
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenCreateModal();
-                }}
-                className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[15px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
-              >
-                <Plus className="w-5 h-5 stroke-[2.4] text-slate-800 shrink-0" />
-                <span className="truncate">Utas baru</span>
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                onOpenCreateModal?.();
+              }}
+              className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[15px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
+            >
+              <Plus className="w-5 h-5 stroke-[2.4] text-slate-800 shrink-0" />
+              <span className="truncate">Utas baru</span>
+            </button>
 
             {/* 3. Cari */}
             <button

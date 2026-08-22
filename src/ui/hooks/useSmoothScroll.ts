@@ -23,35 +23,35 @@ export function resumeSmoothScroll() {
 
 export function useSmoothScroll() {
   useEffect(() => {
-    // Mobile Touch & Desktop Kinetic Physics Configuration
+    if (typeof window === 'undefined') return;
+
+    // Detect if device supports physical touch
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    // Mobile Touch & Desktop Wheel Kinetic Physics Configuration
     const lenis = new Lenis({
+      autoRaf: true, // Fully managed internal RAF loop for 100% reliability
       duration: 1.1,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Apple-style exponential deceleration curve
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Apple-style exponential ease
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: 0.95,
-      // 🚀 Explicit Mobile Touch Engine Activation
-      syncTouch: true,
-      syncTouchLerp: 0.085, // Smooth kinetic interpolation on mobile touch
-      touchInertiaExponent: 1.6, // Luxurious mobile touch fling momentum
-      touchMultiplier: 1.25, // Light, responsive, effortless flick feel on phone screens
+      wheelMultiplier: 1.0,
+      // Touch-only features (Prevent locking mouse wheel on Desktop / Trackpads)
+      syncTouch: isTouch,
+      syncTouchLerp: 0.085,
+      touchInertiaExponent: 1.6,
+      touchMultiplier: 1.25,
       infinite: false,
-      autoRaf: false,
+      autoResize: true,
+      prevent: (node) => {
+        return !!(node instanceof HTMLElement && node.closest('[data-lenis-prevent]'));
+      },
     });
 
     lenisInstance = lenis;
 
-    // RAF Loop (Zero Jitter 120 FPS Synchronization)
-    let rafId: number;
-    function raf(time: number) {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    }
-    rafId = requestAnimationFrame(raf);
-
     return () => {
-      cancelAnimationFrame(rafId);
       lenis.destroy();
       lenisInstance = null;
     };

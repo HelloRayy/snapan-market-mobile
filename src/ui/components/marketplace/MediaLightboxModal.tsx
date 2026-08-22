@@ -175,18 +175,18 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
         )}
       </div>
 
-      {/* Main Fullscreen Gallery Slider */}
+      {/* Main Fullscreen Gallery Slider (Full Width Edge-to-Edge on Mobile) */}
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex-1 w-full max-w-xl mx-auto flex items-center overflow-x-auto snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing touch-pan-x touch-pan-y"
+        className="flex-1 w-full flex items-center overflow-x-auto snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing touch-pan-x touch-pan-y"
       >
         {images.map((imgUrl, idx) => (
           <div
             key={idx}
-            className="w-full h-full shrink-0 flex items-center justify-center snap-center p-4 relative overflow-hidden"
+            className="w-full h-full shrink-0 flex items-center justify-center snap-center p-0 sm:p-4 relative overflow-hidden"
           >
-            <div className="relative max-h-[72vh] w-[88vw] max-w-[420px] aspect-[4/5] rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xl bg-neutral-100 flex items-center justify-center">
+            <div className="relative w-full sm:max-w-[480px] max-h-[78vh] aspect-[4/5] sm:rounded-[18px] overflow-hidden sm:border sm:border-black/[0.08] sm:shadow-2xl bg-neutral-100 flex items-center justify-center">
               <picture className="block w-full h-full">
                 <img
                   src={imgUrl}
@@ -197,7 +197,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
                   className="w-full h-full object-cover select-none pointer-events-none transition-transform duration-300"
                 />
               </picture>
-              <div className="absolute inset-0 rounded-[18px] ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
+              <div className="hidden sm:block absolute inset-0 rounded-[18px] ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
             </div>
           </div>
         ))}

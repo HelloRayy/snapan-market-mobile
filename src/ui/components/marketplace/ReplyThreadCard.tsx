@@ -257,9 +257,9 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
                   {/* Render special blue icon if official topic */}
                   {parentPost.isOfficialTopic && (
                     parentPost.topicIcon === 'presentation' || parentPost.topicIcon === 'party-popper' ? (
-                      <PartyPopper className="w-3.5 h-3.5 text-[#18a3fe] stroke-[2.2] shrink-0" />
+                      <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
                     ) : (
-                      <ThreadsTopicIcon className="w-3.5 h-3.5 text-[#18a3fe] fill-current shrink-0" />
+                      <ThreadsTopicIcon className="w-3.5 h-3.5 text-[#1d64ec] fill-current shrink-0" />
                     )
                   )}
 
@@ -270,7 +270,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
                       onTopicClick?.(parentPost.topicTag!);
                     }}
                     className={`font-semibold text-base h-[21px] leading-snug transition-colors cursor-pointer truncate max-w-[135px] sm:max-w-[200px] flex items-center ${
-                      parentPost.isOfficialTopic ? 'text-[#18a3fe] hover:underline' : 'text-slate-900 hover:underline'
+                      parentPost.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-900 hover:underline'
                     }`}
                   >
                     <span className="leading-snug">{parentPost.topicTag}</span>

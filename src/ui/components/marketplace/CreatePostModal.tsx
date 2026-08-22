@@ -438,15 +438,15 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                         <span
                           className={`flex items-center gap-x-1 font-semibold text-base h-[21px] leading-snug hover:opacity-80 transition-opacity ${
                             selectedTopic.isOfficial
-                              ? 'text-[#18a3fe]'
+                              ? 'text-[#1d64ec]'
                               : 'text-slate-900'
                           }`}
                         >
                           {selectedTopic.isOfficial && (
                             selectedTopic.icon === 'party-popper' ? (
-                              <PartyPopper className="w-3.5 h-3.5 text-[#18a3fe] stroke-[2.2] shrink-0" />
+                              <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
                             ) : (
-                              <ThreadsTopicIcon className="w-3.5 h-3.5 text-[#18a3fe] fill-current shrink-0" />
+                              <ThreadsTopicIcon className="w-3.5 h-3.5 text-[#1d64ec] fill-current shrink-0" />
                             )
                           )}
                           <span className="leading-snug">{selectedTopic.name}</span>

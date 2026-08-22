@@ -241,29 +241,36 @@ export const HomePage: React.FC<HomePageProps> = ({
     return () => observer.disconnect();
   }, [isLoadingMore, page]);
 
-  // Smart Scroll Header & Bottom Nav Visibility State (rAF Throttled for 0% CPU spike)
+  // Smart Scroll Header & Bottom Nav Visibility State (rAF Throttled, Zero-Glitch Deadband & Overscroll Safe)
   const [isNavVisible, setIsNavVisible] = useState(true);
   const lastScrollY = useRef(0);
+  const isTicking = useRef(false);
 
   useEffect(() => {
-    let rAFId: number | null = null;
-
     const handleScroll = () => {
-      if (rAFId !== null) return;
+      if (isTicking.current) return;
+      isTicking.current = true;
 
-      rAFId = requestAnimationFrame(() => {
-        rAFId = null;
-        const currentScrollY = window.scrollY;
+      requestAnimationFrame(() => {
+        isTicking.current = false;
+        const currentScrollY = Math.max(0, window.scrollY);
         const scrollDiff = currentScrollY - lastScrollY.current;
+        const maxScrollY = document.documentElement.scrollHeight - window.innerHeight;
 
-        // 1. Always show if near the top of the feed (< 50px)
-        if (currentScrollY < 50) {
+        // 1. Always keep visible when near the top (< 60px) or on top overscroll bounce
+        if (currentScrollY <= 60) {
           setIsNavVisible(true);
-        } else if (scrollDiff > 10) {
-          // Scrolling DOWN -> smoothly hide top bar and bottom nav
+        }
+        // 2. Ignore bottom elastic overscroll bounce (iOS Safari / Android Chrome)
+        else if (currentScrollY >= maxScrollY - 20) {
+          // Keep current state, ignore bottom bounce jitter
+        }
+        // 3. Scrolling DOWN with positive intention (> 12px) -> hide smoothly
+        else if (scrollDiff > 12) {
           setIsNavVisible(false);
-        } else if (scrollDiff < -4) {
-          // Scrolling UP SEDIKIT saja -> immediately reveal top bar and bottom nav
+        }
+        // 4. Scrolling UP with micro-intention (< -4px) -> reveal instantly
+        else if (scrollDiff < -4) {
           setIsNavVisible(true);
         }
 
@@ -274,35 +281,35 @@ export const HomePage: React.FC<HomePageProps> = ({
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      if (rAFId !== null) cancelAnimationFrame(rAFId);
     };
   }, []);
 
   return (
-    <div className="min-h-screen bg-white text-slate-ink pb-28 font-gt-standard select-none">
+    <div
+      className="min-h-screen bg-white text-slate-ink pb-28 font-gt-standard select-none"
+      style={{
+        paddingTop: 'calc(50px + env(safe-area-inset-top, 0px))',
+      }}
+    >
       <OfflineBanner />
       <InstallBanner />
 
-      {/* Sticky Top Header (Only the 50px MarketHeader is sticky with smooth auto-hide on scroll) */}
+      {/* Fixed Top Header (Zero-Layout-Shift 100% GPU Slide) */}
       <div
-        className="sticky top-0 z-30 w-full bg-white select-none transition-all duration-300"
+        className={`fixed top-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-b border-neutral-200/40 select-none transition-transform duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] transform-gpu ${
+          isNavVisible ? 'translate-y-0' : '-translate-y-full pointer-events-none'
+        }`}
         style={{
           paddingTop: 'env(safe-area-inset-top, 0px)',
         }}
       >
-        <div
-          className={`transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] transform-gpu overflow-hidden ${
-            isNavVisible ? 'max-h-14 opacity-100 translate-y-0' : 'max-h-0 opacity-0 -translate-y-full pointer-events-none'
-          }`}
-        >
-          <MarketHeader
-            cartCount={totalCartItems}
-            cartTotal={totalCartPrice}
-            onMenuClick={onOpenMenu}
-            onSearchClick={onNavigateSearch}
-            onSearchChange={(query) => setSearchQuery(query)}
-          />
-        </div>
+        <MarketHeader
+          cartCount={totalCartItems}
+          cartTotal={totalCartPrice}
+          onMenuClick={onOpenMenu}
+          onSearchClick={onNavigateSearch}
+          onSearchChange={(query) => setSearchQuery(query)}
+        />
       </div>
 
       {/* Non-Sticky Scrollable Tab Switcher ("Untuk Anda" & "Terbaru" - Scrolls naturally with feed) */}

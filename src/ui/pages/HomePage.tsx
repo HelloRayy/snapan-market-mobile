@@ -128,7 +128,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       category: isProduct ? (newPostData.category || 'Jasa DKV/PPLG') : undefined,
       images: newPostData.images || [],
       stock: isProduct ? (newPostData.stock ?? 1) : undefined,
-      locationTag: isProduct ? newPostData.locationTag : undefined,
+      locationTag: newPostData.locationTag || undefined,
       topicTag: newPostData.topicTag,
       isOfficialTopic: newPostData.isOfficialTopic,
       topicIcon: newPostData.topicIcon,
@@ -164,7 +164,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           stock: newPostData.stock || 1,
           price: newPostData.price || 0,
           category: newPostData.category || 'Umum',
-          location_tag: newPostData.locationTag || 'SMKN 8',
+          location_tag: newPostData.locationTag || undefined,
         });
       }
     } catch (err) {

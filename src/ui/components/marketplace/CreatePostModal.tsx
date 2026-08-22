@@ -12,8 +12,6 @@ import {
   Smile,
   BarChart2,
   Music,
-  Plus,
-  Radio,
   Play,
   Volume2,
   ArrowLeft,
@@ -120,8 +118,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
   const [showGifPicker, setShowGifPicker] = useState(false);
   const [selectedGif, setSelectedGif] = useState<string | null>(null);
   const [showPollBuilder, setShowPollBuilder] = useState(false);
-  const [pollQuestion, setPollQuestion] = useState('');
-  const [pollOptions, setPollOptions] = useState<string[]>(['', '']);
+  const [pollOptions, setPollOptions] = useState<string[]>(['', '', '']);
   const [showVoiceNote, setShowVoiceNote] = useState(false);
 
   // Draft Management State
@@ -238,12 +235,6 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
   };
 
   // Poll Handlers
-  const handleAddPollOption = () => {
-    if (pollOptions.length < 4) {
-      setPollOptions([...pollOptions, '']);
-    }
-  };
-
   const handleUpdatePollOption = (index: number, val: string) => {
     const next = [...pollOptions];
     next[index] = val;
@@ -789,67 +780,58 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     </div>
                   )}
 
-                  {/* 📊 Interactive Poll Builder Card */}
+                  {/* 📊 Polling UI (Matching Meta Threads Reference Styling) */}
                   {showPollBuilder && (
-                    <div className="my-2.5 p-3 rounded-2xl bg-neutral-50/90 border border-neutral-200/90 space-y-2.5 transform-gpu animate-toast-pop">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5 text-[13px] font-bold text-slate-900">
-                          <BarChart2 className="w-4 h-4 text-[#1d64ec] stroke-[2.2]" />
-                          <span>Jajak Pendapat / Polling</span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setShowPollBuilder(false)}
-                          className="p-1 rounded-full hover:bg-neutral-200/70 text-neutral-400 hover:text-slate-800 transition-colors cursor-pointer"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-
-                      <input
-                        type="text"
-                        placeholder="Pertanyaan polling (opsional)..."
-                        value={pollQuestion}
-                        onChange={(e) => setPollQuestion(e.target.value)}
-                        className="w-full px-3 py-1.5 rounded-xl bg-white border border-neutral-200 text-[13px] focus:outline-none focus:border-[#1d64ec]"
-                      />
-
-                      <div className="space-y-1.5">
+                    <div className="my-3 space-y-2 text-slate-900 text-base leading-snug transform-gpu animate-toast-pop select-none">
+                      <div className="flex flex-col gap-y-2 leading-snug">
                         {pollOptions.map((opt, idx) => (
-                          <div key={idx} className="flex items-center gap-1.5">
-                            <div className="w-4 h-4 rounded-full border border-neutral-300 flex items-center justify-center shrink-0">
-                              <Radio className="w-2.5 h-2.5 text-neutral-400" />
-                            </div>
+                          <div key={idx} className="relative flex items-center">
                             <input
                               type="text"
-                              placeholder={`Pilihan ${idx + 1}...`}
+                              placeholder={`Opsi ${idx + 1}...`}
                               value={opt}
-                              onChange={(e) => handleUpdatePollOption(idx, e.target.value)}
-                              className="flex-1 px-3 py-1.5 rounded-xl bg-white border border-neutral-200 text-[13px] focus:outline-none focus:border-[#1d64ec]"
+                              onChange={(e) => {
+                                handleUpdatePollOption(idx, e.target.value);
+                                if (
+                                  idx === pollOptions.length - 1 &&
+                                  e.target.value.trim().length > 0 &&
+                                  pollOptions.length < 4
+                                ) {
+                                  setPollOptions((prev) => [...prev, '']);
+                                }
+                              }}
+                              className="w-full p-3 bg-neutral-100 font-semibold rounded-xl border border-neutral-200/90 h-[46.6px] text-[14.5px] leading-snug text-slate-900 placeholder:text-neutral-400 focus:outline-none focus:border-[#1d64ec] focus:bg-white transition-all"
                             />
                             {pollOptions.length > 2 && (
                               <button
                                 type="button"
                                 onClick={() => handleRemovePollOption(idx)}
-                                className="p-1 text-neutral-400 hover:text-rose-600 transition-colors cursor-pointer"
+                                className="absolute right-3 p-1 text-neutral-400 hover:text-rose-600 transition-colors cursor-pointer"
+                                title="Hapus opsi"
                               >
-                                <X className="w-3.5 h-3.5" />
+                                <X className="w-4 h-4 stroke-[2]" />
                               </button>
                             )}
                           </div>
                         ))}
                       </div>
 
-                      {pollOptions.length < 4 && (
+                      {/* Footer: [Berakhir dalam 24 jam] --- [Hapus polling] */}
+                      <div className="flex items-center justify-between h-[21px] px-1 leading-snug select-none">
+                        <span className="text-neutral-400 text-xs leading-snug font-normal">
+                          Berakhir dalam 24 jam
+                        </span>
                         <button
                           type="button"
-                          onClick={handleAddPollOption}
-                          className="text-[12.5px] font-semibold text-[#1d64ec] hover:underline flex items-center gap-1 cursor-pointer pt-0.5"
+                          onClick={() => {
+                            setShowPollBuilder(false);
+                            setPollOptions(['', '', '']);
+                          }}
+                          className="inline-flex items-center h-[16.8px] text-rose-500 hover:text-rose-600 font-semibold text-xs leading-snug cursor-pointer hover:underline"
                         >
-                          <Plus className="w-3.5 h-3.5" />
-                          <span>Tambah pilihan ({pollOptions.length}/4)</span>
+                          Hapus polling
                         </button>
-                      )}
+                      </div>
                     </div>
                   )}
 

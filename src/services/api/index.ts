@@ -6,3 +6,6 @@ export * from './commentService';
 export * from './cartService';
 export * from './ordersService';
 export * from './productsService';
+export * from './bookmarkService';
+export * from './notificationService';
+

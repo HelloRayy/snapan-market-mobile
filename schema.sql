@@ -82,6 +82,29 @@ create table if not exists public.cart_items (
 );
 
 
+-- 6. TABEL POST BOOKMARKS (Simpan / Markah Postingan)
+create table if not exists public.post_bookmarks (
+  post_id uuid references public.market_posts(id) on delete cascade not null,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  primary key (post_id, user_id)
+);
+
+
+-- 7. TABEL NOTIFICATIONS (Notifikasi Sistem & Interaksi Sosial)
+create table if not exists public.notifications (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  actor_id uuid references public.profiles(id) on delete cascade,
+  type text not null check (type in ('like', 'comment', 'reply', 'order', 'system')),
+  title text not null,
+  message text not null,
+  post_id uuid references public.market_posts(id) on delete cascade,
+  is_read boolean default false,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+
 -- ========================================================
 -- 🛡️ ROW LEVEL SECURITY (RLS) POLICIES
 -- ========================================================
@@ -90,6 +113,8 @@ alter table public.market_posts enable row level security;
 alter table public.post_likes enable row level security;
 alter table public.post_comments enable row level security;
 alter table public.cart_items enable row level security;
+alter table public.post_bookmarks enable row level security;
+alter table public.notifications enable row level security;
 
 -- Profiles Policies
 drop policy if exists "Profiles viewable by everyone" on public.profiles;
@@ -128,3 +153,21 @@ create policy "Users view own cart" on public.cart_items for select using (auth.
 create policy "Users add to own cart" on public.cart_items for insert with check (auth.uid() = user_id);
 create policy "Users modify own cart" on public.cart_items for update using (auth.uid() = user_id);
 create policy "Users remove from own cart" on public.cart_items for delete using (auth.uid() = user_id);
+
+-- Post Bookmarks Policies
+drop policy if exists "Users view own bookmarks" on public.post_bookmarks;
+drop policy if exists "Users toggle own bookmarks" on public.post_bookmarks;
+create policy "Users view own bookmarks" on public.post_bookmarks for select using (auth.uid() = user_id);
+create policy "Users add own bookmark" on public.post_bookmarks for insert with check (auth.uid() = user_id);
+create policy "Users remove own bookmark" on public.post_bookmarks for delete using (auth.uid() = user_id);
+
+-- Notifications Policies
+drop policy if exists "Users view own notifications" on public.notifications;
+drop policy if exists "Users update own notifications" on public.notifications;
+drop policy if exists "Users delete own notifications" on public.notifications;
+drop policy if exists "Authenticated users can create notification" on public.notifications;
+create policy "Users view own notifications" on public.notifications for select using (auth.uid() = user_id);
+create policy "Users update own notifications" on public.notifications for update using (auth.uid() = user_id);
+create policy "Users delete own notifications" on public.notifications for delete using (auth.uid() = user_id);
+create policy "Authenticated users can create notification" on public.notifications for insert with check (auth.role() = 'authenticated');
+

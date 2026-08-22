@@ -132,6 +132,7 @@ create table if not exists public.comment_likes (
 
 
 -- ========================================================
+-- ========================================================
 -- 6. TABEL CART ITEMS (Keranjang Belanja)
 -- ========================================================
 create table if not exists public.cart_items (
@@ -145,7 +146,34 @@ create table if not exists public.cart_items (
 
 
 -- ========================================================
--- 7. ROW LEVEL SECURITY (RLS) POLICIES
+-- 7. TABEL POST BOOKMARKS (Simpan / Markah Postingan)
+-- ========================================================
+create table if not exists public.post_bookmarks (
+  post_id uuid references public.market_posts(id) on delete cascade not null,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  primary key (post_id, user_id)
+);
+
+
+-- ========================================================
+-- 8. TABEL NOTIFICATIONS (Notifikasi Sistem & Interaksi Sosial)
+-- ========================================================
+create table if not exists public.notifications (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  actor_id uuid references public.profiles(id) on delete cascade,
+  type text not null check (type in ('like', 'comment', 'reply', 'order', 'system')),
+  title text not null,
+  message text not null,
+  post_id uuid references public.market_posts(id) on delete cascade,
+  is_read boolean default false,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+
+-- ========================================================
+-- 9. ROW LEVEL SECURITY (RLS) POLICIES
 -- ========================================================
 alter table public.profiles enable row level security;
 alter table public.market_posts enable row level security;
@@ -153,6 +181,8 @@ alter table public.post_likes enable row level security;
 alter table public.post_comments enable row level security;
 alter table public.comment_likes enable row level security;
 alter table public.cart_items enable row level security;
+alter table public.post_bookmarks enable row level security;
+alter table public.notifications enable row level security;
 
 -- Profiles
 create policy "Public profiles are viewable by everyone" on public.profiles for select using (true);
@@ -169,7 +199,7 @@ create policy "Post likes viewable by everyone" on public.post_likes for select 
 create policy "Users can toggle own post like" on public.post_likes for all using (auth.uid() = user_id);
 
 -- Post Comments
-create policy "Comments viewable by everyone" on public.post_comments for select using (true);
+create policy "Comments viewable by everyone" on public.post_comments;
 create policy "Users can insert comments" on public.post_comments for insert with check (auth.uid() = user_id);
 create policy "Users can delete own comments" on public.post_comments for delete using (auth.uid() = user_id);
 
@@ -182,4 +212,15 @@ create policy "Users can view own cart items" on public.cart_items for select us
 create policy "Users can insert own cart items" on public.cart_items for insert with check (auth.uid() = user_id);
 create policy "Users can update own cart items" on public.cart_items for update using (auth.uid() = user_id);
 create policy "Users can delete own cart items" on public.cart_items for delete using (auth.uid() = user_id);
+
+-- Post Bookmarks
+create policy "Users view own bookmarks" on public.post_bookmarks for select using (auth.uid() = user_id);
+create policy "Users add own bookmark" on public.post_bookmarks for insert with check (auth.uid() = user_id);
+create policy "Users delete own bookmark" on public.post_bookmarks for delete using (auth.uid() = user_id);
+
+-- Notifications
+create policy "Users view own notifications" on public.notifications for select using (auth.uid() = user_id);
+create policy "Users update own notifications" on public.notifications for update using (auth.uid() = user_id);
+create policy "Users delete own notifications" on public.notifications for delete using (auth.uid() = user_id);
+create policy "Authenticated users create notification" on public.notifications for insert with check (auth.role() = 'authenticated');
 ```

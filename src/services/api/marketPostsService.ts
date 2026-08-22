@@ -34,6 +34,20 @@ export async function getMarketPosts(currentUserId?: string): Promise<MarketPost
     .select('post_id')
     .in('post_id', postIds);
 
+  // Fetch bookmarks for current user
+  const userBookmarksMap: Record<string, boolean> = {};
+  if (currentUserId) {
+    const { data: bookmarksData } = await supabase
+      .from('post_bookmarks')
+      .select('post_id')
+      .eq('user_id', currentUserId)
+      .in('post_id', postIds);
+
+    (bookmarksData || []).forEach((bm) => {
+      userBookmarksMap[bm.post_id] = true;
+    });
+  }
+
   const likesMap: Record<string, number> = {};
   const userLikesMap: Record<string, boolean> = {};
   (likesData || []).forEach((like) => {
@@ -53,7 +67,8 @@ export async function getMarketPosts(currentUserId?: string): Promise<MarketPost
     seller: post.seller as unknown as MarketPostWithSeller['seller'],
     likes_count: likesMap[post.id] || post.likes_count || 0,
     comments_count: commentsMap[post.id] || post.comments_count || 0,
-    is_liked_by_user: !!userLikesMap[post.id]
+    is_liked_by_user: !!userLikesMap[post.id],
+    is_bookmarked_by_user: !!userBookmarksMap[post.id]
   }));
 }
 

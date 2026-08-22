@@ -183,7 +183,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
             setSelectedImageIndex(0);
             setIsLightboxOpen(true);
           }}
-          className="relative w-full rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[420px] aspect-[4/5] sm:aspect-[16/10] mt-2.5 cursor-pointer touch-pan-y"
+          className="relative w-full rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[400px] aspect-[4/5] mt-2.5 cursor-pointer touch-pan-y"
         >
           <ProgressiveImage
             src={parentPost.images[0]}
@@ -219,7 +219,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
               setSelectedImageIndex(idx);
               setIsLightboxOpen(true);
             }}
-            className="relative shrink-0 w-[82%] sm:w-[75%] rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[380px] aspect-[3/4] cursor-pointer touch-pan-y"
+            className="relative shrink-0 w-[84%] sm:w-[76%] rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[400px] aspect-[4/5] cursor-pointer touch-pan-y"
           >
             <ProgressiveImage
               src={imgUrl}

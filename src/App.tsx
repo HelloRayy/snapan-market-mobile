@@ -8,8 +8,38 @@ import { SearchPage } from '@/ui/pages/SearchPage';
 import { NavigationDrawer } from '@/ui/components/navigation/NavigationDrawer';
 import { CreatePostModal } from '@/ui/components/marketplace/CreatePostModal';
 import { MarketPostItem } from '@/types/marketFeed';
+import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
 import { useAuth } from '@/ui/hooks/useAuth';
 import { useSmoothScroll } from '@/ui/hooks/useSmoothScroll';
+
+// Dynamic URL Helper: Extracts matching post from /@username/post/:postId or #post-:postId
+function getPostFromLocation(): MarketPostItem | null {
+  if (typeof window === 'undefined') return null;
+
+  const path = window.location.pathname;
+  const hash = window.location.hash;
+
+  // 1. Check pathname: /@username/post/:postId or /post/:postId
+  if (path.startsWith('/@') || path.startsWith('/post/')) {
+    const parts = path.split('/').filter(Boolean);
+    const potentialPostId = parts[parts.length - 1];
+    if (potentialPostId && potentialPostId !== parts[0]) {
+      const found = MOCK_MARKET_POSTS.find(
+        (p) => p.id === potentialPostId || p.id === decodeURIComponent(potentialPostId)
+      );
+      if (found) return found;
+    }
+  }
+
+  // 2. Check hash fallback: #post-post-thread-1
+  if (hash.startsWith('#post-')) {
+    const rawId = hash.replace(/^#post-/, '');
+    const found = MOCK_MARKET_POSTS.find((p) => p.id === rawId || `post-${p.id}` === rawId);
+    if (found) return found;
+  }
+
+  return null;
+}
 
 export function App() {
   // Initialize Lenis Kinetic Smooth Scroll Engine (120fps physics)
@@ -54,13 +84,14 @@ export function App() {
   const homeScrollYRef = useRef<number>(0);
   const prevRouteRef = useRef<string>(window.location.pathname);
 
-  // Check routes
+  // Dynamic Route Checks
   const isDownloadRoute = currentRoute === '/download' || window.location.hash === '#download';
   const isOnboardingRoute = currentRoute === '/onboarding' || window.location.hash === '#onboarding';
   const isSearchRoute = currentRoute === '/search' || window.location.hash === '#search';
+  const isPostDetailRoute = currentRoute.includes('/post/') || currentRoute.includes('/postingan/') || window.location.hash.startsWith('#post-');
   
-  // Dynamic Route Check: /@username or #@username or /profile
-  const isProfileRoute = currentRoute.startsWith('/@') || currentRoute === '/profile' || window.location.hash.startsWith('#@');
+  // Dynamic Route Check: /@username or #@username or /profile (excluding /@username/post/...)
+  const isProfileRoute = !isPostDetailRoute && (currentRoute.startsWith('/@') || currentRoute === '/profile' || (window.location.hash.startsWith('#@') && !isPostDetailRoute));
   
   let targetProfileUsername = 'radityarayhannnn';
   if (currentRoute.startsWith('/@')) {
@@ -74,10 +105,20 @@ export function App() {
   const myUsername = profile?.full_name?.toLowerCase().replace(/\s+/g, '') || user?.user_metadata?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn';
   const isViewingOtherUserProfile = isProfileRoute && targetProfileUsername !== myUsername && targetProfileUsername !== 'me';
 
-  // Initialize Root History Guard for Standalone PWA
+  // Initialize Root History Guard & Deep Link Post Resolver
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (!window.history.state || !window.history.state.isSnapanRoot) {
+
+    // Resolve post from initial URL if navigated directly or reloaded
+    const initialPost = getPostFromLocation();
+    if (initialPost) {
+      setSelectedPost(initialPost);
+      const authorHandle = initialPost.seller.username || initialPost.seller.name.toLowerCase().replace(/\s+/g, '') || 'author';
+      const cleanHandle = authorHandle.replace(/^@/, '');
+      const canonicalUrl = `/@${cleanHandle}/post/${initialPost.id}`;
+      window.history.replaceState({ isSnapanRoot: false, layer: 'post-detail', postId: initialPost.id, username: cleanHandle }, '', canonicalUrl);
+      setCurrentRoute(canonicalUrl);
+    } else if (!window.history.state || !window.history.state.isSnapanRoot) {
       window.history.replaceState({ isSnapanRoot: true, route: window.location.pathname }, '', window.location.pathname);
     }
   }, []);
@@ -86,6 +127,7 @@ export function App() {
   useEffect(() => {
     const handlePopState = () => {
       const hash = window.location.hash;
+      const nextRoute = window.location.pathname;
 
       // 1. If currently Drawer is open, close it cleanly
       if (isDrawerOpen) {
@@ -93,19 +135,20 @@ export function App() {
         return;
       }
 
-      // 2. If currently a Post Detail layer is open, close it cleanly
-      if (selectedPost && !hash.startsWith('#post-')) {
+      // 2. Resolve post detail state from popstate URL
+      const postMatch = getPostFromLocation();
+      if (postMatch) {
+        setSelectedPost(postMatch);
+      } else {
         setSelectedPost(null);
-        return;
       }
 
       // 3. Update route state
-      const nextRoute = window.location.pathname;
       setCurrentRoute(nextRoute);
 
       // 4. Double-Back to Exit Protection when at Root Home
-      const nextIsRoot = nextRoute === '/' && !hash.startsWith('#@') && !hash.startsWith('#post-');
-      if (nextIsRoot && !selectedPost && !isDrawerOpen) {
+      const nextIsRoot = nextRoute === '/' && !hash.startsWith('#@') && !postMatch;
+      if (nextIsRoot && !postMatch && !isDrawerOpen) {
         const now = Date.now();
         if (now - lastBackPressTimeRef.current < 2000) {
           // Double back within 2s -> Allow OS to exit PWA
@@ -132,12 +175,12 @@ export function App() {
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [user, selectedPost, isDrawerOpen]);
+  }, [user, isDrawerOpen]);
 
   // Route-based Scroll Management: Reset on new non-home routes, restore when returning to Home
   useEffect(() => {
     const prevRoute = prevRouteRef.current;
-    const isCurrentHome = !isProfileRoute && !isDownloadRoute && !isOnboardingRoute;
+    const isCurrentHome = !isProfileRoute && !isDownloadRoute && !isOnboardingRoute && !isPostDetailRoute;
     const wasPrevHome = prevRoute === '/' || (!prevRoute.startsWith('/@') && prevRoute !== '/profile' && !prevRoute.startsWith('#@') && prevRoute !== '/download' && prevRoute !== '/onboarding');
 
     if (wasPrevHome && !isCurrentHome) {
@@ -154,7 +197,7 @@ export function App() {
     }
 
     prevRouteRef.current = currentRoute;
-  }, [currentRoute, isProfileRoute, isDownloadRoute, isOnboardingRoute]);
+  }, [currentRoute, isProfileRoute, isDownloadRoute, isOnboardingRoute, isPostDetailRoute]);
 
   const navigateToWeb = () => {
     window.history.pushState({ route: '/' }, '', '/');
@@ -169,7 +212,7 @@ export function App() {
 
   const navigateToSearch = () => {
     // Record current home scroll position before navigating away
-    if (!isProfileRoute && !isSearchRoute) {
+    if (!isProfileRoute && !isSearchRoute && !isPostDetailRoute) {
       homeScrollYRef.current = window.scrollY;
     }
     window.history.pushState({ route: '/search' }, '', '/search');
@@ -178,7 +221,9 @@ export function App() {
 
   const navigateToProfile = (username: string) => {
     // Record current home scroll position before navigating away
-    homeScrollYRef.current = window.scrollY;
+    if (!isProfileRoute && !isSearchRoute && !isPostDetailRoute) {
+      homeScrollYRef.current = window.scrollY;
+    }
     const clean = username.replace(/^@/, '');
     window.history.pushState({ type: 'profile', username: clean }, '', `/@${clean}`);
     setCurrentRoute(`/@${clean}`);
@@ -199,23 +244,32 @@ export function App() {
 
   const handleOpenPostDetail = (post: MarketPostItem) => {
     // Record home scroll before opening detail
-    if (!isProfileRoute && !isSearchRoute) {
+    if (!isProfileRoute && !isSearchRoute && !isPostDetailRoute) {
       homeScrollYRef.current = window.scrollY;
     }
+    const authorHandle = post.seller.username || post.seller.name.toLowerCase().replace(/\s+/g, '') || 'author';
+    const cleanHandle = authorHandle.replace(/^@/, '');
+    const canonicalUrl = `/@${cleanHandle}/post/${post.id}`;
     window.history.pushState(
-      { layer: 'post-detail', postId: post.id },
+      { layer: 'post-detail', postId: post.id, username: cleanHandle },
       '',
-      `${window.location.pathname}#post-${post.id}`
+      canonicalUrl
     );
+    setCurrentRoute(canonicalUrl);
     setSelectedPost(post);
   };
 
   const handleClosePostDetail = () => {
     window.dispatchEvent(new CustomEvent('snapan:show-nav'));
-    if (window.location.hash.startsWith('#post-')) {
+    setSelectedPost(null);
+    if (window.history.state?.layer === 'post-detail') {
       window.history.back();
     } else {
-      setSelectedPost(null);
+      const returnRoute = currentRoute.startsWith('/@') && !currentRoute.includes('/post/')
+        ? `/@${targetProfileUsername}`
+        : '/';
+      window.history.pushState({ isSnapanRoot: true, route: returnRoute }, '', returnRoute);
+      setCurrentRoute(returnRoute);
     }
   };
 

@@ -7,6 +7,7 @@ import { formatSmartTimestamp } from '@/utils/formatters';
 import { MediaLightboxModal } from './MediaLightboxModal';
 import { ClickableVerifiedBadge } from './VerifiedBadgeModal';
 import { togglePostBookmark } from '@/services/api/bookmarkService';
+import { triggerHaptic } from '@/utils/haptics';
 
 // Custom Threads 3-Dot Topic Icon
 const ThreadsTopicIcon: React.FC<{ className?: string }> = ({ className = "w-3.5 h-3.5 text-[#1d64ec] fill-current shrink-0" }) => (
@@ -132,6 +133,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
       hasDraggedRef.current = false;
       return;
     }
+    triggerHaptic('selection');
     setSelectedImageIndex(index);
     setIsLightboxOpen(true);
   };
@@ -139,9 +141,11 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
   const handleLikeToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isLiked) {
+      triggerHaptic('light');
       setIsLiked(false);
       setLikesCount((prev) => prev - 1);
     } else {
+      triggerHaptic('medium');
       setIsLiked(true);
       setLikesCount((prev) => prev + 1);
     }
@@ -149,6 +153,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
   const handleRepostToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
+    triggerHaptic('medium');
     if (isReposted) {
       setIsReposted(false);
       setRepostsCount((prev) => Math.max(0, prev - 1));

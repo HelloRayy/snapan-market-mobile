@@ -19,6 +19,7 @@ import {
   Navigation,
 } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
+import { triggerHaptic } from '@/utils/haptics';
 
 // Custom Threads 3-Dot Topic Icon
 const ThreadsTopicIcon: React.FC<{ className?: string }> = ({
@@ -326,6 +327,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     };
 
     if (onSubmitPost) {
+      triggerHaptic('success');
       onSubmitPost(newPost);
     }
 

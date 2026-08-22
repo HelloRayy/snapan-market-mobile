@@ -12,6 +12,8 @@ import { useCartStore } from '../store/cartStore';
 import { useAuth } from '../hooks/useAuth';
 import { getMarketPosts, createMarketPost } from '@/services/api/marketPostsService';
 import type { MarketPostWithSeller } from '@/types/supabase';
+import { PullToRefreshIndicator } from '../components/marketplace/PullToRefreshIndicator';
+import { triggerHaptic } from '@/utils/haptics';
 
 interface HomePageProps {
   onSelectPost?: (post: MarketPostItem) => void;
@@ -42,57 +44,122 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [page, setPage] = useState(1);
   const observerTargetRef = useRef<HTMLDivElement>(null);
 
-  // Fetch Supabase Backend Posts on Mount
-  useEffect(() => {
-    async function loadSupabasePosts() {
-      try {
-        const supabasePosts = await getMarketPosts();
-        if (supabasePosts && supabasePosts.length > 0) {
-          const mappedPosts: MarketPostItem[] = supabasePosts.map((p: MarketPostWithSeller) => ({
-            id: p.id,
-            caption: p.caption,
-            price: p.price ?? 0,
-            originalPrice: p.original_price ?? undefined,
-            category: (p.category as MarketPostItem['category']) || 'Lainnya',
-            images: p.images || [],
-            stock: p.stock ?? 1,
-            locationTag: p.location_tag || undefined,
-            likesCount: p.likes_count || 0,
-            commentsCount: p.comments_count || 0,
-            repostsCount: 0,
-            timestamp: new Date(p.created_at).toLocaleDateString('id-ID', {
-              hour: '2-digit',
-              minute: '2-digit'
-            }),
-            isLiked: p.is_liked_by_user,
-            seller: {
-              id: p.seller?.id || p.seller_id,
-              name: p.seller?.full_name || 'Penjual Snapan',
-              avatar:
-                p.seller?.avatar_url ||
-                'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&q=80',
-              classGroup: p.seller?.class_group || 'Siswa Snapan',
-              isVerified: p.seller?.is_verified ?? false,
-              username: p.seller?.full_name
-                ? p.seller.full_name.toLowerCase().replace(/\s+/g, '')
-                : 'seller'
-            }
-          }));
+  // Native Pull-to-Refresh State
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const touchStartY = useRef(0);
+  const isPulling = useRef(false);
+  const hasTriggeredHaptic = useRef(false);
 
-          // Merge Supabase posts with mock posts (Supabase posts at the top)
-          setItems((prev) => {
-            const existingIds = new Set(mappedPosts.map((mp) => mp.id));
-            const filteredMock = prev.filter((item) => !existingIds.has(item.id));
-            return [...mappedPosts, ...filteredMock];
-          });
-        }
-      } catch (err) {
-        console.warn('Supabase fetch bypassed, using mock data:', err);
+  // Fetch Supabase Backend Posts (Re-usable for pull-to-refresh)
+  const fetchPosts = async () => {
+    try {
+      const supabasePosts = await getMarketPosts();
+      if (supabasePosts && supabasePosts.length > 0) {
+        const mappedPosts: MarketPostItem[] = supabasePosts.map((p: MarketPostWithSeller) => ({
+          id: p.id,
+          caption: p.caption,
+          price: p.price ?? 0,
+          originalPrice: p.original_price ?? undefined,
+          category: (p.category as MarketPostItem['category']) || 'Lainnya',
+          images: p.images || [],
+          stock: p.stock ?? 1,
+          locationTag: p.location_tag || undefined,
+          likesCount: p.likes_count || 0,
+          commentsCount: p.comments_count || 0,
+          repostsCount: 0,
+          timestamp: new Date(p.created_at).toLocaleDateString('id-ID', {
+            hour: '2-digit',
+            minute: '2-digit'
+          }),
+          isLiked: p.is_liked_by_user,
+          seller: {
+            id: p.seller?.id || p.seller_id,
+            name: p.seller?.full_name || 'Penjual Snapan',
+            avatar:
+              p.seller?.avatar_url ||
+              'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&q=80',
+            classGroup: p.seller?.class_group || 'Siswa Snapan',
+            isVerified: p.seller?.is_verified ?? false,
+            username: p.seller?.full_name
+              ? p.seller.full_name.toLowerCase().replace(/\s+/g, '')
+              : 'seller'
+          }
+        }));
+
+        setItems((prev) => {
+          const existingIds = new Set(mappedPosts.map((mp) => mp.id));
+          const filteredMock = prev.filter((item) => !existingIds.has(item.id));
+          return [...mappedPosts, ...filteredMock];
+        });
       }
+    } catch (err) {
+      console.warn('Supabase fetch bypassed, using mock data:', err);
     }
+  };
 
-    loadSupabasePosts();
+  useEffect(() => {
+    fetchPosts();
   }, []);
+
+  // Native Pull-to-Refresh Gesture Listeners
+  useEffect(() => {
+    const handleTouchStart = (e: TouchEvent) => {
+      if (window.scrollY <= 2) {
+        touchStartY.current = e.touches[0].clientY;
+        isPulling.current = true;
+        hasTriggeredHaptic.current = false;
+      } else {
+        isPulling.current = false;
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isPulling.current || isRefreshing || window.scrollY > 2) return;
+      const currentY = e.touches[0].clientY;
+      const diff = currentY - touchStartY.current;
+
+      if (diff > 0) {
+        // Elastic rubber-band resistance formula
+        const distance = Math.min(85, diff * 0.45);
+        setPullDistance(distance);
+
+        if (distance >= 60 && !hasTriggeredHaptic.current) {
+          hasTriggeredHaptic.current = true;
+          triggerHaptic('medium');
+        } else if (distance < 60 && hasTriggeredHaptic.current) {
+          hasTriggeredHaptic.current = false;
+        }
+      }
+    };
+
+    const handleTouchEnd = async () => {
+      if (!isPulling.current) return;
+      isPulling.current = false;
+
+      if (pullDistance >= 60 && !isRefreshing) {
+        setIsRefreshing(true);
+        triggerHaptic('success');
+        await fetchPosts();
+        setTimeout(() => {
+          setIsRefreshing(false);
+          setPullDistance(0);
+        }, 600);
+      } else {
+        setPullDistance(0);
+      }
+    };
+
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [pullDistance, isRefreshing]);
 
   // Auth Hook Integration
   const { user, profile } = useAuth();
@@ -319,6 +386,9 @@ export const HomePage: React.FC<HomePageProps> = ({
       <OfflineBanner />
       <InstallBanner />
 
+      {/* Elastic Native Pull-to-Refresh Indicator */}
+      <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
+
       {/* Fixed Top Header (Zero-Layout-Shift 100% GPU Slide) */}
       <div
         className={`fixed top-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-b border-neutral-200/40 select-none transition-transform duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] transform-gpu ${
@@ -331,8 +401,14 @@ export const HomePage: React.FC<HomePageProps> = ({
         <MarketHeader
           cartCount={totalCartItems}
           cartTotal={totalCartPrice}
-          onMenuClick={onOpenMenu}
-          onSearchClick={onNavigateSearch}
+          onMenuClick={() => {
+            triggerHaptic('light');
+            onOpenMenu?.();
+          }}
+          onSearchClick={() => {
+            triggerHaptic('light');
+            onNavigateSearch?.();
+          }}
           onSearchChange={(query) => setSearchQuery(query)}
         />
       </div>
@@ -349,7 +425,10 @@ export const HomePage: React.FC<HomePageProps> = ({
 
           <button
             type="button"
-            onClick={() => setFeedTab('for-you')}
+            onClick={() => {
+              triggerHaptic('selection');
+              setFeedTab('for-you');
+            }}
             className={`flex-1 py-3 text-[14.5px] text-center relative cursor-pointer transition-colors ${
               feedTab === 'for-you' ? 'text-slate-900 font-bold' : 'text-neutral-400 hover:text-slate-700 font-medium'
             }`}
@@ -359,7 +438,10 @@ export const HomePage: React.FC<HomePageProps> = ({
 
           <button
             type="button"
-            onClick={() => setFeedTab('latest')}
+            onClick={() => {
+              triggerHaptic('selection');
+              setFeedTab('latest');
+            }}
             className={`flex-1 py-3 text-[14.5px] text-center relative cursor-pointer transition-colors ${
               feedTab === 'latest' ? 'text-slate-900 font-bold' : 'text-neutral-400 hover:text-slate-700 font-medium'
             }`}
@@ -417,6 +499,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         isVisible={isNavVisible}
         userAvatar={profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80'}
         onTabChange={(tab) => {
+          triggerHaptic('selection');
           if (tab === 'profile') {
             onNavigateToProfile?.(profile?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn');
           } else {
@@ -424,6 +507,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           }
         }}
         onPostClick={() => {
+          triggerHaptic('medium');
           setSelectedPostMode('thread');
           setIsCreateModalOpen(true);
         }}

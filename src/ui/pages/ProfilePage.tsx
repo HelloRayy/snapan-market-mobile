@@ -23,6 +23,7 @@ import { MOCK_MARKET_POSTS, MOCK_USER_REPLIES } from '@/data/mockMarketData';
 import { MarketPostItem } from '@/types/marketFeed';
 import { useAuth } from '../hooks/useAuth';
 import { createMarketPost } from '@/services/api/marketPostsService';
+import { triggerHaptic } from '@/utils/haptics';
 
 interface ProfilePageProps {
   username?: string;
@@ -465,6 +466,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <button
                 type="button"
                 onClick={() => {
+                  triggerHaptic('medium');
                   setIsFollowing(!isFollowing);
                   setProfileData((prev) => ({
                     ...prev,
@@ -488,6 +490,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <button
                 type="button"
                 onClick={() => {
+                  triggerHaptic('light');
                   alert(`Fitur chat langsung dengan @${profileData.username} akan segera hadir!`);
                 }}
                 className="relative flex items-center justify-center w-10 h-10 shrink-0 rounded-xl bg-white text-slate-800 border border-neutral-300 shadow-2xs hover:bg-neutral-50 transition-colors overflow-hidden cursor-pointer select-none active:scale-[0.96]"
@@ -522,7 +525,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
             <button
               type="button"
-              onClick={() => setActiveTab('threads')}
+              onClick={() => {
+                triggerHaptic('selection');
+                setActiveTab('threads');
+              }}
               className={`flex-1 py-3 text-[14px] text-center relative cursor-pointer transition-colors ${
                 activeTab === 'threads' ? 'font-bold text-slate-900' : 'font-medium text-neutral-400 hover:text-slate-700'
               }`}
@@ -532,7 +538,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
             <button
               type="button"
-              onClick={() => setActiveTab('replies')}
+              onClick={() => {
+                triggerHaptic('selection');
+                setActiveTab('replies');
+              }}
               className={`flex-1 py-3 text-[14px] text-center relative cursor-pointer transition-colors ${
                 activeTab === 'replies' ? 'font-bold text-slate-900' : 'font-medium text-neutral-400 hover:text-slate-700'
               }`}
@@ -542,7 +551,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
             <button
               type="button"
-              onClick={() => setActiveTab('media')}
+              onClick={() => {
+                triggerHaptic('selection');
+                setActiveTab('media');
+              }}
               className={`flex-1 py-3 text-[14px] text-center relative cursor-pointer transition-colors ${
                 activeTab === 'media' ? 'font-bold text-slate-900' : 'font-medium text-neutral-400 hover:text-slate-700'
               }`}

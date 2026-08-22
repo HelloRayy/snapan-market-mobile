@@ -71,20 +71,37 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
               : 'fill-slate-900 text-slate-900 stroke-[2]'
             : 'stroke-[1.8] text-neutral-400 group-hover:text-slate-700 fill-transparent';
 
+          // Center Plus Action Button: Original Elevated Kumo Primary Electric Blue Floating FAB
+          if (item.isAction) {
+            return (
+              <div key={item.id} className="relative flex items-center justify-center shrink-0 h-[50px] w-full">
+                <button
+                  type="button"
+                  onClick={onPostClick || (() => onTabChange('post'))}
+                  className="absolute -top-5 w-12 h-12 rounded-full bg-[#1d64ec] hover:bg-[#154ec1] border-2 border-white active:scale-90 text-white flex items-center justify-center shadow-[0_8px_20px_rgba(29,100,236,0.38)] ring-4 ring-white/90 transition-all cursor-pointer z-10 overflow-hidden group"
+                  aria-label="Jual Produk Baru"
+                  title="Jual Produk Baru"
+                >
+                  {/* Kumo Inset Top Rim Highlight Gradient */}
+                  <span className="absolute inset-0 rounded-full bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.4)] group-hover:from-[#2563eb] transition-all pointer-events-none" />
+
+                  {/* Plus Icon */}
+                  <Plus className="w-6 h-6 stroke-[2.5] text-white relative z-10" />
+                </button>
+              </div>
+            );
+          }
+
           return (
             <button
               key={item.id}
               type="button"
-              onClick={
-                item.isAction
-                  ? onPostClick || (() => onTabChange('post'))
-                  : () => onTabChange(item.id)
-              }
+              onClick={() => onTabChange(item.id)}
               className="h-[50px] w-full flex items-center justify-center relative group cursor-pointer active:scale-90 transition-transform duration-100"
               aria-label={item.label}
             >
               {/* Subtle active indicator pill matching Threads h-[42px] */}
-              {isActive && !item.isAction && (
+              {isActive && (
                 <div className="absolute inset-x-1.5 sm:inset-x-2 inset-y-1 bg-neutral-100/90 rounded-xl pointer-events-none -z-0" />
               )}
 
@@ -102,10 +119,6 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
                       alt="Profil"
                       className="w-full h-full object-cover"
                     />
-                  </div>
-                ) : item.isAction ? (
-                  <div className="relative -top-2.5 w-[42px] h-[42px] rounded-full bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] hover:from-[#2563eb] hover:to-[#154ec1] active:scale-90 flex items-center justify-center text-white transition-all shadow-[0_4px_14px_rgba(29,100,236,0.42),inset_0_1px_0_0_rgba(255,255,255,0.5)] border-2 border-white ring-2 ring-blue-500/20 overflow-hidden">
-                    <Plus className="w-5 h-5 stroke-[2.5] text-white relative z-10" />
                   </div>
                 ) : (
                   <Icon className={`w-[24px] h-[24px] transition-all ${iconFillClass}`} />

@@ -257,14 +257,14 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
               Nama pengguna
             </label>
             <div className="flex items-center mt-0.5">
-              <span className="text-[15.5px] font-normal text-slate-400 mr-0.5 select-none">@</span>
+              <span className="text-[15.5px] font-bold text-black mr-0.5 select-none">@</span>
               <input
                 type="text"
                 value={username}
                 maxLength={30}
                 onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9._]/g, ''))}
                 placeholder="radityarayhannnn"
-                className="w-full text-[15.5px] font-normal text-slate-900 bg-transparent focus:outline-none placeholder:text-neutral-400"
+                className="w-full text-[15.5px] font-bold text-black bg-transparent focus:outline-none placeholder:font-normal placeholder:text-neutral-400"
               />
             </div>
           </div>

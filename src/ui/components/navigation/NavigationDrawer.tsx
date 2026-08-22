@@ -86,123 +86,129 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
           </button>
         </div>
 
-        {/* 2. Scrollable Navigation Menu (Pure Minimalist Streamlined Flow) */}
-        <div className="flex-1 overflow-y-auto py-3 space-y-1.5 scrollbar-none leading-snug">
-          {/* 1. Untuk Anda (Active Hero Pill) */}
-          <button
-            type="button"
-            onClick={() => {
-              onNavigateHome();
-              onClose();
-            }}
-            className="flex items-center gap-3.5 h-[42px] w-full px-3.5 rounded-2xl bg-neutral-100/90 text-slate-950 font-bold text-[15px] hover:bg-neutral-200/70 active:scale-98 transition-all cursor-pointer leading-snug text-left shadow-2xs"
-          >
-            <Home className="w-5 h-5 fill-slate-900 stroke-none shrink-0" />
-            <span className="truncate">Untuk Anda</span>
-          </button>
+        {/* 2. Streamlined Navigation Links List */}
+        <div className="flex-1 overflow-y-auto py-2 scrollbar-none leading-snug">
+          {/* Group 1: Feed & Exploration (Untuk Anda, Utas baru, Cari) */}
+          <div className="space-y-1">
+            {/* 1. Untuk Anda (Active Hero Pill) */}
+            <button
+              type="button"
+              onClick={() => {
+                onNavigateHome();
+                onClose();
+              }}
+              className="flex items-center gap-3.5 h-[42px] w-full px-3.5 rounded-2xl bg-neutral-100/90 text-slate-950 font-bold text-[15px] hover:bg-neutral-200/70 active:scale-98 transition-all cursor-pointer leading-snug text-left shadow-2xs"
+            >
+              <Home className="w-5 h-5 fill-slate-900 stroke-none shrink-0" />
+              <span className="truncate">Untuk Anda</span>
+            </button>
 
-          {/* 2. Utas baru */}
-          {onOpenCreateModal && (
+            {/* 2. Utas baru */}
+            {onOpenCreateModal && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenCreateModal();
+                }}
+                className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[15px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
+              >
+                <Plus className="w-5 h-5 stroke-[2.4] text-slate-800 shrink-0" />
+                <span className="truncate">Utas baru</span>
+              </button>
+            )}
+
+            {/* 3. Cari */}
+            <button
+              type="button"
+              onClick={() => {
+                if (onNavigateSearch) {
+                  onNavigateSearch();
+                } else {
+                  onNavigateHome();
+                }
+                onClose();
+              }}
+              className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[15px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
+            >
+              <Search className="w-5 h-5 stroke-[2.2] text-slate-800 shrink-0" />
+              <span className="truncate">Cari</span>
+            </button>
+          </div>
+
+          {/* Group 2: Personal Social Stream & Archive (Pesan, Aktivitas, Profil, Insight, Tersimpan) */}
+          <div className="pt-4 space-y-1">
+            {/* 4. Pesan with Overlaid Notification Badge */}
             <button
               type="button"
               onClick={() => {
                 onClose();
-                onOpenCreateModal();
               }}
               className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[15px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
             >
-              <Plus className="w-5 h-5 stroke-[2.4] text-slate-800 shrink-0" />
-              <span className="truncate">Utas baru</span>
+              <div className="relative shrink-0 flex items-center justify-center">
+                <Send className="w-5 h-5 stroke-[2] text-slate-800 -rotate-12" />
+                <span className="absolute -top-1.5 -right-2 min-w-[15px] h-[15px] px-1 rounded-full bg-[#ff3040] text-white text-[9.5px] font-bold flex items-center justify-center border-1.5 border-white leading-none shadow-2xs">
+                  1
+                </span>
+              </div>
+              <span className="truncate">Pesan</span>
             </button>
-          )}
 
-          {/* 3. Cari */}
-          <button
-            type="button"
-            onClick={() => {
-              if (onNavigateSearch) {
-                onNavigateSearch();
-              } else {
-                onNavigateHome();
-              }
-              onClose();
-            }}
-            className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[15px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
-          >
-            <Search className="w-5 h-5 stroke-[2.2] text-slate-800 shrink-0" />
-            <span className="truncate">Cari</span>
-          </button>
+            {/* 5. Aktivitas with Overlaid Red Dot */}
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+              }}
+              className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[15px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
+            >
+              <div className="relative shrink-0 flex items-center justify-center">
+                <Heart className="w-5 h-5 stroke-[2.2] text-slate-800" />
+                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#ff3040] border-2 border-white" />
+              </div>
+              <span className="truncate">Aktivitas</span>
+            </button>
 
-          {/* 4. Pesan with Overlaid Notification Badge */}
-          <button
-            type="button"
-            onClick={() => {
-              onClose();
-            }}
-            className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[15px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
-          >
-            <div className="relative shrink-0 flex items-center justify-center">
-              <Send className="w-5 h-5 stroke-[2] text-slate-800 -rotate-12" />
-              <span className="absolute -top-1.5 -right-2 min-w-[15px] h-[15px] px-1 rounded-full bg-[#ff3040] text-white text-[9.5px] font-bold flex items-center justify-center border-1.5 border-white leading-none shadow-2xs">
-                1
-              </span>
-            </div>
-            <span className="truncate">Pesan</span>
-          </button>
+            {/* 6. Profil */}
+            <button
+              type="button"
+              onClick={() => {
+                onNavigateProfile(myUsername);
+                onClose();
+              }}
+              className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[15px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
+            >
+              <User className="w-5 h-5 stroke-[2] text-slate-800 shrink-0" />
+              <span className="truncate">Profil</span>
+            </button>
 
-          {/* 5. Aktivitas with Overlaid Red Dot */}
-          <button
-            type="button"
-            onClick={() => {
-              onClose();
-            }}
-            className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[15px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
-          >
-            <div className="relative shrink-0 flex items-center justify-center">
-              <Heart className="w-5 h-5 stroke-[2.2] text-slate-800" />
-              <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#ff3040] border-2 border-white" />
-            </div>
-            <span className="truncate">Aktivitas</span>
-          </button>
+            {/* 7. Insight */}
+            <button
+              type="button"
+              onClick={() => {
+                onNavigateProfile(myUsername);
+                onClose();
+              }}
+              className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[15px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
+            >
+              <BarChart2 className="w-5 h-5 stroke-[2] text-slate-800 shrink-0" />
+              <span className="truncate">Insight</span>
+            </button>
 
-          {/* 6. Profil */}
-          <button
-            type="button"
-            onClick={() => {
-              onNavigateProfile(myUsername);
-              onClose();
-            }}
-            className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[15px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
-          >
-            <User className="w-5 h-5 stroke-[2] text-slate-800 shrink-0" />
-            <span className="truncate">Profil</span>
-          </button>
-
-          {/* 7. Insight */}
-          <button
-            type="button"
-            onClick={() => {
-              onNavigateProfile(myUsername);
-              onClose();
-            }}
-            className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[15px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
-          >
-            <BarChart2 className="w-5 h-5 stroke-[2] text-slate-800 shrink-0" />
-            <span className="truncate">Insight</span>
-          </button>
-
-          {/* 8. Tersimpan */}
-          <button
-            type="button"
-            onClick={() => {
-              onNavigateProfile(myUsername);
-              onClose();
-            }}
-            className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[15px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
-          >
-            <Bookmark className="w-5 h-5 stroke-[2] text-slate-800 shrink-0" />
-            <span className="truncate">Tersimpan</span>
-          </button>
+            {/* 8. Tersimpan */}
+            <button
+              type="button"
+              onClick={() => {
+                onNavigateProfile(myUsername);
+                onClose();
+              }}
+              className="flex items-center gap-3.5 h-[38px] w-full px-3.5 rounded-xl text-[15px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"
+            >
+              <Bookmark className="w-5 h-5 stroke-[2] text-slate-800 shrink-0" />
+              <span className="truncate">Tersimpan</span>
+            </button>
+          </div>
         </div>
 
         {/* 3. Bottom Utility & System Section (Pinned to Bottom with Distinct Separator) */}

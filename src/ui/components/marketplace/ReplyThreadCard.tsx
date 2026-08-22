@@ -68,27 +68,32 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
 
   // Drag to Scroll State for Multi-Image Carousel
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [isMouseDown, setIsMouseDown] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
+  const isMouseDownRef = useRef(false);
+  const startXRef = useRef(0);
+  const scrollLeftRef = useRef(0);
+  const hasDraggedRef = useRef(false);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!scrollContainerRef.current) return;
-    setIsMouseDown(true);
-    setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
-    setScrollLeft(scrollContainerRef.current.scrollLeft);
+    isMouseDownRef.current = true;
+    hasDraggedRef.current = false;
+    startXRef.current = e.pageX - scrollContainerRef.current.offsetLeft;
+    scrollLeftRef.current = scrollContainerRef.current.scrollLeft;
   };
 
   const handleMouseLeaveOrUp = () => {
-    setIsMouseDown(false);
+    isMouseDownRef.current = false;
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isMouseDown || !scrollContainerRef.current) return;
-    e.preventDefault();
+    if (!isMouseDownRef.current || !scrollContainerRef.current) return;
     const x = e.pageX - scrollContainerRef.current.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+    const walk = (x - startXRef.current) * 1.5;
+    if (Math.abs(walk) > 4) {
+      hasDraggedRef.current = true;
+      e.preventDefault();
+      scrollContainerRef.current.scrollLeft = scrollLeftRef.current - walk;
+    }
   };
 
   const handleParentLike = (e: React.MouseEvent) => {
@@ -177,18 +182,24 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
     return (
       <div
         ref={scrollContainerRef}
+        data-lenis-prevent
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeaveOrUp}
         onMouseUp={handleMouseLeaveOrUp}
         onMouseMove={handleMouseMove}
         onClick={(e) => e.stopPropagation()}
-        className="flex gap-2.5 overflow-x-auto no-scrollbar scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none touch-pan-x touch-pan-y -ml-[64px] -mr-4 pl-0 pr-4"
+        className="flex gap-2.5 overflow-x-auto no-scrollbar scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none overscroll-x-contain touch-pan-x touch-pan-y -ml-[64px] -mr-4 pl-0 pr-4"
+        style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {parentPost.images.map((imgUrl, idx) => (
           <div
             key={idx}
             onClick={(e) => {
               e.stopPropagation();
+              if (hasDraggedRef.current) {
+                hasDraggedRef.current = false;
+                return;
+              }
               setSelectedImageIndex(idx);
               setIsLightboxOpen(true);
             }}

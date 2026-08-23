@@ -1,23 +1,68 @@
-# Rencana Implementasi: Standarisasi Tampilan Feed Hasil Pencarian (Search Feed vs Homepage Feed)
+# Rencana Implementasi: In-Page Discovery & Related Feed untuk Low Search Results
 
-## 1. Analisis Masalah
-- **Perbedaan Feed Pencarian vs Homepage Feed**:
-  - Pada `HomePage.tsx`, container feed menggunakan `<main className="max-w-xl mx-auto divide-y divide-neutral-200 pt-0">` tanpa horizontal padding (`px-0`), sehingga setiap kartu `MarketPostCard` tampil *edge-to-edge* (rapat ke tepi layar) dengan garis pemisah `border-b border-neutral-200` dan padding internal kartu `px-3.5`.
-  - Pada `SearchPage.tsx`, container feed dibungkus oleh `<main className="max-w-xl mx-auto px-4 pt-3 space-y-4">` dan `<div className="space-y-3">`. Akibatnya, kartu postingan di tab **Terpopuler** dan **Terbaru** menyempit karena terkena padding `px-4`, serta memiliki celah vertikal antar-kartu yang tidak konsisten dengan Home feed (seperti yang terlihat pada screenshot user).
-
----
-
-## 2. Rincian Perubahan File
-- **`src/ui/pages/SearchPage.tsx`**:
-  - Untuk tab **Terpopuler** (`top`) dan **Terbaru** (`latest`): Gunakan layout *edge-to-edge* dengan `divide-y divide-neutral-200 pt-0 -mx-4` (atau `px-0` pada container feed) agar kartu postingan tampil 100% identik dengan `HomePage.tsx`.
-  - Pertahankan padding `px-4` hanya pada tahap saran akun / trending tags dan tab **Profil** yang membutuhkan card rounded.
-  - Selaraskan styling header tab (Terpopuler, Terbaru, Profil) dengan border pemisah bawah yang rapi dan konsisten dengan tab Home.
+## 1. Ringkasan & Tujuan UX
+- **Latar Belakang**: Saat pengguna mencari kata kunci spesifik (seperti *"web"*), jumlah postingan yang cocok sangat sedikit (misal: 1 postingan). Kondisi ini menyebabkan bagian bawah layar kosong melompong (*dead end*).
+- **Tujuan UX**: Menjaga pengguna tetap berada di **Search Page** dengan menyajikan rekomendasi lanjutan (*in-page discovery*) yang relevan, chip pencarian terkait 1-tap, dan feed rekomendasi lanjutan yang dapat di-scroll tanpa batas.
 
 ---
 
-## 3. Rencana Verifikasi
+## 2. Spesifikasi Desain & Tampilan UI Secara Detail
+
+### A. Layout Struktur Halaman
+```
+┌──────────────────────────────────────────────────────────┐
+│ [ ← ] [ 🔍 web                                   ✕ ]     │
+├──────────────────────────────────────────────────────────┤
+│  [ Terpopuler (Active) ]     [ Terbaru ]      [ Profil ] │
+├──────────────────────────────────────────────────────────┤
+│ ┌──────────────────────────────────────────────────────┐ │
+│ │ [👤 Raymond Chin • 1j]                           ··· │ │
+│ │ Ada kenalan website designer / UI engineer...?       │ │ <── Exact Matching Post (Hasil Utama)
+│ │ [ ❤️ 466 ]  [ 💬 2 ]  [ 🔁 9 ]  [ ✈️ ]               │ │
+│ └──────────────────────────────────────────────────────┘ │
+├──────────────────────────────────────────────────────────┤
+│ ✨ UTAS LAIN YANG MUNGKIN ANDA SUKA        Rekomendasi   │ <── Section Divider Elegan (44px)
+├──────────────────────────────────────────────────────────┤
+│ [ 🔍 #frontend ] [ 🔍 #coding ] [ 🔍 #desain ] [ 🔍 #dkv ]│ <── Horizontal Topic Refinement Chips
+├──────────────────────────────────────────────────────────┤
+│ ┌──────────────────────────────────────────────────────┐ │
+│ │ [👤 Zura • 3j]                                   ··· │ │
+│ │ Rekomendasi tools buat bikin landing page cepet...   │ │ <── Continuous Feed Rekomendasi
+│ │ [ ❤️ 180 ]  [ 💬 14 ]  [ 🔁 5 ]  [ ✈️ ]              │ │     (Edge-to-edge divide-neutral-200)
+│ └──────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────┘
+```
+
+### B. Rincian Komponen UI:
+1. **Section Divider (`InPageDiscoveryHeader`)**:
+   - **Tinggi**: `44px`
+   - **Styling**: `bg-neutral-50/90 backdrop-blur-xs border-y border-neutral-200/70 px-4 flex items-center justify-between`
+   - **Ikon & Tipografi**:
+     - Kiri: Ikon `<Sparkles className="w-3.5 h-3.5 text-[#1d64ec]" />` + teks `text-[12px] font-bold text-slate-700 uppercase tracking-wider` ("Utas Lain yang Mungkin Anda Suka").
+     - Kanan: Badge `text-[11px] text-neutral-400 font-medium` ("Rekomendasi").
+2. **Horizontal Query Refinement Chips (`TopicRefineBar`)**:
+   - **Styling**: `flex items-center gap-2 overflow-x-auto no-scrollbar py-2.5 px-4 bg-white border-b border-neutral-100`
+   - **Item Chip**:
+     - Tombol pill kapsul: `px-3 py-1.5 rounded-full bg-neutral-100/90 hover:bg-neutral-200/80 active:scale-95 text-[12.5px] font-medium text-slate-800 transition-all cursor-pointer flex items-center gap-1.5`
+     - Ikon: `<Search className="w-3 h-3 text-[#1d64ec]" />`
+     - Aksi: Saat di-tap, langsung mengganti kata kunci pencarian seketika (*instant in-place search*) dan memberikan efek haptik ringan (`triggerHaptic('light')`).
+3. **Continuous Feed Rekomendasi**:
+   - Menggunakan `MarketPostCard` dengan styling *edge-to-edge* (`divide-y divide-neutral-200 pt-0`) identik dengan Home feed.
+
+---
+
+## 3. Logika & Algoritma Data (Data Flow)
+- Pada `SearchPage.tsx`:
+  - Hitung `recommendedPosts` menggunakan `useMemo`: memfilter seluruh postingan dari `MOCK_MARKET_POSTS` yang belum termasuk di dalam `scoredPosts`.
+  - Jika `scoredPosts.length < 4`, tampilkan `InPageDiscoveryHeader` dan `TopicRefineBar` di bawah hasil utama, dilanjutkan dengan `recommendedPosts`.
+  - Jika `scoredPosts.length >= 4`, hasil pencarian penuh tetap diprioritaskan.
+
+---
+
+## 4. Rencana Verifikasi
 - `npx tsc --noEmit && npm run build` (0 TypeScript errors).
-- Uji Halaman Pencarian:
-  1. Buka tab Search, ketik kata kunci (misal: "website") dan tekan Enter / klik Lanjutkan.
-  2. Buka tab **Terpopuler** & **Terbaru**: Pastikan kartu postingan tampil *edge-to-edge* dengan pemisah garis neutral-200, 100% konsisten dengan Home feed.
-  3. Buka tab **Profil**: Pastikan daftar akun tetap berjarak rapi dan fungsional.
+- Uji alur pencarian:
+  1. Cari kata kunci spesifik (contoh: *"web"*).
+  2. Pastikan 1 hasil pencarian utama tampil di atas.
+  3. Pastikan di bawahnya langsung muncul divider rekomendasi, chips topik terkait, dan feed postingan lanjutan.
+  4. Klik salah satu chip topik (misal: *#coding*) $\rightarrow$ Pastikan pencarian langsung berganti kata kunci secara instan di tempat.

@@ -616,14 +616,33 @@ export const SearchPage: React.FC<SearchPageProps> = ({
             {activeTab === 'top' && (
               <div className="-mx-4 -mt-3 divide-y divide-neutral-200 pt-0">
                 {popularPosts.length > 0 ? (
-                  popularPosts.map((post) => (
-                    <MarketPostCard
-                      key={post.id}
-                      item={post}
-                      onPostClick={onSelectPost}
-                      onUserClick={(username) => onNavigateToProfile(username || post.seller.username || 'radityarayhannnn')}
-                    />
-                  ))
+                  <>
+                    {popularPosts.map((post) => (
+                      <MarketPostCard
+                        key={post.id}
+                        item={post}
+                        onPostClick={onSelectPost}
+                        onUserClick={(username) => onNavigateToProfile(username || post.seller.username || 'radityarayhannnn')}
+                      />
+                    ))}
+                    {/* Clean Minimalist End of Results Indicator */}
+                    <div className="py-12 px-4 text-center space-y-2 select-none">
+                      <div className="w-1.5 h-1.5 rounded-full bg-neutral-300 mx-auto" />
+                      <p className="text-[13px] text-neutral-400 font-normal">
+                        Semua hasil untuk &ldquo;{searchQuery}&rdquo; telah ditampilkan
+                      </p>
+                      {scoredAccounts.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => setActiveTab('profiles')}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-[#1d64ec] bg-blue-50/70 hover:bg-blue-100/70 active:scale-95 transition-all cursor-pointer mt-1"
+                        >
+                          <Users className="w-3.5 h-3.5" />
+                          <span>Lihat {scoredAccounts.length} profil terkait di tab Profil</span>
+                        </button>
+                      )}
+                    </div>
+                  </>
                 ) : (
                   <div className="py-14 px-4 text-center text-neutral-400 space-y-2">
                     <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto text-neutral-400">
@@ -642,14 +661,33 @@ export const SearchPage: React.FC<SearchPageProps> = ({
             {activeTab === 'latest' && (
               <div className="-mx-4 -mt-3 divide-y divide-neutral-200 pt-0">
                 {latestPosts.length > 0 ? (
-                  latestPosts.map((post) => (
-                    <MarketPostCard
-                      key={post.id}
-                      item={post}
-                      onPostClick={onSelectPost}
-                      onUserClick={(username) => onNavigateToProfile(username || post.seller.username || 'radityarayhannnn')}
-                    />
-                  ))
+                  <>
+                    {latestPosts.map((post) => (
+                      <MarketPostCard
+                        key={post.id}
+                        item={post}
+                        onPostClick={onSelectPost}
+                        onUserClick={(username) => onNavigateToProfile(username || post.seller.username || 'radityarayhannnn')}
+                      />
+                    ))}
+                    {/* Clean Minimalist End of Results Indicator */}
+                    <div className="py-12 px-4 text-center space-y-2 select-none">
+                      <div className="w-1.5 h-1.5 rounded-full bg-neutral-300 mx-auto" />
+                      <p className="text-[13px] text-neutral-400 font-normal">
+                        Semua hasil untuk &ldquo;{searchQuery}&rdquo; telah ditampilkan
+                      </p>
+                      {scoredAccounts.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => setActiveTab('profiles')}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-[#1d64ec] bg-blue-50/70 hover:bg-blue-100/70 active:scale-95 transition-all cursor-pointer mt-1"
+                        >
+                          <Users className="w-3.5 h-3.5" />
+                          <span>Lihat {scoredAccounts.length} profil terkait di tab Profil</span>
+                        </button>
+                      )}
+                    </div>
+                  </>
                 ) : (
                   <div className="py-14 px-4 text-center text-neutral-400 space-y-2">
                     <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto text-neutral-400">

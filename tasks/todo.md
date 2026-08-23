@@ -1,6 +1,7 @@
-# Standarisasi Feed Pencarian Todo
+# In-Page Discovery untuk Low Search Results Todo
 
-- [x] 1. Standarisasi container feed Terpopuler & Terbaru di `SearchPage.tsx` agar edge-to-edge (`divide-y divide-neutral-200 pt-0`)
-- [x] 2. Pertahankan container padding pada tampilan saran topik & tab Profil
-- [x] 3. Jalankan typecheck & build (`npx tsc --noEmit && npm run build`)
-- [x] 4. Commit & push ke repository GitHub
+- [ ] 1. Buat logika komputasi `recommendedPosts` di `SearchPage.tsx`
+- [ ] 2. Implementasikan `InPageDiscoveryHeader` dan `TopicRefineBar` (horizontal chips)
+- [ ] 3. Render feed rekomendasi lanjutan di bawah hasil pencarian utama
+- [ ] 4. Jalankan typecheck & build (`npx tsc --noEmit && npm run build`)
+- [ ] 5. Commit & push ke repository GitHub

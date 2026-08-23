@@ -11,11 +11,13 @@ interface CommentInputBarProps {
   onFocusChange?: (isFocused: boolean) => void;
   onClose?: () => void;
   autoFocus?: boolean;
+  userAvatar?: string;
 }
 
 export const CommentInputBar: React.FC<CommentInputBarProps> = ({
   replyToUser,
   targetAuthor,
+  userAvatar,
   onCancelReply,
   onSubmitComment,
   isInline = false,
@@ -163,7 +165,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
           ) : (
             <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 border border-neutral-200 shadow-2xs">
               <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80"
+                src={userAvatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80"}
                 alt="Profil Saya"
                 className="w-full h-full object-cover"
               />

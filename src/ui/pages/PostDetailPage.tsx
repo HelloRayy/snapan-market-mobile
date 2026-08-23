@@ -196,11 +196,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
                     likesCount: chain.likesCount || 0,
                     isLiked: chain.isLiked || false,
                   }}
-                  currentUserAvatar={userAvatar}
-                  activeReplyingCommentId={replyToCommentId}
                   onReplyClick={handleReplyClick}
-                  onCancelReply={() => setReplyToCommentId(null)}
-                  onSubmitReply={(cid, text) => handleAddComment(text, cid)}
                   onOpenCommentDetail={(c) => setFocusedComment(c)}
                 />
               ))}
@@ -210,11 +206,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
                 <PostCommentItem
                   key={comment.id}
                   comment={comment}
-                  currentUserAvatar={userAvatar}
-                  activeReplyingCommentId={replyToCommentId}
                   onReplyClick={handleReplyClick}
-                  onCancelReply={() => setReplyToCommentId(null)}
-                  onSubmitReply={(cid, text) => handleAddComment(text, cid)}
                   onOpenCommentDetail={(c) => setFocusedComment(c)}
                 />
               ))}
@@ -239,6 +231,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         isCommentingActive ? (
           <CommentInputBar
             targetAuthor={post.seller.username || post.seller.name}
+            userAvatar={userAvatar}
             replyToUser={replyingToUsername}
             autoFocus={true}
             onClose={() => {
@@ -270,6 +263,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         /* MODE 2: Docked Bottom Bar ala Threads / X for Discussion / Utas Posts */
         <CommentInputBar
           targetAuthor={post.seller.username || post.seller.name}
+          userAvatar={userAvatar}
           replyToUser={replyingToUsername}
           onCancelReply={() => setReplyToCommentId(null)}
           onSubmitComment={(text) => handleAddComment(text, replyToCommentId || undefined)}

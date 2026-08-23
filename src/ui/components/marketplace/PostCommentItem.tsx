@@ -4,42 +4,20 @@ import { Heart, Repeat2, Send, BadgeCheck, MoreHorizontal, Crown } from 'lucide-
 import { PostComment } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { formatSmartTimestamp } from '@/utils/formatters';
+import { SmoothCommentIcon } from '@/ui/components/icons';
 import { PostOptionsModal } from './PostOptionsModal';
-
-// Custom Smooth Rounded Lucide-Family Comment Icon
-const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.75"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-.8 2.5c-.25.78.47 1.5 1.25 1.25l2.5-.8a2 2 0 0 1 1.1.09 10 10 0 1 0-4.144-4.207Z" />
-  </svg>
-);
 
 interface PostCommentItemProps {
   comment: PostComment;
   currentUserAvatar?: string;
-  activeReplyingCommentId?: string | null;
   onReplyClick?: (username: string, commentId?: string) => void;
-  onCancelReply?: () => void;
-  onSubmitReply?: (commentId: string, replyText: string) => void;
   onOpenCommentDetail?: (comment: PostComment) => void;
   isNested?: boolean;
 }
 
 export const PostCommentItem: React.FC<PostCommentItemProps> = ({
   comment,
-  currentUserAvatar: _currentUserAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
-  activeReplyingCommentId: _activeReplyingCommentId,
   onReplyClick,
-  onCancelReply: _onCancelReply,
-  onSubmitReply: _onSubmitReply,
   onOpenCommentDetail,
   isNested = false,
 }) => {

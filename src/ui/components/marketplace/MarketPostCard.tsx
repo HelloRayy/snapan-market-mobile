@@ -9,31 +9,7 @@ import { ClickableVerifiedBadge } from './VerifiedBadgeModal';
 import { togglePostBookmark } from '@/services/api/bookmarkService';
 import { triggerHaptic } from '@/utils/haptics';
 import { ProgressiveImage } from '@/ui/components/ui/ProgressiveImage';
-
-// Custom Threads 3-Dot Topic Icon
-const ThreadsTopicIcon: React.FC<{ className?: string }> = ({ className = "w-3.5 h-3.5 text-[#1d64ec] fill-current shrink-0" }) => (
-  <svg className={className} viewBox="0 0 24 24">
-    <circle cx="6" cy="8" r="3" />
-    <circle cx="6" cy="16" r="3" />
-    <circle cx="15" cy="12" r="3" />
-  </svg>
-);
-
-// Custom Smooth Rounded Lucide-Family Comment Icon (Rounded tail tip, 100% Lucide family match)
-const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.75"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-.8 2.5c-.25.78.47 1.5 1.25 1.25l2.5-.8a2 2 0 0 1 1.1.09 10 10 0 1 0-4.144-4.207Z" />
-  </svg>
-);
+import { ThreadsTopicIcon, SmoothCommentIcon } from '@/ui/components/icons';
 
 interface MarketPostCardProps {
   item: MarketPostItem;

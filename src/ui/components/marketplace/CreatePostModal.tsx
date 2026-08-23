@@ -20,17 +20,7 @@ import {
 } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { triggerHaptic } from '@/utils/haptics';
-
-// Custom Threads 3-Dot Topic Icon
-const ThreadsTopicIcon: React.FC<{ className?: string }> = ({
-  className = 'w-4 h-4 text-slate-700 fill-current shrink-0',
-}) => (
-  <svg className={className} viewBox="0 0 24 24">
-    <circle cx="6" cy="8" r="3" />
-    <circle cx="6" cy="16" r="3" />
-    <circle cx="15" cy="12" r="3" />
-  </svg>
-);
+import { ThreadsTopicIcon } from '@/ui/components/icons';
 
 interface TopicOption {
   id: string;

@@ -4,25 +4,10 @@ import { ArrowLeft, Heart, Repeat2, Send, BadgeCheck, MoreHorizontal, Crown } fr
 import { MarketPostItem, PostComment } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { formatSmartTimestamp } from '@/utils/formatters';
+import { SmoothCommentIcon } from '@/ui/components/icons/SmoothCommentIcon';
 import { PostCommentItem } from './PostCommentItem';
 import { PostOptionsModal } from './PostOptionsModal';
 import { useAuth } from '@/ui/hooks/useAuth';
-
-// Custom Smooth Rounded Lucide-Family Comment Icon
-const SmoothCommentIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.75"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-.8 2.5c-.25.78.47 1.5 1.25 1.25l2.5-.8a2 2 0 0 1 1.1.09 10 10 0 1 0-4.144-4.207Z" />
-  </svg>
-);
 
 interface CommentDetailPageProps {
   parentPost: MarketPostItem;
@@ -140,57 +125,32 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
       isLiked: false,
     };
 
-    const updatedComment: PostComment = {
-      ...activeComment,
-      replies: [...(activeComment.replies || []), newReply],
-    };
+    let updatedComment: PostComment;
+    if (replyToCommentId) {
+      updatedComment = {
+        ...activeComment,
+        replies: (activeComment.replies || []).map((r) => {
+          if (r.id === replyToCommentId) {
+            return {
+              ...r,
+              replies: [...(r.replies || []), newReply],
+            };
+          }
+          return r;
+        }),
+      };
+    } else {
+      updatedComment = {
+        ...activeComment,
+        replies: [...(activeComment.replies || []), newReply],
+      };
+    }
 
     setCommentStack((prev) =>
       prev.map((c, i) => (i === prev.length - 1 ? updatedComment : c))
     );
     onUpdateComment?.(updatedComment);
     setReplyInputText('');
-    setReplyToCommentId(null);
-  };
-
-  const handleNestedReplySubmit = (targetChildId: string, text: string) => {
-    const newNestedReply: PostComment = {
-      id: `comment-${Date.now()}`,
-      postId: parentPost.id,
-      user: {
-        id: profile?.id || 'user-current',
-        name: profile?.full_name || 'Raditya Rayhan',
-        username: profile?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn',
-        avatar: profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
-        classGroup: profile?.class_group || 'XII PPLG 1',
-        isVerified: true,
-        isAuthor:
-          (profile?.id || 'current-user') === parentPost.seller.id ||
-          parentPost.seller.username === 'radityarayhannnn',
-      },
-      content: text,
-      timestamp: 'Baru saja',
-      likesCount: 0,
-      isLiked: false,
-    };
-
-    const updatedComment: PostComment = {
-      ...activeComment,
-      replies: (activeComment.replies || []).map((r) => {
-        if (r.id === targetChildId) {
-          return {
-            ...r,
-            replies: [...(r.replies || []), newNestedReply],
-          };
-        }
-        return r;
-      }),
-    };
-
-    setCommentStack((prev) =>
-      prev.map((c, i) => (i === prev.length - 1 ? updatedComment : c))
-    );
-    onUpdateComment?.(updatedComment);
     setReplyToCommentId(null);
   };
 
@@ -505,11 +465,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                 <PostCommentItem
                   key={reply.id}
                   comment={reply}
-                  currentUserAvatar={userAvatar}
-                  activeReplyingCommentId={replyToCommentId}
                   onReplyClick={(username, cid) => handleReplyToUser(username, cid)}
-                  onCancelReply={() => setReplyToCommentId(null)}
-                  onSubmitReply={handleNestedReplySubmit}
                   onOpenCommentDetail={(clickedReply) => {
                     setCommentStack((prev) => [...prev, clickedReply]);
                   }}

@@ -7,6 +7,7 @@ interface CommentInputBarProps {
   targetAuthor?: string;
   onCancelReply?: () => void;
   onSubmitComment: (text: string) => void;
+  onDraftChange?: (text: string) => void;
   isInline?: boolean;
   onFocusChange?: (isFocused: boolean) => void;
   onClose?: () => void;
@@ -20,6 +21,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
   userAvatar,
   onCancelReply,
   onSubmitComment,
+  onDraftChange,
   isInline = false,
   onFocusChange,
   onClose,
@@ -37,6 +39,11 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
     }
   }, [replyToUser, autoFocus]);
 
+  const handleTextChange = (newVal: string) => {
+    setText(newVal);
+    onDraftChange?.(newVal);
+  };
+
   const handleFocus = () => {
     onFocusChange?.(true);
   };
@@ -50,6 +57,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
     if (!text.trim()) return;
     onSubmitComment(text.trim());
     setText('');
+    onDraftChange?.('');
   };
 
   if (isInline) {
@@ -83,7 +91,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
             id="comment-input-field"
             type="text"
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => handleTextChange(e.target.value)}
             onFocus={handleFocus}
             onBlur={handleBlur}
             placeholder={
@@ -135,6 +143,8 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
             type="button"
             onClick={() => {
               triggerHaptic('light');
+              setText('');
+              onDraftChange?.('');
               onCancelReply?.();
               onClose?.();
             }}
@@ -154,6 +164,8 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
               type="button"
               onClick={() => {
                 triggerHaptic('light');
+                setText('');
+                onDraftChange?.('');
                 onClose();
               }}
               className="w-9 h-9 rounded-full bg-neutral-100 hover:bg-neutral-200 active:bg-neutral-300 active:scale-90 flex items-center justify-center text-slate-700 transition-all cursor-pointer shrink-0 border border-neutral-200/60 shadow-2xs"
@@ -178,7 +190,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
             id="comment-input-field"
             type="text"
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => handleTextChange(e.target.value)}
             onFocus={handleFocus}
             onBlur={handleBlur}
             placeholder={

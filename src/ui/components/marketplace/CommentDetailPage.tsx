@@ -29,6 +29,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
   const [replyToUser, setReplyToUser] = useState<string | null>(null);
   const [replyToCommentId, setReplyToCommentId] = useState<string | null>(null);
+  const [draftText, setDraftText] = useState('');
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -40,11 +41,17 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
 
   useEffect(() => {
     setCommentStack([focusedComment]);
+    setReplyToUser(null);
+    setReplyToCommentId(null);
+    setDraftText('');
   }, [focusedComment]);
 
   useEffect(() => {
     setIsHeroLiked(activeComment.isLiked || false);
     setHeroLikesCount(activeComment.likesCount);
+    setReplyToUser(null);
+    setReplyToCommentId(null);
+    setDraftText('');
     if (containerRef.current) {
       containerRef.current.scrollTop = 0;
     }
@@ -98,16 +105,29 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
   // Smart Auto-Mention & Auto-Focus on 💬 Action Click
   const handleReplyToUser = (targetUsername: string, targetCommentId?: string) => {
     triggerHaptic('light');
-    setReplyToUser(targetUsername);
-    setReplyToCommentId(targetCommentId || null);
+    const cleanUser = targetUsername.replace(/^@/, '');
+    const targetId = targetCommentId || '';
+    setReplyToUser(cleanUser);
+    setReplyToCommentId(targetId);
+
+    // Smooth auto-scroll to the target comment
+    if (targetId) {
+      setTimeout(() => {
+        const el = document.getElementById(`comment-${targetId}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 80);
+    }
   };
 
   const handleAddDirectReply = (text: string) => {
     if (!text.trim()) return;
     triggerHaptic('success');
 
+    const createdId = `comment-${Date.now()}`;
     const newReply: PostComment = {
-      id: `comment-${Date.now()}`,
+      id: createdId,
       postId: parentPost.id,
       user: {
         id: profile?.id || 'user-current',
@@ -153,12 +173,32 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
     onUpdateComment?.(updatedComment);
     setReplyToUser(null);
     setReplyToCommentId(null);
+    setDraftText('');
+
+    // Smooth auto-scroll to the newly created comment
+    setTimeout(() => {
+      const el = document.getElementById(`comment-${createdId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
   };
 
   const userAvatar =
     profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80';
 
   const repliesList = activeComment.replies || [];
+
+  const draftReplyObj = replyToUser
+    ? {
+        targetCommentId: replyToCommentId || activeComment.id,
+        text: draftText,
+        userAvatar: userAvatar,
+        username: profile?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn',
+        isVerified: true,
+        isAuthor: (profile?.id || 'current-user') === parentPost.seller.id,
+      }
+    : null;
 
   return (
     <div
@@ -434,6 +474,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
               {repliesList.map((reply) => (
                 <PostCommentItem
                   key={reply.id}
+                  draftReply={draftReplyObj}
                   comment={reply}
                   onReplyClick={(username, cid) => handleReplyToUser(username, cid)}
                   onOpenCommentDetail={(clickedReply) => {
@@ -443,9 +484,9 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
               ))}
             </div>
           ) : (
-            <div className="py-10 text-center space-y-1">
-              <p className="text-slate-600 font-medium text-sm">Belum ada balasan</p>
-              <p className="text-neutral-400 text-xs">Jadilah yang pertama membalas!</p>
+            <div className="py-10 px-6 text-center max-w-[260px] mx-auto space-y-1 select-none">
+              <p className="text-slate-700 font-semibold text-[14px] leading-snug">Belum ada balasan</p>
+              <p className="text-neutral-400 text-[12.5px] leading-relaxed">Jadilah yang pertama membalas!</p>
             </div>
           )}
         </div>
@@ -457,9 +498,11 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
         userAvatar={userAvatar}
         replyToUser={replyToUser}
         autoFocus={Boolean(replyToUser)}
+        onDraftChange={(val) => setDraftText(val)}
         onCancelReply={() => {
           setReplyToUser(null);
           setReplyToCommentId(null);
+          setDraftText('');
         }}
         onSubmitComment={(text) => handleAddDirectReply(text)}
         isInline={false}

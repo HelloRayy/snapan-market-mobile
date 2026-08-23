@@ -14,6 +14,14 @@ interface PostCommentItemProps {
   onReplyClick?: (username: string, commentId?: string) => void;
   onOpenCommentDetail?: (comment: PostComment) => void;
   isNested?: boolean;
+  draftReply?: {
+    targetCommentId: string;
+    text: string;
+    userAvatar?: string;
+    username?: string;
+    isVerified?: boolean;
+    isAuthor?: boolean;
+  } | null;
 }
 
 export const PostCommentItem: React.FC<PostCommentItemProps> = ({
@@ -21,6 +29,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
   onReplyClick,
   onOpenCommentDetail,
   isNested = false,
+  draftReply,
 }) => {
   const [isLiked, setIsLiked] = useState(comment.isLiked || false);
   const [likesCount, setLikesCount] = useState(comment.likesCount || 0);
@@ -59,8 +68,13 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
     );
   };
 
+  const hasDraft = Boolean(
+    draftReply &&
+      (draftReply.targetCommentId === comment.id ||
+        repliesState.some((r) => r.id === draftReply.targetCommentId))
+  );
   const hasReplies = repliesState.length > 0;
-  const isThreadConnected = hasReplies;
+  const isThreadConnected = hasReplies || hasDraft;
 
   const renderActionBar = (
     liked: boolean,
@@ -182,7 +196,12 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
   );
 
   return (
-    <div className={`w-full ${isNested ? 'pt-3.5 pl-0' : 'px-3.5 py-3.5 border-b border-neutral-200'}`}>
+    <div
+      id={`comment-${comment.id}`}
+      className={`w-full transition-colors duration-300 ${
+        isNested ? 'pt-3.5 pl-0' : 'px-3.5 py-3.5 border-b border-neutral-200'
+      }`}
+    >
       {!isThreadConnected ? (
         /* SINGLE COMMENT (NO REPLIES & NOT CURRENTLY REPLYING): Entire Card is Clickable Trigger with Tactile Feedback */
         <div
@@ -377,15 +396,17 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
             ).map((reply, idx) => {
               const isFirstChild = idx === 0;
               const isLastChild =
-                onOpenCommentDetail && repliesState.length > 1
+                !hasDraft &&
+                (onOpenCommentDetail && repliesState.length > 1
                   ? true
-                  : idx === repliesState.length - 1;
+                  : idx === repliesState.length - 1);
 
               return (
                 <div
                   key={reply.id || idx}
+                  id={`comment-${reply.id}`}
                   onClick={() => onOpenCommentDetail?.(reply)}
-                  className={`flex items-start gap-3 ml-7 relative min-w-0 ${
+                  className={`flex items-start gap-3 ml-7 relative min-w-0 transition-colors duration-300 ${
                     onOpenCommentDetail
                       ? 'cursor-pointer active:opacity-75 transition-opacity'
                       : ''
@@ -411,8 +432,8 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                       />
                     </div>
 
-                    {/* Straight vertical line continuing under avatar to subsequent replies */}
-                    {(!isLastChild || (onOpenCommentDetail && repliesState.length > 1)) && (
+                    {/* Straight vertical line continuing under avatar to subsequent replies or draft */}
+                    {(!isLastChild || hasDraft || (onOpenCommentDetail && repliesState.length > 1)) && (
                       <div className="w-[2px] flex-1 bg-[#d1d5db] mt-1 -mb-3.5 rounded-full" />
                     )}
                   </div>
@@ -463,12 +484,71 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                       reply.isLiked || false,
                       reply.likesCount,
                       () => handleNestedReplyLike(reply.id),
-                      () => onReplyClick?.(reply.user.username || reply.user.name, comment.id)
+                      () => onReplyClick?.(reply.user.username || reply.user.name, reply.id)
                     )}
                   </div>
                 </div>
               );
             })}
+
+            {/* LIVE-SYNCED DRAFT REPLY BUBBLE (Threads Style) */}
+            {hasDraft && draftReply && (
+              <div
+                id={`comment-draft-${comment.id}`}
+                className="flex items-start gap-3 ml-7 relative min-w-0 animate-in fade-in slide-in-from-top-1 duration-150"
+              >
+                {/* First reply gets the initial L-Curve from parent if repliesState is empty */}
+                {repliesState.length === 0 && (
+                  <div className="absolute -left-[11px] -top-3.5 h-[32px] w-[12px] border-l-2 border-b-2 border-[#d1d5db] rounded-bl-xl pointer-events-none z-0" />
+                )}
+
+                {/* Left Column: Current User Avatar */}
+                <div className="flex flex-col items-center shrink-0 self-stretch z-10">
+                  {repliesState.length > 0 && (
+                    <div className="w-[2px] h-3.5 bg-[#d1d5db] -mt-3.5 shrink-0" />
+                  )}
+                  <div className="w-9 h-9 rounded-full overflow-hidden border border-[#1d64ec]/50 ring-2 ring-[#1d64ec]/20 shadow-2xs shrink-0 bg-white">
+                    <img
+                      src={draftReply.userAvatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80"}
+                      alt={draftReply.username || "Saya"}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+
+                {/* Right Child Content: Live Synchronized Text */}
+                <div className="flex-1 min-w-0 pb-1">
+                  <div className="flex items-center gap-1.5 min-w-0 h-[21px] leading-snug">
+                    <span className="font-semibold text-[14px] text-slate-900 truncate">
+                      {draftReply.username || 'radityarayhannnn'}
+                    </span>
+
+                    {draftReply.isVerified && (
+                      <BadgeCheck className="w-[15px] h-[15px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" aria-label="Verified User" />
+                    )}
+
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10.5px] font-semibold text-[#1d64ec] bg-blue-50 border border-blue-200/60 animate-pulse shrink-0 select-none">
+                      <span>Mengetik...</span>
+                    </span>
+                  </div>
+
+                  {/* Live Text Body with Simulated Caret */}
+                  <div className="text-base text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere] mt-1 bg-neutral-50/80 rounded-xl px-2.5 py-1.5 border border-neutral-200/60">
+                    {draftReply.text ? (
+                      <span>
+                        <FormattedText text={draftReply.text} />
+                        <span className="inline-block w-0.5 h-4 bg-[#1d64ec] animate-pulse ml-0.5 align-middle" />
+                      </span>
+                    ) : (
+                      <span className="text-neutral-400 italic flex items-center gap-1">
+                        <span>Tulis balasan...</span>
+                        <span className="inline-block w-0.5 h-4 bg-[#1d64ec] animate-pulse align-middle" />
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Threads-style "Show replies" Stacked Avatar Button */}
             {onOpenCommentDetail && repliesState.length > 1 && (

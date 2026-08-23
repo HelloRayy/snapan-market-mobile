@@ -26,6 +26,8 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   const { profile } = useAuth();
   const [comments, setComments] = useState<PostComment[]>(post.comments || []);
   const [replyToCommentId, setReplyToCommentId] = useState<string | null>(null);
+  const [replyTarget, setReplyTarget] = useState<{ id: string; username: string } | null>(null);
+  const [draftText, setDraftText] = useState('');
   const [focusedComment, setFocusedComment] = useState<PostComment | null>(null);
   const [isBuySheetOpen, setIsBuySheetOpen] = useState(false);
   const [isCommentingActive, setIsCommentingActive] = useState(false);
@@ -42,20 +44,23 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
     }
     setComments(post.comments || []);
     setReplyToCommentId(null);
+    setReplyTarget(null);
+    setDraftText('');
     setFocusedComment(null);
     setIsBuySheetOpen(false);
     setIsCommentingActive(false);
   }, [post.id, post.comments]);
 
   const handleAddComment = (content: string, specificCommentId?: string) => {
-    const targetParentId = specificCommentId || replyToCommentId;
+    const targetParentId = specificCommentId || replyTarget?.id || replyToCommentId;
     const isPostAuthor =
       (profile?.id || 'current-user') === post.seller.id ||
       post.seller.username === 'radityarayhannnn' ||
       post.seller.username === profile?.full_name?.toLowerCase().replace(/\s+/g, '');
 
+    const createdId = `comment-${Date.now()}`;
     const newComment: PostComment = {
-      id: `comment-${Date.now()}`,
+      id: createdId,
       postId: post.id,
       user: {
         id: profile?.id || 'user-current',
@@ -90,14 +95,37 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
       setComments((prev) => [newComment, ...prev]);
     }
 
+    setReplyTarget(null);
     setReplyToCommentId(null);
+    setDraftText('');
     setIsCommentingActive(false);
+
+    // Smooth auto-scroll to the newly created comment
+    setTimeout(() => {
+      const el = document.getElementById(`comment-${createdId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
   };
 
-  const handleReplyClick = (_username: string, commentId?: string) => {
+  const handleReplyClick = (username: string, commentId?: string) => {
     triggerHaptic('light');
-    setReplyToCommentId(commentId || null);
+    const cleanUsername = username.replace(/^@/, '');
+    const targetId = commentId || '';
+    setReplyTarget({ id: targetId, username: cleanUsername });
+    setReplyToCommentId(targetId);
     setIsCommentingActive(true);
+
+    // Smooth auto-scroll to the target comment
+    if (targetId) {
+      setTimeout(() => {
+        const el = document.getElementById(`comment-${targetId}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 80);
+    }
   };
 
   const handleChatClick = () => {
@@ -114,19 +142,18 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   const userAvatar =
     profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80';
 
-  // Find the username we're currently replying to across root & nested comments
-  const replyingToUsername = (() => {
-    if (!replyToCommentId) return null;
-    for (const c of comments) {
-      if (c.id === replyToCommentId) return c.user.username || c.user.name;
-      if (c.replies) {
-        for (const r of c.replies) {
-          if (r.id === replyToCommentId) return r.user.username || r.user.name;
-        }
+  const replyingToUsername = replyTarget?.username || null;
+
+  const draftReplyObj = replyTarget
+    ? {
+        targetCommentId: replyTarget.id,
+        text: draftText,
+        userAvatar: userAvatar,
+        username: profile?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn',
+        isVerified: true,
+        isAuthor: (profile?.id || 'current-user') === post.seller.id,
       }
-    }
-    return null;
-  })();
+    : null;
 
   return (
     <div
@@ -186,6 +213,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
               {post.threadChain?.map((chain) => (
                 <PostCommentItem
                   key={chain.id}
+                  draftReply={draftReplyObj}
                   comment={{
                     id: chain.id,
                     postId: post.id,
@@ -215,6 +243,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
               {comments.map((comment) => (
                 <PostCommentItem
                   key={comment.id}
+                  draftReply={draftReplyObj}
                   comment={comment}
                   onReplyClick={handleReplyClick}
                   onOpenCommentDetail={(c) => setFocusedComment(c)}
@@ -222,11 +251,11 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
               ))}
             </div>
           ) : (
-            <div className="py-12 text-center space-y-1">
-              <p className="text-slate-600 font-medium text-sm">
+            <div className="py-12 px-6 text-center max-w-[280px] mx-auto space-y-1.5 select-none">
+              <p className="text-slate-700 font-semibold text-[14px] leading-snug">
                 {isProductMode ? 'Belum ada pertanyaan seputar produk ini' : 'Belum ada komentar'}
               </p>
-              <p className="text-neutral-400 text-xs">
+              <p className="text-neutral-400 text-[12.5px] leading-relaxed">
                 {isProductMode
                   ? 'Gunakan tombol Tanya di bawah untuk menanyakan stok atau detail!'
                   : 'Jadilah yang pertama memberi tanggapan!'}
@@ -244,12 +273,19 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
             userAvatar={userAvatar}
             replyToUser={replyingToUsername}
             autoFocus={true}
+            onDraftChange={(val) => setDraftText(val)}
             onClose={() => {
               setIsCommentingActive(false);
+              setReplyTarget(null);
               setReplyToCommentId(null);
+              setDraftText('');
             }}
-            onCancelReply={() => setReplyToCommentId(null)}
-            onSubmitComment={(text) => handleAddComment(text, replyToCommentId || undefined)}
+            onCancelReply={() => {
+              setReplyTarget(null);
+              setReplyToCommentId(null);
+              setDraftText('');
+            }}
+            onSubmitComment={(text) => handleAddComment(text, replyTarget?.id || replyToCommentId || undefined)}
             isInline={false}
           />
         ) : (
@@ -275,8 +311,13 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
           targetAuthor={post.seller.username || post.seller.name}
           userAvatar={userAvatar}
           replyToUser={replyingToUsername}
-          onCancelReply={() => setReplyToCommentId(null)}
-          onSubmitComment={(text) => handleAddComment(text, replyToCommentId || undefined)}
+          onDraftChange={(val) => setDraftText(val)}
+          onCancelReply={() => {
+            setReplyTarget(null);
+            setReplyToCommentId(null);
+            setDraftText('');
+          }}
+          onSubmitComment={(text) => handleAddComment(text, replyTarget?.id || replyToCommentId || undefined)}
           isInline={false}
         />
       )}

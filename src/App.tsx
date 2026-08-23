@@ -293,7 +293,6 @@ export function App() {
           {/* Main Feed HomePage (Always preserved in DOM so scroll position is never lost) */}
           <div className={isProfileRoute || isSearchRoute || (selectedPost && postDetailOriginRouteRef.current === '/search') ? 'hidden' : 'block'}>
             <HomePage
-              isActive={!isProfileRoute && !isSearchRoute && !selectedPost}
               onSelectPost={handleOpenPostDetail}
               onNavigateToProfile={navigateToProfile}
               onNavigateSearch={navigateToSearch}

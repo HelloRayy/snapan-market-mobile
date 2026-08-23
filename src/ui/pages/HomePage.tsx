@@ -21,7 +21,6 @@ interface HomePageProps {
   onNavigateToProfile?: (username: string) => void;
   onNavigateSearch?: () => void;
   onOpenMenu?: () => void;
-  isActive?: boolean;
 }
 
 export const HomePage: React.FC<HomePageProps> = ({
@@ -29,7 +28,6 @@ export const HomePage: React.FC<HomePageProps> = ({
   onNavigateToProfile,
   onNavigateSearch,
   onOpenMenu,
-  isActive = true,
 }) => {
   const [feedTab, setFeedTab] = useState<'for-you' | 'latest'>('for-you');
   const [bottomNavTab, setBottomNavTab] = useState('home');
@@ -222,7 +220,6 @@ export const HomePage: React.FC<HomePageProps> = ({
     // Reset search query and switch to for-you tab so new post is immediately shown
     setSearchQuery('');
     setFeedTab('for-you');
-    setIsNavVisible(true);
 
     // Smoothly scroll to the very top so the user immediately sees their own post
     setTimeout(() => {
@@ -316,94 +313,6 @@ export const HomePage: React.FC<HomePageProps> = ({
     return () => observer.disconnect();
   }, [isLoadingMore, page]);
 
-  // Smart Scroll Header & Bottom Nav Visibility State (rAF Throttled, Zero-Glitch Deadband & Overscroll Safe)
-  const [isNavVisible, setIsNavVisible] = useState(true);
-  const lastScrollY = useRef(0);
-  const isTicking = useRef(false);
-
-  // Automatically show Top Header and Bottom Nav whenever user returns to Home route from ANY route
-  useEffect(() => {
-    if (isActive) {
-      setIsNavVisible(true);
-      lastScrollY.current = Math.max(0, window.scrollY);
-
-      // Double-check after scroll restoration frame and timeout
-      const frameId = requestAnimationFrame(() => {
-        setIsNavVisible(true);
-        lastScrollY.current = Math.max(0, window.scrollY);
-      });
-
-      const timerId = setTimeout(() => {
-        setIsNavVisible(true);
-        lastScrollY.current = Math.max(0, window.scrollY);
-      }, 100);
-
-      return () => {
-        cancelAnimationFrame(frameId);
-        clearTimeout(timerId);
-      };
-    }
-  }, [isActive]);
-
-  // Global listener for explicit nav reset triggers (popstate, back button, tab switch)
-  useEffect(() => {
-    const handleResetNav = () => {
-      setIsNavVisible(true);
-      lastScrollY.current = Math.max(0, window.scrollY);
-      setTimeout(() => {
-        setIsNavVisible(true);
-        lastScrollY.current = Math.max(0, window.scrollY);
-      }, 50);
-    };
-
-    window.addEventListener('popstate', handleResetNav);
-    window.addEventListener('snapan:show-nav', handleResetNav);
-    return () => {
-      window.removeEventListener('popstate', handleResetNav);
-      window.removeEventListener('snapan:show-nav', handleResetNav);
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!isActive) return;
-      if (isTicking.current) return;
-      isTicking.current = true;
-
-      requestAnimationFrame(() => {
-        isTicking.current = false;
-        if (!isActive) return;
-        const currentScrollY = Math.max(0, window.scrollY);
-        const scrollDiff = currentScrollY - lastScrollY.current;
-        const maxScrollY = document.documentElement.scrollHeight - window.innerHeight;
-
-        // 1. Always keep visible when near the top (< 60px) or on top overscroll bounce
-        if (currentScrollY <= 60) {
-          setIsNavVisible(true);
-        }
-        // 2. Ignore bottom elastic overscroll bounce (iOS Safari / Android Chrome)
-        else if (currentScrollY >= maxScrollY - 20) {
-          // Keep current state, ignore bottom bounce jitter
-        }
-        // 3. Scrolling DOWN with positive intention (> 12px) -> hide smoothly
-        else if (scrollDiff > 12) {
-          setIsNavVisible(false);
-        }
-        // 4. Scrolling UP with micro-intention (< -4px) -> reveal instantly
-        else if (scrollDiff < -4) {
-          setIsNavVisible(true);
-        }
-
-        lastScrollY.current = currentScrollY;
-      });
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [isActive]);
-
   return (
     <div
       className="min-h-screen bg-white text-slate-ink pb-28 font-gt-standard select-none"
@@ -417,11 +326,9 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* Elastic Native Pull-to-Refresh Indicator */}
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
 
-      {/* Fixed Top Header (Zero-Layout-Shift 100% GPU Slide) */}
+      {/* Fixed Top Header (Rock-Solid Fixed, Always Visible, Zero-Jank) */}
       <div
-        className={`fixed top-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-b border-neutral-200/40 select-none transition-transform duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] transform-gpu ${
-          isNavVisible ? 'translate-y-0' : '-translate-y-full pointer-events-none'
-        }`}
+        className="fixed top-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-b border-neutral-200/40 select-none"
         style={{
           paddingTop: 'env(safe-area-inset-top, 0px)',
         }}
@@ -521,10 +428,9 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </main>
 
-      {/* Market 5-Icon Bottom Navigation (1-Tap Direct Trigger with Smart Scroll Auto-Hide) */}
+      {/* Market 5-Icon Bottom Navigation (Rock-Solid Fixed Standard) */}
       <MarketBottomNav
         activeTab={bottomNavTab}
-        isVisible={isNavVisible}
         userAvatar={profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80'}
         onTabChange={(tab) => {
           triggerHaptic('selection');

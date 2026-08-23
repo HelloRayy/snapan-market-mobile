@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { Heart, MoreHorizontal, Repeat2, Send, ChevronRight, PartyPopper, Box } from 'lucide-react';
 import { UserReplyThread, MarketPostItem } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
@@ -338,52 +339,104 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
           {renderParentImages()}
 
           {/* Parent Action Bar (Identical layout and icons as Home Feed) */}
-          <div className="flex items-center gap-1 -ml-2 pt-1 text-slate-600">
+          <div className="flex items-center gap-1.5 -ml-1 pt-1 text-slate-700">
             {/* 1. Like Button */}
-            <button
+            <motion.button
               type="button"
+              whileTap={{ scale: 0.9 }}
               onClick={handleParentLike}
-              className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-[0.96] transition-colors cursor-pointer select-none ${
-                parentLiked ? 'text-rose-500' : 'text-slate-600 hover:text-slate-900'
-              }`}
+              className="flex items-center gap-1.5 px-2 py-1 min-h-[30px] cursor-pointer select-none group"
             >
-              <Heart className={`w-4.5 h-4.5 stroke-[2] ${parentLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-              <span className={`font-normal text-[13.5px] tabular-nums tracking-tight ${parentLiked ? 'text-rose-500 font-medium' : 'text-slate-700'}`}>{parentLikesCount}</span>
-            </button>
+              <motion.div
+                animate={parentLiked ? { scale: [1, 1.45, 0.88, 1.15, 1], rotate: [0, -10, 10, -4, 0] } : { scale: 1, rotate: 0 }}
+                transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
+              >
+                <Heart
+                  className={`w-4 h-4 stroke-[1.8] transition-colors duration-200 ${
+                    parentLiked ? 'fill-rose-500 text-rose-500 stroke-rose-500' : 'text-slate-700'
+                  }`}
+                />
+              </motion.div>
+              {parentLikesCount > 0 && (
+                <motion.span
+                  key={parentLikesCount}
+                  initial={{ opacity: 0.6, y: -2 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className={`font-medium text-[13px] tabular-nums tracking-tight transition-colors duration-200 ${
+                    parentLiked ? 'text-rose-600 font-bold' : 'text-slate-700'
+                  }`}
+                >
+                  {parentLikesCount}
+                </motion.span>
+              )}
+            </motion.button>
 
             {/* 2. Comment Button */}
-            <button
+            <motion.button
               type="button"
+              whileTap={{ scale: 0.9 }}
               onClick={() => onPostClick?.(parentPost)}
-              className="flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-[0.96] transition-colors cursor-pointer text-slate-600 hover:text-slate-900 select-none"
+              className="flex items-center gap-1.5 px-2 py-1 min-h-[30px] cursor-pointer text-slate-700 group select-none"
             >
-              <SmoothCommentIcon className="w-4.5 h-4.5 stroke-[2]" />
-              <span className="font-normal text-[13.5px] text-slate-700 tabular-nums tracking-tight">{parentPost.commentsCount}</span>
-            </button>
+              <motion.div
+                whileTap={{ scale: [1, 0.85, 1.2, 0.95, 1], y: [0, -2, 0] }}
+                transition={{ duration: 0.25 }}
+              >
+                <SmoothCommentIcon className="w-4 h-4 stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
+              </motion.div>
+              {parentPost.commentsCount > 0 && (
+                <span className="font-medium text-[13px] text-slate-700 tabular-nums tracking-tight">{parentPost.commentsCount}</span>
+              )}
+            </motion.button>
 
             {/* 3. Repost Button */}
-            <button
+            <motion.button
               type="button"
+              whileTap={{ scale: 0.9 }}
               onClick={handleParentRepost}
-              className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-[0.96] transition-colors cursor-pointer select-none ${
-                parentReposted ? 'text-emerald-500' : 'text-slate-600 hover:text-slate-900'
-              }`}
+              className="flex items-center gap-1.5 px-2 py-1 min-h-[30px] cursor-pointer select-none group"
             >
-              <Repeat2 className={`w-4.5 h-4.5 stroke-[2] ${parentReposted ? 'text-emerald-500' : ''}`} />
-              <span className={`font-normal text-[13.5px] tabular-nums tracking-tight ${parentReposted ? 'text-emerald-500 font-medium' : 'text-slate-700'}`}>
-                {parentRepostsCount}
-              </span>
-            </button>
+              <motion.div
+                animate={parentReposted ? { rotate: [0, 180], scale: [1, 1.3, 0.9, 1.05, 1] } : { rotate: 0, scale: 1 }}
+                transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
+              >
+                <Repeat2
+                  className={`w-4 h-4 stroke-[1.8] transition-colors duration-200 ${
+                    parentReposted ? 'text-emerald-500 stroke-emerald-500' : 'text-slate-700'
+                  }`}
+                />
+              </motion.div>
+              {parentRepostsCount > 0 && (
+                <motion.span
+                  key={parentRepostsCount}
+                  initial={{ opacity: 0.6, y: -2 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className={`font-medium text-[13px] tabular-nums tracking-tight transition-colors duration-200 ${
+                    parentReposted ? 'text-emerald-600 font-bold' : 'text-slate-700'
+                  }`}
+                >
+                  {parentRepostsCount}
+                </motion.span>
+              )}
+            </motion.button>
 
             {/* 4. Send / Share Button */}
-            <button
+            <motion.button
               type="button"
+              whileTap={{ scale: 0.9 }}
               onClick={(e) => handleShare(e, `Utas dari ${parentPost.seller.name}`, parentPost.caption)}
-              className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-[0.96] transition-colors cursor-pointer text-slate-600 hover:text-slate-900 select-none"
+              className="flex items-center justify-center p-1.5 cursor-pointer text-slate-700 group select-none"
               aria-label="Bagikan postingan"
             >
-              <Send className="w-4 h-4 stroke-[1.8] text-slate-600" />
-            </button>
+              <motion.div
+                whileTap={{ x: [0, 4, -1, 0], y: [0, -4, 1, 0], scale: [1, 1.2, 1] }}
+                transition={{ duration: 0.3 }}
+              >
+                <Send className="w-4 h-4 stroke-[1.8] text-slate-700 group-hover:text-slate-900 transition-colors duration-200" />
+              </motion.div>
+            </motion.button>
 
             {/* 5. Stock Indicator: Compact Inline Pill [ 📦 3 ] (Zero-Wrap Guaranteed) */}
             {parentPost.postType !== 'thread' && !!parentPost.price && parentPost.price > 0 && parentPost.stock !== undefined && parentPost.stock > 0 && (
@@ -459,52 +512,100 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
           </p>
 
           {/* Reply Action Bar */}
-          <div className="flex items-center gap-1 -ml-2 pt-0.5 text-slate-600">
+          <div className="flex items-center gap-1.5 -ml-1 pt-0.5 text-slate-700">
             {/* Like */}
-            <button
+            <motion.button
               type="button"
+              whileTap={{ scale: 0.9 }}
               onClick={handleReplyLike}
-              className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-[0.96] transition-colors cursor-pointer select-none ${
-                replyLiked ? 'text-rose-500' : 'text-slate-600 hover:text-slate-900'
-              }`}
+              className="flex items-center gap-1.5 px-2 py-1 min-h-[30px] cursor-pointer select-none group"
             >
-              <Heart className={`w-4.5 h-4.5 stroke-[2] ${replyLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-              <span className={`font-normal text-[13.5px] tabular-nums tracking-tight ${replyLiked ? 'text-rose-500 font-medium' : 'text-slate-700'}`}>{replyLikesCount}</span>
-            </button>
+              <motion.div
+                animate={replyLiked ? { scale: [1, 1.45, 0.88, 1.15, 1], rotate: [0, -10, 10, -4, 0] } : { scale: 1, rotate: 0 }}
+                transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
+              >
+                <Heart
+                  className={`w-4 h-4 stroke-[1.8] transition-colors duration-200 ${
+                    replyLiked ? 'fill-rose-500 text-rose-500 stroke-rose-500' : 'text-slate-700'
+                  }`}
+                />
+              </motion.div>
+              {replyLikesCount > 0 && (
+                <motion.span
+                  key={replyLikesCount}
+                  initial={{ opacity: 0.6, y: -2 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className={`font-medium text-[13px] tabular-nums tracking-tight transition-colors duration-200 ${
+                    replyLiked ? 'text-rose-600 font-bold' : 'text-slate-700'
+                  }`}
+                >
+                  {replyLikesCount}
+                </motion.span>
+              )}
+            </motion.button>
 
             {/* Comment */}
-            <button
+            <motion.button
               type="button"
+              whileTap={{ scale: 0.9 }}
               onClick={() => onPostClick?.(parentPost)}
-              className="flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-[0.96] transition-colors cursor-pointer text-slate-600 hover:text-slate-900 select-none"
+              className="flex items-center gap-1.5 px-2 py-1 min-h-[30px] cursor-pointer text-slate-700 group select-none"
             >
-              <SmoothCommentIcon className="w-4.5 h-4.5 stroke-[2]" />
-            </button>
+              <motion.div
+                whileTap={{ scale: [1, 0.85, 1.2, 0.95, 1], y: [0, -2, 0] }}
+                transition={{ duration: 0.25 }}
+              >
+                <SmoothCommentIcon className="w-4 h-4 stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
+              </motion.div>
+            </motion.button>
 
             {/* Repost */}
-            <button
+            <motion.button
               type="button"
+              whileTap={{ scale: 0.9 }}
               onClick={handleReplyRepost}
-              className={`flex items-center gap-1.5 min-h-[36px] px-2 py-1 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-[0.96] transition-colors cursor-pointer select-none ${
-                replyReposted ? 'text-emerald-500' : 'text-slate-600 hover:text-slate-900'
-              }`}
+              className="flex items-center gap-1.5 px-2 py-1 min-h-[30px] cursor-pointer select-none group"
             >
-              <Repeat2 className={`w-4.5 h-4.5 stroke-[2] ${replyReposted ? 'text-emerald-500' : ''}`} />
+              <motion.div
+                animate={replyReposted ? { rotate: [0, 180], scale: [1, 1.3, 0.9, 1.05, 1] } : { rotate: 0, scale: 1 }}
+                transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
+              >
+                <Repeat2
+                  className={`w-4 h-4 stroke-[1.8] transition-colors duration-200 ${
+                    replyReposted ? 'text-emerald-500 stroke-emerald-500' : 'text-slate-700'
+                  }`}
+                />
+              </motion.div>
               {replyRepostsCount > 0 && (
-                <span className={`font-normal text-[13.5px] tabular-nums tracking-tight ${replyReposted ? 'text-emerald-500 font-medium' : 'text-slate-700'}`}>
+                <motion.span
+                  key={replyRepostsCount}
+                  initial={{ opacity: 0.6, y: -2 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className={`font-medium text-[13px] tabular-nums tracking-tight transition-colors duration-200 ${
+                    replyReposted ? 'text-emerald-600 font-bold' : 'text-slate-700'
+                  }`}
+                >
                   {replyRepostsCount}
-                </span>
+                </motion.span>
               )}
-            </button>
+            </motion.button>
 
             {/* Share */}
-            <button
+            <motion.button
               type="button"
+              whileTap={{ scale: 0.9 }}
               onClick={(e) => handleShare(e, `Balasan dari ${reply.user.name}`, reply.content)}
-              className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 active:scale-[0.96] transition-colors cursor-pointer text-slate-600 hover:text-slate-900 select-none"
+              className="flex items-center justify-center p-1.5 cursor-pointer text-slate-700 group select-none"
             >
-              <Send className="w-4 h-4 stroke-[1.8] text-slate-600" />
-            </button>
+              <motion.div
+                whileTap={{ x: [0, 4, -1, 0], y: [0, -4, 1, 0], scale: [1, 1.2, 1] }}
+                transition={{ duration: 0.3 }}
+              >
+                <Send className="w-4 h-4 stroke-[1.8] text-slate-700 group-hover:text-slate-900 transition-colors duration-200" />
+              </motion.div>
+            </motion.button>
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { motion } from 'framer-motion';
 import { X, Volume2, VolumeX, Heart, MessageCircle, Repeat2, Send, ChevronLeft, ChevronRight } from 'lucide-react';
 import { triggerHaptic } from '@/utils/haptics';
 
@@ -281,86 +282,126 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
       >
         <div className="flex items-center gap-x-1 sm:gap-x-1.5 bg-white/95 backdrop-blur-xl border border-neutral-200/90 px-3.5 py-1.5 rounded-full shadow-lg text-slate-700 select-none">
           {/* Group 1: Social Engagement Actions (Love, Comment, Repost, Share) */}
-          <div className="flex items-center gap-x-0.5 sm:gap-x-1">
+          <div className="flex items-center gap-x-1 sm:gap-x-1.5">
             {/* 1. Love / Like */}
-            <button
+            <motion.button
               type="button"
+              whileTap={{ scale: 0.88 }}
               onClick={(e) => {
                 e.stopPropagation();
                 triggerHaptic(isLiked ? 'light' : 'medium');
                 onLike?.();
               }}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-neutral-100 active:scale-92 transition-all cursor-pointer group"
+              className="flex items-center gap-1.5 px-2 py-1.5 cursor-pointer select-none group"
               title="Sukai foto"
             >
-              <Heart
-                className={`w-4 h-4 transition-transform group-hover:scale-110 ${
-                  isLiked ? 'fill-rose-500 text-rose-500 stroke-rose-500' : 'stroke-[2] text-slate-700'
-                }`}
-              />
+              <motion.div
+                animate={isLiked ? { scale: [1, 1.45, 0.88, 1.15, 1], rotate: [0, -10, 10, -4, 0] } : { scale: 1, rotate: 0 }}
+                transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
+              >
+                <Heart
+                  className={`w-4 h-4 transition-colors duration-200 ${
+                    isLiked ? 'fill-rose-500 text-rose-500 stroke-rose-500' : 'stroke-[2] text-slate-700'
+                  }`}
+                />
+              </motion.div>
               {typeof likesCount === 'number' && (
-                <span className="text-[13px] font-semibold text-slate-800 tabular-nums leading-none">
+                <motion.span
+                  key={likesCount}
+                  initial={{ opacity: 0.6, y: -2 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className={`text-[13px] font-semibold tabular-nums leading-none transition-colors duration-200 ${
+                    isLiked ? 'text-rose-600 font-bold' : 'text-slate-800'
+                  }`}
+                >
                   {likesCount}
-                </span>
+                </motion.span>
               )}
-            </button>
+            </motion.button>
 
             {/* 2. Comment / Reply */}
-            <button
+            <motion.button
               type="button"
+              whileTap={{ scale: 0.88 }}
               onClick={(e) => {
                 e.stopPropagation();
                 triggerHaptic('light');
                 onClose();
                 onComment?.();
               }}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-neutral-100 active:scale-92 transition-all cursor-pointer text-slate-700 hover:text-slate-900 group"
+              className="flex items-center gap-1.5 px-2 py-1.5 cursor-pointer select-none group"
               title="Komentari"
             >
-              <MessageCircle className="w-4 h-4 stroke-[2] transition-transform group-hover:scale-110" />
+              <motion.div
+                whileTap={{ scale: [1, 0.85, 1.2, 0.95, 1], y: [0, -2, 0] }}
+                transition={{ duration: 0.25 }}
+              >
+                <MessageCircle className="w-4 h-4 stroke-[2] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
+              </motion.div>
               {typeof repliesCount === 'number' && (
                 <span className="text-[13px] font-semibold text-slate-800 tabular-nums leading-none">
                   {repliesCount}
                 </span>
               )}
-            </button>
+            </motion.button>
 
             {/* 3. Repost */}
-            <button
+            <motion.button
               type="button"
+              whileTap={{ scale: 0.88 }}
               onClick={(e) => {
                 e.stopPropagation();
                 triggerHaptic('medium');
                 onRepost?.();
               }}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-neutral-100 active:scale-92 transition-all cursor-pointer group"
+              className="flex items-center gap-1.5 px-2 py-1.5 cursor-pointer select-none group"
               title="Repost"
             >
-              <Repeat2
-                className={`w-4 h-4 stroke-[2.2] transition-transform group-hover:scale-110 ${
-                  isReposted ? 'text-emerald-500' : 'text-slate-700'
-                }`}
-              />
+              <motion.div
+                animate={isReposted ? { rotate: [0, 180], scale: [1, 1.3, 0.9, 1.05, 1] } : { rotate: 0, scale: 1 }}
+                transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
+              >
+                <Repeat2
+                  className={`w-4 h-4 stroke-[2.2] transition-colors duration-200 ${
+                    isReposted ? 'text-emerald-500 stroke-emerald-500' : 'text-slate-700'
+                  }`}
+                />
+              </motion.div>
               {typeof repostsCount === 'number' && (
-                <span className="text-[13px] font-semibold text-slate-800 tabular-nums leading-none">
+                <motion.span
+                  key={repostsCount}
+                  initial={{ opacity: 0.6, y: -2 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className={`text-[13px] font-semibold tabular-nums leading-none transition-colors duration-200 ${
+                    isReposted ? 'text-emerald-600 font-bold' : 'text-slate-800'
+                  }`}
+                >
                   {repostsCount}
-                </span>
+                </motion.span>
               )}
-            </button>
+            </motion.button>
 
             {/* 4. Share */}
-            <button
+            <motion.button
               type="button"
+              whileTap={{ scale: 0.88 }}
               onClick={(e) => {
                 e.stopPropagation();
                 triggerHaptic('light');
                 onShare?.();
               }}
-              className="flex items-center justify-center p-2 rounded-full hover:bg-neutral-100 active:scale-92 transition-all cursor-pointer text-slate-700 hover:text-slate-900 group"
+              className="flex items-center justify-center p-2 cursor-pointer select-none group"
               title="Bagikan"
             >
-              <Send className="w-4 h-4 stroke-[2] transition-transform group-hover:scale-110" />
-            </button>
+              <motion.div
+                whileTap={{ x: [0, 4, -1, 0], y: [0, -4, 1, 0], scale: [1, 1.2, 1] }}
+                transition={{ duration: 0.3 }}
+              >
+                <Send className="w-4 h-4 stroke-[2] text-slate-700 group-hover:text-slate-900 transition-colors duration-200" />
+              </motion.div>
+            </motion.button>
           </div>
 
           {/* Group 2: Photo Viewport Controls (Divider | Pagination Dots | Zoom Scale) */}

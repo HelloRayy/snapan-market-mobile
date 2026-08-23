@@ -251,20 +251,20 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
           {images.map((imgUrl, idx) => (
             <div
               key={idx}
-              className="w-full h-full shrink-0 flex items-center justify-center snap-center p-2 relative overflow-hidden"
+              className="w-full h-full shrink-0 flex items-center justify-center snap-center p-0 relative overflow-hidden"
               onDoubleClick={() => {
                 triggerHaptic('selection');
                 setZoomLevel((prev) => (prev === 1 ? 2 : 1));
               }}
             >
-              <div className="relative w-full h-full max-h-[80vh] flex items-center justify-center overflow-hidden">
+              <div className="relative w-full h-full max-h-[82vh] flex items-center justify-center overflow-hidden">
                 <img
                   src={imgUrl}
                   alt={caption || `Media Preview ${idx + 1}`}
                   style={{
                     transform: zoomLevel > 1 ? `scale(${zoomLevel})` : undefined,
                   }}
-                  className="max-w-full max-h-full w-auto h-auto object-contain select-none pointer-events-none transition-transform duration-300"
+                  className="w-full max-h-full object-contain select-none pointer-events-none transition-transform duration-300"
                 />
               </div>
             </div>

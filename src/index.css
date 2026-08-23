@@ -62,10 +62,34 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* 🚀 PWA 120 FPS Feed Performance (Virtual-DOM Offscreen Containment) */
+/* 🖋️ Form & Input Typography Inheritance + Text Selection + Anti iOS Auto-Zoom */
+input, textarea, select, button {
+  font-family: inherit;
+  font-feature-settings: inherit;
+  letter-spacing: inherit;
+}
+
+input, textarea {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* Prevent disruptive iOS Safari auto-zoom on input focus */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="search"],
+  input[type="number"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"],
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* 🚀 PWA 120 FPS Feed Performance (GPU Compositor Isolation) */
 @utility feed-card-perf {
-  content-visibility: auto;
-  contain-intrinsic-size: 0 320px;
+  contain: layout paint;
   transform: translateZ(0);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;

@@ -88,9 +88,11 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
   const handleParentLike = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (parentLiked) {
+      triggerHaptic('light');
       setParentLiked(false);
       setParentLikesCount((prev) => Math.max(0, prev - 1));
     } else {
+      triggerHaptic('medium');
       setParentLiked(true);
       setParentLikesCount((prev) => prev + 1);
     }

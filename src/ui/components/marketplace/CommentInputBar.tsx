@@ -73,7 +73,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
         <form onSubmit={handleSubmit} className="flex items-center gap-2 w-full min-w-0">
           <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-neutral-200 shadow-2xs">
             <img
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80"
+              src={userAvatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80"}
               alt="Profil Saya"
               className="w-full h-full object-cover"
             />
@@ -91,14 +91,14 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
                 ? `Balas @${replyToUser.replace(/^@/, '')}...`
                 : targetAuthor
                 ? `Balas postingan @${targetAuthor.replace(/^@/, '')}...`
-                : 'Balas postingan...'
+                : 'Tulis balasan...'
             }
-            className="flex-1 min-w-0 bg-neutral-100 hover:bg-neutral-100/80 focus:bg-white border border-transparent focus:border-[#1d64ec] rounded-full px-3.5 sm:px-4 h-10 text-[13.5px] sm:text-[14px] text-slate-900 placeholder:text-neutral-400 focus:outline-none transition-all shadow-2xs"
+            className="flex-1 min-w-0 bg-neutral-100 hover:bg-neutral-100/80 focus:bg-white border border-transparent focus:border-[#1d64ec] rounded-full px-3.5 sm:px-4 h-10 text-[15px] sm:text-[14px] text-slate-900 placeholder:text-neutral-400 focus:outline-none transition-all shadow-2xs"
           />
           <button
             type="submit"
             disabled={!text.trim()}
-            className={`relative inline-flex items-center justify-center gap-1.5 rounded-full px-3.5 sm:px-4 h-10 text-[13px] font-bold text-white bg-[#18181b] border border-black/40 shadow-xs overflow-hidden shrink-0 transition-all ${
+            className={`relative inline-flex items-center justify-center gap-1.5 rounded-full px-3.5 sm:px-4 h-10 text-[13.5px] font-bold text-white bg-[#18181b] border border-black/40 shadow-xs overflow-hidden shrink-0 transition-all ${
               !text.trim()
                 ? 'opacity-40 cursor-not-allowed'
                 : 'active:scale-95 cursor-pointer hover:bg-black'
@@ -126,9 +126,9 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
     >
       {/* Floating Reply Banner if replying to a user */}
       {replyToUser && (
-        <div className="flex items-center justify-between px-3.5 py-1 mb-1.5 bg-white/95 backdrop-blur-md rounded-full border border-neutral-200/90 text-[11.5px] text-slate-700 shadow-xs animate-in fade-in select-none">
+        <div className="flex items-center justify-between px-3.5 py-1.5 mb-1.5 bg-white/95 backdrop-blur-md rounded-full border border-neutral-200/90 text-[12px] text-slate-700 shadow-xs animate-in fade-in select-none">
           <span className="flex items-center gap-1 truncate">
-            <span>Membalas</span>
+            <span className="text-neutral-500 font-normal">Membalas</span>
             <strong className="text-[#1d64ec] font-semibold">@{replyToUser.replace(/^@/, '')}</strong>
           </span>
           <button
@@ -138,14 +138,14 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
               onCancelReply?.();
               onClose?.();
             }}
-            className="text-neutral-400 hover:text-rose-500 text-[11px] font-semibold transition-colors cursor-pointer px-1 shrink-0"
+            className="text-neutral-400 hover:text-rose-500 text-[11.5px] font-semibold transition-colors cursor-pointer px-1.5 shrink-0 active:scale-95"
           >
             Batal
           </button>
         </div>
       )}
 
-      {/* Floating White Pill Dock Container (Identical to StickyBuyBar) */}
+      {/* Floating White Pill Dock Container */}
       <div className="bg-white/95 backdrop-blur-xl border border-neutral-200/80 p-1.5 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.12)] flex items-center gap-2">
         <form onSubmit={handleSubmit} className="flex items-center gap-2 w-full min-w-0">
           {/* Left Slot: ArrowLeft Button (if in Product Mode) OR User Avatar (in Thread Mode) */}
@@ -185,10 +185,10 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
               replyToUser
                 ? `Balas @${replyToUser.replace(/^@/, '')}...`
                 : targetAuthor
-                ? `Tulis pertanyaan untuk @${targetAuthor.replace(/^@/, '')}...`
-                : 'Tulis pertanyaan / komentar...'
+                ? `Tulis balasan untuk @${targetAuthor.replace(/^@/, '')}...`
+                : 'Tulis balasan / tanggapan...'
             }
-            className="flex-1 min-w-0 bg-transparent border-none text-[13.5px] sm:text-[14px] text-slate-900 placeholder:text-neutral-400 focus:outline-none px-1 h-9"
+            className="flex-1 min-w-0 bg-transparent border-none text-[15px] sm:text-[14px] text-slate-900 placeholder:text-neutral-400 focus:outline-none px-2 h-9 leading-snug"
           />
 
           {/* Send Button CTA */}

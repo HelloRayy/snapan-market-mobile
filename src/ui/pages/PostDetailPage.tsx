@@ -73,10 +73,10 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
     };
 
     if (targetParentId) {
-      // Nest directly inside the target parent comment!
+      // Nest directly inside the target parent comment or sibling sub-reply's parent!
       setComments((prev) =>
         prev.map((c) => {
-          if (c.id === targetParentId) {
+          if (c.id === targetParentId || c.replies?.some((r) => r.id === targetParentId)) {
             return {
               ...c,
               replies: [...(c.replies || []), newComment],
@@ -114,9 +114,19 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   const userAvatar =
     profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80';
 
-  // Find the username we're currently replying to if any
-  const targetReplyComment = comments.find((c) => c.id === replyToCommentId);
-  const replyingToUsername = targetReplyComment ? targetReplyComment.user.username || targetReplyComment.user.name : null;
+  // Find the username we're currently replying to across root & nested comments
+  const replyingToUsername = (() => {
+    if (!replyToCommentId) return null;
+    for (const c of comments) {
+      if (c.id === replyToCommentId) return c.user.username || c.user.name;
+      if (c.replies) {
+        for (const r of c.replies) {
+          if (r.id === replyToCommentId) return r.user.username || r.user.name;
+        }
+      }
+    }
+    return null;
+  })();
 
   return (
     <div

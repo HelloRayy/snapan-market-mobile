@@ -7,7 +7,9 @@ import { formatSmartTimestamp } from '@/utils/formatters';
 import { SmoothCommentIcon } from '@/ui/components/icons/SmoothCommentIcon';
 import { PostCommentItem } from './PostCommentItem';
 import { PostOptionsModal } from './PostOptionsModal';
+import { CommentInputBar } from './CommentInputBar';
 import { useAuth } from '@/ui/hooks/useAuth';
+import { triggerHaptic } from '@/utils/haptics';
 
 interface CommentDetailPageProps {
   parentPost: MarketPostItem;
@@ -25,11 +27,10 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
   const { profile } = useAuth();
   const [commentStack, setCommentStack] = useState<PostComment[]>([focusedComment]);
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
-  const [replyInputText, setReplyInputText] = useState('');
+  const [replyToUser, setReplyToUser] = useState<string | null>(null);
   const [replyToCommentId, setReplyToCommentId] = useState<string | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const activeComment = commentStack[commentStack.length - 1] || focusedComment;
   const parentContext = commentStack.length > 1 ? commentStack[commentStack.length - 2] : null;
@@ -49,7 +50,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
     }
   }, [activeComment]);
 
-  // OPTIMIZATION 1: Hardware Back Button & Mobile Swipe Back History Integration (popstate)
+  // Hardware Back Button & Mobile Swipe Back History Integration (popstate)
   useEffect(() => {
     window.history.pushState({ modal: 'comment-detail', depth: commentStack.length }, '');
 
@@ -73,6 +74,12 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
     setIsHeroLiked(nextLiked);
     setHeroLikesCount(nextCount);
 
+    if (nextLiked) {
+      triggerHaptic('medium');
+    } else {
+      triggerHaptic('light');
+    }
+
     const updated = {
       ...activeComment,
       isLiked: nextLiked,
@@ -88,22 +95,16 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
     window.history.back();
   };
 
-  // OPTIMIZATION 3: Smart Auto-Mention & Auto-Focus on 💬 Action Click
+  // Smart Auto-Mention & Auto-Focus on 💬 Action Click
   const handleReplyToUser = (targetUsername: string, targetCommentId?: string) => {
-    const mentionPrefix = `@${targetUsername} `;
-    setReplyInputText(mentionPrefix);
+    triggerHaptic('light');
+    setReplyToUser(targetUsername);
     setReplyToCommentId(targetCommentId || null);
-    setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-        inputRef.current.setSelectionRange(mentionPrefix.length, mentionPrefix.length);
-      }
-    }, 50);
   };
 
-  const handleAddDirectReply = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!replyInputText.trim()) return;
+  const handleAddDirectReply = (text: string) => {
+    if (!text.trim()) return;
+    triggerHaptic('success');
 
     const newReply: PostComment = {
       id: `comment-${Date.now()}`,
@@ -119,7 +120,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
           (profile?.id || 'current-user') === parentPost.seller.id ||
           parentPost.seller.username === 'radityarayhannnn',
       },
-      content: replyInputText.trim(),
+      content: text.trim(),
       timestamp: 'Baru saja',
       likesCount: 0,
       isLiked: false,
@@ -150,7 +151,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
       prev.map((c, i) => (i === prev.length - 1 ? updatedComment : c))
     );
     onUpdateComment?.(updatedComment);
-    setReplyInputText('');
+    setReplyToUser(null);
     setReplyToCommentId(null);
   };
 
@@ -359,7 +360,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                     type="button"
                     whileTap={{ scale: 0.9 }}
                     onClick={() => {
-                      inputRef.current?.focus();
+                      handleReplyToUser(activeComment.user.username || activeComment.user.name, activeComment.id);
                     }}
                     className="flex items-center justify-center gap-1.5 px-2 py-1 min-h-[30px] cursor-pointer transition-colors text-slate-700 group select-none"
                     aria-label="Balas komentar"
@@ -419,38 +420,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
           </div>
         </div>
 
-        {/* 3. Reply Input Bar into Active Hero Comment */}
-        <form
-          onSubmit={handleAddDirectReply}
-          className="flex items-center gap-2.5 bg-neutral-100 focus-within:bg-white focus-within:border-[#1d64ec] border border-neutral-200/80 rounded-full px-4 py-2 transition-all shadow-2xs"
-        >
-          <div className="w-7 h-7 rounded-full overflow-hidden border border-neutral-200 shrink-0">
-            <img src={userAvatar} alt="Profil Saya" className="w-full h-full object-cover" />
-          </div>
-
-          <input
-            ref={inputRef}
-            type="text"
-            value={replyInputText}
-            onChange={(e) => setReplyInputText(e.target.value)}
-            placeholder={`Balas @${activeComment.user.username || activeComment.user.name}...`}
-            className="flex-1 min-w-0 bg-transparent text-[14px] text-slate-900 placeholder:text-neutral-400 focus:outline-none"
-          />
-
-          <button
-            type="submit"
-            disabled={!replyInputText.trim()}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shrink-0 ${
-              replyInputText.trim()
-                ? 'bg-[#18181b] text-white shadow-xs active:scale-95 cursor-pointer'
-                : 'bg-neutral-200 text-neutral-400 cursor-not-allowed'
-            }`}
-          >
-            Kirim
-          </button>
-        </form>
-
-        {/* 4. Sub-Replies List (P3, P4, etc.) */}
+        {/* 3. Sub-Replies List (P3, P4, etc.) */}
         <div className="pt-2 space-y-2">
           <div className="flex items-center justify-between pb-1">
             <h2 className="font-semibold text-sm text-slate-900">
@@ -480,6 +450,20 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
           )}
         </div>
       </main>
+
+      {/* Floating Pill Comment Input Bar ala Threads */}
+      <CommentInputBar
+        targetAuthor={activeComment.user.username || activeComment.user.name}
+        userAvatar={userAvatar}
+        replyToUser={replyToUser}
+        autoFocus={Boolean(replyToUser)}
+        onCancelReply={() => {
+          setReplyToUser(null);
+          setReplyToCommentId(null);
+        }}
+        onSubmitComment={(text) => handleAddDirectReply(text)}
+        isInline={false}
+      />
 
       {/* Focused Comment 3-Dot Options Modal */}
       <PostOptionsModal

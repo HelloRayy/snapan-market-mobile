@@ -6,6 +6,7 @@ import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { formatSmartTimestamp } from '@/utils/formatters';
 import { SmoothCommentIcon } from '@/ui/components/icons';
 import { PostOptionsModal } from './PostOptionsModal';
+import { triggerHaptic } from '@/utils/haptics';
 
 interface PostCommentItemProps {
   comment: PostComment;
@@ -33,6 +34,8 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
   const handleLikeToggle = () => {
     setIsLiked((prev) => {
       const next = !prev;
+      if (next) triggerHaptic('medium');
+      else triggerHaptic('light');
       setLikesCount((c) => (next ? c + 1 : Math.max(0, c - 1)));
       return next;
     });
@@ -43,6 +46,8 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
       prev.map((r) => {
         if (r.id === replyId) {
           const nextLiked = !r.isLiked;
+          if (nextLiked) triggerHaptic('medium');
+          else triggerHaptic('light');
           return {
             ...r,
             isLiked: nextLiked,

@@ -96,19 +96,31 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
         </div>
       </div>
 
-      {/* Collapsible Search Input Row */}
+      {/* Collapsible Threads-Style Capsule Search Input Row */}
       {showSearchInput && (
-        <div className="max-w-xl mx-auto px-4 pb-2.5 animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="relative flex items-center">
-            <Search className="absolute left-3.5 w-4 h-4 text-neutral-400 pointer-events-none" />
+        <div className="max-w-xl mx-auto px-3.5 pb-2.5 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="flex items-center pl-2.5 pr-2 bg-neutral-100/90 text-slate-900 rounded-[22px] h-11 leading-snug border border-neutral-200/70 focus-within:bg-white focus-within:border-slate-400 focus-within:shadow-2xs transition-all">
+            <div className="w-8 h-8 flex items-center justify-center text-neutral-400 shrink-0 mr-1">
+              <Search className="w-4.5 h-4.5 stroke-[2.2]" />
+            </div>
             <input
               type="text"
               autoFocus
-              placeholder="Cari jajanan kantin, barang DKV, aksesoris TJKT..."
+              placeholder="Cari postingan, produk, jajanan, atau akun..."
               value={searchValue}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-neutral-300 bg-neutral-50 text-slate-900 focus:bg-white focus:border-[#1d64ec] focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all font-normal"
+              className="bg-transparent text-slate-900 placeholder:text-neutral-400 outline-none flex-1 text-[15px] font-normal leading-snug h-full px-1"
             />
+            {searchValue && (
+              <button
+                type="button"
+                onClick={() => handleSearchChange('')}
+                className="w-7 h-7 rounded-full flex items-center justify-center text-neutral-400 hover:text-slate-800 hover:bg-neutral-200/60 active:scale-90 transition-all cursor-pointer shrink-0 ml-1"
+                aria-label="Hapus Pencarian"
+              >
+                <X className="w-4 h-4 stroke-[2.5]" />
+              </button>
+            )}
           </div>
         </div>
       )}

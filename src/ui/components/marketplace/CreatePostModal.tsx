@@ -116,6 +116,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
   // Draft Management State
   const [showDiscardAlert, setShowDiscardAlert] = useState(false);
   const [showDraftsSheet, setShowDraftsSheet] = useState(false);
+  const [showDeleteDraftConfirm, setShowDeleteDraftConfirm] = useState(false);
   const [savedDraft, setSavedDraft] = useState<any | null>(null);
 
   // Sync initialMode when modal opens
@@ -1442,10 +1443,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
 
                 <button
                   type="button"
-                  onClick={() => {
-                    localStorage.removeItem('snapan_thread_draft');
-                    setSavedDraft(null);
-                  }}
+                  onClick={() => setShowDeleteDraftConfirm(true)}
                   className="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
                   title="Hapus Draf"
                 >
@@ -1460,6 +1458,30 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
           </div>
         </div>
       )}
+
+      {/* Delete Draft Confirmation Dialog */}
+      <ConfirmActionModal
+        isOpen={showDeleteDraftConfirm}
+        onClose={() => setShowDeleteDraftConfirm(false)}
+        title="Hapus draf?"
+        description="Draf yang tersimpan akan dihapus secara permanen."
+        actions={[
+          {
+            label: 'Hapus Draf',
+            variant: 'destructive',
+            onClick: () => {
+              localStorage.removeItem('snapan_thread_draft');
+              setSavedDraft(null);
+              setShowDeleteDraftConfirm(false);
+            },
+          },
+          {
+            label: 'Batal',
+            variant: 'cancel',
+            onClick: () => setShowDeleteDraftConfirm(false),
+          },
+        ]}
+      />
     </div>
   );
 };

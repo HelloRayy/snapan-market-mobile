@@ -5,9 +5,9 @@ import {
   ChevronRight,
   Check,
   X,
-  AlertTriangle,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { ConfirmActionModal } from '@/ui/components/ui/ConfirmActionModal';
 
 export interface EditProfileData {
   name: string;
@@ -482,63 +482,25 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
         </div>
       </footer>
 
-      {/* Discard Confirmation Modal (Clean Meta Threads / iOS Dialog) */}
-      <AnimatePresence>
-        {showDiscardConfirmModal && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowDiscardConfirmModal(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-xs"
-            />
-
-            {/* Dialog Card */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92, y: 8 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.92, y: 8 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-              className="relative w-full max-w-xs bg-white rounded-3xl p-5 shadow-2xl border border-neutral-100 z-10 text-center space-y-4 font-gt-standard"
-            >
-              <div className="w-12 h-12 rounded-full bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center mx-auto shadow-2xs">
-                <AlertTriangle className="w-6 h-6 stroke-[2.2]" />
-              </div>
-
-              <div className="space-y-1.5">
-                <h3 className="text-[17px] font-bold text-slate-900 tracking-tight leading-snug">
-                  Buang perubahan?
-                </h3>
-                <p className="text-[13.5px] text-neutral-500 font-normal leading-relaxed">
-                  Jika Anda keluar sekarang, perubahan profil yang baru saja diedit tidak akan disimpan.
-                </p>
-              </div>
-
-              <div className="space-y-2 pt-1">
-                {/* Red Destructive Discard Action */}
-                <button
-                  type="button"
-                  onClick={handleConfirmDiscard}
-                  className="w-full h-11 rounded-2xl bg-rose-600 hover:bg-rose-700 active:scale-98 text-white font-bold text-[14.5px] transition-all cursor-pointer shadow-md shadow-rose-600/20"
-                >
-                  Buang Perubahan
-                </button>
-
-                {/* Secondary Cancel Action */}
-                <button
-                  type="button"
-                  onClick={() => setShowDiscardConfirmModal(false)}
-                  className="w-full h-11 rounded-2xl bg-neutral-100 hover:bg-neutral-200/80 active:scale-98 text-slate-800 font-semibold text-[14.5px] transition-all cursor-pointer"
-                >
-                  Batal & Lanjut Edit
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {/* Reusable Threads-style Discard Changes Modal */}
+      <ConfirmActionModal
+        isOpen={showDiscardConfirmModal}
+        onClose={() => setShowDiscardConfirmModal(false)}
+        title="Buang perubahan?"
+        description="Jika Anda keluar sekarang, perubahan profil yang baru saja diedit tidak akan disimpan."
+        actions={[
+          {
+            label: 'Buang',
+            variant: 'destructive',
+            onClick: handleConfirmDiscard,
+          },
+          {
+            label: 'Batal',
+            variant: 'cancel',
+            onClick: () => setShowDiscardConfirmModal(false),
+          },
+        ]}
+      />
 
       {/* Floating Feedback Toast */}
       {toastMessage && (

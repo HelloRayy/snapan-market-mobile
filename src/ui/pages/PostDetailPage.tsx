@@ -160,9 +160,9 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         />
 
         {/* Comments Section (Includes Author Thread Continuations 2/N, 3/N at top) */}
-        <section id="comments-section" className="px-4 pt-2">
+        <section id="comments-section" className="w-full pt-1">
           {/* Section Divider Header */}
-          <div className="py-2.5 flex items-center justify-between">
+          <div className="px-3.5 py-2.5 flex items-center justify-between border-b border-neutral-100">
             <h2 className="font-semibold text-sm text-slate-900">
               {isProductMode ? 'Tanya Jawab & Diskusi' : 'Komentar'} ({post.threadChain && post.threadChain.length > 0 ? comments.length + post.threadChain.length : comments.length})
             </h2>
@@ -171,7 +171,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
 
           {/* Combined Comment List: Author Thread Continuations + General Comments */}
           {(post.threadChain && post.threadChain.length > 0) || comments.length > 0 ? (
-            <div className="divide-y divide-neutral-200">
+            <div className="w-full">
               {/* 1. Author Thread Continuation Comments (Part 2, Part 3, etc.) */}
               {post.threadChain?.map((chain) => (
                 <PostCommentItem

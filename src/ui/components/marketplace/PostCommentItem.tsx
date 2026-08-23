@@ -194,14 +194,14 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
   );
 
   return (
-    <div className={`w-full ${isNested ? 'pt-3.5 pl-0' : 'py-3.5 border-b border-neutral-200'}`}>
+    <div className={`w-full ${isNested ? 'pt-3.5 pl-0' : 'px-3.5 py-3.5 border-b border-neutral-200'}`}>
       {!isThreadConnected ? (
         /* SINGLE COMMENT (NO REPLIES & NOT CURRENTLY REPLYING): Entire Card is Clickable Trigger with Tactile Feedback */
         <div
           onClick={() => onOpenCommentDetail?.(comment)}
-          className={`flex items-start gap-3 w-full -mx-2 px-2 py-1.5 rounded-2xl ${
+          className={`flex items-start gap-3 w-full ${
             onOpenCommentDetail
-              ? 'cursor-pointer active:bg-neutral-100/70 active:scale-[0.995] transition-all duration-75'
+              ? 'cursor-pointer active:opacity-75 transition-opacity'
               : ''
           }`}
         >
@@ -313,9 +313,9 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
           {/* Parent Comment Row (Full Row Clickable Trigger with Tactile Feedback) */}
           <div
             onClick={() => onOpenCommentDetail?.(comment)}
-            className={`flex items-start gap-3 relative w-full -mx-2 px-2 py-1.5 rounded-2xl ${
+            className={`flex items-start gap-3 relative w-full ${
               onOpenCommentDetail
-                ? 'cursor-pointer active:bg-neutral-100/70 active:scale-[0.995] transition-all duration-75'
+                ? 'cursor-pointer active:opacity-75 transition-opacity'
                 : ''
             }`}
           >
@@ -397,9 +397,9 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 <div
                   key={reply.id || idx}
                   onClick={() => onOpenCommentDetail?.(reply)}
-                  className={`flex items-start gap-3 ml-7 relative w-full -mx-2 px-2 py-1.5 rounded-2xl ${
+                  className={`flex items-start gap-3 ml-7 relative w-full ${
                     onOpenCommentDetail
-                      ? 'cursor-pointer active:bg-neutral-100/70 active:scale-[0.995] transition-all duration-75'
+                      ? 'cursor-pointer active:opacity-75 transition-opacity'
                       : ''
                   }`}
                 >

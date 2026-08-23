@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Repeat, Send, BadgeCheck, MoreHorizontal, Crown } from 'lucide-react';
+import { Heart, Repeat2, Send, BadgeCheck, MoreHorizontal, Crown } from 'lucide-react';
 import { PostComment } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { formatSmartTimestamp } from '@/utils/formatters';
@@ -28,14 +28,14 @@ interface PostCommentItemProps {
   activeReplyingCommentId?: string | null;
   onReplyClick?: (username: string, commentId?: string) => void;
   onCancelReply?: () => void;
-  onSubmitReply?: (commentId: string, text: string) => void;
+  onSubmitReply?: (commentId: string, replyText: string) => void;
   onOpenCommentDetail?: (comment: PostComment) => void;
   isNested?: boolean;
 }
 
 export const PostCommentItem: React.FC<PostCommentItemProps> = ({
   comment,
-  currentUserAvatar,
+  currentUserAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
   activeReplyingCommentId,
   onReplyClick,
   onCancelReply,
@@ -44,8 +44,8 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
   isNested = false,
 }) => {
   const [isLiked, setIsLiked] = useState(comment.isLiked || false);
-  const [likesCount, setLikesCount] = useState(comment.likesCount);
-  const [repliesState, setRepliesState] = useState(comment.replies || []);
+  const [likesCount, setLikesCount] = useState(comment.likesCount || 0);
+  const [repliesState, setRepliesState] = useState<PostComment[]>(comment.replies || []);
   const [replyDraftText, setReplyDraftText] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -66,37 +66,35 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
     }
   }, [isReplying]);
 
+  const handleInlineSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!replyDraftText.trim()) return;
+    onSubmitReply?.(comment.id, replyDraftText.trim());
+    setReplyDraftText('');
+  };
+
   const handleLikeToggle = () => {
-    if (isLiked) {
-      setIsLiked(false);
-      setLikesCount((prev) => prev - 1);
-    } else {
-      setIsLiked(true);
-      setLikesCount((prev) => prev + 1);
-    }
+    setIsLiked((prev) => {
+      const next = !prev;
+      setLikesCount((c) => (next ? c + 1 : Math.max(0, c - 1)));
+      return next;
+    });
   };
 
   const handleNestedReplyLike = (replyId: string) => {
     setRepliesState((prev) =>
       prev.map((r) => {
         if (r.id === replyId) {
-          const liked = !r.isLiked;
+          const nextLiked = !r.isLiked;
           return {
             ...r,
-            isLiked: liked,
-            likesCount: liked ? r.likesCount + 1 : Math.max(0, r.likesCount - 1),
+            isLiked: nextLiked,
+            likesCount: nextLiked ? r.likesCount + 1 : Math.max(0, r.likesCount - 1),
           };
         }
         return r;
       })
     );
-  };
-
-  const handleInlineSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!replyDraftText.trim()) return;
-    onSubmitReply?.(comment.id, replyDraftText.trim());
-    setReplyDraftText('');
   };
 
   const hasReplies = repliesState.length > 0;
@@ -113,80 +111,108 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       onClick={(e) => e.stopPropagation()}
-      className="flex items-center text-slate-600 font-normal pt-1.5 -ml-2 text-[13px] select-none"
+      className="flex items-center text-slate-700 font-normal pt-1 -ml-1.5 text-[13px] select-none"
     >
       {/* 1. Suka (Like) Slot */}
-      <div className="flex items-center justify-center font-normal cursor-pointer transition-all">
-        <div className="flex items-stretch font-normal cursor-pointer transition-all">
+      <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer">
+        <div className="flex items-stretch font-normal cursor-pointer">
           <motion.button
             type="button"
-            whileTap={{ scale: 0.94 }}
-            transition={{ duration: 0.1 }}
+            whileTap={{ scale: 0.9 }}
             onClick={(e) => {
               e.stopPropagation();
               onLike?.();
             }}
-            className={`flex items-center justify-center gap-1.5 px-2.5 py-1 min-h-[28px] rounded-full transition-colors cursor-pointer select-none ${
-              liked
-                ? 'border border-slate-900 bg-neutral-100/90 text-slate-900 shadow-2xs'
-                : 'hover:bg-neutral-100/80 active:bg-neutral-200/80 text-slate-700 hover:text-slate-900'
-            }`}
+            className="flex items-center justify-center gap-1 px-1.5 py-1 min-h-[28px] cursor-pointer select-none group"
+            aria-label={`Sukai komentar. ${count} suka`}
           >
             <motion.div
-              animate={liked ? { scale: [1, 1.35, 0.95, 1], rotate: [0, -10, 10, 0] } : { scale: 1, rotate: 0 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
+              animate={liked ? { scale: [1, 1.45, 0.88, 1.15, 1], rotate: [0, -10, 10, -4, 0] } : { scale: 1, rotate: 0 }}
+              transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
             >
-              <Heart className={`w-3.5 h-3.5 stroke-[1.8] ${liked ? 'fill-rose-500 text-rose-500 stroke-rose-500' : ''}`} />
+              <Heart
+                className={`w-3.5 h-3.5 stroke-[1.8] transition-colors duration-200 ${
+                  liked ? 'fill-rose-500 text-rose-500 stroke-rose-500' : 'text-slate-700'
+                }`}
+              />
             </motion.div>
-            {count > 0 && <span className={`font-medium text-[12.5px] tabular-nums tracking-tight ${liked ? 'text-slate-900' : 'text-slate-700'}`}>{count}</span>}
+            {count > 0 && (
+              <motion.span
+                key={count}
+                initial={{ opacity: 0.6, y: -2 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.15 }}
+                className={`font-medium text-[12px] tabular-nums tracking-tight transition-colors duration-200 ${
+                  liked ? 'text-rose-600 font-bold' : 'text-slate-700'
+                }`}
+              >
+                {count}
+              </motion.span>
+            )}
           </motion.button>
         </div>
       </div>
 
       {/* 2. Balas (Comment) Slot */}
-      <div className="flex items-center justify-center font-normal cursor-pointer">
+      <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer">
         <div className="flex items-stretch font-normal cursor-pointer">
           <motion.button
             type="button"
-            whileTap={{ scale: 0.94 }}
-            transition={{ duration: 0.1 }}
+            whileTap={{ scale: 0.9 }}
             onClick={(e) => {
               e.stopPropagation();
               onReply?.();
             }}
-            className="flex items-center justify-center gap-1.5 px-2.5 py-1 min-h-[28px] rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 hover:text-slate-900 transition-colors cursor-pointer text-slate-700 select-none"
+            className="flex items-center justify-center gap-1 px-1.5 py-1 min-h-[28px] cursor-pointer transition-colors text-slate-700 group select-none"
+            aria-label="Balas komentar"
           >
-            <SmoothCommentIcon className="w-3.5 h-3.5 stroke-[1.8]" />
+            <motion.div
+              whileTap={{ scale: [1, 0.85, 1.2, 0.95, 1], y: [0, -2, 0] }}
+              transition={{ duration: 0.25 }}
+            >
+              <SmoothCommentIcon className="w-3.5 h-3.5 stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
+            </motion.div>
           </motion.button>
         </div>
       </div>
 
       {/* 3. Posting Ulang (Repost) Slot */}
-      <div className="flex items-center justify-center font-normal cursor-pointer">
+      <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer">
         <div className="flex items-stretch font-normal cursor-pointer">
           <motion.button
             type="button"
-            whileTap={{ scale: 0.94 }}
-            transition={{ duration: 0.1 }}
+            whileTap={{ scale: 0.9 }}
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center justify-center gap-1.5 px-2.5 py-1 min-h-[28px] rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 hover:text-slate-900 transition-colors cursor-pointer text-slate-700 select-none"
+            className="flex items-center justify-center gap-1 px-1.5 py-1 min-h-[28px] cursor-pointer transition-colors select-none group"
+            aria-label="Post ulang komentar"
           >
-            <Repeat className="w-3.5 h-3.5 stroke-[1.8]" />
+            <motion.div
+              whileTap={{ rotate: [0, 180], scale: [1, 1.3, 0.9, 1.05, 1] }}
+              transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
+            >
+              <Repeat2 className="w-3.5 h-3.5 stroke-[1.8] text-slate-700 group-hover:text-emerald-500 transition-colors duration-200" />
+            </motion.div>
           </motion.button>
         </div>
       </div>
 
       {/* 4. Bagikan (Share) Slot */}
-      <div className="flex items-center justify-center font-normal cursor-pointer">
+      <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer">
         <div className="flex items-stretch px-0.5 font-normal cursor-pointer">
           <motion.button
             type="button"
-            whileTap={{ scale: 0.94 }}
-            transition={{ duration: 0.1 }}
+            whileTap={{ scale: 0.9 }}
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center justify-center p-1.5 rounded-full hover:bg-neutral-100/80 active:bg-neutral-200/80 hover:text-slate-900 transition-colors cursor-pointer text-slate-700 select-none"
+            className="flex items-center justify-center p-1.5 cursor-pointer transition-colors text-slate-700 group select-none"
+            aria-label="Bagikan komentar"
+            title="Bagikan / Kirim"
           >
-            <Send className="w-3.5 h-3.5 stroke-[1.8]" />
+            <motion.div
+              whileTap={{ x: [0, 4, -1, 0], y: [0, -4, 1, 0], scale: [1, 1.2, 1] }}
+              transition={{ duration: 0.35, ease: "easeInOut" }}
+            >
+              <Send className="w-3.5 h-3.5 stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
+            </motion.div>
           </motion.button>
         </div>
       </div>
@@ -397,7 +423,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 <div
                   key={reply.id || idx}
                   onClick={() => onOpenCommentDetail?.(reply)}
-                  className={`flex items-start gap-3 ml-7 relative w-full ${
+                  className={`flex items-start gap-3 ml-7 relative min-w-0 ${
                     onOpenCommentDetail
                       ? 'cursor-pointer active:opacity-75 transition-opacity'
                       : ''

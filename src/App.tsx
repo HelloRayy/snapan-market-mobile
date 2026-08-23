@@ -146,6 +146,9 @@ export function App() {
 
       // 3. Update route state
       setCurrentRoute(nextRoute);
+      if (nextRoute === '/') {
+        window.dispatchEvent(new CustomEvent('snapan:show-nav'));
+      }
 
       // 4. Double-Back to Exit Protection when at Root Home
       const nextIsRoot = nextRoute === '/' && !hash.startsWith('#@') && !postMatch;

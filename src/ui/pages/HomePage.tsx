@@ -321,11 +321,27 @@ export const HomePage: React.FC<HomePageProps> = ({
   const lastScrollY = useRef(0);
   const isTicking = useRef(false);
 
-  // Automatically show Top Header and Bottom Nav whenever user returns to Home route
+  // Automatically show Top Header and Bottom Nav whenever user returns to Home route from ANY route
   useEffect(() => {
     if (isActive) {
       setIsNavVisible(true);
       lastScrollY.current = Math.max(0, window.scrollY);
+
+      // Double-check after scroll restoration frame and timeout
+      const frameId = requestAnimationFrame(() => {
+        setIsNavVisible(true);
+        lastScrollY.current = Math.max(0, window.scrollY);
+      });
+
+      const timerId = setTimeout(() => {
+        setIsNavVisible(true);
+        lastScrollY.current = Math.max(0, window.scrollY);
+      }, 100);
+
+      return () => {
+        cancelAnimationFrame(frameId);
+        clearTimeout(timerId);
+      };
     }
   }, [isActive]);
 
@@ -334,6 +350,10 @@ export const HomePage: React.FC<HomePageProps> = ({
     const handleResetNav = () => {
       setIsNavVisible(true);
       lastScrollY.current = Math.max(0, window.scrollY);
+      setTimeout(() => {
+        setIsNavVisible(true);
+        lastScrollY.current = Math.max(0, window.scrollY);
+      }, 50);
     };
 
     window.addEventListener('popstate', handleResetNav);
@@ -346,11 +366,13 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   useEffect(() => {
     const handleScroll = () => {
+      if (!isActive) return;
       if (isTicking.current) return;
       isTicking.current = true;
 
       requestAnimationFrame(() => {
         isTicking.current = false;
+        if (!isActive) return;
         const currentScrollY = Math.max(0, window.scrollY);
         const scrollDiff = currentScrollY - lastScrollY.current;
         const maxScrollY = document.documentElement.scrollHeight - window.innerHeight;
@@ -380,7 +402,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [isActive]);
 
   return (
     <div

@@ -52,10 +52,13 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
 
   const containerClasses = isInline
     ? 'w-full min-w-0 bg-white py-2 font-gt-standard mb-1'
-    : 'fixed bottom-0 left-0 right-0 max-w-xl mx-auto bg-white border-t border-neutral-200/80 px-4 py-2.5 z-40 font-gt-standard shadow-md';
+    : 'fixed bottom-0 left-0 right-0 max-w-xl mx-auto bg-white/95 backdrop-blur-xl border-t border-neutral-200/90 px-4 pt-2.5 z-40 font-gt-standard shadow-[0_-4px_20px_rgba(0,0,0,0.06)] select-none';
 
   return (
-    <div className={containerClasses}>
+    <div
+      className={containerClasses}
+      style={!isInline ? { paddingBottom: 'max(0.625rem, calc(env(safe-area-inset-bottom, 0px) + 6px))' } : undefined}
+    >
       {replyToUser && (
         <div className="flex items-center justify-between px-1 pb-1.5 text-[12px] text-neutral-500 animate-in fade-in duration-150 select-none">
           <span className="flex items-center gap-1">

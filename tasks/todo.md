@@ -1,6 +1,7 @@
-# Reposisi Badge Lokasi Todo
+# Redesign Input Komentar & Bottom CTA Todo
 
-- [x] 1. Pindahkan badge lokasi di bawah gambar pada varian Detail di `MarketPostCard.tsx`
-- [x] 2. Pindahkan badge lokasi di bawah gambar pada varian Feed di `MarketPostCard.tsx`
-- [x] 3. Jalankan typecheck & build (`npx tsc --noEmit && npm run build`)
-- [x] 4. Commit & push ke repository GitHub
+- [x] 1. Perbarui `PostDetailPage.tsx` untuk menghapus input inline statis di kedua mode
+- [x] 2. Konfigurasi Mode Jualan: Hubungkan tombol `💬 Tanya` di `StickyBuyBar` ke Bottom Sheet Tanya Cepat
+- [x] 3. Konfigurasi Mode Utas: Pasang docked `CommentInputBar` di dasar layar ala Threads/X
+- [x] 4. Jalankan typecheck & build (`npx tsc --noEmit && npm run build`)
+- [x] 5. Commit & push ke repository GitHub

@@ -6,8 +6,10 @@ import { PostCommentItem } from '../components/marketplace/PostCommentItem';
 import { CommentInputBar } from '../components/marketplace/CommentInputBar';
 import { StickyBuyBar } from '../components/marketplace/StickyBuyBar';
 import { BuyBottomSheet } from '../components/marketplace/BuyBottomSheet';
+import { AskSellerBottomSheet } from '../components/marketplace/AskSellerBottomSheet';
 import { CommentDetailPage } from '../components/marketplace/CommentDetailPage';
 import { useAuth } from '../hooks/useAuth';
+import { triggerHaptic } from '@/utils/haptics';
 
 interface PostDetailPageProps {
   post: MarketPostItem;
@@ -27,8 +29,12 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   const [replyToCommentId, setReplyToCommentId] = useState<string | null>(null);
   const [focusedComment, setFocusedComment] = useState<PostComment | null>(null);
   const [isBuySheetOpen, setIsBuySheetOpen] = useState(false);
+  const [isAskSheetOpen, setIsAskSheetOpen] = useState(false);
 
   const containerRef = React.useRef<HTMLDivElement>(null);
+
+  // Determine if this post is a Marketplace Product Post
+  const isProductMode = post.postType === 'product' && !!post.price && post.price > 0;
 
   // Smooth reset & scroll to top when opening post detail
   useEffect(() => {
@@ -39,6 +45,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
     setReplyToCommentId(null);
     setFocusedComment(null);
     setIsBuySheetOpen(false);
+    setIsAskSheetOpen(false);
   }, [post.id, post.comments]);
 
   const handleAddComment = (content: string, specificCommentId?: string) => {
@@ -88,30 +95,27 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   };
 
   const handleReplyClick = (_username: string, commentId?: string) => {
+    triggerHaptic('light');
     setReplyToCommentId(commentId || null);
   };
 
   const handleChatClick = () => {
-    setReplyToCommentId(null);
-    const commentsSection = document.getElementById('comments-section');
-    if (commentsSection) {
-      commentsSection.scrollIntoView({ behavior: 'smooth' });
-    }
-    setTimeout(() => {
-      const inputEl = document.getElementById('comment-input-field');
-      if (inputEl) {
-        inputEl.focus();
-      }
-    }, 300);
+    triggerHaptic('medium');
+    setIsAskSheetOpen(true);
   };
 
   const handleBuyClick = () => {
+    triggerHaptic('medium');
     setIsBuySheetOpen(true);
     onAddToCart?.(post);
   };
 
   const userAvatar =
     profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80';
+
+  // Find the username we're currently replying to if any
+  const targetReplyComment = comments.find((c) => c.id === replyToCommentId);
+  const replyingToUsername = targetReplyComment ? targetReplyComment.user.username || targetReplyComment.user.name : null;
 
   return (
     <div
@@ -159,17 +163,10 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
           {/* Section Divider Header */}
           <div className="py-2.5 flex items-center justify-between">
             <h2 className="font-semibold text-sm text-slate-900">
-              Komentar ({post.threadChain && post.threadChain.length > 0 ? comments.length + post.threadChain.length : comments.length})
+              {isProductMode ? 'Tanya Jawab & Diskusi' : 'Komentar'} ({post.threadChain && post.threadChain.length > 0 ? comments.length + post.threadChain.length : comments.length})
             </h2>
             <span className="text-xs text-neutral-400">Urutkan dari Terbaru</span>
           </div>
-
-          {/* In-Page Inline Comment Input Field for Root Comments to Post */}
-          <CommentInputBar
-            targetAuthor={post.seller.username || post.seller.name}
-            onSubmitComment={(text) => handleAddComment(text)}
-            isInline={true}
-          />
 
           {/* Combined Comment List: Author Thread Continuations + General Comments */}
           {(post.threadChain && post.threadChain.length > 0) || comments.length > 0 ? (
@@ -223,15 +220,21 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
             </div>
           ) : (
             <div className="py-12 text-center space-y-1">
-              <p className="text-slate-600 font-medium text-sm">Belum ada komentar</p>
-              <p className="text-neutral-400 text-xs">Jadilah yang pertama bertanya/memberi tanggapan!</p>
+              <p className="text-slate-600 font-medium text-sm">
+                {isProductMode ? 'Belum ada pertanyaan seputar produk ini' : 'Belum ada komentar'}
+              </p>
+              <p className="text-neutral-400 text-xs">
+                {isProductMode
+                  ? 'Gunakan tombol Tanya di bawah untuk menanyakan stok atau detail!'
+                  : 'Jadilah yang pertama memberi tanggapan!'}
+              </p>
             </div>
           )}
         </section>
       </main>
 
-      {/* Floating Pill Buy Bar & Modal (ONLY for Marketplace Product Posts, NEVER for Utas) */}
-      {post.postType === 'product' && !!post.price && post.price > 0 && (
+      {/* MODE 1: Floating Action Dock for Marketplace Product Posts */}
+      {isProductMode ? (
         <>
           <StickyBuyBar
             price={post.price || 0}
@@ -241,12 +244,29 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
           />
 
           <BuyBottomSheet
-            key={post.id}
+            key={`buy-${post.id}`}
             isOpen={isBuySheetOpen}
             post={post}
             onClose={() => setIsBuySheetOpen(false)}
           />
+
+          <AskSellerBottomSheet
+            key={`ask-${post.id}`}
+            isOpen={isAskSheetOpen}
+            post={post}
+            onClose={() => setIsAskSheetOpen(false)}
+            onSubmitQuestion={(text) => handleAddComment(text)}
+          />
         </>
+      ) : (
+        /* MODE 2: Docked Bottom Bar ala Threads / X for Discussion / Utas Posts */
+        <CommentInputBar
+          targetAuthor={post.seller.username || post.seller.name}
+          replyToUser={replyingToUsername}
+          onCancelReply={() => setReplyToCommentId(null)}
+          onSubmitComment={(text) => handleAddComment(text, replyToCommentId || undefined)}
+          isInline={false}
+        />
       )}
 
       {/* Threads-style Sub-Thread Comment Detail Modal / Fullscreen Sub-Page */}

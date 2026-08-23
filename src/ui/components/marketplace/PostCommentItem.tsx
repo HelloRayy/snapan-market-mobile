@@ -35,43 +35,22 @@ interface PostCommentItemProps {
 
 export const PostCommentItem: React.FC<PostCommentItemProps> = ({
   comment,
-  currentUserAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
-  activeReplyingCommentId,
+  currentUserAvatar: _currentUserAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+  activeReplyingCommentId: _activeReplyingCommentId,
   onReplyClick,
-  onCancelReply,
-  onSubmitReply,
+  onCancelReply: _onCancelReply,
+  onSubmitReply: _onSubmitReply,
   onOpenCommentDetail,
   isNested = false,
 }) => {
   const [isLiked, setIsLiked] = useState(comment.isLiked || false);
   const [likesCount, setLikesCount] = useState(comment.likesCount || 0);
   const [repliesState, setRepliesState] = useState<PostComment[]>(comment.replies || []);
-  const [replyDraftText, setReplyDraftText] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const inputRef = React.useRef<HTMLInputElement>(null);
-
-  const isReplying = activeReplyingCommentId === comment.id;
 
   React.useEffect(() => {
     setRepliesState(comment.replies || []);
   }, [comment.replies]);
-
-  React.useEffect(() => {
-    if (isReplying) {
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
-    } else {
-      setReplyDraftText('');
-    }
-  }, [isReplying]);
-
-  const handleInlineSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!replyDraftText.trim()) return;
-    onSubmitReply?.(comment.id, replyDraftText.trim());
-    setReplyDraftText('');
-  };
 
   const handleLikeToggle = () => {
     setIsLiked((prev) => {
@@ -98,7 +77,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
   };
 
   const hasReplies = repliesState.length > 0;
-  const isThreadConnected = hasReplies || isReplying;
+  const isThreadConnected = hasReplies;
 
   const renderActionBar = (
     liked: boolean,
@@ -415,9 +394,9 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
             ).map((reply, idx) => {
               const isFirstChild = idx === 0;
               const isLastChild =
-                (onOpenCommentDetail && repliesState.length > 1
+                onOpenCommentDetail && repliesState.length > 1
                   ? true
-                  : idx === repliesState.length - 1) && !isReplying;
+                  : idx === repliesState.length - 1;
 
               return (
                 <div
@@ -532,68 +511,6 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 >
                   <span>Lihat {repliesState.length - 1} balasan lainnya</span>
                 </button>
-              </div>
-            )}
-
-            {/* INLINE IN-PLACE SUB-REPLY INPUT (Straight line below last reply) */}
-            {isReplying && (
-              <div className="flex items-start gap-3 ml-7 relative pt-0.5 animate-in fade-in slide-in-from-top-1 duration-150">
-                {/* If no existing replies, initial L-Curve from Parent; else straight line from previous avatar */}
-                {repliesState.length === 0 ? (
-                  <div className="absolute -left-[11px] -top-3.5 h-[32px] w-[12px] border-l-2 border-b-2 border-[#d1d5db] rounded-bl-xl pointer-events-none z-0" />
-                ) : null}
-
-                {/* Left Child Avatar */}
-                <div className="flex flex-col items-center shrink-0 z-10">
-                  {repliesState.length > 0 && (
-                    <div className="w-[2px] h-3.5 bg-[#d1d5db] -mt-3.5 shrink-0" />
-                  )}
-                  <div className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 bg-white mt-0.5">
-                    <img
-                      src={currentUserAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80'}
-                      alt="Profil Saya"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-
-                {/* Right Inline Form */}
-                <form
-                  onSubmit={handleInlineSubmit}
-                  className="flex-1 min-w-0 flex items-center gap-2 bg-neutral-100 focus-within:bg-white focus-within:border-[#1d64ec] border border-neutral-200/80 rounded-full px-3.5 py-1.5 transition-all shadow-2xs"
-                >
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    value={replyDraftText}
-                    onChange={(e) => setReplyDraftText(e.target.value)}
-                    placeholder={`Balas @${comment.user.username || comment.user.name}...`}
-                    className="flex-1 min-w-0 bg-transparent text-[13.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none"
-                    autoFocus
-                  />
-
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <button
-                      type="button"
-                      onClick={onCancelReply}
-                      className="text-[12px] font-medium text-neutral-400 hover:text-rose-500 px-1 py-0.5 cursor-pointer transition-colors"
-                    >
-                      Batal
-                    </button>
-
-                    <button
-                      type="submit"
-                      disabled={!replyDraftText.trim()}
-                      className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
-                        replyDraftText.trim()
-                          ? 'bg-[#18181b] text-white shadow-xs active:scale-95 cursor-pointer'
-                          : 'bg-neutral-200 text-neutral-400 cursor-not-allowed'
-                      }`}
-                    >
-                      Kirim
-                    </button>
-                  </div>
-                </form>
               </div>
             )}
           </div>

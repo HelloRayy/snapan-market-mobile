@@ -37,10 +37,6 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
 
   const handleFocus = () => {
     onFocusChange?.(true);
-    // Smooth scroll into visible center above mobile keyboard
-    setTimeout(() => {
-      inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 150);
   };
 
   const handleBlur = () => {

@@ -1,68 +1,37 @@
-# Rencana Implementasi: In-Page Discovery & Related Feed untuk Low Search Results
+# Rencana Implementasi: Perbaikan Navigasi Search Page & Preservasi State Feed Detail
 
-## 1. Ringkasan & Tujuan UX
-- **Latar Belakang**: Saat pengguna mencari kata kunci spesifik (seperti *"web"*), jumlah postingan yang cocok sangat sedikit (misal: 1 postingan). Kondisi ini menyebabkan bagian bawah layar kosong melompong (*dead end*).
-- **Tujuan UX**: Menjaga pengguna tetap berada di **Search Page** dengan menyajikan rekomendasi lanjutan (*in-page discovery*) yang relevan, chip pencarian terkait 1-tap, dan feed rekomendasi lanjutan yang dapat di-scroll tanpa batas.
+## 1. Analisis Masalah (Root Cause)
+1. **Bug 1 (Tombol Kembali `[ ← ]` di Search Feed)**:
+   - Saat user sedang melihat hasil pencarian feed (`isSubmitted === true`), tombol panah kiri `[ ← ]` di search pill memanggil `onBack()` yang langsung melakukan `window.history.back()` sehingga keluar dari Search Page dan kembali ke Home.
+   - **Solusi**: Saat `isSubmitted === true` atau `searchQuery` ada isinya, tombol `[ ← ]` harus mereset status pencarian (`setIsSubmitted(false)` dan mengembalikan ke mode discovery Search Page) tanpa melempar user keluar ke Home Page. Hanya ketika Search Page dalam kondisi kosong awal (`!isSubmitted && !searchQuery`), tombol `[ ← ]` kembali ke Home.
 
----
-
-## 2. Spesifikasi Desain & Tampilan UI Secara Detail
-
-### A. Layout Struktur Halaman
-```
-┌──────────────────────────────────────────────────────────┐
-│ [ ← ] [ 🔍 web                                   ✕ ]     │
-├──────────────────────────────────────────────────────────┤
-│  [ Terpopuler (Active) ]     [ Terbaru ]      [ Profil ] │
-├──────────────────────────────────────────────────────────┤
-│ ┌──────────────────────────────────────────────────────┐ │
-│ │ [👤 Raymond Chin • 1j]                           ··· │ │
-│ │ Ada kenalan website designer / UI engineer...?       │ │ <── Exact Matching Post (Hasil Utama)
-│ │ [ ❤️ 466 ]  [ 💬 2 ]  [ 🔁 9 ]  [ ✈️ ]               │ │
-│ └──────────────────────────────────────────────────────┘ │
-├──────────────────────────────────────────────────────────┤
-│ ✨ UTAS LAIN YANG MUNGKIN ANDA SUKA        Rekomendasi   │ <── Section Divider Elegan (44px)
-├──────────────────────────────────────────────────────────┤
-│ [ 🔍 #frontend ] [ 🔍 #coding ] [ 🔍 #desain ] [ 🔍 #dkv ]│ <── Horizontal Topic Refinement Chips
-├──────────────────────────────────────────────────────────┤
-│ ┌──────────────────────────────────────────────────────┐ │
-│ │ [👤 Zura • 3j]                                   ··· │ │
-│ │ Rekomendasi tools buat bikin landing page cepet...   │ │ <── Continuous Feed Rekomendasi
-│ │ [ ❤️ 180 ]  [ 💬 14 ]  [ 🔁 5 ]  [ ✈️ ]              │ │     (Edge-to-edge divide-neutral-200)
-│ └──────────────────────────────────────────────────────┘ │
-└──────────────────────────────────────────────────────────┘
-```
-
-### B. Rincian Komponen UI:
-1. **Section Divider (`InPageDiscoveryHeader`)**:
-   - **Tinggi**: `44px`
-   - **Styling**: `bg-neutral-50/90 backdrop-blur-xs border-y border-neutral-200/70 px-4 flex items-center justify-between`
-   - **Ikon & Tipografi**:
-     - Kiri: Ikon `<Sparkles className="w-3.5 h-3.5 text-[#1d64ec]" />` + teks `text-[12px] font-bold text-slate-700 uppercase tracking-wider` ("Utas Lain yang Mungkin Anda Suka").
-     - Kanan: Badge `text-[11px] text-neutral-400 font-medium` ("Rekomendasi").
-2. **Horizontal Query Refinement Chips (`TopicRefineBar`)**:
-   - **Styling**: `flex items-center gap-2 overflow-x-auto no-scrollbar py-2.5 px-4 bg-white border-b border-neutral-100`
-   - **Item Chip**:
-     - Tombol pill kapsul: `px-3 py-1.5 rounded-full bg-neutral-100/90 hover:bg-neutral-200/80 active:scale-95 text-[12.5px] font-medium text-slate-800 transition-all cursor-pointer flex items-center gap-1.5`
-     - Ikon: `<Search className="w-3 h-3 text-[#1d64ec]" />`
-     - Aksi: Saat di-tap, langsung mengganti kata kunci pencarian seketika (*instant in-place search*) dan memberikan efek haptik ringan (`triggerHaptic('light')`).
-3. **Continuous Feed Rekomendasi**:
-   - Menggunakan `MarketPostCard` dengan styling *edge-to-edge* (`divide-y divide-neutral-200 pt-0`) identik dengan Home feed.
+2. **Bug 2 (Search Page State Hilang saat Buka Detail & Kembali)**:
+   - Di `App.tsx`, `SearchPage` dirender kondisional: `{isSearchRoute && <SearchPage ... />}`.
+   - Saat user mengklik postingan dari Search Page, `currentRoute` berubah menjadi `/@author/post/:id`, sehingga `isSearchRoute` bernilai `false`.
+   - Akibatnya, `SearchPage` **ter-unmount dari DOM**.
+   - Ketika user menekan Kembali dari `PostDetailPage`, `SearchPage` ter-mount ulang dari awal dengan `searchQuery = ''` dan `isSubmitted = false` (hasil pencarian hilang).
+   - **Solusi**:
+     - Pertahankan `SearchPage` di dalam DOM (menggunakan `hidden` / `block` atau state preservasi seperti `HomePage`) saat `selectedPost` sedang aktif dibuka dari halaman pencarian.
+     - Saat menutup `PostDetailPage`, pastikan rute kembali ke `/search` dan Search Page tetap berada di tab & query pencarian yang sama.
 
 ---
 
-## 3. Logika & Algoritma Data (Data Flow)
-- Pada `SearchPage.tsx`:
-  - Hitung `recommendedPosts` menggunakan `useMemo`: memfilter seluruh postingan dari `MOCK_MARKET_POSTS` yang belum termasuk di dalam `scoredPosts`.
-  - Jika `scoredPosts.length < 4`, tampilkan `InPageDiscoveryHeader` dan `TopicRefineBar` di bawah hasil utama, dilanjutkan dengan `recommendedPosts`.
-  - Jika `scoredPosts.length >= 4`, hasil pencarian penuh tetap diprioritaskan.
+## 2. Rincian Perubahan File
+- **`src/ui/pages/SearchPage.tsx`**:
+  - Perbarui tombol panah kiri `[ ← ]` di search pill:
+    - Jika `isSubmitted || searchQuery`, klik `[ ← ]` akan memanggil `handleResetToDiscovery()` (reset `isSubmitted = false`, kosongkan query).
+    - Jika sudah di halaman discovery awal, panggil `onBack()` untuk kembali ke Home.
+- **`src/App.tsx`**:
+  - Catat asal navigasi saat membuka postingan (`originRouteRef.current = currentRoute`).
+  - Render `SearchPage` dengan preservasi DOM (`className={isSearchRoute || (selectedPost && originRoute === '/search') ? 'block' : 'hidden'}`) sehingga query pencarian, tab aktif, dan posisi scroll tidak hilang saat membuka dan menutup detail postingan.
+  - Pastikan `handleClosePostDetail` mengembalikan rute ke `/search` jika dibuka dari Search Page.
 
 ---
 
-## 4. Rencana Verifikasi
+## 3. Rencana Verifikasi
 - `npx tsc --noEmit && npm run build` (0 TypeScript errors).
-- Uji alur pencarian:
-  1. Cari kata kunci spesifik (contoh: *"web"*).
-  2. Pastikan 1 hasil pencarian utama tampil di atas.
-  3. Pastikan di bawahnya langsung muncul divider rekomendasi, chips topik terkait, dan feed postingan lanjutan.
-  4. Klik salah satu chip topik (misal: *#coding*) $\rightarrow$ Pastikan pencarian langsung berganti kata kunci secara instan di tempat.
+- Uji alur navigasi:
+  1. Buka Search Page, ketik "web", submit pencarian feed.
+  2. Klik tombol `[ ← ]` di search bar $\rightarrow$ pastikan kembali ke halaman discovery Search Page (bukan terlempar ke Home).
+  3. Submit pencarian "web" lagi, klik postingan untuk membuka `PostDetailPage`.
+  4. Klik tombol Kembali di `PostDetailPage` $\rightarrow$ pastikan langsung kembali ke Search Page dengan query "web" dan hasil pencarian yang tetap utuh!

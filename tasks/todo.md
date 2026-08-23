@@ -1,7 +1,7 @@
-# In-Page Discovery untuk Low Search Results Todo
+# Perbaikan Navigasi & Preservasi Search Page Todo
 
-- [ ] 1. Buat logika komputasi `recommendedPosts` di `SearchPage.tsx`
-- [ ] 2. Implementasikan `InPageDiscoveryHeader` dan `TopicRefineBar` (horizontal chips)
-- [ ] 3. Render feed rekomendasi lanjutan di bawah hasil pencarian utama
-- [ ] 4. Jalankan typecheck & build (`npx tsc --noEmit && npm run build`)
-- [ ] 5. Commit & push ke repository GitHub
+- [x] 1. Perbaiki tombol `[ ← ]` di `SearchPage.tsx` agar kembali ke discovery Search Page saat sedang di feed pencarian
+- [x] 2. Preservasikan DOM & state `SearchPage` di `App.tsx` saat membuka `PostDetailPage`
+- [x] 3. Perbaiki rute kembali `handleClosePostDetail` ke `/search` jika dibuka dari Search Page
+- [x] 4. Jalankan typecheck & build (`npx tsc --noEmit && npm run build`)
+- [x] 5. Commit & push ke repository GitHub

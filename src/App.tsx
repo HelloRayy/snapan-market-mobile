@@ -83,6 +83,7 @@ export function App() {
   // Scroll Restoration: Preserve home feed scroll, reset non-home routes to top
   const homeScrollYRef = useRef<number>(0);
   const prevRouteRef = useRef<string>(window.location.pathname);
+  const postDetailOriginRouteRef = useRef<string>('/');
 
   // Dynamic Route Checks
   const isDownloadRoute = currentRoute === '/download' || window.location.hash === '#download';
@@ -243,7 +244,8 @@ export function App() {
   };
 
   const handleOpenPostDetail = (post: MarketPostItem) => {
-    // Record home scroll before opening detail
+    // Record origin route and home scroll before opening detail
+    postDetailOriginRouteRef.current = currentRoute;
     if (!isProfileRoute && !isSearchRoute && !isPostDetailRoute) {
       homeScrollYRef.current = window.scrollY;
     }
@@ -265,9 +267,9 @@ export function App() {
     if (window.history.state?.layer === 'post-detail') {
       window.history.back();
     } else {
-      const returnRoute = currentRoute.startsWith('/@') && !currentRoute.includes('/post/')
+      const returnRoute = postDetailOriginRouteRef.current || (currentRoute.startsWith('/@') && !currentRoute.includes('/post/')
         ? `/@${targetProfileUsername}`
-        : '/';
+        : '/');
       window.history.pushState({ isSnapanRoot: true, route: returnRoute }, '', returnRoute);
       setCurrentRoute(returnRoute);
     }
@@ -286,7 +288,7 @@ export function App() {
       ) : hasCompletedOnboarding && !isOnboardingRoute ? (
         <div className="relative min-h-screen">
           {/* Main Feed HomePage (Always preserved in DOM so scroll position is never lost) */}
-          <div className={isProfileRoute || isSearchRoute ? 'hidden' : 'block'}>
+          <div className={isProfileRoute || isSearchRoute || (selectedPost && postDetailOriginRouteRef.current === '/search') ? 'hidden' : 'block'}>
             <HomePage
               isActive={!isProfileRoute && !isSearchRoute && !selectedPost}
               onSelectPost={handleOpenPostDetail}
@@ -296,16 +298,18 @@ export function App() {
             />
           </div>
 
-          {/* Dedicated Search / Explore Single Page */}
-          {isSearchRoute && (
+          {/* Dedicated Search / Explore Single Page (Preserved in DOM so query, tabs & scroll are never lost) */}
+          <div className={isSearchRoute || (selectedPost && postDetailOriginRouteRef.current === '/search') ? 'block' : 'hidden'}>
             <SearchPage
-              onBack={() => window.history.back()}
+              onBack={() => {
+                navigateToHome();
+              }}
               onNavigateToProfile={navigateToProfile}
               onNavigateHome={navigateToHome}
               onSelectPost={handleOpenPostDetail}
               onOpenMenu={handleOpenDrawer}
             />
-          )}
+          </div>
 
           {/* Profile Page (Dynamic Route /@username) */}
           {isProfileRoute && (

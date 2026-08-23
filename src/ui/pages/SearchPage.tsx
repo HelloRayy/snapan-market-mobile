@@ -319,7 +319,15 @@ export const SearchPage: React.FC<SearchPageProps> = ({
               {onBack ? (
                 <button
                   type="button"
-                  onClick={onBack}
+                  onClick={() => {
+                    if (isSubmitted || hasSearchQuery) {
+                      setSearchQuery('');
+                      setIsSubmitted(false);
+                      inputRef.current?.focus();
+                    } else {
+                      onBack();
+                    }
+                  }}
                   className="w-8 h-8 rounded-full flex items-center justify-center text-slate-700 hover:text-slate-950 hover:bg-neutral-200/70 active:scale-90 transition-all cursor-pointer shrink-0 mr-1"
                   aria-label="Kembali"
                 >

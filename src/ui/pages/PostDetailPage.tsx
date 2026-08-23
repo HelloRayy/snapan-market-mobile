@@ -6,7 +6,6 @@ import { PostCommentItem } from '../components/marketplace/PostCommentItem';
 import { CommentInputBar } from '../components/marketplace/CommentInputBar';
 import { StickyBuyBar } from '../components/marketplace/StickyBuyBar';
 import { BuyBottomSheet } from '../components/marketplace/BuyBottomSheet';
-import { AskSellerBottomSheet } from '../components/marketplace/AskSellerBottomSheet';
 import { CommentDetailPage } from '../components/marketplace/CommentDetailPage';
 import { useAuth } from '../hooks/useAuth';
 import { triggerHaptic } from '@/utils/haptics';
@@ -29,7 +28,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   const [replyToCommentId, setReplyToCommentId] = useState<string | null>(null);
   const [focusedComment, setFocusedComment] = useState<PostComment | null>(null);
   const [isBuySheetOpen, setIsBuySheetOpen] = useState(false);
-  const [isAskSheetOpen, setIsAskSheetOpen] = useState(false);
+  const [isCommentingActive, setIsCommentingActive] = useState(false);
 
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -45,7 +44,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
     setReplyToCommentId(null);
     setFocusedComment(null);
     setIsBuySheetOpen(false);
-    setIsAskSheetOpen(false);
+    setIsCommentingActive(false);
   }, [post.id, post.comments]);
 
   const handleAddComment = (content: string, specificCommentId?: string) => {
@@ -92,16 +91,18 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
     }
 
     setReplyToCommentId(null);
+    setIsCommentingActive(false);
   };
 
   const handleReplyClick = (_username: string, commentId?: string) => {
     triggerHaptic('light');
     setReplyToCommentId(commentId || null);
+    setIsCommentingActive(true);
   };
 
   const handleChatClick = () => {
-    triggerHaptic('medium');
-    setIsAskSheetOpen(true);
+    triggerHaptic('light');
+    setIsCommentingActive(true);
   };
 
   const handleBuyClick = () => {
@@ -233,31 +234,38 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         </section>
       </main>
 
-      {/* MODE 1: Floating Action Dock for Marketplace Product Posts */}
+      {/* MODE 1: Marketplace Product Posts (Morphing between StickyBuyBar and CommentInputBar) */}
       {isProductMode ? (
-        <>
-          <StickyBuyBar
-            price={post.price || 0}
-            stockCount={post.stock || 1}
-            onBuyClick={handleBuyClick}
-            onChatClick={handleChatClick}
+        isCommentingActive ? (
+          <CommentInputBar
+            targetAuthor={post.seller.username || post.seller.name}
+            replyToUser={replyingToUsername}
+            autoFocus={true}
+            onClose={() => {
+              setIsCommentingActive(false);
+              setReplyToCommentId(null);
+            }}
+            onCancelReply={() => setReplyToCommentId(null)}
+            onSubmitComment={(text) => handleAddComment(text, replyToCommentId || undefined)}
+            isInline={false}
           />
+        ) : (
+          <>
+            <StickyBuyBar
+              price={post.price || 0}
+              stockCount={post.stock || 1}
+              onBuyClick={handleBuyClick}
+              onChatClick={handleChatClick}
+            />
 
-          <BuyBottomSheet
-            key={`buy-${post.id}`}
-            isOpen={isBuySheetOpen}
-            post={post}
-            onClose={() => setIsBuySheetOpen(false)}
-          />
-
-          <AskSellerBottomSheet
-            key={`ask-${post.id}`}
-            isOpen={isAskSheetOpen}
-            post={post}
-            onClose={() => setIsAskSheetOpen(false)}
-            onSubmitQuestion={(text) => handleAddComment(text)}
-          />
-        </>
+            <BuyBottomSheet
+              key={`buy-${post.id}`}
+              isOpen={isBuySheetOpen}
+              post={post}
+              onClose={() => setIsBuySheetOpen(false)}
+            />
+          </>
+        )
       ) : (
         /* MODE 2: Docked Bottom Bar ala Threads / X for Discussion / Utas Posts */
         <CommentInputBar

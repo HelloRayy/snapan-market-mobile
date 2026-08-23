@@ -8,6 +8,8 @@ interface CommentInputBarProps {
   onSubmitComment: (text: string) => void;
   isInline?: boolean;
   onFocusChange?: (isFocused: boolean) => void;
+  onClose?: () => void;
+  autoFocus?: boolean;
 }
 
 export const CommentInputBar: React.FC<CommentInputBarProps> = ({
@@ -17,19 +19,20 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
   onSubmitComment,
   isInline = false,
   onFocusChange,
+  onClose,
+  autoFocus = false,
 }) => {
   const [text, setText] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-focus and scroll smoothly into view when replying to a user
+  // Auto-focus when replying or when autoFocus prop is true
   useEffect(() => {
-    if (replyToUser) {
-      inputRef.current?.focus();
+    if (replyToUser || autoFocus) {
       setTimeout(() => {
-        inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 150);
+        inputRef.current?.focus();
+      }, 100);
     }
-  }, [replyToUser]);
+  }, [replyToUser, autoFocus]);
 
   const handleFocus = () => {
     onFocusChange?.(true);
@@ -59,16 +62,26 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
       className={containerClasses}
       style={!isInline ? { paddingBottom: 'max(0.625rem, calc(env(safe-area-inset-bottom, 0px) + 6px))' } : undefined}
     >
-      {replyToUser && (
+      {/* Reply Banner or Cancel Banner */}
+      {(replyToUser || onClose) && (
         <div className="flex items-center justify-between px-1 pb-1.5 text-[12px] text-neutral-500 animate-in fade-in duration-150 select-none">
           <span className="flex items-center gap-1">
-            <span>Membalas</span>
-            <strong className="text-[#1d64ec] font-semibold">@{replyToUser.replace(/^@/, '')}</strong>
+            {replyToUser ? (
+              <>
+                <span>Membalas</span>
+                <strong className="text-[#1d64ec] font-semibold">@{replyToUser.replace(/^@/, '')}</strong>
+              </>
+            ) : (
+              <span className="text-neutral-500 font-medium">Tulis pertanyaan / komentar</span>
+            )}
           </span>
           <button
             type="button"
-            onClick={onCancelReply}
-            className="text-neutral-400 hover:text-rose-500 text-[11.5px] font-medium transition-colors cursor-pointer"
+            onClick={() => {
+              onCancelReply?.();
+              onClose?.();
+            }}
+            className="text-neutral-500 hover:text-rose-500 text-[12px] font-semibold transition-colors cursor-pointer px-1 py-0.5"
           >
             Batal
           </button>

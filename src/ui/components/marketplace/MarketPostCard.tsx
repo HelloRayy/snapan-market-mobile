@@ -501,16 +501,16 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             )}
           </div>
 
-          {/* Location Tag (High WCAG Contrast >= 7.0:1) */}
+          {/* Product Images: Full Width */}
+          {renderImages(true)}
+
+          {/* Location Tag (Placed under media for optimal UX flow) */}
           {item.locationTag && (
-            <div className="pt-0.5 flex items-center gap-1.5 text-[12px] sm:text-[12.5px] text-slate-600 font-medium leading-snug">
-              <MapPin className="w-3 h-3 text-slate-600 stroke-[2] shrink-0" />
+            <div className="pt-1 flex items-center gap-1.5 text-[12px] sm:text-[12.5px] text-slate-600 font-medium leading-snug">
+              <MapPin className="w-3.5 h-3.5 text-slate-500 stroke-[2] shrink-0" />
               <span className="truncate">{item.locationTag}</span>
             </div>
           )}
-
-          {/* Product Images: Full Width */}
-          {renderImages(true)}
 
           {/* Action Bar */}
           {renderActionBar()}
@@ -622,16 +622,16 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               )}
             </div>
 
-            {/* Location Tag (High WCAG Contrast >= 7.0:1) */}
+            {/* Product Images */}
+            {renderImages(false)}
+
+            {/* Location Tag (Placed under media for optimal UX flow) */}
             {item.locationTag && (
-              <div className="pt-0.5 flex items-center gap-1.5 text-[12px] sm:text-[12.5px] text-slate-600 font-medium leading-snug">
-                <MapPin className="w-3 h-3 text-slate-600 stroke-[2] shrink-0" />
+              <div className="pt-1 flex items-center gap-1.5 text-[12px] sm:text-[12.5px] text-slate-600 font-medium leading-snug">
+                <MapPin className="w-3.5 h-3.5 text-slate-500 stroke-[2] shrink-0" />
                 <span className="truncate">{item.locationTag}</span>
               </div>
             )}
-
-            {/* Product Images */}
-            {renderImages(false)}
 
             {/* Action Bar */}
             {renderActionBar()}

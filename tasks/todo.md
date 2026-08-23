@@ -1,7 +1,6 @@
-# Action Bar Smooth Motion Todo
+# Reposisi Badge Lokasi Todo
 
-- [x] 1. Update micro-interactions di `MediaLightboxModal.tsx` (Framer Motion spring pop, aura burst, rolling counter)
-- [x] 2. Update micro-interactions di `MarketPostCard.tsx` (Elastic heart burst, 180° spin repost, plane flight share)
-- [x] 3. Update micro-interactions di `ReplyThreadCard.tsx` agar seragam
-- [x] 4. Jalankan typecheck & build (`npx tsc --noEmit && npm run build`)
-- [x] 5. Commit & push ke repository GitHub
+- [x] 1. Pindahkan badge lokasi di bawah gambar pada varian Detail di `MarketPostCard.tsx`
+- [x] 2. Pindahkan badge lokasi di bawah gambar pada varian Feed di `MarketPostCard.tsx`
+- [x] 3. Jalankan typecheck & build (`npx tsc --noEmit && npm run build`)
+- [x] 4. Commit & push ke repository GitHub

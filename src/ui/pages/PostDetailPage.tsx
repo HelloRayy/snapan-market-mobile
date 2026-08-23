@@ -252,13 +252,13 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
             </div>
           ) : (
             <div className="py-12 px-6 text-center max-w-[280px] mx-auto space-y-1.5 select-none">
-              <p className="text-slate-700 font-semibold text-[14px] leading-snug">
-                {isProductMode ? 'Belum ada pertanyaan seputar produk ini' : 'Belum ada komentar'}
+              <p className="text-slate-800 font-semibold text-[14.5px] leading-snug">
+                {isProductMode ? 'Belum ada pertanyaan' : 'Belum ada komentar'}
               </p>
-              <p className="text-neutral-400 text-[12.5px] leading-relaxed">
+              <p className="text-neutral-500 text-[12.5px] leading-relaxed">
                 {isProductMode
-                  ? 'Gunakan tombol Tanya di bawah untuk menanyakan stok atau detail!'
-                  : 'Jadilah yang pertama memberi tanggapan!'}
+                  ? 'Ingin tahu kondisi atau ketersediaan stok? Tanyakan langsung ke penjual.'
+                  : 'Mulai percakapan dan jadilah yang pertama memberi tanggapan.'}
               </p>
             </div>
           )}

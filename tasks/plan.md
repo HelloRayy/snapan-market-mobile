@@ -1,30 +1,18 @@
-# Implementation Plan: Fullscreen Media Lightbox Redesign & Bugfix
+# Implementation Plan: Fix MediaLightboxModal Fullscreen Viewport Stacking Bug
 
-## 1. Overview
-Fix visual bleeding and image cropping bugs in `MediaLightboxModal.tsx` when viewing media detail. Replace translucent/cut-off layout with a solid 100% opaque light background, full-frame `object-contain` scaling (zero cropping for landscape & portrait images), clean safe-area insets, and fluid touch gestures.
-
----
-
-## 2. Key Architecture & Design Decisions
-- **100% Opaque Solid Backdrop**: Set `bg-white z-[99999]` with zero opacity bleeding so underlying feed text never leaks through.
-- **Full-Frame `object-contain`**: Center image in viewport with `w-full h-full max-h-[82vh] max-w-full object-contain` to show 100% of the photo without cropping.
-- **Dual-Axis Touch Physics**:
-  - Horizontal swipe with CSS snap scroll for multi-image switching.
-  - Vertical drag-to-dismiss when pulling down/up.
-- **Safe Area Integration**: Top bar respects `env(safe-area-inset-top)` and bottom floating pill respects `env(safe-area-inset-bottom)`.
+## 1. Overview & Root Cause Analysis
+- **Akar Masalah**: Komponen `MediaLightboxModal.tsx` di-render langsung di dalam tag `<article className="feed-card-perf overflow-x-hidden">` milik `MarketPostCard.tsx` tanpa menggunakan **React Portal** (`createPortal(..., document.body)`).
+- **Dampak**: Properti CSS `position: fixed inset-0` terperangkap di dalam *containing block* kartu feed lokal, sehingga modal tidak dapat menutupi Header Atas (`Snapan Market`), Tab Bar (`Untuk Anda`), dan Bottom Navigation Bar (`MarketBottomNav`).
+- **Solusi**: Bungkus `MediaLightboxModal` menggunakan `createPortal(..., document.body)` dan berikan dimensi eksplisit `w-screen h-[100dvh] fixed inset-0 z-[99999] bg-white` agar me-mount langsung ke level `document.body` dan menutupi 100% seluruh layar secara mutlak.
 
 ---
 
-## 3. Task List & Phases
+## 2. Task List
 
-### Phase 1: Core Lightbox Layout & Image Scaling
-- [ ] Task 1: Update `MediaLightboxModal.tsx` backdrop to solid opaque white (`bg-white z-[99999]`) and eliminate background bleed.
-- [ ] Task 2: Standardize image viewport with responsive `object-contain` scaling for landscape and portrait photos.
+### Phase 1: React Portal & Fullscreen Viewport Fix
+- [ ] Task 1: Impor `createPortal` dari `react-dom` di `MediaLightboxModal.tsx` dan portal modal ke `document.body`.
+- [ ] Task 2: Tambahkan `w-screen h-[100dvh]` serta isolasi z-index `z-[99999]` agar menutupi seluruh viewport dari ujung atas (0px) hingga ujung bawah (100dvh).
 
-### Phase 2: Floating Header, Action Capsule & Gesture Tuning
-- [ ] Task 3: Adjust top bar (Close X + Counter Pill) and bottom floating action capsule (Like, Reply, Repost, Share, Zoom toggle, Pagination dots) with iOS safe area insets.
-- [ ] Task 4: Tune vertical drag-to-dismiss gesture and zoom scale toggle (1x / 1.5x / 2x).
-
-### Phase 3: Verification & Integration
-- [ ] Task 5: Run TypeScript checks (`tsc --noEmit`) and production build test (`npm run build`).
-- [ ] Task 6: Push changes to GitHub and trigger Vercel deployment.
+### Phase 2: Verifikasi & Build
+- [ ] Task 3: Jalankan `npx tsc --noEmit && npm run build` untuk memastikan 0 error.
+- [ ] Task 4: Git commit & push ke main.

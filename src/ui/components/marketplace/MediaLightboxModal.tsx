@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Volume2, VolumeX, Heart, MessageCircle, Repeat2, Send, ChevronLeft, ChevronRight } from 'lucide-react';
 import { triggerHaptic } from '@/utils/haptics';
 
@@ -87,6 +88,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
   }, [isOpen]);
 
   if (!isOpen || !images || images.length === 0) return null;
+  if (typeof document === 'undefined') return null;
 
   const handleScroll = () => {
     if (!scrollRef.current || isProgrammaticScrollRef.current) return;
@@ -167,7 +169,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
     onClose();
   };
 
-  return (
+  const modalContent = (
     <div
       onClick={(e) => e.stopPropagation()}
       onPointerDown={(e) => e.stopPropagation()}
@@ -175,7 +177,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
         transform: `translateY(${dragY}px)`,
         opacity: opacity,
       }}
-      className="fixed inset-0 z-[99999] bg-white flex flex-col justify-between overflow-hidden select-none font-gt-standard text-slate-900"
+      className="fixed inset-0 w-screen h-[100dvh] z-[99999] bg-white flex flex-col justify-between overflow-hidden select-none font-gt-standard text-slate-900"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -425,5 +427,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 

@@ -1,7 +1,7 @@
-# Standarisasi Floating Capsule Pill Todo
+# Perbaikan Spacing Komentar Todo
 
-- [x] 1. Ubah struktur docked mode di `CommentInputBar.tsx` menjadi Floating Capsule Pill
-- [x] 2. Tambahkan floating reply chip di atas kapsul saat membalas komentar
-- [x] 3. Sinkronkan transisi kapsul di `PostDetailPage.tsx`
+- [x] 1. Rapatkan gap antara username dan teks komentar di `PostCommentItem.tsx`
+- [x] 2. Pertahankan elemen desain lainnya tanpa perubahan yang tidak diminta
+- [x] 3. Terapkan pada Single, Parent, dan Child Reply comment
 - [x] 4. Jalankan typecheck & build (`npx tsc --noEmit && npm run build`)
 - [x] 5. Commit & push ke repository GitHub

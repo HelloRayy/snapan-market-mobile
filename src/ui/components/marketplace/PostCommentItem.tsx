@@ -215,10 +215,10 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
           </div>
 
           {/* Right Column: Header + Content + Action Bar */}
-          <div className="flex-1 min-w-0 space-y-1">
+          <div className="flex-1 min-w-0">
             {/* Header Row: Username + Verified + Timestamp + Options (...) */}
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+            <div className="flex items-center justify-between gap-2 h-[21px] leading-snug">
+              <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden h-[21px] leading-snug">
                 <span className="font-semibold text-[14px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
                   {comment.user.username || comment.user.name}
                 </span>
@@ -257,8 +257,8 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
               </button>
             </div>
 
-            {/* Comment Content (UX Reading Flow leading-snug text-base) */}
-            <div className="text-base text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere] pt-0.5">
+            {/* Comment Content (UX Reading Flow leading-snug text-base with tight 2px gap) */}
+            <div className="text-base text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere] mt-0.5">
               <FormattedText text={comment.content} />
               {comment.threadPart && comment.totalParts && (
                 <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11px] tabular-nums select-none ml-1.5 align-middle">
@@ -334,9 +334,9 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
             </div>
 
             {/* Right Parent Content */}
-            <div className="flex-1 min-w-0 space-y-1">
-              <div className="flex items-center justify-between gap-2 min-w-0">
-                <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-2 min-w-0 h-[21px] leading-snug">
+                <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden h-[21px] leading-snug">
                   <span className="font-semibold text-[15px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
                     {comment.user.username || comment.user.name}
                   </span>
@@ -368,7 +368,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 </button>
               </div>
 
-              <div className="text-base text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere] pt-0.5">
+              <div className="text-base text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere] mt-0.5">
                 <FormattedText text={comment.content} />
               </div>
 
@@ -430,9 +430,9 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                   </div>
 
                   {/* Right Child Content */}
-                  <div className="flex-1 min-w-0 space-y-1">
-                    <div className="flex items-center justify-between gap-2 min-w-0">
-                      <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2 min-w-0 h-[21px] leading-snug">
+                      <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden h-[21px] leading-snug">
                         <span className="font-semibold text-[14px] text-slate-900 truncate hover:underline shrink-0 max-w-[55%]">
                           {reply.user.username || reply.user.name}
                         </span>
@@ -467,7 +467,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                       </button>
                     </div>
 
-                    <div className="text-base text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere] pt-0.5">
+                    <div className="text-base text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere] mt-0.5">
                       <FormattedText text={reply.content} />
                     </div>
 

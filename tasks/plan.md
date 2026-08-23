@@ -1,54 +1,29 @@
-# Rencana Implementasi: Standarisasi Floating Capsule Pill untuk Seluruh Input Komentar (Mode Utas & Mode Jualan)
+# Rencana Implementasi: Perbaikan Spacing & Desain Komentar Sesuai Standar Threads
 
-## 1. Pemahaman & Analisis Desain
-- **Masalah Saat Ini**:
-  - `StickyBuyBar` di Mode Jualan berbentuk **Floating Capsule Pill** (melayang, `rounded-full`, margin samping, shadow melayang).
-  - Namun `CommentInputBar` sebelumnya masih berbentuk bar kotak nempel penuh (*full-width edge-to-edge*).
-  - Ketika beralih dari tombol beli ke input komentar, terjadi inkonsistensi bentuk dari kapsul melayang tiba-tiba menjadi bar kotak kaku.
-- **Solusi Desain (100% Konsistensi Geometri & Visual)**:
-  - Ubah `CommentInputBar` (mode docked) agar **100% mengadopsi struktur Floating Capsule Pill** yang sama persis dengan `StickyBuyBar`.
-  - **Spesifikasi Kapsul Melayang yang Seragam**:
-    - Lebar & Posisi: `fixed left-4 right-4 max-w-md mx-auto`
-    - Jarak Bawah: `bottom: max(1rem, calc(env(safe-area-inset-bottom, 0px) + 8px))`
-    - Bentuk & Material: `rounded-full bg-white/95 backdrop-blur-xl border border-neutral-200/80 shadow-[0_12px_40px_rgba(0,0,0,0.12)] p-1.5`
+## 1. Analisis Perbedaan UI/UX
+- **Masalah Gap Jelek**:
+  - Di `PostCommentItem.tsx`, container kanan menggunakan `space-y-1` dan teks komentar menggunakan `pt-0.5`.
+  - Kombinasi ini menghasilkan jarak vertikal ~6px–8px yang terlalu renggang antara baris nama akun dan isi komentar.
+- **Standar Threads (Dari Kode Referensi)**:
+  - Header akun memiliki line-height presisi: `h-[21px] leading-snug flex items-center`.
+  - Teks komentar langsung menempel rapat di bawahnya dengan margin mikro: `mt-0.5` (2px) dan `leading-snug`.
+  - Action bar (Like, Reply, Repost, Share) menggunakan `pt-1` tanpa border/background kaku.
 
 ---
 
-## 2. Visual Layout 3 State Kapsul Melayang (100% Seragam)
-
-### State 1: Mode Utas (Komentar Diskusi)
-```
-  ┌────────────────────────────────────────────────────────┐
-  │ ( [👤 Avatar]  [ Balas @username... ]     [🚀 Kirim] ) │ <── Floating Capsule Pill
-  └────────────────────────────────────────────────────────┘
-```
-
-### State 2: Mode Jualan (Mengetik Pertanyaan / Chat)
-```
-  ┌────────────────────────────────────────────────────────┐
-  │ ( [👤 Avatar]  [ Tulis pertanyaan... ] [Batal] [🚀]  ) │ <── Floating Capsule Pill
-  └────────────────────────────────────────────────────────┘
-```
-
-### State 3: Mode Jualan (Belanja / Standby)
-```
-  ┌────────────────────────────────────────────────────────┐
-  │ ( [💬 Chat]    [ 💳 Beli Sekarang          Rp 150k ] ) │ <── Floating Capsule Pill
-  └────────────────────────────────────────────────────────┘
-```
+## 2. Rincian Perubahan di `PostCommentItem.tsx`
+1. **Header Row**: Jadikan `h-[21px] leading-snug flex items-center justify-between`.
+2. **Comment Content Text**: Hapus `pt-0.5` dan `space-y-1`, gunakan `mt-0.5 leading-snug text-[15px] sm:text-[15.5px]`.
+3. **Action Bar**:
+   - Hapus border dan background klik (`border border-slate-900 bg-neutral-100/90`).
+   - Terapkan animasi pegas Framer Motion murni pada ikon (Heart pop, Comment bounce, Repost spin, Share glide).
+4. **Terapkan pada Semua Varian**:
+   - Single comment item
+   - Parent comment dengan thread branch
+   - Nested child replies
 
 ---
 
-## 3. Rincian Perubahan File
-- **`src/ui/components/marketplace/CommentInputBar.tsx`**:
-  - Ubah `containerClasses` dan pembungkus docked mode menjadi floating pill container yang identik dengan `StickyBuyBar`.
-  - Tambahkan kapsul mini `Membalas @username [Batal]` yang melayang lembut di atas kapsul utama saat membalas komentar orang.
-- **`src/ui/pages/PostDetailPage.tsx`**:
-  - Pastikan padding bawah `pb-32` pada halaman agar komentar terakhir tidak tertutup oleh kapsul melayang.
-
----
-
-## 4. Rencana Verifikasi
+## 3. Rencana Verifikasi
 - `npx tsc --noEmit && npm run build` (0 TypeScript errors).
-- Uji Mode Utas: Pastikan input bar tampil sebagai kapsul melayang dengan sudut membulat sempurna dan glassmorphism.
-- Uji Mode Jualan: Pastikan saat klik `[💬]`, kapsul melayang berganti menjadi kapsul input komentar dengan animasi yang sangat konsisten.
+- Uji tampilan komentar: Pastikan gap antara username dan teks komentar menjadi rapat, rapi, dan identik dengan Threads.

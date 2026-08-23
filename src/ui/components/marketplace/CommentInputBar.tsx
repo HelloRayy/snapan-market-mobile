@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send } from 'lucide-react';
+import { Send, ArrowLeft } from 'lucide-react';
+import { triggerHaptic } from '@/utils/haptics';
 
 interface CommentInputBarProps {
   replyToUser?: string | null;
@@ -135,6 +136,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
           <button
             type="button"
             onClick={() => {
+              triggerHaptic('light');
               onCancelReply?.();
               onClose?.();
             }}
@@ -148,16 +150,31 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
       {/* Floating White Pill Dock Container (Identical to StickyBuyBar) */}
       <div className="bg-white/95 backdrop-blur-xl border border-neutral-200/80 p-1.5 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.12)] flex items-center gap-2">
         <form onSubmit={handleSubmit} className="flex items-center gap-2 w-full min-w-0">
-          {/* Current User Avatar */}
-          <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 border border-neutral-200 shadow-2xs">
-            <img
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80"
-              alt="Profil Saya"
-              className="w-full h-full object-cover"
-            />
-          </div>
+          {/* Left Slot: ArrowLeft Button (if in Product Mode) OR User Avatar (in Thread Mode) */}
+          {onClose ? (
+            <button
+              type="button"
+              onClick={() => {
+                triggerHaptic('light');
+                onClose();
+              }}
+              className="w-9 h-9 rounded-full bg-neutral-100 hover:bg-neutral-200 active:bg-neutral-300 active:scale-90 flex items-center justify-center text-slate-700 transition-all cursor-pointer shrink-0 border border-neutral-200/60 shadow-2xs"
+              title="Kembali ke Tombol Beli"
+              aria-label="Kembali ke Tombol Beli"
+            >
+              <ArrowLeft className="w-4.5 h-4.5 stroke-[2.25]" />
+            </button>
+          ) : (
+            <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 border border-neutral-200 shadow-2xs">
+              <img
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80"
+                alt="Profil Saya"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
 
-          {/* Input Text Field */}
+          {/* Input Text Field with Maximum Horizontal Breathable Space */}
           <input
             ref={inputRef}
             id="comment-input-field"
@@ -170,22 +187,11 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
               replyToUser
                 ? `Balas @${replyToUser.replace(/^@/, '')}...`
                 : targetAuthor
-                ? `Balas postingan @${targetAuthor.replace(/^@/, '')}...`
-                : 'Balas postingan...'
+                ? `Tulis pertanyaan untuk @${targetAuthor.replace(/^@/, '')}...`
+                : 'Tulis pertanyaan / komentar...'
             }
             className="flex-1 min-w-0 bg-transparent border-none text-[13.5px] sm:text-[14px] text-slate-900 placeholder:text-neutral-400 focus:outline-none px-1 h-9"
           />
-
-          {/* Cancel button if modal/morphing onClose provided */}
-          {onClose && !replyToUser && (
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-[12px] text-neutral-400 hover:text-slate-700 font-medium px-2 py-1 transition-colors cursor-pointer shrink-0"
-            >
-              Batal
-            </button>
-          )}
 
           {/* Send Button CTA */}
           <button
@@ -199,7 +205,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
             aria-label="Kirim Komentar"
           >
             <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
-            <span className="relative z-10 flex items-center gap-1.5">
+            <span className="relative z-10 flex items-center gap-1">
               <span>Kirim</span>
               <Send className="w-3.5 h-3.5 stroke-[2.25]" />
             </span>

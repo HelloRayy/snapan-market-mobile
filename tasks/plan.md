@@ -1,27 +1,30 @@
-# Implementation Plan: React Vite PWA Marketplace Boilerplate (Supabase Integrated)
+# Implementation Plan: Fullscreen Media Lightbox Redesign & Bugfix
 
-## Overview
-Menyediakan setup dasar (boilerplate) React + Vite dengan Tailwind CSS, PWA (`vite-plugin-pwa`), integrasi Supabase (Database & Google OAuth Auth), Cart Store (Zustand), komponen Marketplace primitives, struktur folder simpel (`ui`, `services`, `types`, `utils`), serta 5 dokumentasi AI Agent lengkap di `/docs`.
+## 1. Overview
+Fix visual bleeding and image cropping bugs in `MediaLightboxModal.tsx` when viewing media detail. Replace translucent/cut-off layout with a solid 100% opaque light background, full-frame `object-contain` scaling (zero cropping for landscape & portrait images), clean safe-area insets, and fluid touch gestures.
 
-## Task List
+---
 
-### Phase 1: Foundation & Package Setup
-- [ ] Task 1: Inisialisasi Vite React TypeScript project dengan `package.json`, `vite.config.ts`, `tsconfig.json`, `.env.example`, dan `@supabase/supabase-js`
-- [ ] Task 2: Setup Tailwind CSS, `clsx`, `tailwind-merge`, `lucide-react`, dan `src/index.css`
-- [ ] Task 3: Setup `vite-plugin-pwa` dengan Web App Manifest, Service Worker, `usePWA` hook, & PWA Install Banner
+## 2. Key Architecture & Design Decisions
+- **100% Opaque Solid Backdrop**: Set `bg-white z-[99999]` with zero opacity bleeding so underlying feed text never leaks through.
+- **Full-Frame `object-contain`**: Center image in viewport with `w-full h-full max-h-[82vh] max-w-full object-contain` to show 100% of the photo without cropping.
+- **Dual-Axis Touch Physics**:
+  - Horizontal swipe with CSS snap scroll for multi-image switching.
+  - Vertical drag-to-dismiss when pulling down/up.
+- **Safe Area Integration**: Top bar respects `env(safe-area-inset-top)` and bottom floating pill respects `env(safe-area-inset-bottom)`.
 
-### Phase 2: Supabase Integration & Marketplace Primitives
-- [ ] Task 4: Inisialisasi Client Supabase (`src/services/api/supabase.ts`), Auth Hook (`useAuth.ts` dengan Google OAuth), & ProtectedRoute
-- [ ] Task 5: Buat Model Tipe Data Marketplace di `src/types/` (`product.ts`, `seller.ts`, `order.ts`, `user.ts`, `supabase.ts`)
-- [ ] Task 6: Buat Cart Store Zustand di `src/ui/store/cartStore.ts`
-- [ ] Task 7: Buat Komponen Marketplace Primitives di `src/ui/components/marketplace/` (`ProductCard.tsx`, `QuantitySelector.tsx`, `RatingStars.tsx`, `MobileBottomNav.tsx`)
+---
 
-### Phase 3: AI Agent Documentation (`/docs`)
-- [ ] Task 8: Buat `/docs/architecture.md` (Folder Architecture & Organization Rules)
-- [ ] Task 9: Buat `/docs/coding-standards.md` (React, TypeScript & Tailwind Rules)
-- [ ] Task 10: Buat `/docs/ai-instructions.md` (Rules for AI Agents)
-- [ ] Task 11: Buat `/docs/pwa-guide.md` (PWA Setup & Deployment Guide)
-- [ ] Task 12: Buat `/docs/supabase-guide.md` (Supabase Marketplace Schema & Google OAuth Setup)
+## 3. Task List & Phases
 
-### Phase 4: Verification
-- [ ] Task 13: Verifikasi build Vite dan keberadaan seluruh komponen, Supabase client, serta 5 file dokumentasi
+### Phase 1: Core Lightbox Layout & Image Scaling
+- [ ] Task 1: Update `MediaLightboxModal.tsx` backdrop to solid opaque white (`bg-white z-[99999]`) and eliminate background bleed.
+- [ ] Task 2: Standardize image viewport with responsive `object-contain` scaling for landscape and portrait photos.
+
+### Phase 2: Floating Header, Action Capsule & Gesture Tuning
+- [ ] Task 3: Adjust top bar (Close X + Counter Pill) and bottom floating action capsule (Like, Reply, Repost, Share, Zoom toggle, Pagination dots) with iOS safe area insets.
+- [ ] Task 4: Tune vertical drag-to-dismiss gesture and zoom scale toggle (1x / 1.5x / 2x).
+
+### Phase 3: Verification & Integration
+- [ ] Task 5: Run TypeScript checks (`tsc --noEmit`) and production build test (`npm run build`).
+- [ ] Task 6: Push changes to GitHub and trigger Vercel deployment.

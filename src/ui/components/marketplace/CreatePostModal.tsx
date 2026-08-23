@@ -21,6 +21,7 @@ import {
 import { MarketPostItem } from '@/types/marketFeed';
 import { triggerHaptic } from '@/utils/haptics';
 import { ThreadsTopicIcon } from '@/ui/components/icons';
+import { ConfirmActionModal } from '@/ui/components/ui/ConfirmActionModal';
 
 interface TopicOption {
   id: string;
@@ -1380,43 +1381,30 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
         </>
       )}
 
-      {/* Discard / Save Draft Alert Dialog */}
-      {showDiscardAlert && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="w-full max-w-xs bg-white rounded-3xl p-5 shadow-2xl border border-neutral-100 text-center space-y-4 font-gt-standard">
-            <div className="space-y-1">
-              <h3 className="text-[17px] font-bold text-slate-900">Buang Utas?</h3>
-              <p className="text-[13.5px] text-neutral-500">
-                Anda dapat membuang atau menyimpan utas ini sebagai draf.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <button
-                type="button"
-                onClick={handleConfirmDiscard}
-                className="w-full h-11 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-[14px] transition-colors cursor-pointer"
-              >
-                Buang
-              </button>
-              <button
-                type="button"
-                onClick={handleSaveDraft}
-                className="w-full h-11 rounded-2xl bg-neutral-100 hover:bg-neutral-200 text-slate-800 font-semibold text-[14px] transition-colors cursor-pointer"
-              >
-                Simpan Draf
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowDiscardAlert(false)}
-                className="w-full h-10 rounded-2xl text-neutral-500 hover:text-slate-800 font-medium text-[13.5px] transition-colors cursor-pointer"
-              >
-                Batal
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Reusable Threads-style Save Draft / Discard Alert Modal */}
+      <ConfirmActionModal
+        isOpen={showDiscardAlert}
+        onClose={() => setShowDiscardAlert(false)}
+        title="Simpan ke draf?"
+        description="Simpan ke konsep untuk diedit dan diposting di lain waktu."
+        actions={[
+          {
+            label: 'Simpan',
+            variant: 'primary',
+            onClick: handleSaveDraft,
+          },
+          {
+            label: 'Jangan simpan',
+            variant: 'destructive',
+            onClick: handleConfirmDiscard,
+          },
+          {
+            label: 'Batal',
+            variant: 'cancel',
+            onClick: () => setShowDiscardAlert(false),
+          },
+        ]}
+      />
 
       {/* Saved Drafts Bottom Sheet */}
       {showDraftsSheet && (

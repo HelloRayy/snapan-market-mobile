@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { X, LogOut, ShieldCheck, Share2, Smartphone } from 'lucide-react';
 import { useAuth } from '@/ui/hooks/useAuth';
+import { ConfirmActionModal } from '@/ui/components/ui/ConfirmActionModal';
 
 interface SettingsBottomSheetProps {
   isOpen: boolean;
@@ -14,12 +15,14 @@ export const SettingsBottomSheet: React.FC<SettingsBottomSheetProps> = ({
   onEditProfileClick,
 }) => {
   const { signOut, user, profile } = useAuth();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   if (!isOpen) return null;
 
   const handleLogout = async () => {
     try {
       await signOut();
+      setShowLogoutConfirm(false);
       onClose();
       window.location.href = '/';
     } catch (err) {
@@ -129,7 +132,7 @@ export const SettingsBottomSheet: React.FC<SettingsBottomSheetProps> = ({
 
             <button
               type="button"
-              onClick={handleLogout}
+              onClick={() => setShowLogoutConfirm(true)}
               className="w-full py-3 px-2 flex items-center justify-between text-red-600 font-bold hover:bg-red-50 rounded-xl transition-colors cursor-pointer group"
             >
               <div className="flex items-center gap-3">
@@ -145,6 +148,26 @@ export const SettingsBottomSheet: React.FC<SettingsBottomSheetProps> = ({
             <p>Platform Marketplace & Komunitas Siswa SMKN 8 Jakarta</p>
           </div>
         </div>
+
+        {/* Reusable Logout Confirmation Dialog */}
+        <ConfirmActionModal
+          isOpen={showLogoutConfirm}
+          onClose={() => setShowLogoutConfirm(false)}
+          title="Keluar dari akun?"
+          description="Anda harus masuk kembali untuk membuat postingan dan berbelanja."
+          actions={[
+            {
+              label: 'Keluar',
+              variant: 'destructive',
+              onClick: handleLogout,
+            },
+            {
+              label: 'Batal',
+              variant: 'cancel',
+              onClick: () => setShowLogoutConfirm(false),
+            },
+          ]}
+        />
       </div>
   );
 };

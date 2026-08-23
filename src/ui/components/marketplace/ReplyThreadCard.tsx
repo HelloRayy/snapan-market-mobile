@@ -321,7 +321,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
             {/* 1. Like Button */}
             <motion.button
               type="button"
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.96 }}
               onClick={handleParentLike}
               className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer select-none group active:bg-neutral-100 rounded-full transition-colors"
             >
@@ -353,16 +353,11 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
             {/* 2. Comment Button */}
             <motion.button
               type="button"
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => onPostClick?.(parentPost)}
               className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer text-slate-700 group select-none active:bg-neutral-100 rounded-full"
             >
-              <motion.div
-                whileTap={{ scale: [1, 0.85, 1.2, 0.95, 1], y: [0, -2, 0] }}
-                transition={{ duration: 0.25 }}
-              >
-                <SmoothCommentIcon className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
-              </motion.div>
+              <SmoothCommentIcon className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
               {parentPost.commentsCount > 0 && (
                 <span className="font-medium text-[13.5px] text-slate-700 tabular-nums tracking-tight">{parentPost.commentsCount}</span>
               )}
@@ -371,7 +366,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
             {/* 3. Repost Button */}
             <motion.button
               type="button"
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.96 }}
               onClick={handleParentRepost}
               className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer select-none group active:bg-neutral-100 rounded-full"
             >
@@ -403,17 +398,12 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
             {/* 4. Send / Share Button */}
             <motion.button
               type="button"
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.96 }}
               onClick={(e) => handleShare(e, `Utas dari ${parentPost.seller.name}`, parentPost.caption)}
               className="flex items-center justify-center p-2 min-h-[36px] min-w-[36px] cursor-pointer text-slate-700 group select-none active:bg-neutral-100 rounded-full"
               aria-label="Bagikan postingan"
             >
-              <motion.div
-                whileTap={{ x: [0, 4, -1, 0], y: [0, -4, 1, 0], scale: [1, 1.2, 1] }}
-                transition={{ duration: 0.3 }}
-              >
-                <Send className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-slate-900 transition-colors duration-200" />
-              </motion.div>
+              <Send className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-slate-900 transition-colors duration-200" />
             </motion.button>
 
             {/* 5. Stock Indicator: Compact Inline Pill [ 📦 3 ] (Zero-Wrap Guaranteed) */}
@@ -494,7 +484,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
             {/* Like */}
             <motion.button
               type="button"
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.96 }}
               onClick={handleReplyLike}
               className="flex items-center justify-center gap-1.5 px-2 py-1 min-h-[34px] min-w-[34px] cursor-pointer select-none group active:bg-neutral-100 rounded-full transition-colors"
             >
@@ -526,22 +516,17 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
             {/* Comment */}
             <motion.button
               type="button"
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => onPostClick?.(parentPost)}
               className="flex items-center justify-center gap-1.5 px-2 py-1 min-h-[34px] min-w-[34px] cursor-pointer text-slate-700 group select-none active:bg-neutral-100 rounded-full"
             >
-              <motion.div
-                whileTap={{ scale: [1, 0.85, 1.2, 0.95, 1], y: [0, -2, 0] }}
-                transition={{ duration: 0.25 }}
-              >
-                <SmoothCommentIcon className="w-[17.5px] h-[17.5px] stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
-              </motion.div>
+              <SmoothCommentIcon className="w-[17.5px] h-[17.5px] stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
             </motion.button>
 
             {/* Repost */}
             <motion.button
               type="button"
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.96 }}
               onClick={handleReplyRepost}
               className="flex items-center justify-center gap-1.5 px-2 py-1 min-h-[34px] min-w-[34px] cursor-pointer select-none group active:bg-neutral-100 rounded-full"
             >
@@ -573,16 +558,11 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
             {/* Share */}
             <motion.button
               type="button"
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.96 }}
               onClick={(e) => handleShare(e, `Balasan dari ${reply.user.name}`, reply.content)}
               className="flex items-center justify-center p-1.5 min-h-[34px] min-w-[34px] cursor-pointer text-slate-700 group select-none active:bg-neutral-100 rounded-full"
             >
-              <motion.div
-                whileTap={{ x: [0, 4, -1, 0], y: [0, -4, 1, 0], scale: [1, 1.2, 1] }}
-                transition={{ duration: 0.3 }}
-              >
-                <Send className="w-[17.5px] h-[17.5px] stroke-[1.8] text-slate-700 group-hover:text-slate-900 transition-colors duration-200" />
-              </motion.div>
+              <Send className="w-[17.5px] h-[17.5px] stroke-[1.8] text-slate-700 group-hover:text-slate-900 transition-colors duration-200" />
             </motion.button>
           </div>
         </div>

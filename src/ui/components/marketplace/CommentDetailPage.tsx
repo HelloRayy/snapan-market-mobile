@@ -219,7 +219,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
         <button
           type="button"
           onClick={handleBack}
-          className="w-9 h-9 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
+          className="w-9 h-9 rounded-full hover:bg-neutral-100 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-[0.96]"
           aria-label="Kembali"
         >
           <ArrowLeft className="w-4.5 h-4.5 stroke-[2.2]" />
@@ -349,19 +349,13 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
               </div>
             )}
 
-            {/* Action Bar with Threads Nested Layout */}
-            <motion.div
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-              className="flex items-center text-slate-700 font-normal pt-3 -ml-1.5 text-[14px] select-none"
-            >
+            <div className="flex items-center gap-2 -ml-1 pt-2 text-slate-700">
               {/* 1. Like Slot */}
               <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer">
                 <div className="flex items-stretch font-normal cursor-pointer">
                   <motion.button
                     type="button"
-                    whileTap={{ scale: 0.9 }}
+                    whileTap={{ scale: 0.96 }}
                     onClick={handleHeroLikeToggle}
                     className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer select-none group active:bg-neutral-100 rounded-full transition-colors"
                     aria-label={`Sukai komentar. ${heroLikesCount} suka`}
@@ -398,19 +392,14 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                 <div className="flex items-stretch font-normal cursor-pointer">
                   <motion.button
                     type="button"
-                    whileTap={{ scale: 0.9 }}
+                    whileTap={{ scale: 0.96 }}
                     onClick={() => {
                       handleReplyToUser(activeComment.user.username || activeComment.user.name, activeComment.id);
                     }}
                     className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer transition-colors text-slate-700 group select-none active:bg-neutral-100 rounded-full"
                     aria-label="Balas komentar"
                   >
-                    <motion.div
-                      whileTap={{ scale: [1, 0.85, 1.2, 0.95, 1], y: [0, -2, 0] }}
-                      transition={{ duration: 0.25 }}
-                    >
-                      <SmoothCommentIcon className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
-                    </motion.div>
+                    <SmoothCommentIcon className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
                     {repliesList.length > 0 && (
                       <span className="font-medium text-[13.5px] text-slate-700 tabular-nums tracking-tight">{repliesList.length}</span>
                     )}
@@ -423,7 +412,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                 <div className="flex items-stretch font-normal cursor-pointer">
                   <motion.button
                     type="button"
-                    whileTap={{ scale: 0.9 }}
+                    whileTap={{ scale: 0.96 }}
                     className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer transition-colors select-none group active:bg-neutral-100 rounded-full"
                     aria-label="Post ulang komentar"
                   >
@@ -442,21 +431,16 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                 <div className="flex items-stretch px-0.5 font-normal cursor-pointer">
                   <motion.button
                     type="button"
-                    whileTap={{ scale: 0.9 }}
+                    whileTap={{ scale: 0.96 }}
                     className="flex items-center justify-center p-2 min-h-[36px] min-w-[36px] cursor-pointer transition-colors text-slate-700 group select-none active:bg-neutral-100 rounded-full"
                     aria-label="Bagikan komentar"
                     title="Bagikan / Kirim"
                   >
-                    <motion.div
-                      whileTap={{ x: [0, 4, -1, 0], y: [0, -4, 1, 0], scale: [1, 1.2, 1] }}
-                      transition={{ duration: 0.35, ease: "easeInOut" }}
-                    >
-                      <Send className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
-                    </motion.div>
+                    <Send className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
                   </motion.button>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
 

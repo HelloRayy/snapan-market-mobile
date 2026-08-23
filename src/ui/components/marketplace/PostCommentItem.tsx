@@ -82,10 +82,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
     onLike?: () => void,
     onReply?: () => void
   ) => (
-    <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
+    <div
       onClick={(e) => e.stopPropagation()}
       className="flex items-center gap-1.5 text-slate-700 font-normal pt-1 -ml-1 text-[13px] select-none"
     >
@@ -94,7 +91,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
         <div className="flex items-stretch font-normal cursor-pointer">
           <motion.button
             type="button"
-            whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: 0.96 }}
             onClick={(e) => {
               e.stopPropagation();
               onLike?.();
@@ -134,7 +131,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
         <div className="flex items-stretch font-normal cursor-pointer">
           <motion.button
             type="button"
-            whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: 0.96 }}
             onClick={(e) => {
               e.stopPropagation();
               onReply?.();
@@ -142,12 +139,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
             className="flex items-center justify-center gap-1.5 px-2 py-1 min-h-[34px] min-w-[34px] cursor-pointer transition-colors text-slate-700 group select-none active:bg-neutral-100 rounded-full"
             aria-label="Balas komentar"
           >
-            <motion.div
-              whileTap={{ scale: [1, 0.85, 1.2, 0.95, 1], y: [0, -2, 0] }}
-              transition={{ duration: 0.25 }}
-            >
-              <SmoothCommentIcon className="w-[17.5px] h-[17.5px] stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
-            </motion.div>
+            <SmoothCommentIcon className="w-[17.5px] h-[17.5px] stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
           </motion.button>
         </div>
       </div>
@@ -157,12 +149,13 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
         <div className="flex items-stretch font-normal cursor-pointer">
           <motion.button
             type="button"
-            whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: 0.96 }}
             onClick={(e) => e.stopPropagation()}
             className="flex items-center justify-center gap-1.5 px-2 py-1 min-h-[34px] min-w-[34px] cursor-pointer transition-colors select-none group active:bg-neutral-100 rounded-full"
             aria-label="Post ulang komentar"
           >
             <motion.div
+              animate={Boolean(count > 0)}
               whileTap={{ rotate: [0, 180], scale: [1, 1.3, 0.9, 1.05, 1] }}
               transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
             >
@@ -177,22 +170,17 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
         <div className="flex items-stretch px-0.5 font-normal cursor-pointer">
           <motion.button
             type="button"
-            whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: 0.96 }}
             onClick={(e) => e.stopPropagation()}
             className="flex items-center justify-center p-1.5 min-h-[34px] min-w-[34px] cursor-pointer transition-colors text-slate-700 group select-none active:bg-neutral-100 rounded-full"
             aria-label="Bagikan komentar"
             title="Bagikan / Kirim"
           >
-            <motion.div
-              whileTap={{ x: [0, 4, -1, 0], y: [0, -4, 1, 0], scale: [1, 1.2, 1] }}
-              transition={{ duration: 0.35, ease: "easeInOut" }}
-            >
-              <Send className="w-[17.5px] h-[17.5px] stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
-            </motion.div>
+            <Send className="w-[17.5px] h-[17.5px] stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
           </motion.button>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 
   return (

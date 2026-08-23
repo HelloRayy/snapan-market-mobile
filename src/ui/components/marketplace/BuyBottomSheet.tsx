@@ -129,15 +129,15 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
         }}
         className="relative w-full max-w-md bg-white text-slate-900 rounded-t-[24px] px-5 pt-5 pb-6 z-10 shadow-[0_-12px_50px_rgba(0,0,0,0.15)] border-t border-neutral-100 max-h-[88vh] flex flex-col transform-gpu animate-page-zoom"
       >
-        {/* Floating Close X Button Floating Above Card Center (Kumo UI Style) */}
+        {/* Floating Close X Button */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute -top-12 left-1/2 -translate-x-1/2 w-9.5 h-9.5 rounded-full bg-white text-slate-800 flex items-center justify-center shadow-md border border-neutral-200 active:scale-90 transition-all cursor-pointer z-20 overflow-hidden group"
+          className="absolute -top-12 left-1/2 -translate-x-1/2 w-9.5 h-9.5 rounded-full bg-white text-slate-800 flex items-center justify-center shadow-md border border-neutral-200 active:scale-[0.96] transition-transform cursor-pointer z-20 overflow-hidden group"
           aria-label="Tutup Modal"
         >
           {/* Kumo Inset Top Rim Highlight Gradient */}
-          <span className="absolute inset-0 rounded-full bg-gradient-to-b from-white to-neutral-100/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9)] group-hover:from-neutral-50 transition-all pointer-events-none" />
+          <span className="absolute inset-0 rounded-full bg-gradient-to-b from-white to-neutral-100/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9)] group-hover:from-neutral-50 transition-colors pointer-events-none" />
 
           {/* X Icon */}
           <X className="w-4 h-4 stroke-[2.2] text-slate-800 relative z-10" />
@@ -145,30 +145,26 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
 
         {/* Scrollable Modal Content Body */}
         <div className="overflow-y-auto overscroll-contain space-y-3.5 pr-0.5 scrollbar-none flex-1 pb-1">
-          {/* 1. Header Penjual (Avatar + Nama + Badge Kelas & Slot Tersisa) with Drag Gesture */}
+          {/* 1. Header Penjual */}
           <div
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            className="flex items-center justify-between gap-3 pt-0.5 cursor-grab active:cursor-grabbing touch-pan-y"
+            className="flex items-center justify-between pb-3 border-b border-neutral-100 touch-pan-y"
           >
-            <div className="flex items-center gap-3 min-w-0">
-              {/* Avatar Penjual */}
+            <div className="flex items-center gap-3">
               <img
                 src={post.seller.avatar}
                 alt={post.seller.name}
-                className="w-11 h-11 rounded-full object-cover border border-neutral-200 shrink-0 shadow-2xs"
+                className="w-11 h-11 rounded-full object-cover border border-neutral-200/80 shadow-xs"
               />
-
-              <div className="flex flex-col min-w-0 space-y-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-bold text-base text-slate-900 truncate">
-                    {post.seller.name}
-                  </span>
+              <div>
+                <h4 className="font-semibold text-slate-900 text-sm flex items-center gap-1.5 leading-tight">
+                  <span>{post.seller.name}</span>
                   {post.seller.isVerified && (
-                    <ClickableVerifiedBadge sellerName={post.seller.name} className="w-[17px] h-[17px]" />
+                    <ClickableVerifiedBadge sellerName={post.seller.name} className="w-[14px] h-[14px]" />
                   )}
-                </div>
+                </h4>
 
                 {/* Badges: Kelas & Slot/Stok */}
                 <div className="flex items-center gap-1.5 flex-wrap">
@@ -242,10 +238,10 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
           <button
             type="button"
             onClick={handleWhatsAppCheckout}
-            className="relative inline-flex items-center justify-between w-full h-12 px-5 rounded-2xl text-white bg-[#1d64ec] hover:bg-[#154ec1] border border-[#154ec1] active:scale-[0.98] font-medium text-sm shadow-md shadow-blue-500/25 transition-all cursor-pointer overflow-hidden select-none group"
+            className="relative inline-flex items-center justify-between w-full h-12 px-5 rounded-2xl text-white bg-[#1d64ec] hover:bg-[#154ec1] border border-[#154ec1] active:scale-[0.96] font-medium text-sm shadow-md shadow-blue-500/25 transition-transform cursor-pointer overflow-hidden select-none group"
           >
             {/* Kumo Inset Top Rim Highlight Gradient */}
-            <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] group-hover:from-[#2563eb] transition-all pointer-events-none" />
+            <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] group-hover:from-[#2563eb] transition-colors pointer-events-none" />
             
             {/* Left Label */}
             <span className="relative z-10 flex items-center gap-2 shrink-0 font-medium">

@@ -286,7 +286,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
             {/* 1. Love / Like */}
             <motion.button
               type="button"
-              whileTap={{ scale: 0.88 }}
+              whileTap={{ scale: 0.96 }}
               onClick={(e) => {
                 e.stopPropagation();
                 triggerHaptic(isLiked ? 'light' : 'medium');
@@ -323,7 +323,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
             {/* 2. Comment / Reply */}
             <motion.button
               type="button"
-              whileTap={{ scale: 0.88 }}
+              whileTap={{ scale: 0.96 }}
               onClick={(e) => {
                 e.stopPropagation();
                 triggerHaptic('light');
@@ -333,12 +333,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
               className="flex items-center gap-1.5 px-2 py-1.5 cursor-pointer select-none group"
               title="Komentari"
             >
-              <motion.div
-                whileTap={{ scale: [1, 0.85, 1.2, 0.95, 1], y: [0, -2, 0] }}
-                transition={{ duration: 0.25 }}
-              >
-                <MessageCircle className="w-4 h-4 stroke-[2] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
-              </motion.div>
+              <MessageCircle className="w-4 h-4 stroke-[2] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
               {typeof repliesCount === 'number' && (
                 <span className="text-[13px] font-semibold text-slate-800 tabular-nums leading-none">
                   {repliesCount}
@@ -349,7 +344,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
             {/* 3. Repost */}
             <motion.button
               type="button"
-              whileTap={{ scale: 0.88 }}
+              whileTap={{ scale: 0.96 }}
               onClick={(e) => {
                 e.stopPropagation();
                 triggerHaptic('medium');
@@ -386,7 +381,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
             {/* 4. Share */}
             <motion.button
               type="button"
-              whileTap={{ scale: 0.88 }}
+              whileTap={{ scale: 0.96 }}
               onClick={(e) => {
                 e.stopPropagation();
                 triggerHaptic('light');
@@ -395,12 +390,7 @@ export const MediaLightboxModal: React.FC<MediaLightboxModalProps> = ({
               className="flex items-center justify-center p-2 cursor-pointer select-none group"
               title="Bagikan"
             >
-              <motion.div
-                whileTap={{ x: [0, 4, -1, 0], y: [0, -4, 1, 0], scale: [1, 1.2, 1] }}
-                transition={{ duration: 0.3 }}
-              >
-                <Send className="w-4 h-4 stroke-[2] text-slate-700 group-hover:text-slate-900 transition-colors duration-200" />
-              </motion.div>
+              <Send className="w-4 h-4 stroke-[2] text-slate-700 group-hover:text-slate-900 transition-colors duration-200" />
             </motion.button>
           </div>
 

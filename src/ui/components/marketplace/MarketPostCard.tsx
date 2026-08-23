@@ -224,12 +224,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
   );
 
   const renderActionBar = () => (
-    <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
-      className="pt-1 flex items-center justify-between text-slate-700 font-normal -ml-1.5 select-none max-w-full"
-    >
+    <div className="pt-1 flex items-center justify-between text-slate-700 font-normal -ml-1.5 select-none max-w-full">
       {/* Left Action Buttons Container (Threads Nested Flex Layout) */}
       <div className="flex items-center gap-2 text-slate-700 text-sm font-normal cursor-pointer select-none">
         {/* 1. Suka (Like) Slot */}
@@ -237,7 +232,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           <div className="flex items-stretch font-normal cursor-pointer">
             <motion.button
               type="button"
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.96 }}
               onClick={handleLikeToggle}
               className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer select-none group active:bg-neutral-100 rounded-full transition-colors"
               aria-label={`Sukai postingan. ${likesCount} suka`}
@@ -274,7 +269,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           <div className="flex items-stretch font-normal cursor-pointer">
             <motion.button
               type="button"
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.96 }}
               onClick={(e) => {
                 e.stopPropagation();
                 onPostClick?.(item);
@@ -282,12 +277,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer transition-colors text-slate-700 group select-none active:bg-neutral-100 rounded-full"
               aria-label={`Komentar postingan. ${item.commentsCount} komentar`}
             >
-              <motion.div
-                whileTap={{ scale: [1, 0.85, 1.2, 0.95, 1], y: [0, -2, 0] }}
-                transition={{ duration: 0.25 }}
-              >
-                <SmoothCommentIcon className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
-              </motion.div>
+              <SmoothCommentIcon className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
               {item.commentsCount > 0 && (
                 <span className="font-medium text-[13.5px] text-slate-700 tabular-nums tracking-tight">{item.commentsCount}</span>
               )}
@@ -300,7 +290,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           <div className="flex items-stretch font-normal cursor-pointer">
             <motion.button
               type="button"
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.96 }}
               onClick={handleRepostToggle}
               className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer transition-colors select-none group active:bg-neutral-100 rounded-full"
               aria-label={`Post ulang postingan. ${repostsCount} posting ulang`}
@@ -337,18 +327,13 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           <div className="flex items-stretch px-0.5 font-normal cursor-pointer">
             <motion.button
               type="button"
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.96 }}
               onClick={handleShare}
               className="flex items-center justify-center p-2 min-h-[36px] min-w-[36px] cursor-pointer transition-colors text-slate-700 group select-none active:bg-neutral-100 rounded-full"
               aria-label="Bagikan postingan"
               title="Bagikan / Kirim"
             >
-              <motion.div
-                whileTap={{ x: [0, 4, -1, 0], y: [0, -4, 1, 0], scale: [1, 1.2, 1] }}
-                transition={{ duration: 0.3 }}
-              >
-                <Send className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-slate-900 transition-colors duration-200" />
-              </motion.div>
+              <Send className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-slate-900 transition-colors duration-200" />
             </motion.button>
           </div>
         </div>
@@ -364,7 +349,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           <span className="font-semibold text-slate-800 tabular-nums tracking-tight whitespace-nowrap">{item.stock}</span>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 
   return (

@@ -600,7 +600,7 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
                 category="Social Actions"
                 description="Tombol like dengan micro-animasi elastic pop, getaran haptik, dan counter otomatis."
                 codeSnippet={`<motion.button
-  whileTap={{ scale: 0.94 }}
+  whileTap={{ scale: 0.96 }}
   onClick={() => setIsLiked(!isLiked)}
   className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-slate-900 bg-neutral-100/90 text-slate-900 shadow-2xs"
 >
@@ -614,7 +614,7 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
                 {() => (
                   <motion.button
                     type="button"
-                    whileTap={{ scale: 0.94 }}
+                    whileTap={{ scale: 0.96 }}
                     onClick={() => {
                       triggerHaptic(demoLike ? 'light' : 'medium');
                       setDemoLike(!demoLike);

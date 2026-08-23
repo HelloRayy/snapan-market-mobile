@@ -172,32 +172,32 @@ input, textarea {
 }
 
 @utility animate-page-zoom {
-  animation: page-zoom-in 0.18s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  animation: page-zoom-in 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform, opacity;
 }
 
 @utility animate-page-slide {
-  animation: page-slide-in-right 0.24s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  animation: page-slide-in-right 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform;
 }
 
 @utility animate-drawer-slide {
-  animation: drawer-slide-in-left 0.24s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  animation: drawer-slide-in-left 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform;
 }
 
 @utility animate-sheet-slide {
-  animation: sheet-slide-up 0.24s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  animation: sheet-slide-up 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform;
 }
 
 @utility animate-backdrop-fade {
-  animation: backdrop-fade-in 0.2s ease-out forwards;
+  animation: backdrop-fade-in 0.18s ease-out forwards;
   will-change: opacity;
 }
 
 @utility animate-toast-pop {
-  animation: toast-pop-in 0.18s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: toast-pop-in 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform, opacity;
 }
 
@@ -211,5 +211,7 @@ input, textarea {
 
 /* Standardized Motion Token Utility for All Slide, Shift & Fade Transitions */
 .kumo-transition {
-  transition: all 0.20s cubic-bezier(0.25, 1, 0.5, 1);
+  transition-property: transform, opacity;
+  transition-duration: 0.20s;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }

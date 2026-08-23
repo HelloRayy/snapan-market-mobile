@@ -106,10 +106,10 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
           <button
             type="submit"
             disabled={!text.trim()}
-            className={`relative inline-flex items-center justify-center gap-1.5 rounded-full px-3.5 sm:px-4 h-10 text-[13.5px] font-bold text-white bg-[#18181b] border border-black/40 shadow-xs overflow-hidden shrink-0 transition-all ${
+            className={`relative inline-flex items-center justify-center gap-1.5 rounded-full px-3.5 sm:px-4 h-10 text-[13.5px] font-bold text-white bg-[#18181b] border border-black/40 shadow-xs overflow-hidden shrink-0 transition-transform ${
               !text.trim()
                 ? 'opacity-40 cursor-not-allowed'
-                : 'active:scale-95 cursor-pointer hover:bg-black'
+                : 'active:scale-[0.96] cursor-pointer hover:bg-black'
             }`}
             aria-label="Kirim Komentar"
           >
@@ -148,7 +148,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
               onCancelReply?.();
               onClose?.();
             }}
-            className="text-neutral-400 hover:text-rose-500 text-[11.5px] font-semibold transition-colors cursor-pointer px-1.5 shrink-0 active:scale-95"
+            className="text-neutral-400 hover:text-rose-500 text-[11.5px] font-semibold transition-colors cursor-pointer px-1.5 shrink-0 active:scale-[0.96]"
           >
             Batal
           </button>
@@ -168,7 +168,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
                 onDraftChange?.('');
                 onClose();
               }}
-              className="w-9 h-9 rounded-full bg-neutral-100 hover:bg-neutral-200 active:bg-neutral-300 active:scale-90 flex items-center justify-center text-slate-700 transition-all cursor-pointer shrink-0 border border-neutral-200/60 shadow-2xs"
+              className="w-9 h-9 rounded-full bg-neutral-100 hover:bg-neutral-200 active:bg-neutral-300 active:scale-[0.96] flex items-center justify-center text-slate-700 transition-transform cursor-pointer shrink-0 border border-neutral-200/60 shadow-2xs"
               title="Kembali ke Tombol Beli"
               aria-label="Kembali ke Tombol Beli"
             >
@@ -207,10 +207,10 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
           <button
             type="submit"
             disabled={!text.trim()}
-            className={`relative inline-flex items-center justify-center gap-1.5 rounded-full px-3.5 h-9 text-[13px] font-bold text-white bg-[#18181b] border border-black/40 shadow-xs overflow-hidden shrink-0 transition-all ${
+            className={`relative inline-flex items-center justify-center gap-1.5 rounded-full px-3.5 h-9 text-[13px] font-bold text-white bg-[#18181b] border border-black/40 shadow-xs overflow-hidden shrink-0 transition-transform ${
               !text.trim()
                 ? 'opacity-40 cursor-not-allowed'
-                : 'active:scale-95 cursor-pointer hover:bg-black'
+                : 'active:scale-[0.96] cursor-pointer hover:bg-black'
             }`}
             aria-label="Kirim Komentar"
           >

@@ -611,10 +611,10 @@ export const SearchPage: React.FC<SearchPageProps> = ({
 
         {/* STAGE 3: Submitted Search Results -> Render based on Active Tab */}
         {hasSearchQuery && isSubmitted && (
-          <div className="space-y-4 animate-in fade-in duration-200">
+          <div className="animate-in fade-in duration-200">
             {/* Tab 1: TERPOPULER */}
             {activeTab === 'top' && (
-              <div className="space-y-3">
+              <div className="-mx-4 -mt-3 divide-y divide-neutral-200 pt-0">
                 {popularPosts.length > 0 ? (
                   popularPosts.map((post) => (
                     <MarketPostCard
@@ -625,7 +625,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                     />
                   ))
                 ) : (
-                  <div className="py-14 text-center text-neutral-400 space-y-2">
+                  <div className="py-14 px-4 text-center text-neutral-400 space-y-2">
                     <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto text-neutral-400">
                       <Search className="w-6 h-6 stroke-[1.8]" />
                     </div>
@@ -640,7 +640,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
 
             {/* Tab 2: TERBARU */}
             {activeTab === 'latest' && (
-              <div className="space-y-3">
+              <div className="-mx-4 -mt-3 divide-y divide-neutral-200 pt-0">
                 {latestPosts.length > 0 ? (
                   latestPosts.map((post) => (
                     <MarketPostCard
@@ -651,7 +651,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                     />
                   ))
                 ) : (
-                  <div className="py-14 text-center text-neutral-400 space-y-2">
+                  <div className="py-14 px-4 text-center text-neutral-400 space-y-2">
                     <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto text-neutral-400">
                       <Search className="w-6 h-6 stroke-[1.8]" />
                     </div>

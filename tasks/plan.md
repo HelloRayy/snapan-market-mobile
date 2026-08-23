@@ -1,34 +1,23 @@
-# Rencana Implementasi: Eliminasi Redundansi Input Bar Komentar (Pola Single Bottom Dock Sesuai Standar Threads & X)
+# Rencana Implementasi: Standarisasi Tampilan Feed Hasil Pencarian (Search Feed vs Homepage Feed)
 
-## 1. Analisis Masalah (Root Cause)
-- **Masalah Saat Ini**:
-  - Saat tombol "Balas" ditekan pada komentar `lisayayaa_`, terjadi **duplikasi 2 input bar**:
-    1. Input Bar Inline di dalam pohon komentar (`PostCommentItem.tsx`).
-    2. Floating Capsule Input Bar di dasar layar (`PostDetailPage.tsx`).
-  - Akibatnya, saat user mengetik di bilah bawah, bilah inline di atas tetap kosong. Tampilan menjadi tumpang tindih, boros ruang, dan membingungkan pengguna.
-- **Standar UX Global (Threads, X, Instagram, TikTok)**:
-  - **Hanya ada 1 (SATU) Input Bar di dasar layar**.
-  - Saat klik "Balas", bilah melayang di bawah langsung aktif dengan chip `Membalas @username [Batal]`.
-  - Tidak ada form input lokal di tengah-tengah daftar komentar.
-  - Setelah tombol Kirim ditekan, komentar balasan langsung otomatis disisipkan di bawah komentar target dengan garis konektor utas.
+## 1. Analisis Masalah
+- **Perbedaan Feed Pencarian vs Homepage Feed**:
+  - Pada `HomePage.tsx`, container feed menggunakan `<main className="max-w-xl mx-auto divide-y divide-neutral-200 pt-0">` tanpa horizontal padding (`px-0`), sehingga setiap kartu `MarketPostCard` tampil *edge-to-edge* (rapat ke tepi layar) dengan garis pemisah `border-b border-neutral-200` dan padding internal kartu `px-3.5`.
+  - Pada `SearchPage.tsx`, container feed dibungkus oleh `<main className="max-w-xl mx-auto px-4 pt-3 space-y-4">` dan `<div className="space-y-3">`. Akibatnya, kartu postingan di tab **Terpopuler** dan **Terbaru** menyempit karena terkena padding `px-4`, serta memiliki celah vertikal antar-kartu yang tidak konsisten dengan Home feed (seperti yang terlihat pada screenshot user).
 
 ---
 
 ## 2. Rincian Perubahan File
-- **`src/ui/components/marketplace/PostCommentItem.tsx`**:
-  - Hapus blok input inline `{isReplying && (<form ...>)}` di dalam `PostCommentItem.tsx`.
-  - Hapus state lokal `replyDraftText`, `inputRef`, dan `handleInlineSubmit` yang tidak lagi diperlukan.
-  - Cukup trigger `onReplyClick(username, commentId)` agar bilah Floating Capsule di dasar layar menangani pengetikan dan pengiriman secara terpusat.
-- **`src/ui/pages/PostDetailPage.tsx`**:
-  - Pastikan saat `handleReplyClick` dipanggil, bilah Floating Capsule di bawah langsung fokus (`autoFocus`) dengan target `replyToUser` dan `replyToCommentId`.
-  - Saat dikirim via `handleAddComment(text, replyToCommentId)`, balasan langsung bersarang di bawah komentar target.
+- **`src/ui/pages/SearchPage.tsx`**:
+  - Untuk tab **Terpopuler** (`top`) dan **Terbaru** (`latest`): Gunakan layout *edge-to-edge* dengan `divide-y divide-neutral-200 pt-0 -mx-4` (atau `px-0` pada container feed) agar kartu postingan tampil 100% identik dengan `HomePage.tsx`.
+  - Pertahankan padding `px-4` hanya pada tahap saran akun / trending tags dan tab **Profil** yang membutuhkan card rounded.
+  - Selaraskan styling header tab (Terpopuler, Terbaru, Profil) dengan border pemisah bawah yang rapi dan konsisten dengan tab Home.
 
 ---
 
 ## 3. Rencana Verifikasi
 - `npx tsc --noEmit && npm run build` (0 TypeScript errors).
-- Uji alur membalas komentar:
-  1. Klik "Balas" pada komentar siapapun.
-  2. Pastikan hanya ada 1 bilah input yang aktif di bawah dengan chip `Membalas @username [Batal]`.
-  3. Ketik dan kirim balasan.
-  4. Pastikan balasan langsung muncul tersambung dengan garis utas di bawah komentar yang dibalas.
+- Uji Halaman Pencarian:
+  1. Buka tab Search, ketik kata kunci (misal: "website") dan tekan Enter / klik Lanjutkan.
+  2. Buka tab **Terpopuler** & **Terbaru**: Pastikan kartu postingan tampil *edge-to-edge* dengan pemisah garis neutral-200, 100% konsisten dengan Home feed.
+  3. Buka tab **Profil**: Pastikan daftar akun tetap berjarak rapi dan fungsional.

@@ -363,7 +363,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                     type="button"
                     whileTap={{ scale: 0.9 }}
                     onClick={handleHeroLikeToggle}
-                    className="flex items-center justify-center gap-1.5 px-2 py-1 min-h-[30px] cursor-pointer select-none group"
+                    className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer select-none group active:bg-neutral-100 rounded-full transition-colors"
                     aria-label={`Sukai komentar. ${heroLikesCount} suka`}
                   >
                     <motion.div
@@ -371,7 +371,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                       transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
                     >
                       <Heart
-                        className={`w-4 h-4 stroke-[1.8] transition-colors duration-200 ${
+                        className={`w-[19px] h-[19px] stroke-[1.85] transition-colors duration-200 ${
                           isHeroLiked ? 'fill-rose-500 text-rose-500 stroke-rose-500' : 'text-slate-700'
                         }`}
                       />
@@ -382,7 +382,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                         initial={{ opacity: 0.6, y: -2 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.15 }}
-                        className={`font-medium text-[13px] tabular-nums tracking-tight transition-colors duration-200 ${
+                        className={`font-medium text-[13.5px] tabular-nums tracking-tight transition-colors duration-200 ${
                           isHeroLiked ? 'text-rose-600 font-bold' : 'text-slate-700'
                         }`}
                       >
@@ -402,17 +402,17 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                     onClick={() => {
                       handleReplyToUser(activeComment.user.username || activeComment.user.name, activeComment.id);
                     }}
-                    className="flex items-center justify-center gap-1.5 px-2 py-1 min-h-[30px] cursor-pointer transition-colors text-slate-700 group select-none"
+                    className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer transition-colors text-slate-700 group select-none active:bg-neutral-100 rounded-full"
                     aria-label="Balas komentar"
                   >
                     <motion.div
                       whileTap={{ scale: [1, 0.85, 1.2, 0.95, 1], y: [0, -2, 0] }}
                       transition={{ duration: 0.25 }}
                     >
-                      <SmoothCommentIcon className="w-4 h-4 stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
+                      <SmoothCommentIcon className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
                     </motion.div>
                     {repliesList.length > 0 && (
-                      <span className="font-medium text-[13px] text-slate-700 tabular-nums tracking-tight">{repliesList.length}</span>
+                      <span className="font-medium text-[13.5px] text-slate-700 tabular-nums tracking-tight">{repliesList.length}</span>
                     )}
                   </motion.button>
                 </div>
@@ -424,14 +424,14 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                   <motion.button
                     type="button"
                     whileTap={{ scale: 0.9 }}
-                    className="flex items-center justify-center gap-1.5 px-2 py-1 min-h-[30px] cursor-pointer transition-colors select-none group"
+                    className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer transition-colors select-none group active:bg-neutral-100 rounded-full"
                     aria-label="Post ulang komentar"
                   >
                     <motion.div
                       whileTap={{ rotate: [0, 180], scale: [1, 1.3, 0.9, 1.05, 1] }}
                       transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
                     >
-                      <Repeat2 className="w-4 h-4 stroke-[1.8] text-slate-700 group-hover:text-emerald-500 transition-colors duration-200" />
+                      <Repeat2 className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-emerald-500 transition-colors duration-200" />
                     </motion.div>
                   </motion.button>
                 </div>
@@ -443,7 +443,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                   <motion.button
                     type="button"
                     whileTap={{ scale: 0.9 }}
-                    className="flex items-center justify-center p-1.5 cursor-pointer transition-colors text-slate-700 group select-none"
+                    className="flex items-center justify-center p-2 min-h-[36px] min-w-[36px] cursor-pointer transition-colors text-slate-700 group select-none active:bg-neutral-100 rounded-full"
                     aria-label="Bagikan komentar"
                     title="Bagikan / Kirim"
                   >
@@ -451,7 +451,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                       whileTap={{ x: [0, 4, -1, 0], y: [0, -4, 1, 0], scale: [1, 1.2, 1] }}
                       transition={{ duration: 0.35, ease: "easeInOut" }}
                     >
-                      <Send className="w-4 h-4 stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
+                      <Send className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
                     </motion.div>
                   </motion.button>
                 </div>

@@ -87,7 +87,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       onClick={(e) => e.stopPropagation()}
-      className="flex items-center text-slate-700 font-normal pt-1 -ml-1.5 text-[13px] select-none"
+      className="flex items-center gap-1.5 text-slate-700 font-normal pt-1 -ml-1 text-[13px] select-none"
     >
       {/* 1. Suka (Like) Slot */}
       <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer">
@@ -99,7 +99,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
               e.stopPropagation();
               onLike?.();
             }}
-            className="flex items-center justify-center gap-1 px-1.5 py-1 min-h-[28px] cursor-pointer select-none group"
+            className="flex items-center justify-center gap-1.5 px-2 py-1 min-h-[34px] min-w-[34px] cursor-pointer select-none group active:bg-neutral-100 rounded-full transition-colors"
             aria-label={`Sukai komentar. ${count} suka`}
           >
             <motion.div
@@ -107,7 +107,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
               transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
             >
               <Heart
-                className={`w-3.5 h-3.5 stroke-[1.8] transition-colors duration-200 ${
+                className={`w-[17.5px] h-[17.5px] stroke-[1.8] transition-colors duration-200 ${
                   liked ? 'fill-rose-500 text-rose-500 stroke-rose-500' : 'text-slate-700'
                 }`}
               />
@@ -118,7 +118,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 initial={{ opacity: 0.6, y: -2 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.15 }}
-                className={`font-medium text-[12px] tabular-nums tracking-tight transition-colors duration-200 ${
+                className={`font-medium text-[12.5px] tabular-nums tracking-tight transition-colors duration-200 ${
                   liked ? 'text-rose-600 font-bold' : 'text-slate-700'
                 }`}
               >
@@ -139,14 +139,14 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
               e.stopPropagation();
               onReply?.();
             }}
-            className="flex items-center justify-center gap-1 px-1.5 py-1 min-h-[28px] cursor-pointer transition-colors text-slate-700 group select-none"
+            className="flex items-center justify-center gap-1.5 px-2 py-1 min-h-[34px] min-w-[34px] cursor-pointer transition-colors text-slate-700 group select-none active:bg-neutral-100 rounded-full"
             aria-label="Balas komentar"
           >
             <motion.div
               whileTap={{ scale: [1, 0.85, 1.2, 0.95, 1], y: [0, -2, 0] }}
               transition={{ duration: 0.25 }}
             >
-              <SmoothCommentIcon className="w-3.5 h-3.5 stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
+              <SmoothCommentIcon className="w-[17.5px] h-[17.5px] stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
             </motion.div>
           </motion.button>
         </div>
@@ -159,14 +159,14 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
             type="button"
             whileTap={{ scale: 0.9 }}
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center justify-center gap-1 px-1.5 py-1 min-h-[28px] cursor-pointer transition-colors select-none group"
+            className="flex items-center justify-center gap-1.5 px-2 py-1 min-h-[34px] min-w-[34px] cursor-pointer transition-colors select-none group active:bg-neutral-100 rounded-full"
             aria-label="Post ulang komentar"
           >
             <motion.div
               whileTap={{ rotate: [0, 180], scale: [1, 1.3, 0.9, 1.05, 1] }}
               transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
             >
-              <Repeat2 className="w-3.5 h-3.5 stroke-[1.8] text-slate-700 group-hover:text-emerald-500 transition-colors duration-200" />
+              <Repeat2 className="w-[17.5px] h-[17.5px] stroke-[1.8] text-slate-700 group-hover:text-emerald-500 transition-colors duration-200" />
             </motion.div>
           </motion.button>
         </div>
@@ -179,7 +179,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
             type="button"
             whileTap={{ scale: 0.9 }}
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center justify-center p-1.5 cursor-pointer transition-colors text-slate-700 group select-none"
+            className="flex items-center justify-center p-1.5 min-h-[34px] min-w-[34px] cursor-pointer transition-colors text-slate-700 group select-none active:bg-neutral-100 rounded-full"
             aria-label="Bagikan komentar"
             title="Bagikan / Kirim"
           >
@@ -187,7 +187,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
               whileTap={{ x: [0, 4, -1, 0], y: [0, -4, 1, 0], scale: [1, 1.2, 1] }}
               transition={{ duration: 0.35, ease: "easeInOut" }}
             >
-              <Send className="w-3.5 h-3.5 stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
+              <Send className="w-[17.5px] h-[17.5px] stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
             </motion.div>
           </motion.button>
         </div>

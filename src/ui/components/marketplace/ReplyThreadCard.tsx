@@ -317,20 +317,20 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
           {renderParentImages()}
 
           {/* Parent Action Bar (Identical layout and icons as Home Feed) */}
-          <div className="flex items-center gap-1.5 -ml-1 pt-1 text-slate-700">
+          <div className="flex items-center gap-2 -ml-1 pt-1 text-slate-700">
             {/* 1. Like Button */}
             <motion.button
               type="button"
               whileTap={{ scale: 0.9 }}
               onClick={handleParentLike}
-              className="flex items-center gap-1.5 px-2 py-1 min-h-[30px] cursor-pointer select-none group"
+              className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer select-none group active:bg-neutral-100 rounded-full transition-colors"
             >
               <motion.div
                 animate={parentLiked ? { scale: [1, 1.45, 0.88, 1.15, 1], rotate: [0, -10, 10, -4, 0] } : { scale: 1, rotate: 0 }}
                 transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
               >
                 <Heart
-                  className={`w-4 h-4 stroke-[1.8] transition-colors duration-200 ${
+                  className={`w-[19px] h-[19px] stroke-[1.85] transition-colors duration-200 ${
                     parentLiked ? 'fill-rose-500 text-rose-500 stroke-rose-500' : 'text-slate-700'
                   }`}
                 />
@@ -341,7 +341,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
                   initial={{ opacity: 0.6, y: -2 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.15 }}
-                  className={`font-medium text-[13px] tabular-nums tracking-tight transition-colors duration-200 ${
+                  className={`font-medium text-[13.5px] tabular-nums tracking-tight transition-colors duration-200 ${
                     parentLiked ? 'text-rose-600 font-bold' : 'text-slate-700'
                   }`}
                 >
@@ -355,16 +355,16 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
               type="button"
               whileTap={{ scale: 0.9 }}
               onClick={() => onPostClick?.(parentPost)}
-              className="flex items-center gap-1.5 px-2 py-1 min-h-[30px] cursor-pointer text-slate-700 group select-none"
+              className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer text-slate-700 group select-none active:bg-neutral-100 rounded-full"
             >
               <motion.div
                 whileTap={{ scale: [1, 0.85, 1.2, 0.95, 1], y: [0, -2, 0] }}
                 transition={{ duration: 0.25 }}
               >
-                <SmoothCommentIcon className="w-4 h-4 stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
+                <SmoothCommentIcon className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
               </motion.div>
               {parentPost.commentsCount > 0 && (
-                <span className="font-medium text-[13px] text-slate-700 tabular-nums tracking-tight">{parentPost.commentsCount}</span>
+                <span className="font-medium text-[13.5px] text-slate-700 tabular-nums tracking-tight">{parentPost.commentsCount}</span>
               )}
             </motion.button>
 
@@ -373,14 +373,14 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
               type="button"
               whileTap={{ scale: 0.9 }}
               onClick={handleParentRepost}
-              className="flex items-center gap-1.5 px-2 py-1 min-h-[30px] cursor-pointer select-none group"
+              className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer select-none group active:bg-neutral-100 rounded-full"
             >
               <motion.div
                 animate={parentReposted ? { rotate: [0, 180], scale: [1, 1.3, 0.9, 1.05, 1] } : { rotate: 0, scale: 1 }}
                 transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
               >
                 <Repeat2
-                  className={`w-4 h-4 stroke-[1.8] transition-colors duration-200 ${
+                  className={`w-[19px] h-[19px] stroke-[1.85] transition-colors duration-200 ${
                     parentReposted ? 'text-emerald-500 stroke-emerald-500' : 'text-slate-700'
                   }`}
                 />
@@ -391,7 +391,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
                   initial={{ opacity: 0.6, y: -2 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.15 }}
-                  className={`font-medium text-[13px] tabular-nums tracking-tight transition-colors duration-200 ${
+                  className={`font-medium text-[13.5px] tabular-nums tracking-tight transition-colors duration-200 ${
                     parentReposted ? 'text-emerald-600 font-bold' : 'text-slate-700'
                   }`}
                 >
@@ -405,14 +405,14 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
               type="button"
               whileTap={{ scale: 0.9 }}
               onClick={(e) => handleShare(e, `Utas dari ${parentPost.seller.name}`, parentPost.caption)}
-              className="flex items-center justify-center p-1.5 cursor-pointer text-slate-700 group select-none"
+              className="flex items-center justify-center p-2 min-h-[36px] min-w-[36px] cursor-pointer text-slate-700 group select-none active:bg-neutral-100 rounded-full"
               aria-label="Bagikan postingan"
             >
               <motion.div
                 whileTap={{ x: [0, 4, -1, 0], y: [0, -4, 1, 0], scale: [1, 1.2, 1] }}
                 transition={{ duration: 0.3 }}
               >
-                <Send className="w-4 h-4 stroke-[1.8] text-slate-700 group-hover:text-slate-900 transition-colors duration-200" />
+                <Send className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-slate-900 transition-colors duration-200" />
               </motion.div>
             </motion.button>
 
@@ -496,14 +496,14 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
               type="button"
               whileTap={{ scale: 0.9 }}
               onClick={handleReplyLike}
-              className="flex items-center gap-1.5 px-2 py-1 min-h-[30px] cursor-pointer select-none group"
+              className="flex items-center justify-center gap-1.5 px-2 py-1 min-h-[34px] min-w-[34px] cursor-pointer select-none group active:bg-neutral-100 rounded-full transition-colors"
             >
               <motion.div
                 animate={replyLiked ? { scale: [1, 1.45, 0.88, 1.15, 1], rotate: [0, -10, 10, -4, 0] } : { scale: 1, rotate: 0 }}
                 transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
               >
                 <Heart
-                  className={`w-4 h-4 stroke-[1.8] transition-colors duration-200 ${
+                  className={`w-[17.5px] h-[17.5px] stroke-[1.8] transition-colors duration-200 ${
                     replyLiked ? 'fill-rose-500 text-rose-500 stroke-rose-500' : 'text-slate-700'
                   }`}
                 />
@@ -514,7 +514,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
                   initial={{ opacity: 0.6, y: -2 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.15 }}
-                  className={`font-medium text-[13px] tabular-nums tracking-tight transition-colors duration-200 ${
+                  className={`font-medium text-[12.5px] tabular-nums tracking-tight transition-colors duration-200 ${
                     replyLiked ? 'text-rose-600 font-bold' : 'text-slate-700'
                   }`}
                 >
@@ -528,13 +528,13 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
               type="button"
               whileTap={{ scale: 0.9 }}
               onClick={() => onPostClick?.(parentPost)}
-              className="flex items-center gap-1.5 px-2 py-1 min-h-[30px] cursor-pointer text-slate-700 group select-none"
+              className="flex items-center justify-center gap-1.5 px-2 py-1 min-h-[34px] min-w-[34px] cursor-pointer text-slate-700 group select-none active:bg-neutral-100 rounded-full"
             >
               <motion.div
                 whileTap={{ scale: [1, 0.85, 1.2, 0.95, 1], y: [0, -2, 0] }}
                 transition={{ duration: 0.25 }}
               >
-                <SmoothCommentIcon className="w-4 h-4 stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
+                <SmoothCommentIcon className="w-[17.5px] h-[17.5px] stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
               </motion.div>
             </motion.button>
 
@@ -543,14 +543,14 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
               type="button"
               whileTap={{ scale: 0.9 }}
               onClick={handleReplyRepost}
-              className="flex items-center gap-1.5 px-2 py-1 min-h-[30px] cursor-pointer select-none group"
+              className="flex items-center justify-center gap-1.5 px-2 py-1 min-h-[34px] min-w-[34px] cursor-pointer select-none group active:bg-neutral-100 rounded-full"
             >
               <motion.div
                 animate={replyReposted ? { rotate: [0, 180], scale: [1, 1.3, 0.9, 1.05, 1] } : { rotate: 0, scale: 1 }}
                 transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
               >
                 <Repeat2
-                  className={`w-4 h-4 stroke-[1.8] transition-colors duration-200 ${
+                  className={`w-[17.5px] h-[17.5px] stroke-[1.8] transition-colors duration-200 ${
                     replyReposted ? 'text-emerald-500 stroke-emerald-500' : 'text-slate-700'
                   }`}
                 />
@@ -561,7 +561,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
                   initial={{ opacity: 0.6, y: -2 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.15 }}
-                  className={`font-medium text-[13px] tabular-nums tracking-tight transition-colors duration-200 ${
+                  className={`font-medium text-[12.5px] tabular-nums tracking-tight transition-colors duration-200 ${
                     replyReposted ? 'text-emerald-600 font-bold' : 'text-slate-700'
                   }`}
                 >
@@ -575,13 +575,13 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
               type="button"
               whileTap={{ scale: 0.9 }}
               onClick={(e) => handleShare(e, `Balasan dari ${reply.user.name}`, reply.content)}
-              className="flex items-center justify-center p-1.5 cursor-pointer text-slate-700 group select-none"
+              className="flex items-center justify-center p-1.5 min-h-[34px] min-w-[34px] cursor-pointer text-slate-700 group select-none active:bg-neutral-100 rounded-full"
             >
               <motion.div
                 whileTap={{ x: [0, 4, -1, 0], y: [0, -4, 1, 0], scale: [1, 1.2, 1] }}
                 transition={{ duration: 0.3 }}
               >
-                <Send className="w-4 h-4 stroke-[1.8] text-slate-700 group-hover:text-slate-900 transition-colors duration-200" />
+                <Send className="w-[17.5px] h-[17.5px] stroke-[1.8] text-slate-700 group-hover:text-slate-900 transition-colors duration-200" />
               </motion.div>
             </motion.button>
           </div>

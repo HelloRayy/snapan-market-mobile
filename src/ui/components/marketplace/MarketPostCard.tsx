@@ -231,7 +231,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
       className="pt-1 flex items-center justify-between text-slate-700 font-normal -ml-1.5 select-none max-w-full"
     >
       {/* Left Action Buttons Container (Threads Nested Flex Layout) */}
-      <div className="flex items-center gap-1.5 text-slate-700 text-sm font-normal cursor-pointer select-none">
+      <div className="flex items-center gap-2 text-slate-700 text-sm font-normal cursor-pointer select-none">
         {/* 1. Suka (Like) Slot */}
         <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer">
           <div className="flex items-stretch font-normal cursor-pointer">
@@ -239,7 +239,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               type="button"
               whileTap={{ scale: 0.9 }}
               onClick={handleLikeToggle}
-              className="flex items-center justify-center gap-1.5 px-2 py-1 min-h-[30px] cursor-pointer select-none group"
+              className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer select-none group active:bg-neutral-100 rounded-full transition-colors"
               aria-label={`Sukai postingan. ${likesCount} suka`}
             >
               <motion.div
@@ -247,7 +247,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
               >
                 <Heart
-                  className={`w-4 h-4 stroke-[1.8] transition-colors duration-200 ${
+                  className={`w-[19px] h-[19px] stroke-[1.85] transition-colors duration-200 ${
                     isLiked ? 'fill-rose-500 text-rose-500 stroke-rose-500' : 'text-slate-700'
                   }`}
                 />
@@ -258,7 +258,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                   initial={{ opacity: 0.6, y: -2 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.15 }}
-                  className={`font-medium text-[13px] tabular-nums tracking-tight transition-colors duration-200 ${
+                  className={`font-medium text-[13.5px] tabular-nums tracking-tight transition-colors duration-200 ${
                     isLiked ? 'text-rose-600 font-bold' : 'text-slate-700'
                   }`}
                 >
@@ -279,17 +279,17 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 e.stopPropagation();
                 onPostClick?.(item);
               }}
-              className="flex items-center justify-center gap-1.5 px-2 py-1 min-h-[30px] cursor-pointer transition-colors text-slate-700 group select-none"
+              className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer transition-colors text-slate-700 group select-none active:bg-neutral-100 rounded-full"
               aria-label={`Komentar postingan. ${item.commentsCount} komentar`}
             >
               <motion.div
                 whileTap={{ scale: [1, 0.85, 1.2, 0.95, 1], y: [0, -2, 0] }}
                 transition={{ duration: 0.25 }}
               >
-                <SmoothCommentIcon className="w-4 h-4 stroke-[1.8] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
+                <SmoothCommentIcon className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
               </motion.div>
               {item.commentsCount > 0 && (
-                <span className="font-medium text-[13px] text-slate-700 tabular-nums tracking-tight">{item.commentsCount}</span>
+                <span className="font-medium text-[13.5px] text-slate-700 tabular-nums tracking-tight">{item.commentsCount}</span>
               )}
             </motion.button>
           </div>
@@ -302,7 +302,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               type="button"
               whileTap={{ scale: 0.9 }}
               onClick={handleRepostToggle}
-              className="flex items-center justify-center gap-1.5 px-2 py-1 min-h-[30px] cursor-pointer transition-colors select-none group"
+              className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer transition-colors select-none group active:bg-neutral-100 rounded-full"
               aria-label={`Post ulang postingan. ${repostsCount} posting ulang`}
             >
               <motion.div
@@ -310,7 +310,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
               >
                 <Repeat2
-                  className={`w-4 h-4 stroke-[1.8] transition-colors duration-200 ${
+                  className={`w-[19px] h-[19px] stroke-[1.85] transition-colors duration-200 ${
                     isReposted ? 'text-emerald-500 stroke-emerald-500' : 'text-slate-700'
                   }`}
                 />
@@ -321,7 +321,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                   initial={{ opacity: 0.6, y: -2 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.15 }}
-                  className={`font-medium text-[13px] tabular-nums tracking-tight transition-colors duration-200 ${
+                  className={`font-medium text-[13.5px] tabular-nums tracking-tight transition-colors duration-200 ${
                     isReposted ? 'text-emerald-600 font-bold' : 'text-slate-700'
                   }`}
                 >
@@ -339,7 +339,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               type="button"
               whileTap={{ scale: 0.9 }}
               onClick={handleShare}
-              className="flex items-center justify-center p-1.5 cursor-pointer transition-colors text-slate-700 group select-none"
+              className="flex items-center justify-center p-2 min-h-[36px] min-w-[36px] cursor-pointer transition-colors text-slate-700 group select-none active:bg-neutral-100 rounded-full"
               aria-label="Bagikan postingan"
               title="Bagikan / Kirim"
             >
@@ -347,7 +347,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 whileTap={{ x: [0, 4, -1, 0], y: [0, -4, 1, 0], scale: [1, 1.2, 1] }}
                 transition={{ duration: 0.3 }}
               >
-                <Send className="w-4 h-4 stroke-[1.8] text-slate-700 group-hover:text-slate-900 transition-colors duration-200" />
+                <Send className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-slate-900 transition-colors duration-200" />
               </motion.div>
             </motion.button>
           </div>

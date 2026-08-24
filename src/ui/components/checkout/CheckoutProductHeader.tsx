@@ -33,17 +33,17 @@ export const CheckoutProductHeader: React.FC<CheckoutProductHeaderProps> = ({ po
 
   return (
     <section className="space-y-2.5 select-none font-gt-standard">
-      {/* 1. Category Pill (Left) & Rating Pill (Right) - Pixel-perfect reference match */}
+      {/* 1. Category Pill (Left) & Rating Pill (Right) - Softer Elegant Match */}
       <div className="flex items-center justify-between gap-2">
         {/* Category Pill */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#eceff3] text-slate-800 text-[12.5px] font-bold tracking-tight">
-          <Tag className="w-3.5 h-3.5 fill-slate-800 text-slate-800" />
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#edf0f3] text-slate-700 text-[12px] font-semibold tracking-tight">
+          <Tag className="w-3 h-3 text-slate-600 stroke-[2.2]" />
           <span>{getCategoryLabel()}</span>
         </div>
 
         {/* Rating Pill */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#eceff3] text-slate-800 text-[12.5px] font-bold">
-          <Star className="w-3.5 h-3.5 fill-slate-800 text-slate-800 stroke-none" />
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#edf0f3] text-slate-700 text-[12px] font-semibold">
+          <Star className="w-3 h-3 fill-slate-700 text-slate-700 stroke-none" />
           <span>4.5</span>
         </div>
       </div>

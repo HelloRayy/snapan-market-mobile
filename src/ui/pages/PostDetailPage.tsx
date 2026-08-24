@@ -7,6 +7,7 @@ import { CommentInputBar } from '../components/marketplace/CommentInputBar';
 import { StickyBuyBar } from '../components/marketplace/StickyBuyBar';
 import { BuyBottomSheet } from '../components/marketplace/BuyBottomSheet';
 import { CommentDetailPage } from '../components/marketplace/CommentDetailPage';
+import { CheckoutPage } from './CheckoutPage';
 import { useAuth } from '../hooks/useAuth';
 import { triggerHaptic } from '@/utils/haptics';
 
@@ -30,6 +31,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   const [draftText, setDraftText] = useState('');
   const [focusedComment, setFocusedComment] = useState<PostComment | null>(null);
   const [isBuySheetOpen, setIsBuySheetOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isCommentingActive, setIsCommentingActive] = useState(false);
 
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -135,7 +137,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
 
   const handleBuyClick = () => {
     triggerHaptic('medium');
-    setIsBuySheetOpen(true);
+    setIsCheckoutOpen(true);
     onAddToCart?.(post);
   };
 
@@ -154,6 +156,11 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         isAuthor: (profile?.id || 'current-user') === post.seller.id,
       }
     : null;
+
+  // Single Page Mode: CheckoutPage
+  if (isCheckoutOpen) {
+    return <CheckoutPage post={post} onBack={() => setIsCheckoutOpen(false)} />;
+  }
 
   return (
     <div

@@ -29,12 +29,14 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ post, onBack }) => {
         initialLiked={false}
       />
 
-      {/* 2. SHEET CONTAINER (Latar Belakang Form & Konten) */}
-      <div className="bg-[#f8f9fa] rounded-t-[32px] border-t border-neutral-200/70 p-5 pt-5 -mt-3 relative z-10 shadow-xs space-y-5">
-        {/* Product Info Header (Category, Rating, Title, Location) */}
-        <CheckoutProductHeader post={post} />
+      {/* 2. FORM CONTAINER (Dengan gap bersih dan sudut membulat elegan) */}
+      <div className="px-3.5 pb-8 -mt-1">
+        <div className="bg-[#f8f9fa] rounded-[28px] border border-neutral-200/60 p-5 shadow-xs space-y-5">
+          {/* Product Info Header (Category, Rating, Title, Location) */}
+          <CheckoutProductHeader post={post} />
 
-        {/* Step-step berikutnya akan di-slicing di bawah ini */}
+          {/* Step-step berikutnya akan di-slicing di bawah ini */}
+        </div>
       </div>
     </div>
   );

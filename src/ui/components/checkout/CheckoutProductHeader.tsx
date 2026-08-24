@@ -33,19 +33,18 @@ export const CheckoutProductHeader: React.FC<CheckoutProductHeaderProps> = ({ po
 
   return (
     <section className="space-y-2.5 select-none font-gt-standard">
-      {/* 1. Category Pill (Left) & Rating Pill (Right) */}
+      {/* 1. Category Pill (Left) & Rating Pill (Right) - Pixel-perfect reference match */}
       <div className="flex items-center justify-between gap-2">
         {/* Category Pill */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100/90 text-slate-700 text-[12px] font-medium tracking-tight border border-neutral-200/80 shadow-2xs">
-          <Tag className="w-3.5 h-3.5 text-slate-600 stroke-[2]" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#eceff3] text-slate-800 text-[12.5px] font-bold tracking-tight">
+          <Tag className="w-3.5 h-3.5 fill-slate-800 text-slate-800" />
           <span>{getCategoryLabel()}</span>
         </div>
 
         {/* Rating Pill */}
-        <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-neutral-100/90 text-slate-700 text-[12px] font-medium border border-neutral-200/80 shadow-2xs">
-          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400 stroke-none" />
-          <span className="font-semibold text-slate-800">4.9</span>
-          <span className="text-neutral-400 text-[11px] font-normal">(18)</span>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#eceff3] text-slate-800 text-[12.5px] font-bold">
+          <Star className="w-3.5 h-3.5 fill-slate-800 text-slate-800 stroke-none" />
+          <span>4.5</span>
         </div>
       </div>
 

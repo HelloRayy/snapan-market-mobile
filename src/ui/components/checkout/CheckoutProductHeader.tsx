@@ -32,32 +32,33 @@ export const CheckoutProductHeader: React.FC<CheckoutProductHeaderProps> = ({ po
   };
 
   return (
-    <section className="space-y-3 select-none font-gt-standard">
+    <section className="space-y-2.5 select-none font-gt-standard">
       {/* 1. Category Pill (Left) & Rating Pill (Right) */}
       <div className="flex items-center justify-between gap-2">
         {/* Category Pill */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neutral-200/80 text-slate-900 text-[12.5px] font-semibold tracking-tight shadow-2xs border border-neutral-300/60">
-          <Tag className="w-3.5 h-3.5 text-slate-800 stroke-[2.2]" />
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100/90 text-slate-700 text-[12px] font-medium tracking-tight border border-neutral-200/80 shadow-2xs">
+          <Tag className="w-3.5 h-3.5 text-slate-600 stroke-[2]" />
           <span>{getCategoryLabel()}</span>
         </div>
 
         {/* Rating Pill */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neutral-200/80 text-slate-900 text-[12.5px] font-bold shadow-2xs border border-neutral-300/60">
-          <Star className="w-3.5 h-3.5 fill-slate-900 text-slate-900" />
-          <span>4.9</span>
+        <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-neutral-100/90 text-slate-700 text-[12px] font-medium border border-neutral-200/80 shadow-2xs">
+          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400 stroke-none" />
+          <span className="font-semibold text-slate-800">4.9</span>
+          <span className="text-neutral-400 text-[11px] font-normal">(18)</span>
         </div>
       </div>
 
       {/* 2. Main Product Title */}
-      <h1 className="font-bold text-[20px] sm:text-[22px] text-slate-900 leading-snug tracking-tight pt-0.5">
+      <h1 className="font-bold text-[19px] sm:text-[20px] text-slate-900 leading-snug tracking-tight pt-0.5">
         {titleText}
       </h1>
 
       {/* 3. Location & Seller Class Info */}
-      <div className="flex items-center gap-1.5 text-[13.5px] text-slate-600 font-medium">
-        <MapPin className="w-4 h-4 text-slate-700 shrink-0 stroke-[2.2]" />
+      <div className="flex items-center gap-1.5 text-[13px] text-neutral-500 font-normal">
+        <MapPin className="w-3.5 h-3.5 text-neutral-400 shrink-0 stroke-[2]" />
         <span>
-          SMKN 8 Jakarta · <strong className="text-slate-800 font-semibold">{post.seller.classGroup || 'XII PPLG 1'}</strong>
+          SMKN 8 Jakarta · <span className="text-slate-700 font-medium">{post.seller.classGroup || 'XII PPLG 1'}</span>
         </span>
       </div>
     </section>

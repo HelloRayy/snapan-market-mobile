@@ -33,17 +33,17 @@ export const CheckoutProductHeader: React.FC<CheckoutProductHeaderProps> = ({ po
 
   return (
     <section className="space-y-2.5 select-none font-gt-standard">
-      {/* 1. Category Pill (Left) & Rating Pill (Right) - Softer Elegant Match */}
+      {/* 1. Category Pill (Left) & Rating Pill (Right) - Branded Fresh Accents */}
       <div className="flex items-center justify-between gap-2">
-        {/* Category Pill */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#edf0f3] text-slate-700 text-[12px] font-semibold tracking-tight">
-          <Tag className="w-3 h-3 text-slate-600 stroke-[2.2]" />
+        {/* Category Pill with Primary Blue Accent */}
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-[#1d64ec] text-[12px] font-bold tracking-tight border border-blue-100/80 shadow-2xs">
+          <Tag className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2]" />
           <span>{getCategoryLabel()}</span>
         </div>
 
-        {/* Rating Pill */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#edf0f3] text-slate-700 text-[12px] font-semibold">
-          <Star className="w-3 h-3 fill-slate-700 text-slate-700 stroke-none" />
+        {/* Rating Pill with Warm Amber Accent */}
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-900 text-[12px] font-semibold border border-amber-200/60 shadow-2xs">
+          <Star className="w-3 h-3 fill-amber-400 text-amber-400 stroke-none" />
           <span>4.5</span>
         </div>
       </div>
@@ -53,11 +53,11 @@ export const CheckoutProductHeader: React.FC<CheckoutProductHeaderProps> = ({ po
         {titleText}
       </h1>
 
-      {/* 3. Location & Seller Class Info */}
+      {/* 3. Location & Seller Class Info with Blue Location Pin */}
       <div className="flex items-center gap-1.5 text-[13px] text-neutral-500 font-normal">
-        <MapPin className="w-3.5 h-3.5 text-neutral-400 shrink-0 stroke-[2]" />
+        <MapPin className="w-3.5 h-3.5 text-[#1d64ec] shrink-0 stroke-[2.2]" />
         <span>
-          SMKN 8 Jakarta · <span className="text-slate-700 font-medium">{post.seller.classGroup || 'XII PPLG 1'}</span>
+          SMKN 8 Jakarta · <span className="text-slate-800 font-semibold">{post.seller.classGroup || 'XII PPLG 1'}</span>
         </span>
       </div>
     </section>

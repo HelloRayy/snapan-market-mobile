@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { CheckoutHeroImage } from '../components/checkout/CheckoutHeroImage';
+import { CheckoutProductHeader } from '../components/checkout/CheckoutProductHeader';
 
 interface CheckoutPageProps {
   post: MarketPostItem;
@@ -28,9 +29,12 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ post, onBack }) => {
         initialLiked={false}
       />
 
-      {/* Placeholder container for the next slicing steps */}
-      <div className="px-4 py-2 space-y-4">
-        {/* Step berikutnya akan di-slicing di sini */}
+      {/* 2. SHEET CONTAINER (Latar Belakang Form & Konten) */}
+      <div className="bg-[#f8f9fa] rounded-t-[32px] border-t border-neutral-200/70 p-5 pt-5 -mt-3 relative z-10 shadow-xs space-y-5">
+        {/* Product Info Header (Category, Rating, Title, Location) */}
+        <CheckoutProductHeader post={post} />
+
+        {/* Step-step berikutnya akan di-slicing di bawah ini */}
       </div>
     </div>
   );

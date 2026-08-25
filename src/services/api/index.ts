@@ -8,4 +8,8 @@ export * from './ordersService';
 export * from './productsService';
 export * from './bookmarkService';
 export * from './notificationService';
-
+export * from './profileService';
+export * from './reviewService';
+export * from './repostService';
+export * from './meetingPointService';
+export * from './orderNotificationService';

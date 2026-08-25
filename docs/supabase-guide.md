@@ -192,6 +192,42 @@ create table if not exists public.notifications (
 
 
 -- ========================================================
+-- 9. TABEL USER FOLLOWS (Follow / Unfollow Antar Pengguna)
+-- ========================================================
+create table if not exists public.user_follows (
+  follower_id uuid references public.profiles(id) on delete cascade not null,
+  following_id uuid references public.profiles(id) on delete cascade not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  primary key (follower_id, following_id),
+  constraint cant_follow_self check (follower_id <> following_id)
+);
+
+
+-- ========================================================
+-- 10. TABEL REVIEWS (Ulasan & Rating Produk)
+-- ========================================================
+create table if not exists public.reviews (
+  id uuid default gen_random_uuid() primary key,
+  product_id uuid references public.market_posts(id) on delete cascade not null,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  rating integer not null check (rating >= 1 and rating <= 5),
+  comment text,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+
+-- ========================================================
+-- 11. TABEL POST REPOSTS (Repost / Bagikan Utas)
+-- ========================================================
+create table if not exists public.post_reposts (
+  post_id uuid references public.market_posts(id) on delete cascade not null,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  primary key (post_id, user_id)
+);
+
+
+-- ========================================================
 -- 🛡️ ROW LEVEL SECURITY (RLS) POLICIES
 -- ========================================================
 alter table public.profiles enable row level security;
@@ -202,6 +238,9 @@ alter table public.comment_likes enable row level security;
 alter table public.cart_items enable row level security;
 alter table public.post_bookmarks enable row level security;
 alter table public.notifications enable row level security;
+alter table public.user_follows enable row level security;
+alter table public.reviews enable row level security;
+alter table public.post_reposts enable row level security;
 
 -- Profiles
 create policy "Public profiles are viewable by everyone" on public.profiles for select using (true);
@@ -243,6 +282,20 @@ create policy "Users update own notifications" on public.notifications for updat
 create policy "Users delete own notifications" on public.notifications for delete using (auth.uid() = user_id);
 create policy "Authenticated users create notification" on public.notifications for insert with check (auth.role() = 'authenticated');
 
+-- User Follows
+create policy "Follows viewable by everyone" on public.user_follows for select using (true);
+create policy "Users can toggle follow" on public.user_follows for all using (auth.uid() = follower_id);
+
+-- Reviews
+create policy "Reviews viewable by everyone" on public.reviews for select using (true);
+create policy "Users can write review" on public.reviews for insert with check (auth.uid() = user_id);
+create policy "Users can update own review" on public.reviews for update using (auth.uid() = user_id);
+create policy "Users can delete own review" on public.reviews for delete using (auth.uid() = user_id);
+
+-- Post Reposts
+create policy "Reposts viewable by everyone" on public.post_reposts for select using (true);
+create policy "Users can toggle repost" on public.post_reposts for all using (auth.uid() = user_id);
+
 
 -- ========================================================
 -- ⚡ INDEXING PERFORMA PENCARIAN & FILTERING
@@ -251,4 +304,6 @@ create index if not exists idx_market_posts_category on public.market_posts(cate
 create index if not exists idx_market_posts_post_type on public.market_posts(post_type);
 create index if not exists idx_market_posts_price on public.market_posts(price);
 create index if not exists idx_market_posts_created_at on public.market_posts(created_at desc);
+create index if not exists idx_user_follows_following_id on public.user_follows(following_id);
+create index if not exists idx_reviews_product_id on public.reviews(product_id);
 ```

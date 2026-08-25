@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { Compass, ZoomIn, ZoomOut, Layers, Check, ArrowLeft } from 'lucide-react';
+import { Compass, ZoomIn, ZoomOut, Layers, Check, ArrowLeft, MapPin } from 'lucide-react';
 import { SCHOOL_FLOORS, RoomZone } from '@/data/mockSchoolMapData';
 import { triggerHaptic } from '@/utils/haptics';
 
@@ -39,12 +39,12 @@ export const Campus3DMap: React.FC<Campus3DMapProps> = ({
 
     // 1. Scene Setup
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf4f8fa);
+    scene.background = new THREE.Color(0xf2f6f9); // Soft atmospheric sky tone
     sceneRef.current = scene;
 
     // 2. Camera Setup (2.5D Isometric Perspective)
-    const camera = new THREE.PerspectiveCamera(40, width / height, 1, 3000);
-    camera.position.set(0, 480, 520);
+    const camera = new THREE.PerspectiveCamera(38, width / height, 1, 3000);
+    camera.position.set(-60, 490, 560);
     camera.lookAt(0, 0, 0);
     cameraRef.current = camera;
 
@@ -57,96 +57,150 @@ export const Campus3DMap: React.FC<Campus3DMapProps> = ({
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // 4. OrbitControls with Momentum Physics (Mappedin Style)
+    // 4. OrbitControls with Momentum Deceleration (Mappedin Physics)
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.dampingFactor = 0.06; // Kinetic smooth deceleration
+    controls.dampingFactor = 0.06;
     controls.screenSpacePanning = true;
-    controls.maxPolarAngle = Math.PI / 2.3; // Prevent going below ground
-    controls.minDistance = 150;
-    controls.maxDistance = 900;
+    controls.maxPolarAngle = Math.PI / 2.35; // Prevent under-ground camera
+    controls.minDistance = 180;
+    controls.maxDistance = 1000;
     controls.target.set(0, 0, 0);
     controlsRef.current = controls;
 
-    // 5. Lighting: Ambient + Directional Key Light with Soft Shadows
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+    // 5. Clean Architectural Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.88);
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.95);
-    dirLight.position.set(200, 450, 250);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.92);
+    dirLight.position.set(240, 520, 280);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 1024;
     dirLight.shadow.mapSize.height = 1024;
     dirLight.shadow.camera.near = 10;
-    dirLight.shadow.camera.far = 1000;
-    dirLight.shadow.camera.left = -400;
-    dirLight.shadow.camera.right = 400;
-    dirLight.shadow.camera.top = 400;
-    dirLight.shadow.camera.bottom = -400;
-    dirLight.shadow.bias = -0.001;
+    dirLight.shadow.camera.far = 1200;
+    dirLight.shadow.camera.left = -500;
+    dirLight.shadow.camera.right = 500;
+    dirLight.shadow.camera.top = 500;
+    dirLight.shadow.camera.bottom = -500;
+    dirLight.shadow.bias = -0.0008;
     scene.add(dirLight);
 
-    // 6. Ground Base Plane (Pale School Campus Yard)
-    const groundGeo = new THREE.PlaneGeometry(1200, 1000);
+    // Subtle Fill Light from Opposite Side for Contrast
+    const fillLight = new THREE.DirectionalLight(0xe8f0fe, 0.35);
+    fillLight.position.set(-200, 300, -200);
+    scene.add(fillLight);
+
+    // 6. Base Campus Ground & Surrounding Roads Environment
+    // A. Main Plot Base
+    const groundGeo = new THREE.PlaneGeometry(1600, 1400);
     const groundMat = new THREE.MeshStandardMaterial({
-      color: 0xeef3f6,
-      roughness: 0.9,
+      color: 0xebf1f5,
+      roughness: 0.95,
     });
     const ground = new THREE.Mesh(groundGeo, groundMat);
     ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -0.5;
+    ground.position.y = -0.6;
     ground.receiveShadow = true;
     scene.add(ground);
 
-    // Subtle Ground Grid
-    const grid = new THREE.GridHelper(1000, 25, 0xd8e2e8, 0xe2ebf0);
-    grid.position.y = 0.1;
-    scene.add(grid);
+    // B. Surrounding Roads (Jl. Pandanaran 2 - Vector Asphalt Road)
+    const roadGroup = new THREE.Group();
+    scene.add(roadGroup);
+
+    // Road 1: West Side (Front of Main Gate)
+    const roadWestGeo = new THREE.PlaneGeometry(100, 900);
+    const roadMat = new THREE.MeshStandardMaterial({ color: 0xdde4eb, roughness: 0.8 });
+    const roadWest = new THREE.Mesh(roadWestGeo, roadMat);
+    roadWest.rotation.x = -Math.PI / 2;
+    roadWest.position.set(-420, -0.4, 0);
+    roadGroup.add(roadWest);
+
+    // Road 2: North Side (Jl. Pandanaran Connector)
+    const roadNorthGeo = new THREE.PlaneGeometry(1200, 100);
+    const roadNorth = new THREE.Mesh(roadNorthGeo, roadMat);
+    roadNorth.rotation.x = -Math.PI / 2;
+    roadNorth.position.set(100, -0.4, -380);
+    roadGroup.add(roadNorth);
+
+    // Road Sidewalk Borders
+    const sidewalkMat = new THREE.MeshStandardMaterial({ color: 0xd2dbe3, roughness: 0.9 });
+    const sidewalkWest = new THREE.Mesh(new THREE.PlaneGeometry(16, 900), sidewalkMat);
+    sidewalkWest.rotation.x = -Math.PI / 2;
+    sidewalkWest.position.set(-362, -0.3, 0);
+    roadGroup.add(sidewalkWest);
+
+    // C. Central Courtyard / Lapangan Upacara & Olahraga
+    const courtGeo = new THREE.PlaneGeometry(280, 160);
+    const courtMat = new THREE.MeshStandardMaterial({
+      color: 0xd8e8de, // Soft vector green lawn / field
+      roughness: 0.85,
+    });
+    const court = new THREE.Mesh(courtGeo, courtMat);
+    court.rotation.x = -Math.PI / 2;
+    court.position.set(-40, -0.2, 80);
+    court.receiveShadow = true;
+    scene.add(court);
+
+    // Futsal/Basketball Court in Center of Lawn
+    const sportsFieldGeo = new THREE.PlaneGeometry(200, 110);
+    const sportsFieldMat = new THREE.MeshStandardMaterial({
+      color: 0xcfe0d5,
+      roughness: 0.8,
+    });
+    const sportsField = new THREE.Mesh(sportsFieldGeo, sportsFieldMat);
+    sportsField.rotation.x = -Math.PI / 2;
+    sportsField.position.set(-40, -0.15, 80);
+    scene.add(sportsField);
 
     // 7. Pulsing 3D Pin Marker Group
     const markerGroup = new THREE.Group();
     scene.add(markerGroup);
     markerGroupRef.current = markerGroup;
 
-    // Marker Pin Core Mesh
-    const pinGeo = new THREE.ConeGeometry(8, 20, 16);
+    // Pin Cone Top
+    const pinGeo = new THREE.ConeGeometry(9, 24, 16);
     pinGeo.rotateX(Math.PI);
     const pinMat = new THREE.MeshStandardMaterial({
       color: 0x3d38f5,
       emissive: 0x3d38f5,
-      emissiveIntensity: 0.4,
+      emissiveIntensity: 0.45,
       roughness: 0.2,
     });
     const pinMesh = new THREE.Mesh(pinGeo, pinMat);
-    pinMesh.position.y = 28;
+    pinMesh.position.y = 36;
     markerGroup.add(pinMesh);
 
-    // Marker Floating Ring
-    const ringGeo = new THREE.RingGeometry(8, 12, 24);
+    // Pin Floating Spherical Head
+    const pinHeadGeo = new THREE.SphereGeometry(7, 16, 16);
+    const pinHeadMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 });
+    const pinHead = new THREE.Mesh(pinHeadGeo, pinHeadMat);
+    pinHead.position.y = 48;
+    markerGroup.add(pinHead);
+
+    // Ground Radar Ripple Ring
+    const ringGeo = new THREE.RingGeometry(10, 15, 28);
     ringGeo.rotateX(-Math.PI / 2);
     const ringMat = new THREE.MeshBasicMaterial({
       color: 0x3d38f5,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.65,
     });
     const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-    ringMesh.position.y = 2;
+    ringMesh.position.y = 2.5;
     markerGroup.add(ringMesh);
     markerGroup.visible = false;
 
     // 8. Build 2.5D Extruded Building Geometry
     const buildFloorMeshes = () => {
-      // Clear previous meshes
       meshMapRef.current.forEach((mesh) => scene.remove(mesh));
       meshMapRef.current.clear();
 
-      // SVG scale & offset to center around (0,0) in 3D world
-      const scale = 0.85;
+      const scale = 0.88;
       const offsetX = 510;
       const offsetY = 400;
 
-      // Coordinate converter helper from SVG to 3D world (X, Z)
       const to3D = (svgX: number, svgY: number) => {
         return {
           x: (svgX - offsetX) * scale,
@@ -154,9 +208,7 @@ export const Campus3DMap: React.FC<Campus3DMapProps> = ({
         };
       };
 
-      // Create Extruded 3D Building Meshes
       floorData.rooms.forEach((room) => {
-        // Parse simple SVG Path coordinates
         const points = room.path
           .replace(/[MLZ]/g, ' ')
           .trim()
@@ -176,29 +228,49 @@ export const Campus3DMap: React.FC<Campus3DMapProps> = ({
           }
           shape.closePath();
 
+          const wallHeight = room.height || 30;
+          const isCentralAula = room.id === 'aula-limasan-tengah';
+
           const extrudeSettings = {
-            depth: 28, // Extrusion height for 2.5D walls
+            depth: wallHeight,
             bevelEnabled: true,
-            bevelSegments: 2,
+            bevelSegments: isCentralAula ? 3 : 2,
             steps: 1,
-            bevelSize: 1,
-            bevelThickness: 1.2,
+            bevelSize: isCentralAula ? 2.5 : 1.2,
+            bevelThickness: isCentralAula ? 2.8 : 1.4,
           };
 
           const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-          geo.rotateX(-Math.PI / 2); // Lay flat on ground
+          geo.rotateX(-Math.PI / 2);
 
           const isSelected = selectedRoom?.id === room.id;
+          
+          // Architectural Vector Colors: Warm stone off-white for body
           const mat = new THREE.MeshStandardMaterial({
-            color: isSelected ? 0x3d38f5 : 0xe4e2dc,
-            roughness: 0.55,
-            metalness: 0.1,
+            color: isSelected ? 0x3d38f5 : (isCentralAula ? 0xdfddd6 : 0xe8e6df),
+            roughness: 0.6,
+            metalness: 0.08,
           });
 
           const mesh = new THREE.Mesh(geo, mat);
           mesh.castShadow = true;
           mesh.receiveShadow = true;
           (mesh as any).userData = { room };
+
+          // Add tiered roof tier for Central Aula (Joglo/Limasan effect)
+          if (isCentralAula) {
+            const roofGeo = new THREE.ConeGeometry(55, 18, 4);
+            roofGeo.rotateY(Math.PI / 4);
+            const roofMat = new THREE.MeshStandardMaterial({
+              color: isSelected ? 0x312bd9 : 0xd2cfc6,
+              roughness: 0.5,
+            });
+            const roofMesh = new THREE.Mesh(roofGeo, roofMat);
+            const centerPt = to3D(room.pinPosition.x, room.pinPosition.y);
+            roofMesh.position.set(centerPt.x, wallHeight + 9, centerPt.z);
+            roofMesh.castShadow = true;
+            mesh.add(roofMesh);
+          }
 
           scene.add(mesh);
           meshMapRef.current.set(room.id, mesh);
@@ -216,10 +288,10 @@ export const Campus3DMap: React.FC<Campus3DMapProps> = ({
       animationFrameId = requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
 
-      // Pulse the 3D pin marker
       if (markerGroup.visible) {
-        ringMesh.scale.setScalar(1 + Math.sin(elapsedTime * 4) * 0.25);
-        pinMesh.position.y = 28 + Math.sin(elapsedTime * 3) * 3;
+        ringMesh.scale.setScalar(1 + Math.sin(elapsedTime * 4.5) * 0.28);
+        pinMesh.position.y = 36 + Math.sin(elapsedTime * 3.5) * 3.5;
+        pinHead.position.y = 48 + Math.sin(elapsedTime * 3.5) * 3.5;
       }
 
       controls.update();
@@ -238,45 +310,51 @@ export const Campus3DMap: React.FC<Campus3DMapProps> = ({
 
       raycasterRef.current.setFromCamera(mouseRef.current, camera);
       const meshes = Array.from(meshMapRef.current.values());
-      const intersects = raycasterRef.current.intersectObjects(meshes);
+      const intersects = raycasterRef.current.intersectObjects(meshes, true);
 
       if (intersects.length > 0) {
-        const hitMesh = intersects[0].object as THREE.Mesh;
-        const room: RoomZone = (hitMesh as any).userData?.room;
+        // Find top parent mesh with room userData
+        let hitObject: THREE.Object3D | null = intersects[0].object;
+        while (hitObject && !(hitObject as any).userData?.room && hitObject.parent) {
+          hitObject = hitObject.parent;
+        }
+
+        const room: RoomZone = (hitObject as any)?.userData?.room;
         if (room) {
           triggerHaptic('light');
           setSelectedRoom(room);
 
-          // Update colors: Reset all, highlight clicked
+          // Update colors: Reset all, highlight clicked with Electric Indigo
           meshMapRef.current.forEach((m, id) => {
             const mMat = m.material as THREE.MeshStandardMaterial;
             if (id === room.id) {
               mMat.color.setHex(0x3d38f5);
               mMat.emissive.setHex(0x1a1680);
-              mMat.emissiveIntensity = 0.25;
+              mMat.emissiveIntensity = 0.28;
             } else {
-              mMat.color.setHex(0xe4e2dc);
+              mMat.color.setHex(id === 'aula-limasan-tengah' ? 0xdfddd6 : 0xe8e6df);
               mMat.emissive.setHex(0x000000);
             }
           });
 
           // Position 3D Pin Marker above clicked room
-          const scale = 0.85;
+          const scale = 0.88;
           const target3D = {
             x: (room.pinPosition.x - 510) * scale,
             z: (room.pinPosition.y - 400) * scale,
           };
-          markerGroup.position.set(target3D.x, 30, target3D.z);
+          const topElevation = (room.height || 30) + 12;
+          markerGroup.position.set(target3D.x, topElevation, target3D.z);
           markerGroup.visible = true;
 
-          // Smooth Camera Focus on Clicked Room
+          // Smooth Camera Focus on Clicked Room (Tweening)
           const currentTarget = controls.target;
           const startTime = performance.now();
-          const duration = 400;
+          const duration = 380;
 
           const animateCamera = (now: number) => {
             const t = Math.min(1, (now - startTime) / duration);
-            const ease = 1 - Math.pow(1 - t, 3); // Ease Out Cubic
+            const ease = 1 - Math.pow(1 - t, 3);
             controls.target.x = THREE.MathUtils.lerp(currentTarget.x, target3D.x, ease);
             controls.target.z = THREE.MathUtils.lerp(currentTarget.z, target3D.z, ease);
             if (t < 1) {
@@ -302,7 +380,6 @@ export const Campus3DMap: React.FC<Campus3DMapProps> = ({
     };
     window.addEventListener('resize', handleResize);
 
-    // Cleanup on unmount
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
@@ -319,7 +396,7 @@ export const Campus3DMap: React.FC<Campus3DMapProps> = ({
   const handleResetCamera = () => {
     triggerHaptic('light');
     if (!controlsRef.current || !cameraRef.current) return;
-    cameraRef.current.position.set(0, 480, 520);
+    cameraRef.current.position.set(-60, 490, 560);
     controlsRef.current.target.set(0, 0, 0);
   };
 
@@ -336,9 +413,9 @@ export const Campus3DMap: React.FC<Campus3DMapProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 w-screen h-screen bg-[#f4f8fa] overflow-hidden select-none font-gt-standard">
-      {/* 1. Top Left Floating Back Button */}
-      <div className="absolute top-4 left-4 z-40">
+    <div className="fixed inset-0 z-50 w-screen h-screen bg-[#f2f6f9] overflow-hidden select-none font-gt-standard">
+      {/* 1. Top Left Floating Back Button & Street Label */}
+      <div className="absolute top-4 left-4 z-40 flex items-center gap-2">
         <button
           type="button"
           onClick={() => {
@@ -351,6 +428,11 @@ export const Campus3DMap: React.FC<Campus3DMapProps> = ({
         >
           <ArrowLeft className="w-5 h-5 stroke-[2.4]" />
         </button>
+
+        <div className="bg-white/90 backdrop-blur-xl border border-neutral-200/90 px-3 py-1.5 rounded-2xl shadow-md hidden sm:flex items-center gap-1.5 text-[12px] font-bold text-slate-800">
+          <MapPin className="w-3.5 h-3.5 text-[#3d38f5]" />
+          <span>SMK Negeri 8 Semarang (Jl. Pandanaran 2)</span>
+        </div>
       </div>
 
       {/* 2. Top Right Floating Floor Switcher */}

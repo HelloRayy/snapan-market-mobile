@@ -54,8 +54,8 @@ export const CheckoutSellerCard: React.FC<CheckoutSellerCardProps> = ({
               <ClickableVerifiedBadge sellerName={seller.name} className="w-[14px] h-[14px]" />
             )}
           </h4>
-          <p className="text-[12px] text-slate-500 font-normal mt-0.5 truncate">
-            Penjual · {seller.classGroup || 'XII PPLG 1'}
+          <p className="text-[12.5px] text-slate-500 font-normal mt-0.5 truncate">
+            @{seller.username || seller.name.toLowerCase().replace(/\s+/g, '')}
           </p>
         </div>
       </div>

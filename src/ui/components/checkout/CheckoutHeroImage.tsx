@@ -6,6 +6,8 @@ interface CheckoutHeroImageProps {
   images?: string[];
   title?: string;
   onBack: () => void;
+  isLiked?: boolean;
+  onToggleLike?: () => void;
   initialLiked?: boolean;
 }
 
@@ -13,10 +15,14 @@ export const CheckoutHeroImage: React.FC<CheckoutHeroImageProps> = ({
   images = [],
   title = 'Foto Produk',
   onBack,
+  isLiked: controlledLiked,
+  onToggleLike,
   initialLiked = false,
 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isLiked, setIsLiked] = useState(initialLiked);
+  const [internalLiked, setInternalLiked] = useState(initialLiked);
+
+  const isLiked = controlledLiked !== undefined ? controlledLiked : internalLiked;
 
   const imageList =
     images.length > 0
@@ -30,7 +36,11 @@ export const CheckoutHeroImage: React.FC<CheckoutHeroImageProps> = ({
 
   const handleToggleLike = () => {
     triggerHaptic('medium');
-    setIsLiked((prev) => !prev);
+    if (onToggleLike) {
+      onToggleLike();
+    } else {
+      setInternalLiked((prev) => !prev);
+    }
   };
 
   return (

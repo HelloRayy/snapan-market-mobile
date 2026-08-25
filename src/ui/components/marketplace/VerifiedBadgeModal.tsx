@@ -106,7 +106,7 @@ export const ClickableVerifiedBadge: React.FC<ClickableVerifiedBadgeProps> = ({
         title="User Terverifikasi"
         aria-label="User Terverifikasi"
       >
-        <BadgeCheck className={`${className} text-[#1d64ec] fill-[#1d64ec] text-white`} />
+        <BadgeCheck className={`${className} text-[#3d38f5] fill-[#3d38f5] text-white`} />
       </button>
 
       {/* Portal Tooltip (Exact Pixel Caret Alignment with Icon Center) */}

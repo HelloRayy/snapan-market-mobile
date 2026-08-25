@@ -5,7 +5,7 @@ import React from 'react';
  * Used across thread cards, create modals, and topic tags.
  */
 export const ThreadsTopicIcon: React.FC<{ className?: string }> = ({
-  className = "w-3.5 h-3.5 text-[#1d64ec] fill-current shrink-0",
+  className = "w-3.5 h-3.5 text-[#3d38f5] fill-current shrink-0",
 }) => (
   <svg className={className} viewBox="0 0 24 24">
     <circle cx="6" cy="8" r="3" />

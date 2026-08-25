@@ -17,11 +17,11 @@ export const CheckoutProductHeader: React.FC<CheckoutProductHeaderProps> = ({ po
 
   return (
     <section className="space-y-3 select-none font-gt-standard">
-      {/* 1. Availability Pill (Left) & Rating Pill (Right) - Borderless Soft Pastel */}
+      {/* 1. Availability Pill (Left) & Rating Pill (Right) - Electric Indigo Signature */}
       <div className="flex items-center justify-between gap-2">
-        {/* Ready for COD Badge */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 text-[#1d64ec] text-[12.5px] font-bold tracking-tight">
-          <Handshake className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2]" />
+        {/* Ready for COD Badge with Electric Indigo Accent */}
+        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#eef0ff] text-[#3d38f5] text-[12.5px] font-bold tracking-tight">
+          <Handshake className="w-3.5 h-3.5 text-[#3d38f5] stroke-[2.2]" />
           <span>Ready for COD</span>
         </div>
 
@@ -37,9 +37,9 @@ export const CheckoutProductHeader: React.FC<CheckoutProductHeaderProps> = ({ po
         {titleText}
       </h1>
 
-      {/* 3. Location & Seller Class Info with Blue Location Pin */}
+      {/* 3. Location & Seller Class Info with Electric Indigo Pin */}
       <div className="flex items-center gap-1.5 text-[13px] text-neutral-500 font-normal">
-        <MapPin className="w-3.5 h-3.5 text-[#1d64ec] shrink-0 stroke-[2.2]" />
+        <MapPin className="w-3.5 h-3.5 text-[#3d38f5] shrink-0 stroke-[2.2]" />
         <span>
           SMKN 8 Jakarta · <span className="text-slate-800 font-semibold">{post.seller.classGroup || 'XII PPLG 1'}</span>
         </span>

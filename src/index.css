@@ -9,8 +9,15 @@
   --color-muted-gray: #787574;
   --color-cool-stone: #cccccc;
   --color-warm-fog: #acb0aa;
-  --color-shop-violet: #5433eb;
-  --color-violet-wash: #c0b5f3;
+  /* Bespoke Signature Brand: Electric Indigo (Anti-AI Slop) */
+  --color-brand-primary: #3d38f5;
+  --color-brand-hover: #312bd9;
+  --color-brand-pastel: #eef0ff;
+  --color-brand-border: #d8dbfe;
+  --color-brand-ring: rgba(61, 56, 245, 0.15);
+
+  --color-shop-violet: #3d38f5;
+  --color-violet-wash: #eef0ff;
   --color-slate-ink: #332f2d;
   --color-ash-veil: #665a54;
 

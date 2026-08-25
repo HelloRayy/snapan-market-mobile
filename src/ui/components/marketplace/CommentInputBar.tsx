@@ -67,7 +67,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
           <div className="flex items-center justify-between px-1 pb-1.5 text-[12px] text-neutral-500 animate-in fade-in duration-150 select-none">
             <span className="flex items-center gap-1">
               <span>Membalas</span>
-              <strong className="text-[#1d64ec] font-semibold">@{replyToUser.replace(/^@/, '')}</strong>
+              <strong className="text-[#3d38f5] font-semibold">@{replyToUser.replace(/^@/, '')}</strong>
             </span>
             <button
               type="button"
@@ -101,7 +101,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
                 ? `Balas postingan @${targetAuthor.replace(/^@/, '')}...`
                 : 'Tulis balasan...'
             }
-            className="flex-1 min-w-0 bg-neutral-100 hover:bg-neutral-100/80 focus:bg-white border border-transparent focus:border-[#1d64ec] rounded-full px-3.5 sm:px-4 h-10 text-[15px] sm:text-[14px] text-slate-900 placeholder:text-neutral-400 focus:outline-none transition-all shadow-2xs"
+            className="flex-1 min-w-0 bg-neutral-100 hover:bg-neutral-100/80 focus:bg-white border border-transparent focus:border-[#3d38f5] rounded-full px-3.5 sm:px-4 h-10 text-[15px] sm:text-[14px] text-slate-900 placeholder:text-neutral-400 focus:outline-none transition-all shadow-2xs"
           />
           <button
             type="submit"

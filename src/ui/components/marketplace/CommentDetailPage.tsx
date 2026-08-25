@@ -256,7 +256,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                   : parentPost.seller.username || parentPost.seller.name}
               </span>
               {(parentContext ? parentContext.user.isVerified : parentPost.seller.isVerified) && (
-                <BadgeCheck className="w-3.5 h-3.5 text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" />
+                <BadgeCheck className="w-3.5 h-3.5 text-[#3d38f5] shrink-0 fill-[#3d38f5] text-white" />
               )}
             </div>
             <p className="text-[13px] text-neutral-500 font-normal line-clamp-2 leading-snug pt-0.5">
@@ -296,7 +296,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                   </span>
 
                   {activeComment.user.isVerified && (
-                    <BadgeCheck className="w-[15px] h-[15px] text-[#1d64ec] shrink-0 fill-[#1d64ec] text-white" />
+                    <BadgeCheck className="w-[15px] h-[15px] text-[#3d38f5] shrink-0 fill-[#3d38f5] text-white" />
                   )}
 
                   {activeComment.user.isAuthor && (

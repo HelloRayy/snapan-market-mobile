@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { getMapData, show3dMap, MapView } from '@mappedin/mappedin-js';
 import '@mappedin/mappedin-js/lib/index.css';
 import { Loader2, RefreshCw, Layers } from 'lucide-react';
+import { triggerHaptic } from '@/utils/haptics';
 
 interface MappedinViewProps {
   className?: string;
@@ -27,7 +28,7 @@ export const MappedinView: React.FC<MappedinViewProps> = ({
     setErrorMsg(null);
 
     try {
-      // 1. Fetch Demo Map Data from Mappedin Cloud
+      // 1. Fetch Official Demo Venue Data from Mappedin Cloud
       const mapData = await getMapData({
         key: '5eab30aa91b055001a68e996',
         secret: 'RJyRXKcryCMy4erZqqCbuB1NbR66QTGNXVE0x3Pg6oCIlUR1',
@@ -36,11 +37,11 @@ export const MappedinView: React.FC<MappedinViewProps> = ({
 
       if (!containerRef.current) return;
 
-      // 2. Render 3D WebGL Map onto Container
+      // 2. Render 3D/2.5D WebGL Interactive Map Canvas
       const mapView = await show3dMap(containerRef.current, mapData);
       mapViewRef.current = mapView;
 
-      // 3. Extract Floor data
+      // 3. Extract Floor Stack data
       if (mapData.getByType('floor')) {
         const floorList = mapData.getByType('floor');
         setFloors(floorList);
@@ -49,30 +50,31 @@ export const MappedinView: React.FC<MappedinViewProps> = ({
         }
       }
 
-      // 4. Interactivity: Listen to Click Events on Spaces / Polygons
+      // 4. Interactivity: Listen to Click / Tap Events on Spaces
       mapView.on('click', (event) => {
         if (event && event.spaces && event.spaces.length > 0) {
+          triggerHaptic('light');
           const clickedSpace = event.spaces[0];
-          const name = clickedSpace.name || 'Ruangan Terpilih';
+          const name = clickedSpace.name || 'Ruangan / Toko';
           setSelectedSpaceName(name);
           onSpaceClick?.(name);
 
-          // Dynamic Camera Focus & Highlight on Clicked Space
+          // Dynamic 2.5D Camera Tween Focus & Poligon Highlight
           try {
             (mapView as any).updateState?.(clickedSpace, {
               color: '#3d38f5',
             });
             (mapView as any).Camera?.focusOn?.(clickedSpace);
           } catch {
-            // Ignore if optional camera animation
+            // Safe fallback
           }
         }
       });
 
       setIsLoading(false);
     } catch (err: any) {
-      console.error('Mappedin initialization error:', err);
-      setErrorMsg(err.message || 'Gagal memuat engine peta Mappedin.');
+      console.error('Mappedin WebGL initialization error:', err);
+      setErrorMsg(err.message || 'Gagal memuat engine WebGL Mappedin.');
       setIsLoading(false);
     }
   };
@@ -85,13 +87,14 @@ export const MappedinView: React.FC<MappedinViewProps> = ({
         try {
           mapViewRef.current.destroy();
         } catch {
-          // Cleanup safe
+          // Safe WebGL memory cleanup
         }
       }
     };
   }, []);
 
   const handleFloorSelect = (floor: any) => {
+    triggerHaptic('medium');
     if (mapViewRef.current && floor) {
       try {
         mapViewRef.current.setFloor(floor);
@@ -103,28 +106,28 @@ export const MappedinView: React.FC<MappedinViewProps> = ({
   };
 
   return (
-    <div className={`relative w-full h-[650px] bg-neutral-100 rounded-[28px] overflow-hidden border border-neutral-200 shadow-2xs font-gt-standard ${className}`}>
+    <div className={`relative w-full h-full bg-slate-900 overflow-hidden font-gt-standard select-none touch-none ${className}`}>
       {/* Loading Overlay */}
       {isLoading && (
-        <div className="absolute inset-0 z-30 bg-neutral-100/90 backdrop-blur-sm flex flex-col items-center justify-center gap-3 select-none">
-          <Loader2 className="w-8 h-8 text-[#3d38f5] animate-spin" />
-          <p className="text-[13.5px] font-bold text-slate-800">
-            Memuat WebGL Map Engine...
+        <div className="absolute inset-0 z-30 bg-slate-900/95 backdrop-blur-md flex flex-col items-center justify-center gap-3 select-none text-white">
+          <Loader2 className="w-9 h-9 text-[#3d38f5] animate-spin" />
+          <p className="text-[14px] font-bold text-white tracking-wide">
+            Memuat WebGL 2.5D Map Engine...
           </p>
-          <p className="text-[11.5px] text-slate-500 font-normal">
-            Menghubungkan ke Mappedin Playground
+          <p className="text-[12px] text-slate-400 font-normal">
+            Menghubungkan ke Mappedin Interactive Cloud
           </p>
         </div>
       )}
 
       {/* Error Fallback */}
       {errorMsg && !isLoading && (
-        <div className="absolute inset-0 z-30 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center space-y-3">
-          <p className="text-[14px] font-bold text-rose-600">{errorMsg}</p>
+        <div className="absolute inset-0 z-30 bg-slate-900/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center space-y-3 text-white">
+          <p className="text-[14px] font-bold text-rose-400">{errorMsg}</p>
           <button
             type="button"
             onClick={initMap}
-            className="px-4 py-2 rounded-xl bg-slate-900 text-white text-[13px] font-bold flex items-center gap-2 hover:bg-black active:scale-95 transition-all cursor-pointer"
+            className="px-5 py-2.5 rounded-xl bg-[#3d38f5] text-white text-[13px] font-bold flex items-center gap-2 hover:bg-indigo-600 active:scale-95 transition-all cursor-pointer shadow-lg"
           >
             <RefreshCw className="w-4 h-4" />
             <span>Coba Muat Ulang</span>
@@ -132,7 +135,7 @@ export const MappedinView: React.FC<MappedinViewProps> = ({
         </div>
       )}
 
-      {/* Mappedin Interactive Map Container */}
+      {/* Pure WebGL Map Canvas Container */}
       <div
         ref={containerRef}
         id="mappedin-canvas-container"
@@ -140,11 +143,11 @@ export const MappedinView: React.FC<MappedinViewProps> = ({
         style={{ width: '100%', height: '100%' }}
       />
 
-      {/* Floating Floor Selector (If multiple floors exist) */}
+      {/* Floating Floor Selector in Top-Right (Minimalist Pill) */}
       {floors.length > 1 && (
-        <div className="absolute top-4 right-4 z-20 bg-white/95 backdrop-blur-md border border-neutral-200/90 p-1.5 rounded-2xl shadow-md flex flex-col gap-1 select-none">
-          <div className="flex items-center gap-1 px-1.5 py-0.5 text-[10.5px] font-bold text-neutral-400">
-            <Layers className="w-3 h-3" />
+        <div className="absolute top-4 right-4 z-20 bg-slate-900/80 backdrop-blur-xl border border-white/10 p-1 rounded-2xl shadow-xl flex flex-col gap-1 select-none">
+          <div className="flex items-center gap-1 px-2 py-0.5 text-[9.5px] font-bold text-slate-400 tracking-wider">
+            <Layers className="w-3 h-3 text-[#3d38f5]" />
             <span>LANTAI</span>
           </div>
           {floors.map((fl) => (
@@ -152,10 +155,10 @@ export const MappedinView: React.FC<MappedinViewProps> = ({
               key={fl.id}
               type="button"
               onClick={() => handleFloorSelect(fl)}
-              className={`px-3 py-1.5 rounded-xl text-[12px] font-bold transition-all cursor-pointer text-left ${
+              className={`px-3 py-1.5 rounded-xl text-[11.5px] font-bold transition-all cursor-pointer text-left ${
                 currentFloorId === fl.id
-                  ? 'bg-[#3d38f5] text-white shadow-2xs'
-                  : 'text-slate-700 hover:bg-neutral-100'
+                  ? 'bg-[#3d38f5] text-white shadow-md'
+                  : 'text-slate-300 hover:bg-white/10'
               }`}
             >
               {fl.name || `Lantai ${fl.elevation || 1}`}
@@ -164,11 +167,13 @@ export const MappedinView: React.FC<MappedinViewProps> = ({
         </div>
       )}
 
-      {/* Floating Info Pill on Bottom */}
+      {/* Minimalist Floating Selected Room Badge at Bottom Center */}
       {selectedSpaceName && (
-        <div className="absolute bottom-4 inset-x-4 z-20 pointer-events-none flex justify-center">
-          <div className="bg-slate-900/90 backdrop-blur-md text-white px-4 py-2 rounded-full shadow-lg text-[13px] font-bold animate-in slide-in-from-bottom-2 duration-150">
-            Ruangan Terpilih: <span className="text-[#818cf8]">{selectedSpaceName}</span>
+        <div className="absolute bottom-5 inset-x-4 z-20 pointer-events-none flex justify-center animate-in slide-in-from-bottom-2 duration-150">
+          <div className="bg-slate-900/90 backdrop-blur-xl border border-white/15 text-white px-4 py-2 rounded-full shadow-2xl text-[13px] font-bold flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#3d38f5] animate-pulse" />
+            <span>Ruangan:</span>
+            <span className="text-[#818cf8]">{selectedSpaceName}</span>
           </div>
         </div>
       )}

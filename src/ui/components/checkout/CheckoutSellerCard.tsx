@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageCircle, User } from 'lucide-react';
+import { MessageSquareText, User } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { ClickableVerifiedBadge } from '../marketplace/VerifiedBadgeModal';
 import { triggerHaptic } from '@/utils/haptics';
@@ -80,7 +80,7 @@ export const CheckoutSellerCard: React.FC<CheckoutSellerCardProps> = ({
         >
           {/* Kumo Inset Top Rim Highlight Gradient */}
           <span className="absolute inset-0 rounded-full bg-gradient-to-b from-[#5550f7] to-[#3d38f5] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.4)] group-hover:from-[#4944f6] transition-opacity duration-150 pointer-events-none" />
-          <MessageCircle className="relative z-10 w-4.5 h-4.5 stroke-[2] fill-white text-[#3d38f5]" />
+          <MessageSquareText className="relative z-10 w-5 h-5 text-white stroke-[2.2] fill-none" />
         </button>
       </div>
     </div>

@@ -2,27 +2,22 @@ export interface RoomZone {
   id: string;
   name: string;
   code: string;
+  buildingName: string;
   floor: number; // 1, 2, or 3
   category: 'canteen' | 'lab' | 'class' | 'lobby' | 'outdoor' | 'facility';
   categoryLabel: string;
   description: string;
   hint: string;
-  path: string; // SVG path data
+  path: string; // SVG polygon/path data
   pinPosition: { x: number; y: number };
   isPopularCodSpot: boolean;
-  colorPreset?: string;
 }
 
-export interface MapFeature {
+export interface BuildingOutline {
   id: string;
-  type: 'table' | 'atrium' | 'pillar' | 'entrance' | 'stairs';
-  x: number;
-  y: number;
-  width?: number;
-  height?: number;
-  radius?: number;
-  label?: string;
-  floor: number;
+  name: string;
+  path: string;
+  labelPosition?: { x: number; y: number };
 }
 
 export interface FloorData {
@@ -30,134 +25,200 @@ export interface FloorData {
   name: string;
   subtitle: string;
   rooms: RoomZone[];
-  features: MapFeature[];
 }
+
+export const SCHOOL_BUILDING_OUTLINES: BuildingOutline[] = [
+  // 1. Gedung Besar Berbentuk L (L-Shaped Building)
+  {
+    id: 'gedung-l',
+    name: 'Gedung Utama (L-Wing)',
+    path: 'M 112 85 L 910 25 L 910 162 L 272 208 L 274 620 L 132 630 Z',
+    labelPosition: { x: 500, y: 110 },
+  },
+  // 2. Gedung Tengah (Central Building / Lab)
+  {
+    id: 'gedung-tengah',
+    name: 'Gedung Vokasi & Lab',
+    path: 'M 324 435 L 658 418 L 660 522 L 328 540 Z',
+    labelPosition: { x: 490, y: 480 },
+  },
+  // 3. Gedung Kanan (Right Wing / Aula)
+  {
+    id: 'gedung-kanan',
+    name: 'Gedung Aula & Serbaguna',
+    path: 'M 678 395 L 870 375 L 884 582 L 688 604 Z',
+    labelPosition: { x: 780, y: 490 },
+  },
+  // 4. Bangunan Miring Bawah Kiri (Kantin & Pujasera)
+  {
+    id: 'gedung-bawah-1',
+    name: 'Kantin & Pujasera',
+    path: 'M 560 690 L 630 630 L 760 720 L 690 780 Z',
+    labelPosition: { x: 660, y: 705 },
+  },
+  // 5. Bangunan Miring Bawah Kanan (Gazebo & Koperasi)
+  {
+    id: 'gedung-bawah-2',
+    name: 'Gazebo & Koperasi',
+    path: 'M 755 640 L 825 580 L 915 635 L 845 700 Z',
+    labelPosition: { x: 835, y: 640 },
+  },
+];
 
 export const SCHOOL_FLOORS: FloorData[] = [
   {
     floor: 1,
     name: 'Lantai 1',
-    subtitle: 'Lobi Utama, Kantin & Ruang Kelas Dasar',
-    features: [
-      // Central Circular Atrium (persis gambar referensi)
-      { id: 'atrium-1', type: 'atrium', x: 230, y: 260, radius: 24, label: 'Atrium', floor: 1 },
-      // Meja-meja Kantin (kotak kuning khas referensi di area bawah)
-      { id: 'table-1', type: 'table', x: 270, y: 560, width: 18, height: 18, floor: 1 },
-      { id: 'table-2', type: 'table', x: 320, y: 560, width: 18, height: 18, floor: 1 },
-      { id: 'table-3', type: 'table', x: 250, y: 600, width: 18, height: 18, floor: 1 },
-      { id: 'table-4', type: 'table', x: 295, y: 600, width: 18, height: 18, floor: 1 },
-      { id: 'table-5', type: 'table', x: 345, y: 600, width: 18, height: 18, floor: 1 },
-      { id: 'table-6', type: 'table', x: 270, y: 640, width: 18, height: 18, floor: 1 },
-      { id: 'table-7', type: 'table', x: 320, y: 640, width: 18, height: 18, floor: 1 },
-      { id: 'table-8', type: 'table', x: 250, y: 680, width: 18, height: 18, floor: 1 },
-      { id: 'table-9', type: 'table', x: 295, y: 680, width: 18, height: 18, floor: 1 },
-      { id: 'table-10', type: 'table', x: 345, y: 680, width: 18, height: 18, floor: 1 },
-      // Pintu Masuk Gerbang
-      { id: 'ent-1', type: 'entrance', x: 230, y: 60, width: 60, height: 12, label: 'Pintu Gerbang Utama', floor: 1 },
-    ],
+    subtitle: 'Lobi Utama, Kantin, Lab DKV & Ruang Guru',
     rooms: [
+      // 1. Kantin Utama (Paling Populer COD)
       {
         id: 'kantin-utama',
-        name: 'Kantin Sekolah (Meja Tengah)',
+        name: 'Kantin Utama & Pujasera',
         code: 'KANTIN',
+        buildingName: 'Area Pujasera Belakang',
         floor: 1,
         category: 'canteen',
         categoryLabel: 'Kantin & Makanan',
-        description: 'Area pujasera & meja makan utama SMKN 8 Jakarta.',
-        hint: 'Spot COD paling favorit saat jam istirahat. Dekat stan minuman jus.',
-        path: 'M 140 540 L 410 540 L 410 740 L 140 740 Z',
-        pinPosition: { x: 295, y: 620 },
+        description: 'Pusat jajanan & meja makan outdoor siswa SMKN 8 Jakarta.',
+        hint: 'Titik COD paling ramai & mudah ditemukan saat istirahat. Dekat stan minuman jus.',
+        path: 'M 560 690 L 630 630 L 760 720 L 690 780 Z',
+        pinPosition: { x: 660, y: 705 },
         isPopularCodSpot: true,
       },
+      // 2. Lobi Depan Gedung A
       {
         id: 'lobi-utama',
-        name: 'Lobi Depan Gedung A',
+        name: 'Lobi Depan Gedung Utama',
         code: 'LOBI A',
+        buildingName: 'Gedung Utama (Sayap Atas)',
         floor: 1,
         category: 'lobby',
         categoryLabel: 'Lobi & Informasi',
-        description: 'Pusat resepsionis & ruang tunggu tamu sekolah.',
-        hint: 'Dekat piala prestasi dan papan pengumuman lobi.',
-        path: 'M 140 80 L 320 80 L 320 180 L 140 180 Z',
-        pinPosition: { x: 230, y: 130 },
+        description: 'Area resepsionis, etalase piala prestasi, dan ruang tunggu tamu.',
+        hint: 'Dekat pintu masuk gerbang utama sekolah.',
+        path: 'M 112 85 L 390 65 L 390 198 L 272 208 L 260 210 L 112 85 Z',
+        pinPosition: { x: 250, y: 145 },
         isPopularCodSpot: true,
       },
+      // 3. Ruang Guru & Tata Usaha
       {
-        id: 'ruang-guru-1',
+        id: 'ruang-guru-tu',
         name: 'Ruang Guru & Tata Usaha',
-        code: 'TU & GURU',
+        code: 'RUANG GURU',
+        buildingName: 'Gedung Utama (Sayap Atas)',
         floor: 1,
         category: 'facility',
         categoryLabel: 'Fasilitas Guru',
-        description: 'Ruang kantor administrasi dan staff pengajar.',
-        hint: 'Lantai 1 sayap kanan lobi.',
-        path: 'M 330 80 L 480 80 L 480 180 L 330 180 Z',
-        pinPosition: { x: 405, y: 130 },
+        description: 'Kantor administrasi guru dan staff pengajar.',
+        hint: 'Lantai 1 koridor tengah gedung utama.',
+        path: 'M 390 65 L 660 45 L 660 180 L 390 198 Z',
+        pinPosition: { x: 525, y: 125 },
         isPopularCodSpot: false,
       },
+      // 4. Ruang Kepala Sekolah & Tamu
       {
-        id: 'kelas-x-pplg1',
-        name: 'Kelas X PPLG 1',
-        code: 'X PPLG 1',
-        floor: 1,
-        category: 'class',
-        categoryLabel: 'Ruang Teori',
-        description: 'Ruang kelas teori pengembangan perangkat lunak.',
-        hint: 'Lorong sayap kiri dekat tangga.',
-        path: 'M 80 200 L 180 200 L 180 340 L 80 340 Z',
-        pinPosition: { x: 130, y: 270 },
-        isPopularCodSpot: false,
-      },
-      {
-        id: 'kelas-x-pplg2',
-        name: 'Kelas X PPLG 2',
-        code: 'X PPLG 2',
-        floor: 1,
-        category: 'class',
-        categoryLabel: 'Ruang Teori',
-        description: 'Ruang kelas teori tingkat dasar.',
-        hint: 'Lorong sayap kiri dekat toilet siswa.',
-        path: 'M 80 350 L 180 350 L 180 500 L 80 500 Z',
-        pinPosition: { x: 130, y: 425 },
-        isPopularCodSpot: false,
-      },
-      {
-        id: 'koperasi-sekolah',
-        name: 'Koperasi & ATK Siswa',
-        code: 'KOPERASI',
+        id: 'ruang-kepsek',
+        name: 'Ruang Kepala Sekolah & Mitra',
+        code: 'KEPSEK',
+        buildingName: 'Gedung Utama (Sayap Kanan Atas)',
         floor: 1,
         category: 'facility',
-        categoryLabel: 'Belanja & Cetak',
-        description: 'Menjual perlengkapan seragam, fotokopi, dan ATK.',
-        hint: 'Tepat di samping area masuk kantin.',
-        path: 'M 260 480 L 340 480 L 340 530 L 260 530 Z',
-        pinPosition: { x: 300, y: 505 },
+        categoryLabel: 'Kantor Pimpinan',
+        description: 'Ruang pimpinan sekolah dan pertemuan mitra industri.',
+        hint: 'Ujung kanan gedung utama lantai 1.',
+        path: 'M 660 45 L 910 25 L 910 162 L 660 180 Z',
+        pinPosition: { x: 785, y: 105 },
+        isPopularCodSpot: false,
+      },
+      // 5. Studio Desain & Animasi DKV (Gedung Tengah)
+      {
+        id: 'studio-dkv',
+        name: 'Studio Desain & Animasi DKV',
+        code: 'STUDIO DKV',
+        buildingName: 'Gedung Vokasi Tengah',
+        floor: 1,
+        category: 'lab',
+        categoryLabel: 'Studio Kreatif',
+        description: 'Studio praktikum iMac dan drawing tablet jurusan DKV.',
+        hint: 'Gedung tengah lantai 1, pintu kaca lorong depan.',
+        path: 'M 324 435 L 490 425 L 492 530 L 328 540 Z',
+        pinPosition: { x: 408, y: 482 },
         isPopularCodSpot: true,
       },
+      // 6. Ruang Praktik Kerja Industri (Gedung Tengah Kanan)
       {
-        id: 'ruang-bimbingan-konseling',
-        name: 'Ruang BK & UKS',
-        code: 'BK & UKS',
+        id: 'ruang-prakerin',
+        name: 'Ruang Prakerin & Karir Siswa',
+        code: 'BKK / PRAKERIN',
+        buildingName: 'Gedung Vokasi Tengah',
         floor: 1,
         category: 'facility',
-        categoryLabel: 'Layanan Siswa',
-        description: 'Ruang bimbingan konseling dan unit kesehatan sekolah.',
-        hint: 'Sayap kanan dekat koridor belakang.',
-        path: 'M 350 320 L 480 320 L 480 440 L 350 440 Z',
-        pinPosition: { x: 415, y: 380 },
+        categoryLabel: 'Layanan Karir',
+        description: 'Pusat informasi magang, PKL, dan bursa kerja khusus.',
+        hint: 'Sebelah studio DKV gedung tengah.',
+        path: 'M 490 425 L 658 418 L 660 522 L 492 530 Z',
+        pinPosition: { x: 575, y: 475 },
         isPopularCodSpot: false,
       },
+      // 7. Aula Utama & Lapangan Indoor (Gedung Kanan)
       {
-        id: 'gazebo-lapangan',
-        name: 'Gazebo Taman Lapangan',
+        id: 'aula-serbaguna',
+        name: 'Aula Utama & Gedung Serbaguna',
+        code: 'AULA SMKN 8',
+        buildingName: 'Gedung Aula Kanan',
+        floor: 1,
+        category: 'facility',
+        categoryLabel: 'Aula & Acara',
+        description: 'Gedung pertemuan besar untuk pameran karya, seminar, dan eskul.',
+        hint: 'Gedung sayap kanan dekat pintu lapangan.',
+        path: 'M 678 395 L 870 375 L 884 582 L 688 604 Z',
+        pinPosition: { x: 780, y: 490 },
+        isPopularCodSpot: true,
+      },
+      // 8. Gazebo Taman & Lapangan (Pojok Kanan Bawah)
+      {
+        id: 'gazebo-taman',
+        name: 'Gazebo Taman & Koperasi Siswa',
         code: 'GAZEBO',
+        buildingName: 'Area Luar / Taman',
         floor: 1,
         category: 'outdoor',
-        categoryLabel: 'Taman & Gazebo',
-        description: 'Area duduk santai terbuka di pinggir lapangan hijau.',
+        categoryLabel: 'Taman Santai',
+        description: 'Area duduk rindang dan stan koperasi perlengkapan siswa.',
         hint: 'Di bawah pohon rindang samping lapangan basket.',
-        path: 'M 500 200 L 620 200 L 620 320 L 500 320 Z',
-        pinPosition: { x: 560, y: 260 },
+        path: 'M 755 640 L 825 580 L 915 635 L 845 700 Z',
+        pinPosition: { x: 835, y: 640 },
+        isPopularCodSpot: true,
+      },
+      // 9. Kelas X & XI PPLG 1 (Sayap Kiri Gedung L)
+      {
+        id: 'kelas-x-pplg',
+        name: 'Ruang Kelas X & XI PPLG',
+        code: 'KELAS PPLG',
+        buildingName: 'Gedung Utama (Sayap Kiri)',
+        floor: 1,
+        category: 'class',
+        categoryLabel: 'Ruang Teori',
+        description: 'Ruang kelas teori pengembangan perangkat lunak & gim.',
+        hint: 'Lorong sayap kiri dekat tangga.',
+        path: 'M 112 215 L 268 215 L 270 415 L 120 415 Z',
+        pinPosition: { x: 192, y: 315 },
+        isPopularCodSpot: false,
+      },
+      // 10. Perpustakaan & Ruang Baca (Sayap Kiri Bawah)
+      {
+        id: 'perpustakaan-sekolah',
+        name: 'Perpustakaan & Ruang Baca',
+        code: 'PERPUSTAKAAN',
+        buildingName: 'Gedung Utama (Sayap Kiri)',
+        floor: 1,
+        category: 'facility',
+        categoryLabel: 'Belajar & Literasi',
+        description: 'Ruang baca ber-AC yang nyaman dengan akses internet cepat.',
+        hint: 'Ujung lorong sayap kiri lantai 1.',
+        path: 'M 120 425 L 270 425 L 274 620 L 132 630 Z',
+        pinPosition: { x: 200, y: 525 },
         isPopularCodSpot: true,
       },
     ],
@@ -165,124 +226,97 @@ export const SCHOOL_FLOORS: FloorData[] = [
   {
     floor: 2,
     name: 'Lantai 2',
-    subtitle: 'Laboratorium Komputer PPLG, DKV & Perpustakaan',
-    features: [
-      { id: 'atrium-2', type: 'atrium', x: 230, y: 260, radius: 24, label: 'Void Atrium', floor: 2 },
-    ],
+    subtitle: 'Lab Software RPL 1 & 2, Server Room & Ruang Multimedia',
     rooms: [
+      // 1. Lab Software RPL 1 (Gedung Tengah Lantai 2)
       {
-        id: 'lab-pplg-1',
+        id: 'lab-rpl-1',
         name: 'Laboratorium Software RPL / PPLG 1',
         code: 'LAB RPL 1',
+        buildingName: 'Gedung Vokasi Tengah (Lt. 2)',
         floor: 2,
         category: 'lab',
         categoryLabel: 'Lab Komputer',
-        description: 'Lab komputer spesifikasi tinggi untuk coding & web dev.',
-        hint: 'Dekat tangga utama lantai 2, pintu kaca biru.',
-        path: 'M 140 80 L 320 80 L 320 180 L 140 180 Z',
-        pinPosition: { x: 230, y: 130 },
+        description: 'Lab komputer spesifikasi tinggi untuk web & mobile app dev.',
+        hint: 'Gedung tengah lantai 2, pintu kaca biru depan tangga.',
+        path: 'M 324 435 L 490 425 L 492 530 L 328 540 Z',
+        pinPosition: { x: 408, y: 482 },
         isPopularCodSpot: true,
       },
+      // 2. Lab Software RPL 2 (Gedung Tengah Lantai 2 Kanan)
       {
-        id: 'lab-pplg-2',
+        id: 'lab-rpl-2',
         name: 'Laboratorium Software RPL / PPLG 2',
         code: 'LAB RPL 2',
+        buildingName: 'Gedung Vokasi Tengah (Lt. 2)',
         floor: 2,
         category: 'lab',
         categoryLabel: 'Lab Komputer',
-        description: 'Lab pengembangan mobile app & cloud computing.',
-        hint: 'Sebelah Lab RPL 1.',
-        path: 'M 330 80 L 480 80 L 480 180 L 330 180 Z',
-        pinPosition: { x: 405, y: 130 },
+        description: 'Lab praktikum database, API backend, dan cloud server.',
+        hint: 'Sebelah Lab RPL 1 di lantai 2.',
+        path: 'M 490 425 L 658 418 L 660 522 L 492 530 Z',
+        pinPosition: { x: 575, y: 475 },
         isPopularCodSpot: true,
       },
+      // 3. Ruang Server & IT Support (Gedung Utama Atas Lt. 2)
       {
-        id: 'lab-dkv',
-        name: 'Studio Desain & Animasi DKV',
-        code: 'STUDIO DKV',
-        floor: 2,
-        category: 'lab',
-        categoryLabel: 'Studio Kreatif',
-        description: 'Lab iMac & drawing tablet untuk desain grafis.',
-        hint: 'Sayap kiri lantai 2, depan ruang server.',
-        path: 'M 80 200 L 180 200 L 180 380 L 80 380 Z',
-        pinPosition: { x: 130, y: 290 },
-        isPopularCodSpot: true,
-      },
-      {
-        id: 'perpustakaan',
-        name: 'Perpustakaan Digital SMKN 8',
-        code: 'PERPUS',
+        id: 'ruang-server',
+        name: 'Pusat Server & Network Operations',
+        code: 'SERVER ROOM',
+        buildingName: 'Gedung Utama (Lt. 2)',
         floor: 2,
         category: 'facility',
-        categoryLabel: 'Perpustakaan & Belajar',
-        description: 'Ruang baca ber-AC yang tenang dengan koleksi buku lengkap.',
-        hint: 'Di seberang void atrium lantai 2.',
-        path: 'M 350 320 L 520 320 L 520 500 L 350 500 Z',
-        pinPosition: { x: 435, y: 410 },
-        isPopularCodSpot: true,
-      },
-      {
-        id: 'ruang-audio-visual',
-        name: 'Ruang Audio Visual / Mini Theater',
-        code: 'AUDIO VISUAL',
-        floor: 2,
-        category: 'facility',
-        categoryLabel: 'Ruang Presentasi',
-        description: 'Tempat pemutaran film & presentasi karya siswa.',
-        hint: 'Sayap belakang lantai 2.',
-        path: 'M 140 540 L 410 540 L 410 740 L 140 740 Z',
-        pinPosition: { x: 275, y: 640 },
+        categoryLabel: 'Infrastruktur IT',
+        description: 'Pusat jaringan internet dan server lokal SMKN 8 Jakarta.',
+        hint: 'Lantai 2 di atas lobi utama.',
+        path: 'M 112 85 L 390 65 L 390 198 L 272 208 L 260 210 L 112 85 Z',
+        pinPosition: { x: 250, y: 145 },
         isPopularCodSpot: false,
       },
-    ],
-  },
-  {
-    floor: 3,
-    name: 'Lantai 3',
-    subtitle: 'Ruang Multimedia, Aula Utama & Rooftop',
-    features: [
-      { id: 'atrium-3', type: 'atrium', x: 230, y: 260, radius: 24, label: 'Void Atrium', floor: 3 },
-    ],
-    rooms: [
+      // 4. Ruang Multimedia & Podcast (Gedung Utama Kanan Lt. 2)
       {
-        id: 'aula-utama',
-        name: 'Aula Serbaguna SMKN 8',
-        code: 'AULA UTAMA',
-        floor: 3,
-        category: 'facility',
-        categoryLabel: 'Aula & Event',
-        description: 'Aula besar untuk seminar, pameran karya, dan pentas seni.',
-        hint: 'Pintu ganda utama lantai 3.',
-        path: 'M 140 80 L 480 80 L 480 260 L 140 260 Z',
-        pinPosition: { x: 310, y: 170 },
+        id: 'studio-podcast',
+        name: 'Studio Podcast & Broadcast SMKN 8',
+        code: 'BROADCAST',
+        buildingName: 'Gedung Utama (Lt. 2)',
+        floor: 2,
+        category: 'lab',
+        categoryLabel: 'Studio Rekaman',
+        description: 'Studio kedap suara untuk rekaman podcast dan video sekolah.',
+        hint: 'Lantai 2 gedung utama sayap kanan.',
+        path: 'M 390 65 L 910 25 L 910 162 L 390 198 Z',
+        pinPosition: { x: 650, y: 110 },
         isPopularCodSpot: true,
       },
+      // 5. Tribun Atas Aula (Gedung Kanan Lt. 2)
       {
-        id: 'lab-jaringan-tkj',
-        name: 'Laboratorium Jaringan & Server',
-        code: 'LAB JARINGAN',
-        floor: 3,
-        category: 'lab',
-        categoryLabel: 'Lab Hardware & IoT',
-        description: 'Ruang praktikum mikrotik, router, dan fiber optic.',
-        hint: 'Sayap kiri lantai 3.',
-        path: 'M 80 280 L 180 280 L 180 480 L 80 480 Z',
-        pinPosition: { x: 130, y: 380 },
+        id: 'tribun-aula',
+        name: 'Balkon & Tribun Aula Serbaguna',
+        code: 'TRIBUN AULA',
+        buildingName: 'Gedung Aula Kanan (Lt. 2)',
+        floor: 2,
+        category: 'facility',
+        categoryLabel: 'Tribun Acara',
+        description: 'Area penonton atas untuk pementasan seni dan wisuda.',
+        hint: 'Akses tangga samping aula.',
+        path: 'M 678 395 L 870 375 L 884 582 L 688 604 Z',
+        pinPosition: { x: 780, y: 490 },
         isPopularCodSpot: false,
       },
+      // 6. Lab Perakitan & Hardware (Sayap Kiri Lt. 2)
       {
-        id: 'rooftop-greenhouse',
-        name: 'Taman Atap & Green House',
-        code: 'ROOFTOP',
-        floor: 3,
-        category: 'outdoor',
-        categoryLabel: 'Rooftop & Udara Terbuka',
-        description: 'Area santai terbuka di lantai teratas dengan pemandangan kota.',
-        hint: 'Pintu keluar lorong belakang lantai 3.',
-        path: 'M 200 480 L 480 480 L 480 720 L 200 720 Z',
-        pinPosition: { x: 340, y: 600 },
-        isPopularCodSpot: true,
+        id: 'lab-hardware',
+        name: 'Laboratorium Hardware & Mikrokontroler',
+        code: 'LAB HARDWARE',
+        buildingName: 'Gedung Utama Sayap Kiri (Lt. 2)',
+        floor: 2,
+        category: 'lab',
+        categoryLabel: 'Lab IoT & Robotik',
+        description: 'Ruang solder, perakitan PC, dan pemrograman Arduino/IoT.',
+        hint: 'Sayap kiri lantai 2.',
+        path: 'M 112 215 L 274 215 L 274 620 L 132 630 Z',
+        pinPosition: { x: 195, y: 420 },
+        isPopularCodSpot: false,
       },
     ],
   },

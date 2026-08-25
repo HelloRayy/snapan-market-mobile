@@ -1,6 +1,7 @@
-import React from 'react';
-import { ArrowLeft, Compass, Sparkles } from 'lucide-react';
-import { MappedinView } from '../components/map/MappedinView';
+import React, { useState } from 'react';
+import { ArrowLeft, Compass, Sparkles, Check } from 'lucide-react';
+import { InteractiveCampusMap } from '../components/map/InteractiveCampusMap';
+import { RoomZone } from '@/data/mockSchoolMapData';
 import { triggerHaptic } from '@/utils/haptics';
 
 interface CampusMapPageProps {
@@ -8,6 +9,8 @@ interface CampusMapPageProps {
 }
 
 export const CampusMapPage: React.FC<CampusMapPageProps> = ({ onBack }) => {
+  const [selectedSpot, setSelectedSpot] = useState<RoomZone | null>(null);
+
   const handleBack = () => {
     triggerHaptic('light');
     if (onBack) {
@@ -17,8 +20,12 @@ export const CampusMapPage: React.FC<CampusMapPageProps> = ({ onBack }) => {
     }
   };
 
+  const handleSelectSpot = (room: RoomZone) => {
+    setSelectedSpot(room);
+  };
+
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-gt-standard pb-12 max-w-[620px] mx-auto overflow-x-hidden animate-in fade-in duration-200">
+    <div className="min-h-screen bg-[#f4f8fa] text-slate-900 font-gt-standard pb-12 max-w-[620px] mx-auto overflow-x-hidden animate-in fade-in duration-200">
       {/* 1. Permanent Sticky Top Navigation Bar */}
       <header className="sticky top-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-200/80 px-4 h-14 flex items-center justify-between">
         {/* Left: Back Button */}
@@ -34,10 +41,10 @@ export const CampusMapPage: React.FC<CampusMapPageProps> = ({ onBack }) => {
         {/* Center: Title & Subtitle */}
         <div className="flex-1 min-w-0 text-center px-2">
           <h1 className="font-bold text-[15px] text-slate-900 truncate">
-            Mappedin WebGL Playground
+            Denah 2D SMKN 8 Jakarta
           </h1>
           <p className="text-[11px] text-[#3d38f5] font-semibold">
-            Live Official Interactive 3D/2D Engine
+            Interactive Hotspot Blueprint 🗺️
           </p>
         </div>
 
@@ -47,22 +54,38 @@ export const CampusMapPage: React.FC<CampusMapPageProps> = ({ onBack }) => {
         </div>
       </header>
 
-      {/* 2. Main Map Area (Fokus Penuh ke Map) */}
+      {/* 2. Main Map Area (Fokus Penuh ke Denah Sesuai Gambar) */}
       <div className="p-3.5 space-y-3">
         {/* Banner Info Ringkas */}
         <div className="bg-[#eef0ff] border border-[#d8dbfe] rounded-2xl p-3 flex items-center gap-2.5 shadow-2xs">
           <Sparkles className="w-4 h-4 text-[#3d38f5] shrink-0" />
           <p className="text-[12px] text-slate-700 font-normal leading-snug">
-            Engine WebGL Mappedin asli dengan fisika momentum kamera, rotasi, zoom, dan seleksi poligon ruangan.
+            Geometri denah disesuaikan dengan tata letak sekolah. Ketuk ruangan atau pilih kategori di atas untuk melihat hotspot.
           </p>
         </div>
 
-        {/* 3. The Live Official Mappedin Map Component */}
-        <MappedinView
-          onSpaceClick={() => {
-            triggerHaptic('light');
-          }}
+        {/* 3. The Interactive Campus Map Component */}
+        <InteractiveCampusMap
+          onSelectLocation={handleSelectSpot}
+          selectedLocationId={selectedSpot?.id || 'kantin-utama'}
         />
+
+        {/* 4. Confirmed Status Alert (If selected) */}
+        {selectedSpot && (
+          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3.5 flex items-center gap-3 animate-in fade-in zoom-in-95 duration-150">
+            <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+              <Check className="w-4.5 h-4.5 stroke-[2.5]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">
+                Titik COD Terpilih
+              </p>
+              <p className="text-[13.5px] font-bold text-slate-900 truncate">
+                {selectedSpot.name} ({selectedSpot.buildingName} · Lantai {selectedSpot.floor})
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

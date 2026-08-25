@@ -13,3 +13,4 @@ export * from './reviewService';
 export * from './repostService';
 export * from './meetingPointService';
 export * from './orderNotificationService';
+export * from './realtimeService';

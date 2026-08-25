@@ -89,3 +89,18 @@ export async function removeFromCart(cartItemId: string) {
     throw error;
   }
 }
+
+/**
+ * Mengosongkan seluruh keranjang milik pengguna (biasanya dipanggil setelah checkout selesai)
+ */
+export async function clearCart(userId: string): Promise<void> {
+  const { error } = await supabase
+    .from('cart_items')
+    .delete()
+    .eq('user_id', userId);
+
+  if (error) {
+    console.error(`Error clearing cart for user ${userId}:`, error.message);
+    throw error;
+  }
+}

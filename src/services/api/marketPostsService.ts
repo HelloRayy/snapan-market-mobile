@@ -283,3 +283,110 @@ export async function togglePostLike(postId: string, userId: string, isLiked: bo
   }
 }
 
+/**
+ * Fetch detail satu postingan berdasarkan postId beserta profil seller, suka, bookmark, dll.
+ */
+export async function getPostById(postId: string, currentUserId?: string): Promise<MarketPostWithSeller | null> {
+  const { data: post, error } = await supabase
+    .from('market_posts')
+    .select(`
+      *,
+      seller:profiles!market_posts_seller_id_fkey(*)
+    `)
+    .eq('id', postId)
+    .maybeSingle();
+
+  if (error || !post) {
+    if (error) console.error(`Error fetching post ${postId}:`, error.message);
+    return null;
+  }
+
+  // Check like count & is_liked
+  const { count: likesCount } = await supabase
+    .from('post_likes')
+    .select('*', { count: 'exact', head: true })
+    .eq('post_id', postId);
+
+  const { count: commentsCount } = await supabase
+    .from('post_comments')
+    .select('*', { count: 'exact', head: true })
+    .eq('post_id', postId);
+
+  let isLikedByUser = false;
+  let isBookmarkedByUser = false;
+
+  if (currentUserId) {
+    const { data: likeRecord } = await supabase
+      .from('post_likes')
+      .select('post_id')
+      .eq('post_id', postId)
+      .eq('user_id', currentUserId)
+      .maybeSingle();
+    isLikedByUser = !!likeRecord;
+
+    const { data: bmRecord } = await supabase
+      .from('post_bookmarks')
+      .select('post_id')
+      .eq('post_id', postId)
+      .eq('user_id', currentUserId)
+      .maybeSingle();
+    isBookmarkedByUser = !!bmRecord;
+  }
+
+  return {
+    ...post,
+    seller: post.seller as unknown as MarketPostWithSeller['seller'],
+    likes_count: likesCount || post.likes_count || 0,
+    comments_count: commentsCount || post.comments_count || 0,
+    is_liked_by_user: isLikedByUser,
+    is_bookmarked_by_user: isBookmarkedByUser
+  };
+}
+
+/**
+ * Update postingan yang sudah ada
+ */
+export async function updateMarketPost(postId: string, sellerId: string, payload: Partial<{
+  caption: string;
+  title: string;
+  description: string;
+  images: string[];
+  stock: number;
+  price: number;
+  original_price: number;
+  category: string;
+  location_tag: string;
+  topic_tag: string;
+  is_sold_out: boolean;
+}>) {
+  const { data, error } = await supabase
+    .from('market_posts')
+    .update(payload)
+    .eq('id', postId)
+    .eq('seller_id', sellerId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error(`Error updating post ${postId}:`, error.message);
+    throw error;
+  }
+
+  return data;
+}
+
+/**
+ * Hapus postingan milik sendiri
+ */
+export async function deleteMarketPost(postId: string, sellerId: string): Promise<void> {
+  const { error } = await supabase
+    .from('market_posts')
+    .delete()
+    .eq('id', postId)
+    .eq('seller_id', sellerId);
+
+  if (error) {
+    console.error(`Error deleting post ${postId}:`, error.message);
+    throw error;
+  }
+}

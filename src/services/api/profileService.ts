@@ -88,3 +88,36 @@ export async function toggleFollowUser(
     }
   }
 }
+
+/**
+ * Fetch profil pengguna berdasarkan User ID (UUID)
+ */
+export async function getProfileById(userId: string): Promise<ProfileWithFollowStats | null> {
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .maybeSingle();
+
+  if (error || !profile) {
+    if (error) console.error(`Error fetching profile for id ${userId}:`, error.message);
+    return null;
+  }
+
+  const { count: followersCount } = await supabase
+    .from('user_follows')
+    .select('*', { count: 'exact', head: true })
+    .eq('following_id', profile.id);
+
+  const { count: followingCount } = await supabase
+    .from('user_follows')
+    .select('*', { count: 'exact', head: true })
+    .eq('follower_id', profile.id);
+
+  return {
+    ...profile,
+    followers_count: followersCount || 0,
+    following_count: followingCount || 0,
+    is_followed_by_user: false
+  };
+}

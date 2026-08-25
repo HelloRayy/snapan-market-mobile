@@ -568,3 +568,58 @@ values
   ('studio_dkv',         3, 'Studio Desain Komunikasi Visual','lab',      'Depan pintu Lab DKV Multimedia',                 35.0, 30.0),
   ('corridor_fl3',       3, 'Koridor Kelas XII Lantai 3',    'corridor',  'Depan lorong kelas XII PPLG / AKL',              55.0, 30.0)
 on conflict (id) do nothing;
+
+
+-- ========================================================
+-- 👥 SOCIAL FEATURES: USER FOLLOWS & POST REPOSTS
+-- ========================================================
+
+-- 18. TABEL USER FOLLOWS (Sistem Ikuti / Following Antar Siswa)
+create table if not exists public.user_follows (
+  follower_id uuid not null references public.profiles(id) on delete cascade,
+  following_id uuid not null references public.profiles(id) on delete cascade,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  primary key (follower_id, following_id),
+  constraint check_not_self_follow check (follower_id != following_id)
+);
+
+
+-- 19. TABEL POST REPOSTS (Repost / Bagikan Ulang Postingan)
+create table if not exists public.post_reposts (
+  post_id uuid not null references public.market_posts(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  primary key (post_id, user_id)
+);
+
+
+-- ========================================================
+-- 🛡️ RLS POLICIES: USER FOLLOWS & POST REPOSTS
+-- ========================================================
+alter table public.user_follows enable row level security;
+alter table public.post_reposts enable row level security;
+
+-- User Follows: Publik bisa melihat daftar follow, user login bisa toggle follow
+drop policy if exists "Follows viewable by everyone" on public.user_follows;
+drop policy if exists "Users can follow others" on public.user_follows;
+drop policy if exists "Users can unfollow others" on public.user_follows;
+create policy "Follows viewable by everyone" on public.user_follows for select using (true);
+create policy "Users can follow others" on public.user_follows for insert with check (auth.uid() = follower_id);
+create policy "Users can unfollow others" on public.user_follows for delete using (auth.uid() = follower_id);
+
+-- Post Reposts: Publik bisa melihat repost, user login bisa toggle repost
+drop policy if exists "Reposts viewable by everyone" on public.post_reposts;
+drop policy if exists "Users can repost" on public.post_reposts;
+drop policy if exists "Users can remove repost" on public.post_reposts;
+create policy "Reposts viewable by everyone" on public.post_reposts for select using (true);
+create policy "Users can repost" on public.post_reposts for insert with check (auth.uid() = user_id);
+create policy "Users can remove repost" on public.post_reposts for delete using (auth.uid() = user_id);
+
+
+-- ========================================================
+-- ⚡ INDEXING: SOCIAL FEATURES
+-- ========================================================
+create index if not exists idx_user_follows_follower on public.user_follows(follower_id);
+create index if not exists idx_user_follows_following on public.user_follows(following_id);
+create index if not exists idx_post_reposts_post on public.post_reposts(post_id);
+create index if not exists idx_post_reposts_user on public.post_reposts(user_id);

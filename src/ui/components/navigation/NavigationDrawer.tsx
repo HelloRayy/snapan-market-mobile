@@ -14,6 +14,7 @@ import {
   BarChart2,
   Search,
   Palette,
+  MapPin,
 } from 'lucide-react';
 import { useAuth } from '@/ui/hooks/useAuth';
 
@@ -26,6 +27,7 @@ interface NavigationDrawerProps {
   onNavigateDownload: () => void;
   onNavigateColors?: () => void;
   onOpenCreateModal?: () => void;
+  onNavigateMap?: () => void;
 }
 
 export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
@@ -36,6 +38,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   onNavigateProfile,
   onNavigateDownload,
   onNavigateColors,
+  onNavigateMap,
   onOpenCreateModal,
 }) => {
   const { profile, signOut } = useAuth();
@@ -229,6 +232,23 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
         {/* 3. Bottom Utility & System Section (Pinned to Bottom with Distinct Separator) */}
         <div className="pt-2.5 pb-3 border-t border-neutral-200/90 bg-white space-y-1 shrink-0 leading-snug">
+          {/* Denah 2D SMKN 8 */}
+          <button
+            type="button"
+            onClick={() => {
+              if (onNavigateMap) {
+                onNavigateMap();
+              } else {
+                window.location.href = '/map';
+              }
+              onClose();
+            }}
+            className="flex items-center gap-3 h-[36px] w-full px-3 rounded-xl text-[14.5px] font-semibold text-[#3d38f5] hover:bg-[#eef0ff] active:bg-[#e0e4fe] transition-colors cursor-pointer leading-snug text-left"
+          >
+            <MapPin className="w-4.5 h-4.5 text-[#3d38f5] stroke-[2.2] shrink-0" />
+            <span className="truncate">Denah 2D SMKN 8 🗺️</span>
+          </button>
+
           {/* Brand Color Laboratory */}
           <button
             type="button"

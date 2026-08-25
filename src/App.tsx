@@ -13,6 +13,7 @@ import { useAuth } from '@/ui/hooks/useAuth';
 import { useSmoothScroll } from '@/ui/hooks/useSmoothScroll';
 
 import { ColorShowcasePage } from '@/ui/pages/ColorShowcasePage';
+import { CampusMapPage } from '@/ui/pages/CampusMapPage';
 
 // Dynamic URL Helper: Extracts matching post from /@username/post/:postId or #post-:postId
 function getPostFromLocation(): MarketPostItem | null {
@@ -88,6 +89,7 @@ export function App() {
   const postDetailOriginRouteRef = useRef<string>('/');
 
   // Dynamic Route Checks
+  const isMapRoute = currentRoute === '/map' || window.location.hash === '#map';
   const isColorsRoute = currentRoute === '/colors' || window.location.hash === '#colors';
   const isDownloadRoute = currentRoute === '/download' || window.location.hash === '#download';
   const isOnboardingRoute = currentRoute === '/onboarding' || window.location.hash === '#onboarding';
@@ -338,6 +340,13 @@ export function App() {
             </div>
           )}
 
+          {/* Interactive 2D Campus Map Page (Route /map or #map) */}
+          {isMapRoute && (
+            <div className="fixed inset-0 z-50 bg-[#f8fafc] overflow-y-auto">
+              <CampusMapPage onBack={navigateToHome} />
+            </div>
+          )}
+
           {/* Side Navigation Drawer (Sliding from Left with Backdrop Blur) */}
           <NavigationDrawer
             isOpen={isDrawerOpen}
@@ -353,6 +362,10 @@ export function App() {
             onNavigateColors={() => {
               setCurrentRoute('/colors');
               window.history.pushState({}, '', '/colors');
+            }}
+            onNavigateMap={() => {
+              setCurrentRoute('/map');
+              window.history.pushState({}, '', '/map');
             }}
           />
 

@@ -8,9 +8,10 @@ import { CheckoutSellerCard } from '../components/checkout/CheckoutSellerCard';
 interface CheckoutPageProps {
   post: MarketPostItem;
   onBack: () => void;
+  onUserClick?: (username: string) => void;
 }
 
-export const CheckoutPage: React.FC<CheckoutPageProps> = ({ post, onBack }) => {
+export const CheckoutPage: React.FC<CheckoutPageProps> = ({ post, onBack, onUserClick }) => {
   // Smooth scroll to top on mount
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -40,11 +41,12 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ post, onBack }) => {
           {/* B. Product Description with Read More */}
           <CheckoutDescription description={post.description || post.caption} />
 
-          {/* C. Seller Contact Card (Avatar, Name, Class, Chat & Phone/WA) */}
+          {/* C. Seller Contact Card (Avatar, Name, In-App Kumo Profile & Chat) */}
           <CheckoutSellerCard
             seller={post.seller}
             productTitle={post.title || post.caption}
             productPrice={post.price || 0}
+            onUserClick={onUserClick}
           />
 
           {/* Step berikutnya (Denah & Floating Bottom Bar) akan di-slicing di bawah ini */}

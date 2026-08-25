@@ -159,7 +159,13 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
 
   // Single Page Mode: CheckoutPage
   if (isCheckoutOpen) {
-    return <CheckoutPage post={post} onBack={() => setIsCheckoutOpen(false)} />;
+    return (
+      <CheckoutPage
+        post={post}
+        onBack={() => setIsCheckoutOpen(false)}
+        onUserClick={onUserClick}
+      />
+    );
   }
 
   return (

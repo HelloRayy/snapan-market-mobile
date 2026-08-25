@@ -97,6 +97,7 @@ export default defineConfig({
           'vendor-supabase': ['@supabase/supabase-js'],
           'vendor-state': ['zustand'],
           'vendor-mappedin': ['@mappedin/mappedin-js'],
+          'vendor-three': ['three'],
         }
       }
     }

@@ -38,7 +38,7 @@ export const CheckoutSellerCard: React.FC<CheckoutSellerCardProps> = ({
   };
 
   return (
-    <div className="bg-[#eaedf1] rounded-[22px] p-3.5 flex items-center justify-between gap-3 select-none font-gt-standard">
+    <div className="bg-neutral-50/90 rounded-2xl p-3.5 border border-neutral-200/80 flex items-center justify-between gap-3 select-none font-gt-standard shadow-2xs">
       {/* Sisi Kiri: Avatar & Info Penjual */}
       <div className="flex items-center gap-3 min-w-0 flex-1">
         <img

@@ -31,9 +31,9 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ post, onBack }) => {
         initialLiked={false}
       />
 
-      {/* 2. FORM CONTAINER (Dengan gap bersih dan sudut membulat elegan) */}
+      {/* 2. FORM CONTAINER (Tema Terang Bersih & Konsisten) */}
       <div className="px-3.5 pb-8 -mt-1">
-        <div className="bg-[#f8f9fa] rounded-[28px] border border-neutral-200/60 p-5 shadow-xs space-y-5">
+        <div className="bg-neutral-50/60 rounded-[28px] border border-neutral-200/80 p-5 shadow-2xs space-y-5">
           {/* A. Product Info Header (Category, Rating, Title, Location) */}
           <CheckoutProductHeader post={post} />
 

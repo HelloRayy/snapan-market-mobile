@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, MapPin, Tag } from 'lucide-react';
+import { Star, MapPin, Handshake } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 
 interface CheckoutProductHeaderProps {
@@ -15,30 +15,14 @@ export const CheckoutProductHeader: React.FC<CheckoutProductHeaderProps> = ({ po
 
   const titleText = post.title || (cleanTitle.length > 60 ? cleanTitle.slice(0, 58) + '...' : cleanTitle);
 
-  // Category Formatter
-  const getCategoryLabel = () => {
-    if (post.category) return post.category;
-    const catLower = (post.title || post.caption || '').toLowerCase();
-    if (catLower.includes('jasa') || catLower.includes('coding') || catLower.includes('web') || catLower.includes('desain')) {
-      return 'Jasa & Karya Digital';
-    }
-    if (catLower.includes('buku') || catLower.includes('modul') || catLower.includes('catatan')) {
-      return 'Buku & Pelajaran';
-    }
-    if (catLower.includes('makanan') || catLower.includes('snack') || catLower.includes('minum')) {
-      return 'Kuliner Sekolah';
-    }
-    return 'Marketplace Sekolah';
-  };
-
   return (
     <section className="space-y-3 select-none font-gt-standard">
-      {/* 1. Category Pill (Left) & Rating Pill (Right) - Borderless Soft Pastel */}
+      {/* 1. Availability Pill (Left) & Rating Pill (Right) - Borderless Soft Pastel */}
       <div className="flex items-center justify-between gap-2">
-        {/* Category Pill with Primary Blue Accent (Borderless) */}
+        {/* Ready for COD Badge */}
         <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 text-[#1d64ec] text-[12.5px] font-bold tracking-tight">
-          <Tag className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2]" />
-          <span>{getCategoryLabel()}</span>
+          <Handshake className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2]" />
+          <span>Ready for COD</span>
         </div>
 
         {/* Rating Pill with Warm Amber Accent (Borderless) */}

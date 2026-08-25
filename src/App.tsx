@@ -12,6 +12,8 @@ import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
 import { useAuth } from '@/ui/hooks/useAuth';
 import { useSmoothScroll } from '@/ui/hooks/useSmoothScroll';
 
+import { ColorShowcasePage } from '@/ui/pages/ColorShowcasePage';
+
 // Dynamic URL Helper: Extracts matching post from /@username/post/:postId or #post-:postId
 function getPostFromLocation(): MarketPostItem | null {
   if (typeof window === 'undefined') return null;
@@ -86,6 +88,7 @@ export function App() {
   const postDetailOriginRouteRef = useRef<string>('/');
 
   // Dynamic Route Checks
+  const isColorsRoute = currentRoute === '/colors' || window.location.hash === '#colors';
   const isDownloadRoute = currentRoute === '/download' || window.location.hash === '#download';
   const isOnboardingRoute = currentRoute === '/onboarding' || window.location.hash === '#onboarding';
   const isSearchRoute = currentRoute === '/search' || window.location.hash === '#search';
@@ -328,6 +331,13 @@ export function App() {
             />
           )}
 
+          {/* Color Laboratory Showcase Page (Route /colors or #colors) */}
+          {isColorsRoute && (
+            <div className="fixed inset-0 z-50 bg-[#f8f9fa] overflow-y-auto">
+              <ColorShowcasePage onBack={navigateToHome} />
+            </div>
+          )}
+
           {/* Side Navigation Drawer (Sliding from Left with Backdrop Blur) */}
           <NavigationDrawer
             isOpen={isDrawerOpen}
@@ -339,6 +349,10 @@ export function App() {
             onNavigateDownload={() => {
               setCurrentRoute('/download');
               window.history.pushState({}, '', '/download');
+            }}
+            onNavigateColors={() => {
+              setCurrentRoute('/colors');
+              window.history.pushState({}, '', '/colors');
             }}
           />
 

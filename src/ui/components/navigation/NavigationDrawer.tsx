@@ -13,6 +13,7 @@ import {
   Heart,
   BarChart2,
   Search,
+  Palette,
 } from 'lucide-react';
 import { useAuth } from '@/ui/hooks/useAuth';
 
@@ -23,6 +24,7 @@ interface NavigationDrawerProps {
   onNavigateSearch?: () => void;
   onNavigateProfile: (username: string) => void;
   onNavigateDownload: () => void;
+  onNavigateColors?: () => void;
   onOpenCreateModal?: () => void;
 }
 
@@ -33,6 +35,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   onNavigateSearch,
   onNavigateProfile,
   onNavigateDownload,
+  onNavigateColors,
   onOpenCreateModal,
 }) => {
   const { profile, signOut } = useAuth();
@@ -226,6 +229,23 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
         {/* 3. Bottom Utility & System Section (Pinned to Bottom with Distinct Separator) */}
         <div className="pt-2.5 pb-3 border-t border-neutral-200/90 bg-white space-y-1 shrink-0 leading-snug">
+          {/* Brand Color Laboratory */}
+          <button
+            type="button"
+            onClick={() => {
+              if (onNavigateColors) {
+                onNavigateColors();
+              } else {
+                window.location.href = '/colors';
+              }
+              onClose();
+            }}
+            className="flex items-center gap-3 h-[36px] w-full px-3 rounded-xl text-[14.5px] font-semibold text-indigo-600 hover:bg-indigo-50 active:bg-indigo-100/70 transition-colors cursor-pointer leading-snug text-left"
+          >
+            <Palette className="w-4.5 h-4.5 text-indigo-600 stroke-[2.2] shrink-0" />
+            <span className="truncate">Brand Color Lab 🎨</span>
+          </button>
+
           {/* Unduh Aplikasi */}
           <button
             type="button"

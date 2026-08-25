@@ -60,16 +60,6 @@ export const CheckoutProductHeader: React.FC<CheckoutProductHeaderProps> = ({ po
           SMKN 8 Jakarta · <span className="text-slate-700 font-medium">{post.seller.classGroup || 'XII PPLG 1'}</span>
         </span>
       </div>
-
-      {/* 4. Section Header (Facilities / Spesifikasi) */}
-      <div className="flex items-center justify-between pt-2">
-        <h3 className="font-bold text-[16px] text-slate-900 tracking-tight">
-          Facilities
-        </h3>
-        <span className="text-slate-400 font-medium text-[13px] hover:text-slate-700 cursor-pointer">
-          See all
-        </span>
-      </div>
     </section>
   );
 };

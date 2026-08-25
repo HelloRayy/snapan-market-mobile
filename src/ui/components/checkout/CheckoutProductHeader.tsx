@@ -33,16 +33,16 @@ export const CheckoutProductHeader: React.FC<CheckoutProductHeaderProps> = ({ po
 
   return (
     <section className="space-y-3 select-none font-gt-standard">
-      {/* 1. Category Pill (Left) & Rating Pill (Right) - Signature Light Accents */}
+      {/* 1. Category Pill (Left) & Rating Pill (Right) - Borderless Soft Pastel */}
       <div className="flex items-center justify-between gap-2">
-        {/* Category Pill with Primary Blue Accent */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-[#1d64ec] text-[12px] font-bold tracking-tight border border-blue-100/80 shadow-2xs">
+        {/* Category Pill with Primary Blue Accent (Borderless) */}
+        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 text-[#1d64ec] text-[12.5px] font-bold tracking-tight">
           <Tag className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2]" />
           <span>{getCategoryLabel()}</span>
         </div>
 
-        {/* Rating Pill with Warm Amber Accent */}
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-900 text-[12px] font-semibold border border-amber-200/60 shadow-2xs">
+        {/* Rating Pill with Warm Amber Accent (Borderless) */}
+        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 text-amber-900 text-[12.5px] font-bold">
           <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400 stroke-none" />
           <span>4.5</span>
         </div>

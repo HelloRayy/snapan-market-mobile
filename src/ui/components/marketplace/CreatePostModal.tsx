@@ -1,71 +1,29 @@
 import React, { useState } from 'react';
 import {
   X,
-  FileText,
-  MoreHorizontal,
   Image as ImageIcon,
   MapPin,
   PartyPopper,
   Sparkles,
   ChevronRight,
-  Trash2,
-  Smile,
-  BarChart2,
-  Music,
   Play,
   Volume2,
-  ArrowLeft,
-  Search,
-  Navigation,
 } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { triggerHaptic } from '@/utils/haptics';
 import { ThreadsTopicIcon } from '@/ui/components/icons';
 import { ConfirmActionModal } from '@/ui/components/ui/ConfirmActionModal';
-
-interface TopicOption {
-  id: string;
-  name: string;
-  isOfficial: boolean;
-  icon?: 'threads' | 'party-popper';
-  subtitle?: string;
-}
-
-const PRESET_TOPICS: TopicOption[] = [
-  { id: 't-1', name: 'frontend', isOfficial: true, icon: 'threads', subtitle: '1.2M anggota · 220 postingan baru' },
-  { id: 't-2', name: 'PJBL', isOfficial: true, icon: 'party-popper', subtitle: 'Project Based Learning SMKN 8' },
-  { id: 't-3', name: 'JajananKantin', isOfficial: true, icon: 'threads', subtitle: 'Kantin Sekolah & Snack' },
-  { id: 't-4', name: 'Github', isOfficial: false, subtitle: '92 postingan baru' },
-  { id: 't-5', name: 'PrelovedOutfit', isOfficial: false, subtitle: '136 postingan baru' },
-];
-
-interface SchoolPlace {
-  id: string;
-  name: string;
-  subtitle: string;
-  distance: string;
-}
-
-const RICH_SCHOOL_PLACES: SchoolPlace[] = [
-  { id: 'p1', name: 'Lab PPLG 1 & 2', subtitle: 'Gedung Kejuruan Lantai 2 · SMKN 8 Semarang', distance: 'Sekitar sini' },
-  { id: 'p2', name: 'Kantin Belakang SMKN 8', subtitle: 'Area Pujasera & Kuliner Siswa', distance: '50 m' },
-  { id: 'p3', name: 'Lapangan Utama SMKN 8', subtitle: 'Area Olahraga & Lapangan Upacara', distance: '30 m' },
-  { id: 'p4', name: 'Perpustakaan Sekolah', subtitle: 'Gedung Utama Lantai 1', distance: '40 m' },
-  { id: 'p5', name: 'Lobi Depan & Ruang OSIS', subtitle: 'Gerbang Utama & Pos Keamanan', distance: '80 m' },
-  { id: 'p6', name: 'Studio DKV', subtitle: 'Gedung Kreatif Lantai 2', distance: '60 m' },
-  { id: 'p7', name: 'Bengkel TJKT / Jaringan', subtitle: 'Gedung Teknologi Barat', distance: '70 m' },
-  { id: 'p8', name: 'Musholla As-Salam SMKN 8', subtitle: 'Tempat Ibadah Sekolah', distance: '90 m' },
-];
-
-const PRESET_EMOJIS = ['🔥', '😍', '🙌', '✨', '⚡', '💯', '❤️', '👏', '🚀', '💡', '🍱', '💻'];
-
-const PRESET_GIFS = [
-  { id: 'g1', title: 'Coding Cat', url: 'https://images.unsplash.com/photo-1534972195531-a756b1146245?w=400&q=80' },
-  { id: 'g2', title: 'Let\'s Go', url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&q=80' },
-  { id: 'g3', title: 'Yummy Food', url: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&q=80' },
-  { id: 'g4', title: 'Deal Success', url: 'https://images.unsplash.com/photo-1556742049-0a67e55722c6?w=400&q=80' },
-];
-
+import {
+  TopicOption,
+  PRESET_TOPICS,
+  RICH_SCHOOL_PLACES,
+} from './create-post/types';
+import { CreatePostLocationPicker } from './create-post/CreatePostLocationPicker';
+import { CreatePostProductFields } from './create-post/CreatePostProductFields';
+import { CreatePostHeader } from './create-post/CreatePostHeader';
+import { CreatePostFooter } from './create-post/CreatePostFooter';
+import { CreatePostDraftsSheet } from './create-post/CreatePostDraftsSheet';
+import { CreatePostMediaToolbar } from './create-post/CreatePostMediaToolbar';
 interface CreatePostModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -419,181 +377,31 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
       {/* 🗺️ DEDICATED "PILIH TEMPAT" SCREEN (Matching Meta Threads Reference Layout) */}
       {/* ========================================================================= */}
       {showLocationPicker ? (
-        <div className="flex-1 flex flex-col bg-white overflow-hidden animate-in fade-in duration-200">
-          {/* Header (Grid layout: [Kembali] --- [Pilih tempat] --- [Spacer]) */}
-          <div className="grid grid-cols-[48px_1fr_48px] items-center text-slate-900 border-b border-neutral-100 h-14 px-3 leading-snug shrink-0">
-            <button
-              type="button"
-              onClick={() => setShowLocationPicker(false)}
-              className="flex items-center justify-center h-8 w-8 rounded-full hover:bg-neutral-100 text-slate-700 transition-colors cursor-pointer"
-              aria-label="Kembali"
-            >
-              <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
-            </button>
-            <h1 className="font-bold text-center text-[16px] text-slate-900 leading-snug">
-              Pilih tempat
-            </h1>
-            <div className="w-6" />
-          </div>
-
-          {/* Searchbar & "Sekitar Sini" (GPS Navigation Button) */}
-          <div className="flex items-center gap-x-2.5 pt-3 px-4 leading-snug">
-            <div className="flex-1 flex items-center gap-2 py-2 px-3.5 bg-neutral-100/90 rounded-2xl border border-neutral-200/80 leading-snug focus-within:border-[#1d64ec] focus-within:bg-white transition-all">
-              <Search className="w-4 h-4 text-slate-500 shrink-0" />
-              <input
-                type="text"
-                autoFocus
-                placeholder="Cari tempat atau ketik lokasi..."
-                value={locationSearchQuery}
-                onChange={(e) => setLocationSearchQuery(e.target.value)}
-                className="w-full text-[14px] text-slate-900 placeholder:text-slate-400 bg-transparent focus:outline-none leading-snug"
-              />
-              {locationSearchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setLocationSearchQuery('')}
-                  className="text-slate-400 hover:text-slate-700"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedLocation('📍 Sekitar SMKN 8 Semarang');
-                setShowLocationPicker(false);
-                setLocationSearchQuery('');
-              }}
-              className="flex items-center justify-center h-10 w-10 rounded-2xl bg-neutral-100 hover:bg-neutral-200/80 text-slate-800 transition-colors cursor-pointer shrink-0"
-              title="Gunakan lokasi saat ini (Sekitar sini)"
-            >
-              <Navigation className="w-4.5 h-4.5 stroke-[2] text-[#1d64ec]" />
-            </button>
-          </div>
-
-          {/* Place Results & Suggestions List */}
-          <div data-lenis-prevent className="flex-1 overflow-y-auto px-4 py-3 leading-snug scrollbar-none touch-pan-y">
-            {/* Custom Input Option if user typed something */}
-            {locationSearchQuery.trim() && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedLocation(`📍 ${locationSearchQuery.trim()}`);
-                  setShowLocationPicker(false);
-                  setLocationSearchQuery('');
-                }}
-                className="w-full flex items-center justify-between py-3 px-3.5 mb-2.5 rounded-2xl bg-blue-50/80 hover:bg-blue-100/70 border border-blue-200/80 text-left transition-colors cursor-pointer shadow-2xs"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-8 h-8 rounded-xl bg-[#1d64ec] text-white flex items-center justify-center shrink-0">
-                    <MapPin className="w-4 h-4 stroke-[2.2]" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-[14px] font-bold text-[#1d64ec] truncate">
-                      Gunakan "{locationSearchQuery.trim()}"
-                    </p>
-                    <p className="text-[11.5px] text-blue-600/80 truncate">
-                      Tambahkan sebagai lokasi baru
-                    </p>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-[#1d64ec] shrink-0" />
-              </button>
-            )}
-
-            <div className="text-[11.5px] font-bold text-slate-500 uppercase tracking-wider px-1 mb-2">
-              Rekomendasi Titik Temu SMKN 8
-            </div>
-
-            <ul className="divide-y divide-neutral-100 bg-white rounded-2xl border border-neutral-100 shadow-2xs overflow-hidden">
-              {filteredPlaces.map((place) => (
-                <li key={place.id}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedLocation(place.name);
-                      setShowLocationPicker(false);
-                      setLocationSearchQuery('');
-                    }}
-                    className="w-full flex items-center justify-between py-3 px-3.5 hover:bg-neutral-50 active:bg-neutral-100/80 text-left transition-colors cursor-pointer group"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-8 h-8 rounded-xl bg-neutral-100 group-hover:bg-neutral-200/80 flex items-center justify-center text-slate-700 shrink-0 transition-colors">
-                        <MapPin className="w-4 h-4 stroke-[2]" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-[14px] font-semibold text-slate-900 truncate group-hover:text-[#1d64ec] transition-colors">
-                          {place.name}
-                        </p>
-                        <p className="text-[12px] text-slate-500 truncate">
-                          {place.subtitle}
-                        </p>
-                      </div>
-                    </div>
-
-                    <span className="text-[11.5px] text-slate-500 font-semibold shrink-0 ml-2">
-                      {place.distance}
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+        <CreatePostLocationPicker
+          onBack={() => setShowLocationPicker(false)}
+          searchQuery={locationSearchQuery}
+          onSearchChange={setLocationSearchQuery}
+          onSelectLocation={(loc) => {
+            setSelectedLocation(loc);
+            setShowLocationPicker(false);
+            setLocationSearchQuery('');
+          }}
+          filteredPlaces={filteredPlaces}
+        />
       ) : (
         /* ========================================================================= */
         /* 📝 MAIN THREAD / PRODUCT FORM SCREEN                                      */
         /* ========================================================================= */
         <>
-          {/* Top Bar Header: [ Batal ] --- [ Title (Dead Centered to Screen) ] --- [ Draft & Options ] */}
-          <div className="relative px-4 h-14 flex items-center justify-between border-b border-neutral-200/80 bg-white shrink-0">
-            <button
-              type="button"
-              onClick={handleCancelClick}
-              className="text-[15px] font-medium text-slate-900 hover:opacity-75 active:scale-95 transition-all cursor-pointer z-10"
-            >
-              Batal
-            </button>
-
-            {/* Absolute Dead Center to Screen */}
-            <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
-              <h2 className="text-[15.5px] font-bold text-slate-900 tracking-tight flex items-center gap-1.5 pointer-events-auto select-none">
-                {postMode === 'product' ? (
-                  <span className="text-[#1d64ec]">Jual Produk</span>
-                ) : (
-                  <span>Utas Baru</span>
-                )}
-              </h2>
-            </div>
-
-            <div className="flex items-center gap-2 z-10">
-              {/* Draft Icon Button with Active Indicator Dot */}
-              <button
-                type="button"
-                onClick={() => {
-                  refreshSavedDraft();
-                  setShowDraftsSheet(true);
-                }}
-                className="relative text-slate-600 hover:text-slate-900 transition-colors p-1.5 rounded-full hover:bg-neutral-100 cursor-pointer"
-                title="Lihat Draf Tersimpan"
-              >
-                <FileText className="w-5 h-5 stroke-[1.8]" />
-                {savedDraft && (
-                  <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-[#1d64ec] border-2 border-white" />
-                )}
-              </button>
-
-              <button
-                type="button"
-                className="text-slate-600 hover:text-slate-900 transition-colors p-1.5 rounded-full hover:bg-neutral-100 cursor-pointer"
-                title="Opsi"
-              >
-                <MoreHorizontal className="w-5 h-5 stroke-[1.8]" />
-              </button>
-            </div>
-          </div>
+          <CreatePostHeader
+            postMode={postMode}
+            onCancel={handleCancelClick}
+            onOpenDrafts={() => {
+              refreshSavedDraft();
+              setShowDraftsSheet(true);
+            }}
+            hasSavedDraft={!!savedDraft}
+          />
 
           {/* Form Scrollable Body */}
           <div data-lenis-prevent className="p-4 pb-48 overflow-y-auto flex-1 relative max-w-lg mx-auto w-full overscroll-contain scroll-pb-40 scrollbar-none touch-pan-y">
@@ -909,187 +717,41 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     </div>
                   )}
 
-                  {/* 😊 Quick Emoji Carousel Bar */}
-                  {showEmojiBar && (
-                    <div className="flex items-center gap-2 py-1.5 overflow-x-auto scrollbar-none animate-toast-pop select-none">
-                      {PRESET_EMOJIS.map((em, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => handleInsertEmoji(em)}
-                          className="w-8 h-8 rounded-xl bg-neutral-100 hover:bg-neutral-200/80 active:scale-90 flex items-center justify-center text-lg transition-transform cursor-pointer shrink-0"
-                        >
-                          {em}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* 👾 Quick GIF Selector Carousel */}
-                  {showGifPicker && (
-                    <div className="py-2 space-y-1.5 animate-toast-pop select-none">
-                      <div className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider px-1">
-                        Pilih GIF Reaksi
-                      </div>
-                      <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-0.5">
-                        {PRESET_GIFS.map((gif) => (
-                          <button
-                            key={gif.id}
-                            type="button"
-                            onClick={() => {
-                              setSelectedGif(gif.url);
-                              setShowGifPicker(false);
-                            }}
-                            className="relative w-20 h-16 rounded-xl overflow-hidden border border-neutral-200 hover:border-[#1d64ec] shrink-0 group cursor-pointer transition-all"
-                          >
-                            <img src={gif.url} alt={gif.title} className="w-full h-full object-cover" />
-                            <span className="absolute inset-x-0 bottom-0 bg-black/60 text-white text-[9px] font-semibold truncate px-1 py-0.5 text-center">
-                              {gif.title}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* 🌟 Pure Meta Threads 7-Icon Action Toolbar */}
-                  <div className="flex items-center justify-between flex-wrap gap-2 pt-2.5 select-none">
-                    {/* 7 Meta Threads Action Icons */}
-                    <div className="flex items-center gap-1">
-                      {/* 1. Galeri / Foto */}
-                      <button
-                        type="button"
-                        onClick={handleAddDummyImage}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
-                          images.length > 0
-                            ? 'bg-blue-50 text-[#1d64ec]'
-                            : 'text-slate-600 hover:text-slate-900 hover:bg-neutral-100'
-                        }`}
-                        title="Unggah Foto"
-                      >
-                        <ImageIcon className="w-4.5 h-4.5 stroke-[2]" />
-                      </button>
-
-                      {/* 2. GIF Picker */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowGifPicker(!showGifPicker);
-                          setShowEmojiBar(false);
-                        }}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
-                          selectedGif || showGifPicker
-                            ? 'bg-blue-50 text-[#1d64ec]'
-                            : 'text-slate-600 hover:text-slate-900 hover:bg-neutral-100'
-                        }`}
-                        title="Sisipkan GIF"
-                      >
-                        <span className="text-[11px] font-bold px-1 py-0.5 rounded border border-current leading-none">
-                          GIF
-                        </span>
-                      </button>
-
-                      {/* 3. Emoji Picker */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowEmojiBar(!showEmojiBar);
-                          setShowGifPicker(false);
-                        }}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
-                          showEmojiBar
-                            ? 'bg-blue-50 text-[#1d64ec]'
-                            : 'text-slate-600 hover:text-slate-900 hover:bg-neutral-100'
-                        }`}
-                        title="Sisipkan Emoji"
-                      >
-                        <Smile className="w-4.5 h-4.5 stroke-[2]" />
-                      </button>
-
-                      {/* 4. Polling / Jajak Pendapat */}
-                      <button
-                        type="button"
-                        onClick={() => setShowPollBuilder(!showPollBuilder)}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
-                          showPollBuilder
-                            ? 'bg-blue-50 text-[#1d64ec]'
-                            : 'text-slate-600 hover:text-slate-900 hover:bg-neutral-100'
-                        }`}
-                        title="Buat Jajak Pendapat / Polling"
-                      >
-                        <BarChart2 className="w-4.5 h-4.5 stroke-[2]" />
-                      </button>
-
-                      {/* 5. Topic Tagging (Threads 3-Dot Topic) */}
-                      <button
-                        type="button"
-                        onClick={() => setShowTopicDropdown(!showTopicDropdown)}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
-                          selectedTopic
-                            ? 'bg-blue-50 text-[#1d64ec]'
-                            : 'text-slate-600 hover:text-slate-900 hover:bg-neutral-100'
-                        }`}
-                        title="Pilih Topik"
-                      >
-                        <ThreadsTopicIcon className="w-4 h-4 text-current fill-current" />
-                      </button>
-
-                      {/* 6. Tag Lokasi Sekolah -> Opens Dedicated "Pilih tempat" Screen */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowLocationPicker(true);
-                          setShowEmojiBar(false);
-                          setShowGifPicker(false);
-                        }}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
-                          selectedLocation
-                            ? 'bg-blue-50 text-[#1d64ec]'
-                            : 'text-slate-600 hover:text-slate-900 hover:bg-neutral-100'
-                        }`}
-                        title="Pilih Tempat / Lokasi COD Sekolah"
-                      >
-                        <MapPin className="w-4.5 h-4.5 stroke-[2]" />
-                      </button>
-
-                      {/* 7. Voice Note / Audio */}
-                      <button
-                        type="button"
-                        onClick={() => setShowVoiceNote(!showVoiceNote)}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
-                          showVoiceNote
-                            ? 'bg-blue-50 text-[#1d64ec]'
-                            : 'text-slate-600 hover:text-slate-900 hover:bg-neutral-100'
-                        }`}
-                        title="Rekaman Suara / Audio"
-                      >
-                        <Music className="w-4.5 h-4.5 stroke-[2]" />
-                      </button>
-                    </div>
-
-                    {/* Mode "Jual Barang" Toggle Switch Pill */}
-                    <div
-                      onClick={() => setPostMode(postMode === 'product' ? 'thread' : 'product')}
-                      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all cursor-pointer select-none active:scale-95 ${
-                        postMode === 'product'
-                          ? 'bg-blue-50/90 border-blue-200 text-[#1d64ec] font-bold shadow-2xs'
-                          : 'bg-neutral-100/90 hover:bg-neutral-200/80 border-neutral-200/80 text-slate-800 font-semibold'
-                      }`}
-                    >
-                      <div
-                        className={`w-7.5 h-4 rounded-full p-0.5 transition-colors duration-200 flex items-center shrink-0 ${
-                          postMode === 'product' ? 'bg-[#1d64ec]' : 'bg-neutral-300'
-                        }`}
-                      >
-                        <div
-                          className={`w-3 h-3 rounded-full bg-white shadow-xs transition-transform duration-200 transform-gpu ${
-                            postMode === 'product' ? 'translate-x-3.5' : 'translate-x-0'
-                          }`}
-                        />
-                      </div>
-                      <span className="text-[12px] leading-none">Jual Barang</span>
-                    </div>
-                  </div>
+                  <CreatePostMediaToolbar
+                    hasImages={images.length > 0}
+                    onAddImage={handleAddDummyImage}
+                    showGifPicker={showGifPicker}
+                    onToggleGifPicker={() => {
+                      setShowGifPicker(!showGifPicker);
+                      setShowEmojiBar(false);
+                    }}
+                    selectedGif={selectedGif}
+                    onSelectGif={(url) => {
+                      setSelectedGif(url);
+                      setShowGifPicker(false);
+                    }}
+                    showEmojiBar={showEmojiBar}
+                    onToggleEmojiBar={() => {
+                      setShowEmojiBar(!showEmojiBar);
+                      setShowGifPicker(false);
+                    }}
+                    onInsertEmoji={handleInsertEmoji}
+                    showPollBuilder={showPollBuilder}
+                    onTogglePollBuilder={() => setShowPollBuilder(!showPollBuilder)}
+                    showTopicDropdown={showTopicDropdown}
+                    onToggleTopicDropdown={() => setShowTopicDropdown(!showTopicDropdown)}
+                    selectedTopic={selectedTopic}
+                    onOpenLocationPicker={() => {
+                      setShowLocationPicker(true);
+                      setShowEmojiBar(false);
+                      setShowGifPicker(false);
+                    }}
+                    selectedLocation={selectedLocation}
+                    showVoiceNote={showVoiceNote}
+                    onToggleVoiceNote={() => setShowVoiceNote(!showVoiceNote)}
+                    postMode={postMode}
+                    onTogglePostMode={() => setPostMode(postMode === 'product' ? 'thread' : 'product')}
+                  />
                 </div>
               </div>
             </div>
@@ -1200,185 +862,22 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
 
             {/* 4. Product Mode Fields (Original Rich Seller Form) */}
             {postMode === 'product' && (
-              <div
-                className="mt-4 space-y-4 w-full pt-3 border-t border-neutral-100 transform-gpu animate-sheet-slide"
-                style={{ willChange: 'transform' }}
-              >
-                {/* Field 1: Nama / Judul Barang */}
-                <div className="space-y-1">
-                  <label className="block text-[12.5px] font-bold text-slate-800">
-                    Nama Barang / Jasa <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Tulis nama barang atau jasa..."
-                    value={productTitle}
-                    onFocus={handleInputFocus}
-                    onChange={(e) => setProductTitle(e.target.value)}
-                    className="w-full px-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white font-semibold text-slate-900 placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs"
-                  />
-                </div>
-
-                {/* Field 2: Harga (Rp) */}
-                <div className="space-y-1">
-                  <label className="block text-[12.5px] font-bold text-slate-800">
-                    Harga (Rp) <span className="text-rose-500">*</span>
-                  </label>
-                  <div className="relative">
-                    {priceInput && (
-                      <span className="absolute left-3.5 top-2.5 text-[13.5px] font-bold text-slate-900 pointer-events-none select-none">
-                        Rp
-                      </span>
-                    )}
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      placeholder="Masukkan nominal harga..."
-                      value={priceInput}
-                      onFocus={handleInputFocus}
-                      onChange={(e) => {
-                        const raw = e.target.value.replace(/[^0-9]/g, '');
-                        if (!raw) {
-                          setPriceInput('');
-                          return;
-                        }
-                        const formatted = new Intl.NumberFormat('id-ID').format(Number(raw));
-                        setPriceInput(formatted);
-                      }}
-                      className={`w-full ${
-                        priceInput ? 'pl-10 font-bold text-slate-900' : 'pl-3.5 font-normal text-slate-900'
-                      } pr-3.5 py-2.5 text-[14px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white placeholder:font-normal placeholder:text-neutral-400 transition-all shadow-2xs`}
-                    />
-                  </div>
-                </div>
-
-                {/* Field 3: Deskripsi Singkat / Rincian Barang */}
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-[12.5px] font-bold text-slate-800">
-                      Deskripsi Singkat
-                    </label>
-                    {250 - productDescription.length <= 30 && (
-                      <span
-                        className={`text-[11.5px] font-semibold transition-colors ${
-                          productDescription.length >= 250 ? 'text-rose-600 font-bold' : 'text-rose-500'
-                        }`}
-                      >
-                        {productDescription.length >= 250
-                          ? 'Batas maksimal tercapai'
-                          : `Sisa ${250 - productDescription.length} karakter`}
-                      </span>
-                    )}
-                  </div>
-                  <textarea
-                    rows={4}
-                    maxLength={250}
-                    placeholder="Tulis kondisi barang, kelengkapan, atau alasan jual..."
-                    value={productDescription}
-                    onFocus={handleInputFocus}
-                    onChange={(e) => setProductDescription(e.target.value)}
-                    className={`w-full min-h-[96px] px-3.5 py-2.5 text-[14px] leading-relaxed rounded-xl border ${
-                      productDescription.length >= 250
-                        ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-500/10'
-                        : 'border-neutral-300 focus:border-[#1d64ec] focus:ring-blue-500/10'
-                    } focus:outline-none focus:ring-4 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs resize-none`}
-                  />
-                </div>
-
-                {/* Field 4: Titik COD di Sekolah (Direct Form Field + 1-Tap Chips) */}
-                <div className="space-y-1.5 pt-0.5">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-[12.5px] font-bold text-slate-800">
-                      Titik COD di Sekolah
-                    </label>
-                    {locationInput && (
-                      <button
-                        type="button"
-                        onClick={() => setLocationInput('')}
-                        className="text-[11.5px] font-medium text-neutral-400 hover:text-rose-500 transition-colors cursor-pointer"
-                      >
-                        Hapus
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="relative">
-                    <MapPin className="absolute left-3.5 top-3 w-4 h-4 text-neutral-400 pointer-events-none" />
-                    <input
-                      type="text"
-                      placeholder="Ketik titik temu COD (Kantin, Lab, dll)..."
-                      value={locationInput}
-                      onFocus={handleInputFocus}
-                      onChange={(e) => setLocationInput(e.target.value)}
-                      className="w-full pl-9.5 pr-8 py-2.5 text-[13.5px] rounded-xl border border-neutral-300 focus:outline-none focus:border-[#1d64ec] focus:ring-4 focus:ring-blue-500/10 bg-white text-slate-900 placeholder:text-neutral-400 transition-all shadow-2xs font-normal"
-                    />
-                    {locationInput && (
-                      <button
-                        type="button"
-                        onClick={() => setLocationInput('')}
-                        className="absolute right-2.5 top-2.5 w-5 h-5 rounded-full bg-neutral-200/80 hover:bg-neutral-300 text-neutral-600 flex items-center justify-center transition-colors cursor-pointer"
-                      >
-                        <X className="w-3 h-3 stroke-[2.5]" />
-                      </button>
-                    )}
-                  </div>
-
-                  {/* 1-Tap Preset Recommendations */}
-                  <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
-                    {[
-                      { name: 'Kantin', emoji: '🍜' },
-                      { name: 'Lab PPLG', emoji: '💻' },
-                      { name: 'Perpustakaan', emoji: '📚' },
-                      { name: 'Depan Gerbang', emoji: '🏫' },
-                      { name: 'Lapangan', emoji: '⚽' },
-                      { name: 'Gazebo DKV', emoji: '☕' },
-                    ].map((loc) => {
-                      const isSelected = locationInput.toLowerCase() === loc.name.toLowerCase();
-                      return (
-                        <button
-                          key={loc.name}
-                          type="button"
-                          onClick={() => setLocationInput(isSelected ? '' : loc.name)}
-                          className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[12px] font-semibold transition-all cursor-pointer select-none active:scale-95 border ${
-                            isSelected
-                              ? 'bg-blue-50 border-blue-400 text-[#1d64ec] shadow-2xs font-bold'
-                              : 'bg-neutral-50 hover:bg-neutral-100/90 border-neutral-200 text-slate-700'
-                          }`}
-                        >
-                          <span>{loc.emoji}</span>
-                          <span>{loc.name}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
+              <CreatePostProductFields
+                productTitle={productTitle}
+                onProductTitleChange={setProductTitle}
+                priceInput={priceInput}
+                onPriceInputChange={setPriceInput}
+                productDescription={productDescription}
+                onProductDescriptionChange={setProductDescription}
+                locationInput={locationInput}
+                onLocationInputChange={setLocationInput}
+                onInputFocus={handleInputFocus}
+              />
             )}
           </div>
 
           {/* Floating Bottom Sticky Action Footer */}
-          <div
-            className="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-neutral-200/80 px-4 py-3 z-30 flex items-center justify-between max-w-lg mx-auto shadow-lg"
-            style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom, 12px))' }}
-          >
-            <span className="text-[13px] text-neutral-500 font-normal">
-              Siapa pun dapat membalas & mengutip
-            </span>
-
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={!canPost}
-              className={`h-9 px-5 rounded-full font-bold text-[14px] transition-all cursor-pointer shadow-md ${
-                canPost
-                  ? 'bg-[#101010] hover:bg-black text-white active:scale-95 shadow-black/10'
-                  : 'bg-neutral-100 text-neutral-400 cursor-not-allowed shadow-none'
-              }`}
-            >
-              Posting
-            </button>
-          </div>
+          <CreatePostFooter onSubmit={handleSubmit} canPost={canPost} />
         </>
       )}
 
@@ -1408,56 +907,18 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
       />
 
       {/* Saved Drafts Bottom Sheet */}
-      {showDraftsSheet && (
-        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs">
-          <div className="w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl border border-neutral-100 space-y-4 font-gt-standard max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
-              <h3 className="text-[16px] font-bold text-slate-900">Draf Tersimpan</h3>
-              <button
-                type="button"
-                onClick={() => setShowDraftsSheet(false)}
-                className="p-1 rounded-full hover:bg-neutral-100 text-neutral-400 hover:text-slate-800 cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {savedDraft ? (
-              <div className="p-3.5 rounded-2xl bg-neutral-50 border border-neutral-200 flex items-center justify-between gap-3">
-                <div
-                  className="flex-1 min-w-0 cursor-pointer"
-                  onClick={() => {
-                    if (savedDraft.caption) setCaption(savedDraft.caption);
-                    if (savedDraft.images) setImages(savedDraft.images);
-                    if (savedDraft.selectedTopic) setSelectedTopic(savedDraft.selectedTopic);
-                    setShowDraftsSheet(false);
-                  }}
-                >
-                  <p className="text-[13.5px] font-semibold text-slate-900 truncate">
-                    {savedDraft.caption || 'Draf tanpa judul'}
-                  </p>
-                  <p className="text-[11.5px] text-neutral-400">
-                    Disimpan {new Date(savedDraft.timestamp || Date.now()).toLocaleTimeString()}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setShowDeleteDraftConfirm(true)}
-                  className="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
-                  title="Hapus Draf"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <div className="py-8 text-center text-neutral-400 text-sm">
-                Belum ada draf yang disimpan.
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      <CreatePostDraftsSheet
+        isOpen={showDraftsSheet}
+        onClose={() => setShowDraftsSheet(false)}
+        savedDraft={savedDraft}
+        onSelectDraft={(draft) => {
+          if (draft.caption) setCaption(draft.caption);
+          if (draft.images) setImages(draft.images);
+          if (draft.selectedTopic) setSelectedTopic(draft.selectedTopic);
+          setShowDraftsSheet(false);
+        }}
+        onRequestDeleteDraft={() => setShowDeleteDraftConfirm(true)}
+      />
 
       {/* Delete Draft Confirmation Dialog */}
       <ConfirmActionModal

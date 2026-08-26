@@ -1,16 +1,13 @@
-import React, { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from 'react';
 import {
   ArrowLeft,
-  Search,
   SquarePen,
-  X,
   MoreHorizontal,
   CheckCheck,
+  Search,
 } from 'lucide-react';
-import { MarketBottomNav } from '@/ui/components/marketplace/MarketBottomNav';
+import { MobileSearchBar } from '@/ui/components/ui/MobileSearchBar';
 import { ClickableVerifiedBadge } from '@/ui/components/marketplace/VerifiedBadgeModal';
-import { useAuth } from '@/ui/hooks/useAuth';
 import { triggerHaptic } from '@/utils/haptics';
 
 interface DirectMessagesPageProps {
@@ -117,22 +114,11 @@ const MOCK_CONVERSATIONS: MockConversation[] = [
 
 export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
   onBack,
-  onNavigateHome,
-  onNavigateSearch,
-  onNavigateProfile,
   onSelectConversation,
   onOpenNewChatModal,
 }) => {
-  const { user, profile } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [activeFilter, setActiveFilter] = useState<'inbox' | 'requests'>('inbox');
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const myUsername =
-    profile?.full_name?.toLowerCase().replace(/\s+/g, '') ||
-    user?.user_metadata?.full_name?.toLowerCase().replace(/\s+/g, '') ||
-    'radityarayhannnn';
-
   const filteredConversations = MOCK_CONVERSATIONS.filter((conv) => {
     // 1. Search Query Filter
     const matchesSearch =
@@ -203,80 +189,14 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
         </div>
 
         {/* Row 2: SearchBar Capsule with Fluid Motion */}
-        <div className="w-full max-w-xl mx-auto px-4 pt-1 pb-3 flex items-center gap-2">
-          <div
-            className={`flex-1 flex items-center gap-2.5 h-[38px] px-3.5 rounded-full border backdrop-blur-md leading-snug transition-colors duration-150 ${
-              isSearchFocused
-                ? 'bg-neutral-100 border-neutral-300'
-                : 'bg-neutral-100/90 hover:bg-neutral-200/60 border-neutral-200/70'
-            } text-slate-900`}
-          >
-            <Search
-              className={`w-4 h-4 stroke-[2.2] shrink-0 transition-colors duration-150 ${
-                isSearchFocused ? 'text-slate-700' : 'text-neutral-400'
-              }`}
-            />
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => {
-                if (!searchQuery) {
-                  setIsSearchFocused(false);
-                }
-              }}
-              placeholder="Cari pesan..."
-              className="w-full bg-transparent text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-hidden py-0.5 leading-snug"
-            />
-            <AnimatePresence>
-              {searchQuery && (
-                <motion.button
-                  key="clear-search"
-                  type="button"
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.8, opacity: 0 }}
-                  transition={{ duration: 0.15 }}
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => {
-                    triggerHaptic('selection');
-                    setSearchQuery('');
-                    searchInputRef.current?.focus();
-                  }}
-                  className="w-4 h-4 rounded-full bg-neutral-300 hover:bg-neutral-400 text-white flex items-center justify-center cursor-pointer active:scale-90 shrink-0 transition-colors"
-                  aria-label="Hapus pencarian"
-                >
-                  <X className="w-2.5 h-2.5 stroke-[3]" />
-                </motion.button>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Cancel Button ("Batal") with Spring Physics */}
-          <AnimatePresence>
-            {(isSearchFocused || searchQuery.length > 0) && (
-              <motion.button
-                key="cancel-search"
-                type="button"
-                initial={{ opacity: 0, width: 0, x: 12 }}
-                animate={{ opacity: 1, width: 'auto', x: 0 }}
-                exit={{ opacity: 0, width: 0, x: 12 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => {
-                  triggerHaptic('selection');
-                  setSearchQuery('');
-                  setIsSearchFocused(false);
-                  searchInputRef.current?.blur();
-                }}
-                className="text-[14px] font-semibold text-[#1d64ec] hover:text-[#154ec1] active:opacity-70 whitespace-nowrap pl-1 pr-0.5 cursor-pointer select-none overflow-hidden shrink-0"
-              >
-                Batal
-              </motion.button>
-            )}
-          </AnimatePresence>
+        <div className="w-full max-w-xl mx-auto px-4 pt-1 pb-3">
+          <MobileSearchBar
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder="Cari pesan..."
+            onCancel={() => setSearchQuery('')}
+            variant="compact"
+          />
         </div>
 
         {/* Row 3: Sub-Navigation Filter Tab Pills ("Kotak Masuk" & "Permintaan") */}
@@ -437,26 +357,6 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
         )}
       </main>
 
-      {/* 5-Icon Standard Bottom Navigation (Hidden when searching to prevent floating above keyboard) */}
-      {!isSearchFocused && searchQuery.length === 0 && (
-        <MarketBottomNav
-          activeTab="messages"
-          userAvatar={
-            profile?.avatar_url ||
-            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80'
-          }
-          onTabChange={(tab: string) => {
-            triggerHaptic('selection');
-            if (tab === 'home') {
-              onNavigateHome?.();
-            } else if (tab === 'profile') {
-              onNavigateProfile?.(myUsername);
-            } else if (tab === 'search') {
-              onNavigateSearch?.();
-            }
-          }}
-        />
-      )}
     </div>
   );
 };

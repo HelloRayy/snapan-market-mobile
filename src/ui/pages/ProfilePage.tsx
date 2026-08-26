@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import { MarketPostCard } from '../components/marketplace/MarketPostCard';
 import { ReplyThreadCard } from '../components/marketplace/ReplyThreadCard';
-import { MarketBottomNav } from '../components/marketplace/MarketBottomNav';
 import { EditProfilePage, EditProfileData } from './EditProfilePage';
 import { SettingsBottomSheet } from '../components/profile/SettingsBottomSheet';
 import { MediaLightboxModal } from '../components/marketplace/MediaLightboxModal';
@@ -39,7 +38,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   onBack,
   onSelectPost,
   onAddToCart,
-  onNavigateTab,
   onOpenMenu,
 }) => {
   const { user, profile } = useAuth();
@@ -56,7 +54,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [selectedPostMode, setSelectedPostMode] = useState<'thread' | 'product'>('thread');
+  const [selectedPostMode] = useState<'thread' | 'product'>('thread');
   const [createdPosts, setCreatedPosts] = useState<MarketPostItem[]>([]);
 
   // Follow Toggle state (for viewing other users)
@@ -699,25 +697,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         />
       )}
 
-      {/* Bottom Nav: Only show if root tab view */}
-      {!onBack && (
-        <MarketBottomNav
-          activeTab="profile"
-          userAvatar={profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80'}
-          onTabChange={(tab) => {
-            if (tab === 'post') {
-              setSelectedPostMode('thread');
-              setIsCreateModalOpen(true);
-            } else {
-              onNavigateTab?.(tab);
-            }
-          }}
-          onPostClick={() => {
-            setSelectedPostMode('thread');
-            setIsCreateModalOpen(true);
-          }}
-        />
-      )}
 
       {/* Create New Post Full-Screen Modal */}
       <CreatePostModal

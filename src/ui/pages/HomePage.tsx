@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Loader2, Sparkles } from 'lucide-react';
 import { MarketHeader } from '../components/marketplace/MarketHeader';
 import { MarketPostCard } from '../components/marketplace/MarketPostCard';
-import { MarketBottomNav } from '../components/marketplace/MarketBottomNav';
 import { CreatePostModal } from '../components/marketplace/CreatePostModal';
 import { InstallBanner } from '../components/pwa/InstallBanner';
 import { OfflineBanner } from '../components/pwa/OfflineBanner';
@@ -28,16 +27,14 @@ export const HomePage: React.FC<HomePageProps> = ({
   onSelectPost,
   onNavigateToProfile,
   onNavigateSearch,
-  onNavigateMessages,
   onOpenMenu,
 }) => {
   const [feedTab, setFeedTab] = useState<'for-you' | 'latest'>('for-you');
-  const [bottomNavTab, setBottomNavTab] = useState('home');
   const [searchQuery, setSearchQuery] = useState('');
   
   // Create Post Modal State (1-Tap Zero Friction Trigger)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [selectedPostMode, setSelectedPostMode] = useState<'thread' | 'product'>('thread');
+  const [selectedPostMode] = useState<'thread' | 'product'>('thread');
 
   // Items State (Instant 0ms Cache-First Load) & Infinite Scroll Loading
   const [items, setItems] = useState<MarketPostItem[]>(() => {
@@ -429,28 +426,6 @@ export const HomePage: React.FC<HomePageProps> = ({
           )}
         </div>
       </main>
-
-      {/* Market 5-Icon Bottom Navigation (Rock-Solid Fixed Standard) */}
-      <MarketBottomNav
-        activeTab={bottomNavTab}
-        userAvatar={profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80'}
-        onTabChange={(tab) => {
-          triggerHaptic('selection');
-          if (tab === 'profile') {
-            onNavigateToProfile?.(profile?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn');
-          } else if (tab === 'messages') {
-            onNavigateMessages?.();
-          } else {
-            setBottomNavTab(tab);
-          }
-        }}
-        onPostClick={() => {
-          triggerHaptic('medium');
-          setSelectedPostMode('thread');
-          setIsCreateModalOpen(true);
-        }}
-      />
-
       {/* Create New Post Full-Screen Modal (with Bottom Segmented Slider) */}
       <CreatePostModal
         isOpen={isCreateModalOpen}

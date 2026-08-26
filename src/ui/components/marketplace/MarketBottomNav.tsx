@@ -1,5 +1,6 @@
 import React from 'react';
 import { Home, Send, Plus, Heart, User } from 'lucide-react';
+import { useVirtualKeyboard } from '@/ui/hooks/useVirtualKeyboard';
 
 interface MarketBottomNavProps {
   activeTab: string;
@@ -7,15 +8,6 @@ interface MarketBottomNavProps {
   onPostClick?: () => void;
   userAvatar?: string;
 }
-const isEditableElement = (el: Element | null): boolean => {
-  if (!el) return false;
-  const tag = el.tagName.toLowerCase();
-  if (tag === 'input') {
-    const type = (el as HTMLInputElement).type?.toLowerCase();
-    return !['button', 'checkbox', 'color', 'file', 'hidden', 'image', 'radio', 'reset', 'submit'].includes(type);
-  }
-  return tag === 'textarea' || (el as HTMLElement).isContentEditable;
-};
 
 export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   activeTab,
@@ -23,64 +15,10 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   onPostClick,
   userAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
 }) => {
-  // Robust Virtual Keyboard & Active Input Detection to prevent bottom nav from floating over the keyboard
-  const [isInputFocused, setIsInputFocused] = React.useState<boolean>(() => {
-    if (typeof document === 'undefined') return false;
-    return isEditableElement(document.activeElement);
-  });
-  const [isViewportResized, setIsViewportResized] = React.useState<boolean>(false);
-  const baselineHeightRef = React.useRef<number>(
-    typeof window !== 'undefined' ? Math.max(window.innerHeight, window.screen?.height || 0) : 0
-  );
+  // Auto-detect virtual keyboard and active text inputs to prevent bottom nav from floating over the keyboard
+  const { isKeyboardOpen } = useVirtualKeyboard();
 
-  React.useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    // 1. Focus-based input detection (instant & universal across all mobile/desktop platforms)
-    const handleFocusIn = (e: FocusEvent) => {
-      if (isEditableElement(e.target as Element)) {
-        setIsInputFocused(true);
-      }
-    };
-
-    const handleFocusOut = () => {
-      // Use a short tick so document.activeElement has transitioned to the next focused target
-      setTimeout(() => {
-        if (!isEditableElement(document.activeElement)) {
-          setIsInputFocused(false);
-        }
-      }, 50);
-    };
-
-    document.addEventListener('focusin', handleFocusIn);
-    document.addEventListener('focusout', handleFocusOut);
-
-    // 2. Viewport resize detection (for virtual keyboards that shrink visualViewport or innerHeight)
-    const handleViewportChange = () => {
-      const currentHeight = window.visualViewport?.height ?? window.innerHeight;
-      const baseline = baselineHeightRef.current;
-      const isShrunk = baseline > 0 && currentHeight < baseline * 0.78;
-      setIsViewportResized(isShrunk);
-    };
-
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', handleViewportChange);
-      window.visualViewport.addEventListener('scroll', handleViewportChange);
-    }
-    window.addEventListener('resize', handleViewportChange);
-
-    return () => {
-      document.removeEventListener('focusin', handleFocusIn);
-      document.removeEventListener('focusout', handleFocusOut);
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', handleViewportChange);
-        window.visualViewport.removeEventListener('scroll', handleViewportChange);
-      }
-      window.removeEventListener('resize', handleViewportChange);
-    };
-  }, []);
-
-  if (isInputFocused || isViewportResized) {
+  if (isKeyboardOpen) {
     return null;
   }
 

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { Search, X, SlidersHorizontal, ArrowLeft, Users, TrendingUp, ChevronRight } from 'lucide-react';
+import { SlidersHorizontal, ArrowLeft, Users, TrendingUp, ChevronRight, Search } from 'lucide-react';
+import { MobileSearchBar, MobileSearchBarRef } from '@/ui/components/ui/MobileSearchBar';
 import { ClickableVerifiedBadge } from '@/ui/components/marketplace/VerifiedBadgeModal';
-import { MarketBottomNav } from '@/ui/components/marketplace/MarketBottomNav';
 import { MarketPostCard } from '@/ui/components/marketplace/MarketPostCard';
 import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
 import { MarketPostItem } from '@/types/marketFeed';
@@ -212,17 +212,14 @@ interface SearchPageProps {
 export const SearchPage: React.FC<SearchPageProps> = ({
   onBack,
   onNavigateToProfile,
-  onNavigateHome,
-  onNavigateMessages,
   onSelectPost,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isInputFocused, setIsInputFocused] = useState(false);
   const [visibleSuggestedCount, setVisibleSuggestedCount] = useState(5);
   const [activeTab, setActiveTab] = useState<SearchTab>('top');
   const [followingMap, setFollowingMap] = useState<Record<string, boolean>>({});
-  const inputRef = useRef<HTMLInputElement>(null);
+  const searchBarRef = useRef<MobileSearchBarRef>(null);
 
   // Auto scroll to top when SearchPage opens
   useEffect(() => {
@@ -247,14 +244,13 @@ export const SearchPage: React.FC<SearchPageProps> = ({
   const handleCancelSearch = () => {
     setSearchQuery('');
     setIsSubmitted(false);
-    inputRef.current?.blur();
+    searchBarRef.current?.blur();
   };
 
   const handleExecuteSearch = () => {
     if (searchQuery.trim()) {
       setIsSubmitted(true);
-      setIsInputFocused(false);
-      inputRef.current?.blur();
+      searchBarRef.current?.blur();
       if (document.activeElement instanceof HTMLElement) {
         document.activeElement.blur();
       }
@@ -314,18 +310,24 @@ export const SearchPage: React.FC<SearchPageProps> = ({
       >
         <div className="max-w-xl mx-auto w-full">
           {/* Top Search Bar Row */}
-          <div className="flex items-center gap-2 pb-2.5">
-            {/* Capsule Search Bar with Integrated Back Arrow */}
-            <div className="flex items-center pl-2.5 pr-3 bg-neutral-100/90 text-slate-900 text-base rounded-[22px] h-11 leading-snug border border-neutral-200/70 flex-1 focus-within:bg-white focus-within:border-slate-400 focus-within:shadow-2xs transition-all">
-              {/* Integrated Back Arrow / Search Icon */}
-              {onBack ? (
+          <MobileSearchBar
+            ref={searchBarRef}
+            value={searchQuery}
+            onChange={handleQueryChange}
+            placeholder="Cari"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleExecuteSearch();
+              }
+            }}
+            leftIcon={
+              onBack ? (
                 <button
                   type="button"
                   onClick={() => {
                     if (isSubmitted || hasSearchQuery) {
                       setSearchQuery('');
                       setIsSubmitted(false);
-                      inputRef.current?.focus();
                     } else {
                       onBack();
                     }
@@ -339,63 +341,21 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                 <div className="w-8 h-8 flex items-center justify-center text-neutral-400 shrink-0 mr-1">
                   <Search className="w-4.5 h-4.5 stroke-[2.2]" />
                 </div>
-              )}
-
-              {/* Search Input Field */}
-              <input
-                ref={inputRef}
-                type="text"
-                autoFocus
-                value={searchQuery}
-                onFocus={() => setIsInputFocused(true)}
-                onBlur={() => {
-                  setTimeout(() => setIsInputFocused(false), 200);
-                }}
-                onChange={(e) => handleQueryChange(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleExecuteSearch();
-                  }
-                }}
-                placeholder="Cari"
-                className="bg-transparent text-slate-900 placeholder:text-neutral-400 outline-none flex-1 text-[15px] font-normal leading-snug h-full px-1"
-              />
-
-              {/* Right Action: Clear 'X' or Filter Sliders */}
-              {searchQuery ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearchQuery('');
-                    setIsSubmitted(false);
-                  }}
-                  className="w-7 h-7 rounded-full flex items-center justify-center text-neutral-400 hover:text-slate-800 hover:bg-neutral-200/60 active:scale-90 transition-all cursor-pointer shrink-0 ml-1"
-                  aria-label="Hapus Pencarian"
-                >
-                  <X className="w-4 h-4 stroke-[2.5]" />
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="inline-flex rounded-full h-8 w-8 items-center justify-center text-neutral-400 hover:text-slate-800 hover:bg-neutral-200/60 active:scale-90 transition-all cursor-pointer shrink-0 ml-1"
-                  aria-label="Filter Pencarian"
-                >
-                  <SlidersHorizontal className="w-4 h-4 stroke-[2]" />
-                </button>
-              )}
-            </div>
-
-            {/* "Batal" Button (Shown when user is actively searching / typing) */}
-            {hasSearchQuery && (
+              )
+            }
+            rightAction={
               <button
                 type="button"
-                onClick={handleCancelSearch}
-                className="px-2 py-1 text-[15px] font-medium text-slate-900 hover:text-slate-600 active:scale-95 transition-all cursor-pointer shrink-0"
+                className="inline-flex rounded-full h-8 w-8 items-center justify-center text-neutral-400 hover:text-slate-800 hover:bg-neutral-200/60 active:scale-90 transition-all cursor-pointer shrink-0 ml-1"
+                aria-label="Filter Pencarian"
               >
-                Batal
+                <SlidersHorizontal className="w-4 h-4 stroke-[2]" />
               </button>
-            )}
-          </div>
+            }
+            variant="rounded"
+            onCancel={handleCancelSearch}
+            className="pb-2.5"
+          />
 
           {/* 3 Main Meta Threads Tabs: Terpopuler | Terbaru | Profil (ONLY shown after search submission) */}
           {hasSearchQuery && isSubmitted && (
@@ -632,7 +592,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                         key={post.id}
                         item={post}
                         onPostClick={onSelectPost}
-                        onUserClick={(username) => onNavigateToProfile(username || post.seller.username || 'radityarayhannnn')}
+                        onUserClick={(username?: string) => onNavigateToProfile(username || post.seller.username || 'radityarayhannnn')}
                       />
                     ))}
                     {/* Clean Minimalist End of Results Indicator */}
@@ -677,7 +637,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                         key={post.id}
                         item={post}
                         onPostClick={onSelectPost}
-                        onUserClick={(username) => onNavigateToProfile(username || post.seller.username || 'radityarayhannnn')}
+                        onUserClick={(username?: string) => onNavigateToProfile(username || post.seller.username || 'radityarayhannnn')}
                       />
                     ))}
                     {/* Clean Minimalist End of Results Indicator */}
@@ -779,21 +739,6 @@ export const SearchPage: React.FC<SearchPageProps> = ({
         )}
       </main>
 
-      {/* Standard PWA Bottom Navigation Bar (Hidden when input is focused or actively typing to prevent floating above keyboard) */}
-      {!isInputFocused && !(hasSearchQuery && !isSubmitted) && (
-        <MarketBottomNav
-          activeTab="search"
-          onTabChange={(tab) => {
-            if (tab === 'home') {
-              onNavigateHome();
-            } else if (tab === 'profile') {
-              onNavigateToProfile('radityarayhannnn');
-            } else if (tab === 'messages') {
-              onNavigateMessages?.();
-            }
-          }}
-        />
-      )}
     </div>
   );
 };

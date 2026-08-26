@@ -8,11 +8,12 @@ import { SearchPage } from '@/ui/pages/SearchPage';
 import { DirectMessagesPage } from '@/ui/pages/DirectMessagesPage';
 import { NavigationDrawer } from '@/ui/components/navigation/NavigationDrawer';
 import { CreatePostModal } from '@/ui/components/marketplace/CreatePostModal';
+import { MarketBottomNav } from '@/ui/components/marketplace/MarketBottomNav';
 import { MarketPostItem } from '@/types/marketFeed';
 import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
 import { useAuth } from '@/ui/hooks/useAuth';
 import { useSmoothScroll } from '@/ui/hooks/useSmoothScroll';
-
+import { triggerHaptic } from '@/utils/haptics';
 import { ColorShowcasePage } from '@/ui/pages/ColorShowcasePage';
 import { CampusMapPage } from '@/ui/pages/CampusMapPage';
 
@@ -404,6 +405,37 @@ export function App() {
             }}
           />
 
+          {/* Canonical 5-Icon Market Bottom Navigation */}
+          {!selectedPost && !isColorsRoute && !isMapRoute && (
+            <MarketBottomNav
+              activeTab={
+                isMessagesRoute
+                  ? 'messages'
+                  : isSearchRoute
+                  ? 'search'
+                  : isProfileRoute && !isViewingOtherUserProfile
+                  ? 'profile'
+                  : 'home'
+              }
+              userAvatar={profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80'}
+              onTabChange={(tab) => {
+                triggerHaptic('selection');
+                if (tab === 'home') {
+                  navigateToHome();
+                } else if (tab === 'search') {
+                  navigateToSearch();
+                } else if (tab === 'messages') {
+                  navigateToMessages();
+                } else if (tab === 'profile') {
+                  navigateToProfile(profile?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn');
+                }
+              }}
+              onPostClick={() => {
+                triggerHaptic('medium');
+                setIsCreateModalOpen(true);
+              }}
+            />
+          )}
           {/* Detail Page Layer (Threads/Instagram Subtle Scale Zoom & Fade In) */}
           {selectedPost && (
             <div

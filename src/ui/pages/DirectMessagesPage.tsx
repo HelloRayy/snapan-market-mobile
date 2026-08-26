@@ -277,7 +277,7 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
                       className="w-[50px] h-[50px] rounded-full object-cover"
                     />
                     {conv.user.isOnline && (
-                      <span className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-white" />
+                      <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-[#31a24c] ring-2 ring-white" />
                     )}
                   </div>
 

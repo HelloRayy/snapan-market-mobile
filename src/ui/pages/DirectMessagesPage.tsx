@@ -6,6 +6,7 @@ import {
   X,
   CheckCheck,
   ShoppingBag,
+  MoreHorizontal,
 } from 'lucide-react';
 import { MarketBottomNav } from '@/ui/components/marketplace/MarketBottomNav';
 import { useAuth } from '@/ui/hooks/useAuth';
@@ -267,14 +268,14 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
                     triggerHaptic('selection');
                     onSelectConversation?.(conv.id);
                   }}
-                  className="flex items-start gap-3 p-3 rounded-2xl hover:bg-neutral-50 active:bg-neutral-100/80 transition-colors cursor-pointer group"
+                  className="min-h-[78px] py-3.5 pl-4 sm:pl-6 pr-3.5 flex items-center gap-3.5 rounded-2xl hover:bg-neutral-50 active:bg-neutral-100/70 text-slate-900 cursor-pointer transition-all duration-150 active:scale-[0.98] group"
                 >
                   {/* User Avatar with Online Dot */}
-                  <div className="relative shrink-0 mt-0.5">
+                  <div className="relative shrink-0 w-[50px] h-[50px] rounded-full bg-neutral-100 ring-1 ring-neutral-200/80">
                     <img
                       src={conv.user.avatar}
                       alt={conv.user.name}
-                      className="w-12 h-12 rounded-full object-cover ring-1 ring-neutral-200/80"
+                      className="w-[50px] h-[50px] rounded-full object-cover"
                     />
                     {conv.user.isOnline && (
                       <span className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-white" />
@@ -282,58 +283,70 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
                   </div>
 
                   {/* Conversation Meta */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-1">
-                      <div className="flex items-center gap-1.5 min-w-0">
-                        <span
-                          className={`text-[14.5px] truncate ${
-                            hasUnread ? 'font-bold text-slate-950' : 'font-semibold text-slate-800'
-                          }`}
-                        >
-                          {conv.user.name}
-                        </span>
-                        {conv.user.isVerified && (
-                          <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-[#1d64ec] text-white shrink-0">
-                            <CheckCheck className="w-2.5 h-2.5 stroke-[3]" />
-                          </span>
-                        )}
-                      </div>
-
-                      <span
-                        className={`text-[11.5px] whitespace-nowrap shrink-0 ${
-                          hasUnread ? 'font-bold text-[#1d64ec]' : 'text-neutral-400 font-medium'
+                  <div className="flex-1 min-w-0 flex flex-col justify-center leading-snug">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <p
+                        className={`text-[15px] truncate ${
+                          hasUnread ? 'font-bold text-slate-950' : 'font-semibold text-slate-900'
                         }`}
                       >
-                        {conv.timestamp}
+                        {conv.user.name}
+                      </p>
+                      {conv.user.isVerified && (
+                        <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-[#1d64ec] text-white shrink-0">
+                          <CheckCheck className="w-2.5 h-2.5 stroke-[3]" />
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Last message and timestamp preview */}
+                    <div className="flex items-center text-[13.5px] leading-snug min-w-0 mt-0.5">
+                      <span
+                        className={`truncate ${
+                          hasUnread ? 'font-semibold text-slate-950' : 'text-neutral-500'
+                        }`}
+                      >
+                        {conv.lastMessage}
+                      </span>
+                      <span
+                        className={`shrink-0 ml-1 flex items-center ${
+                          hasUnread ? 'font-semibold text-[#1d64ec]' : 'text-neutral-400'
+                        }`}
+                      >
+                        · {conv.timestamp}
                       </span>
                     </div>
 
                     {/* Product Context Tag if Marketplace related */}
                     {conv.productContext && (
-                      <div className="mt-0.5 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-blue-50/80 border border-blue-100 text-[#1d64ec] text-[11px] font-medium max-w-full truncate">
+                      <div className="mt-1 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-blue-50/80 border border-blue-100 text-[#1d64ec] text-[11px] font-medium max-w-full truncate self-start">
                         <ShoppingBag className="w-2.5 h-2.5 shrink-0 stroke-[2.2]" />
                         <span className="truncate">{conv.productContext.title}</span>
                         <span className="text-blue-400 shrink-0">•</span>
                         <span className="font-semibold shrink-0">{conv.productContext.price}</span>
                       </div>
                     )}
+                  </div>
 
-                    {/* Last message preview */}
-                    <div className="flex items-center justify-between gap-2 mt-0.5">
-                      <p
-                        className={`text-[13px] line-clamp-1 leading-snug ${
-                          hasUnread ? 'font-semibold text-slate-900' : 'text-neutral-500'
-                        }`}
-                      >
-                        {conv.lastMessage}
-                      </p>
+                  {/* Right Side Actions: Unread Badge & More Options */}
+                  <div className="flex items-center gap-1.5 shrink-0 ml-1">
+                    {hasUnread && (
+                      <span className="shrink-0 min-w-[18px] h-[18px] px-1 rounded-full bg-[#1d64ec] text-white text-[10px] font-bold flex items-center justify-center leading-none shadow-2xs">
+                        {conv.unreadCount}
+                      </span>
+                    )}
 
-                      {hasUnread && (
-                        <span className="shrink-0 min-w-[18px] h-[18px] px-1 rounded-full bg-[#1d64ec] text-white text-[10px] font-bold flex items-center justify-center leading-none shadow-2xs">
-                          {conv.unreadCount}
-                        </span>
-                      )}
-                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        triggerHaptic('selection');
+                      }}
+                      aria-label="Opsi lainnya untuk percakapan"
+                      className="flex items-center justify-center rounded-full w-7 h-7 text-neutral-400 hover:text-slate-700 hover:bg-neutral-100 active:scale-95 transition-all duration-150 cursor-pointer"
+                    >
+                      <MoreHorizontal className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               );

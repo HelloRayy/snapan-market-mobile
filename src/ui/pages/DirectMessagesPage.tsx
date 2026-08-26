@@ -5,6 +5,7 @@ import {
   SquarePen,
   X,
   MoreHorizontal,
+  CheckCheck,
 } from 'lucide-react';
 import { MarketBottomNav } from '@/ui/components/marketplace/MarketBottomNav';
 import { ClickableVerifiedBadge } from '@/ui/components/marketplace/VerifiedBadgeModal';
@@ -32,6 +33,7 @@ interface MockConversation {
   lastMessage: string;
   timestamp: string;
   unreadCount?: number;
+  isSender?: boolean;
   isSeller?: boolean;
   isRequest?: boolean;
   productContext?: {
@@ -68,6 +70,7 @@ const MOCK_CONVERSATIONS: MockConversation[] = [
     },
     lastMessage: 'Siap bro, nanti jam istirahat kedua gua tunggu di depan lab komputer yaa.',
     timestamp: '12m',
+    isSender: true,
     isSeller: true,
     productContext: {
       title: 'Buku Paket Fisika Kelas 12',
@@ -95,6 +98,7 @@ const MOCK_CONVERSATIONS: MockConversation[] = [
     },
     lastMessage: 'Bisa nego tipis gak bro untuk jas almamaternya?',
     timestamp: '1h',
+    isSender: true,
   },
   {
     id: 'conv-5',
@@ -221,20 +225,20 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
         </div>
 
         {/* Row 3: Sub-Navigation Filter Tab Pills ("Kotak Masuk" & "Permintaan") */}
-        <div className="w-full max-w-xl mx-auto flex items-center gap-x-2 px-4 pb-3.5 leading-snug">
+        <div className="w-full max-w-xl mx-auto flex items-center gap-x-2 px-4 pb-3">
           <button
             type="button"
             onClick={() => {
               triggerHaptic('selection');
               setActiveFilter('inbox');
             }}
-            className={`flex items-center justify-center gap-x-2 p-4 text-sm font-semibold rounded-[20px] border h-[34px] leading-relaxed cursor-pointer transition-all duration-150 active:scale-[0.98] ${
+            className={`flex items-center justify-center px-4 py-1.5 text-[13px] rounded-full border transition-all duration-150 active:scale-[0.98] cursor-pointer ${
               activeFilter === 'inbox'
-                ? 'bg-slate-900 text-white border-slate-900 shadow-2xs hover:bg-slate-800'
-                : 'bg-white text-slate-700 border-neutral-200/80 hover:bg-neutral-100 hover:text-slate-950'
+                ? 'bg-blue-50 text-[#1d64ec] border-blue-200/90 font-bold shadow-2xs'
+                : 'bg-white text-neutral-500 border-neutral-200/80 hover:bg-neutral-50 hover:text-slate-700 font-medium'
             }`}
           >
-            <span className="h-[21px] flex items-center leading-relaxed">Kotak Masuk</span>
+            Kotak Masuk
           </button>
 
           <button
@@ -243,13 +247,13 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
               triggerHaptic('selection');
               setActiveFilter('requests');
             }}
-            className={`flex items-center justify-center gap-x-2 p-4 text-sm font-semibold rounded-[20px] border h-[34px] leading-relaxed cursor-pointer transition-all duration-150 active:scale-[0.98] ${
+            className={`flex items-center justify-center px-4 py-1.5 text-[13px] rounded-full border transition-all duration-150 active:scale-[0.98] cursor-pointer ${
               activeFilter === 'requests'
-                ? 'bg-slate-900 text-white border-slate-900 shadow-2xs hover:bg-slate-800'
-                : 'bg-white text-slate-700 border-neutral-200/80 hover:bg-neutral-100 hover:text-slate-950'
+                ? 'bg-blue-50 text-[#1d64ec] border-blue-200/90 font-bold shadow-2xs'
+                : 'bg-white text-neutral-500 border-neutral-200/80 hover:bg-neutral-50 hover:text-slate-700 font-medium'
             }`}
           >
-            <span className="h-[21px] flex items-center leading-relaxed">Permintaan</span>
+            Permintaan
           </button>
         </div>
       </header>
@@ -267,77 +271,92 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
                     triggerHaptic('selection');
                     onSelectConversation?.(conv.id);
                   }}
-                  className="min-h-[78px] h-[78px] py-3.5 pl-4 sm:pl-6 pr-3.5 flex items-center gap-3.5 rounded-2xl hover:bg-neutral-50 active:bg-neutral-100/70 text-slate-900 cursor-pointer transition-all duration-150 active:scale-[0.98] group"
+                  className="min-h-[76px] h-[76px] py-3 pl-4 sm:pl-6 pr-4 flex items-center gap-3.5 rounded-2xl hover:bg-neutral-50 active:bg-neutral-100/70 text-slate-900 cursor-pointer transition-all duration-150 active:scale-[0.98] group"
                 >
-                  {/* User Avatar with Online Dot */}
+                  {/* 1. Avatar Column with Multi-Badge Placement */}
                   <div className="relative shrink-0 w-[50px] h-[50px] rounded-full bg-neutral-100 ring-1 ring-neutral-200/80">
                     <img
                       src={conv.user.avatar}
                       alt={conv.user.name}
                       className="w-[50px] h-[50px] rounded-full object-cover"
                     />
+
+                    {/* Unread Alert Dot at Top-Right */}
+                    {hasUnread && (
+                      <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[#1d64ec] ring-2 ring-white" />
+                    )}
+
+                    {/* Online Status Dot at Bottom-Right */}
                     {conv.user.isOnline && (
-                      <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-[#31a24c] ring-2 ring-white" />
+                      <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#31a24c] ring-2 ring-white" />
                     )}
                   </div>
 
-                  {/* Conversation Meta */}
-                  <div className="flex-1 min-w-0 flex flex-col justify-center leading-snug">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <p
-                        className={`text-[15px] truncate ${
-                          hasUnread ? 'font-bold text-slate-950' : 'font-semibold text-slate-900'
-                        }`}
-                      >
-                        {conv.user.name}
-                      </p>
-                      {conv.user.isVerified && (
-                        <ClickableVerifiedBadge
-                          sellerName={conv.user.name}
-                          className="w-[15px] h-[15px] shrink-0"
-                        />
-                      )}
-                    </div>
+                  {/* 2. Text Content (2 Balanced Rows) */}
+                  <div className="flex-1 min-w-0 flex flex-col justify-center gap-y-1">
+                    {/* ROW 1 (Header): Name + Verified on Left, Timestamp on Right */}
+                    <div className="flex items-center justify-between min-w-0 w-full gap-2">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <p
+                          className={`text-[15px] truncate ${
+                            hasUnread ? 'font-bold text-slate-950' : 'font-semibold text-slate-900'
+                          }`}
+                        >
+                          {conv.user.name}
+                        </p>
+                        {conv.user.isVerified && (
+                          <ClickableVerifiedBadge
+                            sellerName={conv.user.name}
+                            className="w-[15px] h-[15px] shrink-0"
+                          />
+                        )}
+                      </div>
 
-                    {/* Last message and timestamp preview */}
-                    <div className="flex items-center text-[13.5px] leading-snug min-w-0 mt-0.5">
+                      {/* Timestamp Aligned to Top-Right */}
                       <span
-                        className={`truncate ${
-                          hasUnread ? 'font-semibold text-slate-950' : 'text-neutral-500'
-                        }`}
-                      >
-                        {conv.lastMessage}
-                      </span>
-                      <span
-                        className={`shrink-0 ml-1 flex items-center ${
+                        className={`text-[12px] shrink-0 ${
                           hasUnread ? 'font-semibold text-[#1d64ec]' : 'text-neutral-400'
                         }`}
                       >
-                        · {conv.timestamp}
+                        {conv.timestamp}
                       </span>
                     </div>
 
-                  </div>
+                    {/* ROW 2 (Subtitle): Read Receipt Icon + Message Preview on Left, Unread Counter / Actions on Right */}
+                    <div className="flex items-center justify-between min-w-0 w-full gap-2">
+                      <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                        {/* Outgoing Message Read Status Indicator (✓✓ CheckCheck) */}
+                        {conv.isSender && (
+                          <CheckCheck className="w-3.5 h-3.5 text-[#1d64ec] shrink-0 stroke-[2.5]" />
+                        )}
+                        <p
+                          className={`text-[13.5px] truncate leading-snug ${
+                            hasUnread ? 'font-semibold text-slate-950' : 'text-neutral-500'
+                          }`}
+                        >
+                          {conv.lastMessage}
+                        </p>
+                      </div>
 
-                  {/* Right Side Actions: Unread Badge & More Options */}
-                  <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                    {hasUnread && (
-                      <span className="shrink-0 min-w-[20px] h-5 px-1.5 rounded-full bg-[#1d64ec] text-white text-[11px] font-bold flex items-center justify-center leading-none shadow-2xs">
-                        {conv.unreadCount}
-                      </span>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        triggerHaptic('selection');
-                      }}
-                      aria-label="Opsi lainnya untuk percakapan"
-                      className="flex items-center justify-center rounded-full w-7 h-7 text-neutral-400 hover:text-slate-700 hover:bg-neutral-100 active:scale-95 transition-all duration-150 cursor-pointer"
-                    >
-                      <MoreHorizontal className="w-4 h-4" />
-                    </button>
+                      {/* Unread Pill Badge or More Button on Right */}
+                      {hasUnread ? (
+                        <span className="shrink-0 min-w-[19px] h-[19px] px-1.5 rounded-full bg-[#1d64ec] text-white text-[10.5px] font-bold flex items-center justify-center leading-none shadow-2xs">
+                          {conv.unreadCount}
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            triggerHaptic('selection');
+                          }}
+                          aria-label="Opsi lainnya untuk percakapan"
+                          className="opacity-0 group-hover:opacity-100 sm:flex hidden items-center justify-center rounded-full w-6 h-6 text-neutral-400 hover:text-slate-700 hover:bg-neutral-100 active:scale-95 transition-all duration-150 cursor-pointer"
+                        >
+                          <MoreHorizontal className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               );

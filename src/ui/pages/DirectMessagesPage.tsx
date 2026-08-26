@@ -287,10 +287,10 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
               triggerHaptic('selection');
               setActiveFilter('inbox');
             }}
-            className={`flex items-center justify-center px-4 py-1.5 text-[13px] rounded-full transition-all duration-150 active:scale-[0.98] cursor-pointer ${
+            className={`flex items-center justify-center px-3.5 py-1.5 text-[13px] font-semibold rounded-full select-none cursor-pointer transition-colors duration-100 ease-out active:opacity-75 ${
               activeFilter === 'inbox'
-                ? 'bg-blue-50 text-[#1d64ec] font-bold'
-                : 'bg-transparent text-neutral-500 hover:bg-neutral-100/70 hover:text-slate-700 font-medium'
+                ? 'bg-blue-50 text-[#1d64ec]'
+                : 'bg-transparent text-neutral-500 hover:bg-neutral-100/70 hover:text-slate-700'
             }`}
           >
             Kotak Masuk
@@ -302,10 +302,10 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
               triggerHaptic('selection');
               setActiveFilter('requests');
             }}
-            className={`flex items-center justify-center px-4 py-1.5 text-[13px] rounded-full transition-all duration-150 active:scale-[0.98] cursor-pointer ${
+            className={`flex items-center justify-center px-3.5 py-1.5 text-[13px] font-semibold rounded-full select-none cursor-pointer transition-colors duration-100 ease-out active:opacity-75 ${
               activeFilter === 'requests'
-                ? 'bg-blue-50 text-[#1d64ec] font-bold'
-                : 'bg-transparent text-neutral-500 hover:bg-neutral-100/70 hover:text-slate-700 font-medium'
+                ? 'bg-blue-50 text-[#1d64ec]'
+                : 'bg-transparent text-neutral-500 hover:bg-neutral-100/70 hover:text-slate-700'
             }`}
           >
             Permintaan

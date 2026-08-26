@@ -223,20 +223,20 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
         </div>
 
         {/* Row 3: Sub-Navigation Filter Tab Pills ("Kotak Masuk" & "Permintaan") */}
-        <div className="w-full max-w-xl mx-auto flex items-center gap-x-2 pb-3 px-4 leading-snug">
+        <div className="w-full max-w-xl mx-auto flex items-center gap-x-2 pb-3.5 px-4 leading-snug">
           <button
             type="button"
             onClick={() => {
               triggerHaptic('selection');
               setActiveFilter('inbox');
             }}
-            className={`flex items-center justify-center gap-x-1.5 py-1.5 px-4 rounded-[20px] text-sm font-semibold transition-all duration-150 cursor-pointer active:scale-[0.98] ${
+            className={`flex items-center justify-center gap-x-2 px-4 py-1.5 h-[34px] text-sm font-semibold rounded-[20px] border leading-relaxed cursor-pointer transition-all duration-150 active:scale-[0.98] ${
               activeFilter === 'inbox'
-                ? 'bg-slate-900 text-white border border-slate-900 shadow-2xs'
-                : 'bg-white text-neutral-600 hover:bg-neutral-100 hover:text-slate-900 border border-neutral-200/80'
+                ? 'bg-slate-900 text-white border-slate-900 hover:bg-slate-800 shadow-2xs'
+                : 'bg-transparent text-slate-700 border-neutral-200/80 hover:bg-neutral-100 hover:text-slate-950'
             }`}
           >
-            <span>Kotak Masuk</span>
+            <span className="h-[21px] flex items-center leading-relaxed">Kotak Masuk</span>
           </button>
 
           <button
@@ -245,13 +245,13 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
               triggerHaptic('selection');
               setActiveFilter('requests');
             }}
-            className={`flex items-center justify-center gap-x-1.5 py-1.5 px-4 rounded-[20px] text-sm font-semibold transition-all duration-150 cursor-pointer active:scale-[0.98] ${
+            className={`flex items-center justify-center gap-x-2 px-4 py-1.5 h-[34px] text-sm font-semibold rounded-[20px] border leading-relaxed cursor-pointer transition-all duration-150 active:scale-[0.98] ${
               activeFilter === 'requests'
-                ? 'bg-slate-900 text-white border border-slate-900 shadow-2xs'
-                : 'bg-white text-neutral-600 hover:bg-neutral-100 hover:text-slate-900 border border-neutral-200/80'
+                ? 'bg-slate-900 text-white border-slate-900 hover:bg-slate-800 shadow-2xs'
+                : 'bg-transparent text-slate-700 border-neutral-200/80 hover:bg-neutral-100 hover:text-slate-950'
             }`}
           >
-            <span>Permintaan</span>
+            <span className="h-[21px] flex items-center leading-relaxed">Permintaan</span>
           </button>
         </div>
       </header>

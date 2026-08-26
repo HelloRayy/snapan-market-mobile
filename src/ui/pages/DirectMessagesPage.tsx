@@ -4,10 +4,10 @@ import {
   Search,
   SquarePen,
   X,
-  CheckCheck,
   MoreHorizontal,
 } from 'lucide-react';
 import { MarketBottomNav } from '@/ui/components/marketplace/MarketBottomNav';
+import { ClickableVerifiedBadge } from '@/ui/components/marketplace/VerifiedBadgeModal';
 import { useAuth } from '@/ui/hooks/useAuth';
 import { triggerHaptic } from '@/utils/haptics';
 
@@ -292,9 +292,10 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
                         {conv.user.name}
                       </p>
                       {conv.user.isVerified && (
-                        <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-[#1d64ec] text-white shrink-0">
-                          <CheckCheck className="w-2.5 h-2.5 stroke-[3]" />
-                        </span>
+                        <ClickableVerifiedBadge
+                          sellerName={conv.user.name}
+                          className="w-[15px] h-[15px] shrink-0"
+                        />
                       )}
                     </div>
 

@@ -151,8 +151,8 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
         className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-100 font-gt-standard select-none transition-colors"
         style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
       >
-        {/* Row 1: Top Bar (h-14 Standard Height) */}
-        <div className="w-full max-w-xl mx-auto px-4 h-14 flex items-center justify-between relative select-none">
+        {/* Row 1: Top Bar (HIG 48px Header Height with Balanced Spacing) */}
+        <div className="w-full max-w-xl mx-auto px-4 h-12 flex items-center justify-between relative select-none">
           {/* Left Side: Back button or placeholder spacer */}
           <div className="flex items-center">
             {onBack ? (
@@ -162,19 +162,19 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
                   triggerHaptic('selection');
                   onBack();
                 }}
-                className="w-10 h-10 rounded-full hover:bg-neutral-100 active:bg-neutral-200 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
+                className="w-9 h-9 -ml-1.5 rounded-full hover:bg-neutral-100 active:bg-neutral-200 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-95"
                 aria-label="Kembali"
               >
-                <ArrowLeft className="w-5 h-5 stroke-[2.25]" />
+                <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
               </button>
             ) : (
-              <div className="w-10 h-10 pointer-events-none" />
+              <div className="w-9 h-9" />
             )}
           </div>
 
-          {/* Center: Title */}
+          {/* Center: Title (iOS HIG 17px SemiBold Standard) */}
           <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
-            <h1 className="font-semibold text-base text-slate-900 tracking-tight transition-all duration-150 pointer-events-auto">
+            <h1 className="font-semibold text-[17px] text-slate-900 tracking-tight leading-none transition-all duration-150 pointer-events-auto">
               Pesan
             </h1>
           </div>
@@ -187,27 +187,25 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
                 triggerHaptic('medium');
                 onOpenNewChatModal?.();
               }}
-              className="w-10 h-10 rounded-full hover:bg-neutral-100 active:bg-neutral-200 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
+              className="w-9 h-9 -mr-1.5 rounded-full hover:bg-neutral-100 active:bg-neutral-200 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-95"
               aria-label="Pesan baru"
               title="Pesan baru"
             >
-              <SquarePen className="w-5 h-5 stroke-[2]" />
+              <SquarePen className="w-[19px] h-[19px] stroke-[2]" />
             </button>
           </div>
         </div>
 
         {/* Row 2: SearchBar Capsule */}
-        <div className="w-full max-w-xl mx-auto px-4 pb-2.5">
-          <div className="flex items-center gap-2 py-2 px-4 bg-neutral-100 hover:bg-neutral-200/60 focus-within:bg-white focus-within:border-slate-300 focus-within:ring-2 focus-within:ring-slate-900/10 text-slate-900 text-base rounded-[22px] border border-neutral-200/70 backdrop-blur-md leading-snug transition-all duration-150">
-            <div className="h-[15.9896px] w-[15.9896px] leading-snug flex items-center justify-center shrink-0">
-              <Search className="w-4 h-4 text-neutral-400 stroke-[2.2]" />
-            </div>
+        <div className="w-full max-w-xl mx-auto px-4 pt-1 pb-3">
+          <div className="flex items-center gap-2.5 h-[38px] px-3.5 bg-neutral-100 hover:bg-neutral-200/60 focus-within:bg-white focus-within:border-slate-300 focus-within:ring-2 focus-within:ring-slate-900/10 text-slate-900 rounded-full border border-neutral-200/70 backdrop-blur-md leading-snug transition-all duration-150">
+            <Search className="w-4 h-4 text-neutral-400 stroke-[2.2] shrink-0" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari pesan..."
-              className="py-px px-0.5 w-full bg-transparent text-sm text-slate-900 placeholder:text-neutral-400 focus:outline-hidden leading-snug transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-transparent text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-hidden py-0.5 leading-snug"
             />
             {searchQuery && (
               <button
@@ -223,20 +221,20 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
         </div>
 
         {/* Row 3: Sub-Navigation Filter Tab Pills ("Kotak Masuk" & "Permintaan") */}
-        <div className="w-full max-w-xl mx-auto flex items-center gap-x-2 pb-3.5 px-4 leading-snug">
+        <div className="w-full max-w-xl mx-auto flex items-center gap-2 px-4 pb-3.5 leading-snug">
           <button
             type="button"
             onClick={() => {
               triggerHaptic('selection');
               setActiveFilter('inbox');
             }}
-            className={`flex items-center justify-center gap-x-2 px-4 py-1.5 h-[34px] text-sm font-semibold rounded-[20px] border leading-relaxed cursor-pointer transition-all duration-150 active:scale-[0.98] ${
+            className={`flex items-center justify-center px-4 h-[34px] text-[13.5px] font-semibold rounded-full leading-relaxed cursor-pointer transition-all duration-150 active:scale-[0.97] ${
               activeFilter === 'inbox'
-                ? 'bg-slate-900 text-white border-slate-900 hover:bg-slate-800 shadow-2xs'
-                : 'bg-transparent text-slate-700 border-neutral-200/80 hover:bg-neutral-100 hover:text-slate-950'
+                ? 'bg-slate-900 text-white shadow-2xs'
+                : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200/70 hover:text-slate-900'
             }`}
           >
-            <span className="h-[21px] flex items-center leading-relaxed">Kotak Masuk</span>
+            <span>Kotak Masuk</span>
           </button>
 
           <button
@@ -245,13 +243,13 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
               triggerHaptic('selection');
               setActiveFilter('requests');
             }}
-            className={`flex items-center justify-center gap-x-2 px-4 py-1.5 h-[34px] text-sm font-semibold rounded-[20px] border leading-relaxed cursor-pointer transition-all duration-150 active:scale-[0.98] ${
+            className={`flex items-center justify-center px-4 h-[34px] text-[13.5px] font-semibold rounded-full leading-relaxed cursor-pointer transition-all duration-150 active:scale-[0.97] ${
               activeFilter === 'requests'
-                ? 'bg-slate-900 text-white border-slate-900 hover:bg-slate-800 shadow-2xs'
-                : 'bg-transparent text-slate-700 border-neutral-200/80 hover:bg-neutral-100 hover:text-slate-950'
+                ? 'bg-slate-900 text-white shadow-2xs'
+                : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200/70 hover:text-slate-900'
             }`}
           >
-            <span className="h-[21px] flex items-center leading-relaxed">Permintaan</span>
+            <span>Permintaan</span>
           </button>
         </div>
       </header>

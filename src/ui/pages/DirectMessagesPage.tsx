@@ -33,6 +33,7 @@ interface MockConversation {
   timestamp: string;
   unreadCount?: number;
   isSeller?: boolean;
+  isRequest?: boolean;
   productContext?: {
     title: string;
     price: string;
@@ -95,6 +96,18 @@ const MOCK_CONVERSATIONS: MockConversation[] = [
     lastMessage: 'Bisa nego tipis gak bro untuk jas almamaternya?',
     timestamp: '1h',
   },
+  {
+    id: 'conv-5',
+    user: {
+      name: 'Bagus Prakoso',
+      username: 'bagus_prakoso',
+      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&q=80',
+      isOnline: false,
+    },
+    lastMessage: 'Halo kak, akun Canva Pro edukasi nya ready gak ya?',
+    timestamp: '3h',
+    isRequest: true,
+  },
 ];
 
 export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
@@ -107,7 +120,7 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
 }) => {
   const { user, profile } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState<'all' | 'unread' | 'market'>('all');
+  const [activeFilter, setActiveFilter] = useState<'inbox' | 'requests'>('inbox');
 
   const myUsername =
     profile?.full_name?.toLowerCase().replace(/\s+/g, '') ||
@@ -125,21 +138,19 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
     if (!matchesSearch) return false;
 
     // 2. Tab Filter
-    if (activeFilter === 'unread') {
-      return (conv.unreadCount || 0) > 0;
+    if (activeFilter === 'requests') {
+      return conv.isRequest === true;
     }
-    if (activeFilter === 'market') {
-      return !!conv.productContext;
-    }
-    return true;
+    return !conv.isRequest;
   });
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-gt-standard pb-24 select-none">
       {/* Top Sticky App Header */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-100">
-        <div className="max-w-xl mx-auto px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-100/80">
+        {/* Row 1: Title & Action Button */}
+        <div className="max-w-xl mx-auto flex items-center justify-between pt-[18px] pb-3 px-6 leading-snug">
+          <div className="flex items-center gap-2.5">
             {onBack && (
               <button
                 type="button"
@@ -147,58 +158,48 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
                   triggerHaptic('selection');
                   onBack();
                 }}
-                className="w-9 h-9 -ml-1 rounded-full flex items-center justify-center text-slate-700 hover:text-slate-900 hover:bg-neutral-100 active:bg-neutral-200 active:scale-95 transition-all cursor-pointer"
+                className="w-8 h-8 -ml-2 rounded-full flex items-center justify-center text-slate-700 hover:text-slate-900 hover:bg-neutral-100 active:bg-neutral-200 active:scale-95 transition-all duration-150 cursor-pointer"
                 aria-label="Kembali"
               >
                 <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
               </button>
             )}
-
-            <div>
-              <div className="flex items-center gap-1.5">
-                <h1 className="font-bold text-[17px] text-slate-900 tracking-tight leading-tight">
-                  Pesan Langsung
-                </h1>
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              </div>
-              <p className="text-[11.5px] font-medium text-neutral-400 leading-none mt-0.5">
-                @{myUsername}
-              </p>
-            </div>
+            <h1 className="text-xl font-semibold text-slate-900 tracking-tight transition-all duration-150 active:scale-[0.98]">
+              Pesan
+            </h1>
           </div>
 
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              onClick={() => {
-                triggerHaptic('medium');
-                onOpenNewChatModal?.();
-              }}
-              className="w-9 h-9 rounded-full flex items-center justify-center text-slate-700 hover:text-slate-900 hover:bg-neutral-100 active:bg-neutral-200 active:scale-95 transition-all cursor-pointer"
-              aria-label="Tulis Pesan Baru"
-              title="Tulis Pesan Baru"
-            >
-              <SquarePen className="w-5 h-5 stroke-[2]" />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => {
+              triggerHaptic('medium');
+              onOpenNewChatModal?.();
+            }}
+            className="flex items-center justify-center rounded-full h-[36px] w-[36px] bg-neutral-100 hover:bg-neutral-200/80 active:scale-95 text-slate-900 transition-all duration-150 cursor-pointer border border-neutral-200/60 shadow-2xs"
+            aria-label="Pesan baru"
+            title="Pesan baru"
+          >
+            <SquarePen className="w-4.5 h-4.5 stroke-[2]" />
+          </button>
         </div>
 
-        {/* Search Bar Input */}
-        <div className="max-w-xl mx-auto px-4 pb-2.5">
-          <div className="relative flex items-center w-full">
-            <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 pointer-events-none stroke-[2.2]" />
+        {/* Row 2: SearchBar Capsule */}
+        <div className="max-w-xl mx-auto flex items-center gap-x-3 pb-3 px-6 leading-snug">
+          <div className="flex items-center gap-2.5 w-full py-1.5 px-4 bg-neutral-100 hover:bg-neutral-200/60 focus-within:bg-white focus-within:ring-2 focus-within:ring-slate-900/10 focus-within:border-neutral-300 rounded-[22px] border border-neutral-200/60 transition-all duration-150">
+            <Search className="w-4 h-4 text-neutral-400 shrink-0 stroke-[2.2]" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cari pesan atau nama teman..."
-              className="w-full h-9 pl-9.5 pr-8 bg-neutral-100 hover:bg-neutral-200/60 focus:bg-white text-[13.5px] text-slate-900 placeholder:text-neutral-400 rounded-xl border border-transparent focus:border-neutral-300 focus:outline-hidden transition-all"
+              placeholder="Cari pesan atau kontak..."
+              className="w-full bg-transparent text-sm text-slate-900 placeholder:text-neutral-400 focus:outline-hidden py-0.5 leading-snug"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 w-4 h-4 rounded-full bg-neutral-300 hover:bg-neutral-400 flex items-center justify-center text-white cursor-pointer"
+                className="w-4 h-4 rounded-full bg-neutral-300 hover:bg-neutral-400 text-white flex items-center justify-center cursor-pointer transition-colors"
+                aria-label="Hapus pencarian"
               >
                 <X className="w-2.5 h-2.5 stroke-[3]" />
               </button>
@@ -206,51 +207,36 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
           </div>
         </div>
 
-        {/* Segmented Filter Pills */}
-        <div className="max-w-xl mx-auto px-4 pb-2 flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+        {/* Row 3: Sub-Navigation Filter Tab Pills ("Kotak Masuk" & "Permintaan") */}
+        <div className="max-w-xl mx-auto flex items-center gap-x-2 pb-3.5 px-6 leading-snug">
           <button
             type="button"
             onClick={() => {
               triggerHaptic('selection');
-              setActiveFilter('all');
+              setActiveFilter('inbox');
             }}
-            className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
-              activeFilter === 'all'
-                ? 'bg-slate-900 text-white shadow-2xs'
-                : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200/70 hover:text-slate-800'
+            className={`flex items-center justify-center gap-x-1.5 py-1.5 px-4 rounded-[20px] text-sm font-semibold transition-all duration-150 cursor-pointer active:scale-[0.98] ${
+              activeFilter === 'inbox'
+                ? 'bg-slate-900 text-white border border-slate-900 shadow-2xs'
+                : 'bg-white text-neutral-600 hover:bg-neutral-100 hover:text-slate-900 border border-neutral-200/80'
             }`}
           >
-            Semua
+            <span>Kotak Masuk</span>
           </button>
+
           <button
             type="button"
             onClick={() => {
               triggerHaptic('selection');
-              setActiveFilter('unread');
+              setActiveFilter('requests');
             }}
-            className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeFilter === 'unread'
-                ? 'bg-slate-900 text-white shadow-2xs'
-                : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200/70 hover:text-slate-800'
+            className={`flex items-center justify-center gap-x-1.5 py-1.5 px-4 rounded-[20px] text-sm font-semibold transition-all duration-150 cursor-pointer active:scale-[0.98] ${
+              activeFilter === 'requests'
+                ? 'bg-slate-900 text-white border border-slate-900 shadow-2xs'
+                : 'bg-white text-neutral-600 hover:bg-neutral-100 hover:text-slate-900 border border-neutral-200/80'
             }`}
           >
-            <span>Belum Dibaca</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#ff3040]" />
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              triggerHaptic('selection');
-              setActiveFilter('market');
-            }}
-            className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1 ${
-              activeFilter === 'market'
-                ? 'bg-slate-900 text-white shadow-2xs'
-                : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200/70 hover:text-slate-800'
-            }`}
-          >
-            <ShoppingBag className="w-3 h-3 stroke-[2.2]" />
-            <span>Transaksi & Jualan</span>
+            <span>Permintaan</span>
           </button>
         </div>
       </header>
@@ -345,10 +331,14 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
             <div className="w-12 h-12 mx-auto rounded-2xl bg-neutral-100 flex items-center justify-center text-neutral-400">
               <Search className="w-6 h-6 stroke-[1.8]" />
             </div>
-            <p className="font-semibold text-slate-800 text-[15px]">Tidak ada percakapan</p>
+            <p className="font-semibold text-slate-800 text-[15px]">
+              {activeFilter === 'requests' ? 'Tidak ada permintaan pesan' : 'Tidak ada percakapan'}
+            </p>
             <p className="text-xs text-neutral-400 max-w-xs mx-auto">
               {searchQuery
-                ? `Tidak ditemukan percakapan dengan kata kunci "${searchQuery}"`
+                ? `Tidak ditemukan pesan dengan kata kunci "${searchQuery}"`
+                : activeFilter === 'requests'
+                ? 'Permintaan pesan dari pengguna lain yang belum terhubung akan muncul di sini.'
                 : 'Mulai kirim pesan ke teman atau penjual barang di Snapan Market.'}
             </p>
           </div>

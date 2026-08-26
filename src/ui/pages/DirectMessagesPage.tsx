@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
   Search,
@@ -124,8 +125,9 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
 }) => {
   const { user, profile } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [activeFilter, setActiveFilter] = useState<'inbox' | 'requests'>('inbox');
-
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const myUsername =
     profile?.full_name?.toLowerCase().replace(/\s+/g, '') ||
     user?.user_metadata?.full_name?.toLowerCase().replace(/\s+/g, '') ||
@@ -200,28 +202,81 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
           </div>
         </div>
 
-        {/* Row 2: SearchBar Capsule */}
-        <div className="w-full max-w-xl mx-auto px-4 pt-1 pb-3">
-          <div className="flex items-center gap-2.5 h-[38px] px-3.5 bg-neutral-100 hover:bg-neutral-200/60 focus-within:bg-white focus-within:border-slate-300 focus-within:ring-2 focus-within:ring-slate-900/10 text-slate-900 rounded-full border border-neutral-200/70 backdrop-blur-md leading-snug transition-all duration-150">
-            <Search className="w-4 h-4 text-neutral-400 stroke-[2.2] shrink-0" />
+        {/* Row 2: SearchBar Capsule with Fluid Motion */}
+        <div className="w-full max-w-xl mx-auto px-4 pt-1 pb-3 flex items-center gap-2">
+          <div
+            className={`flex-1 flex items-center gap-2.5 h-[38px] px-3.5 rounded-full border backdrop-blur-md leading-snug transition-colors duration-150 ${
+              isSearchFocused
+                ? 'bg-neutral-100 border-neutral-300'
+                : 'bg-neutral-100/90 hover:bg-neutral-200/60 border-neutral-200/70'
+            } text-slate-900`}
+          >
+            <Search
+              className={`w-4 h-4 stroke-[2.2] shrink-0 transition-colors duration-150 ${
+                isSearchFocused ? 'text-slate-700' : 'text-neutral-400'
+              }`}
+            />
             <input
+              ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => {
+                if (!searchQuery) {
+                  setIsSearchFocused(false);
+                }
+              }}
               placeholder="Cari pesan..."
               className="w-full bg-transparent text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-hidden py-0.5 leading-snug"
             />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className="w-4 h-4 rounded-full bg-neutral-300 hover:bg-neutral-400 text-white flex items-center justify-center cursor-pointer transition-colors shrink-0"
-                aria-label="Hapus pencarian"
-              >
-                <X className="w-2.5 h-2.5 stroke-[3]" />
-              </button>
-            )}
+            <AnimatePresence>
+              {searchQuery && (
+                <motion.button
+                  key="clear-search"
+                  type="button"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    triggerHaptic('selection');
+                    setSearchQuery('');
+                    searchInputRef.current?.focus();
+                  }}
+                  className="w-4 h-4 rounded-full bg-neutral-300 hover:bg-neutral-400 text-white flex items-center justify-center cursor-pointer active:scale-90 shrink-0 transition-colors"
+                  aria-label="Hapus pencarian"
+                >
+                  <X className="w-2.5 h-2.5 stroke-[3]" />
+                </motion.button>
+              )}
+            </AnimatePresence>
           </div>
+
+          {/* Cancel Button ("Batal") with Spring Physics */}
+          <AnimatePresence>
+            {(isSearchFocused || searchQuery.length > 0) && (
+              <motion.button
+                key="cancel-search"
+                type="button"
+                initial={{ opacity: 0, width: 0, x: 12 }}
+                animate={{ opacity: 1, width: 'auto', x: 0 }}
+                exit={{ opacity: 0, width: 0, x: 12 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                  triggerHaptic('selection');
+                  setSearchQuery('');
+                  setIsSearchFocused(false);
+                  searchInputRef.current?.blur();
+                }}
+                className="text-[14px] font-semibold text-[#1d64ec] hover:text-[#154ec1] active:opacity-70 whitespace-nowrap pl-1 pr-0.5 cursor-pointer select-none overflow-hidden shrink-0"
+              >
+                Batal
+              </motion.button>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Row 3: Sub-Navigation Filter Tab Pills ("Kotak Masuk" & "Permintaan") */}
@@ -232,10 +287,10 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
               triggerHaptic('selection');
               setActiveFilter('inbox');
             }}
-            className={`flex items-center justify-center px-4 py-1.5 text-[13px] rounded-full border transition-all duration-150 active:scale-[0.98] cursor-pointer ${
+            className={`flex items-center justify-center px-4 py-1.5 text-[13px] rounded-full transition-all duration-150 active:scale-[0.98] cursor-pointer ${
               activeFilter === 'inbox'
-                ? 'bg-blue-50 text-[#1d64ec] border-blue-200/90 font-bold shadow-2xs'
-                : 'bg-white text-neutral-500 border-neutral-200/80 hover:bg-neutral-50 hover:text-slate-700 font-medium'
+                ? 'bg-blue-50 text-[#1d64ec] font-bold'
+                : 'bg-transparent text-neutral-500 hover:bg-neutral-100/70 hover:text-slate-700 font-medium'
             }`}
           >
             Kotak Masuk
@@ -247,10 +302,10 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
               triggerHaptic('selection');
               setActiveFilter('requests');
             }}
-            className={`flex items-center justify-center px-4 py-1.5 text-[13px] rounded-full border transition-all duration-150 active:scale-[0.98] cursor-pointer ${
+            className={`flex items-center justify-center px-4 py-1.5 text-[13px] rounded-full transition-all duration-150 active:scale-[0.98] cursor-pointer ${
               activeFilter === 'requests'
-                ? 'bg-blue-50 text-[#1d64ec] border-blue-200/90 font-bold shadow-2xs'
-                : 'bg-white text-neutral-500 border-neutral-200/80 hover:bg-neutral-50 hover:text-slate-700 font-medium'
+                ? 'bg-blue-50 text-[#1d64ec] font-bold'
+                : 'bg-transparent text-neutral-500 hover:bg-neutral-100/70 hover:text-slate-700 font-medium'
             }`}
           >
             Permintaan
@@ -281,14 +336,9 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
                       className="w-[50px] h-[50px] rounded-full object-cover"
                     />
 
-                    {/* Unread Alert Dot at Top-Right */}
-                    {hasUnread && (
-                      <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[#1d64ec] ring-2 ring-white" />
-                    )}
-
-                    {/* Online Status Dot at Bottom-Right */}
+                    {/* Online Status Dot at Top-Right (Always Green when user is online) */}
                     {conv.user.isOnline && (
-                      <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#31a24c] ring-2 ring-white" />
+                      <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[#31a24c] ring-2 ring-white" />
                     )}
                   </div>
 
@@ -315,7 +365,7 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
                       {/* Timestamp Aligned to Top-Right */}
                       <span
                         className={`text-[12px] shrink-0 ${
-                          hasUnread ? 'font-semibold text-[#1d64ec]' : 'text-neutral-400'
+                          hasUnread ? 'font-semibold text-[#1d64ec]' : 'font-normal text-neutral-400'
                         }`}
                       >
                         {conv.timestamp}
@@ -331,16 +381,22 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
                         )}
                         <p
                           className={`text-[13.5px] truncate leading-snug ${
-                            hasUnread ? 'font-semibold text-slate-950' : 'text-neutral-500'
+                            hasUnread ? 'font-medium text-slate-700' : 'font-normal text-neutral-400'
                           }`}
                         >
                           {conv.lastMessage}
                         </p>
                       </div>
 
-                      {/* Unread Pill Badge or More Button on Right */}
+                      {/* Unread Circular Badge or More Button on Right */}
                       {hasUnread ? (
-                        <span className="shrink-0 min-w-[19px] h-[19px] px-1.5 rounded-full bg-[#1d64ec] text-white text-[10.5px] font-bold flex items-center justify-center leading-none shadow-2xs">
+                        <span
+                          className={`shrink-0 rounded-full bg-[#1d64ec] text-white font-bold flex items-center justify-center leading-none ${
+                            (conv.unreadCount || 0) < 10
+                              ? 'w-5 h-5 min-w-5 aspect-square text-[11px]'
+                              : 'min-w-[20px] h-5 px-1.5 text-[10.5px]'
+                          }`}
+                        >
                           {conv.unreadCount}
                         </span>
                       ) : (

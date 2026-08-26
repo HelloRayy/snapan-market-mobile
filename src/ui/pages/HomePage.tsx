@@ -20,6 +20,7 @@ interface HomePageProps {
   onSelectPost?: (post: MarketPostItem) => void;
   onNavigateToProfile?: (username: string) => void;
   onNavigateSearch?: () => void;
+  onNavigateMessages?: () => void;
   onOpenMenu?: () => void;
 }
 
@@ -27,6 +28,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   onSelectPost,
   onNavigateToProfile,
   onNavigateSearch,
+  onNavigateMessages,
   onOpenMenu,
 }) => {
   const [feedTab, setFeedTab] = useState<'for-you' | 'latest'>('for-you');
@@ -436,6 +438,8 @@ export const HomePage: React.FC<HomePageProps> = ({
           triggerHaptic('selection');
           if (tab === 'profile') {
             onNavigateToProfile?.(profile?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn');
+          } else if (tab === 'messages') {
+            onNavigateMessages?.();
           } else {
             setBottomNavTab(tab);
           }

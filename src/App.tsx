@@ -5,6 +5,7 @@ import { HomePage } from '@/ui/pages/HomePage';
 import { PostDetailPage } from '@/ui/pages/PostDetailPage';
 import { ProfilePage } from '@/ui/pages/ProfilePage';
 import { SearchPage } from '@/ui/pages/SearchPage';
+import { DirectMessagesPage } from '@/ui/pages/DirectMessagesPage';
 import { NavigationDrawer } from '@/ui/components/navigation/NavigationDrawer';
 import { CreatePostModal } from '@/ui/components/marketplace/CreatePostModal';
 import { MarketPostItem } from '@/types/marketFeed';
@@ -94,10 +95,11 @@ export function App() {
   const isDownloadRoute = currentRoute === '/download' || window.location.hash === '#download';
   const isOnboardingRoute = currentRoute === '/onboarding' || window.location.hash === '#onboarding';
   const isSearchRoute = currentRoute === '/search' || window.location.hash === '#search';
+  const isMessagesRoute = currentRoute === '/messages' || window.location.hash === '#messages';
   const isPostDetailRoute = currentRoute.includes('/post/') || currentRoute.includes('/postingan/') || window.location.hash.startsWith('#post-');
   
   // Dynamic Route Check: /@username or #@username or /profile (excluding /@username/post/...)
-  const isProfileRoute = !isPostDetailRoute && (currentRoute.startsWith('/@') || currentRoute === '/profile' || (window.location.hash.startsWith('#@') && !isPostDetailRoute));
+  const isProfileRoute = !isPostDetailRoute && !isMessagesRoute && (currentRoute.startsWith('/@') || currentRoute === '/profile' || (window.location.hash.startsWith('#@') && !isPostDetailRoute));
   
   let targetProfileUsername = 'radityarayhannnn';
   if (currentRoute.startsWith('/@')) {
@@ -189,8 +191,8 @@ export function App() {
   // Route-based Scroll Management: Reset on new non-home routes, restore when returning to Home
   useEffect(() => {
     const prevRoute = prevRouteRef.current;
-    const isCurrentHome = !isProfileRoute && !isDownloadRoute && !isOnboardingRoute && !isPostDetailRoute;
-    const wasPrevHome = prevRoute === '/' || (!prevRoute.startsWith('/@') && prevRoute !== '/profile' && !prevRoute.startsWith('#@') && prevRoute !== '/download' && prevRoute !== '/onboarding');
+    const isCurrentHome = !isProfileRoute && !isDownloadRoute && !isOnboardingRoute && !isPostDetailRoute && !isMessagesRoute;
+    const wasPrevHome = prevRoute === '/' || (!prevRoute.startsWith('/@') && prevRoute !== '/profile' && !prevRoute.startsWith('#@') && prevRoute !== '/download' && prevRoute !== '/onboarding' && prevRoute !== '/messages');
 
     if (wasPrevHome && !isCurrentHome) {
       // Leaving Home -> Reset scroll to top (0, 0) for new route
@@ -206,7 +208,7 @@ export function App() {
     }
 
     prevRouteRef.current = currentRoute;
-  }, [currentRoute, isProfileRoute, isDownloadRoute, isOnboardingRoute, isPostDetailRoute]);
+  }, [currentRoute, isProfileRoute, isDownloadRoute, isOnboardingRoute, isPostDetailRoute, isMessagesRoute]);
 
   const navigateToWeb = () => {
     window.history.pushState({ route: '/' }, '', '/');
@@ -226,6 +228,15 @@ export function App() {
     }
     window.history.pushState({ route: '/search' }, '', '/search');
     setCurrentRoute('/search');
+  };
+
+  const navigateToMessages = () => {
+    // Record current home scroll position before navigating away
+    if (!isProfileRoute && !isSearchRoute && !isPostDetailRoute && !isMessagesRoute) {
+      homeScrollYRef.current = window.scrollY;
+    }
+    window.history.pushState({ route: '/messages' }, '', '/messages');
+    setCurrentRoute('/messages');
   };
 
   const navigateToProfile = (username: string) => {
@@ -296,11 +307,12 @@ export function App() {
       ) : hasCompletedOnboarding && !isOnboardingRoute ? (
         <div className="relative min-h-screen">
           {/* Main Feed HomePage (Always preserved in DOM so scroll position is never lost) */}
-          <div className={isProfileRoute || isSearchRoute || (selectedPost && postDetailOriginRouteRef.current === '/search') ? 'hidden' : 'block'}>
+          <div className={isProfileRoute || isSearchRoute || isMessagesRoute || (selectedPost && postDetailOriginRouteRef.current === '/search') ? 'hidden' : 'block'}>
             <HomePage
               onSelectPost={handleOpenPostDetail}
               onNavigateToProfile={navigateToProfile}
               onNavigateSearch={navigateToSearch}
+              onNavigateMessages={navigateToMessages}
               onOpenMenu={handleOpenDrawer}
             />
           </div>
@@ -313,6 +325,7 @@ export function App() {
               }}
               onNavigateToProfile={navigateToProfile}
               onNavigateHome={navigateToHome}
+              onNavigateMessages={navigateToMessages}
               onSelectPost={handleOpenPostDetail}
               onOpenMenu={handleOpenDrawer}
             />
@@ -328,8 +341,20 @@ export function App() {
               onNavigateTab={(tab) => {
                 if (tab === 'home') {
                   navigateToHome();
+                } else if (tab === 'messages') {
+                  navigateToMessages();
                 }
               }}
+            />
+          )}
+
+          {/* Direct Messages Page (Route /messages or #messages) */}
+          {isMessagesRoute && (
+            <DirectMessagesPage
+              onBack={navigateToHome}
+              onNavigateHome={navigateToHome}
+              onNavigateSearch={navigateToSearch}
+              onNavigateProfile={navigateToProfile}
             />
           )}
 
@@ -354,6 +379,7 @@ export function App() {
             onNavigateHome={navigateToHome}
             onNavigateSearch={navigateToSearch}
             onNavigateProfile={navigateToProfile}
+            onNavigateMessages={navigateToMessages}
             onOpenCreateModal={() => setIsCreateModalOpen(true)}
             onNavigateDownload={() => {
               setCurrentRoute('/download');

@@ -25,6 +25,7 @@ interface NavigationDrawerProps {
   onNavigateSearch?: () => void;
   onNavigateProfile: (username: string) => void;
   onNavigateDownload: () => void;
+  onNavigateMessages?: () => void;
   onNavigateColors?: () => void;
   onOpenCreateModal?: () => void;
   onNavigateMap?: () => void;
@@ -37,6 +38,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   onNavigateSearch,
   onNavigateProfile,
   onNavigateDownload,
+  onNavigateMessages,
   onNavigateColors,
   onNavigateMap,
   onOpenCreateModal,
@@ -155,6 +157,9 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             <button
               type="button"
               onClick={() => {
+                if (onNavigateMessages) {
+                  onNavigateMessages();
+                }
                 onClose();
               }}
               className="flex items-center gap-x-3 h-[36px] w-full px-3 rounded-xl text-[14.5px] font-medium text-slate-800 hover:text-slate-950 hover:bg-neutral-100 active:bg-neutral-200/70 transition-colors cursor-pointer leading-snug text-left"

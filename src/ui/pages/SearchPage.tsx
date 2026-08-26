@@ -204,6 +204,7 @@ interface SearchPageProps {
   onBack?: () => void;
   onNavigateToProfile: (username: string) => void;
   onNavigateHome: () => void;
+  onNavigateMessages?: () => void;
   onSelectPost?: (post: MarketPostItem) => void;
   onOpenMenu?: () => void;
 }
@@ -212,6 +213,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
   onBack,
   onNavigateToProfile,
   onNavigateHome,
+  onNavigateMessages,
   onSelectPost,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -786,6 +788,8 @@ export const SearchPage: React.FC<SearchPageProps> = ({
               onNavigateHome();
             } else if (tab === 'profile') {
               onNavigateToProfile('radityarayhannnn');
+            } else if (tab === 'messages') {
+              onNavigateMessages?.();
             }
           }}
         />

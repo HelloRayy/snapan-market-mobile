@@ -147,58 +147,73 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
   return (
     <div className="min-h-screen bg-white text-slate-900 font-gt-standard pb-24 select-none">
       {/* Top Sticky App Header */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-100/80">
-        {/* Row 1: Title & Action Button */}
-        <div className="max-w-xl mx-auto flex items-center justify-between pt-[18px] pb-3 px-6 leading-snug">
-          <div className="flex items-center gap-2.5">
-            {onBack && (
+      <header
+        className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-100 font-gt-standard select-none transition-colors"
+        style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
+      >
+        {/* Row 1: Top Bar (h-14 Standard Height) */}
+        <div className="w-full max-w-xl mx-auto px-4 h-14 flex items-center justify-between relative select-none">
+          {/* Left Side: Back button or placeholder spacer */}
+          <div className="flex items-center">
+            {onBack ? (
               <button
                 type="button"
                 onClick={() => {
                   triggerHaptic('selection');
                   onBack();
                 }}
-                className="w-8 h-8 -ml-2 rounded-full flex items-center justify-center text-slate-700 hover:text-slate-900 hover:bg-neutral-100 active:bg-neutral-200 active:scale-95 transition-all duration-150 cursor-pointer"
+                className="w-10 h-10 rounded-full hover:bg-neutral-100 active:bg-neutral-200 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
                 aria-label="Kembali"
               >
-                <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
+                <ArrowLeft className="w-5 h-5 stroke-[2.25]" />
               </button>
+            ) : (
+              <div className="w-10 h-10 pointer-events-none" />
             )}
-            <h1 className="text-xl font-semibold text-slate-900 tracking-tight transition-all duration-150 active:scale-[0.98]">
+          </div>
+
+          {/* Center: Title */}
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
+            <h1 className="font-semibold text-base text-slate-900 tracking-tight transition-all duration-150 pointer-events-auto">
               Pesan
             </h1>
           </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              triggerHaptic('medium');
-              onOpenNewChatModal?.();
-            }}
-            className="flex items-center justify-center rounded-full h-[36px] w-[36px] bg-neutral-100 hover:bg-neutral-200/80 active:scale-95 text-slate-900 transition-all duration-150 cursor-pointer border border-neutral-200/60 shadow-2xs"
-            aria-label="Pesan baru"
-            title="Pesan baru"
-          >
-            <SquarePen className="w-4.5 h-4.5 stroke-[2]" />
-          </button>
+          {/* Right Side: New Message Action Button */}
+          <div className="flex items-center">
+            <button
+              type="button"
+              onClick={() => {
+                triggerHaptic('medium');
+                onOpenNewChatModal?.();
+              }}
+              className="w-10 h-10 rounded-full hover:bg-neutral-100 active:bg-neutral-200 flex items-center justify-center text-slate-800 transition-colors cursor-pointer active:scale-90"
+              aria-label="Pesan baru"
+              title="Pesan baru"
+            >
+              <SquarePen className="w-5 h-5 stroke-[2]" />
+            </button>
+          </div>
         </div>
 
         {/* Row 2: SearchBar Capsule */}
-        <div className="max-w-xl mx-auto flex items-center gap-x-3 pb-3 px-6 leading-snug">
-          <div className="flex items-center gap-2.5 w-full py-1.5 px-4 bg-neutral-100 hover:bg-neutral-200/60 focus-within:bg-white focus-within:ring-2 focus-within:ring-slate-900/10 focus-within:border-neutral-300 rounded-[22px] border border-neutral-200/60 transition-all duration-150">
-            <Search className="w-4 h-4 text-neutral-400 shrink-0 stroke-[2.2]" />
+        <div className="w-full max-w-xl mx-auto px-4 pb-2.5">
+          <div className="flex items-center gap-2 py-2 px-4 bg-neutral-100 hover:bg-neutral-200/60 focus-within:bg-white focus-within:border-slate-300 focus-within:ring-2 focus-within:ring-slate-900/10 text-slate-900 text-base rounded-[22px] border border-neutral-200/70 backdrop-blur-md leading-snug transition-all duration-150">
+            <div className="h-[15.9896px] w-[15.9896px] leading-snug flex items-center justify-center shrink-0">
+              <Search className="w-4 h-4 text-neutral-400 stroke-[2.2]" />
+            </div>
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cari pesan atau kontak..."
-              className="w-full bg-transparent text-sm text-slate-900 placeholder:text-neutral-400 focus:outline-hidden py-0.5 leading-snug"
+              placeholder="Cari pesan..."
+              className="py-px px-0.5 w-full bg-transparent text-sm text-slate-900 placeholder:text-neutral-400 focus:outline-hidden leading-snug transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="w-4 h-4 rounded-full bg-neutral-300 hover:bg-neutral-400 text-white flex items-center justify-center cursor-pointer transition-colors"
+                className="w-4 h-4 rounded-full bg-neutral-300 hover:bg-neutral-400 text-white flex items-center justify-center cursor-pointer transition-colors shrink-0"
                 aria-label="Hapus pencarian"
               >
                 <X className="w-2.5 h-2.5 stroke-[3]" />
@@ -208,7 +223,7 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
         </div>
 
         {/* Row 3: Sub-Navigation Filter Tab Pills ("Kotak Masuk" & "Permintaan") */}
-        <div className="max-w-xl mx-auto flex items-center gap-x-2 pb-3.5 px-6 leading-snug">
+        <div className="w-full max-w-xl mx-auto flex items-center gap-x-2 pb-3 px-4 leading-snug">
           <button
             type="button"
             onClick={() => {

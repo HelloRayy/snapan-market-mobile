@@ -5,7 +5,6 @@ import {
   SquarePen,
   X,
   CheckCheck,
-  ShoppingBag,
   MoreHorizontal,
 } from 'lucide-react';
 import { MarketBottomNav } from '@/ui/components/marketplace/MarketBottomNav';
@@ -268,7 +267,7 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
                     triggerHaptic('selection');
                     onSelectConversation?.(conv.id);
                   }}
-                  className="min-h-[78px] py-3.5 pl-4 sm:pl-6 pr-3.5 flex items-center gap-3.5 rounded-2xl hover:bg-neutral-50 active:bg-neutral-100/70 text-slate-900 cursor-pointer transition-all duration-150 active:scale-[0.98] group"
+                  className="min-h-[78px] h-[78px] py-3.5 pl-4 sm:pl-6 pr-3.5 flex items-center gap-3.5 rounded-2xl hover:bg-neutral-50 active:bg-neutral-100/70 text-slate-900 cursor-pointer transition-all duration-150 active:scale-[0.98] group"
                 >
                   {/* User Avatar with Online Dot */}
                   <div className="relative shrink-0 w-[50px] h-[50px] rounded-full bg-neutral-100 ring-1 ring-neutral-200/80">
@@ -317,21 +316,12 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
                       </span>
                     </div>
 
-                    {/* Product Context Tag if Marketplace related */}
-                    {conv.productContext && (
-                      <div className="mt-1 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-blue-50/80 border border-blue-100 text-[#1d64ec] text-[11px] font-medium max-w-full truncate self-start">
-                        <ShoppingBag className="w-2.5 h-2.5 shrink-0 stroke-[2.2]" />
-                        <span className="truncate">{conv.productContext.title}</span>
-                        <span className="text-blue-400 shrink-0">•</span>
-                        <span className="font-semibold shrink-0">{conv.productContext.price}</span>
-                      </div>
-                    )}
                   </div>
 
                   {/* Right Side Actions: Unread Badge & More Options */}
-                  <div className="flex items-center gap-1.5 shrink-0 ml-1">
+                  <div className="flex items-center gap-1.5 shrink-0 ml-2">
                     {hasUnread && (
-                      <span className="shrink-0 min-w-[18px] h-[18px] px-1 rounded-full bg-[#1d64ec] text-white text-[10px] font-bold flex items-center justify-center leading-none shadow-2xs">
+                      <span className="shrink-0 min-w-[20px] h-5 px-1.5 rounded-full bg-[#1d64ec] text-white text-[11px] font-bold flex items-center justify-center leading-none shadow-2xs">
                         {conv.unreadCount}
                       </span>
                     )}

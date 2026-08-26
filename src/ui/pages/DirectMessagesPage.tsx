@@ -437,24 +437,26 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
         )}
       </main>
 
-      {/* 5-Icon Standard Bottom Navigation */}
-      <MarketBottomNav
-        activeTab="messages"
-        userAvatar={
-          profile?.avatar_url ||
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80'
-        }
-        onTabChange={(tab: string) => {
-          triggerHaptic('selection');
-          if (tab === 'home') {
-            onNavigateHome?.();
-          } else if (tab === 'profile') {
-            onNavigateProfile?.(myUsername);
-          } else if (tab === 'search') {
-            onNavigateSearch?.();
+      {/* 5-Icon Standard Bottom Navigation (Hidden when searching to prevent floating above keyboard) */}
+      {!isSearchFocused && searchQuery.length === 0 && (
+        <MarketBottomNav
+          activeTab="messages"
+          userAvatar={
+            profile?.avatar_url ||
+            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80'
           }
-        }}
-      />
+          onTabChange={(tab: string) => {
+            triggerHaptic('selection');
+            if (tab === 'home') {
+              onNavigateHome?.();
+            } else if (tab === 'profile') {
+              onNavigateProfile?.(myUsername);
+            } else if (tab === 'search') {
+              onNavigateSearch?.();
+            }
+          }}
+        />
+      )}
     </div>
   );
 };

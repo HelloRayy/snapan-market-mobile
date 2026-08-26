@@ -60,6 +60,12 @@
       "sourceType": "github",
       "skillPath": "skills/supabase-postgres-best-practices/SKILL.md",
       "computedHash": "128fac78002d916c8ca908245d398e634f540d8bcf20915b2b2359aeb18eba59"
+    },
+    "security": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": ".agents/skills/security/SKILL.md",
+      "computedHash": "custom-security-skill"
     }
   }
 }

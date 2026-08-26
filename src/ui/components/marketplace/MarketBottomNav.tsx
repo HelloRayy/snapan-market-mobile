@@ -7,6 +7,15 @@ interface MarketBottomNavProps {
   onPostClick?: () => void;
   userAvatar?: string;
 }
+const isEditableElement = (el: Element | null): boolean => {
+  if (!el) return false;
+  const tag = el.tagName.toLowerCase();
+  if (tag === 'input') {
+    const type = (el as HTMLInputElement).type?.toLowerCase();
+    return !['button', 'checkbox', 'color', 'file', 'hidden', 'image', 'radio', 'reset', 'submit'].includes(type);
+  }
+  return tag === 'textarea' || (el as HTMLElement).isContentEditable;
+};
 
 export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   activeTab,
@@ -14,30 +23,64 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   onPostClick,
   userAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
 }) => {
-  // Auto-detect virtual keyboard on mobile devices to prevent bottom nav from floating over the keyboard
-  const [isKeyboardOpen, setIsKeyboardOpen] = React.useState(false);
+  // Robust Virtual Keyboard & Active Input Detection to prevent bottom nav from floating over the keyboard
+  const [isInputFocused, setIsInputFocused] = React.useState<boolean>(() => {
+    if (typeof document === 'undefined') return false;
+    return isEditableElement(document.activeElement);
+  });
+  const [isViewportResized, setIsViewportResized] = React.useState<boolean>(false);
+  const baselineHeightRef = React.useRef<number>(
+    typeof window !== 'undefined' ? Math.max(window.innerHeight, window.screen?.height || 0) : 0
+  );
 
   React.useEffect(() => {
-    if (typeof window === 'undefined' || !window.visualViewport) return;
+    if (typeof window === 'undefined') return;
 
-    const handleViewportChange = () => {
-      if (window.visualViewport) {
-        // Virtual keyboard causes visualViewport height to shrink significantly (> 15% reduction)
-        const isKeyboard = window.visualViewport.height < window.innerHeight * 0.82;
-        setIsKeyboardOpen(isKeyboard);
+    // 1. Focus-based input detection (instant & universal across all mobile/desktop platforms)
+    const handleFocusIn = (e: FocusEvent) => {
+      if (isEditableElement(e.target as Element)) {
+        setIsInputFocused(true);
       }
     };
 
-    window.visualViewport.addEventListener('resize', handleViewportChange);
-    window.visualViewport.addEventListener('scroll', handleViewportChange);
+    const handleFocusOut = () => {
+      // Use a short tick so document.activeElement has transitioned to the next focused target
+      setTimeout(() => {
+        if (!isEditableElement(document.activeElement)) {
+          setIsInputFocused(false);
+        }
+      }, 50);
+    };
+
+    document.addEventListener('focusin', handleFocusIn);
+    document.addEventListener('focusout', handleFocusOut);
+
+    // 2. Viewport resize detection (for virtual keyboards that shrink visualViewport or innerHeight)
+    const handleViewportChange = () => {
+      const currentHeight = window.visualViewport?.height ?? window.innerHeight;
+      const baseline = baselineHeightRef.current;
+      const isShrunk = baseline > 0 && currentHeight < baseline * 0.78;
+      setIsViewportResized(isShrunk);
+    };
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleViewportChange);
+      window.visualViewport.addEventListener('scroll', handleViewportChange);
+    }
+    window.addEventListener('resize', handleViewportChange);
 
     return () => {
-      window.visualViewport?.removeEventListener('resize', handleViewportChange);
-      window.visualViewport?.removeEventListener('scroll', handleViewportChange);
+      document.removeEventListener('focusin', handleFocusIn);
+      document.removeEventListener('focusout', handleFocusOut);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleViewportChange);
+        window.visualViewport.removeEventListener('scroll', handleViewportChange);
+      }
+      window.removeEventListener('resize', handleViewportChange);
     };
   }, []);
 
-  if (isKeyboardOpen) {
+  if (isInputFocused || isViewportResized) {
     return null;
   }
 

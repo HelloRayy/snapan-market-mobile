@@ -112,6 +112,29 @@ export function App() {
   const [selectedPost, setSelectedPost] = useState<MarketPostItem | null>(null);
   const [activeChatThreadId, setActiveChatThreadId] = useState<string | null>(() => getChatThreadFromLocation());
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  // Dynamic local chat messages store (keyed by threadId)
+  const [extraChatMessages, setExtraChatMessages] = useState<Record<string, Array<{ id: string; text: string; time: string }>>>({});
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll chat stream to bottom on mount or message update
+  useEffect(() => {
+    if (activeChatThreadId) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [activeChatThreadId, extraChatMessages]);
+
+  const handleSendChatMessage = (text: string) => {
+    if (!activeChatThreadId) return;
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    setExtraChatMessages((prev) => ({
+      ...prev,
+      [activeChatThreadId]: [
+        ...(prev[activeChatThreadId] || []),
+        { id: `msg-${Date.now()}`, text, time: timeStr },
+      ],
+    }));
+  };
   // Double-Back to Exit Toast State
   const [showExitToast, setShowExitToast] = useState(false);
   const lastBackPressTimeRef = useRef<number>(0);
@@ -581,6 +604,12 @@ export function App() {
                           setCurrentRoute('/map');
                           window.history.pushState({ isSnapanRoot: false, route: '/map' }, '', '/map');
                         }}
+                        onViewProduct={(postId) => {
+                          const post = MOCK_MARKET_POSTS.find((p) => p.id === postId || p.id === 'post-thread-1');
+                          if (post) {
+                            handleOpenPostDetail(post);
+                          }
+                        }}
                       />
 
                       {/* Bubble 2 (Bawah - Menyatu) */}
@@ -656,10 +685,29 @@ export function App() {
                     </div>
                   </>
                 )}
+
+                {/* Dynamically Appended Sent Messages from Composer */}
+                {extraChatMessages[activeChatThreadId]?.map((msg) => (
+                  <div
+                    key={msg.id}
+                    className="flex flex-col items-end gap-y-1 max-w-[85%] sm:max-w-[75%] ml-auto animate-in fade-in slide-in-from-bottom-2 duration-200"
+                  >
+                    <ChatBubble variant="sent" shape="single" className="w-full">
+                      <ChatBubbleMessage>{msg.text}</ChatBubbleMessage>
+                      <ChatBubbleTimestamp
+                        className="text-white/80"
+                        statusIcon={<CheckCheck className="w-3.5 h-3.5 text-white/95 stroke-[2.2]" />}
+                      >
+                        {msg.time}
+                      </ChatBubbleTimestamp>
+                    </ChatBubble>
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
               </main>
 
               {/* Bottom Sticky Chat Composer Bar */}
-              <ChatComposerBar />
+              <ChatComposerBar onSendMessage={handleSendChatMessage} />
             </div>
           )}
 

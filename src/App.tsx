@@ -9,6 +9,7 @@ import { SearchPage } from '@/ui/pages/SearchPage';
 import { DirectMessagesPage, MOCK_CONVERSATIONS } from '@/ui/pages/DirectMessagesPage';
 import { ChatTopBar } from '@/ui/components/chat/ChatTopBar';
 import { ChatProductCard } from '@/ui/components/chat/ChatProductCard';
+import { ChatComposerBar } from '@/ui/components/chat/ChatComposerBar';
 import {
   ChatBubble,
   ChatBubbleMessage,
@@ -656,6 +657,9 @@ export function App() {
                   </>
                 )}
               </main>
+
+              {/* Bottom Sticky Chat Composer Bar */}
+              <ChatComposerBar />
             </div>
           )}
 

@@ -557,27 +557,30 @@ export function App() {
                 className="flex-1 overflow-y-auto px-3.5 py-4 space-y-4 bg-[#fbfbfb] touch-pan-y"
               >
                 {activeChatThreadId === '17892348123791823' ? (
-                  /* ROOM CHAT DIMAS WICAKSONO: showProductCard = true (With Product Context Card) */
+                  /* ROOM CHAT DIMAS WICAKSONO: showProductCard = true (With Product Context Card as Left Bubble) */
                   <>
-                    {/* 1. Attached Product Context Card (Shopee/Marketplace Anatomy) */}
-                    <ChatProductCard
-                      product={{
-                        id: 'market-post-fisika-12',
-                        title: 'Buku Paket Fisika Kelas 12 (Kurikulum Merdeka)',
-                        price: 'Rp 45.000',
-                        itemCount: 1,
-                        image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200&q=80',
-                        statusText: 'Selesai',
-                        statusColor: 'text-[#ff5722]',
-                        orderId: '2604294WFPDA0B',
-                        orderTime: '27-08-2026 10:45',
-                      }}
-                      timestamp="10:55"
-                    />
-
-                    {/* 2. Received Message Bubble (Dimas Wicaksono) */}
+                    {/* GRUP 1: 2 Bubble Bertumpuk Penerima (Kiri / Left) - Dimas Wicaksono */}
                     <div className="flex flex-col items-start gap-y-1 max-w-[85%] sm:max-w-[75%] mr-auto">
-                      <ChatBubble variant="received" shape="single" className="w-full">
+                      {/* Bubble 1 (Atas - Product Context Card Bubble) */}
+                      <ChatProductCard
+                        shape="firstReceived"
+                        className="w-full"
+                        product={{
+                          id: 'market-post-fisika-12',
+                          title: 'Buku Paket Fisika Kelas 12 (Kurikulum Merdeka)',
+                          price: 'Rp 45.000',
+                          itemCount: 1,
+                          image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200&q=80',
+                          statusText: 'Selesai',
+                          statusColor: 'text-[#ff5722]',
+                          orderId: '2604294WFPDA0B',
+                          orderTime: '27-08-2026 10:45',
+                        }}
+                        timestamp="10:55"
+                      />
+
+                      {/* Bubble 2 (Bawah - Menyatu) */}
+                      <ChatBubble variant="received" shape="lastReceived" className="w-full">
                         <ChatBubbleMessage>
                           Siap bro, nanti jam istirahat kedua gua tunggu di depan lab komputer yaa.
                         </ChatBubbleMessage>
@@ -587,7 +590,7 @@ export function App() {
                       </ChatBubble>
                     </div>
 
-                    {/* 3. Sent Message Bubble (User / Buyer) */}
+                    {/* GRUP 2: Bubble Pengirim (Kanan / Right) */}
                     <div className="flex flex-col items-end gap-y-1 max-w-[85%] sm:max-w-[75%] ml-auto">
                       <ChatBubble variant="sent" shape="single" className="w-full">
                         <ChatBubbleMessage>

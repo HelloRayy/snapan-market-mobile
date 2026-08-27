@@ -199,7 +199,7 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
           />
         </div>
 
-        {/* Row 3: Sub-Navigation Filter Tab Pills ("Kotak Masuk" & "Permintaan") */}
+        {/* Row 3: Sub-Navigation Filter Tab Pills ("Obrolan" & "Pembeli") */}
         <div className="w-full max-w-xl mx-auto flex items-center gap-x-2 px-4 pb-3">
           <button
             type="button"
@@ -213,7 +213,7 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
                 : 'bg-transparent text-neutral-500 hover:bg-neutral-100/70 hover:text-slate-700'
             }`}
           >
-            Kotak Masuk
+            Obrolan
           </button>
 
           <button
@@ -228,7 +228,7 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
                 : 'bg-transparent text-neutral-500 hover:bg-neutral-100/70 hover:text-slate-700'
             }`}
           >
-            Permintaan
+            Pembeli
           </button>
         </div>
       </header>
@@ -344,13 +344,13 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
               <Search className="w-6 h-6 stroke-[1.8]" />
             </div>
             <p className="font-semibold text-slate-800 text-[15px]">
-              {activeFilter === 'requests' ? 'Tidak ada permintaan pesan' : 'Tidak ada percakapan'}
+              {activeFilter === 'requests' ? 'Tidak ada pesan dari pembeli' : 'Tidak ada obrolan'}
             </p>
             <p className="text-xs text-neutral-400 max-w-xs mx-auto">
               {searchQuery
                 ? `Tidak ditemukan pesan dengan kata kunci "${searchQuery}"`
                 : activeFilter === 'requests'
-                ? 'Permintaan pesan dari pengguna lain yang belum terhubung akan muncul di sini.'
+                ? 'Pesan dari calon pembeli produk jualan Anda akan muncul di sini.'
                 : 'Mulai kirim pesan ke teman atau penjual barang di Snapan Market.'}
             </p>
           </div>

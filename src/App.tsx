@@ -550,56 +550,53 @@ export function App() {
                 }}
               />
 
-              {/* Chat Messages Stream (2 Kiri / Receiver, 2 Kanan / Sender) */}
+              {/* Chat Messages Stream (2 Bubble Bertumpuk Kiri, 2 Bubble Bertumpuk Kanan) */}
               <main
                 data-lenis-prevent
-                className="flex-1 overflow-y-auto px-3.5 py-4 space-y-3.5 bg-[#fbfbfb] touch-pan-y"
+                className="flex-1 overflow-y-auto px-3.5 py-4 space-y-4 bg-[#fbfbfb] touch-pan-y"
               >
-                {/* 1. Bubble Penerima (Kiri / Left) */}
-                <ChatBubble variant="received">
-                  <ChatBubbleMessage>
-                    Halo kak! Kalkulator Casio FX-991EX nya masih ready gak ya?
-                  </ChatBubbleMessage>
-                  <ChatBubbleTimestamp className="text-neutral-400">
-                    08:15
-                  </ChatBubbleTimestamp>
-                </ChatBubble>
+                {/* GRUP 1: 2 Bubble Bertumpuk Penerima (Kiri / Left) - Jam 08:15 */}
+                <div className="flex flex-col items-start gap-y-1 max-w-[85%] sm:max-w-[75%] mr-auto">
+                  {/* Bubble 1 (Atas) */}
+                  <ChatBubble variant="received" shape="firstReceived" className="w-full">
+                    <ChatBubbleMessage>
+                      Halo kak! Mau tanya soal kalkulator Casio FX-991EX nya
+                    </ChatBubbleMessage>
+                  </ChatBubble>
 
-                {/* 2. Bubble Pengirim (Kanan / Right) */}
-                <ChatBubble variant="sent">
-                  <ChatBubbleMessage>
-                    Halo Sarah! Masih ready kok, kondisinya 95% mulus lengkap sama cover pelindungnya yaa 👍
-                  </ChatBubbleMessage>
-                  <ChatBubbleTimestamp
-                    className="text-blue-100"
-                    statusIcon={<CheckCheck className="w-3.5 h-3.5 text-blue-200 stroke-[2.5]" />}
-                  >
-                    08:18
-                  </ChatBubbleTimestamp>
-                </ChatBubble>
+                  {/* Bubble 2 (Bawah - Menyatu) */}
+                  <ChatBubble variant="received" shape="lastReceived" className="w-full">
+                    <ChatBubbleMessage>
+                      Kira-kira masih lengkap sama dus dan buku panduannya gak ya?
+                    </ChatBubbleMessage>
+                    <ChatBubbleTimestamp className="text-neutral-400">
+                      08:15
+                    </ChatBubbleTimestamp>
+                  </ChatBubble>
+                </div>
 
-                {/* 3. Bubble Penerima (Kiri / Left) */}
-                <ChatBubble variant="received">
-                  <ChatBubbleMessage>
-                    Boleh nego tipis kak untuk persiapan ujian matematika besok? Bisa COD di kantin depan?
-                  </ChatBubbleMessage>
-                  <ChatBubbleTimestamp className="text-neutral-400">
-                    08:22
-                  </ChatBubbleTimestamp>
-                </ChatBubble>
+                {/* GRUP 2: 2 Bubble Bertumpuk Pengirim (Kanan / Right) - Jam 08:18 */}
+                <div className="flex flex-col items-end gap-y-1 max-w-[85%] sm:max-w-[75%] ml-auto">
+                  {/* Bubble 1 (Atas) */}
+                  <ChatBubble variant="sent" shape="firstSent" className="w-full">
+                    <ChatBubbleMessage>
+                      Halo Sarah! Masih lengkap semua kok, dus buku sama cover pelindungnya masih ada 👍
+                    </ChatBubbleMessage>
+                  </ChatBubble>
 
-                {/* 4. Bubble Pengirim (Kanan / Right) */}
-                <ChatBubble variant="sent">
-                  <ChatBubbleMessage>
-                    Boleh deh, deal di Rp 175.000 yaa! Nanti pas jam istirahat kedua kita ketemuan di kantin depan ya.
-                  </ChatBubbleMessage>
-                  <ChatBubbleTimestamp
-                    className="text-blue-100"
-                    statusIcon={<CheckCheck className="w-3.5 h-3.5 text-blue-200 stroke-[2.5]" />}
-                  >
-                    08:25
-                  </ChatBubbleTimestamp>
-                </ChatBubble>
+                  {/* Bubble 2 (Bawah - Menyatu) */}
+                  <ChatBubble variant="sent" shape="lastSent" className="w-full">
+                    <ChatBubbleMessage>
+                      Baterainya juga baru aja diganti minggu kemarin, jadi siap pakai banget.
+                    </ChatBubbleMessage>
+                    <ChatBubbleTimestamp
+                      className="text-blue-100"
+                      statusIcon={<CheckCheck className="w-3.5 h-3.5 text-blue-200 stroke-[2.5]" />}
+                    >
+                      08:18
+                    </ChatBubbleTimestamp>
+                  </ChatBubble>
+                </div>
               </main>
             </div>
           )}

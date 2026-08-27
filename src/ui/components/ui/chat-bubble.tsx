@@ -3,17 +3,25 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/utils/cn';
 
 export const chatBubbleVariants = cva(
-  'relative max-w-[85%] sm:max-w-[75%] rounded-[20px] px-3.5 py-2 text-[14.5px] leading-relaxed break-words shadow-2xs transition-all',
+  'relative max-w-[85%] sm:max-w-[75%] px-3.5 py-2 text-[14.5px] leading-relaxed break-words shadow-2xs transition-all',
   {
     variants: {
       variant: {
-        sent: 'ml-auto bg-[#1d64ec] text-white rounded-br-[4px]',
-        received: 'mr-auto bg-[#f1f3f5] text-slate-900 rounded-bl-[4px]',
+        sent: 'ml-auto bg-[#1d64ec] text-white',
+        received: 'mr-auto bg-[#f1f3f5] text-slate-900',
         system: 'mx-auto bg-neutral-100/90 text-neutral-500 text-[11.5px] font-medium text-center border border-neutral-200/60 rounded-full px-3 py-1 shadow-2xs',
+      },
+      shape: {
+        single: 'rounded-[20px]',
+        firstReceived: 'rounded-[20px] rounded-bl-[6px]',
+        lastReceived: 'rounded-[20px] rounded-tl-[6px] rounded-bl-[4px]',
+        firstSent: 'rounded-[20px] rounded-br-[6px]',
+        lastSent: 'rounded-[20px] rounded-tr-[6px] rounded-br-[4px]',
       },
     },
     defaultVariants: {
       variant: 'received',
+      shape: 'single',
     },
   }
 );
@@ -23,10 +31,10 @@ export interface ChatBubbleProps
     VariantProps<typeof chatBubbleVariants> {}
 
 export const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
-  ({ className, variant, ...props }, ref) => (
+  ({ className, variant, shape, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn(chatBubbleVariants({ variant, className }))}
+      className={cn(chatBubbleVariants({ variant, shape, className }))}
       {...props}
     />
   )

@@ -53,24 +53,32 @@ export const ChatBubbleMessage = React.forwardRef<
 ));
 ChatBubbleMessage.displayName = 'ChatBubbleMessage';
 
+export interface ChatBubbleTimestampProps
+  extends React.HTMLAttributes<HTMLSpanElement> {
+  statusLabel?: string;
+  statusIcon?: React.ReactNode;
+}
+
 export const ChatBubbleTimestamp = React.forwardRef<
   HTMLSpanElement,
-  React.HTMLAttributes<HTMLSpanElement> & { statusIcon?: React.ReactNode }
->(({ className, children, statusIcon, ...props }, ref) => (
+  ChatBubbleTimestampProps
+>(({ className, children, statusLabel, statusIcon, ...props }, ref) => (
   <span
     ref={ref}
     className={cn(
-      'flex items-center justify-end gap-1 mt-0.5 text-[10.5px] select-none opacity-85',
+      'flex items-center justify-end gap-1.5 mt-0.5 text-[10.5px] select-none opacity-85',
       className
     )}
     {...props}
   >
     {children}
+    {statusLabel && (
+      <span className="font-medium tracking-tight opacity-90">• {statusLabel}</span>
+    )}
     {statusIcon}
   </span>
 ));
 ChatBubbleTimestamp.displayName = 'ChatBubbleTimestamp';
-
 export const ChatBubbleAvatar = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & { src: string; alt?: string; isOnline?: boolean }

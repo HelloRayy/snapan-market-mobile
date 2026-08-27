@@ -10,6 +10,7 @@ import { CommentDetailPage } from '../components/marketplace/CommentDetailPage';
 import { CheckoutPage } from './CheckoutPage';
 import { useAuth } from '../hooks/useAuth';
 import { triggerHaptic } from '@/utils/haptics';
+import { toUsernameSlug } from '@/utils/formatters';
 
 interface PostDetailPageProps {
   post: MarketPostItem;
@@ -55,10 +56,11 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
 
   const handleAddComment = (content: string, specificCommentId?: string) => {
     const targetParentId = specificCommentId || replyTarget?.id || replyToCommentId;
+    const currentUsernameSlug = toUsernameSlug(profile?.full_name, 'radityarayhannnn');
     const isPostAuthor =
       (profile?.id || 'current-user') === post.seller.id ||
       post.seller.username === 'radityarayhannnn' ||
-      post.seller.username === profile?.full_name?.toLowerCase().replace(/\s+/g, '');
+      post.seller.username === currentUsernameSlug;
 
     const createdId = `comment-${Date.now()}`;
     const newComment: PostComment = {
@@ -67,7 +69,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
       user: {
         id: profile?.id || 'user-current',
         name: profile?.full_name || 'Raditya Rayhan',
-        username: profile?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn',
+        username: currentUsernameSlug,
         avatar: profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
         classGroup: profile?.class_group || 'XII PPLG 1',
         isVerified: true,

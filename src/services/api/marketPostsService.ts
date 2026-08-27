@@ -1,6 +1,41 @@
 import { supabase } from './supabase';
 import type { MarketPostWithSeller, MarketPostFilterOptions } from '@/types/supabase';
+import type { MarketPostItem } from '@/types/marketFeed';
+import { toUsernameSlug } from '@/utils/formatters';
 
+/**
+ * Maps a raw Supabase MarketPostWithSeller record to the UI MarketPostItem feed model
+ */
+export function mapSupabasePostToFeedItem(p: MarketPostWithSeller): MarketPostItem {
+  return {
+    id: p.id,
+    caption: p.caption,
+    price: p.price ?? 0,
+    originalPrice: p.original_price ?? undefined,
+    category: (p.category as MarketPostItem['category']) || 'Lainnya',
+    images: p.images || [],
+    stock: p.stock ?? 1,
+    locationTag: p.location_tag || undefined,
+    likesCount: p.likes_count || 0,
+    commentsCount: p.comments_count || 0,
+    repostsCount: 0,
+    timestamp: new Date(p.created_at).toLocaleDateString('id-ID', {
+      hour: '2-digit',
+      minute: '2-digit',
+    }),
+    isLiked: p.is_liked_by_user,
+    seller: {
+      id: p.seller?.id || p.seller_id,
+      name: p.seller?.full_name || 'Penjual Snapan',
+      avatar:
+        p.seller?.avatar_url ||
+        'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&q=80',
+      classGroup: p.seller?.class_group || 'Siswa Snapan',
+      isVerified: p.seller?.is_verified ?? false,
+      username: toUsernameSlug(p.seller?.full_name, 'seller'),
+    },
+  };
+}
 /**
  * Fetch semua postingan feed jualan & sosial beserta detail seller, jumlah suka, dan jumlah komentar
  */

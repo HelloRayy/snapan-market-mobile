@@ -1,5 +1,6 @@
 import React from 'react';
 import { CreditCard, MessageSquare } from 'lucide-react';
+import { formatRupiah } from '@/utils/formatters';
 
 interface StickyBuyBarProps {
   price?: number;
@@ -14,12 +15,6 @@ export const StickyBuyBar: React.FC<StickyBuyBarProps> = ({
   onBuyClick,
   onChatClick,
 }) => {
-  const formatRupiah = (val: number) =>
-    new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0,
-    }).format(val);
 
   return (
     <div

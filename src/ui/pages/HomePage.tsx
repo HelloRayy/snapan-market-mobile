@@ -9,8 +9,7 @@ import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
 import { MarketPostItem } from '@/types/marketFeed';
 import { useCartStore } from '../store/cartStore';
 import { useAuth } from '../hooks/useAuth';
-import { getMarketPosts, createMarketPost } from '@/services/api/marketPostsService';
-import type { MarketPostWithSeller } from '@/types/supabase';
+import { getMarketPosts, createMarketPost, mapSupabasePostToFeedItem } from '@/services/api/marketPostsService';
 import { PullToRefreshIndicator } from '../components/marketplace/PullToRefreshIndicator';
 import { triggerHaptic } from '@/utils/haptics';
 import { saveFeedCache, loadFeedCache } from '@/services/cache/feedCache';
@@ -34,7 +33,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   
   // Create Post Modal State (1-Tap Zero Friction Trigger)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [selectedPostMode] = useState<'thread' | 'product'>('thread');
+  const selectedPostMode: 'thread' | 'product' = 'thread';
 
   // Items State (Instant 0ms Cache-First Load) & Infinite Scroll Loading
   const [items, setItems] = useState<MarketPostItem[]>(() => {
@@ -57,36 +56,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     try {
       const supabasePosts = await getMarketPosts();
       if (supabasePosts && supabasePosts.length > 0) {
-        const mappedPosts: MarketPostItem[] = supabasePosts.map((p: MarketPostWithSeller) => ({
-          id: p.id,
-          caption: p.caption,
-          price: p.price ?? 0,
-          originalPrice: p.original_price ?? undefined,
-          category: (p.category as MarketPostItem['category']) || 'Lainnya',
-          images: p.images || [],
-          stock: p.stock ?? 1,
-          locationTag: p.location_tag || undefined,
-          likesCount: p.likes_count || 0,
-          commentsCount: p.comments_count || 0,
-          repostsCount: 0,
-          timestamp: new Date(p.created_at).toLocaleDateString('id-ID', {
-            hour: '2-digit',
-            minute: '2-digit'
-          }),
-          isLiked: p.is_liked_by_user,
-          seller: {
-            id: p.seller?.id || p.seller_id,
-            name: p.seller?.full_name || 'Penjual Snapan',
-            avatar:
-              p.seller?.avatar_url ||
-              'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&q=80',
-            classGroup: p.seller?.class_group || 'Siswa Snapan',
-            isVerified: p.seller?.is_verified ?? false,
-            username: p.seller?.full_name
-              ? p.seller.full_name.toLowerCase().replace(/\s+/g, '')
-              : 'seller'
-          }
-        }));
+        const mappedPosts: MarketPostItem[] = supabasePosts.map(mapSupabasePostToFeedItem);
 
         setItems((prev) => {
           const existingIds = new Set(mappedPosts.map((mp) => mp.id));

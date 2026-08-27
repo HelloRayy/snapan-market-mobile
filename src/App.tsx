@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { CheckCheck } from 'lucide-react';
 import { OnboardingScreen } from '@/ui/components/onboarding/OnboardingScreen';
 import { PwaLandingPage } from '@/ui/components/pwa/PwaLandingPage';
 import { HomePage } from '@/ui/pages/HomePage';
@@ -7,6 +8,11 @@ import { ProfilePage } from '@/ui/pages/ProfilePage';
 import { SearchPage } from '@/ui/pages/SearchPage';
 import { DirectMessagesPage, MOCK_CONVERSATIONS } from '@/ui/pages/DirectMessagesPage';
 import { ChatTopBar } from '@/ui/components/chat/ChatTopBar';
+import {
+  ChatBubble,
+  ChatBubbleMessage,
+  ChatBubbleTimestamp,
+} from '@/ui/components/ui/chat-bubble';
 import { NavigationDrawer } from '@/ui/components/navigation/NavigationDrawer';
 import { CreatePostModal } from '@/ui/components/marketplace/CreatePostModal';
 import { MarketBottomNav } from '@/ui/components/marketplace/MarketBottomNav';
@@ -544,8 +550,57 @@ export function App() {
                 }}
               />
 
-              {/* Canvas Body (White Screen for Next Slicing Step) */}
-              <div className="flex-1 bg-white" />
+              {/* Chat Messages Stream (2 Kiri / Receiver, 2 Kanan / Sender) */}
+              <main
+                data-lenis-prevent
+                className="flex-1 overflow-y-auto px-3.5 py-4 space-y-3.5 bg-[#fbfbfb] touch-pan-y"
+              >
+                {/* 1. Bubble Penerima (Kiri / Left) */}
+                <ChatBubble variant="received">
+                  <ChatBubbleMessage>
+                    Halo kak! Kalkulator Casio FX-991EX nya masih ready gak ya?
+                  </ChatBubbleMessage>
+                  <ChatBubbleTimestamp className="text-neutral-400">
+                    08:15
+                  </ChatBubbleTimestamp>
+                </ChatBubble>
+
+                {/* 2. Bubble Pengirim (Kanan / Right) */}
+                <ChatBubble variant="sent">
+                  <ChatBubbleMessage>
+                    Halo Sarah! Masih ready kok, kondisinya 95% mulus lengkap sama cover pelindungnya yaa 👍
+                  </ChatBubbleMessage>
+                  <ChatBubbleTimestamp
+                    className="text-blue-100"
+                    statusIcon={<CheckCheck className="w-3.5 h-3.5 text-blue-200 stroke-[2.5]" />}
+                  >
+                    08:18
+                  </ChatBubbleTimestamp>
+                </ChatBubble>
+
+                {/* 3. Bubble Penerima (Kiri / Left) */}
+                <ChatBubble variant="received">
+                  <ChatBubbleMessage>
+                    Boleh nego tipis kak untuk persiapan ujian matematika besok? Bisa COD di kantin depan?
+                  </ChatBubbleMessage>
+                  <ChatBubbleTimestamp className="text-neutral-400">
+                    08:22
+                  </ChatBubbleTimestamp>
+                </ChatBubble>
+
+                {/* 4. Bubble Pengirim (Kanan / Right) */}
+                <ChatBubble variant="sent">
+                  <ChatBubbleMessage>
+                    Boleh deh, deal di Rp 175.000 yaa! Nanti pas jam istirahat kedua kita ketemuan di kantin depan ya.
+                  </ChatBubbleMessage>
+                  <ChatBubbleTimestamp
+                    className="text-blue-100"
+                    statusIcon={<CheckCheck className="w-3.5 h-3.5 text-blue-200 stroke-[2.5]" />}
+                  >
+                    08:25
+                  </ChatBubbleTimestamp>
+                </ChatBubble>
+              </main>
             </div>
           )}
 

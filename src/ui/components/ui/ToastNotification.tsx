@@ -109,8 +109,8 @@ export const ToastNotification: React.FC<ToastNotificationProps> = ({
 
   const positionClasses =
     position === 'top'
-      ? 'fixed top-6 left-1/2 -translate-x-1/2 z-[99999]'
-      : 'fixed bottom-20 sm:bottom-24 left-1/2 -translate-x-1/2 z-[99999]';
+      ? 'fixed top-6 left-1/2 z-[99999]'
+      : 'fixed bottom-20 sm:bottom-24 left-1/2 z-[99999]';
 
   const renderIcon = () => {
     if (icon) return icon;
@@ -154,17 +154,43 @@ export const ToastNotification: React.FC<ToastNotificationProps> = ({
           aria-live="polite"
           aria-atomic="true"
           onClick={handleDismiss}
-          initial={{ opacity: 0, y: position === 'top' ? -16 : 16, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: position === 'top' ? -12 : 12, scale: 0.95 }}
-          transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+          style={{ willChange: 'transform, opacity' }}
+          initial={{
+            opacity: 0,
+            y: position === 'top' ? -14 : 14,
+            x: '-50%',
+            scale: 0.94,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            x: '-50%',
+            scale: 1,
+            transition: {
+              type: 'spring',
+              damping: 25,
+              stiffness: 420,
+              mass: 0.4,
+            },
+          }}
+          exit={{
+            opacity: 0,
+            y: position === 'top' ? -8 : 8,
+            x: '-50%',
+            scale: 0.95,
+            transition: {
+              duration: 0.1,
+              ease: 'easeOut',
+            },
+          }}
+          whileTap={{ scale: 0.96 }}
           className={cn(
             positionClasses,
             'flex items-center gap-2.5 px-3.5 py-2.5',
             'min-w-[240px] max-w-[calc(100vw-32px)] sm:max-w-[420px] w-auto',
             'bg-white/98 text-slate-800 border border-neutral-200/90 rounded-2xl',
             'shadow-[0_14px_34px_rgba(0,0,0,0.12),0_2px_8px_rgba(0,0,0,0.04)] ring-1 ring-black/[0.04]',
-            'backdrop-blur-xl select-none pointer-events-auto cursor-pointer active:scale-[0.98] transition-transform',
+            'backdrop-blur-xl select-none pointer-events-auto cursor-pointer',
             className
           )}
         >

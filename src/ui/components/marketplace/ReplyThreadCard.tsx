@@ -297,7 +297,11 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
               <div className="relative">
                 <button
                   type="button"
+                  id={`reply-card-parent-btn-${parentPost.id}`}
                   data-submenu-trigger="true"
+                  aria-haspopup="menu"
+                  aria-expanded={isParentMenuOpen}
+                  aria-controls={`reply-card-parent-menu-${parentPost.id}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsParentMenuOpen((prev) => !prev);
@@ -314,6 +318,8 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
                   authorUsername={parentPost.seller.username}
                   isSaved={false}
                   align="right"
+                  menuId={`reply-card-parent-menu-${parentPost.id}`}
+                  triggerId={`reply-card-parent-btn-${parentPost.id}`}
                 />
               </div>
             </div>
@@ -474,7 +480,11 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
               <div className="relative">
                 <button
                   type="button"
+                  id={`reply-card-reply-btn-${reply.id}`}
                   data-submenu-trigger="true"
+                  aria-haspopup="menu"
+                  aria-expanded={isReplyMenuOpen}
+                  aria-controls={`reply-card-reply-menu-${reply.id}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsReplyMenuOpen((prev) => !prev);
@@ -492,6 +502,8 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
                   authorUsername={reply.user.username}
                   isSaved={false}
                   align="right"
+                  menuId={`reply-card-reply-menu-${reply.id}`}
+                  triggerId={`reply-card-reply-btn-${reply.id}`}
                 />
               </div>
             </div>

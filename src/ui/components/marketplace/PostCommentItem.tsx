@@ -242,7 +242,11 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
               <div className="relative">
                 <button
                   type="button"
+                  id={`comment-options-btn-${comment.id}`}
                   data-submenu-trigger="true"
+                  aria-haspopup="menu"
+                  aria-expanded={isMenuOpen}
+                  aria-controls={`comment-options-menu-${comment.id}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsMenuOpen((prev) => !prev);
@@ -260,6 +264,8 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                   authorUsername={comment.user.username}
                   isSaved={false}
                   align="right"
+                  menuId={`comment-options-menu-${comment.id}`}
+                  triggerId={`comment-options-btn-${comment.id}`}
                 />
               </div>
             </div>
@@ -368,7 +374,11 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 <div className="relative">
                   <button
                     type="button"
+                    id={`threaded-comment-options-btn-${comment.id}`}
                     data-submenu-trigger="true"
+                    aria-haspopup="menu"
+                    aria-expanded={isMenuOpen}
+                    aria-controls={`threaded-comment-options-menu-${comment.id}`}
                     onClick={(e) => {
                       e.stopPropagation();
                       setIsMenuOpen((prev) => !prev);
@@ -386,10 +396,11 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                     authorUsername={comment.user.username}
                     isSaved={false}
                     align="right"
+                    menuId={`threaded-comment-options-menu-${comment.id}`}
+                    triggerId={`threaded-comment-options-btn-${comment.id}`}
                   />
                 </div>
               </div>
-
               <div className="text-base text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere] mt-0.5">
                 <FormattedText text={comment.content} />
               </div>

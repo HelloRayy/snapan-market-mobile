@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   Bookmark,
   BookmarkCheck,
@@ -29,10 +29,14 @@ export interface PostSubmenuDropdownProps {
   onDelete?: () => void | Promise<void>;
   onEdit?: () => void;
   align?: 'left' | 'right';
+  placement?: 'auto' | 'top' | 'bottom';
   className?: string;
+  triggerRef?: React.RefObject<HTMLElement | null>;
+  menuId?: string;
+  triggerId?: string;
 }
 
-export const PostSubmenuDropdown: React.FC<PostSubmenuDropdownProps> = ({
+export const PostSubmenuDropdownComponent: React.FC<PostSubmenuDropdownProps> = ({
   isOpen,
   onClose,
   title = 'Opsi Postingan',
@@ -48,17 +52,21 @@ export const PostSubmenuDropdown: React.FC<PostSubmenuDropdownProps> = ({
   onDelete,
   onEdit,
   align = 'right',
+  placement = 'auto',
   className = '',
+  triggerRef,
+  menuId,
+  triggerId,
 }) => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const showToast = (msg: string) => {
+  const showToast = useCallback((msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 2500);
-  };
+  }, []);
 
-  const handleCopyLink = (e: React.MouseEvent) => {
+  const handleCopyLink = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     if (onCopyLink) {
       onCopyLink();
@@ -66,116 +74,135 @@ export const PostSubmenuDropdown: React.FC<PostSubmenuDropdownProps> = ({
       navigator.clipboard?.writeText(window.location.href);
       showToast('Tautan berhasil disalin ke papan klip! 📋');
     }
-  };
+  }, [onCopyLink, showToast]);
 
-  const handleToggleSave = (e: React.MouseEvent) => {
+  const handleToggleSave = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     onToggleSave?.();
     showToast(isSaved ? 'Dihapus dari markah 🔖' : 'Disimpan ke markah tersimpan 🔖');
-  };
+  }, [onToggleSave, isSaved, showToast]);
 
-  const handleMute = (e: React.MouseEvent) => {
+  const handleMute = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     onMute?.();
     showToast(`Notifikasi dari @${authorUsername || authorName} disenyapkan 🔇`);
-  };
+  }, [onMute, authorUsername, authorName, showToast]);
 
-  const handleHide = (e: React.MouseEvent) => {
+  const handleHide = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     onHide?.();
     showToast('Postingan disembunyikan dari feed Anda 👁️');
-  };
+  }, [onHide, showToast]);
 
-  const handleReport = (e: React.MouseEvent) => {
+  const handleReport = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     onReport?.();
     showToast('Laporan terkirim! Terima kasih atas masukan Anda 🛡️');
-  };
+  }, [onReport, showToast]);
 
-  const handleDeleteClick = (e: React.MouseEvent) => {
+  const handleDeleteClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     setShowDeleteConfirm(true);
-  };
+  }, []);
 
-  const handleExecuteDelete = () => {
+  const handleExecuteDelete = useCallback(() => {
     setShowDeleteConfirm(false);
     onDelete?.();
     showToast('Postingan dihapus 🗑️');
-  };
+  }, [onDelete, showToast]);
 
-  const handleEdit = (e: React.MouseEvent) => {
+  const handleEdit = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     onEdit?.();
-  };
+  }, [onEdit]);
 
-  const menuItems: SubmenuDropdownItem[] = [
-    // 1. Bookmark / Save Option
-    {
-      id: 'bookmark',
-      label: isSaved ? 'Hapus dari Markah' : 'Simpan ke Markah',
-      icon: isSaved ? BookmarkCheck : Bookmark,
-      onClick: handleToggleSave,
-    },
-    // 2. Copy Link Option
-    {
-      id: 'copy-link',
-      label: 'Salin Tautan',
-      icon: Copy,
-      onClick: handleCopyLink,
-    },
-    // 3. User Options Nested Submenu
-    {
-      id: 'user-options',
-      label: 'Opsi Pengguna',
-      icon: UserX,
-      subTitle: `Pengguna: @${authorUsername || authorName}`,
-      subItems: [
-        {
-          id: 'mute-user',
-          label: `Senyapkan @${authorUsername || authorName}`,
-          icon: BellOff,
-          onClick: handleMute,
-        },
-        {
-          id: 'hide-post',
-          label: 'Sembunyikan Postingan',
-          icon: EyeOff,
-          onClick: handleHide,
-        },
-      ],
-    },
-  ];
+  const menuItems = useMemo<SubmenuDropdownItem[]>(() => {
+    const items: SubmenuDropdownItem[] = [
+      // 1. Bookmark / Save Option
+      {
+        id: 'bookmark',
+        label: isSaved ? 'Hapus dari Markah' : 'Simpan ke Markah',
+        icon: isSaved ? BookmarkCheck : Bookmark,
+        onClick: handleToggleSave,
+      },
+      // 2. Copy Link Option
+      {
+        id: 'copy-link',
+        label: 'Salin Tautan',
+        icon: Copy,
+        onClick: handleCopyLink,
+      },
+      // 3. User Options Nested Submenu
+      {
+        id: 'user-options',
+        label: 'Opsi Pengguna',
+        icon: UserX,
+        subTitle: `Pengguna: @${authorUsername || authorName}`,
+        subItems: [
+          {
+            id: 'mute-user',
+            label: `Senyapkan @${authorUsername || authorName}`,
+            icon: BellOff,
+            onClick: handleMute,
+          },
+          {
+            id: 'hide-post',
+            label: 'Sembunyikan Postingan',
+            icon: EyeOff,
+            onClick: handleHide,
+          },
+        ],
+      },
+    ];
 
-  // 4. Owner Actions (Edit & Delete)
-  if (isOwner) {
-    if (onEdit) {
-      menuItems.push({
-        id: 'edit-post',
-        label: 'Edit Postingan',
-        icon: Edit3,
-        onClick: handleEdit,
-      });
+    // 4. Owner Actions (Edit & Delete)
+    if (isOwner) {
+      if (onEdit) {
+        items.push({
+          id: 'edit-post',
+          label: 'Edit Postingan',
+          icon: Edit3,
+          onClick: handleEdit,
+        });
+      }
+
+      if (onDelete) {
+        items.push({
+          id: 'delete-post',
+          label: 'Hapus Postingan',
+          icon: Trash2,
+          danger: true,
+          onClick: handleDeleteClick,
+        });
+      }
     }
 
-    if (onDelete) {
-      menuItems.push({
-        id: 'delete-post',
-        label: 'Hapus Postingan',
-        icon: Trash2,
-        danger: true,
-        onClick: handleDeleteClick,
-      });
-    }
-  }
+    // 5. Report Option
+    items.push({
+      id: 'report-post',
+      label: title === 'Opsi Komentar' ? 'Laporkan Komentar' : 'Laporkan Postingan',
+      icon: Flag,
+      danger: true,
+      onClick: handleReport,
+    });
 
-  // 5. Report Option
-  menuItems.push({
-    id: 'report-post',
-    label: title === 'Opsi Komentar' ? 'Laporkan Komentar' : 'Laporkan Postingan',
-    icon: Flag,
-    danger: true,
-    onClick: handleReport,
-  });
+    return items;
+  }, [
+    isSaved,
+    handleToggleSave,
+    handleCopyLink,
+    authorUsername,
+    authorName,
+    handleMute,
+    handleHide,
+    isOwner,
+    onEdit,
+    handleEdit,
+    onDelete,
+    handleDeleteClick,
+    title,
+    handleReport,
+  ]);
 
   return (
     <>
@@ -184,7 +211,11 @@ export const PostSubmenuDropdown: React.FC<PostSubmenuDropdownProps> = ({
         onClose={onClose}
         items={menuItems}
         align={align}
+        placement={placement}
         className={className}
+        triggerRef={triggerRef}
+        menuId={menuId}
+        triggerId={triggerId}
       />
 
       {/* Confirmation Modal for Destructive Delete */}
@@ -216,3 +247,6 @@ export const PostSubmenuDropdown: React.FC<PostSubmenuDropdownProps> = ({
     </>
   );
 };
+
+export const PostSubmenuDropdown = React.memo(PostSubmenuDropdownComponent);
+PostSubmenuDropdown.displayName = 'PostSubmenuDropdown';

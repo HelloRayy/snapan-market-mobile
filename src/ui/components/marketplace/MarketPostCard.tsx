@@ -442,7 +442,11 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               <div className="relative">
                 <button
                   type="button"
+                  id={`post-detail-options-btn-${item.id}`}
                   data-submenu-trigger="true"
+                  aria-haspopup="menu"
+                  aria-expanded={isMenuOpen}
+                  aria-controls={`post-detail-options-menu-${item.id}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsMenuOpen((prev) => !prev);
@@ -464,6 +468,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                     showToast('Laporan terkirim! Terima kasih atas masukan Anda 🛡️');
                   }}
                   align="right"
+                  menuId={`post-detail-options-menu-${item.id}`}
+                  triggerId={`post-detail-options-btn-${item.id}`}
                 />
               </div>
             </div>
@@ -579,7 +585,11 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 <div className="relative">
                   <button
                     type="button"
+                    id={`post-feed-options-btn-${item.id}`}
                     data-submenu-trigger="true"
+                    aria-haspopup="menu"
+                    aria-expanded={isMenuOpen}
+                    aria-controls={`post-feed-options-menu-${item.id}`}
                     onClick={(e) => {
                       e.stopPropagation();
                       setIsMenuOpen((prev) => !prev);
@@ -601,6 +611,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                       showToast('Laporan terkirim! Terima kasih atas masukan Anda 🛡️');
                     }}
                     align="right"
+                    menuId={`post-feed-options-menu-${item.id}`}
+                    triggerId={`post-feed-options-btn-${item.id}`}
                   />
                 </div>
               </div>

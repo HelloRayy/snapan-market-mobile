@@ -318,7 +318,11 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                 <div className="relative">
                   <button
                     type="button"
+                    id={`comment-detail-options-btn-${activeComment.id}`}
                     data-submenu-trigger="true"
+                    aria-haspopup="menu"
+                    aria-expanded={isOptionsModalOpen}
+                    aria-controls={`comment-detail-options-menu-${activeComment.id}`}
                     onClick={(e) => {
                       e.stopPropagation();
                       setIsOptionsModalOpen((prev) => !prev);
@@ -336,6 +340,8 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                     authorUsername={activeComment.user.username}
                     isSaved={false}
                     align="right"
+                    menuId={`comment-detail-options-menu-${activeComment.id}`}
+                    triggerId={`comment-detail-options-btn-${activeComment.id}`}
                   />
                 </div>
               </div>

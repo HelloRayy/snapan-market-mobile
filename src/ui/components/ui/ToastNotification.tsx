@@ -130,26 +130,26 @@ export const ToastNotification: React.FC<ToastNotificationProps> = ({
     switch (resolvedType) {
       case 'success':
         return (
-          <div className="w-5 h-5 rounded-full bg-emerald-500/12 text-emerald-600 flex items-center justify-center shrink-0">
+          <div className="w-5 h-5 rounded-[6px] bg-emerald-500/12 text-emerald-600 flex items-center justify-center shrink-0">
             <Check className="w-3.5 h-3.5 stroke-[2.8]" />
           </div>
         );
       case 'error':
         return (
-          <div className="w-5 h-5 rounded-full bg-rose-500/12 text-rose-600 flex items-center justify-center shrink-0">
+          <div className="w-5 h-5 rounded-[6px] bg-rose-500/12 text-rose-600 flex items-center justify-center shrink-0">
             <X className="w-3.5 h-3.5 stroke-[2.8]" />
           </div>
         );
       case 'warning':
         return (
-          <div className="w-5 h-5 rounded-full bg-amber-500/12 text-amber-600 flex items-center justify-center shrink-0">
+          <div className="w-5 h-5 rounded-[6px] bg-amber-500/12 text-amber-600 flex items-center justify-center shrink-0">
             <AlertTriangle className="w-3.5 h-3.5 stroke-[2.4]" />
           </div>
         );
       case 'info':
       default:
         return (
-          <div className="w-5 h-5 rounded-full bg-blue-500/12 text-blue-600 flex items-center justify-center shrink-0">
+          <div className="w-5 h-5 rounded-[6px] bg-blue-500/12 text-blue-600 flex items-center justify-center shrink-0">
             <Info className="w-3.5 h-3.5 stroke-[2.4]" />
           </div>
         );
@@ -200,8 +200,7 @@ export const ToastNotification: React.FC<ToastNotificationProps> = ({
             positionClasses,
             'flex items-center gap-2.5 px-3.5 py-2.5',
             'min-w-[240px] max-w-[calc(100vw-32px)] sm:max-w-[420px] w-auto',
-            'bg-white/98 text-slate-800 border border-neutral-200/90 rounded-2xl',
-            'shadow-[0_14px_34px_rgba(0,0,0,0.12),0_2px_8px_rgba(0,0,0,0.04)] ring-1 ring-black/[0.04]',
+            'bg-white/98 text-slate-800 border border-neutral-200/90 rounded-[8px]',
             'backdrop-blur-xl select-none pointer-events-auto cursor-pointer',
             className
           )}

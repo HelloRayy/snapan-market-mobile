@@ -1124,15 +1124,15 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
                   <div className="w-full flex flex-col items-center gap-3">
                     <div className="flex flex-wrap items-center justify-center gap-2">
                       {/* Success Preview */}
-                      <div className="flex items-center gap-2.5 px-3 py-2 bg-white/98 text-slate-800 border border-neutral-200/90 rounded-2xl shadow-sm ring-1 ring-black/[0.04] backdrop-blur-xl">
-                        <div className="w-5 h-5 rounded-full bg-emerald-500/12 text-emerald-600 flex items-center justify-center shrink-0">
+                      <div className="flex items-center gap-2.5 px-3 py-2 bg-white/98 text-slate-800 border border-neutral-200/90 rounded-[8px] shadow-sm ring-1 ring-black/[0.04] backdrop-blur-xl">
+                        <div className="w-5 h-5 rounded-[6px] bg-emerald-500/12 text-emerald-600 flex items-center justify-center shrink-0">
                           <Check className="w-3.5 h-3.5 stroke-[2.8]" />
                         </div>
                         <span className="text-[13px] font-semibold text-slate-800 tracking-tight">Berhasil disalin</span>
                       </div>
                       {/* Failed / Error Preview */}
-                      <div className="flex items-center gap-2.5 px-3 py-2 bg-white/98 text-slate-800 border border-neutral-200/90 rounded-2xl shadow-sm ring-1 ring-black/[0.04] backdrop-blur-xl">
-                        <div className="w-5 h-5 rounded-full bg-rose-500/12 text-rose-600 flex items-center justify-center shrink-0">
+                      <div className="flex items-center gap-2.5 px-3 py-2 bg-white/98 text-slate-800 border border-neutral-200/90 rounded-[8px] shadow-sm ring-1 ring-black/[0.04] backdrop-blur-xl">
+                        <div className="w-5 h-5 rounded-[6px] bg-rose-500/12 text-rose-600 flex items-center justify-center shrink-0">
                           <X className="w-3.5 h-3.5 stroke-[2.8]" />
                         </div>
                         <span className="text-[13px] font-semibold text-slate-800 tracking-tight">Gagal memuat</span>

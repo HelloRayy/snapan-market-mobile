@@ -571,12 +571,16 @@ export function App() {
                           price: 'Rp 45.000',
                           itemCount: 1,
                           image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200&q=80',
-                          statusText: 'Selesai',
-                          statusColor: 'text-[#ff5722]',
-                          orderId: '2604294WFPDA0B',
-                          orderTime: '27-08-2026 10:45',
+                          statusText: 'Tersedia',
+                          statusColor: 'text-[#1d64ec]',
+                          location: 'Lab PPLG',
                         }}
                         timestamp="10:55"
+                        onCheckLocation={() => {
+                          setActiveChatThreadId(null);
+                          setCurrentRoute('/map');
+                          window.history.pushState({ isSnapanRoot: false, route: '/map' }, '', '/map');
+                        }}
                       />
 
                       {/* Bubble 2 (Bawah - Menyatu) */}

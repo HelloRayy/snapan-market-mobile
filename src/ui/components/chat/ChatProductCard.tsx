@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+import React from 'react';
+import { MapPin } from 'lucide-react';
 import { triggerHaptic } from '@/utils/haptics';
 import { cn } from '@/utils/cn';
 
@@ -9,8 +9,10 @@ export interface ChatProductContext {
   price: string;
   image: string;
   itemCount?: number;
-  statusText: string;
+  statusText?: string;
   statusColor?: string;
+  location?: string;
+  category?: string;
   orderId?: string;
   orderTime?: string;
 }
@@ -20,6 +22,7 @@ interface ChatProductCardProps {
   timestamp?: string;
   shape?: 'single' | 'firstReceived' | 'lastReceived';
   onViewProduct?: (productId: string) => void;
+  onCheckLocation?: (locationName: string) => void;
   className?: string;
 }
 
@@ -34,33 +37,16 @@ export const ChatProductCard: React.FC<ChatProductCardProps> = ({
   timestamp = '10:55',
   shape = 'firstReceived',
   onViewProduct,
+  onCheckLocation,
   className = '',
 }) => {
-  const [copied, setCopied] = useState(false);
+  const codLocation = product.location || 'Lab PPLG';
 
-  const handleCopyOrderId = (e: React.MouseEvent) => {
+  const handleCheckLocationClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    triggerHaptic('light');
-
-    if (!product.orderId) return;
-
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(product.orderId);
-      } else {
-        const textarea = document.createElement('textarea');
-        textarea.value = product.orderId;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-      }
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Fallback
+    triggerHaptic('medium');
+    if (onCheckLocation) {
+      onCheckLocation(codLocation);
     }
   };
 
@@ -96,60 +82,40 @@ export const ChatProductCard: React.FC<ChatProductCardProps> = ({
             <span className="font-semibold text-slate-950">{product.price}</span>
           </p>
           <span
-            className={`text-[12.5px] font-normal mt-0.5 ${
-              product.statusColor || 'text-[#ff5722]'
+            className={`text-[12.5px] font-medium mt-0.5 ${
+              product.statusColor || 'text-[#1d64ec]'
             }`}
           >
-            {product.statusText}
+            {product.statusText || 'Tersedia'}
           </span>
         </div>
       </div>
 
-      {/* 2. Thin Horizontal Divider Line (as seen in reference) */}
-      {(product.orderId || product.orderTime) && (
-        <div className="border-t border-neutral-100 my-2.5" />
-      )}
+      {/* 2. Thin Horizontal Divider Line */}
+      <div className="border-t border-neutral-100 my-2.5" />
 
-      {/* 3. Bottom Order / Transaction Metadata */}
-      {(product.orderId || product.orderTime) && (
-        <div className="px-0.5 space-y-1.5 text-[12.5px]">
-          {product.orderId && (
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-neutral-500 shrink-0 font-normal">No. Pesanan</span>
-              <div className="flex items-center gap-1.5 text-slate-900 font-normal min-w-0">
-                <span className="truncate">{product.orderId}</span>
-                <button
-                  type="button"
-                  onClick={handleCopyOrderId}
-                  aria-label={copied ? 'Tersalin' : 'Salin No. Pesanan'}
-                  className="p-1 -mr-1 hover:bg-blue-50/80 rounded transition-colors text-[#1d64ec] hover:text-blue-700 cursor-pointer flex items-center gap-1 shrink-0"
-                  title="Salin No. Pesanan"
-                >
-                  {copied ? (
-                    <>
-                      <Check className="w-3.5 h-3.5 text-emerald-600 stroke-[2.5]" />
-                      <span className="text-[11px] text-emerald-600 font-medium">
-                        Tersalin
-                      </span>
-                    </>
-                  ) : (
-                    <Copy className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2]" />
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {product.orderTime && (
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-neutral-500 shrink-0 font-normal">Waktu Pesanan</span>
-              <span className="text-slate-900 font-normal">
-                {product.orderTime}
-              </span>
-            </div>
-          )}
+      {/* 3. Bottom Metadata & Full-Width Secondary Action Button */}
+      <div className="px-0.5 space-y-2">
+        {/* Row 1: Titik COD Label & Value */}
+        <div className="flex items-center justify-between gap-2 text-[12.5px]">
+          <span className="text-neutral-500 font-normal">Titik COD</span>
+          <span className="text-slate-900 font-medium truncate">
+            {codLocation}
+          </span>
         </div>
-      )}
+
+        {/* Row 2: Full-Width Secondary Button "Cek Lokasi" */}
+        <button
+          type="button"
+          onClick={handleCheckLocationClick}
+          className="w-full h-8.5 px-3.5 rounded-xl bg-white hover:bg-neutral-50 active:bg-neutral-100 active:scale-[0.98] text-slate-800 hover:text-slate-950 font-medium text-[12px] border border-neutral-200/90 shadow-2xs flex items-center justify-center gap-1.5 transition-all cursor-pointer select-none"
+          title="Lihat denah lokasi di peta sekolah"
+          aria-label={`Cek lokasi ${codLocation} di peta sekolah`}
+        >
+          <MapPin className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2]" />
+          <span>Cek Lokasi di Peta</span>
+        </button>
+      </div>
 
       {/* 4. Timestamp inside bottom-right of bubble */}
       {timestamp && (

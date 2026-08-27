@@ -7,12 +7,14 @@ interface BuyBottomSheetProps {
   isOpen: boolean;
   post: MarketPostItem;
   onClose: () => void;
+  onNavigateChat?: (sellerId: string, post?: MarketPostItem) => void;
 }
 
 export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
   isOpen,
   post,
   onClose,
+  onNavigateChat,
 }) => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [dragY, setDragY] = useState(0);
@@ -84,17 +86,12 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
 
   const titleText = post.title || (cleanTitle.length > 55 ? cleanTitle.slice(0, 53) + '...' : cleanTitle);
 
-  const handleWhatsAppCheckout = () => {
-    const sellerName = post.seller.name;
-    const itemTitle = cleanTitle;
-    
-    const message = `Halo ${sellerName}, saya tertarik dengan *${itemTitle}* (${formatRupiah(post.price ?? 0)}) di Snapan Market.\n\nBisa minta info ketersediaan & janjian COD di sekolah? Terima kasih!`;
-
-    const waNumber = '6281234567890';
-    const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
-    
-    window.open(waUrl, '_blank');
+  const handleInAppChat = () => {
     onClose();
+    const sellerId = post.seller.username || post.seller.id;
+    if (onNavigateChat) {
+      onNavigateChat(sellerId, post);
+    }
   };
 
   const images = post.images && post.images.length > 0 ? post.images : ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80'];
@@ -229,7 +226,7 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
         <div className="pt-3 space-y-2 shrink-0 border-t border-neutral-100/80 bg-white">
           <button
             type="button"
-            onClick={handleWhatsAppCheckout}
+            onClick={handleInAppChat}
             className="relative inline-flex items-center justify-between w-full h-12 px-5 rounded-2xl text-white bg-[#1d64ec] hover:bg-[#154ec1] border border-[#154ec1] active:scale-[0.96] font-medium text-sm shadow-md shadow-blue-500/25 transition-transform cursor-pointer overflow-hidden select-none group"
           >
             {/* Kumo Inset Top Rim Highlight Gradient */}
@@ -238,7 +235,7 @@ export const BuyBottomSheet: React.FC<BuyBottomSheetProps> = ({
             {/* Left Label */}
             <span className="relative z-10 flex items-center gap-2 shrink-0 font-medium">
               <Send className="w-4 h-4 stroke-[1.8] text-white" />
-              <span>Chat via WhatsApp</span>
+              <span>Chat Penjual</span>
             </span>
 
             {/* Right Price */}

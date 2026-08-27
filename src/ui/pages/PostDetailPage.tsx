@@ -17,7 +17,6 @@ interface PostDetailPageProps {
   onBack: () => void;
   onAddToCart?: (item: MarketPostItem) => void;
   onUserClick?: (username: string) => void;
-  onOpenChat?: (username: string, product?: MarketPostItem) => void;
 }
 
 export const PostDetailPage: React.FC<PostDetailPageProps> = ({
@@ -25,7 +24,6 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   onBack,
   onAddToCart,
   onUserClick,
-  onOpenChat,
 }) => {
   const { profile } = useAuth();
   const [comments, setComments] = useState<PostComment[]>(post.comments || []);
@@ -168,7 +166,6 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         post={post}
         onBack={() => setIsCheckoutOpen(false)}
         onUserClick={onUserClick}
-        onOpenChat={(uname) => onOpenChat?.(uname, post)}
       />
     );
   }

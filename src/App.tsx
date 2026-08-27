@@ -6,6 +6,7 @@ import { PostDetailPage } from '@/ui/pages/PostDetailPage';
 import { ProfilePage } from '@/ui/pages/ProfilePage';
 import { SearchPage } from '@/ui/pages/SearchPage';
 import { DirectMessagesPage } from '@/ui/pages/DirectMessagesPage';
+import { ChatRoomPage } from '@/ui/pages/ChatRoomPage';
 import { NavigationDrawer } from '@/ui/components/navigation/NavigationDrawer';
 import { CreatePostModal } from '@/ui/components/marketplace/CreatePostModal';
 import { MarketBottomNav } from '@/ui/components/marketplace/MarketBottomNav';
@@ -29,7 +30,7 @@ function getPostFromLocation(): MarketPostItem | null {
   if (path.startsWith('/@') || path.startsWith('/post/')) {
     const parts = path.split('/').filter(Boolean);
     const potentialPostId = parts[parts.length - 1];
-    if (potentialPostId && potentialPostId !== parts[0]) {
+    if (potentialPostId && potentialPostId !== parts[0] && potentialPostId !== 'chat') {
       const found = MOCK_MARKET_POSTS.find(
         (p) => p.id === potentialPostId || p.id === decodeURIComponent(potentialPostId)
       );
@@ -42,6 +43,48 @@ function getPostFromLocation(): MarketPostItem | null {
     const rawId = hash.replace(/^#post-/, '');
     const found = MOCK_MARKET_POSTS.find((p) => p.id === rawId || `post-${p.id}` === rawId);
     if (found) return found;
+  }
+
+  return null;
+}
+
+interface ChatRouteMatch {
+  threadId?: string;
+  username?: string;
+  productId?: string;
+}
+
+function getChatThreadFromLocation(): ChatRouteMatch | null {
+  if (typeof window === 'undefined') return null;
+  const path = window.location.pathname;
+  const hash = window.location.hash;
+  const searchParams = new URLSearchParams(window.location.search);
+  const productId = searchParams.get('product') || undefined;
+
+  // 1. /direct/t/:threadId or /messages/t/:threadId
+  if (path.startsWith('/direct/t/') || path.startsWith('/messages/t/')) {
+    const parts = path.split('/t/').filter(Boolean);
+    const rawThreadId = parts[1]?.split('/')[0];
+    if (rawThreadId) {
+      return { threadId: decodeURIComponent(rawThreadId), productId };
+    }
+  }
+
+  // 2. /@username/chat
+  if (path.startsWith('/@') && path.endsWith('/chat')) {
+    const rawUsername = path.replace(/^\/@/, '').replace(/\/chat$/, '');
+    if (rawUsername) {
+      return { username: decodeURIComponent(rawUsername), productId };
+    }
+  }
+
+  // 3. Hash fallback: #chat-1784... or #chat-@sarahanas
+  if (hash.startsWith('#chat-')) {
+    const rawVal = hash.replace(/^#chat-/, '');
+    if (rawVal.startsWith('@')) {
+      return { username: decodeURIComponent(rawVal.slice(1)), productId };
+    }
+    return { threadId: decodeURIComponent(rawVal), productId };
   }
 
   return null;
@@ -80,8 +123,9 @@ export function App() {
 
   const [currentRoute, setCurrentRoute] = useState<string>(window.location.pathname);
   const [selectedPost, setSelectedPost] = useState<MarketPostItem | null>(null);
+  const [activeChatMatch, setActiveChatMatch] = useState<ChatRouteMatch | null>(() => getChatThreadFromLocation());
+  const [activeChatProductContext, setActiveChatProductContext] = useState<MarketPostItem | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
-
   // Double-Back to Exit Toast State
   const [showExitToast, setShowExitToast] = useState(false);
   const lastBackPressTimeRef = useRef<number>(0);
@@ -97,11 +141,11 @@ export function App() {
   const isDownloadRoute = currentRoute === '/download' || window.location.hash === '#download';
   const isOnboardingRoute = currentRoute === '/onboarding' || window.location.hash === '#onboarding';
   const isSearchRoute = currentRoute === '/search' || window.location.hash === '#search';
-  const isMessagesRoute = currentRoute === '/messages' || window.location.hash === '#messages';
+  const isMessagesRoute = currentRoute === '/messages' || currentRoute === '/direct' || window.location.hash === '#messages' || window.location.hash === '#direct';
   const isPostDetailRoute = currentRoute.includes('/post/') || currentRoute.includes('/postingan/') || window.location.hash.startsWith('#post-');
   
-  // Dynamic Route Check: /@username or #@username or /profile (excluding /@username/post/...)
-  const isProfileRoute = !isPostDetailRoute && !isMessagesRoute && (currentRoute.startsWith('/@') || currentRoute === '/profile' || (window.location.hash.startsWith('#@') && !isPostDetailRoute));
+  // Dynamic Route Check: /@username or #@username or /profile (excluding /@username/post/... and /@username/chat)
+  const isProfileRoute = !isPostDetailRoute && !isMessagesRoute && !activeChatMatch && (currentRoute.startsWith('/@') || currentRoute === '/profile' || (window.location.hash.startsWith('#@') && !isPostDetailRoute));
   
   let targetProfileUsername = 'radityarayhannnn';
   if (currentRoute.startsWith('/@')) {
@@ -145,7 +189,11 @@ export function App() {
         return;
       }
 
-      // 2. Resolve post detail state from popstate URL
+      // 2. Resolve chat room state from popstate URL
+      const chatMatch = getChatThreadFromLocation();
+      setActiveChatMatch(chatMatch);
+
+      // 3. Resolve post detail state from popstate URL
       const postMatch = getPostFromLocation();
       if (postMatch) {
         setSelectedPost(postMatch);
@@ -153,7 +201,7 @@ export function App() {
         setSelectedPost(null);
       }
 
-      // 3. Update route state
+      // 4. Update route state
       setCurrentRoute(nextRoute);
       if (nextRoute === '/') {
         window.dispatchEvent(new CustomEvent('snapan:show-nav'));
@@ -230,6 +278,41 @@ export function App() {
     }
     window.history.pushState({ route: '/search' }, '', '/search');
     setCurrentRoute('/search');
+  };
+
+  const navigateToChatThread = (threadId: string, productContext?: MarketPostItem) => {
+    if (productContext) {
+      setActiveChatProductContext(productContext);
+    }
+    const url = productContext
+      ? `/direct/t/${threadId}?product=${productContext.id}`
+      : `/direct/t/${threadId}`;
+    window.history.pushState({ isSnapanRoot: false, layer: 'chat-room', threadId }, '', url);
+    setCurrentRoute(url);
+    setActiveChatMatch({ threadId, productId: productContext?.id });
+  };
+
+  const navigateToUserChat = (username: string, productContext?: MarketPostItem) => {
+    const cleanHandle = username.replace(/^@/, '');
+    if (productContext) {
+      setActiveChatProductContext(productContext);
+    }
+    const url = productContext
+      ? `/@${cleanHandle}/chat?product=${productContext.id}`
+      : `/@${cleanHandle}/chat`;
+    window.history.pushState({ isSnapanRoot: false, layer: 'chat-room', username: cleanHandle }, '', url);
+    setCurrentRoute(url);
+    setActiveChatMatch({ username: cleanHandle, productId: productContext?.id });
+  };
+
+  const handleCloseChatThread = () => {
+    setActiveChatMatch(null);
+    setActiveChatProductContext(null);
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      navigateToMessages();
+    }
   };
 
   const navigateToMessages = () => {
@@ -340,6 +423,7 @@ export function App() {
               onBack={isViewingOtherUserProfile ? () => window.history.back() : undefined}
               onSelectPost={handleOpenPostDetail}
               onOpenMenu={handleOpenDrawer}
+              onOpenChat={(uname) => navigateToUserChat(uname)}
               onNavigateTab={(tab) => {
                 if (tab === 'home') {
                   navigateToHome();
@@ -350,13 +434,15 @@ export function App() {
             />
           )}
 
-          {/* Direct Messages Page (Route /messages or #messages) */}
-          {isMessagesRoute && (
+          {/* Direct Messages Page (Route /messages, /direct, or #messages) */}
+          {isMessagesRoute && !activeChatMatch && (
             <DirectMessagesPage
               onBack={navigateToHome}
               onNavigateHome={navigateToHome}
               onNavigateSearch={navigateToSearch}
               onNavigateProfile={navigateToProfile}
+              onSelectConversation={(threadId) => navigateToChatThread(threadId)}
+              onOpenNewChatModal={() => navigateToChatThread('17845432127501402')}
             />
           )}
 
@@ -407,7 +493,7 @@ export function App() {
           />
 
           {/* Canonical 5-Icon Market Bottom Navigation */}
-          {!selectedPost && !isColorsRoute && !isMapRoute && (
+          {!selectedPost && !activeChatMatch && !isColorsRoute && !isMapRoute && (
             <MarketBottomNav
               activeTab={
                 isMessagesRoute
@@ -455,6 +541,51 @@ export function App() {
                 onUserClick={(uname) => {
                   handleClosePostDetail();
                   navigateToProfile(uname);
+                }}
+                onOpenChat={(uname, prod) => {
+                  handleClosePostDetail();
+                  navigateToUserChat(uname, prod);
+                }}
+              />
+            </div>
+          )}
+          {/* Instagram-Style Fullscreen Chat Room Layer */}
+          {activeChatMatch && (
+            <div
+              key={activeChatMatch.threadId || activeChatMatch.username}
+              data-lenis-prevent
+              className="fixed inset-0 z-50 bg-white overflow-hidden transform-gpu animate-page-zoom touch-pan-y"
+              style={{
+                willChange: 'transform, opacity',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
+              }}
+            >
+              <ChatRoomPage
+                threadId={activeChatMatch.threadId}
+                targetUsername={activeChatMatch.username}
+                initialProduct={
+                  activeChatProductContext ||
+                  (activeChatMatch.productId
+                    ? MOCK_MARKET_POSTS.find((p) => p.id === activeChatMatch.productId)
+                    : null)
+                }
+                onBack={handleCloseChatThread}
+                onViewProfile={(uname) => {
+                  handleCloseChatThread();
+                  navigateToProfile(uname);
+                }}
+                onViewProduct={(pid) => {
+                  const matched = MOCK_MARKET_POSTS.find((p) => p.id === pid);
+                  if (matched) {
+                    handleCloseChatThread();
+                    handleOpenPostDetail(matched);
+                  }
+                }}
+                onViewMap={() => {
+                  handleCloseChatThread();
+                  setCurrentRoute('/map');
+                  window.history.pushState({}, '', '/map');
                 }}
               />
             </div>

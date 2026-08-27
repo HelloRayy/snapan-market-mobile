@@ -11,9 +11,15 @@ interface CheckoutPageProps {
   post: MarketPostItem;
   onBack: () => void;
   onUserClick?: (username: string) => void;
+  onOpenChat?: (username: string) => void;
 }
 
-export const CheckoutPage: React.FC<CheckoutPageProps> = ({ post, onBack, onUserClick }) => {
+export const CheckoutPage: React.FC<CheckoutPageProps> = ({
+  post,
+  onBack,
+  onUserClick,
+  onOpenChat,
+}) => {
   const [isLiked, setIsLiked] = useState<boolean>(false);
 
   // Smooth scroll to top on mount
@@ -93,8 +99,8 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ post, onBack, onUser
             productTitle={post.title || post.caption}
             productPrice={post.price || 0}
             onUserClick={onUserClick}
+            onOpenChat={onOpenChat}
           />
-
           {/* Step berikutnya (Denah & Floating Bottom Bar) akan di-slicing di bawah ini */}
         </div>
       </div>

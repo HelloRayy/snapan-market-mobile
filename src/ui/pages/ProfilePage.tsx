@@ -31,6 +31,7 @@ interface ProfilePageProps {
   onAddToCart?: (post: MarketPostItem) => void;
   onNavigateTab?: (tab: string) => void;
   onOpenMenu?: () => void;
+  onOpenChat?: (username: string) => void;
 }
 
 export const ProfilePage: React.FC<ProfilePageProps> = ({
@@ -38,7 +39,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   onBack,
   onSelectPost,
   onAddToCart,
+  onNavigateTab: _onNavigateTab,
   onOpenMenu,
+  onOpenChat,
 }) => {
   const { user, profile } = useAuth();
 
@@ -489,7 +492,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 type="button"
                 onClick={() => {
                   triggerHaptic('light');
-                  alert(`Fitur chat langsung dengan @${profileData.username} akan segera hadir!`);
+                  if (onOpenChat) {
+                    onOpenChat(cleanTargetUsername);
+                  } else {
+                    window.location.href = `/@${cleanTargetUsername}/chat`;
+                  }
                 }}
                 className="relative flex items-center justify-center w-10 h-10 shrink-0 rounded-xl bg-white text-slate-800 border border-neutral-300 shadow-2xs hover:bg-neutral-50 transition-colors overflow-hidden cursor-pointer select-none active:scale-[0.96]"
                 title="Kirim pesan"

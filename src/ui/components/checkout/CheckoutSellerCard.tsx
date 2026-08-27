@@ -9,11 +9,13 @@ interface CheckoutSellerCardProps {
   productTitle?: string;
   productPrice?: number;
   onUserClick?: (username: string) => void;
+  onOpenChat?: (username: string) => void;
 }
 
 export const CheckoutSellerCard: React.FC<CheckoutSellerCardProps> = ({
   seller,
   onUserClick,
+  onOpenChat,
 }) => {
   const sellerUsername = seller.username || seller.name.toLowerCase().replace(/\s+/g, '');
 
@@ -28,9 +30,12 @@ export const CheckoutSellerCard: React.FC<CheckoutSellerCardProps> = ({
 
   const handleChatClick = () => {
     triggerHaptic('medium');
-    alert(`Membuka percakapan pesan in-app dengan ${seller.name} (@${sellerUsername})`);
+    if (onOpenChat) {
+      onOpenChat(sellerUsername);
+    } else {
+      window.location.href = `/@${sellerUsername}/chat`;
+    }
   };
-
   return (
     <div className="bg-neutral-50/90 rounded-2xl p-3.5 border border-neutral-200/80 flex items-center justify-between gap-3 select-none font-gt-standard shadow-2xs">
       {/* Sisi Kiri: Avatar & Info Penjual (Bisa diketuk ke profil) */}

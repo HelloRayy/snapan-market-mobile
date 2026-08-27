@@ -1,5 +1,4 @@
 import React from 'react';
-import { MapPin } from 'lucide-react';
 import { triggerHaptic } from '@/utils/haptics';
 import { cn } from '@/utils/cn';
 
@@ -19,7 +18,6 @@ export interface ChatProductContext {
 
 interface ChatProductCardProps {
   product: ChatProductContext;
-  timestamp?: string;
   shape?: 'single' | 'firstReceived' | 'lastReceived';
   onViewProduct?: (productId: string) => void;
   onCheckLocation?: (locationName: string) => void;
@@ -34,7 +32,6 @@ const shapeClasses = {
 
 export const ChatProductCard: React.FC<ChatProductCardProps> = ({
   product,
-  timestamp = '10:55',
   shape = 'firstReceived',
   onViewProduct,
   onCheckLocation,
@@ -104,27 +101,17 @@ export const ChatProductCard: React.FC<ChatProductCardProps> = ({
           </span>
         </div>
 
-        {/* Row 2: Full-Width Secondary Button "Cek Lokasi" */}
+        {/* Row 2: Full-Width Secondary Button "Cek Lokasi di Peta" (Label Only) */}
         <button
           type="button"
           onClick={handleCheckLocationClick}
-          className="w-full h-8.5 px-3.5 rounded-xl bg-white hover:bg-neutral-50 active:bg-neutral-100 active:scale-[0.98] text-slate-800 hover:text-slate-950 font-medium text-[12px] border border-neutral-200/90 shadow-2xs flex items-center justify-center gap-1.5 transition-all cursor-pointer select-none"
+          className="w-full h-8.5 px-3.5 rounded-xl bg-white hover:bg-neutral-50 active:bg-neutral-100 active:scale-[0.98] text-slate-800 hover:text-slate-950 font-medium text-[12px] border border-neutral-200/90 shadow-2xs flex items-center justify-center transition-all cursor-pointer select-none"
           title="Lihat denah lokasi di peta sekolah"
           aria-label={`Cek lokasi ${codLocation} di peta sekolah`}
         >
-          <MapPin className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2]" />
           <span>Cek Lokasi di Peta</span>
         </button>
       </div>
-
-      {/* 4. Timestamp inside bottom-right of bubble */}
-      {timestamp && (
-        <div className="flex items-center justify-end mt-1 select-none">
-          <span className="text-[11px] text-neutral-400 font-normal">
-            {timestamp}
-          </span>
-        </div>
-      )}
     </div>
   );
 };

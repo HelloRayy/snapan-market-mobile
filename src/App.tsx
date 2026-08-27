@@ -575,7 +575,6 @@ export function App() {
                           statusColor: 'text-[#1d64ec]',
                           location: 'Lab PPLG',
                         }}
-                        timestamp="10:55"
                         onCheckLocation={() => {
                           setActiveChatThreadId(null);
                           setCurrentRoute('/map');

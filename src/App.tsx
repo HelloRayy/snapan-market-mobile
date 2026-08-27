@@ -8,6 +8,7 @@ import { ProfilePage } from '@/ui/pages/ProfilePage';
 import { SearchPage } from '@/ui/pages/SearchPage';
 import { DirectMessagesPage, MOCK_CONVERSATIONS } from '@/ui/pages/DirectMessagesPage';
 import { ChatTopBar } from '@/ui/components/chat/ChatTopBar';
+import { ChatProductCard } from '@/ui/components/chat/ChatProductCard';
 import {
   ChatBubble,
   ChatBubbleMessage,
@@ -550,53 +551,104 @@ export function App() {
                 }}
               />
 
-              {/* Chat Messages Stream (2 Bubble Bertumpuk Kiri, 2 Bubble Bertumpuk Kanan) */}
+              {/* Chat Messages Stream */}
               <main
                 data-lenis-prevent
                 className="flex-1 overflow-y-auto px-3.5 py-4 space-y-4 bg-[#fbfbfb] touch-pan-y"
               >
-                {/* GRUP 1: 2 Bubble Bertumpuk Penerima (Kiri / Left) - Jam 08:15 */}
-                <div className="flex flex-col items-start gap-y-1 max-w-[85%] sm:max-w-[75%] mr-auto">
-                  {/* Bubble 1 (Atas) */}
-                  <ChatBubble variant="received" shape="firstReceived" className="w-full">
-                    <ChatBubbleMessage>
-                      Halo kak! Mau tanya soal kalkulator Casio FX-991EX nya
-                    </ChatBubbleMessage>
-                  </ChatBubble>
+                {activeChatThreadId === '17892348123791823' ? (
+                  /* ROOM CHAT DIMAS WICAKSONO: showProductCard = true (With Product Context Card) */
+                  <>
+                    {/* 1. Attached Product Context Card (Shopee/Marketplace Anatomy) */}
+                    <ChatProductCard
+                      product={{
+                        id: 'market-post-fisika-12',
+                        title: 'Buku Paket Fisika Kelas 12 (Kurikulum Merdeka)',
+                        price: 'Rp 45.000',
+                        itemCount: 1,
+                        image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200&q=80',
+                        statusText: 'Selesai',
+                        statusColor: 'text-[#ff5722]',
+                        orderId: '2604294WFPDA0B',
+                        orderTime: '27-08-2026 10:45',
+                      }}
+                      timestamp="10:55"
+                    />
 
-                  {/* Bubble 2 (Bawah - Menyatu) */}
-                  <ChatBubble variant="received" shape="lastReceived" className="w-full">
-                    <ChatBubbleMessage>
-                      Kira-kira masih lengkap sama dus dan buku panduannya gak ya?
-                    </ChatBubbleMessage>
-                    <ChatBubbleTimestamp className="text-neutral-600 font-medium">
-                      08:15
-                    </ChatBubbleTimestamp>
-                  </ChatBubble>
-                </div>
+                    {/* 2. Received Message Bubble (Dimas Wicaksono) */}
+                    <div className="flex flex-col items-start gap-y-1 max-w-[85%] sm:max-w-[75%] mr-auto">
+                      <ChatBubble variant="received" shape="single" className="w-full">
+                        <ChatBubbleMessage>
+                          Siap bro, nanti jam istirahat kedua gua tunggu di depan lab komputer yaa.
+                        </ChatBubbleMessage>
+                        <ChatBubbleTimestamp className="text-neutral-600 font-medium">
+                          10:56
+                        </ChatBubbleTimestamp>
+                      </ChatBubble>
+                    </div>
 
-                {/* GRUP 2: 2 Bubble Bertumpuk Pengirim (Kanan / Right) - Jam 08:18 */}
-                <div className="flex flex-col items-end gap-y-1 max-w-[85%] sm:max-w-[75%] ml-auto">
-                  {/* Bubble 1 (Atas) */}
-                  <ChatBubble variant="sent" shape="firstSent" className="w-full">
-                    <ChatBubbleMessage>
-                      Halo Sarah! Masih lengkap semua kok, dus buku sama cover pelindungnya masih ada 👍
-                    </ChatBubbleMessage>
-                  </ChatBubble>
+                    {/* 3. Sent Message Bubble (User / Buyer) */}
+                    <div className="flex flex-col items-end gap-y-1 max-w-[85%] sm:max-w-[75%] ml-auto">
+                      <ChatBubble variant="sent" shape="single" className="w-full">
+                        <ChatBubbleMessage>
+                          Oke bro, nanti gua langsung ke sana bawa uang pas Rp 45.000 yaa 👍
+                        </ChatBubbleMessage>
+                        <ChatBubbleTimestamp
+                          className="text-white/80"
+                          statusIcon={<CheckCheck className="w-3.5 h-3.5 text-white/95 stroke-[2.2]" />}
+                        >
+                          10:57
+                        </ChatBubbleTimestamp>
+                      </ChatBubble>
+                    </div>
+                  </>
+                ) : (
+                  /* ROOM CHAT SARAH ANASTASYA & DEFAULT: showProductCard = false (Pure Text Messages) */
+                  <>
+                    {/* GRUP 1: 2 Bubble Bertumpuk Penerima (Kiri / Left) - Jam 08:15 */}
+                    <div className="flex flex-col items-start gap-y-1 max-w-[85%] sm:max-w-[75%] mr-auto">
+                      {/* Bubble 1 (Atas) */}
+                      <ChatBubble variant="received" shape="firstReceived" className="w-full">
+                        <ChatBubbleMessage>
+                          Halo kak! Mau tanya soal kalkulator Casio FX-991EX nya
+                        </ChatBubbleMessage>
+                      </ChatBubble>
 
-                  {/* Bubble 2 (Bawah - Menyatu) */}
-                  <ChatBubble variant="sent" shape="lastSent" className="w-full">
-                    <ChatBubbleMessage>
-                      Baterainya juga baru aja diganti minggu kemarin, jadi siap pakai banget.
-                    </ChatBubbleMessage>
-                    <ChatBubbleTimestamp
-                      className="text-white/80"
-                      statusIcon={<CheckCheck className="w-3.5 h-3.5 text-white/95 stroke-[2.2]" />}
-                    >
-                      08:18
-                    </ChatBubbleTimestamp>
-                  </ChatBubble>
-                </div>
+                      {/* Bubble 2 (Bawah - Menyatu) */}
+                      <ChatBubble variant="received" shape="lastReceived" className="w-full">
+                        <ChatBubbleMessage>
+                          Kira-kira masih lengkap sama dus dan buku panduannya gak ya?
+                        </ChatBubbleMessage>
+                        <ChatBubbleTimestamp className="text-neutral-600 font-medium">
+                          08:15
+                        </ChatBubbleTimestamp>
+                      </ChatBubble>
+                    </div>
+
+                    {/* GRUP 2: 2 Bubble Bertumpuk Pengirim (Kanan / Right) - Jam 08:18 */}
+                    <div className="flex flex-col items-end gap-y-1 max-w-[85%] sm:max-w-[75%] ml-auto">
+                      {/* Bubble 1 (Atas) */}
+                      <ChatBubble variant="sent" shape="firstSent" className="w-full">
+                        <ChatBubbleMessage>
+                          Halo Sarah! Masih lengkap semua kok, dus buku sama cover pelindungnya masih ada 👍
+                        </ChatBubbleMessage>
+                      </ChatBubble>
+
+                      {/* Bubble 2 (Bawah - Menyatu) */}
+                      <ChatBubble variant="sent" shape="lastSent" className="w-full">
+                        <ChatBubbleMessage>
+                          Baterainya juga baru aja diganti minggu kemarin, jadi siap pakai banget.
+                        </ChatBubbleMessage>
+                        <ChatBubbleTimestamp
+                          className="text-white/80"
+                          statusIcon={<CheckCheck className="w-3.5 h-3.5 text-white/95 stroke-[2.2]" />}
+                        >
+                          08:18
+                        </ChatBubbleTimestamp>
+                      </ChatBubble>
+                    </div>
+                  </>
+                )}
               </main>
             </div>
           )}

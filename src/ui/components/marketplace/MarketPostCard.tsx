@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Heart, MoreHorizontal, Box, Repeat2, Send, PartyPopper, ChevronRight, MapPin } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
+import { ToastNotification } from '@/ui/components/ui/ToastNotification';
 import { formatSmartTimestamp } from '@/utils/formatters';
 import { MediaLightboxModal } from './MediaLightboxModal';
 import { PostSubmenuDropdown } from './PostSubmenuDropdown';
@@ -42,7 +43,6 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 2500);
   };
 
   const handleBookmarkToggle = async (e?: React.MouseEvent) => {
@@ -50,7 +50,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
     setIsMenuOpen(false);
     const nextState = !isSaved;
     setIsSaved(nextState);
-    showToast(nextState ? 'Postingan disimpan ke Markah 📌' : 'Dihapus dari Markah');
+    showToast(nextState ? 'Postingan disimpan ke markah' : 'Dihapus dari markah');
 
     try {
       if (item.id && item.seller?.id) {
@@ -139,7 +139,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
     } else {
       setIsReposted(true);
       setRepostsCount((prev) => prev + 1);
-      showToast('Postingan berhasil diposting ulang! 🚀');
+      showToast('Postingan berhasil diposting ulang');
     }
   };
 
@@ -165,7 +165,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
     } else {
       try {
         await navigator.clipboard.writeText(shareUrl);
-        showToast('Tautan postingan berhasil disalin! 📋');
+        showToast('Tautan postingan berhasil disalin');
       } catch (err) {
         showToast('Tautan disalin ke papan klip');
       }
@@ -465,7 +465,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                   onToggleSave={handleBookmarkToggle}
                   onCopyLink={handleShare}
                   onReport={() => {
-                    showToast('Laporan terkirim! Terima kasih atas masukan Anda 🛡️');
+                    showToast('Laporan terkirim, terima kasih atas masukan Anda');
                   }}
                   align="right"
                   menuId={`post-detail-options-menu-${item.id}`}
@@ -608,7 +608,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                     onToggleSave={handleBookmarkToggle}
                     onCopyLink={handleShare}
                     onReport={() => {
-                      showToast('Laporan terkirim! Terima kasih atas masukan Anda 🛡️');
+                      showToast('Laporan terkirim, terima kasih atas masukan Anda');
                     }}
                     align="right"
                     menuId={`post-feed-options-menu-${item.id}`}
@@ -678,7 +678,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           } else {
             setIsReposted(true);
             setRepostsCount((prev) => prev + 1);
-            showToast('Postingan berhasil diposting ulang! 🚀');
+            showToast('Postingan berhasil diposting ulang');
           }
         }}
         onShare={() => {
@@ -691,19 +691,18 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             }).catch(() => {});
           } else {
             navigator.clipboard.writeText(shareUrl).then(() => {
-              showToast('Tautan postingan berhasil disalin! 📋');
+              showToast('Tautan postingan berhasil disalin');
             }).catch(() => {});
           }
         }}
       />
 
 
-      {/* Floating Feedback Toast Notification for Repost & Share */}
-      {toastMessage && (
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[99999] px-4 py-2 rounded-full bg-slate-900/95 text-white text-xs font-semibold shadow-2xl border border-white/20 backdrop-blur-md animate-in fade-in slide-in-from-bottom-3 duration-200 pointer-events-none">
-          {toastMessage}
-        </div>
-      )}
+      {/* Floating Feedback Toast Notification */}
+      <ToastNotification
+        message={toastMessage}
+        onClose={() => setToastMessage(null)}
+      />
     </article>
   );
 };

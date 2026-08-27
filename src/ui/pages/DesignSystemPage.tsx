@@ -35,10 +35,11 @@ import {
   Trash2,
   ShieldCheck,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { triggerHaptic, HapticType } from '@/utils/haptics';
 import { ClickableVerifiedBadge } from '@/ui/components/marketplace/VerifiedBadgeModal';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
+import { ToastNotification } from '@/ui/components/ui/ToastNotification';
 import { QuantitySelector } from '@/ui/components/marketplace/QuantitySelector';
 import { ProgressiveImage } from '@/ui/components/ui/ProgressiveImage';
 import { MarketPostCard } from '@/ui/components/marketplace/MarketPostCard';
@@ -194,7 +195,6 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 2500);
   };
 
   const copyToClipboard = async (text: string, label: string) => {
@@ -262,19 +262,11 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
   return (
     <div className="min-h-screen bg-neutral-100/70 text-slate-900 flex font-gt-standard">
       {/* Toast Notification */}
-      <AnimatePresence>
-        {toastMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-xl flex items-center gap-2 border border-slate-700"
-          >
-            <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" />
-            <span>{toastMessage}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ToastNotification
+        message={toastMessage}
+        onClose={() => setToastMessage(null)}
+        position="top"
+      />
 
       {/* ===================================================================== */}
       {/* 🧭 DESKTOP DEVELOPER SIDEBAR                                           */}
@@ -503,7 +495,7 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
                         type="button"
                         onClick={() => {
                           triggerHaptic(hap.type);
-                          showToast(`Haptic "${hap.type}" terpicu! 📳`);
+                          showToast(`Haptic "${hap.type}" terpicu!`);
                         }}
                         className="px-4 py-2.5 rounded-xl border border-neutral-300 bg-white hover:bg-neutral-50 active:scale-95 text-xs font-bold text-slate-800 shadow-2xs transition-all cursor-pointer flex items-center gap-2"
                       >
@@ -697,7 +689,7 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
                       type="button"
                       onClick={() => {
                         triggerHaptic('light');
-                        showToast('Native Share Sheet terbuka 📲');
+                        showToast('Native Share Sheet terbuka');
                       }}
                       className="p-2 rounded-full hover:bg-neutral-100 text-slate-700 cursor-pointer"
                     >
@@ -1111,6 +1103,64 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
                     >
                       Pasang
                     </button>
+                  </div>
+                )}
+              </ShowcaseCard>
+
+              {/* 4.8 Modern White Toast Notification */}
+              <ShowcaseCard
+                id="badge-toast"
+                title="Toast Notification Card (Adaptive Status Icon)"
+                category="System Indicators"
+                description="Notifikasi melayang warna putih bersih dengan adaptive status icon (✓ Sukses, ✕ Gagal, ⚠ Peringatan, ℹ Info) di sisi kiri dan label pesan berdaya kontras tinggi."
+                codeSnippet={`<ToastNotification
+  message="Tautan postingan berhasil disalin"
+  type="success"
+  onClose={() => setToastMessage(null)}
+/>`}
+                availableStates={['default', 'active']}
+              >
+                {() => (
+                  <div className="w-full flex flex-col items-center gap-3">
+                    <div className="flex flex-wrap items-center justify-center gap-2">
+                      {/* Success Preview */}
+                      <div className="flex items-center gap-2.5 px-3 py-2 bg-white/98 text-slate-800 border border-neutral-200/90 rounded-2xl shadow-sm ring-1 ring-black/[0.04] backdrop-blur-xl">
+                        <div className="w-5 h-5 rounded-full bg-emerald-500/12 text-emerald-600 flex items-center justify-center shrink-0">
+                          <Check className="w-3.5 h-3.5 stroke-[2.8]" />
+                        </div>
+                        <span className="text-[13px] font-semibold text-slate-800 tracking-tight">Berhasil disalin</span>
+                      </div>
+                      {/* Failed / Error Preview */}
+                      <div className="flex items-center gap-2.5 px-3 py-2 bg-white/98 text-slate-800 border border-neutral-200/90 rounded-2xl shadow-sm ring-1 ring-black/[0.04] backdrop-blur-xl">
+                        <div className="w-5 h-5 rounded-full bg-rose-500/12 text-rose-600 flex items-center justify-center shrink-0">
+                          <X className="w-3.5 h-3.5 stroke-[2.8]" />
+                        </div>
+                        <span className="text-[13px] font-semibold text-slate-800 tracking-tight">Gagal memuat</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center justify-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => showToast('Tautan postingan berhasil disalin')}
+                        className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-semibold shadow-xs cursor-pointer"
+                      >
+                        Tes Sukses
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => showToast('Gagal memproses tindakan')}
+                        className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 active:scale-95 text-white text-xs font-semibold shadow-xs cursor-pointer"
+                      >
+                        Tes Gagal
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => showToast('Perhatian: Kuota tersisa sedikit')}
+                        className="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 active:scale-95 text-white text-xs font-semibold shadow-xs cursor-pointer"
+                      >
+                        Tes Peringatan
+                      </button>
+                    </div>
                   </div>
                 )}
               </ShowcaseCard>

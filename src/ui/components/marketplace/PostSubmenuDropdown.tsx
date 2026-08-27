@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { SubmenuDropdown, SubmenuDropdownItem } from '@/ui/components/ui/SubmenuDropdown';
 import { ConfirmActionModal } from '@/ui/components/ui/ConfirmActionModal';
+import { ToastNotification } from '@/ui/components/ui/ToastNotification';
 
 export interface PostSubmenuDropdownProps {
   isOpen: boolean;
@@ -63,7 +64,6 @@ export const PostSubmenuDropdownComponent: React.FC<PostSubmenuDropdownProps> = 
 
   const showToast = useCallback((msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 2500);
   }, []);
 
   const handleCopyLink = useCallback((e: React.MouseEvent) => {
@@ -72,32 +72,32 @@ export const PostSubmenuDropdownComponent: React.FC<PostSubmenuDropdownProps> = 
       onCopyLink();
     } else {
       navigator.clipboard?.writeText(window.location.href);
-      showToast('Tautan berhasil disalin ke papan klip! 📋');
+      showToast('Tautan berhasil disalin ke papan klip');
     }
   }, [onCopyLink, showToast]);
 
   const handleToggleSave = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     onToggleSave?.();
-    showToast(isSaved ? 'Dihapus dari markah 🔖' : 'Disimpan ke markah tersimpan 🔖');
+    showToast(isSaved ? 'Dihapus dari markah' : 'Disimpan ke markah tersimpan');
   }, [onToggleSave, isSaved, showToast]);
 
   const handleMute = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     onMute?.();
-    showToast(`Notifikasi dari @${authorUsername || authorName} disenyapkan 🔇`);
+    showToast(`Notifikasi dari @${authorUsername || authorName} disenyapkan`);
   }, [onMute, authorUsername, authorName, showToast]);
 
   const handleHide = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     onHide?.();
-    showToast('Postingan disembunyikan dari feed Anda 👁️');
+    showToast('Postingan disembunyikan dari feed Anda');
   }, [onHide, showToast]);
 
   const handleReport = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     onReport?.();
-    showToast('Laporan terkirim! Terima kasih atas masukan Anda 🛡️');
+    showToast('Laporan terkirim, terima kasih atas masukan Anda');
   }, [onReport, showToast]);
 
   const handleDeleteClick = useCallback((e: React.MouseEvent) => {
@@ -108,7 +108,7 @@ export const PostSubmenuDropdownComponent: React.FC<PostSubmenuDropdownProps> = 
   const handleExecuteDelete = useCallback(() => {
     setShowDeleteConfirm(false);
     onDelete?.();
-    showToast('Postingan dihapus 🗑️');
+    showToast('Postingan dihapus');
   }, [onDelete, showToast]);
 
   const handleEdit = useCallback((e: React.MouseEvent) => {
@@ -239,11 +239,10 @@ export const PostSubmenuDropdownComponent: React.FC<PostSubmenuDropdownProps> = 
       />
 
       {/* Floating Action Toast Notification */}
-      {toastMessage && (
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[99999] px-4 py-2 rounded-full bg-slate-900/95 text-white text-xs font-semibold shadow-2xl border border-white/20 backdrop-blur-md animate-in fade-in slide-in-from-bottom-3 duration-200 pointer-events-none">
-          {toastMessage}
-        </div>
-      )}
+      <ToastNotification
+        message={toastMessage}
+        onClose={() => setToastMessage(null)}
+      />
     </>
   );
 };

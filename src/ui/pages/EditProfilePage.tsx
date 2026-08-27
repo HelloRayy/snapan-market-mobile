@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { ConfirmActionModal } from '@/ui/components/ui/ConfirmActionModal';
-
+import { ToastNotification } from '@/ui/components/ui/ToastNotification';
 export interface EditProfileData {
   name: string;
   username: string;
@@ -58,7 +58,6 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 2500);
   };
 
   // Detect whether any field has been modified compared to initialData
@@ -115,7 +114,7 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
       reader.onload = (event) => {
         if (event.target?.result) {
           setAvatar(event.target.result as string);
-          showToast('Foto profil diperbarui! 📸');
+          showToast('Foto profil diperbarui');
         }
       };
       reader.readAsDataURL(file);
@@ -277,7 +276,7 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
                     type="button"
                     onClick={() => {
                       setAvatar(pic);
-                      showToast('Preset avatar dipilih! ✨');
+                      showToast('Preset avatar dipilih');
                     }}
                     className={`relative w-11 h-11 rounded-full overflow-hidden border-2 transition-all cursor-pointer shrink-0 ${
                       avatar === pic ? 'border-[#101010] ring-2 ring-black/20 scale-105' : 'border-neutral-200 hover:opacity-80'
@@ -503,11 +502,10 @@ export const EditProfilePage: React.FC<EditProfilePageProps> = ({
       />
 
       {/* Floating Feedback Toast */}
-      {toastMessage && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[99999] px-4 py-2 rounded-full bg-slate-900 text-white text-xs font-semibold shadow-2xl border border-white/20 backdrop-blur-md animate-in fade-in slide-in-from-bottom-3 duration-200 pointer-events-none">
-          {toastMessage}
-        </div>
-      )}
+      <ToastNotification
+        message={toastMessage}
+        onClose={() => setToastMessage(null)}
+      />
     </div>
   );
 };

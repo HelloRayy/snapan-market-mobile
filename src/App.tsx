@@ -16,6 +16,7 @@ import { useSmoothScroll } from '@/ui/hooks/useSmoothScroll';
 import { triggerHaptic } from '@/utils/haptics';
 import { ColorShowcasePage } from '@/ui/pages/ColorShowcasePage';
 import { CampusMapPage } from '@/ui/pages/CampusMapPage';
+import { ToastNotification } from '@/ui/components/ui/ToastNotification';
 
 // Dynamic URL Helper: Extracts matching post from /@username/post/:postId or #post-:postId
 function getPostFromLocation(): MarketPostItem | null {
@@ -460,11 +461,11 @@ export function App() {
           )}
 
           {/* Native Double-Back to Exit Confirmation Toast */}
-          {showExitToast && (
-            <div className="fixed bottom-20 inset-x-0 mx-auto w-fit z-50 pointer-events-none px-4 py-2 bg-slate-900/90 backdrop-blur-md text-white text-xs font-medium rounded-full shadow-lg flex items-center gap-1.5 animate-toast-pop">
-              <span>Tekan sekali lagi untuk keluar</span>
-            </div>
-          )}
+          <ToastNotification
+            message={showExitToast ? 'Tekan sekali lagi untuk keluar' : null}
+            onClose={() => setShowExitToast(false)}
+            duration={2000}
+          />
         </div>
       ) : (
         <OnboardingScreen onComplete={handleOnboardingComplete} />

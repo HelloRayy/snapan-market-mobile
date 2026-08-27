@@ -73,12 +73,12 @@ export const ChatProductCard: React.FC<ChatProductCardProps> = ({
         className
       )}
     >
-      {/* Inset Product Media & Summary Box */}
-      <div className="bg-[#f8f9fa] border border-neutral-100 rounded-xl p-2.5 flex items-start gap-2.5">
+      {/* 1. Top Product Summary Inset Box */}
+      <div className="bg-[#f8f9fa] border border-neutral-100/80 rounded-xl p-2.5 flex items-start gap-2.5">
         <img
           src={product.image}
           alt={product.title}
-          className="w-13 h-13 sm:w-14 sm:h-14 rounded-lg object-cover bg-neutral-100 shrink-0 ring-1 ring-black/5"
+          className="w-14 h-14 rounded-lg object-cover bg-neutral-100 shrink-0 ring-1 ring-black/5"
           loading="eager"
           onError={(e) => {
             (e.target as HTMLImageElement).src =
@@ -86,14 +86,14 @@ export const ChatProductCard: React.FC<ChatProductCardProps> = ({
           }}
         />
         <div className="min-w-0 flex-1 flex flex-col justify-between self-stretch">
-          <h4 className="text-[13.5px] font-medium text-slate-900 line-clamp-1 leading-snug">
+          <h4 className="text-[13px] font-normal text-neutral-600 line-clamp-1 leading-snug">
             {product.title}
           </h4>
-          <p className="text-[12px] text-neutral-600 font-normal mt-0.5">
+          <p className="text-[13px] font-normal text-slate-800 mt-0.5">
             {product.itemCount ? `${product.itemCount} item, ` : ''}Total: {product.price}
           </p>
           <span
-            className={`text-[12px] font-semibold mt-0.5 ${
+            className={`text-[12.5px] font-normal mt-0.5 ${
               product.statusColor || 'text-[#ff5722]'
             }`}
           >
@@ -102,30 +102,35 @@ export const ChatProductCard: React.FC<ChatProductCardProps> = ({
         </div>
       </div>
 
-      {/* Bottom Order / Transaction Metadata */}
+      {/* 2. Thin Horizontal Divider Line (as seen in reference) */}
       {(product.orderId || product.orderTime) && (
-        <div className="mt-2.5 px-0.5 space-y-1.5 text-[12px] text-neutral-600">
+        <div className="border-t border-neutral-100 my-2.5" />
+      )}
+
+      {/* 3. Bottom Order / Transaction Metadata */}
+      {(product.orderId || product.orderTime) && (
+        <div className="px-0.5 space-y-1.5 text-[12.5px]">
           {product.orderId && (
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-neutral-500 shrink-0">No. Pesanan</span>
-              <div className="flex items-center gap-1.5 font-mono text-slate-900 font-medium min-w-0">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-neutral-500 shrink-0 font-normal">No. Pesanan</span>
+              <div className="flex items-center gap-1.5 text-slate-900 font-normal min-w-0">
                 <span className="truncate">{product.orderId}</span>
                 <button
                   type="button"
                   onClick={handleCopyOrderId}
                   aria-label={copied ? 'Tersalin' : 'Salin No. Pesanan'}
-                  className="p-1 -mr-1 hover:bg-neutral-200/70 rounded transition-colors text-[#1d64ec] hover:text-blue-700 cursor-pointer flex items-center gap-1"
+                  className="p-1 -mr-1 hover:bg-neutral-100 rounded transition-colors text-[#3b82f6] hover:text-blue-600 cursor-pointer flex items-center gap-1 shrink-0"
                   title="Salin No. Pesanan"
                 >
                   {copied ? (
                     <>
                       <Check className="w-3.5 h-3.5 text-emerald-600 stroke-[2.5]" />
-                      <span className="text-[10.5px] font-sans text-emerald-600 font-medium">
+                      <span className="text-[11px] text-emerald-600 font-medium">
                         Tersalin
                       </span>
                     </>
                   ) : (
-                    <Copy className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2]" />
+                    <Copy className="w-3.5 h-3.5 text-[#3b82f6] stroke-[2]" />
                   )}
                 </button>
               </div>
@@ -133,9 +138,9 @@ export const ChatProductCard: React.FC<ChatProductCardProps> = ({
           )}
 
           {product.orderTime && (
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-neutral-500 shrink-0">Waktu Pesanan</span>
-              <span className="text-slate-800 font-normal">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-neutral-500 shrink-0 font-normal">Waktu Pesanan</span>
+              <span className="text-slate-900 font-normal">
                 {product.orderTime}
               </span>
             </div>
@@ -143,10 +148,10 @@ export const ChatProductCard: React.FC<ChatProductCardProps> = ({
         </div>
       )}
 
-      {/* Timestamp inside bottom-right of bubble */}
+      {/* 4. Timestamp inside bottom-right of bubble */}
       {timestamp && (
-        <div className="flex items-center justify-end mt-1.5 select-none">
-          <span className="text-[11px] text-neutral-500 font-medium">
+        <div className="flex items-center justify-end mt-1 select-none">
+          <span className="text-[11px] text-neutral-400 font-normal">
             {timestamp}
           </span>
         </div>

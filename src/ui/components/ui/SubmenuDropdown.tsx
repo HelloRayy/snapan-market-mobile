@@ -91,21 +91,23 @@ export const SubmenuDropdown: React.FC<SubmenuDropdownProps> = ({
       {isOpen && (
         <motion.div
           ref={dropdownRef}
+          role="menu"
+          aria-orientation="vertical"
           initial={{ opacity: 0, scale: 0.92, y: -4 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.92, y: -4 }}
-          transition={{ type: 'spring', damping: 24, stiffness: 380 }}
+          transition={{ type: 'spring', damping: 25, stiffness: 400 }}
           style={{
             transformOrigin: align === 'left' ? 'top left' : 'top right',
           }}
           onClick={(e) => e.stopPropagation()}
           className={`absolute top-full mt-1.5 ${
             align === 'left' ? 'left-0' : 'right-0'
-          } z-[9999] bg-[#18181b]/95 text-white border border-[#27272a] rounded-2xl shadow-2xl backdrop-blur-xl min-w-[210px] max-w-[260px] p-1.5 select-none overflow-hidden ring-1 ring-white/10 ${className}`}
+          } z-[9999] bg-white/98 text-slate-900 border border-neutral-200/90 rounded-2xl shadow-[0_12px_32px_rgba(0,0,0,0.12),0_2px_8px_rgba(0,0,0,0.04)] backdrop-blur-xl min-w-[210px] max-w-[260px] p-1.5 select-none overflow-hidden ring-1 ring-black/[0.04] ${className}`}
         >
           {/* Submenu Header with Back Button */}
           {currentLevel && (
-            <div className="flex items-center gap-1 px-1 py-1 mb-1 border-b border-[#27272a]">
+            <div className="flex items-center gap-1 px-1 py-1 mb-1 border-b border-neutral-100">
               <button
                 type="button"
                 onClick={(e) => {
@@ -113,9 +115,10 @@ export const SubmenuDropdown: React.FC<SubmenuDropdownProps> = ({
                   triggerHaptic('light');
                   setMenuStack((prev) => prev.slice(0, -1));
                 }}
-                className="flex items-center gap-1.5 px-2 py-1 text-xs font-semibold text-neutral-300 hover:text-white rounded-lg hover:bg-white/10 active:bg-white/15 transition-colors w-full cursor-pointer"
+                className="flex items-center gap-1.5 px-2 py-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900 rounded-lg hover:bg-neutral-100/90 active:bg-neutral-200/70 transition-colors w-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20"
+                aria-label={`Kembali dari ${currentLevel.title}`}
               >
-                <ChevronLeft className="w-3.5 h-3.5" />
+                <ChevronLeft className="w-3.5 h-3.5 text-slate-600 shrink-0" />
                 <span className="truncate">{currentLevel.title}</span>
               </button>
             </div>
@@ -135,7 +138,9 @@ export const SubmenuDropdown: React.FC<SubmenuDropdownProps> = ({
                 <button
                   type="button"
                   key={item.id}
+                  role="menuitem"
                   disabled={item.disabled}
+                  aria-disabled={item.disabled}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (item.disabled) return;
@@ -151,21 +156,21 @@ export const SubmenuDropdown: React.FC<SubmenuDropdownProps> = ({
                       onClose();
                     }
                   }}
-                  className={`group flex items-center justify-between w-full px-3 py-2 text-[13px] font-medium rounded-xl transition-all duration-150 cursor-pointer ${
+                  className={`group flex items-center justify-between w-full px-3 py-2 text-[13.5px] font-medium rounded-xl transition-all duration-150 cursor-pointer ${
                     item.disabled
-                      ? 'opacity-40 cursor-not-allowed pointer-events-none'
+                      ? 'opacity-40 cursor-not-allowed pointer-events-none text-slate-400'
                       : item.danger
-                      ? 'text-rose-400 hover:bg-rose-500/15 active:bg-rose-500/25 hover:text-rose-300'
-                      : 'text-neutral-200 hover:text-white hover:bg-white/10 active:bg-white/15'
-                  }`}
+                      ? 'text-rose-600 hover:bg-rose-50/90 active:bg-rose-100/80 hover:text-rose-700 focus-visible:bg-rose-50 focus-visible:ring-2 focus-visible:ring-rose-500/30'
+                      : 'text-slate-800 hover:text-slate-900 hover:bg-neutral-100/90 active:bg-neutral-200/80 focus-visible:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-slate-900/20'
+                  } focus-visible:outline-none`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     {Icon && (
                       <Icon
                         className={`w-4 h-4 shrink-0 transition-colors ${
                           item.danger
-                            ? 'text-rose-400 group-hover:text-rose-300'
-                            : 'text-neutral-400 group-hover:text-white'
+                            ? 'text-rose-600 group-hover:text-rose-700'
+                            : 'text-slate-500 group-hover:text-slate-800'
                         }`}
                       />
                     )}
@@ -174,17 +179,17 @@ export const SubmenuDropdown: React.FC<SubmenuDropdownProps> = ({
 
                   <div className="flex items-center gap-1.5 shrink-0 ml-2">
                     {item.shortcut && (
-                      <span className="text-[11px] text-neutral-400 font-mono tracking-wider">
+                      <span className="text-[11px] text-slate-500 font-mono tracking-wider">
                         {item.shortcut}
                       </span>
                     )}
                     {item.badge && (
-                      <span className="text-[11px] px-1.5 py-0.5 rounded-md bg-white/10 text-neutral-300 font-medium">
+                      <span className="text-[11px] px-1.5 py-0.5 rounded-md bg-neutral-100 border border-neutral-200/70 text-slate-600 font-medium">
                         {item.badge}
                       </span>
                     )}
                     {item.subItems && item.subItems.length > 0 && (
-                      <ChevronRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-white transition-colors" />
+                      <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700 transition-colors" />
                     )}
                   </div>
                 </button>

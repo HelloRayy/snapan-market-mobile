@@ -68,7 +68,7 @@ export const ChatProductCard: React.FC<ChatProductCardProps> = ({
     <div
       onClick={() => onViewProduct?.(product.id)}
       className={cn(
-        'relative mr-auto bg-white text-slate-900 border border-neutral-200/80 p-3 text-[14.5px] leading-[1.38] tracking-[-0.01em] break-words shadow-2xs transition-all select-none cursor-pointer',
+        'relative mr-auto bg-white text-slate-900 border border-neutral-200/80 hover:border-blue-200/90 p-3 text-[14.5px] leading-[1.38] tracking-[-0.01em] break-words shadow-2xs transition-all select-none cursor-pointer',
         shapeClasses[shape],
         className
       )}
@@ -89,8 +89,11 @@ export const ChatProductCard: React.FC<ChatProductCardProps> = ({
           <h4 className="text-[13px] font-normal text-neutral-600 line-clamp-1 leading-snug">
             {product.title}
           </h4>
-          <p className="text-[13px] font-normal text-slate-800 mt-0.5">
-            {product.itemCount ? `${product.itemCount} item, ` : ''}Total: {product.price}
+          <p className="text-[13px] text-slate-900 mt-0.5 leading-snug">
+            <span className="text-neutral-500 font-normal">
+              {product.itemCount ? `${product.itemCount} item, ` : ''}Total:{' '}
+            </span>
+            <span className="font-semibold text-slate-950">{product.price}</span>
           </p>
           <span
             className={`text-[12.5px] font-normal mt-0.5 ${
@@ -119,7 +122,7 @@ export const ChatProductCard: React.FC<ChatProductCardProps> = ({
                   type="button"
                   onClick={handleCopyOrderId}
                   aria-label={copied ? 'Tersalin' : 'Salin No. Pesanan'}
-                  className="p-1 -mr-1 hover:bg-neutral-100 rounded transition-colors text-[#3b82f6] hover:text-blue-600 cursor-pointer flex items-center gap-1 shrink-0"
+                  className="p-1 -mr-1 hover:bg-blue-50/80 rounded transition-colors text-[#1d64ec] hover:text-blue-700 cursor-pointer flex items-center gap-1 shrink-0"
                   title="Salin No. Pesanan"
                 >
                   {copied ? (
@@ -130,7 +133,7 @@ export const ChatProductCard: React.FC<ChatProductCardProps> = ({
                       </span>
                     </>
                   ) : (
-                    <Copy className="w-3.5 h-3.5 text-[#3b82f6] stroke-[2]" />
+                    <Copy className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2]" />
                   )}
                 </button>
               </div>

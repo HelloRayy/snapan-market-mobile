@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { ArrowLeft } from 'lucide-react';
 import { OnboardingScreen } from '@/ui/components/onboarding/OnboardingScreen';
 import { PwaLandingPage } from '@/ui/components/pwa/PwaLandingPage';
 import { HomePage } from '@/ui/pages/HomePage';
@@ -47,6 +48,27 @@ function getPostFromLocation(): MarketPostItem | null {
   return null;
 }
 
+// Dynamic URL Helper: Extracts chat threadId from /direct/t/:threadId or /messages/t/:threadId
+function getChatThreadFromLocation(): string | null {
+  if (typeof window === 'undefined') return null;
+  const path = window.location.pathname;
+  const hash = window.location.hash;
+
+  if (path.startsWith('/direct/t/') || path.startsWith('/messages/t/')) {
+    const parts = path.split('/t/').filter(Boolean);
+    const rawThreadId = parts[1]?.split('/')[0];
+    if (rawThreadId) {
+      return decodeURIComponent(rawThreadId);
+    }
+  }
+
+  if (hash.startsWith('#chat-')) {
+    return decodeURIComponent(hash.replace(/^#chat-/, ''));
+  }
+
+  return null;
+}
+
 export function App() {
   // Initialize Lenis Kinetic Smooth Scroll Engine (120fps physics)
   useSmoothScroll();
@@ -80,8 +102,8 @@ export function App() {
 
   const [currentRoute, setCurrentRoute] = useState<string>(window.location.pathname);
   const [selectedPost, setSelectedPost] = useState<MarketPostItem | null>(null);
+  const [activeChatThreadId, setActiveChatThreadId] = useState<string | null>(() => getChatThreadFromLocation());
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
-
   // Double-Back to Exit Toast State
   const [showExitToast, setShowExitToast] = useState(false);
   const lastBackPressTimeRef = useRef<number>(0);
@@ -97,11 +119,11 @@ export function App() {
   const isDownloadRoute = currentRoute === '/download' || window.location.hash === '#download';
   const isOnboardingRoute = currentRoute === '/onboarding' || window.location.hash === '#onboarding';
   const isSearchRoute = currentRoute === '/search' || window.location.hash === '#search';
-  const isMessagesRoute = currentRoute === '/messages' || window.location.hash === '#messages';
+  const isMessagesRoute = currentRoute === '/messages' || currentRoute === '/direct' || window.location.hash === '#messages' || window.location.hash === '#direct';
   const isPostDetailRoute = currentRoute.includes('/post/') || currentRoute.includes('/postingan/') || window.location.hash.startsWith('#post-');
   
   // Dynamic Route Check: /@username or #@username or /profile (excluding /@username/post/...)
-  const isProfileRoute = !isPostDetailRoute && !isMessagesRoute && (currentRoute.startsWith('/@') || currentRoute === '/profile' || (window.location.hash.startsWith('#@') && !isPostDetailRoute));
+  const isProfileRoute = !isPostDetailRoute && !isMessagesRoute && !activeChatThreadId && (currentRoute.startsWith('/@') || currentRoute === '/profile' || (window.location.hash.startsWith('#@') && !isPostDetailRoute));
   
   let targetProfileUsername = 'radityarayhannnn';
   if (currentRoute.startsWith('/@')) {
@@ -145,7 +167,11 @@ export function App() {
         return;
       }
 
-      // 2. Resolve post detail state from popstate URL
+      // 2. Resolve chat room state from popstate URL
+      const threadMatch = getChatThreadFromLocation();
+      setActiveChatThreadId(threadMatch);
+
+      // 3. Resolve post detail state from popstate URL
       const postMatch = getPostFromLocation();
       if (postMatch) {
         setSelectedPost(postMatch);
@@ -153,7 +179,7 @@ export function App() {
         setSelectedPost(null);
       }
 
-      // 3. Update route state
+      // 4. Update route state
       setCurrentRoute(nextRoute);
       if (nextRoute === '/') {
         window.dispatchEvent(new CustomEvent('snapan:show-nav'));
@@ -230,6 +256,22 @@ export function App() {
     }
     window.history.pushState({ route: '/search' }, '', '/search');
     setCurrentRoute('/search');
+  };
+
+  const navigateToChatThread = (threadId: string) => {
+    const url = `/direct/t/${threadId}`;
+    window.history.pushState({ isSnapanRoot: false, layer: 'chat-room', threadId }, '', url);
+    setCurrentRoute(url);
+    setActiveChatThreadId(threadId);
+  };
+
+  const handleCloseChatThread = () => {
+    setActiveChatThreadId(null);
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      navigateToMessages();
+    }
   };
 
   const navigateToMessages = () => {
@@ -351,12 +393,13 @@ export function App() {
           )}
 
           {/* Direct Messages Page (Route /messages or #messages) */}
-          {isMessagesRoute && (
+          {isMessagesRoute && !activeChatThreadId && (
             <DirectMessagesPage
               onBack={navigateToHome}
               onNavigateHome={navigateToHome}
               onNavigateSearch={navigateToSearch}
               onNavigateProfile={navigateToProfile}
+              onSelectConversation={(threadId) => navigateToChatThread(threadId)}
             />
           )}
 
@@ -407,7 +450,7 @@ export function App() {
           />
 
           {/* Canonical 5-Icon Market Bottom Navigation */}
-          {!selectedPost && !isColorsRoute && !isMapRoute && (
+          {!selectedPost && !activeChatThreadId && !isColorsRoute && !isMapRoute && (
             <MarketBottomNav
               activeTab={
                 isMessagesRoute
@@ -457,6 +500,32 @@ export function App() {
                   navigateToProfile(uname);
                 }}
               />
+            </div>
+          )}
+          {/* Fullscreen Chat Room White Screen Canvas */}
+          {/* Fullscreen Chat Room White Screen Canvas */}
+          {activeChatThreadId && (
+            <div
+              key={activeChatThreadId}
+              data-lenis-prevent
+              className="fixed inset-0 z-50 bg-white overflow-hidden transform-gpu animate-page-zoom touch-pan-y"
+              style={{
+                willChange: 'transform, opacity',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
+              }}
+            >
+              {/* Minimal top bar with back button on White Screen */}
+              <div className="p-3">
+                <button
+                  type="button"
+                  onClick={handleCloseChatThread}
+                  className="w-9 h-9 rounded-full hover:bg-neutral-100 active:bg-neutral-200 flex items-center justify-center text-slate-800 transition-colors"
+                  aria-label="Kembali ke Inbox"
+                >
+                  <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
+                </button>
+              </div>
             </div>
           )}
 

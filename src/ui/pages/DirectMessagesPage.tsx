@@ -42,7 +42,7 @@ interface MockConversation {
 
 const MOCK_CONVERSATIONS: MockConversation[] = [
   {
-    id: 'conv-1',
+    id: '17845432127501402',
     user: {
       name: 'Sarah Anastasya',
       username: 'sarahanas',
@@ -59,7 +59,7 @@ const MOCK_CONVERSATIONS: MockConversation[] = [
     },
   },
   {
-    id: 'conv-2',
+    id: '17892348123791823',
     user: {
       name: 'Dimas Wicaksono',
       username: 'dimas_wicak',
@@ -76,7 +76,7 @@ const MOCK_CONVERSATIONS: MockConversation[] = [
     },
   },
   {
-    id: 'conv-3',
+    id: '17950293812048512',
     user: {
       name: 'Nadia Putri',
       username: 'nadiaputri',
@@ -87,7 +87,7 @@ const MOCK_CONVERSATIONS: MockConversation[] = [
     timestamp: '2j',
   },
   {
-    id: 'conv-4',
+    id: '17961203912830192',
     user: {
       name: 'Rian Pratama',
       username: 'rian_pratama',
@@ -99,7 +99,7 @@ const MOCK_CONVERSATIONS: MockConversation[] = [
     isSender: true,
   },
   {
-    id: 'conv-5',
+    id: '17970192830192831',
     user: {
       name: 'Bagus Prakoso',
       username: 'bagus_prakoso',

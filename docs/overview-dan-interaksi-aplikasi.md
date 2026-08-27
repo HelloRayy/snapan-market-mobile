@@ -264,7 +264,7 @@ Seluruh dialog konfirmasi aksi kritis di dalam aplikasi telah distandarisasi men
   - Micro-interaction: `hover:bg-neutral-50 active:bg-neutral-100 active:scale-[0.98]`.
 - **4 Titik Integrasi Utama di Aplikasi**:
   1. **Simpan / Buang Draf Utas** (`CreatePostModal`) $\rightarrow$ Simpan / Jangan simpan / Batal.
-  2. **Konfirmasi Hapus Postingan** (`PostOptionsModal`) $\rightarrow$ Hapus [Destructive] / Batal.
+  2. **Konfirmasi Hapus Postingan** (`PostSubmenuDropdown`) $\rightarrow$ Hapus [Destructive] / Batal.
   3. **Konfirmasi Buang Edit Profil** (`EditProfilePage`) $\rightarrow$ Buang [Destructive] / Batal.
   4. **Konfirmasi Keluar Akun** (`SettingsBottomSheet`) $\rightarrow$ Keluar [Destructive] / Batal.
 

@@ -5,7 +5,7 @@ import { PostComment } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { formatSmartTimestamp } from '@/utils/formatters';
 import { SmoothCommentIcon } from '@/ui/components/icons';
-import { PostOptionsModal } from './PostOptionsModal';
+import { PostSubmenuDropdown } from './PostSubmenuDropdown';
 import { triggerHaptic } from '@/utils/haptics';
 
 interface PostCommentItemProps {
@@ -238,18 +238,30 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 </span>
               </div>
 
-              {/* Option (...) Icon */}
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsMenuOpen(true);
-                }}
-                className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer active:scale-[0.96]"
-                aria-label="Opsi komentar"
-              >
-                <MoreHorizontal className="w-4 h-4" />
-              </button>
+              {/* Option (...) Icon & Submenu */}
+              <div className="relative">
+                <button
+                  type="button"
+                  data-submenu-trigger="true"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMenuOpen((prev) => !prev);
+                  }}
+                  className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer active:scale-[0.96]"
+                  aria-label="Opsi komentar"
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
+                <PostSubmenuDropdown
+                  isOpen={isMenuOpen}
+                  onClose={() => setIsMenuOpen(false)}
+                  title="Opsi Komentar"
+                  authorName={comment.user.name}
+                  authorUsername={comment.user.username}
+                  isSaved={false}
+                  align="right"
+                />
+              </div>
             </div>
 
             {/* Comment Content (UX Reading Flow leading-snug text-base with tight 2px gap) */}
@@ -353,14 +365,29 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                   </span>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={(e) => e.stopPropagation()}
-                  className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0"
-                  aria-label="Opsi komentar"
-                >
-                  <MoreHorizontal className="w-4 h-4" />
-                </button>
+                <div className="relative">
+                  <button
+                    type="button"
+                    data-submenu-trigger="true"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsMenuOpen((prev) => !prev);
+                    }}
+                    className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer"
+                    aria-label="Opsi komentar"
+                  >
+                    <MoreHorizontal className="w-4 h-4" />
+                  </button>
+                  <PostSubmenuDropdown
+                    isOpen={isMenuOpen}
+                    onClose={() => setIsMenuOpen(false)}
+                    title="Opsi Komentar"
+                    authorName={comment.user.name}
+                    authorUsername={comment.user.username}
+                    isSaved={false}
+                    align="right"
+                  />
+                </div>
               </div>
 
               <div className="text-base text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere] mt-0.5">
@@ -568,15 +595,6 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
         </div>
       )}
 
-      {/* Comment 3-Dot Options Modal */}
-      <PostOptionsModal
-        isOpen={isMenuOpen}
-        onClose={() => setIsMenuOpen(false)}
-        title="Opsi Komentar"
-        authorName={comment.user.name}
-        authorUsername={comment.user.username}
-        isSaved={false}
-      />
     </div>
   );
 };

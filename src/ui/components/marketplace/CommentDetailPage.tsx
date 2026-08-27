@@ -6,7 +6,7 @@ import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { formatSmartTimestamp } from '@/utils/formatters';
 import { SmoothCommentIcon } from '@/ui/components/icons/SmoothCommentIcon';
 import { PostCommentItem } from './PostCommentItem';
-import { PostOptionsModal } from './PostOptionsModal';
+import { PostSubmenuDropdown } from './PostSubmenuDropdown';
 import { CommentInputBar } from './CommentInputBar';
 import { useAuth } from '@/ui/hooks/useAuth';
 import { triggerHaptic } from '@/utils/haptics';
@@ -315,14 +315,29 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                   </span>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setIsOptionsModalOpen(true)}
-                  className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer active:scale-[0.96]"
-                  aria-label="Opsi komentar"
-                >
-                  <MoreHorizontal className="w-4 h-4" />
-                </button>
+                <div className="relative">
+                  <button
+                    type="button"
+                    data-submenu-trigger="true"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsOptionsModalOpen((prev) => !prev);
+                    }}
+                    className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer active:scale-[0.96]"
+                    aria-label="Opsi komentar"
+                  >
+                    <MoreHorizontal className="w-4 h-4" />
+                  </button>
+                  <PostSubmenuDropdown
+                    isOpen={isOptionsModalOpen}
+                    onClose={() => setIsOptionsModalOpen(false)}
+                    title="Opsi Komentar"
+                    authorName={activeComment.user.name}
+                    authorUsername={activeComment.user.username}
+                    isSaved={false}
+                    align="right"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -492,15 +507,6 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
         isInline={false}
       />
 
-      {/* Focused Comment 3-Dot Options Modal */}
-      <PostOptionsModal
-        isOpen={isOptionsModalOpen}
-        onClose={() => setIsOptionsModalOpen(false)}
-        title="Opsi Komentar"
-        authorName={activeComment.user.name}
-        authorUsername={activeComment.user.username}
-        isSaved={false}
-      />
     </div>
   );
 };

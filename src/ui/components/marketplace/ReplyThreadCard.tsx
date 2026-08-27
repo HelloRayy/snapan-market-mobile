@@ -5,7 +5,7 @@ import { UserReplyThread, MarketPostItem } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { ClickableVerifiedBadge } from './VerifiedBadgeModal';
 import { MediaLightboxModal } from './MediaLightboxModal';
-import { PostOptionsModal } from './PostOptionsModal';
+import { PostSubmenuDropdown } from './PostSubmenuDropdown';
 import { ProgressiveImage } from '@/ui/components/ui/ProgressiveImage';
 import { triggerHaptic } from '@/utils/haptics';
 import { ThreadsTopicIcon, SmoothCommentIcon } from '@/ui/components/icons';
@@ -294,17 +294,28 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
 
             <div className="flex items-center gap-1.5 shrink-0 ml-auto">
               <span className="text-[13.5px] sm:text-[14px] font-normal text-neutral-400 whitespace-nowrap">{parentPost.timestamp}</span>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsParentMenuOpen(true);
-                }}
-                className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer active:scale-[0.96]"
-                aria-label="Opsi postingan"
-              >
-                <MoreHorizontal className="w-4 h-4" />
-              </button>
+              <div className="relative">
+                <button
+                  type="button"
+                  data-submenu-trigger="true"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsParentMenuOpen((prev) => !prev);
+                  }}
+                  className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer active:scale-[0.96]"
+                  aria-label="Opsi postingan"
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
+                <PostSubmenuDropdown
+                  isOpen={isParentMenuOpen}
+                  onClose={() => setIsParentMenuOpen(false)}
+                  authorName={parentPost.seller.name}
+                  authorUsername={parentPost.seller.username}
+                  isSaved={false}
+                  align="right"
+                />
+              </div>
             </div>
           </div>
 
@@ -460,17 +471,29 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
 
             <div className="flex items-center gap-1.5 shrink-0 ml-auto">
               <span className="text-[13.5px] sm:text-[14px] font-normal text-neutral-400 whitespace-nowrap">{reply.timestamp}</span>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsReplyMenuOpen(true);
-                }}
-                className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer active:scale-[0.96]"
-                aria-label="Opsi balasan"
-              >
-                <MoreHorizontal className="w-4 h-4" />
-              </button>
+              <div className="relative">
+                <button
+                  type="button"
+                  data-submenu-trigger="true"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsReplyMenuOpen((prev) => !prev);
+                  }}
+                  className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer active:scale-[0.96]"
+                  aria-label="Opsi balasan"
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
+                <PostSubmenuDropdown
+                  isOpen={isReplyMenuOpen}
+                  onClose={() => setIsReplyMenuOpen(false)}
+                  title="Opsi Balasan"
+                  authorName={reply.user.name}
+                  authorUsername={reply.user.username}
+                  isSaved={false}
+                  align="right"
+                />
+              </div>
             </div>
           </div>
 
@@ -614,24 +637,6 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
         />
       )}
 
-      {/* Parent Post 3-Dot Options Modal */}
-      <PostOptionsModal
-        isOpen={isParentMenuOpen}
-        onClose={() => setIsParentMenuOpen(false)}
-        authorName={parentPost.seller.name}
-        authorUsername={parentPost.seller.username}
-        isSaved={false}
-      />
-
-      {/* Reply Post 3-Dot Options Modal */}
-      <PostOptionsModal
-        isOpen={isReplyMenuOpen}
-        onClose={() => setIsReplyMenuOpen(false)}
-        title="Opsi Balasan"
-        authorName={reply.user.name}
-        authorUsername={reply.user.username}
-        isSaved={false}
-      />
     </article>
   );
 };

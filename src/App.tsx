@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { CheckCheck } from 'lucide-react';
 import { OnboardingScreen } from '@/ui/components/onboarding/OnboardingScreen';
 import { PwaLandingPage } from '@/ui/components/pwa/PwaLandingPage';
 import { HomePage } from '@/ui/pages/HomePage';
@@ -568,7 +569,7 @@ export function App() {
                     <ChatBubbleMessage>
                       Kira-kira masih lengkap sama dus dan buku panduannya gak ya?
                     </ChatBubbleMessage>
-                    <ChatBubbleTimestamp className="text-neutral-400">
+                    <ChatBubbleTimestamp className="text-neutral-600 font-medium">
                       08:15
                     </ChatBubbleTimestamp>
                   </ChatBubble>
@@ -588,7 +589,10 @@ export function App() {
                     <ChatBubbleMessage>
                       Baterainya juga baru aja diganti minggu kemarin, jadi siap pakai banget.
                     </ChatBubbleMessage>
-                    <ChatBubbleTimestamp className="text-blue-100" statusLabel="Terbaca">
+                    <ChatBubbleTimestamp
+                      className="text-white/80"
+                      statusIcon={<CheckCheck className="w-3.5 h-3.5 text-white/95 stroke-[2.2]" />}
+                    >
                       08:18
                     </ChatBubbleTimestamp>
                   </ChatBubble>

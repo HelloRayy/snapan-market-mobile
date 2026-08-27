@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/utils/cn';
 
 export const chatBubbleVariants = cva(
-  'relative max-w-[85%] sm:max-w-[75%] px-3.5 py-2 text-[14.5px] leading-relaxed break-words shadow-2xs transition-all',
+  'relative max-w-[85%] sm:max-w-[75%] px-3.5 py-2 text-[14.5px] leading-[1.38] tracking-[-0.01em] break-words shadow-2xs transition-all',
   {
     variants: {
       variant: {
@@ -47,7 +47,7 @@ export const ChatBubbleMessage = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn('whitespace-pre-wrap leading-relaxed', className)}
+    className={cn('whitespace-pre-wrap leading-[1.38] text-[14.5px]', className)}
     {...props}
   />
 ));
@@ -66,7 +66,7 @@ export const ChatBubbleTimestamp = React.forwardRef<
   <span
     ref={ref}
     className={cn(
-      'flex items-center justify-end gap-1.5 mt-0.5 text-[10.5px] select-none opacity-85',
+      'flex items-center justify-end gap-1 mt-1 text-[11px] font-normal tracking-tight select-none',
       className
     )}
     {...props}

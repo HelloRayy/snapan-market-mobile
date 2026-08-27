@@ -19,7 +19,7 @@ interface DirectMessagesPageProps {
   onOpenNewChatModal?: () => void;
 }
 
-interface MockConversation {
+export interface MockConversation {
   id: string;
   user: {
     name: string;
@@ -40,7 +40,7 @@ interface MockConversation {
   };
 }
 
-const MOCK_CONVERSATIONS: MockConversation[] = [
+export const MOCK_CONVERSATIONS: MockConversation[] = [
   {
     id: '17845432127501402',
     user: {

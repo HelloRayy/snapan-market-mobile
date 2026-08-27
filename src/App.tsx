@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft } from 'lucide-react';
 import { OnboardingScreen } from '@/ui/components/onboarding/OnboardingScreen';
 import { PwaLandingPage } from '@/ui/components/pwa/PwaLandingPage';
 import { HomePage } from '@/ui/pages/HomePage';
 import { PostDetailPage } from '@/ui/pages/PostDetailPage';
 import { ProfilePage } from '@/ui/pages/ProfilePage';
 import { SearchPage } from '@/ui/pages/SearchPage';
-import { DirectMessagesPage } from '@/ui/pages/DirectMessagesPage';
+import { DirectMessagesPage, MOCK_CONVERSATIONS } from '@/ui/pages/DirectMessagesPage';
+import { ChatTopBar } from '@/ui/components/chat/ChatTopBar';
 import { NavigationDrawer } from '@/ui/components/navigation/NavigationDrawer';
 import { CreatePostModal } from '@/ui/components/marketplace/CreatePostModal';
 import { MarketBottomNav } from '@/ui/components/marketplace/MarketBottomNav';
@@ -502,30 +502,50 @@ export function App() {
               />
             </div>
           )}
-          {/* Fullscreen Chat Room White Screen Canvas */}
-          {/* Fullscreen Chat Room White Screen Canvas */}
+          {/* Fullscreen Chat Room Layer with ChatTopBar Slicing */}
           {activeChatThreadId && (
             <div
               key={activeChatThreadId}
               data-lenis-prevent
-              className="fixed inset-0 z-50 bg-white overflow-hidden transform-gpu animate-page-zoom touch-pan-y"
+              className="fixed inset-0 z-50 bg-white overflow-hidden transform-gpu animate-page-zoom touch-pan-y flex flex-col"
               style={{
                 willChange: 'transform, opacity',
                 backfaceVisibility: 'hidden',
                 WebkitBackfaceVisibility: 'hidden',
               }}
             >
-              {/* Minimal top bar with back button on White Screen */}
-              <div className="p-3">
-                <button
-                  type="button"
-                  onClick={handleCloseChatThread}
-                  className="w-9 h-9 rounded-full hover:bg-neutral-100 active:bg-neutral-200 flex items-center justify-center text-slate-800 transition-colors"
-                  aria-label="Kembali ke Inbox"
-                >
-                  <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
-                </button>
-              </div>
+              {/* Chat TopBar: ArrowLeft - PFP Profile + Name - Option Icon */}
+              <ChatTopBar
+                participant={
+                  (() => {
+                    const conv = MOCK_CONVERSATIONS.find((c) => c.id === activeChatThreadId);
+                    if (conv) {
+                      return {
+                        name: conv.user.name,
+                        username: conv.user.username,
+                        avatar: conv.user.avatar,
+                        isVerified: conv.user.isVerified,
+                        isOnline: conv.user.isOnline,
+                      };
+                    }
+                    return {
+                      name: 'Sarah Anastasya',
+                      username: 'sarahanas',
+                      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&q=80',
+                      isVerified: true,
+                      isOnline: true,
+                    };
+                  })()
+                }
+                onBack={handleCloseChatThread}
+                onViewProfile={(uname) => {
+                  handleCloseChatThread();
+                  navigateToProfile(uname);
+                }}
+              />
+
+              {/* Canvas Body (White Screen for Next Slicing Step) */}
+              <div className="flex-1 bg-white" />
             </div>
           )}
 

@@ -98,6 +98,18 @@ export const ToastNotification: React.FC<ToastNotificationProps> = ({
 
     return () => clearTimeout(timer);
   }, [isVisible, message, duration]);
+  useEffect(() => {
+    if (!isVisible) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onCloseRef.current();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isVisible]);
 
   const handleDismiss = (e: React.MouseEvent) => {
     e.stopPropagation();

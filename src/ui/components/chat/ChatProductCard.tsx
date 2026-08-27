@@ -68,13 +68,13 @@ export const ChatProductCard: React.FC<ChatProductCardProps> = ({
     <div
       onClick={() => onViewProduct?.(product.id)}
       className={cn(
-        'relative mr-auto bg-[#f1f3f5] text-slate-900 p-3 text-[14.5px] leading-[1.38] tracking-[-0.01em] break-words shadow-2xs transition-all select-none cursor-pointer',
+        'relative mr-auto bg-white text-slate-900 border border-neutral-200/80 p-3 text-[14.5px] leading-[1.38] tracking-[-0.01em] break-words shadow-2xs transition-all select-none cursor-pointer',
         shapeClasses[shape],
         className
       )}
     >
       {/* Inset Product Media & Summary Box */}
-      <div className="bg-white/95 border border-neutral-200/80 rounded-xl p-2.5 flex items-start gap-2.5 shadow-2xs">
+      <div className="bg-[#f8f9fa] border border-neutral-100 rounded-xl p-2.5 flex items-start gap-2.5">
         <img
           src={product.image}
           alt={product.title}
@@ -145,8 +145,8 @@ export const ChatProductCard: React.FC<ChatProductCardProps> = ({
 
       {/* Timestamp inside bottom-right of bubble */}
       {timestamp && (
-        <div className="flex items-center justify-end mt-1 select-none">
-          <span className="text-[11px] text-neutral-600 font-medium">
+        <div className="flex items-center justify-end mt-1.5 select-none">
+          <span className="text-[11px] text-neutral-500 font-medium">
             {timestamp}
           </span>
         </div>

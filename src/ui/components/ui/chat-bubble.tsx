@@ -8,7 +8,7 @@ export const chatBubbleVariants = cva(
     variants: {
       variant: {
         sent: 'ml-auto bg-[#1d64ec] text-white',
-        received: 'mr-auto bg-[#f1f3f5] text-slate-900',
+        received: 'mr-auto bg-white text-slate-900 border border-neutral-200/80 shadow-2xs',
         system: 'mx-auto bg-neutral-100/90 text-neutral-500 text-[11.5px] font-medium text-center border border-neutral-200/60 rounded-full px-3 py-1 shadow-2xs',
       },
       shape: {

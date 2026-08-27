@@ -554,7 +554,7 @@ export function App() {
               {/* Chat Messages Stream */}
               <main
                 data-lenis-prevent
-                className="flex-1 overflow-y-auto px-3.5 py-4 space-y-4 bg-[#fbfbfb] touch-pan-y"
+                className="flex-1 overflow-y-auto px-3.5 py-4 space-y-4 bg-[#f6f7f9] touch-pan-y"
               >
                 {activeChatThreadId === '17892348123791823' ? (
                   /* ROOM CHAT DIMAS WICAKSONO: showProductCard = true (With Product Context Card as Left Bubble) */
@@ -584,7 +584,7 @@ export function App() {
                         <ChatBubbleMessage>
                           Siap bro, nanti jam istirahat kedua gua tunggu di depan lab komputer yaa.
                         </ChatBubbleMessage>
-                        <ChatBubbleTimestamp className="text-neutral-600 font-medium">
+                        <ChatBubbleTimestamp className="text-neutral-500 font-medium">
                           10:56
                         </ChatBubbleTimestamp>
                       </ChatBubble>
@@ -622,7 +622,7 @@ export function App() {
                         <ChatBubbleMessage>
                           Kira-kira masih lengkap sama dus dan buku panduannya gak ya?
                         </ChatBubbleMessage>
-                        <ChatBubbleTimestamp className="text-neutral-600 font-medium">
+                        <ChatBubbleTimestamp className="text-neutral-500 font-medium">
                           08:15
                         </ChatBubbleTimestamp>
                       </ChatBubble>

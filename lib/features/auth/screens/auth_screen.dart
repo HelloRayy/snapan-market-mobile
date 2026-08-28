@@ -241,9 +241,9 @@ class _AuthScreenState extends State<AuthScreen> {
       children: [
         const SizedBox(height: 6),
 
-        // 1. Email Floating Label Field (Empty default)
+        // 1. WhatsApp / Email Floating Label Field (Empty default)
         KumoFloatingField(
-          label: 'Email',
+          label: 'Nomor WhatsApp / Email',
           controller: _loginEmailController,
           keyboardType: TextInputType.emailAddress,
         ),

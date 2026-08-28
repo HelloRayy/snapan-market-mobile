@@ -4,18 +4,18 @@ import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
 
-/// Fullscreen Modal / Bottom Sheet for Creating Threads & Selling Products
+/// Full-Page Screen for Creating Threads & Selling Products
 ///
-/// 100% faithful Flutter translation of `src/ui/components/marketplace/CreatePostModal.tsx`:
-/// - Dual Mode: Utas Biasa (`thread`) vs Jual Produk (`product`)
-/// - Smart Selling Intent Detection: detects selling keywords & suggests switching mode
-/// - 7-Icon Media Toolbar (Gallery, GIF, Emoji, Poll, COD Location, Voice, Topic)
+/// 100% exact match to web single-page layout (Image #2):
+/// - Full-page Scaffold with pure white canvas (no bottom-sheet peek)
+/// - Header: "Batal" | "Utas Baru" | Drafts & More options ("...")
+/// - Vertical Thread Connector Line from author avatar to sub-thread
+/// - 7-Icon Media Toolbar on Row 1 + Dedicated "Jual Barang" switch pill on Row 2 (anti-overflow)
 /// - Sub-thread chained continuation ("Tambahkan ke utas")
 /// - Product e-commerce fields (Price with Rp prefix, Stock, School COD Place picker)
-/// - Draft management and audience privacy control
+/// - Pinned Bottom Footer: Audience selector + "Posting" pill button
 class CreatePostModal extends StatefulWidget {
   final PostMode initialMode;
-  final VoidCallback? onClose;
   final ValueChanged<Map<String, dynamic>>? onSubmitPost;
   final String currentUsername;
   final String currentUserAvatar;
@@ -23,34 +23,25 @@ class CreatePostModal extends StatefulWidget {
   const CreatePostModal({
     super.key,
     this.initialMode = PostMode.thread,
-    this.onClose,
     this.onSubmitPost,
     this.currentUsername = 'radityarayhannnn',
     this.currentUserAvatar =
         'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
   });
 
-  /// Static helper to open modal smoothly as a full-screen bottom sheet
+  /// Static helper to open as a full-page modal route
   static Future<void> show(
     BuildContext context, {
     PostMode initialMode = PostMode.thread,
     ValueChanged<Map<String, dynamic>>? onSubmitPost,
   }) {
-    return showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
-      ),
-      builder: (context) => CreatePostModal(
-        initialMode: initialMode,
-        onClose: () => Navigator.of(context).pop(),
-        onSubmitPost: (data) {
-          Navigator.of(context).pop();
-          onSubmitPost?.call(data);
-        },
+    return Navigator.of(context).push(
+      CupertinoPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => CreatePostModal(
+          initialMode: initialMode,
+          onSubmitPost: onSubmitPost,
+        ),
       ),
     );
   }
@@ -95,6 +86,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
     super.initState();
     _postMode = widget.initialMode;
     _captionController.addListener(_checkSellingIntent);
+    _captionController.addListener(() => setState(() {}));
   }
 
   @override
@@ -167,13 +159,6 @@ class _CreatePostModalState extends State<CreatePostModal> {
 
     final caption = _captionController.text.trim();
     if (caption.isEmpty && _images.isEmpty && _productTitleController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Tuliskan sesuatu atau tambahkan foto terlebih dahulu'),
-          duration: Duration(seconds: 2),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
       return;
     }
 
@@ -196,6 +181,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
     };
 
     widget.onSubmitPost?.call(postData);
+    Navigator.of(context).pop();
   }
 
   void _handleCancel() {
@@ -204,11 +190,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
         _images.isNotEmpty;
 
     if (!hasContent) {
-      if (widget.onClose != null) {
-        widget.onClose!();
-      } else {
-        Navigator.of(context).pop();
-      }
+      Navigator.of(context).pop();
       return;
     }
 
@@ -222,11 +204,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
             isDestructiveAction: true,
             onPressed: () {
               Navigator.of(context).pop();
-              if (widget.onClose != null) {
-                widget.onClose!();
-              } else {
-                Navigator.of(context).pop();
-              }
+              Navigator.of(context).pop();
             },
             child: const Text('Buang'),
           ),
@@ -239,97 +217,159 @@ class _CreatePostModalState extends State<CreatePostModal> {
     );
   }
 
+  bool get _canSubmit {
+    return _captionController.text.trim().isNotEmpty ||
+        _images.isNotEmpty ||
+        _productTitleController.text.trim().isNotEmpty;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.sizeOf(context).height * 0.92,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // 1. Header Bar: Batal | Judul Modal | Drafts / Actions
-          _buildHeaderBar(context),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        top: true,
+        bottom: true,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // 1. Top Header Bar (Matching Image #2)
+            _buildHeaderBar(context),
 
-          // 2. Scrollable Body Content
-          Expanded(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Smart Intent Detection Banner
-                  if (_showSellingIntentBanner) _buildSellingIntentBanner(),
+            // 2. Scrollable Body Area with Vertical Thread Connector Line
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Smart Intent Detection Banner
+                    if (_showSellingIntentBanner) _buildSellingIntentBanner(),
 
-                  // Author Header Line (Avatar + Username + Topic Tag Dropdown)
-                  _buildAuthorLine(),
+                    // Main Thread Block (Left Avatar + Connector Line | Right Editor)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Left Column: Avatar & Vertical Thread Connector Line
+                        Column(
+                          children: [
+                            // Author Avatar
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(18.0),
+                              child: Image.network(
+                                widget.currentUserAvatar,
+                                width: 36.0,
+                                height: 36.0,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) => Container(
+                                  width: 36.0,
+                                  height: 36.0,
+                                  color: const Color(0xFFF1F5F9),
+                                  child: const Icon(
+                                    Icons.person_rounded,
+                                    size: 20.0,
+                                    color: AppColors.muted,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 6.0),
 
-                  const SizedBox(height: 12.0),
+                            // Vertical Thread Connector Line
+                            Container(
+                              width: 2.0,
+                              height: 120.0,
+                              color: const Color(0xFFE2E8F0),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 12.0),
 
-                  // Main Textarea
-                  _buildMainTextInput(),
+                        // Right Column: Author Header, Textarea, Attached Content, Toolbar
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Author Name + Topic Picker
+                              _buildAuthorAndTopicLine(),
 
-                  // Product Specific Selling Fields (if postMode == product)
-                  if (_postMode == PostMode.product) ...[
-                    const SizedBox(height: 16.0),
-                    _buildProductFields(),
+                              const SizedBox(height: 8.0),
+
+                              // Main Textarea ("Apa yang baru?")
+                              _buildMainTextInput(),
+
+                              // Product Fields (if postMode == product)
+                              if (_postMode == PostMode.product) ...[
+                                const SizedBox(height: 12.0),
+                                _buildProductFields(),
+                              ],
+
+                              // Attached Images Horizontal Carousel
+                              if (_images.isNotEmpty) ...[
+                                const SizedBox(height: 12.0),
+                                _buildImagesPreview(),
+                              ],
+
+                              // Selected GIF Preview
+                              if (_selectedGif != null) ...[
+                                const SizedBox(height: 10.0),
+                                _buildGifPreview(),
+                              ],
+
+                              // Selected Location Chip
+                              if (_selectedLocation != null) ...[
+                                const SizedBox(height: 8.0),
+                                _buildLocationChip(),
+                              ],
+
+                              // Poll Builder Card
+                              if (_showPoll) ...[
+                                const SizedBox(height: 12.0),
+                                _buildPollBuilder(),
+                              ],
+
+                              const SizedBox(height: 12.0),
+
+                              // 7-Icon Media Toolbar (Row 1)
+                              _buildMediaIconsRow(),
+
+                              const SizedBox(height: 8.0),
+
+                              // "Jual Barang" Switch Pill (Row 2 - Anti-Overflow)
+                              _buildSellingSwitchPill(),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    // Sub-Threads Chain (if any)
+                    if (_subThreads.isNotEmpty) ...[
+                      const SizedBox(height: 12.0),
+                      _buildSubThreadsChain(),
+                    ],
+
+                    const SizedBox(height: 8.0),
+
+                    // Sub-Thread Continuation Trigger ("Tambahkan ke utas")
+                    _buildSubThreadTrigger(),
+
+                    const SizedBox(height: 40.0),
                   ],
-
-                  // Attached Images Horizontal Carousel
-                  if (_images.isNotEmpty) ...[
-                    const SizedBox(height: 14.0),
-                    _buildImagesPreview(),
-                  ],
-
-                  // Selected GIF Preview
-                  if (_selectedGif != null) ...[
-                    const SizedBox(height: 12.0),
-                    _buildGifPreview(),
-                  ],
-
-                  // Selected Location Chip
-                  if (_selectedLocation != null) ...[
-                    const SizedBox(height: 10.0),
-                    _buildLocationChip(),
-                  ],
-
-                  // Poll Builder Card
-                  if (_showPoll) ...[
-                    const SizedBox(height: 14.0),
-                    _buildPollBuilder(),
-                  ],
-
-                  // 7-Icon Media Toolbar
-                  const SizedBox(height: 16.0),
-                  _buildMediaToolbar(),
-
-                  // Sub-Thread Chained Continuation ("Tambahkan ke utas")
-                  if (_subThreads.isNotEmpty) ...[
-                    const SizedBox(height: 16.0),
-                    _buildSubThreadsChain(),
-                  ],
-
-                  // Button "Tambahkan ke utas"
-                  const SizedBox(height: 12.0),
-                  _buildAddSubThreadButton(),
-
-                  const SizedBox(height: 40.0),
-                ],
+                ),
               ),
             ),
-          ),
 
-          // 3. Pinned Bottom Footer Bar (Privacy Selector + Kumo Submit Button)
-          _buildFooterBar(),
-        ],
+            // 3. Pinned Bottom Footer Bar (Privacy Selector + Posting Pill Button)
+            _buildFooterBar(),
+          ],
+        ),
       ),
     );
   }
 
-  // 1. Header Bar
+  // 1. Top Header Bar (Matching Image #2: Batal | Utas Baru | Drafts + More options)
   Widget _buildHeaderBar(BuildContext context) {
     return Container(
       height: 52.0,
@@ -342,7 +382,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Batal
+          // Left: Batal
           GestureDetector(
             onTap: _handleCancel,
             behavior: HitTestBehavior.opaque,
@@ -352,187 +392,115 @@ class _CreatePostModalState extends State<CreatePostModal> {
                 'Batal',
                 style: TextStyle(
                   fontSize: 15.0,
-                  color: AppColors.ink,
+                  color: Color(0xFF332F2D),
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ),
           ),
 
-          // Title
+          // Center: Title ("Utas Baru")
           Text(
-            _postMode == PostMode.thread ? 'Utas Baru' : 'Jual Produk Baru',
+            _postMode == PostMode.thread ? 'Utas Baru' : 'Jual Produk',
             style: const TextStyle(
               fontSize: 16.0,
               fontWeight: FontWeight.w700,
               color: AppColors.ink,
+              letterSpacing: -0.3,
             ),
           ),
 
-          // Right: Action / Draft Indicator
-          IconButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Draft postingan otomatis tersimpan'),
-                  duration: Duration(seconds: 2),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            },
-            icon: const Icon(
-              CupertinoIcons.doc_text,
-              size: 20.0,
-              color: AppColors.muted,
-            ),
-            tooltip: 'Drafts',
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Smart Selling Intent Banner
-  Widget _buildSellingIntentBanner() {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12.0),
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-      decoration: BoxDecoration(
-        color: AppColors.primaryPastel,
-        borderRadius: BorderRadius.circular(12.0),
-        border: Border.all(color: const Color(0xFFBFDBFE)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.auto_awesome_rounded, size: 16.0, color: AppColors.primary),
-          const SizedBox(width: 8.0),
-          const Expanded(
-            child: Text(
-              'Ingin menjual barang/jasa?',
-              style: TextStyle(
-                fontSize: 12.5,
-                fontWeight: FontWeight.w600,
-                color: AppColors.primaryDark,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              HapticFeedback.selectionClick();
-              setState(() {
-                _postMode = PostMode.product;
-                _showSellingIntentBanner = false;
-              });
-            },
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              backgroundColor: AppColors.primary,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-            ),
-            child: const Text(
-              'Beralih ke Jual',
-              style: TextStyle(
-                fontSize: 11.5,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Author Line (Avatar, Username, Topic Chip)
-  Widget _buildAuthorLine() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        // Avatar
-        ClipRRect(
-          borderRadius: BorderRadius.circular(18.0),
-          child: Image.network(
-            widget.currentUserAvatar,
-            width: 36.0,
-            height: 36.0,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) => Container(
-              width: 36.0,
-              height: 36.0,
-              color: const Color(0xFFF1F5F9),
-              child: const Icon(Icons.person_rounded, size: 20.0, color: AppColors.muted),
-            ),
-          ),
-        ),
-        const SizedBox(width: 10.0),
-
-        // Username + Topic
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          // Right: Drafts Document Icon + More Options ("...")
+          Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                widget.currentUsername,
-                style: const TextStyle(
-                  fontSize: 14.5,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.ink,
+              IconButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Draft postingan tersimpan otomatis'),
+                      duration: Duration(seconds: 1),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                },
+                icon: const Icon(
+                  CupertinoIcons.doc_text,
+                  size: 20.0,
+                  color: AppColors.slateInk,
                 ),
+                padding: const EdgeInsets.all(4.0),
+                constraints: const BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+                tooltip: 'Drafts',
               ),
-              const SizedBox(height: 2.0),
-
-              // Topic Chip Dropdown Trigger
-              GestureDetector(
-                onTap: _showTopicPickerBottomSheet,
-                behavior: HitTestBehavior.opaque,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      _selectedTopic != null
-                          ? '#${_selectedTopic!.name}'
-                          : 'Komunitas atau topik',
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        color: _selectedTopic != null ? AppColors.primary : AppColors.muted,
-                        fontWeight: _selectedTopic != null ? FontWeight.w600 : FontWeight.w400,
-                      ),
-                    ),
-                    const SizedBox(width: 2.0),
-                    const Icon(
-                      Icons.chevron_right_rounded,
-                      size: 14.0,
-                      color: AppColors.muted,
-                    ),
-                  ],
+              const SizedBox(width: 4.0),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(
+                  CupertinoIcons.ellipsis,
+                  size: 20.0,
+                  color: AppColors.slateInk,
                 ),
+                padding: const EdgeInsets.all(4.0),
+                constraints: const BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+                tooltip: 'Opsi Lainnya',
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Author Name + Topic Tag Line
+  Widget _buildAuthorAndTopicLine() {
+    return Row(
+      children: [
+        Text(
+          widget.currentUsername,
+          style: const TextStyle(
+            fontSize: 14.5,
+            fontWeight: FontWeight.w700,
+            color: AppColors.ink,
+            letterSpacing: -0.2,
+          ),
+        ),
+        const SizedBox(width: 6.0),
+        const Icon(Icons.chevron_right_rounded, size: 14.0, color: AppColors.muted),
+        const SizedBox(width: 2.0),
+        GestureDetector(
+          onTap: _showTopicPickerBottomSheet,
+          behavior: HitTestBehavior.opaque,
+          child: Text(
+            _selectedTopic != null ? '#${_selectedTopic!.name}' : 'Komunitas atau topik',
+            style: TextStyle(
+              fontSize: 13.0,
+              color: _selectedTopic != null ? AppColors.primary : const Color(0xFF64748B),
+              fontWeight: _selectedTopic != null ? FontWeight.w600 : FontWeight.w400,
+            ),
           ),
         ),
       ],
     );
   }
 
-  // Main Textarea
+  // Main Textarea ("Apa yang baru?")
   Widget _buildMainTextInput() {
     return TextField(
       controller: _captionController,
       maxLines: null,
       keyboardType: TextInputType.multiline,
       style: const TextStyle(
-        fontSize: 15.5,
+        fontSize: 15.0,
         color: AppColors.ink,
         height: 1.4,
       ),
       decoration: InputDecoration(
         hintText: _postMode == PostMode.thread
             ? 'Apa yang baru?'
-            : 'Ceritakan detail barang atau jasamu...',
+            : 'Ceritakan tentang barang atau jasamu...',
         hintStyle: const TextStyle(
-          fontSize: 15.5,
+          fontSize: 15.0,
           color: Color(0xFF94A3B8),
         ),
         border: InputBorder.none,
@@ -541,13 +509,204 @@ class _CreatePostModalState extends State<CreatePostModal> {
     );
   }
 
+  // 7-Icon Media Toolbar (Row 1 - Matching Image #2)
+  Widget _buildMediaIconsRow() {
+    return Row(
+      children: [
+        // 1. Galeri Foto
+        _MediaIconButton(
+          icon: CupertinoIcons.photo,
+          tooltip: 'Foto',
+          onTap: _handlePickImage,
+        ),
+        // 2. GIF
+        _MediaIconButton(
+          icon: Icons.gif_box_outlined,
+          tooltip: 'GIF',
+          onTap: _showGifPickerBottomSheet,
+        ),
+        // 3. Emoji
+        _MediaIconButton(
+          icon: CupertinoIcons.smiley,
+          tooltip: 'Emoji',
+          onTap: _showEmojiPickerBottomSheet,
+        ),
+        // 4. Polling
+        _MediaIconButton(
+          icon: CupertinoIcons.chart_bar_square,
+          tooltip: 'Polling',
+          onTap: () => setState(() => _showPoll = !_showPoll),
+        ),
+        // 5. Topik / Tags
+        _MediaIconButton(
+          icon: Icons.scatter_plot_rounded,
+          tooltip: 'Topik',
+          onTap: _showTopicPickerBottomSheet,
+        ),
+        // 6. Lokasi COD
+        _MediaIconButton(
+          icon: CupertinoIcons.location,
+          tooltip: 'Lokasi COD',
+          onTap: _showLocationPickerBottomSheet,
+        ),
+        // 7. Audio / Music Note
+        _MediaIconButton(
+          icon: CupertinoIcons.music_note_2,
+          tooltip: 'Audio',
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Audio clip segera hadir'),
+                duration: Duration(seconds: 1),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  // "Jual Barang" Switch Pill (Row 2 - Matching Image #2)
+  Widget _buildSellingSwitchPill() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF1F5F9), // Soft neutral pill bg
+        borderRadius: BorderRadius.circular(16.0),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Transform.scale(
+            scale: 0.75,
+            child: CupertinoSwitch(
+              value: _postMode == PostMode.product,
+              activeTrackColor: AppColors.primary,
+              onChanged: (val) {
+                HapticFeedback.selectionClick();
+                setState(() {
+                  _postMode = val ? PostMode.product : PostMode.thread;
+                });
+              },
+            ),
+          ),
+          const SizedBox(width: 2.0),
+          Text(
+            'Jual Barang',
+            style: TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+              color: _postMode == PostMode.product ? AppColors.primary : const Color(0xFF475569),
+            ),
+          ),
+          const SizedBox(width: 4.0),
+        ],
+      ),
+    );
+  }
+
+  // Sub-Thread Continuation Trigger ("Tambahkan ke utas")
+  Widget _buildSubThreadTrigger() {
+    return GestureDetector(
+      onTap: _handleAddSubThread,
+      behavior: HitTestBehavior.opaque,
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12.0),
+            child: Image.network(
+              widget.currentUserAvatar,
+              width: 24.0,
+              height: 24.0,
+              fit: BoxFit.cover,
+            ),
+          ),
+          const SizedBox(width: 14.0),
+          const Text(
+            'Tambahkan ke utas',
+            style: TextStyle(
+              fontSize: 14.0,
+              color: Color(0xFF94A3B8),
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Pinned Bottom Footer Bar (Matching Image #2)
+  Widget _buildFooterBar() {
+    final canSubmit = _canSubmit;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          top: BorderSide(color: Color(0xFFF1F5F9), width: 1.0),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Left: "Siapa pun dapat membalas & mengutip"
+          GestureDetector(
+            onTap: _showPrivacyPickerBottomSheet,
+            behavior: HitTestBehavior.opaque,
+            child: Text(
+              _audiencePrivacy,
+              style: const TextStyle(
+                fontSize: 12.5,
+                color: Color(0xFF94A3B8),
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+
+          // Right: "Posting" / "Jual" Pill Button
+          GestureDetector(
+            onTap: canSubmit ? _handleSubmit : null,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              padding: const EdgeInsets.symmetric(horizontal: 22.0, vertical: 9.0),
+              decoration: BoxDecoration(
+                color: canSubmit ? AppColors.primary : const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(20.0),
+                border: Border.all(
+                  color: canSubmit ? AppColors.primaryDark : const Color(0xFFE2E8F0),
+                  width: 1.0,
+                ),
+              ),
+              child: _isSubmitting
+                  ? const SizedBox(
+                      width: 14.0,
+                      height: 14.0,
+                      child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white),
+                    )
+                  : Text(
+                      _postMode == PostMode.thread ? 'Posting' : 'Jual',
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.w700,
+                        color: canSubmit ? Colors.white : const Color(0xFF94A3B8),
+                      ),
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   // Product E-Commerce Fields
   Widget _buildProductFields() {
     return Container(
-      padding: const EdgeInsets.all(14.0),
+      padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(16.0),
+        borderRadius: BorderRadius.circular(14.0),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Column(
@@ -555,25 +714,21 @@ class _CreatePostModalState extends State<CreatePostModal> {
         children: [
           const Text(
             'Informasi Produk & COD SMKN 8',
-            style: TextStyle(
-              fontSize: 13.0,
-              fontWeight: FontWeight.w700,
-              color: AppColors.slateInk,
-            ),
+            style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.slateInk),
           ),
-          const SizedBox(height: 12.0),
+          const SizedBox(height: 10.0),
 
           // Nama Produk
           TextField(
             controller: _productTitleController,
-            style: const TextStyle(fontSize: 14.0, color: AppColors.ink),
+            style: const TextStyle(fontSize: 13.5, color: AppColors.ink),
             decoration: _buildInputDecoration(
               label: 'Nama Produk / Jasa',
-              hint: 'e.g. Seragam Batik SMKN 8, Jasa Logo DKV',
+              hint: 'e.g. Seragam Batik SMKN 8, Jasa Desain',
               icon: CupertinoIcons.tag,
             ),
           ),
-          const SizedBox(height: 10.0),
+          const SizedBox(height: 8.0),
 
           // Harga & Stok
           Row(
@@ -583,7 +738,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                 child: TextField(
                   controller: _priceController,
                   keyboardType: TextInputType.number,
-                  style: const TextStyle(fontSize: 14.0, color: AppColors.ink),
+                  style: const TextStyle(fontSize: 13.5, color: AppColors.ink),
                   decoration: _buildInputDecoration(
                     label: 'Harga (Rp)',
                     hint: '25.000',
@@ -591,13 +746,13 @@ class _CreatePostModalState extends State<CreatePostModal> {
                   ),
                 ),
               ),
-              const SizedBox(width: 10.0),
+              const SizedBox(width: 8.0),
               Expanded(
                 flex: 2,
                 child: TextField(
                   controller: _stockController,
                   keyboardType: TextInputType.number,
-                  style: const TextStyle(fontSize: 14.0, color: AppColors.ink),
+                  style: const TextStyle(fontSize: 13.5, color: AppColors.ink),
                   decoration: _buildInputDecoration(
                     label: 'Stok',
                     hint: '1',
@@ -607,36 +762,34 @@ class _CreatePostModalState extends State<CreatePostModal> {
               ),
             ],
           ),
-          const SizedBox(height: 10.0),
+          const SizedBox(height: 8.0),
 
-          // Lokasi Titik Temu COD Kampus SMKN 8
+          // Lokasi Titik Temu COD
           GestureDetector(
             onTap: _showLocationPickerBottomSheet,
             behavior: HitTestBehavior.opaque,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(12.0),
+                borderRadius: BorderRadius.circular(10.0),
                 border: Border.all(color: const Color(0xFFE2E8F0)),
               ),
               child: Row(
                 children: [
-                  const Icon(CupertinoIcons.location, size: 16.0, color: AppColors.primary),
-                  const SizedBox(width: 8.0),
+                  const Icon(CupertinoIcons.location, size: 15.0, color: AppColors.primary),
+                  const SizedBox(width: 6.0),
                   Expanded(
                     child: Text(
-                      _selectedLocation != null
-                          ? _selectedLocation!.name
-                          : 'Pilih Titik Temu COD Sekolah...',
+                      _selectedLocation != null ? _selectedLocation!.name : 'Pilih Titik Temu COD...',
                       style: TextStyle(
-                        fontSize: 13.5,
+                        fontSize: 13.0,
                         color: _selectedLocation != null ? AppColors.ink : AppColors.muted,
                         fontWeight: _selectedLocation != null ? FontWeight.w600 : FontWeight.w400,
                       ),
                     ),
                   ),
-                  const Icon(Icons.chevron_right_rounded, size: 16.0, color: AppColors.muted),
+                  const Icon(Icons.chevron_right_rounded, size: 15.0, color: AppColors.muted),
                 ],
               ),
             ),
@@ -653,28 +806,28 @@ class _CreatePostModalState extends State<CreatePostModal> {
   }) {
     return InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(fontSize: 12.5, color: AppColors.muted),
+      labelStyle: const TextStyle(fontSize: 12.0, color: AppColors.muted),
       hintText: hint,
-      hintStyle: const TextStyle(fontSize: 13.5, color: Color(0xFFCBD5E1)),
-      prefixIcon: Icon(icon, size: 16.0, color: AppColors.muted),
+      hintStyle: const TextStyle(fontSize: 13.0, color: Color(0xFFCBD5E1)),
+      prefixIcon: Icon(icon, size: 15.0, color: AppColors.muted),
       filled: true,
       fillColor: Colors.white,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.0),
+        borderRadius: BorderRadius.circular(10.0),
         borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.0),
+        borderRadius: BorderRadius.circular(10.0),
         borderSide: const BorderSide(color: AppColors.primary),
       ),
     );
   }
 
-  // Attached Images Preview List
+  // Attached Images Preview
   Widget _buildImagesPreview() {
     return SizedBox(
-      height: 100.0,
+      height: 90.0,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
@@ -682,22 +835,21 @@ class _CreatePostModalState extends State<CreatePostModal> {
         separatorBuilder: (_, __) => const SizedBox(width: 8.0),
         itemBuilder: (context, index) {
           if (index == _images.length) {
-            // Add More Button
             return GestureDetector(
               onTap: _handlePickImage,
               child: Container(
-                width: 90.0,
+                width: 80.0,
                 decoration: BoxDecoration(
                   color: const Color(0xFFF1F5F9),
-                  borderRadius: BorderRadius.circular(12.0),
+                  borderRadius: BorderRadius.circular(10.0),
                   border: Border.all(color: const Color(0xFFE2E8F0)),
                 ),
                 child: const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(CupertinoIcons.camera, size: 22.0, color: AppColors.muted),
-                    SizedBox(height: 4.0),
-                    Text('Tambah', style: TextStyle(fontSize: 11.0, color: AppColors.muted)),
+                    Icon(CupertinoIcons.camera, size: 20.0, color: AppColors.muted),
+                    SizedBox(height: 2.0),
+                    Text('Tambah', style: TextStyle(fontSize: 10.5, color: AppColors.muted)),
                   ],
                 ),
               ),
@@ -708,26 +860,18 @@ class _CreatePostModalState extends State<CreatePostModal> {
           return Stack(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(12.0),
-                child: Image.network(
-                  imgUrl,
-                  width: 100.0,
-                  height: 100.0,
-                  fit: BoxFit.cover,
-                ),
+                borderRadius: BorderRadius.circular(10.0),
+                child: Image.network(imgUrl, width: 90.0, height: 90.0, fit: BoxFit.cover),
               ),
               Positioned(
-                top: 4.0,
-                right: 4.0,
+                top: 3.0,
+                right: 3.0,
                 child: GestureDetector(
                   onTap: () => _handleRemoveImage(index),
                   child: Container(
-                    padding: const EdgeInsets.all(3.0),
-                    decoration: const BoxDecoration(
-                      color: Colors.black54,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.close, size: 14.0, color: Colors.white),
+                    padding: const EdgeInsets.all(2.0),
+                    decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+                    child: const Icon(Icons.close, size: 12.0, color: Colors.white),
                   ),
                 ),
               ),
@@ -743,25 +887,17 @@ class _CreatePostModalState extends State<CreatePostModal> {
     return Stack(
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(12.0),
-          child: Image.network(
-            _selectedGif!.url,
-            height: 140.0,
-            width: double.infinity,
-            fit: BoxFit.cover,
-          ),
+          borderRadius: BorderRadius.circular(10.0),
+          child: Image.network(_selectedGif!.url, height: 120.0, width: double.infinity, fit: BoxFit.cover),
         ),
         Positioned(
-          top: 6.0,
-          right: 6.0,
+          top: 4.0,
+          right: 4.0,
           child: GestureDetector(
             onTap: () => setState(() => _selectedGif = null),
             child: Container(
-              padding: const EdgeInsets.all(4.0),
-              decoration: const BoxDecoration(
-                color: Colors.black54,
-                shape: BoxShape.circle,
-              ),
+              padding: const EdgeInsets.all(3.0),
+              decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
               child: const Icon(Icons.close, size: 14.0, color: Colors.white),
             ),
           ),
@@ -770,45 +906,41 @@ class _CreatePostModalState extends State<CreatePostModal> {
     );
   }
 
-  // Selected Location Chip
+  // Location Chip
   Widget _buildLocationChip() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       decoration: BoxDecoration(
         color: AppColors.primaryPastel,
-        borderRadius: BorderRadius.circular(20.0),
+        borderRadius: BorderRadius.circular(14.0),
         border: Border.all(color: const Color(0xFFBFDBFE)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(CupertinoIcons.location_solid, size: 14.0, color: AppColors.primary),
+          const Icon(CupertinoIcons.location_solid, size: 12.0, color: AppColors.primary),
           const SizedBox(width: 4.0),
           Text(
             _selectedLocation!.name,
-            style: const TextStyle(
-              fontSize: 12.0,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primaryDark,
-            ),
+            style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.primaryDark),
           ),
           const SizedBox(width: 4.0),
           GestureDetector(
             onTap: () => setState(() => _selectedLocation = null),
-            child: const Icon(Icons.close, size: 14.0, color: AppColors.primaryDark),
+            child: const Icon(Icons.close, size: 12.0, color: AppColors.primaryDark),
           ),
         ],
       ),
     );
   }
 
-  // Poll Builder Card
+  // Poll Builder
   Widget _buildPollBuilder() {
     return Container(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.all(10.0),
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(14.0),
+        borderRadius: BorderRadius.circular(12.0),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Column(
@@ -817,36 +949,27 @@ class _CreatePostModalState extends State<CreatePostModal> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Row(
-                children: [
-                  Icon(CupertinoIcons.chart_bar_square, size: 16.0, color: AppColors.primary),
-                  SizedBox(width: 6.0),
-                  Text(
-                    'Polling Komunitas',
-                    style: TextStyle(fontSize: 13.0, fontWeight: FontWeight.w700),
-                  ),
-                ],
-              ),
+              const Text('Polling Komunitas', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
               GestureDetector(
                 onTap: () => setState(() => _showPoll = false),
-                child: const Icon(Icons.close, size: 16.0, color: AppColors.muted),
+                child: const Icon(Icons.close, size: 14.0, color: AppColors.muted),
               ),
             ],
           ),
-          const SizedBox(height: 10.0),
+          const SizedBox(height: 8.0),
           for (int i = 0; i < _pollOptionControllers.length; i++) ...[
             Padding(
               padding: const EdgeInsets.only(bottom: 6.0),
               child: TextField(
                 controller: _pollOptionControllers[i],
-                style: const TextStyle(fontSize: 13.5),
+                style: const TextStyle(fontSize: 13.0),
                 decoration: InputDecoration(
                   hintText: 'Pilihan ${i + 1}...',
                   filled: true,
                   fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+                    borderRadius: BorderRadius.circular(8.0),
                     borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
                   ),
                 ),
@@ -858,255 +981,104 @@ class _CreatePostModalState extends State<CreatePostModal> {
     );
   }
 
-  // 7-Icon Media Toolbar
-  Widget _buildMediaToolbar() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        // Left: 6 Action Icons
-        Row(
-          children: [
-            _ToolbarIconButton(
-              icon: CupertinoIcons.photo,
-              tooltip: 'Galeri Foto',
-              onTap: _handlePickImage,
-            ),
-            _ToolbarIconButton(
-              icon: Icons.gif_box_outlined,
-              tooltip: 'GIF',
-              onTap: _showGifPickerBottomSheet,
-            ),
-            _ToolbarIconButton(
-              icon: CupertinoIcons.smiley,
-              tooltip: 'Emoji',
-              onTap: _showEmojiPickerBottomSheet,
-            ),
-            _ToolbarIconButton(
-              icon: CupertinoIcons.chart_bar_square,
-              tooltip: 'Polling',
-              onTap: () {
-                HapticFeedback.selectionClick();
-                setState(() => _showPoll = !_showPoll);
-              },
-            ),
-            _ToolbarIconButton(
-              icon: CupertinoIcons.location,
-              tooltip: 'Lokasi COD',
-              onTap: _showLocationPickerBottomSheet,
-            ),
-            _ToolbarIconButton(
-              icon: CupertinoIcons.mic,
-              tooltip: 'Voice Note',
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Perekam suara segera hadir'),
-                    duration: Duration(seconds: 1),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-
-        // Right: Switch Toggle "Jual Barang"
-        Row(
-          children: [
-            Text(
-              'Jual Barang',
-              style: TextStyle(
-                fontSize: 12.0,
-                fontWeight: FontWeight.w600,
-                color: _postMode == PostMode.product ? AppColors.primary : AppColors.muted,
-              ),
-            ),
-            const SizedBox(width: 4.0),
-            CupertinoSwitch(
-              value: _postMode == PostMode.product,
-              activeTrackColor: AppColors.primary,
-              onChanged: (val) {
-                HapticFeedback.selectionClick();
-                setState(() {
-                  _postMode = val ? PostMode.product : PostMode.thread;
-                });
-              },
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  // Sub-Thread Chained Items
+  // Sub-Thread Chain
   Widget _buildSubThreadsChain() {
     return Column(
       children: [
         for (int i = 0; i < _subThreads.length; i++) ...[
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  children: [
-                    Container(
-                      width: 2.0,
-                      height: 40.0,
-                      color: const Color(0xFFCBD5E1),
-                    ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12.0),
-                      child: Image.network(
-                        widget.currentUserAvatar,
-                        width: 24.0,
-                        height: 24.0,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 10.0),
-                Expanded(
-                  child: TextField(
-                    onChanged: (val) => _subThreads[i].caption = val,
-                    maxLines: null,
-                    decoration: InputDecoration(
-                      hintText: 'Lanjutkan utas (${i + 2})...',
-                      hintStyle: const TextStyle(fontSize: 14.0, color: Color(0xFF94A3B8)),
-                      border: InputBorder.none,
-                    ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                children: [
+                  Container(width: 2.0, height: 36.0, color: const Color(0xFFE2E8F0)),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12.0),
+                    child: Image.network(widget.currentUserAvatar, width: 24.0, height: 24.0, fit: BoxFit.cover),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 10.0),
+              Expanded(
+                child: TextField(
+                  onChanged: (val) => _subThreads[i].caption = val,
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    hintText: 'Lanjutkan utas (${i + 2})...',
+                    hintStyle: const TextStyle(fontSize: 13.5, color: Color(0xFF94A3B8)),
+                    border: InputBorder.none,
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.close, size: 16.0, color: AppColors.muted),
-                  onPressed: () {
-                    HapticFeedback.selectionClick();
-                    setState(() => _subThreads.removeAt(i));
-                  },
-                ),
-              ],
-            ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close, size: 14.0, color: AppColors.muted),
+                onPressed: () => setState(() => _subThreads.removeAt(i)),
+              ),
+            ],
           ),
         ],
       ],
     );
   }
 
-  // Add Sub-thread trigger
-  Widget _buildAddSubThreadButton() {
-    return GestureDetector(
-      onTap: _handleAddSubThread,
-      behavior: HitTestBehavior.opaque,
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10.0),
-            child: Image.network(
-              widget.currentUserAvatar,
-              width: 20.0,
-              height: 20.0,
-              fit: BoxFit.cover,
-            ),
-          ),
-          const SizedBox(width: 10.0),
-          const Text(
-            'Tambahkan ke utas',
-            style: TextStyle(
-              fontSize: 13.5,
-              color: Color(0xFF94A3B8),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 3. Pinned Bottom Footer Bar
-  Widget _buildFooterBar() {
+  // Selling Intent Banner
+  Widget _buildSellingIntentBanner() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          top: BorderSide(color: Color(0xFFF1F5F9), width: 1.0),
-        ),
+      margin: const EdgeInsets.only(bottom: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+      decoration: BoxDecoration(
+        color: AppColors.primaryPastel,
+        borderRadius: BorderRadius.circular(10.0),
+        border: Border.all(color: const Color(0xFFBFDBFE)),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Left: Audience Privacy Selector
-          GestureDetector(
-            onTap: _showPrivacyPickerBottomSheet,
-            behavior: HitTestBehavior.opaque,
+          const Icon(Icons.auto_awesome_rounded, size: 15.0, color: AppColors.primary),
+          const SizedBox(width: 6.0),
+          const Expanded(
             child: Text(
-              _audiencePrivacy,
-              style: const TextStyle(
-                fontSize: 12.0,
-                color: Color(0xFF94A3B8),
-                fontWeight: FontWeight.w500,
-              ),
+              'Ingin menjual barang?',
+              style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w600, color: AppColors.primaryDark),
             ),
           ),
-
-          // Right: Kumo Primary Blue Submit Button
-          ElevatedButton(
-            onPressed: _isSubmitting ? null : _handleSubmit,
-            style: ElevatedButton.styleFrom(
+          TextButton(
+            onPressed: () => setState(() {
+              _postMode = PostMode.product;
+              _showSellingIntentBanner = false;
+            }),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
               backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.0)),
             ),
-            child: _isSubmitting
-                ? const SizedBox(
-                    width: 16.0,
-                    height: 16.0,
-                    child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white),
-                  )
-                : Text(
-                    _postMode == PostMode.thread ? 'Posting' : 'Jual',
-                    style: const TextStyle(
-                      fontSize: 14.5,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+            child: const Text('Beralih ke Jual', style: TextStyle(fontSize: 11.0, color: Colors.white)),
           ),
         ],
       ),
     );
   }
 
-  // Bottom Sheets Helpers (Topic, Location, GIF, Emoji, Privacy)
+  // Bottom Sheets (Topic, Location, GIF, Emoji, Privacy)
   void _showTopicPickerBottomSheet() {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16.0))),
       builder: (context) => Container(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Pilih Topik Komunitas SMKN 8',
-              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 12.0),
+            const Text('Pilih Topik Komunitas', style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 10.0),
             for (var t in kPresetTopics) ...[
               ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(CupertinoIcons.number, color: AppColors.primary),
                 title: Text('#${t.name}', style: const TextStyle(fontWeight: FontWeight.w600)),
-                subtitle: t.subtitle != null ? Text(t.subtitle!) : null,
                 onTap: () {
-                  HapticFeedback.selectionClick();
                   setState(() => _selectedTopic = t);
                   Navigator.of(context).pop();
                 },
@@ -1122,20 +1094,15 @@ class _CreatePostModalState extends State<CreatePostModal> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16.0))),
       builder: (context) => Container(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Pilih Titik Temu COD Kampus SMKN 8',
-              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 12.0),
+            const Text('Pilih Titik Temu COD SMKN 8', style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 10.0),
             for (var p in kRichSchoolPlaces) ...[
               ListTile(
                 dense: true,
@@ -1144,7 +1111,6 @@ class _CreatePostModalState extends State<CreatePostModal> {
                 title: Text(p.name, style: const TextStyle(fontWeight: FontWeight.w600)),
                 subtitle: Text('${p.subtitle} · ${p.distance}'),
                 onTap: () {
-                  HapticFeedback.selectionClick();
                   setState(() => _selectedLocation = p);
                   Navigator.of(context).pop();
                 },
@@ -1160,43 +1126,28 @@ class _CreatePostModalState extends State<CreatePostModal> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16.0))),
       builder: (context) => Container(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Pilih GIF Populer',
-              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 12.0),
+            const Text('Pilih GIF Populer', style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 10.0),
             GridView.builder(
               shrinkWrap: true,
               itemCount: kPresetGifs.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 8.0,
-                mainAxisSpacing: 8.0,
-                childAspectRatio: 1.5,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 8, mainAxisSpacing: 8, childAspectRatio: 1.5),
+              itemBuilder: (context, idx) => GestureDetector(
+                onTap: () {
+                  setState(() => _selectedGif = kPresetGifs[idx]);
+                  Navigator.of(context).pop();
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Image.network(kPresetGifs[idx].url, fit: BoxFit.cover),
+                ),
               ),
-              itemBuilder: (context, idx) {
-                final gif = kPresetGifs[idx];
-                return GestureDetector(
-                  onTap: () {
-                    HapticFeedback.selectionClick();
-                    setState(() => _selectedGif = gif);
-                    Navigator.of(context).pop();
-                  },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10.0),
-                    child: Image.network(gif.url, fit: BoxFit.cover),
-                  ),
-                );
-              },
             ),
           ],
         ),
@@ -1208,9 +1159,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16.0))),
       builder: (context) => Container(
         padding: const EdgeInsets.all(16.0),
         child: Wrap(
@@ -1220,11 +1169,10 @@ class _CreatePostModalState extends State<CreatePostModal> {
             for (var emoji in kPresetEmojis) ...[
               GestureDetector(
                 onTap: () {
-                  HapticFeedback.selectionClick();
                   _captionController.text += emoji;
                   Navigator.of(context).pop();
                 },
-                child: Text(emoji, style: const TextStyle(fontSize: 28.0)),
+                child: Text(emoji, style: const TextStyle(fontSize: 26.0)),
               ),
             ],
           ],
@@ -1237,9 +1185,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16.0))),
       builder: (context) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -1270,13 +1216,13 @@ class _CreatePostModalState extends State<CreatePostModal> {
   }
 }
 
-/// Small Circular Icon Button for Media Toolbar
-class _ToolbarIconButton extends StatelessWidget {
+/// Small Circular Icon Button for Media Toolbar (Matching Image #2)
+class _MediaIconButton extends StatelessWidget {
   final IconData icon;
   final String tooltip;
   final VoidCallback onTap;
 
-  const _ToolbarIconButton({
+  const _MediaIconButton({
     required this.icon,
     required this.tooltip,
     required this.onTap,
@@ -1284,12 +1230,20 @@ class _ToolbarIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: Icon(icon, size: 20.0, color: const Color(0xFF64748B)),
-      tooltip: tooltip,
-      onPressed: onTap,
-      padding: const EdgeInsets.all(6.0),
-      constraints: const BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.only(right: 12.0, top: 4.0, bottom: 4.0),
+        child: Icon(
+          icon,
+          size: 19.0,
+          color: const Color(0xFF64748B),
+        ),
+      ),
     );
   }
 }

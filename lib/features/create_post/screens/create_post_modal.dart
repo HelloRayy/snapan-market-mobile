@@ -379,83 +379,96 @@ class _CreatePostModalState extends State<CreatePostModal> {
     );
   }
 
-  // 1. Top Header Bar (Matching Image #2: Batal | Utas Baru | Drafts + More options)
+  // 1. Top Header Bar (Absolute Centered Title matching Image #1)
   Widget _buildHeaderBar(BuildContext context) {
     return Container(
       height: 52.0,
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       decoration: const BoxDecoration(
+        color: Colors.white,
         border: Border(
           bottom: BorderSide(color: Color(0xFFF1F5F9), width: 1.0),
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Stack(
+        alignment: Alignment.center,
         children: [
           // Left: Batal
-          GestureDetector(
-            onTap: _handleCancel,
-            behavior: HitTestBehavior.opaque,
-            child: const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(
-                'Batal',
-                style: TextStyle(
-                  fontSize: 15.0,
-                  color: Color(0xFF332F2D),
-                  fontWeight: FontWeight.w500,
+          Align(
+            alignment: Alignment.centerLeft,
+            child: GestureDetector(
+              onTap: _handleCancel,
+              behavior: HitTestBehavior.opaque,
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 2.0),
+                child: Text(
+                  'Batal',
+                  style: TextStyle(
+                    fontSize: 15.0,
+                    color: Color(0xFF1E293B), // Slate 800
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.2,
+                  ),
                 ),
               ),
             ),
           ),
 
-          // Center: Title ("Utas Baru")
+          // Center: Absolute Centered Title ("Utas Baru")
           Text(
             _postMode == PostMode.thread ? 'Utas Baru' : 'Jual Produk',
             style: const TextStyle(
               fontSize: 16.0,
               fontWeight: FontWeight.w700,
-              color: AppColors.ink,
+              color: Color(0xFF0F172A), // Slate 900
               letterSpacing: -0.3,
             ),
           ),
 
           // Right: Drafts Document Icon + More Options ("...")
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Draft postingan tersimpan otomatis'),
-                      duration: Duration(seconds: 1),
-                      behavior: SnackBarBehavior.floating,
+          Align(
+            alignment: Alignment.centerRight,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Draft postingan tersimpan otomatis'),
+                        duration: Duration(seconds: 1),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: const Padding(
+                    padding: EdgeInsets.all(6.0),
+                    child: Icon(
+                      CupertinoIcons.doc_text,
+                      size: 20.0,
+                      color: Color(0xFF334155), // Slate 700
                     ),
-                  );
-                },
-                icon: const Icon(
-                  CupertinoIcons.doc_text,
-                  size: 20.0,
-                  color: AppColors.slateInk,
+                  ),
                 ),
-                padding: const EdgeInsets.all(4.0),
-                constraints: const BoxConstraints(minWidth: 32.0, minHeight: 32.0),
-                tooltip: 'Drafts',
-              ),
-              const SizedBox(width: 4.0),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  CupertinoIcons.ellipsis,
-                  size: 20.0,
-                  color: AppColors.slateInk,
+                const SizedBox(width: 8.0),
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: const Padding(
+                    padding: EdgeInsets.all(6.0),
+                    child: Icon(
+                      CupertinoIcons.ellipsis,
+                      size: 20.0,
+                      color: Color(0xFF334155), // Slate 700
+                    ),
+                  ),
                 ),
-                padding: const EdgeInsets.all(4.0),
-                constraints: const BoxConstraints(minWidth: 32.0, minHeight: 32.0),
-                tooltip: 'Opsi Lainnya',
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

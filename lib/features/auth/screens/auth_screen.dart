@@ -207,7 +207,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   onBack: _handleBack,
                 ),
 
-                // Bottom Form Card
+                // Bottom Form Card (Styled like a modern Bottom Sheet)
                 Expanded(
                   child: Container(
                     width: double.infinity,
@@ -217,19 +217,42 @@ class _AuthScreenState extends State<AuthScreen> {
                         top: Radius.circular(32),
                       ),
                     ),
-                    child: RepaintBoundary(
-                      child: SingleChildScrollView(
-                        keyboardDismissBehavior:
-                            ScrollViewKeyboardDismissBehavior.onDrag,
-                        physics: const ClampingScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 28,
+                    child: Column(
+                      children: [
+                        // Drag Handle / Pill Indicator
+                        const SizedBox(height: 12),
+                        Center(
+                          child: Container(
+                            width: 38,
+                            height: 4.5,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFCBD5E1),
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                          ),
                         ),
-                        child: _authMode == AuthMode.login
-                            ? _buildLoginForm()
-                            : _buildRegisterForm(),
-                      ),
+                        const SizedBox(height: 4),
+
+                        // Scrollable Form Content
+                        Expanded(
+                          child: RepaintBoundary(
+                            child: SingleChildScrollView(
+                              keyboardDismissBehavior:
+                                  ScrollViewKeyboardDismissBehavior.onDrag,
+                              physics: const ClampingScrollPhysics(),
+                              padding: const EdgeInsets.fromLTRB(
+                                24,
+                                12,
+                                24,
+                                28,
+                              ),
+                              child: _authMode == AuthMode.login
+                                  ? _buildLoginForm()
+                                  : _buildRegisterForm(),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

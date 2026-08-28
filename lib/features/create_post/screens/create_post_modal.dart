@@ -289,7 +289,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                             // Vertical Thread Connector Line
                             Container(
                               width: 2.0,
-                              height: 120.0,
+                              height: 140.0, // Stretches smoothly along the spacious textarea
                               color: const Color(0xFFE2E8F0),
                             ),
                           ],
@@ -507,27 +507,33 @@ class _CreatePostModalState extends State<CreatePostModal> {
     );
   }
 
-  // Main Textarea ("Apa yang baru?")
+  // Main Textarea ("Apa yang baru?" with generous minHeight)
   Widget _buildMainTextInput() {
-    return TextField(
-      controller: _captionController,
-      maxLines: null,
-      keyboardType: TextInputType.multiline,
-      style: const TextStyle(
-        fontSize: 15.0,
-        color: AppColors.ink,
-        height: 1.4,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(
+        minHeight: 80.0, // Spacious writing area matching Threads
       ),
-      decoration: InputDecoration(
-        hintText: _postMode == PostMode.thread
-            ? 'Apa yang baru?'
-            : 'Ceritakan tentang barang atau jasamu...',
-        hintStyle: const TextStyle(
+      child: TextField(
+        controller: _captionController,
+        minLines: 3, // At least 3 lines of comfortable typing space
+        maxLines: null,
+        keyboardType: TextInputType.multiline,
+        style: const TextStyle(
           fontSize: 15.0,
-          color: Color(0xFF94A3B8),
+          color: AppColors.ink,
+          height: 1.4,
         ),
-        border: InputBorder.none,
-        contentPadding: EdgeInsets.zero,
+        decoration: InputDecoration(
+          hintText: _postMode == PostMode.thread
+              ? 'Apa yang baru?'
+              : 'Ceritakan tentang barang atau jasamu...',
+          hintStyle: const TextStyle(
+            fontSize: 15.0,
+            color: Color(0xFF94A3B8),
+          ),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.only(top: 2.0, bottom: 8.0),
+        ),
       ),
     );
   }

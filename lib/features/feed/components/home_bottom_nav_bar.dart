@@ -400,7 +400,7 @@ class _NavTabItemState extends State<_NavTabItem> {
 
     final iconWidget = Icon(
       iconData,
-      size: 24.0,
+      size: 28.0, // Enlarged from 24.0 to 28.0
       color: color,
     );
 
@@ -412,10 +412,10 @@ class _NavTabItemState extends State<_NavTabItem> {
       clipBehavior: Clip.none,
       children: [
         iconWidget,
-        // Red Notification Unread Badge (Threads style: 8px #FF3040 with 2px white ring)
+        // Red Notification Unread Badge (8px #FF3040 with 2px white ring)
         Positioned(
-          top: -0.5,
-          right: -1.0,
+          top: -1.5,
+          right: -2.5,
           child: Container(
             width: 8.0,
             height: 8.0,
@@ -435,8 +435,8 @@ class _NavTabItemState extends State<_NavTabItem> {
 
   Widget _buildProfileAvatar(bool isActive) {
     return Container(
-      width: 25.0,
-      height: 25.0,
+      width: 28.0,
+      height: 28.0,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
@@ -453,12 +453,12 @@ class _NavTabItemState extends State<_NavTabItem> {
             : null,
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(12.5),
+        borderRadius: BorderRadius.circular(14.0),
         child: widget.userAvatar != null && widget.userAvatar!.isNotEmpty
             ? Image.network(
                 widget.userAvatar!,
-                width: 23.0,
-                height: 23.0,
+                width: 25.5,
+                height: 25.5,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) =>
                     _buildAvatarFallback(isActive),
@@ -470,12 +470,12 @@ class _NavTabItemState extends State<_NavTabItem> {
 
   Widget _buildAvatarFallback(bool isActive) {
     return Container(
-      width: 23.0,
-      height: 23.0,
+      width: 25.5,
+      height: 25.5,
       color: const Color(0xFFF1F5F9),
       child: Icon(
         Icons.person_rounded,
-        size: 15.0,
+        size: 18.0,
         color: isActive ? AppColors.ink : const Color(0xFF94A3B8),
       ),
     );

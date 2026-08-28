@@ -530,7 +530,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
       ),
     );
   }
-  // 7-Icon Media Toolbar (Row 1 - Matching Image #2)
+  // 7-Icon Media Toolbar (Row 1 - Thumb Friendly)
   Widget _buildMediaIconsRow() {
     return Row(
       children: [
@@ -540,36 +540,42 @@ class _CreatePostModalState extends State<CreatePostModal> {
           tooltip: 'Foto',
           onTap: _handlePickImage,
         ),
+        const SizedBox(width: 2.0),
         // 2. GIF
         _MediaIconButton(
           icon: Icons.gif_box_outlined,
           tooltip: 'GIF',
           onTap: _showGifPickerBottomSheet,
         ),
+        const SizedBox(width: 2.0),
         // 3. Emoji
         _MediaIconButton(
           icon: CupertinoIcons.smiley,
           tooltip: 'Emoji',
           onTap: _showEmojiPickerBottomSheet,
         ),
+        const SizedBox(width: 2.0),
         // 4. Polling
         _MediaIconButton(
           icon: CupertinoIcons.chart_bar_square,
           tooltip: 'Polling',
           onTap: () => setState(() => _showPoll = !_showPoll),
         ),
+        const SizedBox(width: 2.0),
         // 5. Topik / Tags
         _MediaIconButton(
           icon: Icons.scatter_plot_rounded,
           tooltip: 'Topik',
           onTap: _showTopicPickerBottomSheet,
         ),
+        const SizedBox(width: 2.0),
         // 6. Lokasi COD
         _MediaIconButton(
           icon: CupertinoIcons.location,
           tooltip: 'Lokasi COD',
           onTap: _showLocationPickerBottomSheet,
         ),
+        const SizedBox(width: 2.0),
         // 7. Audio / Music Note
         _MediaIconButton(
           icon: CupertinoIcons.music_note_2,
@@ -1237,8 +1243,8 @@ class _CreatePostModalState extends State<CreatePostModal> {
   }
 }
 
-/// Small Circular Icon Button for Media Toolbar (Matching Image #2)
-class _MediaIconButton extends StatelessWidget {
+/// Thumb-Friendly 38x38px Action Icon Button for Media Toolbar
+class _MediaIconButton extends StatefulWidget {
   final IconData icon;
   final String tooltip;
   final VoidCallback onTap;
@@ -1250,19 +1256,42 @@ class _MediaIconButton extends StatelessWidget {
   });
 
   @override
+  State<_MediaIconButton> createState() => _MediaIconButtonState();
+}
+
+class _MediaIconButtonState extends State<_MediaIconButton> {
+  bool _isPressed = false;
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTapDown: (_) {
+        setState(() => _isPressed = true);
         HapticFeedback.selectionClick();
-        onTap();
       },
+      onTapUp: (_) => setState(() => _isPressed = false),
+      onTapCancel: () => setState(() => _isPressed = false),
+      onTap: widget.onTap,
       behavior: HitTestBehavior.opaque,
-      child: Padding(
-        padding: const EdgeInsets.only(right: 12.0, top: 4.0, bottom: 4.0),
-        child: Icon(
-          icon,
-          size: 19.0,
-          color: const Color(0xFF64748B),
+      child: AnimatedScale(
+        scale: _isPressed ? 0.90 : 1.0,
+        duration: const Duration(milliseconds: 60),
+        curve: Curves.easeOutCubic,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 100),
+          width: 36.0,
+          height: 36.0,
+          decoration: BoxDecoration(
+            color: _isPressed ? const Color(0x0F000000) : Colors.transparent,
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Center(
+            child: Icon(
+              widget.icon,
+              size: 21.5, // Crisp, easily visible icon size
+              color: _isPressed ? AppColors.ink : const Color(0xFF64748B),
+            ),
+          ),
         ),
       ),
     );

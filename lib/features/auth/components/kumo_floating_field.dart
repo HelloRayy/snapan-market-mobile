@@ -123,22 +123,35 @@ class _KumoFloatingFieldState extends State<KumoFloatingField>
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: hasError
-                          ? const Color(0xFFEF4444)
+                          ? const Color(0xFFEF4444) // Error Red
                           : _isFocused
                               ? const Color(0xFF1D64EC) // Kumo Blue Focus
                               : const Color(0xFFE2E8F0),
-                      width: _isFocused || hasError ? 1.6 : 1.2,
+                      width: hasError
+                          ? 1.6
+                          : _isFocused
+                              ? 1.6
+                              : 1.2,
                     ),
-                    boxShadow: _isFocused
+                    boxShadow: hasError
                         ? [
                             BoxShadow(
-                              color: const Color(0xFF1D64EC)
-                                  .withValues(alpha: 0.14),
-                              blurRadius: 8,
+                              color: const Color(0xFFEF4444)
+                                  .withValues(alpha: 0.12),
+                              blurRadius: 6,
                               offset: const Offset(0, 2),
                             ),
                           ]
-                        : null,
+                        : _isFocused
+                            ? [
+                                BoxShadow(
+                                  color: const Color(0xFF1D64EC)
+                                      .withValues(alpha: 0.14),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : null,
                   ),
                   child: Row(
                     children: [
@@ -237,17 +250,30 @@ class _KumoFloatingFieldState extends State<KumoFloatingField>
               ],
             ),
 
-            // Error Text jika ada
+            // Error Text Banner dengan Icon Alert
             if (hasError)
               Padding(
-                padding: const EdgeInsets.only(top: 4, left: 14),
-                child: Text(
-                  widget.errorText!,
-                  style: const TextStyle(
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFFEF4444),
-                  ),
+                padding: const EdgeInsets.only(top: 6, left: 14, right: 14),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.error_outline_rounded,
+                      color: Color(0xFFEF4444),
+                      size: 14,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        widget.errorText!,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFFEF4444),
+                          letterSpacing: -0.2,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
           ],

@@ -58,19 +58,28 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   AuthMode _authMode = AuthMode.login;
 
-  // --- LOGIN CONTROLLERS (EMPTY DEFAULT) ---
+  // --- LOGIN CONTROLLERS ---
   final TextEditingController _loginEmailController = TextEditingController();
   final TextEditingController _loginPasswordController =
       TextEditingController();
   bool _showLoginPassword = false;
   bool _rememberMe = true;
 
-  // --- REGISTER CONTROLLERS (EMPTY DEFAULT) ---
+  // --- REGISTER CONTROLLERS ---
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _regPasswordController = TextEditingController();
   final TextEditingController _regRepeatPasswordController =
       TextEditingController();
+
+  // --- FORM ERROR STATES ---
+  String? _loginEmailError;
+  String? _loginPasswordError;
+
+  String? _fullNameError;
+  String? _phoneError;
+  String? _regPasswordError;
+  String? _regRepeatPasswordError;
 
   // SMKN 8 Options
   String _selectedGrade = 'X';
@@ -91,6 +100,37 @@ class _AuthScreenState extends State<AuthScreen> {
   final List<String> _classNumOptions = const ['1', '2', '3'];
 
   @override
+  void initState() {
+    super.initState();
+    // Clear errors when typing
+    _loginEmailController.addListener(() {
+      if (_loginEmailError != null) setState(() => _loginEmailError = null);
+    });
+    _loginPasswordController.addListener(() {
+      if (_loginPasswordError != null) {
+        setState(() => _loginPasswordError = null);
+      }
+    });
+    _fullNameController.addListener(() {
+      if (_fullNameError != null) setState(() => _fullNameError = null);
+    });
+    _phoneController.addListener(() {
+      if (_phoneError != null) setState(() => _phoneError = null);
+    });
+    _regPasswordController.addListener(() {
+      if (_regPasswordError != null) setState(() => _regPasswordError = null);
+      if (_regRepeatPasswordError != null) {
+        setState(() => _regRepeatPasswordError = null);
+      }
+    });
+    _regRepeatPasswordController.addListener(() {
+      if (_regRepeatPasswordError != null) {
+        setState(() => _regRepeatPasswordError = null);
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _loginEmailController.dispose();
     _loginPasswordController.dispose();
@@ -106,10 +146,99 @@ class _AuthScreenState extends State<AuthScreen> {
     if (_authMode == AuthMode.register) {
       setState(() {
         _authMode = AuthMode.login;
+        _clearErrors();
       });
     } else {
       widget.onBack();
     }
+  }
+
+  void _clearErrors() {
+    _loginEmailError = null;
+    _loginPasswordError = null;
+    _fullNameError = null;
+    _phoneError = null;
+    _regPasswordError = null;
+    _regRepeatPasswordError = null;
+  }
+
+  // --- SUBMIT LOGIN VALIDATION ---
+  void _submitLogin() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(_clearErrors);
+
+    bool isValid = true;
+
+    if (_loginEmailController.text.trim().isEmpty) {
+      _loginEmailError = 'Masukkan nomor WhatsApp atau email';
+      isValid = false;
+    }
+
+    if (_loginPasswordController.text.isEmpty) {
+      _loginPasswordError = 'Masukkan kata sandi';
+      isValid = false;
+    }
+
+    if (!isValid) {
+      HapticFeedback.vibrate();
+      setState(() {});
+      return;
+    }
+
+    widget.onSuccess();
+  }
+
+  // --- SUBMIT REGISTER VALIDATION (PASSWORD MATCH CHECK) ---
+  void _submitRegister() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(_clearErrors);
+
+    bool isValid = true;
+
+    // 1. Validasi Nama Lengkap
+    if (_fullNameController.text.trim().isEmpty) {
+      _fullNameError = 'Nama lengkap wajib diisi';
+      isValid = false;
+    }
+
+    // 2. Validasi Nomor WhatsApp
+    final rawPhone = _phoneController.text.replaceAll(RegExp(r'\D'), '');
+    if (rawPhone.isEmpty) {
+      _phoneError = 'Nomor WhatsApp wajib diisi';
+      isValid = false;
+    } else if (rawPhone.length < 8) {
+      _phoneError = 'Nomor WhatsApp minimal 8 angka';
+      isValid = false;
+    }
+
+    // 3. Validasi Kata Sandi
+    final pass = _regPasswordController.text;
+    final repeatPass = _regRepeatPasswordController.text;
+
+    if (pass.isEmpty) {
+      _regPasswordError = 'Kata sandi wajib diisi';
+      isValid = false;
+    } else if (pass.length < 6) {
+      _regPasswordError = 'Kata sandi minimal 6 karakter';
+      isValid = false;
+    }
+
+    // 4. Validasi Kesamaan Kata Sandi (Password Matching)
+    if (repeatPass.isEmpty) {
+      _regRepeatPasswordError = 'Ulangi kata sandi wajib diisi';
+      isValid = false;
+    } else if (pass != repeatPass) {
+      _regRepeatPasswordError = 'Kata sandi tidak sama. Pastikan kedua kata sandi cocok.';
+      isValid = false;
+    }
+
+    if (!isValid) {
+      HapticFeedback.vibrate();
+      setState(() {});
+      return;
+    }
+
+    widget.onSuccess();
   }
 
   @override
@@ -234,29 +363,31 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   // ==========================================
-  // --- LOGIN FORM (FLOATING LABELS) ---
+  // --- LOGIN FORM (FLOATING LABELS & VALIDATION) ---
   // ==========================================
   Widget _buildLoginForm() {
     return Column(
       children: [
         const SizedBox(height: 6),
 
-        // 1. WhatsApp / Email Floating Label Field (Empty default)
+        // 1. WhatsApp / Email Floating Label Field
         KumoFloatingField(
           label: 'Nomor WhatsApp / Email',
           controller: _loginEmailController,
           keyboardType: TextInputType.emailAddress,
+          errorText: _loginEmailError,
         ),
 
         const SizedBox(height: 20),
 
-        // 2. Password Floating Label Field (Empty default)
+        // 2. Password Floating Label Field
         KumoFloatingField(
           label: 'Kata Sandi',
           controller: _loginPasswordController,
           obscureText: !_showLoginPassword,
           textInputAction: TextInputAction.done,
-          onSubmitted: (_) => widget.onSuccess(),
+          onSubmitted: (_) => _submitLogin(),
+          errorText: _loginPasswordError,
           suffixIcon: GestureDetector(
             onTap: () {
               setState(() {
@@ -275,7 +406,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 16),
 
-        // 3. Remember Me (Blue Checkbox) & Forgot Password Row
+        // 3. Remember Me & Forgot Password Row
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -292,7 +423,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     height: 18,
                     decoration: BoxDecoration(
                       color: _rememberMe
-                          ? const Color(0xFF1D64EC) // Kumo Blue when checked
+                          ? const Color(0xFF1D64EC)
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(5),
                       border: Border.all(
@@ -344,7 +475,7 @@ class _AuthScreenState extends State<AuthScreen> {
           width: double.infinity,
           height: 52,
           borderRadius: 16,
-          onPressed: widget.onSuccess,
+          onPressed: _submitLogin,
         ),
 
         const SizedBox(height: 22),
@@ -412,6 +543,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 FocusManager.instance.primaryFocus?.unfocus();
                 setState(() {
                   _authMode = AuthMode.register;
+                  _clearErrors();
                 });
               },
               child: const Padding(
@@ -433,17 +565,18 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   // ==========================================
-  // --- REGISTER FORM (FLOATING LABELS & DROPDOWN) ---
+  // --- REGISTER FORM (FLOATING LABELS & VALIDATION) ---
   // ==========================================
   Widget _buildRegisterForm() {
     return Column(
       children: [
         const SizedBox(height: 6),
 
-        // 1. Full Name Floating Label Field (Empty default)
+        // 1. Full Name Floating Label Field
         KumoFloatingField(
           label: 'Nama Lengkap',
           controller: _fullNameController,
+          errorText: _fullNameError,
         ),
 
         const SizedBox(height: 18),
@@ -485,11 +618,12 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 18),
 
-        // 3. WhatsApp / Phone Number Floating Label Field (Empty default & xxx-xxxx-xxxx)
+        // 3. WhatsApp / Phone Number Floating Label Field (xxx-xxxx-xxxx)
         KumoFloatingField(
           label: 'Nomor WhatsApp / HP',
           controller: _phoneController,
           keyboardType: TextInputType.phone,
+          errorText: _phoneError,
           inputFormatters: [
             PhoneNumberFormatter(),
           ],
@@ -522,11 +656,12 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 18),
 
-        // 4. Password Floating Label Field (Empty default)
+        // 4. Password Floating Label Field
         KumoFloatingField(
           label: 'Kata Sandi',
           controller: _regPasswordController,
           obscureText: !_showRegPassword,
+          errorText: _regPasswordError,
           suffixIcon: GestureDetector(
             onTap: () {
               setState(() {
@@ -545,13 +680,14 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 18),
 
-        // 5. Repeat Password Floating Label Field (Empty default)
+        // 5. Repeat Password Floating Label Field (Matches Password)
         KumoFloatingField(
           label: 'Ulangi Kata Sandi',
           controller: _regRepeatPasswordController,
           obscureText: !_showRegRepeatPassword,
           textInputAction: TextInputAction.done,
-          onSubmitted: (_) => widget.onSuccess(),
+          onSubmitted: (_) => _submitRegister(),
+          errorText: _regRepeatPasswordError,
           suffixIcon: GestureDetector(
             onTap: () {
               setState(() {
@@ -576,7 +712,7 @@ class _AuthScreenState extends State<AuthScreen> {
           width: double.infinity,
           height: 52,
           borderRadius: 16,
-          onPressed: widget.onSuccess,
+          onPressed: _submitRegister,
         ),
 
         const SizedBox(height: 24),
@@ -599,6 +735,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 FocusManager.instance.primaryFocus?.unfocus();
                 setState(() {
                   _authMode = AuthMode.login;
+                  _clearErrors();
                 });
               },
               child: const Padding(
@@ -659,7 +796,7 @@ class _AuthScreenState extends State<AuthScreen> {
 }
 
 // ==========================================
-// --- 1-TAP DROPDOWN BOX WITH WIDE FLOATING MENU & FOCUS UNFOCUS GUARD ---
+// --- 1-TAP DROPDOWN BOX WITH WIDE FLOATING MENU ---
 // ==========================================
 class _DropdownColumnBox extends StatelessWidget {
   final String label;
@@ -682,7 +819,6 @@ class _DropdownColumnBox extends StatelessWidget {
       key: boxKey,
       behavior: HitTestBehavior.opaque,
       onTap: () async {
-        // 1. Explicitly unfocus any active keyboard input
         FocusManager.instance.primaryFocus?.unfocus();
         HapticFeedback.selectionClick();
 
@@ -724,7 +860,7 @@ class _DropdownColumnBox extends StatelessWidget {
                       fontSize: 14,
                       fontWeight:
                           isSelected ? FontWeight.w700 : FontWeight.w500,
-                      color: isSelected ? const Color(0xFF1D64EC) : AppColors.ink,
+                      color: isSelected ? AppColors.primary : AppColors.ink,
                     ),
                   ),
                   if (isSelected)
@@ -739,7 +875,6 @@ class _DropdownColumnBox extends StatelessWidget {
           }).toList(),
         );
 
-        // 2. Keep focus unfocused when menu dismisses or an item is chosen
         FocusManager.instance.primaryFocus?.unfocus();
 
         if (selected != null) {

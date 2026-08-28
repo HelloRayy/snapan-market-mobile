@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/components/kumo_button.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/auth/components/google_logo.dart';
 import 'package:snapan_market/features/auth/components/kumo_floating_field.dart';
@@ -57,15 +58,14 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   AuthMode _authMode = AuthMode.login;
 
-  // --- LOGIN CONTROLLERS ---
-  final TextEditingController _loginEmailController =
-      TextEditingController(text: 'rabbirezwan07@gmail.com');
+  // --- LOGIN CONTROLLERS (EMPTY DEFAULT) ---
+  final TextEditingController _loginEmailController = TextEditingController();
   final TextEditingController _loginPasswordController =
-      TextEditingController(text: 'password123');
+      TextEditingController();
   bool _showLoginPassword = false;
   bool _rememberMe = true;
 
-  // --- REGISTER CONTROLLERS ---
+  // --- REGISTER CONTROLLERS (EMPTY DEFAULT) ---
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _regPasswordController = TextEditingController();
@@ -102,6 +102,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   void _handleBack() {
+    FocusManager.instance.primaryFocus?.unfocus();
     if (_authMode == AuthMode.register) {
       setState(() {
         _authMode = AuthMode.login;
@@ -240,7 +241,7 @@ class _AuthScreenState extends State<AuthScreen> {
       children: [
         const SizedBox(height: 6),
 
-        // 1. Email Floating Label Field
+        // 1. Email Floating Label Field (Empty default)
         KumoFloatingField(
           label: 'Email',
           controller: _loginEmailController,
@@ -249,7 +250,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 20),
 
-        // 2. Password Floating Label Field
+        // 2. Password Floating Label Field (Empty default)
         KumoFloatingField(
           label: 'Kata Sandi',
           controller: _loginPasswordController,
@@ -274,7 +275,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 16),
 
-        // 3. Remember Me & Forgot Password Row
+        // 3. Remember Me (Blue Checkbox) & Forgot Password Row
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -290,18 +291,20 @@ class _AuthScreenState extends State<AuthScreen> {
                     width: 18,
                     height: 18,
                     decoration: BoxDecoration(
-                      color: _rememberMe ? AppColors.ink : Colors.transparent,
+                      color: _rememberMe
+                          ? const Color(0xFF1D64EC) // Kumo Blue when checked
+                          : Colors.transparent,
                       borderRadius: BorderRadius.circular(5),
                       border: Border.all(
                         color: _rememberMe
-                            ? AppColors.ink
+                            ? const Color(0xFF1D64EC)
                             : const Color(0xFFCBD5E1),
                         width: 1.5,
                       ),
                     ),
                     child: _rememberMe
                         ? const Icon(
-                            Icons.check,
+                            Icons.check_rounded,
                             color: Colors.white,
                             size: 13,
                           )
@@ -335,29 +338,13 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 24),
 
-        // 4. Solid Black Log In Button
-        SizedBox(
+        // 4. Kumo Primary Log In Button
+        KumoButton.primary(
+          text: 'Masuk',
           width: double.infinity,
           height: 52,
-          child: ElevatedButton(
-            onPressed: widget.onSuccess,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.ink,
-              foregroundColor: Colors.white,
-              elevation: 4,
-              shadowColor: Colors.black26,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(26),
-              ),
-            ),
-            child: const Text(
-              'Masuk',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
+          borderRadius: 16,
+          onPressed: widget.onSuccess,
         ),
 
         const SizedBox(height: 22),
@@ -388,7 +375,8 @@ class _AuthScreenState extends State<AuthScreen> {
           children: [
             Expanded(
               child: _buildSocialButton(
-                iconWidget: const Icon(Icons.apple, size: 24, color: AppColors.ink),
+                iconWidget:
+                    const Icon(Icons.apple, size: 24, color: AppColors.ink),
                 label: 'Apple',
                 onTap: widget.onSuccess,
               ),
@@ -421,6 +409,7 @@ class _AuthScreenState extends State<AuthScreen> {
             GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () {
+                FocusManager.instance.primaryFocus?.unfocus();
                 setState(() {
                   _authMode = AuthMode.register;
                 });
@@ -451,7 +440,7 @@ class _AuthScreenState extends State<AuthScreen> {
       children: [
         const SizedBox(height: 6),
 
-        // 1. Full Name Floating Label Field
+        // 1. Full Name Floating Label Field (Empty default)
         KumoFloatingField(
           label: 'Nama Lengkap',
           controller: _fullNameController,
@@ -496,7 +485,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 18),
 
-        // 3. WhatsApp / Phone Number Floating Label Field (xxx-xxxx-xxxx)
+        // 3. WhatsApp / Phone Number Floating Label Field (Empty default & xxx-xxxx-xxxx)
         KumoFloatingField(
           label: 'Nomor WhatsApp / HP',
           controller: _phoneController,
@@ -533,7 +522,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 18),
 
-        // 4. Password Floating Label Field
+        // 4. Password Floating Label Field (Empty default)
         KumoFloatingField(
           label: 'Kata Sandi',
           controller: _regPasswordController,
@@ -556,7 +545,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 18),
 
-        // 5. Repeat Password Floating Label Field
+        // 5. Repeat Password Floating Label Field (Empty default)
         KumoFloatingField(
           label: 'Ulangi Kata Sandi',
           controller: _regRepeatPasswordController,
@@ -581,29 +570,13 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 24),
 
-        // 6. Solid Black Register Button
-        SizedBox(
+        // 6. Kumo Primary Register Button
+        KumoButton.primary(
+          text: 'Daftar',
           width: double.infinity,
           height: 52,
-          child: ElevatedButton(
-            onPressed: widget.onSuccess,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.ink,
-              foregroundColor: Colors.white,
-              elevation: 4,
-              shadowColor: Colors.black26,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(26),
-              ),
-            ),
-            child: const Text(
-              'Daftar',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
+          borderRadius: 16,
+          onPressed: widget.onSuccess,
         ),
 
         const SizedBox(height: 24),
@@ -623,6 +596,7 @@ class _AuthScreenState extends State<AuthScreen> {
             GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () {
+                FocusManager.instance.primaryFocus?.unfocus();
                 setState(() {
                   _authMode = AuthMode.login;
                 });
@@ -685,7 +659,7 @@ class _AuthScreenState extends State<AuthScreen> {
 }
 
 // ==========================================
-// --- 1-TAP DROPDOWN BOX WITH WIDE FLOATING MENU ---
+// --- 1-TAP DROPDOWN BOX WITH WIDE FLOATING MENU & FOCUS UNFOCUS GUARD ---
 // ==========================================
 class _DropdownColumnBox extends StatelessWidget {
   final String label;
@@ -708,7 +682,10 @@ class _DropdownColumnBox extends StatelessWidget {
       key: boxKey,
       behavior: HitTestBehavior.opaque,
       onTap: () async {
+        // 1. Explicitly unfocus any active keyboard input
+        FocusManager.instance.primaryFocus?.unfocus();
         HapticFeedback.selectionClick();
+
         final renderBox =
             boxKey.currentContext?.findRenderObject() as RenderBox?;
         if (renderBox == null) return;
@@ -747,13 +724,13 @@ class _DropdownColumnBox extends StatelessWidget {
                       fontSize: 14,
                       fontWeight:
                           isSelected ? FontWeight.w700 : FontWeight.w500,
-                      color: isSelected ? AppColors.primary : AppColors.ink,
+                      color: isSelected ? const Color(0xFF1D64EC) : AppColors.ink,
                     ),
                   ),
                   if (isSelected)
                     const Icon(
                       Icons.check_rounded,
-                      color: AppColors.primary,
+                      color: Color(0xFF1D64EC),
                       size: 18,
                     ),
                 ],
@@ -761,6 +738,9 @@ class _DropdownColumnBox extends StatelessWidget {
             );
           }).toList(),
         );
+
+        // 2. Keep focus unfocused when menu dismisses or an item is chosen
+        FocusManager.instance.primaryFocus?.unfocus();
 
         if (selected != null) {
           HapticFeedback.selectionClick();

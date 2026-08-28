@@ -226,57 +226,76 @@ class _ReferenceCenterButtonState extends State<_ReferenceCenterButton> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: _handleTapDown,
-      onTapUp: _handleTapUp,
-      onTapCancel: _handleTapCancel,
-      onTap: () {
-        HapticFeedback.mediumImpact();
-        widget.onTap();
-      },
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedScale(
-        scale: _isPressed ? 0.95 : 1.0, // active:scale-95
-        duration: const Duration(milliseconds: 75),
-        curve: Curves.easeOutCubic,
-        child: Container(
-          width: 48.0,
-          height: 48.0,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: const Color(0xFF1D64EC), // bg-[#1d64ec]
-            border: Border.all(
-              color: const Color(0xFF154EC1), // border-[#154ec1]
-              width: 1.0,
-            ),
-            boxShadow: [
-              // 1. 4px White Halo Shadow (oklab(0.999994 ... / 0.95) 0 0 0 4px)
-              BoxShadow(
-                color: Colors.white.withValues(alpha: 0.95),
-                spreadRadius: 3.5,
-                blurRadius: 0,
+    return SizedBox(
+      height: 50.0,
+      width: 48.0,
+      child: OverflowBox(
+        maxHeight: 90.0,
+        maxWidth: 90.0,
+        alignment: Alignment.center,
+        child: Transform.translate(
+          offset: const Offset(0, -16.0), // Floating outset matching web absolute -top-5
+          child: GestureDetector(
+            onTapDown: _handleTapDown,
+            onTapUp: _handleTapUp,
+            onTapCancel: _handleTapCancel,
+            onTap: () {
+              HapticFeedback.mediumImpact();
+              widget.onTap();
+            },
+            behavior: HitTestBehavior.opaque,
+            child: AnimatedScale(
+              scale: _isPressed ? 0.95 : 1.0, // active:scale-95
+              duration: const Duration(milliseconds: 75),
+              curve: Curves.easeOutCubic,
+              child: Container(
+                width: 48.0,
+                height: 48.0,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFF3B82F6), // from-[#3b82f6]
+                      Color(0xFF1D64EC), // to-[#1d64ec]
+                    ],
+                  ),
+                  border: Border.all(
+                    color: const Color(0xFF154EC1), // border-[#154ec1]
+                    width: 1.0,
+                  ),
+                  boxShadow: [
+                    // 1. 4px White Halo Shadow (oklab(0.999994 ... / 0.95) 0 0 0 4px)
+                    BoxShadow(
+                      color: Colors.white.withValues(alpha: 0.95),
+                      spreadRadius: 3.5,
+                      blurRadius: 0,
+                    ),
+                    // 2. oklab(0.623 ... / 0.3) 0px 4px 6px -1px
+                    const BoxShadow(
+                      color: Color(0x4D1D64EC),
+                      blurRadius: 6.0,
+                      offset: Offset(0, 4),
+                      spreadRadius: -1.0,
+                    ),
+                    // 3. oklab(0.623 ... / 0.3) 0px 2px 4px -2px
+                    const BoxShadow(
+                      color: Color(0x4D1D64EC),
+                      blurRadius: 4.0,
+                      offset: Offset(0, 2),
+                      spreadRadius: -2.0,
+                    ),
+                  ],
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.add_rounded,
+                    color: Colors.white,
+                    size: 24.0,
+                  ),
+                ),
               ),
-              // 2. oklab(0.623 ... / 0.3) 0px 4px 6px -1px
-              const BoxShadow(
-                color: Color(0x4D1D64EC),
-                blurRadius: 6.0,
-                offset: Offset(0, 4),
-                spreadRadius: -1.0,
-              ),
-              // 3. oklab(0.623 ... / 0.3) 0px 2px 4px -2px
-              const BoxShadow(
-                color: Color(0x4D1D64EC),
-                blurRadius: 4.0,
-                offset: Offset(0, 2),
-                spreadRadius: -2.0,
-              ),
-            ],
-          ),
-          child: const Center(
-            child: Icon(
-              Icons.add_rounded,
-              color: Colors.white,
-              size: 26.0,
             ),
           ),
         ),

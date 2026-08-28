@@ -236,6 +236,8 @@ class _CreatePostModalState extends State<CreatePostModal> {
 
   @override
   Widget build(BuildContext context) {
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       behavior: HitTestBehavior.opaque,
@@ -243,19 +245,25 @@ class _CreatePostModalState extends State<CreatePostModal> {
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
         body: SafeArea(
-        bottom: true,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // 1. Top Header Bar (Matching Image #2)
-            _buildHeaderBar(context),
+          top: true,
+          bottom: true,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // 1. Top Header Bar (Matching Image #2)
+              _buildHeaderBar(context),
 
-            // 2. Scrollable Body Area with Vertical Thread Connector Line
-            Expanded(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                child: Column(
+              // 2. Scrollable Body Area with Vertical Thread Connector Line
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: EdgeInsets.fromLTRB(
+                    16.0,
+                    12.0,
+                    16.0,
+                    keyboardHeight > 0 ? keyboardHeight + 80.0 : 20.0,
+                  ),
+                  child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Smart Intent Detection Banner

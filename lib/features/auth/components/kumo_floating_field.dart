@@ -33,27 +33,36 @@ class KumoFloatingField extends StatefulWidget {
 
 class _KumoFloatingFieldState extends State<KumoFloatingField>
     with SingleTickerProviderStateMixin {
-  late AnimationController _animController;
-  late Animation<double> _anim;
+  AnimationController? _animController;
+  Animation<double>? _anim;
   final FocusNode _focusNode = FocusNode();
   bool _isFocused = false;
 
   @override
   void initState() {
     super.initState();
+    _initAnimation();
+    _focusNode.addListener(_handleFocusChange);
+    widget.controller.addListener(_handleTextChange);
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    _initAnimation();
+  }
+
+  void _initAnimation() {
     final bool initiallyFloating = widget.controller.text.isNotEmpty;
-    _animController = AnimationController(
+    _animController ??= AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 180),
       value: initiallyFloating ? 1.0 : 0.0,
     );
-    _anim = CurvedAnimation(
-      parent: _animController,
+    _anim ??= CurvedAnimation(
+      parent: _animController!,
       curve: Curves.easeOutCubic,
     );
-
-    _focusNode.addListener(_handleFocusChange);
-    widget.controller.addListener(_handleTextChange);
   }
 
   @override
@@ -61,7 +70,7 @@ class _KumoFloatingFieldState extends State<KumoFloatingField>
     _focusNode.removeListener(_handleFocusChange);
     widget.controller.removeListener(_handleTextChange);
     _focusNode.dispose();
-    _animController.dispose();
+    _animController?.dispose();
     super.dispose();
   }
 
@@ -79,23 +88,25 @@ class _KumoFloatingFieldState extends State<KumoFloatingField>
   }
 
   void _updateAnimation() {
-    // Label HARUS tetap melayang (floating) jika sedang fokus ATAU jika ada teks terisi
+    if (_animController == null) return;
     final bool shouldFloat = _isFocused || widget.controller.text.isNotEmpty;
-    if (shouldFloat && _animController.value != 1.0) {
-      _animController.forward();
-    } else if (!shouldFloat && _animController.value != 0.0) {
-      _animController.reverse();
+    if (shouldFloat && _animController!.value != 1.0) {
+      _animController!.forward();
+    } else if (!shouldFloat && _animController!.value != 0.0) {
+      _animController!.reverse();
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    _initAnimation();
+    final anim = _anim!;
     final hasError = widget.errorText != null && widget.errorText!.isNotEmpty;
 
     return AnimatedBuilder(
-      animation: _anim,
+      animation: anim,
       builder: (context, child) {
-        final double progress = _anim.value;
+        final double progress = anim.value;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,11 +195,11 @@ class _KumoFloatingFieldState extends State<KumoFloatingField>
                   left: Tween<double>(
                     begin: widget.prefixWidget != null ? 82.0 : 16.0,
                     end: 14.0,
-                  ).evaluate(_anim),
+                  ).evaluate(anim),
                   top: Tween<double>(
                     begin: 17.0, // Posisi tengah saat belum diketik & belum fokus
                     end: -9.0,   // Posisi melayang di atas border saat fokus / ada teks
-                  ).evaluate(_anim),
+                  ).evaluate(anim),
                   child: IgnorePointer(
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -204,7 +215,7 @@ class _KumoFloatingFieldState extends State<KumoFloatingField>
                           fontSize: Tween<double>(
                             begin: 14.5,
                             end: 11.5,
-                          ).evaluate(_anim),
+                          ).evaluate(anim),
                           fontWeight: progress > 0.5
                               ? FontWeight.w700
                               : FontWeight.w400,

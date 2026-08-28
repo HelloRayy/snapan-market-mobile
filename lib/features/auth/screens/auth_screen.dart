@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/auth/components/google_logo.dart';
-import 'package:snapan_market/features/auth/components/kumo_auth_field.dart';
+import 'package:snapan_market/features/auth/components/kumo_floating_field.dart';
 
 enum AuthMode { login, register }
 
@@ -189,27 +189,27 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   // ==========================================
-  // --- LOGIN FORM (INDONESIAN) ---
+  // --- LOGIN FORM (FLOATING LABELS) ---
   // ==========================================
   Widget _buildLoginForm() {
     return Column(
       children: [
-        // 1. Email Field Capsule
-        KumoAuthField(
+        const SizedBox(height: 6),
+
+        // 1. Email Floating Label Field
+        KumoFloatingField(
           label: 'Email',
           controller: _loginEmailController,
           keyboardType: TextInputType.emailAddress,
-          hintText: 'rabbirezwan07@gmail.com',
         ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
 
-        // 2. Password Field Capsule
-        KumoAuthField(
+        // 2. Password Floating Label Field
+        KumoFloatingField(
           label: 'Kata Sandi',
           controller: _loginPasswordController,
           obscureText: !_showLoginPassword,
-          hintText: '••••••••',
           textInputAction: TextInputAction.done,
           onSubmitted: (_) => widget.onSuccess(),
           suffixIcon: GestureDetector(
@@ -228,7 +228,7 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
         ),
 
-        const SizedBox(height: 14),
+        const SizedBox(height: 16),
 
         // 3. Remember Me & Forgot Password Row
         Row(
@@ -400,19 +400,20 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   // ==========================================
-  // --- REGISTER FORM (INDONESIAN) ---
+  // --- REGISTER FORM (FLOATING LABELS) ---
   // ==========================================
   Widget _buildRegisterForm() {
     return Column(
       children: [
-        // 1. Full Name Field Capsule
-        KumoAuthField(
+        const SizedBox(height: 6),
+
+        // 1. Full Name Floating Label Field
+        KumoFloatingField(
           label: 'Nama Lengkap',
           controller: _fullNameController,
-          hintText: 'Rayhan Muhammad',
         ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 18),
 
         // 2. Dropdown Grid 3 Kolom (Kelas, Jurusan, No. Kelas SMKN 8)
         Row(
@@ -449,14 +450,13 @@ class _AuthScreenState extends State<AuthScreen> {
           ],
         ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 18),
 
-        // 3. WhatsApp / Phone Number Capsule
-        KumoAuthField(
+        // 3. WhatsApp / Phone Number Floating Label Field
+        KumoFloatingField(
           label: 'Nomor WhatsApp / HP',
           controller: _phoneController,
           keyboardType: TextInputType.phone,
-          hintText: '812-3456-7890',
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
             LengthLimitingTextInputFormatter(13),
@@ -488,14 +488,13 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
         ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 18),
 
-        // 4. Password Field Capsule
-        KumoAuthField(
+        // 4. Password Floating Label Field
+        KumoFloatingField(
           label: 'Kata Sandi',
           controller: _regPasswordController,
           obscureText: !_showRegPassword,
-          hintText: 'Minimal 6 karakter',
           suffixIcon: GestureDetector(
             onTap: () {
               setState(() {
@@ -512,14 +511,13 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
         ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 18),
 
-        // 5. Repeat Password Field Capsule
-        KumoAuthField(
+        // 5. Repeat Password Floating Label Field
+        KumoFloatingField(
           label: 'Ulangi Kata Sandi',
           controller: _regRepeatPasswordController,
           obscureText: !_showRegRepeatPassword,
-          hintText: 'Ulangi kata sandi',
           textInputAction: TextInputAction.done,
           onSubmitted: (_) => widget.onSuccess(),
           suffixIcon: GestureDetector(
@@ -633,14 +631,16 @@ class _AuthScreenState extends State<AuthScreen> {
         }).toList();
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+        height: 56,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFFF8FAFC),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
+          border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               label,
@@ -650,7 +650,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 color: Color(0xFF64748B),
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

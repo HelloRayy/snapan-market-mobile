@@ -12,22 +12,18 @@ class PhoneNumberFormatter extends TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    // 1. Ambil hanya digit
     var digits = newValue.text.replaceAll(RegExp(r'\D'), '');
 
-    // 2. Hapus awalan 0 atau 62 jika ada
     if (digits.startsWith('0')) {
       digits = digits.substring(1);
     } else if (digits.startsWith('62')) {
       digits = digits.substring(2);
     }
 
-    // 3. Batasi maksimal 11-12 digit lokal
     if (digits.length > 12) {
       digits = digits.substring(0, 12);
     }
 
-    // 4. Format xxx-xxxx-xxxx
     final StringBuffer buffer = StringBuffer();
     for (int i = 0; i < digits.length; i++) {
       if (i == 3 || i == 7) {
@@ -117,10 +113,9 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      resizeToAvoidBottomInset: true,
-      body: GestureDetector(
+    return Material(
+      color: Colors.transparent,
+      child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {
           FocusManager.instance.primaryFocus?.unfocus();
@@ -133,7 +128,7 @@ class _AuthScreenState extends State<AuthScreen> {
             bottom: false,
             child: Column(
               children: [
-                // --- TOP HEADER AREA (GPU ISOLATED) ---
+                // --- TOP HEADER AREA (ISOLATED GPU LAYER) ---
                 RepaintBoundary(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -184,8 +179,8 @@ class _AuthScreenState extends State<AuthScreen> {
                         Center(
                           child: Text(
                             _authMode == AuthMode.login
-                             ? 'Masuk\nke Akun Kamu'
-                             : 'Daftar\nAkun Baru',
+                                ? 'Masuk\nke Akun Kamu'
+                                : 'Daftar\nAkun Baru',
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontSize: 28,
@@ -203,7 +198,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                 ),
 
-                // --- BOTTOM WHITE CARD CONTAINER ---
+                // --- BOTTOM WHITE CARD CONTAINER (SCROLLABLE & ISOLATED) ---
                 Expanded(
                   child: Container(
                     width: double.infinity,
@@ -213,17 +208,19 @@ class _AuthScreenState extends State<AuthScreen> {
                         top: Radius.circular(32),
                       ),
                     ),
-                    child: SingleChildScrollView(
-                      keyboardDismissBehavior:
-                          ScrollViewKeyboardDismissBehavior.onDrag,
-                      physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 28,
+                    child: RepaintBoundary(
+                      child: SingleChildScrollView(
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
+                        physics: const ClampingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 28,
+                        ),
+                        child: _authMode == AuthMode.login
+                            ? _buildLoginForm()
+                            : _buildRegisterForm(),
                       ),
-                      child: _authMode == AuthMode.login
-                          ? _buildLoginForm()
-                          : _buildRegisterForm(),
                     ),
                   ),
                 ),

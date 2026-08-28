@@ -222,13 +222,13 @@ class _FloatingCreateButtonState extends State<_FloatingCreateButton> {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 50.0,
-      width: 48.0,
+      width: 52.0,
       child: OverflowBox(
         maxHeight: 90.0,
         maxWidth: 90.0,
         alignment: Alignment.center,
         child: Transform.translate(
-          offset: const Offset(0, -16.0), // Floating outset -16px matching web -top-5
+          offset: const Offset(0, -18.0), // Floating outset -18px
           child: GestureDetector(
             onTapDown: _handleTapDown,
             onTapUp: _handleTapUp,
@@ -239,54 +239,44 @@ class _FloatingCreateButtonState extends State<_FloatingCreateButton> {
             },
             behavior: HitTestBehavior.opaque,
             child: AnimatedScale(
-              scale: _isPressed ? 0.96 : 1.0, // Matches Web active:scale-[0.96]
+              scale: _isPressed ? 0.96 : 1.0,
               duration: const Duration(milliseconds: 75),
               curve: Curves.easeOutCubic,
               child: Container(
-                width: 48.0,
-                height: 48.0,
+                width: 52.0,
+                height: 52.0,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  // 4px outer halo matching Web ring-4 ring-white/95
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFF3B82F6), // Kumo gradient top #3B82F6
+                      Color(0xFF1D64EC), // Kumo primary blue #1D64EC
+                    ],
+                  ),
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.95),
-                    width: 4.0,
+                    color: AppColors.primaryDark, // #154EC1 clean border without white ring
+                    width: 1.0,
                   ),
                   boxShadow: const [
                     BoxShadow(
-                      color: Color(0x4D1D64EC), // oklab(0.623 ... / 0.3) 0 4px 6px -1px
-                      blurRadius: 6.0,
-                      offset: Offset(0, 4),
+                      color: Color(0x591D64EC), // Enhanced 35% diffused blue glow shadow
+                      blurRadius: 10.0,
+                      offset: Offset(0, 5),
                     ),
                     BoxShadow(
-                      color: Color(0x4D1D64EC), // oklab(0.623 ... / 0.3) 0 2px 4px -2px
+                      color: Color(0x331D64EC),
                       blurRadius: 4.0,
                       offset: Offset(0, 2),
                     ),
                   ],
                 ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: const LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0xFF3B82F6), // from-[#3b82f6]
-                        Color(0xFF1D64EC), // to-[#1d64ec]
-                      ],
-                    ),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.35), // Inset top shine highlight
-                      width: 0.8,
-                    ),
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.add_rounded,
-                      color: Colors.white,
-                      size: 26.0,
-                    ),
+                child: const Center(
+                  child: Icon(
+                    Icons.add_rounded,
+                    color: Colors.white,
+                    size: 32.0, // Larger bold plus icon
                   ),
                 ),
               ),

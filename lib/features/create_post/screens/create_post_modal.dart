@@ -1103,12 +1103,12 @@ class _CreatePostModalState extends State<CreatePostModal> {
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Dismiss Topic Popover',
-      barrierColor: Colors.black.withValues(alpha: 0.20),
+      barrierColor: Colors.transparent, // No background darkening
       transitionDuration: const Duration(milliseconds: 150),
       pageBuilder: (dialogContext, anim1, anim2) {
         final screenWidth = MediaQuery.sizeOf(dialogContext).width;
-        final popoverLeft = (offset.dx - 12.0).clamp(16.0, screenWidth - 276.0);
-        final popoverTop = offset.dy + size.height + 6.0;
+        final popoverLeft = (offset.dx - 12.0).clamp(16.0, screenWidth - 266.0);
+        final popoverTop = offset.dy + size.height + 4.0;
 
         return Stack(
           children: [
@@ -1118,7 +1118,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
               child: Material(
                 color: Colors.transparent,
                 child: Container(
-                  width: 260.0,
+                  width: 250.0,
                   padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 4.0),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -1126,9 +1126,9 @@ class _CreatePostModalState extends State<CreatePostModal> {
                     border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
                     boxShadow: const [
                       BoxShadow(
-                        color: Color(0x1F000000), // shadow-xl elevation
+                        color: Color(0x1F000000), // shadow-xl
                         blurRadius: 24.0,
-                        offset: Offset(0, 10),
+                        offset: Offset(0, 8),
                       ),
                       BoxShadow(
                         color: Color(0x0A000000),
@@ -1156,8 +1156,8 @@ class _CreatePostModalState extends State<CreatePostModal> {
                       ),
                       const SizedBox(height: 2.0),
 
-                      // Preset Topics List
-                      for (var t in kPresetTopics) ...[
+                      // Top 3 Topics Only
+                      for (var t in kPresetTopics.take(3)) ...[
                         InkWell(
                           onTap: () {
                             HapticFeedback.selectionClick();
@@ -1211,66 +1211,89 @@ class _CreatePostModalState extends State<CreatePostModal> {
                       const Divider(color: Color(0xFFF1F5F9), height: 1.0),
                       const SizedBox(height: 4.0),
 
-                      // Custom Topic Input Field
+                      // Refined Custom Topic Input Pill
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                controller: customTopicController,
-                                maxLength: 20,
-                                style: const TextStyle(fontSize: 12.5, color: AppColors.ink),
-                                decoration: InputDecoration(
-                                  hintText: 'Ketik topik baru...',
-                                  hintStyle: const TextStyle(fontSize: 12.0, color: Color(0xFFCBD5E1)),
-                                  counterText: '',
-                                  filled: true,
-                                  fillColor: const Color(0xFFF8FAFC),
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-                                  ),
+                        child: Container(
+                          height: 34.0,
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF1F5F9), // Soft neutral pill
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Row(
+                            children: [
+                              const Text(
+                                '#',
+                                style: TextStyle(
+                                  fontSize: 13.0,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.muted,
                                 ),
-                                onSubmitted: (val) {
-                                  if (val.trim().isNotEmpty) {
+                              ),
+                              const SizedBox(width: 4.0),
+                              Expanded(
+                                child: TextField(
+                                  controller: customTopicController,
+                                  maxLength: 20,
+                                  style: const TextStyle(
+                                    fontSize: 12.5,
+                                    color: AppColors.ink,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  decoration: const InputDecoration(
+                                    hintText: 'Ketik topik baru...',
+                                    hintStyle: TextStyle(fontSize: 12.0, color: Color(0xFF94A3B8)),
+                                    counterText: '',
+                                    border: InputBorder.none,
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                  onSubmitted: (val) {
+                                    if (val.trim().isNotEmpty) {
+                                      HapticFeedback.selectionClick();
+                                      setState(() {
+                                        _selectedTopic = TopicOption(
+                                          id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
+                                          name: val.trim().replaceAll('#', ''),
+                                        );
+                                      });
+                                      Navigator.of(dialogContext).pop();
+                                    }
+                                  },
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  final val = customTopicController.text.trim();
+                                  if (val.isNotEmpty) {
                                     HapticFeedback.selectionClick();
                                     setState(() {
                                       _selectedTopic = TopicOption(
                                         id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
-                                        name: val.trim().replaceAll('#', ''),
+                                        name: val.replaceAll('#', ''),
                                       );
                                     });
                                     Navigator.of(dialogContext).pop();
                                   }
                                 },
+                                behavior: HitTestBehavior.opaque,
+                                child: Container(
+                                  width: 22.0,
+                                  height: 22.0,
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.primary,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.arrow_upward_rounded,
+                                    size: 14.0,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 4.0),
-                            IconButton(
-                              icon: const Icon(Icons.check_rounded, size: 18.0, color: AppColors.primary),
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(minWidth: 28.0, minHeight: 28.0),
-                              onPressed: () {
-                                final val = customTopicController.text.trim();
-                                if (val.isNotEmpty) {
-                                  HapticFeedback.selectionClick();
-                                  setState(() {
-                                    _selectedTopic = TopicOption(
-                                      id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
-                                      name: val.replaceAll('#', ''),
-                                    );
-                                  });
-                                  Navigator.of(dialogContext).pop();
-                                }
-                              },
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ],

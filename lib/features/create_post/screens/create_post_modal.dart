@@ -56,14 +56,22 @@ class CreatePostModal extends StatefulWidget {
 class _CreatePostModalState extends State<CreatePostModal> {
   late PostMode _postMode;
 
+  final ScrollController _scrollController = ScrollController();
   final TextEditingController _captionController = TextEditingController();
   final TextEditingController _productTitleController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _stockController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
 
+  final FocusNode _titleFocusNode = FocusNode();
+  final FocusNode _priceFocusNode = FocusNode();
+  final FocusNode _descFocusNode = FocusNode();
+
+  final GlobalKey _titleKey = GlobalKey();
+  final GlobalKey _priceKey = GlobalKey();
+  final GlobalKey _descKey = GlobalKey();
+
   final List<String> _images = [];
-  final List<SubThreadItem> _subThreads = [];
   TopicOption? _selectedTopic;
   SchoolPlace? _selectedLocation;
   PresetGif? _selectedGif;
@@ -90,15 +98,41 @@ class _CreatePostModalState extends State<CreatePostModal> {
     _postMode = widget.initialMode;
     _captionController.addListener(_checkSellingIntent);
     _captionController.addListener(() => setState(() {}));
+
+    _titleFocusNode.addListener(() {
+      if (_titleFocusNode.hasFocus) _scrollToField(_titleKey);
+    });
+    _priceFocusNode.addListener(() {
+      if (_priceFocusNode.hasFocus) _scrollToField(_priceKey);
+    });
+    _descFocusNode.addListener(() {
+      if (_descFocusNode.hasFocus) _scrollToField(_descKey);
+    });
   }
 
+  void _scrollToField(GlobalKey key) {
+    Future.delayed(const Duration(milliseconds: 250), () {
+      if (key.currentContext != null && mounted) {
+        Scrollable.ensureVisible(
+          key.currentContext!,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutCubic,
+          alignment: 0.25, // Placed comfortably in upper half above keyboard
+        );
+      }
+    });
+  }
   @override
   void dispose() {
+    _scrollController.dispose();
     _captionController.dispose();
     _productTitleController.dispose();
     _priceController.dispose();
     _stockController.dispose();
     _descController.dispose();
+    _titleFocusNode.dispose();
+    _priceFocusNode.dispose();
+    _descFocusNode.dispose();
     for (var c in _pollOptionControllers) {
       c.dispose();
     }
@@ -256,6 +290,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
               // 2. Scrollable Body Area with Vertical Thread Connector Line
               Expanded(
                 child: SingleChildScrollView(
+                  controller: _scrollController,
                   physics: const BouncingScrollPhysics(),
                   padding: EdgeInsets.fromLTRB(
                     16.0,
@@ -772,6 +807,8 @@ class _CreatePostModalState extends State<CreatePostModal> {
         _buildFieldLabel('Nama Barang / Jasa', isRequired: true),
         const SizedBox(height: 6.0),
         TextField(
+          key: _titleKey,
+          focusNode: _titleFocusNode,
           controller: _productTitleController,
           cursorColor: AppColors.primary,
           style: const TextStyle(
@@ -789,6 +826,8 @@ class _CreatePostModalState extends State<CreatePostModal> {
         _buildFieldLabel('Harga (Rp)', isRequired: true),
         const SizedBox(height: 6.0),
         TextField(
+          key: _priceKey,
+          focusNode: _priceFocusNode,
           controller: _priceController,
           keyboardType: TextInputType.number,
           cursorColor: AppColors.primary,
@@ -825,6 +864,8 @@ class _CreatePostModalState extends State<CreatePostModal> {
         _buildFieldLabel('Deskripsi Singkat'),
         const SizedBox(height: 6.0),
         TextField(
+          key: _descKey,
+          focusNode: _descFocusNode,
           controller: _descController,
           minLines: 3,
           maxLines: 4,

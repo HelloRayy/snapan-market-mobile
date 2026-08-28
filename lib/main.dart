@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/screens/home_feed_screen.dart';
 import 'package:snapan_market/features/onboarding/screens/onboarding_screen.dart';
@@ -54,6 +53,7 @@ class SnapanMarketApp extends StatelessWidget {
           ),
         ),
       ),
+      home: const AppRoot(),
     );
   }
 }

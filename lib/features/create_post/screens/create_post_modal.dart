@@ -72,6 +72,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
   final GlobalKey _descKey = GlobalKey();
 
   final List<String> _images = [];
+  final List<SubThreadItem> _subThreads = [];
   TopicOption? _selectedTopic;
   SchoolPlace? _selectedLocation;
   PresetGif? _selectedGif;
@@ -1037,7 +1038,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         itemCount: _images.length + 1,
-        separatorBuilder: (_, __) => const SizedBox(width: 8.0),
+        separatorBuilder: (context, index) => const SizedBox(width: 8.0),
         itemBuilder: (context, index) {
           if (index == _images.length) {
             return GestureDetector(

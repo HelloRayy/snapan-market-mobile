@@ -1,5 +1,6 @@
 /// Data types and presets for the Create Post & Thread feature
 /// Matching Web `src/ui/components/marketplace/create-post/types.ts`
+library;
 
 enum PostMode {
   thread,

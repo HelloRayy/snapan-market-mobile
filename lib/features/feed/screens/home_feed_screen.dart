@@ -3,6 +3,7 @@ import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/components/home_feed_header.dart';
 import 'package:snapan_market/features/feed/components/home_feed_tab_switch.dart';
 import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart';
+import 'package:snapan_market/features/feed/components/home_navigation_drawer.dart';
 
 /// Main Home Feed Screen
 ///
@@ -23,6 +24,7 @@ class HomeFeedScreen extends StatefulWidget {
 }
 
 class _HomeFeedScreenState extends State<HomeFeedScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final ScrollController _scrollController = ScrollController();
   FeedTab _activeTab = FeedTab.forYou;
   HomeNavTab _currentNavTab = HomeNavTab.home;
@@ -44,14 +46,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   }
 
   void _handleMenuTap() {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Menu drawer akan segera hadir pada slicing berikutnya!'),
-        duration: Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    _scaffoldKey.currentState?.openDrawer();
   }
 
   void _handleSearchTap() {
@@ -85,7 +80,22 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: AppColors.canvas,
+      drawerEnableOpenDragGesture: true,
+      drawerEdgeDragWidth: 40.0,
+      drawer: HomeNavigationDrawer(
+        onNavigateHome: () {
+          setState(() {
+            _activeTab = FeedTab.forYou;
+            _currentNavTab = HomeNavTab.home;
+          });
+          _scrollToTop();
+        },
+        onNavigateSearch: _handleSearchTap,
+        onOpenCreateModal: _handleCreatePost,
+        onLogout: widget.onLogout,
+      ),
       appBar: HomeFeedHeader(
         onMenuTap: _handleMenuTap,
         onTitleTap: _scrollToTop,

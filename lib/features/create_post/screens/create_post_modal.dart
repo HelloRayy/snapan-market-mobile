@@ -753,7 +753,12 @@ class _CreatePostModalState extends State<CreatePostModal> {
         const SizedBox(height: 6.0),
         TextField(
           controller: _productTitleController,
-          style: const TextStyle(fontSize: 14.0, color: AppColors.ink),
+          cursorColor: AppColors.primary,
+          style: const TextStyle(
+            fontSize: 14.5,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF0F172A),
+          ),
           decoration: _buildCleanInputDecoration(
             hint: 'Tulis nama barang atau jasa...',
           ),
@@ -766,19 +771,21 @@ class _CreatePostModalState extends State<CreatePostModal> {
         TextField(
           controller: _priceController,
           keyboardType: TextInputType.number,
+          cursorColor: AppColors.primary,
           inputFormatters: [
             const RupiahInputFormatter(),
           ],
           style: const TextStyle(
-            fontSize: 14.5,
-            fontWeight: FontWeight.w600,
-            color: AppColors.ink,
+            fontSize: 15.0,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF0F172A),
           ),
           decoration: _buildCleanInputDecoration(
             hint: '0',
             prefixText: 'Rp ',
           ),
         ),
+        const SizedBox(height: 14.0),
 
         // 3. Deskripsi Singkat
         _buildFieldLabel('Deskripsi Singkat'),
@@ -787,7 +794,12 @@ class _CreatePostModalState extends State<CreatePostModal> {
           controller: _descController,
           minLines: 3,
           maxLines: 4,
-          style: const TextStyle(fontSize: 14.0, color: AppColors.ink),
+          cursorColor: AppColors.primary,
+          style: const TextStyle(
+            fontSize: 14.5,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF0F172A),
+          ),
           decoration: _buildCleanInputDecoration(
             hint: 'Tulis kondisi barang, kelengkapan, atau alasan jual...',
           ),
@@ -800,33 +812,35 @@ class _CreatePostModalState extends State<CreatePostModal> {
         TextField(
           readOnly: true,
           onTap: _showLocationPickerBottomSheet,
-          style: const TextStyle(fontSize: 13.5, color: AppColors.ink),
+          style: const TextStyle(
+            fontSize: 14.0,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF0F172A),
+          ),
           decoration: InputDecoration(
             hintText: _selectedLocation != null
                 ? _selectedLocation!.name
                 : 'Ketik titik temu COD (Kantin, Lab, dll)...',
             hintStyle: TextStyle(
               fontSize: 13.5,
-              color: _selectedLocation != null ? AppColors.ink : const Color(0xFFCBD5E1),
+              color: _selectedLocation != null ? const Color(0xFF0F172A) : const Color(0xFF94A3B8),
               fontWeight: _selectedLocation != null ? FontWeight.w600 : FontWeight.w400,
             ),
-            prefixIcon: const Icon(CupertinoIcons.location, size: 16.0, color: Color(0xFF94A3B8)),
+            prefixIcon: const Icon(CupertinoIcons.location, size: 16.0, color: Color(0xFF64748B)),
             filled: true,
             fillColor: Colors.white,
             contentPadding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.0),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.0),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.0),
-              borderSide: const BorderSide(color: AppColors.primary),
+              borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
             ),
           ),
         ),
         const SizedBox(height: 8.0),
-
-        // Quick Preset COD Chips (Matching Image #2)
         Wrap(
           spacing: 6.0,
           runSpacing: 6.0,
@@ -845,15 +859,16 @@ class _CreatePostModalState extends State<CreatePostModal> {
                   });
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: _selectedLocation?.name == preset['name']
+                        ? const Color(0xFFEFF6FF)
+                        : Colors.white,
                     borderRadius: BorderRadius.circular(10.0),
                     border: Border.all(
                       color: _selectedLocation?.name == preset['name']
                           ? AppColors.primary
                           : const Color(0xFFE2E8F0),
-                      width: _selectedLocation?.name == preset['name'] ? 1.5 : 1.0,
+                      width: _selectedLocation?.name == preset['name'] ? 1.4 : 1.0,
                     ),
                   ),
                   child: Row(
@@ -865,7 +880,9 @@ class _CreatePostModalState extends State<CreatePostModal> {
                         preset['name']!,
                         style: TextStyle(
                           fontSize: 12.0,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: _selectedLocation?.name == preset['name']
+                              ? FontWeight.w700
+                              : FontWeight.w600,
                           color: _selectedLocation?.name == preset['name']
                               ? AppColors.primary
                               : const Color(0xFF334155),
@@ -910,23 +927,23 @@ class _CreatePostModalState extends State<CreatePostModal> {
   }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(fontSize: 13.5, color: Color(0xFFCBD5E1)),
+      hintStyle: const TextStyle(fontSize: 13.5, color: Color(0xFF94A3B8)),
       prefixText: prefixText,
       prefixStyle: const TextStyle(
-        fontSize: 14.5,
+        fontSize: 15.0,
         fontWeight: FontWeight.w700,
-        color: AppColors.ink,
+        color: Color(0xFF0F172A),
       ),
       filled: true,
       fillColor: Colors.white,
       contentPadding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12.0),
-        borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
+        borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.0),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12.0),
-        borderSide: const BorderSide(color: AppColors.primary, width: 1.6),
+        borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
       ),
     );
   }

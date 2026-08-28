@@ -33,25 +33,6 @@ class SnapanMarketApp extends StatelessWidget {
           surface: Colors.white,
         ),
         scaffoldBackgroundColor: Colors.white,
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.white,
-          focusColor: Colors.white,
-          hoverColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.0),
-            borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.0),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.0),
-            borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.0),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.0),
-            borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-          ),
-        ),
       ),
       home: const AppRoot(),
     );

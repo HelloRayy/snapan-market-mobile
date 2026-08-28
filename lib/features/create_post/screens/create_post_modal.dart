@@ -569,12 +569,17 @@ class _CreatePostModalState extends State<CreatePostModal> {
       decoration: InputDecoration(
         hintText: _postMode == PostMode.thread
             ? 'Apa yang baru?'
-            : 'Tulis deskripsi atau rincian jualan...',
+            : 'Ceritakan tentang produk jualanmu...',
         hintStyle: const TextStyle(
           fontSize: 15.0,
           color: Color(0xFF94A3B8),
         ),
         border: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        errorBorder: InputBorder.none,
+        disabledBorder: InputBorder.none,
+        filled: false,
         isDense: true,
         contentPadding: EdgeInsets.zero,
       ),
@@ -678,7 +683,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
           ),
           const SizedBox(width: 6.0), // Tight clean gap
           Text(
-            'Jual Barang',
+            _postMode == PostMode.product ? 'Mode Jual Aktif' : 'Jual Produk',
             style: TextStyle(
               fontSize: 13.0,
               fontWeight: FontWeight.w600,

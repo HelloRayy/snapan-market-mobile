@@ -13,7 +13,7 @@ class RupiahInputFormatter extends TextInputFormatter {
     TextEditingValue newValue,
   ) {
     // 1. Ambil hanya angka (digits)
-    final digits = newValue.text.replaceAll(RegExp(r'\D'), '');
+    var digits = newValue.text.replaceAll(RegExp(r'\D'), '');
 
     if (digits.isEmpty) {
       return const TextEditingValue(
@@ -22,9 +22,13 @@ class RupiahInputFormatter extends TextInputFormatter {
       );
     }
 
-    // 2. Batasi maksimal 13 digit (sampai Triliun)
-    final safeDigits = digits.length > 13 ? digits.substring(0, 13) : digits;
+    // 2. Hilangkan angka 0 di depan (leading zeros), contoh: 085139 -> 85139
+    while (digits.length > 1 && digits.startsWith('0')) {
+      digits = digits.substring(1);
+    }
 
+    // 3. Batasi maksimal 13 digit (sampai Triliun)
+    final safeDigits = digits.length > 13 ? digits.substring(0, 13) : digits;
     // 3. Format ribuan dengan titik (contoh: 123.123.123)
     final StringBuffer buffer = StringBuffer();
     final int len = safeDigits.length;

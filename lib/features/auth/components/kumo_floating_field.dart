@@ -145,7 +145,7 @@ class _KumoFloatingFieldState extends State<KumoFloatingField>
                       // Prefix Widget (misal: 🇮🇩 +62)
                       if (widget.prefixWidget != null) ...[
                         Padding(
-                          padding: const EdgeInsets.only(left: 14, right: 6),
+                          padding: const EdgeInsets.only(left: 12, right: 12),
                           child: widget.prefixWidget!,
                         ),
                       ] else
@@ -193,7 +193,7 @@ class _KumoFloatingFieldState extends State<KumoFloatingField>
                 // 2. Animated Floating Label Melayang ke Border Atas
                 Positioned(
                   left: Tween<double>(
-                    begin: widget.prefixWidget != null ? 82.0 : 16.0,
+                    begin: widget.prefixWidget != null ? 98.0 : 16.0,
                     end: 14.0,
                   ).evaluate(anim),
                   top: Tween<double>(

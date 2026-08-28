@@ -289,7 +289,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                             // Vertical Thread Connector Line
                             Container(
                               width: 2.0,
-                              height: 140.0, // Stretches smoothly along the spacious textarea
+                              height: 75.0, // Compact thread line matching 1-line initial state
                               color: const Color(0xFFE2E8F0),
                             ),
                           ],
@@ -304,7 +304,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                               // Author Name + Topic Picker
                               _buildAuthorAndTopicLine(),
 
-                              const SizedBox(height: 8.0),
+                              const SizedBox(height: 4.0),
 
                               // Main Textarea ("Apa yang baru?")
                               _buildMainTextInput(),
@@ -339,12 +339,12 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                 _buildPollBuilder(),
                               ],
 
-                              const SizedBox(height: 12.0),
+                              const SizedBox(height: 8.0),
 
                               // 7-Icon Media Toolbar (Row 1)
                               _buildMediaIconsRow(),
 
-                              const SizedBox(height: 8.0),
+                              const SizedBox(height: 6.0),
 
                               // "Jual Barang" Switch Pill (Row 2 - Anti-Overflow)
                               _buildSellingSwitchPill(),
@@ -507,37 +507,31 @@ class _CreatePostModalState extends State<CreatePostModal> {
     );
   }
 
-  // Main Textarea ("Apa yang baru?" with generous minHeight)
+  // Main Textarea ("Apa yang baru?" - Compact & Auto-Expanding)
   Widget _buildMainTextInput() {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(
-        minHeight: 80.0, // Spacious writing area matching Threads
+    return TextField(
+      controller: _captionController,
+      minLines: 1, // Compact starting height
+      maxLines: null, // Expands dynamically as user types
+      keyboardType: TextInputType.multiline,
+      style: const TextStyle(
+        fontSize: 15.0,
+        color: AppColors.ink,
+        height: 1.35,
       ),
-      child: TextField(
-        controller: _captionController,
-        minLines: 3, // At least 3 lines of comfortable typing space
-        maxLines: null,
-        keyboardType: TextInputType.multiline,
-        style: const TextStyle(
+      decoration: InputDecoration(
+        hintText: _postMode == PostMode.thread
+            ? 'Apa yang baru?'
+            : 'Ceritakan tentang barang atau jasamu...',
+        hintStyle: const TextStyle(
           fontSize: 15.0,
-          color: AppColors.ink,
-          height: 1.4,
+          color: Color(0xFF94A3B8),
         ),
-        decoration: InputDecoration(
-          hintText: _postMode == PostMode.thread
-              ? 'Apa yang baru?'
-              : 'Ceritakan tentang barang atau jasamu...',
-          hintStyle: const TextStyle(
-            fontSize: 15.0,
-            color: Color(0xFF94A3B8),
-          ),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.only(top: 2.0, bottom: 8.0),
-        ),
+        border: InputBorder.none,
+        contentPadding: const EdgeInsets.only(top: 2.0, bottom: 4.0),
       ),
     );
   }
-
   // 7-Icon Media Toolbar (Row 1 - Matching Image #2)
   Widget _buildMediaIconsRow() {
     return Row(

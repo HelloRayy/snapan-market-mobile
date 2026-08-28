@@ -204,7 +204,11 @@ class _CreatePostModalState extends State<CreatePostModal> {
         _images.isNotEmpty;
 
     if (!hasContent) {
-      widget.onClose?.call() ?? Navigator.of(context).pop();
+      if (widget.onClose != null) {
+        widget.onClose!();
+      } else {
+        Navigator.of(context).pop();
+      }
       return;
     }
 
@@ -218,7 +222,11 @@ class _CreatePostModalState extends State<CreatePostModal> {
             isDestructiveAction: true,
             onPressed: () {
               Navigator.of(context).pop();
-              widget.onClose?.call() ?? Navigator.of(context).pop();
+              if (widget.onClose != null) {
+                widget.onClose!();
+              } else {
+                Navigator.of(context).pop();
+              }
             },
             child: const Text('Buang'),
           ),

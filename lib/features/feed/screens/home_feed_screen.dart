@@ -4,6 +4,8 @@ import 'package:snapan_market/features/feed/components/home_feed_header.dart';
 import 'package:snapan_market/features/feed/components/home_feed_tab_switch.dart';
 import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart';
 import 'package:snapan_market/features/feed/components/home_navigation_drawer.dart';
+import 'package:snapan_market/features/create_post/screens/create_post_modal.dart';
+import 'package:snapan_market/features/create_post/models/create_post_types.dart';
 
 /// Main Home Feed Screen
 ///
@@ -60,14 +62,23 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
     );
   }
 
-  void _handleCreatePost() {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Buat postingan / thread baru akan segera hadir!'),
-        duration: Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-      ),
+  void _handleCreatePost([PostMode mode = PostMode.thread]) {
+    CreatePostModal.show(
+      context,
+      initialMode: mode,
+      onSubmitPost: (data) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              data['mode'] == 'product'
+                  ? 'Produk berhasil dipasang ke katalog COD SMKN 8!'
+                  : 'Utas berhasil diposting ke feed!',
+            ),
+            duration: const Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      },
     );
   }
 

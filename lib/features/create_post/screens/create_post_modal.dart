@@ -241,8 +241,8 @@ class _CreatePostModalState extends State<CreatePostModal> {
       behavior: HitTestBehavior.opaque,
       child: Scaffold(
         backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: false,
         body: SafeArea(
-        top: true,
         bottom: true,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -790,14 +790,18 @@ class _CreatePostModalState extends State<CreatePostModal> {
           ),
           decoration: _buildCleanInputDecoration(
             hint: '0',
-            prefixWidget: const Padding(
-              padding: EdgeInsets.only(left: 14.0, right: 4.0),
+            prefixWidget: Padding(
+              padding: const EdgeInsets.only(left: 14.0, right: 4.0),
               child: Text(
                 'Rp ',
                 style: TextStyle(
                   fontSize: 15.0,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF0F172A),
+                  fontWeight: _priceController.text.isNotEmpty
+                      ? FontWeight.w700
+                      : FontWeight.w400,
+                  color: _priceController.text.isNotEmpty
+                      ? const Color(0xFF0F172A)
+                      : const Color(0xFF94A3B8),
                 ),
               ),
             ),
@@ -945,7 +949,11 @@ class _CreatePostModalState extends State<CreatePostModal> {
   }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(fontSize: 13.5, color: Color(0xFF94A3B8)),
+      hintStyle: const TextStyle(
+        fontSize: 13.5,
+        fontWeight: FontWeight.w400,
+        color: Color(0xFF94A3B8),
+      ),
       prefixIcon: prefixWidget,
       prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
       filled: true,

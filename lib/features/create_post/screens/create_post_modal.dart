@@ -351,17 +351,18 @@ class _CreatePostModalState extends State<CreatePostModal> {
                       ],
                     ),
 
-                    // Sub-Threads Chain (if any)
-                    if (_subThreads.isNotEmpty) ...[
-                      const SizedBox(height: 12.0),
-                      _buildSubThreadsChain(),
+                    // Sub-Threads Chain (Only in Thread Mode - matching Image #1)
+                    if (_postMode == PostMode.thread) ...[
+                      if (_subThreads.isNotEmpty) ...[
+                        const SizedBox(height: 12.0),
+                        _buildSubThreadsChain(),
+                      ],
+
+                      const SizedBox(height: 8.0),
+
+                      // Sub-Thread Continuation Trigger ("Tambahkan ke utas")
+                      _buildSubThreadTrigger(),
                     ],
-
-                    const SizedBox(height: 8.0),
-
-                    // Sub-Thread Continuation Trigger ("Tambahkan ke utas")
-                    _buildSubThreadTrigger(),
-
                     const SizedBox(height: 40.0),
                   ],
                 ),
@@ -733,125 +734,183 @@ class _CreatePostModalState extends State<CreatePostModal> {
     );
   }
 
-  // Product E-Commerce Fields
+  // Product Fields Layout (Matching Image #2 1:1)
   Widget _buildProductFields() {
-    return Container(
-      padding: const EdgeInsets.all(12.0),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(14.0),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Informasi Produk & COD SMKN 8',
-            style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.slateInk),
-          ),
-          const SizedBox(height: 10.0),
+    const codPresets = [
+      {'name': 'Kantin', 'emoji': '🍜'},
+      {'name': 'Lab PPLG', 'emoji': '💻'},
+      {'name': 'Perpustakaan', 'emoji': '📚'},
+      {'name': 'Depan Gerbang', 'emoji': '🏫'},
+      {'name': 'Lapangan', 'emoji': '⚽'},
+      {'name': 'Gazebo DKV', 'emoji': '☕'},
+    ];
 
-          // Nama Produk
-          TextField(
-            controller: _productTitleController,
-            style: const TextStyle(fontSize: 13.5, color: AppColors.ink),
-            decoration: _buildInputDecoration(
-              label: 'Nama Produk / Jasa',
-              hint: 'e.g. Seragam Batik SMKN 8, Jasa Desain',
-              icon: CupertinoIcons.tag,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 1. Nama Barang / Jasa *
+        _buildFieldLabel('Nama Barang / Jasa', isRequired: true),
+        const SizedBox(height: 6.0),
+        TextField(
+          controller: _productTitleController,
+          style: const TextStyle(fontSize: 14.0, color: AppColors.ink),
+          decoration: _buildCleanInputDecoration(
+            hint: 'Tulis nama barang atau jasa...',
+          ),
+        ),
+        const SizedBox(height: 14.0),
+
+        // 2. Harga (Rp) *
+        _buildFieldLabel('Harga (Rp)', isRequired: true),
+        const SizedBox(height: 6.0),
+        TextField(
+          controller: _priceController,
+          keyboardType: TextInputType.number,
+          style: const TextStyle(fontSize: 14.0, color: AppColors.ink),
+          decoration: _buildCleanInputDecoration(
+            hint: 'Masukkan nominal harga...',
+          ),
+        ),
+        const SizedBox(height: 14.0),
+
+        // 3. Deskripsi Singkat
+        _buildFieldLabel('Deskripsi Singkat'),
+        const SizedBox(height: 6.0),
+        TextField(
+          controller: _descController,
+          minLines: 3,
+          maxLines: 4,
+          style: const TextStyle(fontSize: 14.0, color: AppColors.ink),
+          decoration: _buildCleanInputDecoration(
+            hint: 'Tulis kondisi barang, kelengkapan, atau alasan jual...',
+          ),
+        ),
+        const SizedBox(height: 14.0),
+
+        // 4. Titik COD di Sekolah
+        _buildFieldLabel('Titik COD di Sekolah'),
+        const SizedBox(height: 6.0),
+        TextField(
+          readOnly: true,
+          onTap: _showLocationPickerBottomSheet,
+          style: const TextStyle(fontSize: 13.5, color: AppColors.ink),
+          decoration: InputDecoration(
+            hintText: _selectedLocation != null
+                ? _selectedLocation!.name
+                : 'Ketik titik temu COD (Kantin, Lab, dll)...',
+            hintStyle: TextStyle(
+              fontSize: 13.5,
+              color: _selectedLocation != null ? AppColors.ink : const Color(0xFFCBD5E1),
+              fontWeight: _selectedLocation != null ? FontWeight.w600 : FontWeight.w400,
+            ),
+            prefixIcon: const Icon(CupertinoIcons.location, size: 16.0, color: Color(0xFF94A3B8)),
+            filled: true,
+            fillColor: Colors.white,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: const BorderSide(color: AppColors.primary),
             ),
           ),
-          const SizedBox(height: 8.0),
+        ),
+        const SizedBox(height: 8.0),
 
-          // Harga & Stok
-          Row(
-            children: [
-              Expanded(
-                flex: 3,
-                child: TextField(
-                  controller: _priceController,
-                  keyboardType: TextInputType.number,
-                  style: const TextStyle(fontSize: 13.5, color: AppColors.ink),
-                  decoration: _buildInputDecoration(
-                    label: 'Harga (Rp)',
-                    hint: '25.000',
-                    icon: CupertinoIcons.money_dollar,
+        // Quick Preset COD Chips (Matching Image #2)
+        Wrap(
+          spacing: 6.0,
+          runSpacing: 6.0,
+          children: [
+            for (var preset in codPresets) ...[
+              GestureDetector(
+                onTap: () {
+                  HapticFeedback.selectionClick();
+                  setState(() {
+                    _selectedLocation = SchoolPlace(
+                      id: 'preset_${preset['name']}',
+                      name: preset['name']!,
+                      subtitle: 'Titik Temu COD Sekolah',
+                      distance: 'Kampus SMKN 8',
+                    );
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                    border: Border.all(
+                      color: _selectedLocation?.name == preset['name']
+                          ? AppColors.primary
+                          : const Color(0xFFE2E8F0),
+                      width: _selectedLocation?.name == preset['name'] ? 1.5 : 1.0,
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(width: 8.0),
-              Expanded(
-                flex: 2,
-                child: TextField(
-                  controller: _stockController,
-                  keyboardType: TextInputType.number,
-                  style: const TextStyle(fontSize: 13.5, color: AppColors.ink),
-                  decoration: _buildInputDecoration(
-                    label: 'Stok',
-                    hint: '1',
-                    icon: CupertinoIcons.cube_box,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(preset['emoji']!, style: const TextStyle(fontSize: 12.0)),
+                      const SizedBox(width: 4.0),
+                      Text(
+                        preset['name']!,
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w600,
+                          color: _selectedLocation?.name == preset['name']
+                              ? AppColors.primary
+                              : const Color(0xFF334155),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 8.0),
+          ],
+        ),
+      ],
+    );
+  }
 
-          // Lokasi Titik Temu COD
-          GestureDetector(
-            onTap: _showLocationPickerBottomSheet,
-            behavior: HitTestBehavior.opaque,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10.0),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(CupertinoIcons.location, size: 15.0, color: AppColors.primary),
-                  const SizedBox(width: 6.0),
-                  Expanded(
-                    child: Text(
-                      _selectedLocation != null ? _selectedLocation!.name : 'Pilih Titik Temu COD...',
-                      style: TextStyle(
-                        fontSize: 13.0,
-                        color: _selectedLocation != null ? AppColors.ink : AppColors.muted,
-                        fontWeight: _selectedLocation != null ? FontWeight.w600 : FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                  const Icon(Icons.chevron_right_rounded, size: 15.0, color: AppColors.muted),
-                ],
+  Widget _buildFieldLabel(String text, {bool isRequired = false}) {
+    return RichText(
+      text: TextSpan(
+        text: text,
+        style: const TextStyle(
+          fontSize: 13.5,
+          fontWeight: FontWeight.w700,
+          color: Color(0xFF1E293B), // Slate 800
+        ),
+        children: [
+          if (isRequired)
+            const TextSpan(
+              text: ' *',
+              style: TextStyle(
+                color: Color(0xFFEF4444), // Red *
+                fontWeight: FontWeight.w700,
               ),
             ),
-          ),
         ],
       ),
     );
   }
 
-  InputDecoration _buildInputDecoration({
-    required String label,
-    required String hint,
-    required IconData icon,
-  }) {
+  InputDecoration _buildCleanInputDecoration({required String hint}) {
     return InputDecoration(
-      labelText: label,
-      labelStyle: const TextStyle(fontSize: 12.0, color: AppColors.muted),
       hintText: hint,
-      hintStyle: const TextStyle(fontSize: 13.0, color: Color(0xFFCBD5E1)),
-      prefixIcon: Icon(icon, size: 15.0, color: AppColors.muted),
+      hintStyle: const TextStyle(fontSize: 13.5, color: Color(0xFFCBD5E1)),
       filled: true,
       fillColor: Colors.white,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
+        borderRadius: BorderRadius.circular(12.0),
         borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
+        borderRadius: BorderRadius.circular(12.0),
         borderSide: const BorderSide(color: AppColors.primary),
       ),
     );

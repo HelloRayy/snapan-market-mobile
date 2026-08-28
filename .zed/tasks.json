@@ -1,0 +1,32 @@
+[
+  {
+    "label": "📱 Run App to Phone (Build, Install & Launch)",
+    "command": "cd android && ./gradlew installDebug && adb shell am start -n com.snapan.market.debug/com.snapan.market.MainActivity",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "🔨 Build Debug APK Only",
+    "command": "cd android && ./gradlew assembleDebug",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "🖥️ Launch Scrcpy Mirror (Ultra Low Latency)",
+    "command": "scrcpy -S -t --no-audio --video-buffer=0 -m 1080 -b 6M --max-fps 60 --always-on-top --stay-awake",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "📋 View App Logcat (Realtime Logs & Errors)",
+    "command": "adb logcat -v time -s 'SnapanMarket:V' 'AndroidRuntime:E' 'System.out:I'",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "🧹 Clean Gradle Cache",
+    "command": "cd android && ./gradlew clean",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false
+  }
+]

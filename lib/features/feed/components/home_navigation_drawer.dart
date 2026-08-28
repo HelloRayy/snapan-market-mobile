@@ -585,9 +585,9 @@ class _DrawerItemButtonState extends State<_DrawerItemButton> {
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           decoration: BoxDecoration(
             color: widget.isActiveHero
-                ? const Color(0x08000000) // Ultra subtle 3% tint (barely visible, clean & soft)
+                ? const Color(0x0D000000) // Exact hover:bg-black/5 color (5% black)
                 : _isPressed
-                    ? const Color(0x0D000000) // 5% hover/press
+                    ? const Color(0x14000000) // 8% black press feedback
                     : Colors.transparent,
             borderRadius: BorderRadius.circular(12.0),
           ),

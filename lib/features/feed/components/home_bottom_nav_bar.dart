@@ -181,11 +181,13 @@ class HomeBottomNavBar extends StatelessWidget {
                           ),
                         ),
 
-                        // Tab 5: Profil (User Avatar)
+                        // Tab 5: Profil (User Avatar with Outline/Solid transition)
                         Expanded(
                           child: _NavTabItem(
                             tab: HomeNavTab.profile,
                             isActive: currentTab == HomeNavTab.profile,
+                            icon: CupertinoIcons.person,
+                            activeIcon: CupertinoIcons.person_fill,
                             userAvatar: userAvatar,
                             tooltip: 'Profil',
                             onTap: () => onTabSelected(HomeNavTab.profile),
@@ -477,7 +479,7 @@ class _NavTabItemState extends State<_NavTabItem> {
       height: 24.0,
       color: const Color(0xFFF1F5F9),
       child: Icon(
-        CupertinoIcons.person_fill,
+        isActive ? CupertinoIcons.person_fill : CupertinoIcons.person,
         size: 16.0,
         color: isActive ? AppColors.ink : const Color(0xFF94A3B8),
       ),

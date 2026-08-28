@@ -115,7 +115,7 @@ class HomeBottomNavBar extends StatelessWidget {
           bottom: true,
           child: Container(
             height: 50.0,
-            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0), // Edge padding to center buttons
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -228,13 +228,13 @@ class _ReferenceCenterButtonState extends State<_ReferenceCenterButton> {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 50.0,
-      width: 48.0,
+      width: 54.0,
       child: OverflowBox(
-        maxHeight: 90.0,
-        maxWidth: 90.0,
+        maxHeight: 100.0,
+        maxWidth: 100.0,
         alignment: Alignment.center,
         child: Transform.translate(
-          offset: const Offset(0, -18.0), // Floating outset -18px matching web
+          offset: const Offset(0, -20.0), // Floating outset -20px
           child: GestureDetector(
             onTapDown: _handleTapDown,
             onTapUp: _handleTapUp,
@@ -249,16 +249,16 @@ class _ReferenceCenterButtonState extends State<_ReferenceCenterButton> {
               duration: const Duration(milliseconds: 75),
               curve: Curves.easeOutCubic,
               child: Container(
-                width: 48.0,
-                height: 48.0,
+                width: 54.0,
+                height: 54.0,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.white.withValues(alpha: 0.95), // 4px pure white halo ring
                   boxShadow: const [
                     BoxShadow(
                       color: Color(0x331D64EC), // Subtle diffused blue ambient shadow
-                      blurRadius: 8.0,
-                      offset: Offset(0, 4),
+                      blurRadius: 10.0,
+                      offset: Offset(0, 5),
                     ),
                     BoxShadow(
                       color: Color(0x14000000), // Ambient depth shadow
@@ -267,7 +267,7 @@ class _ReferenceCenterButtonState extends State<_ReferenceCenterButton> {
                     ),
                   ],
                 ),
-                padding: const EdgeInsets.all(3.5), // The exact clean 4px white halo ring
+                padding: const EdgeInsets.all(4.0), // Clean 4px white halo ring
                 child: Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
@@ -288,7 +288,7 @@ class _ReferenceCenterButtonState extends State<_ReferenceCenterButton> {
                     child: Icon(
                       Icons.add_rounded,
                       color: Colors.white,
-                      size: 22.0,
+                      size: 26.0, // Enlarged plus icon
                     ),
                   ),
                 ),

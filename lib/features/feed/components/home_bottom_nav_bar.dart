@@ -116,71 +116,68 @@ class HomeBottomNavBar extends StatelessWidget {
           child: SizedBox(
             height: 50.0,
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Tab 1: Home (Kumo Active Pill)
-                Expanded(
-                  child: _NavTabItem(
-                    tab: HomeNavTab.home,
-                    isActive: currentTab == HomeNavTab.home,
-                    icon: Icons.home_outlined,
-                    activeIcon: Icons.home_rounded,
-                    tooltip: 'Home',
-                    onTap: () => onTabSelected(HomeNavTab.home),
-                  ),
+                _NavTabItem(
+                  tab: HomeNavTab.home,
+                  isActive: currentTab == HomeNavTab.home,
+                  icon: Icons.home_outlined,
+                  activeIcon: Icons.home_rounded,
+                  tooltip: 'Home',
+                  onTap: () => onTabSelected(HomeNavTab.home),
                 ),
+
+                const SizedBox(width: 4.0), // 4px tight gap
 
                 // Tab 2: Pesan (Send Icon with Red Dot Badge)
-                Expanded(
-                  child: _NavTabItem(
-                    tab: HomeNavTab.messages,
-                    isActive: currentTab == HomeNavTab.messages,
-                    icon: Icons.send_outlined,
-                    activeIcon: Icons.send_rounded,
-                    hasBadge: hasUnreadMessages,
-                    tooltip: 'Pesan',
-                    onTap: () => onTabSelected(HomeNavTab.messages),
-                  ),
+                _NavTabItem(
+                  tab: HomeNavTab.messages,
+                  isActive: currentTab == HomeNavTab.messages,
+                  icon: Icons.send_outlined,
+                  activeIcon: Icons.send_rounded,
+                  hasBadge: hasUnreadMessages,
+                  tooltip: 'Pesan',
+                  onTap: () => onTabSelected(HomeNavTab.messages),
                 ),
+
+                const SizedBox(width: 4.0), // 4px tight gap
 
                 // Tab 3: Center Action (Enlarged Floating Kumo FAB 56px with High Z-Index)
-                Expanded(
-                  child: Center(
-                    child: _FloatingKumoFabButton(
-                      onTap: () {
-                        if (onCreateTap != null) {
-                          onCreateTap!();
-                        } else {
-                          onTabSelected(HomeNavTab.create);
-                        }
-                      },
-                    ),
-                  ),
+                _FloatingKumoFabButton(
+                  onTap: () {
+                    if (onCreateTap != null) {
+                      onCreateTap!();
+                    } else {
+                      onTabSelected(HomeNavTab.create);
+                    }
+                  },
                 ),
+
+                const SizedBox(width: 4.0), // 4px tight gap
 
                 // Tab 4: Aktivitas (Heart Icon)
-                Expanded(
-                  child: _NavTabItem(
-                    tab: HomeNavTab.activity,
-                    isActive: currentTab == HomeNavTab.activity,
-                    icon: Icons.favorite_border_rounded,
-                    activeIcon: Icons.favorite_rounded,
-                    activeColor: const Color(0xFFF43F5E), // rose-500
-                    hasBadge: hasUnreadActivity,
-                    tooltip: 'Aktivitas',
-                    onTap: () => onTabSelected(HomeNavTab.activity),
-                  ),
+                _NavTabItem(
+                  tab: HomeNavTab.activity,
+                  isActive: currentTab == HomeNavTab.activity,
+                  icon: Icons.favorite_border_rounded,
+                  activeIcon: Icons.favorite_rounded,
+                  activeColor: const Color(0xFFF43F5E), // rose-500
+                  hasBadge: hasUnreadActivity,
+                  tooltip: 'Aktivitas',
+                  onTap: () => onTabSelected(HomeNavTab.activity),
                 ),
 
+                const SizedBox(width: 4.0), // 4px tight gap
+
                 // Tab 5: Profil (User Avatar)
-                Expanded(
-                  child: _NavTabItem(
-                    tab: HomeNavTab.profile,
-                    isActive: currentTab == HomeNavTab.profile,
-                    userAvatar: userAvatar,
-                    tooltip: 'Profil',
-                    onTap: () => onTabSelected(HomeNavTab.profile),
-                  ),
+                _NavTabItem(
+                  tab: HomeNavTab.profile,
+                  isActive: currentTab == HomeNavTab.profile,
+                  userAvatar: userAvatar,
+                  tooltip: 'Profil',
+                  onTap: () => onTabSelected(HomeNavTab.profile),
                 ),
               ],
             ),
@@ -348,8 +345,6 @@ class _NavTabItemState extends State<_NavTabItem> {
 
     return Semantics(
       label: widget.tooltip,
-      selected: widget.isActive,
-      button: true,
       child: GestureDetector(
         onTapDown: _handleTapDown,
         onTapUp: _handleTapUp,
@@ -363,7 +358,10 @@ class _NavTabItemState extends State<_NavTabItem> {
           scale: _isPressed ? 0.96 : 1.0,
           duration: const Duration(milliseconds: 75),
           curve: Curves.easeOutCubic,
-          child: Center(
+          child: Container(
+            width: 58.0, // Fixed compact slot width
+            height: 50.0,
+            alignment: Alignment.center,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               curve: Curves.easeOutCubic,

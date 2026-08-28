@@ -129,7 +129,7 @@ class HomeBottomNavBar extends StatelessWidget {
                   onTap: () => onTabSelected(HomeNavTab.home),
                 ),
 
-                const SizedBox(width: 4.0), // 4px tight gap
+                const SizedBox(width: 8.0), // 8px gap
 
                 // Tab 2: Pesan (Send Icon with Red Dot Badge)
                 _NavTabItem(
@@ -142,7 +142,7 @@ class HomeBottomNavBar extends StatelessWidget {
                   onTap: () => onTabSelected(HomeNavTab.messages),
                 ),
 
-                const SizedBox(width: 4.0), // 4px tight gap
+                const SizedBox(width: 8.0), // 8px gap
 
                 // Tab 3: Center Action (Enlarged Floating Kumo FAB 56px with High Z-Index)
                 _FloatingKumoFabButton(
@@ -155,7 +155,7 @@ class HomeBottomNavBar extends StatelessWidget {
                   },
                 ),
 
-                const SizedBox(width: 4.0), // 4px tight gap
+                const SizedBox(width: 8.0), // 8px gap
 
                 // Tab 4: Aktivitas (Heart Icon)
                 _NavTabItem(
@@ -169,7 +169,7 @@ class HomeBottomNavBar extends StatelessWidget {
                   onTap: () => onTabSelected(HomeNavTab.activity),
                 ),
 
-                const SizedBox(width: 4.0), // 4px tight gap
+                const SizedBox(width: 8.0), // 8px gap
 
                 // Tab 5: Profil (User Avatar)
                 _NavTabItem(
@@ -355,23 +355,23 @@ class _NavTabItemState extends State<_NavTabItem> {
         },
         behavior: HitTestBehavior.opaque,
         child: AnimatedScale(
-          scale: _isPressed ? 0.96 : 1.0,
+          scale: _isPressed ? 0.98 : 1.0, // active:scale-[0.98]
           duration: const Duration(milliseconds: 75),
           curve: Curves.easeOutCubic,
           child: Container(
-            width: 58.0, // Fixed compact slot width
+            width: 74.0, // Slot width matching w-[78.16px]
             height: 50.0,
             alignment: Alignment.center,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               curve: Curves.easeOutCubic,
-              height: 40.0, // In-bar active indicator pill h-[40px]
-              width: widget.isActive ? 58.0 : 44.0,
+              height: 42.0, // Full gray area h-[41.99px]
+              width: widget.isActive ? 70.0 : 48.0, // Full gray area w-[70.15px]
               decoration: BoxDecoration(
                 color: widget.isActive
-                    ? const Color(0xFFF1F5F9) // bg-neutral-100/90
+                    ? const Color(0xFFF1F5F9) // bg-[#ffffff/8] / neutral-100
                     : Colors.transparent,
-                borderRadius: BorderRadius.circular(12.0), // rounded-xl
+                borderRadius: BorderRadius.circular(10.0), // rounded-lg
               ),
               child: Center(
                 child: widget.tab == HomeNavTab.profile
@@ -390,7 +390,7 @@ class _NavTabItemState extends State<_NavTabItem> {
 
     final iconWidget = Icon(
       iconData,
-      size: 26.0,
+      size: 24.0, // 24px icon matching h-[23.99px]
       color: color,
     );
 

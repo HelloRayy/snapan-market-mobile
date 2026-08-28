@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -131,8 +132,8 @@ class HomeBottomNavBar extends StatelessWidget {
                           child: _NavTabItem(
                             tab: HomeNavTab.home,
                             isActive: currentTab == HomeNavTab.home,
-                            icon: Icons.home_outlined,
-                            activeIcon: Icons.home_rounded,
+                            icon: CupertinoIcons.house,
+                            activeIcon: CupertinoIcons.house_fill,
                             tooltip: 'Home',
                             onTap: () => onTabSelected(HomeNavTab.home),
                           ),
@@ -143,8 +144,8 @@ class HomeBottomNavBar extends StatelessWidget {
                           child: _NavTabItem(
                             tab: HomeNavTab.messages,
                             isActive: currentTab == HomeNavTab.messages,
-                            icon: Icons.send_outlined,
-                            activeIcon: Icons.send_rounded,
+                            icon: CupertinoIcons.paperplane,
+                            activeIcon: CupertinoIcons.paperplane_fill,
                             hasBadge: hasUnreadMessages,
                             tooltip: 'Pesan',
                             onTap: () => onTabSelected(HomeNavTab.messages),
@@ -171,8 +172,8 @@ class HomeBottomNavBar extends StatelessWidget {
                           child: _NavTabItem(
                             tab: HomeNavTab.activity,
                             isActive: currentTab == HomeNavTab.activity,
-                            icon: Icons.favorite_border_rounded,
-                            activeIcon: Icons.favorite_rounded,
+                            icon: CupertinoIcons.heart,
+                            activeIcon: CupertinoIcons.heart_fill,
                             activeColor: const Color(0xFFF43F5E), // rose-500
                             hasBadge: hasUnreadActivity,
                             tooltip: 'Aktivitas',
@@ -290,7 +291,7 @@ class _FloatingKumoFabButtonState extends State<_FloatingKumoFabButton> {
                   ),
                   child: const Center(
                     child: Icon(
-                      Icons.add_rounded,
+                      CupertinoIcons.add,
                       color: Colors.white,
                       size: 28.0, // Enlarged bold plus icon
                     ),
@@ -476,7 +477,7 @@ class _NavTabItemState extends State<_NavTabItem> {
       height: 24.0,
       color: const Color(0xFFF1F5F9),
       child: Icon(
-        Icons.person_rounded,
+        CupertinoIcons.person_fill,
         size: 16.0,
         color: isActive ? AppColors.ink : const Color(0xFF94A3B8),
       ),

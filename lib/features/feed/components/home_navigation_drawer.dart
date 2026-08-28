@@ -579,15 +579,11 @@ class _DrawerItemButtonState extends State<_DrawerItemButton> {
         duration: const Duration(milliseconds: 150), // transition-all duration-150
         curve: Curves.easeOutCubic,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150), // transition-all duration-150
-          curve: Curves.easeOutCubic,
-          height: widget.isActiveHero ? 38.0 : 36.0,
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
           decoration: BoxDecoration(
             color: widget.isActiveHero
-                ? const Color(0x0D000000) // 5% black matching hover:bg-black/5
+                ? const Color(0x08000000) // Ultra subtle 3% tint (barely visible, clean & soft)
                 : _isPressed
-                    ? const Color(0x0D000000) // hover:bg-black/5
+                    ? const Color(0x0D000000) // 5% hover/press
                     : Colors.transparent,
             borderRadius: BorderRadius.circular(12.0),
           ),

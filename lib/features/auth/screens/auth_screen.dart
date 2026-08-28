@@ -83,6 +83,7 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
+      resizeToAvoidBottomInset: true,
       body: Container(
         decoration: const BoxDecoration(
           gradient: AppColors.authGradient,
@@ -170,6 +171,8 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                   ),
                   child: SingleChildScrollView(
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
                     physics: const BouncingScrollPhysics(),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
@@ -631,8 +634,7 @@ class _AuthScreenState extends State<AuthScreen> {
         }).toList();
       },
       child: Container(
-        height: 56,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -640,7 +642,7 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               label,
@@ -648,20 +650,27 @@ class _AuthScreenState extends State<AuthScreen> {
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF64748B),
+                height: 1.1,
               ),
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 3),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  selectedValue,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF0F172A),
+                Flexible(
+                  child: Text(
+                    selectedValue,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF0F172A),
+                      height: 1.2,
+                    ),
                   ),
                 ),
+                const SizedBox(width: 4),
                 const Icon(
                   Icons.keyboard_arrow_down_rounded,
                   color: Color(0xFF64748B),

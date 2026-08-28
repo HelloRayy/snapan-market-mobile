@@ -152,10 +152,10 @@ class HomeBottomNavBar extends StatelessWidget {
                           ),
                         ),
 
-                        // Tab 3: Center Action (Squircle Pill Container "+")
+                        // Tab 3: Center Action (Floating Kumo FAB with High Z-Index)
                         Expanded(
                           child: Center(
-                            child: _CenterSquircleAction(
+                            child: _FloatingKumoFabButton(
                               onTap: () {
                                 if (onCreateTap != null) {
                                   onCreateTap!();
@@ -234,46 +234,88 @@ class HomeBottomNavBar extends StatelessWidget {
   }
 }
 
-/// Center Squircle Action Button (Soft translucent pill with "+" icon)
-class _CenterSquircleAction extends StatefulWidget {
+/// Center Floating Action Button (Elevated Kumo Circle with 4px White Halo Ring & High Z-Index)
+class _FloatingKumoFabButton extends StatefulWidget {
   final VoidCallback onTap;
 
-  const _CenterSquircleAction({required this.onTap});
+  const _FloatingKumoFabButton({required this.onTap});
 
   @override
-  State<_CenterSquircleAction> createState() => _CenterSquircleActionState();
+  State<_FloatingKumoFabButton> createState() => _FloatingKumoFabButtonState();
 }
 
-class _CenterSquircleActionState extends State<_CenterSquircleAction> {
+class _FloatingKumoFabButtonState extends State<_FloatingKumoFabButton> {
   bool _isPressed = false;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _isPressed = true),
-      onTapUp: (_) => setState(() => _isPressed = false),
-      onTapCancel: () => setState(() => _isPressed = false),
-      onTap: () {
-        HapticFeedback.mediumImpact();
-        widget.onTap();
-      },
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedScale(
-        scale: _isPressed ? 0.94 : 1.0,
-        duration: const Duration(milliseconds: 75),
-        curve: Curves.easeOutCubic,
-        child: Container(
-          width: 44.0,
-          height: 38.0,
-          decoration: BoxDecoration(
-            color: const Color(0x14000000), // 8% gray translucent pill
-            borderRadius: BorderRadius.circular(14.0), // Rounded squircle
-          ),
-          child: const Center(
-            child: Icon(
-              Icons.add_rounded,
-              color: Color(0xFF475569), // Slate 600
-              size: 24.0,
+    return SizedBox(
+      height: 50.0,
+      width: 52.0,
+      child: OverflowBox(
+        maxHeight: 110.0,
+        maxWidth: 110.0,
+        alignment: Alignment.center,
+        child: Transform.translate(
+          offset: const Offset(0, -18.0), // Floating outset -18px
+          child: GestureDetector(
+            onTapDown: (_) => setState(() => _isPressed = true),
+            onTapUp: (_) => setState(() => _isPressed = false),
+            onTapCancel: () => setState(() => _isPressed = false),
+            onTap: () {
+              HapticFeedback.mediumImpact();
+              widget.onTap();
+            },
+            behavior: HitTestBehavior.opaque,
+            child: AnimatedScale(
+              scale: _isPressed ? 0.95 : 1.0,
+              duration: const Duration(milliseconds: 75),
+              curve: Curves.easeOutCubic,
+              child: Container(
+                width: 52.0,
+                height: 52.0,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.95), // 4px clean white halo ring
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x331D64EC), // Subtle diffused blue ambient shadow
+                      blurRadius: 8.0,
+                      offset: Offset(0, 4),
+                    ),
+                    BoxShadow(
+                      color: Color(0x14000000), // Depth shadow
+                      blurRadius: 4.0,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(3.5), // The exact clean 4px white halo ring
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0xFF3B82F6), // from-[#3b82f6]
+                        Color(0xFF1D64EC), // to-[#1d64ec]
+                      ],
+                    ),
+                    border: Border.all(
+                      color: const Color(0xFF154EC1), // border-[#154ec1]
+                      width: 0.8,
+                    ),
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.add_rounded,
+                      color: Colors.white,
+                      size: 26.0,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ),

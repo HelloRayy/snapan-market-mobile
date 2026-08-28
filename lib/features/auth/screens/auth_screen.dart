@@ -181,7 +181,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           child: Text(
                             _authMode == AuthMode.login
                                 ? 'Masuk\nke Akun Kamu'
-                                : 'Tes123',
+                                : 'Daftar\nAkun Baru',
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontSize: 28,

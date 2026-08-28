@@ -113,9 +113,8 @@ class HomeBottomNavBar extends StatelessWidget {
         SafeArea(
           top: false,
           bottom: true,
-          child: Container(
+          child: SizedBox(
             height: 50.0,
-            padding: const EdgeInsets.symmetric(horizontal: 12.0), // Balanced edge padding
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [

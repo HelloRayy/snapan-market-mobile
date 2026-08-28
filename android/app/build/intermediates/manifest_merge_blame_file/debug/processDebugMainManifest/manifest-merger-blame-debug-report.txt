@@ -1,0 +1,207 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.snapan.market.debug"
+4    android:versionCode="1"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="35" />
+10
+11    <!-- Permissions -->
+12    <uses-permission android:name="android.permission.INTERNET" />
+12-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:5:5-67
+12-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:5:22-64
+13    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+13-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:6:5-79
+13-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:6:22-76
+14    <uses-permission android:name="android.permission.VIBRATE" />
+14-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:7:5-66
+14-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:7:22-63
+15    <uses-permission
+15-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:8:5-9:38
+16        android:name="android.permission.READ_EXTERNAL_STORAGE"
+16-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:8:22-77
+17        android:maxSdkVersion="32" />
+17-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:9:9-35
+18    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+18-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:10:5-76
+18-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:10:22-73
+19
+20    <permission
+20-->[androidx.core:core:1.15.0] /home/rayhan/.gradle/caches/8.11.1/transforms/428bd330cfdbf9c25e0c22901a005e3e/transformed/core-1.15.0/AndroidManifest.xml:22:5-24:47
+21        android:name="com.snapan.market.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+21-->[androidx.core:core:1.15.0] /home/rayhan/.gradle/caches/8.11.1/transforms/428bd330cfdbf9c25e0c22901a005e3e/transformed/core-1.15.0/AndroidManifest.xml:23:9-81
+22        android:protectionLevel="signature" />
+22-->[androidx.core:core:1.15.0] /home/rayhan/.gradle/caches/8.11.1/transforms/428bd330cfdbf9c25e0c22901a005e3e/transformed/core-1.15.0/AndroidManifest.xml:24:9-44
+23
+24    <uses-permission android:name="com.snapan.market.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+24-->[androidx.core:core:1.15.0] /home/rayhan/.gradle/caches/8.11.1/transforms/428bd330cfdbf9c25e0c22901a005e3e/transformed/core-1.15.0/AndroidManifest.xml:26:5-97
+24-->[androidx.core:core:1.15.0] /home/rayhan/.gradle/caches/8.11.1/transforms/428bd330cfdbf9c25e0c22901a005e3e/transformed/core-1.15.0/AndroidManifest.xml:26:22-94
+25
+26    <application
+26-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:12:5-45:19
+27        android:allowBackup="true"
+27-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:13:9-35
+28        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+28-->[androidx.core:core:1.15.0] /home/rayhan/.gradle/caches/8.11.1/transforms/428bd330cfdbf9c25e0c22901a005e3e/transformed/core-1.15.0/AndroidManifest.xml:28:18-86
+29        android:debuggable="true"
+30        android:extractNativeLibs="false"
+31        android:icon="@android:drawable/sym_def_app_icon"
+31-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:14:9-58
+32        android:label="@string/app_name"
+32-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:15:9-41
+33        android:roundIcon="@android:drawable/sym_def_app_icon"
+33-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:16:9-63
+34        android:supportsRtl="true"
+34-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:17:9-35
+35        android:theme="@style/Theme.SnapanMarketMobile"
+35-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:18:9-56
+36        android:usesCleartextTraffic="false" >
+36-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:19:9-45
+37        <activity
+37-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:21:9-44:20
+38            android:name="com.snapan.market.MainActivity"
+38-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:22:13-41
+39            android:exported="true"
+39-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:23:13-36
+40            android:label="@string/app_name"
+40-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:24:13-45
+41            android:theme="@style/Theme.SnapanMarketMobile"
+41-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:25:13-60
+42            android:windowSoftInputMode="adjustResize" >
+42-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:26:13-55
+43            <intent-filter>
+43-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:27:13-30:29
+44                <action android:name="android.intent.action.MAIN" />
+44-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:28:17-69
+44-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:28:25-66
+45
+46                <category android:name="android.intent.category.LAUNCHER" />
+46-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:29:17-77
+46-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:29:27-74
+47            </intent-filter>
+48
+49            <!-- Deep Link Scheme (snapan://post/{id}) -->
+50            <intent-filter android:autoVerify="true" >
+50-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:33:13-43:29
+50-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:33:28-53
+51                <action android:name="android.intent.action.VIEW" />
+51-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:34:17-69
+51-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:34:25-66
+52
+53                <category android:name="android.intent.category.DEFAULT" />
+53-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:35:17-76
+53-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:35:27-73
+54                <category android:name="android.intent.category.BROWSABLE" />
+54-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:36:17-78
+54-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:36:27-75
+55
+56                <data
+56-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:37:17-39:46
+57                    android:host="snapan.market"
+57-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:38:21-49
+58                    android:scheme="https" />
+58-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:39:21-43
+59                <data
+59-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:37:17-39:46
+60                    android:host="post"
+60-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:38:21-49
+61                    android:scheme="snapan" />
+61-->/home/rayhan/Windows-D/project/snapan-market-mobile/android/app/src/main/AndroidManifest.xml:39:21-43
+62            </intent-filter>
+63        </activity>
+64
+65        <provider
+65-->[androidx.emoji2:emoji2:1.3.0] /home/rayhan/.gradle/caches/8.11.1/transforms/094602d1f5490e91e0b6515337277dd1/transformed/emoji2-1.3.0/AndroidManifest.xml:24:9-32:20
+66            android:name="androidx.startup.InitializationProvider"
+66-->[androidx.emoji2:emoji2:1.3.0] /home/rayhan/.gradle/caches/8.11.1/transforms/094602d1f5490e91e0b6515337277dd1/transformed/emoji2-1.3.0/AndroidManifest.xml:25:13-67
+67            android:authorities="com.snapan.market.debug.androidx-startup"
+67-->[androidx.emoji2:emoji2:1.3.0] /home/rayhan/.gradle/caches/8.11.1/transforms/094602d1f5490e91e0b6515337277dd1/transformed/emoji2-1.3.0/AndroidManifest.xml:26:13-68
+68            android:exported="false" >
+68-->[androidx.emoji2:emoji2:1.3.0] /home/rayhan/.gradle/caches/8.11.1/transforms/094602d1f5490e91e0b6515337277dd1/transformed/emoji2-1.3.0/AndroidManifest.xml:27:13-37
+69            <meta-data
+69-->[androidx.emoji2:emoji2:1.3.0] /home/rayhan/.gradle/caches/8.11.1/transforms/094602d1f5490e91e0b6515337277dd1/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
+70                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+70-->[androidx.emoji2:emoji2:1.3.0] /home/rayhan/.gradle/caches/8.11.1/transforms/094602d1f5490e91e0b6515337277dd1/transformed/emoji2-1.3.0/AndroidManifest.xml:30:17-75
+71                android:value="androidx.startup" />
+71-->[androidx.emoji2:emoji2:1.3.0] /home/rayhan/.gradle/caches/8.11.1/transforms/094602d1f5490e91e0b6515337277dd1/transformed/emoji2-1.3.0/AndroidManifest.xml:31:17-49
+72            <meta-data
+72-->[io.github.jan-tennert.supabase:storage-kt-android-debug:3.0.3] /home/rayhan/.gradle/caches/8.11.1/transforms/cc7466313fe1233e45742ef58b908d67/transformed/storage-kt-debug/AndroidManifest.xml:14:13-16:52
+73                android:name="io.github.jan.supabase.storage.SupabaseInitializer"
+73-->[io.github.jan-tennert.supabase:storage-kt-android-debug:3.0.3] /home/rayhan/.gradle/caches/8.11.1/transforms/cc7466313fe1233e45742ef58b908d67/transformed/storage-kt-debug/AndroidManifest.xml:15:17-82
+74                android:value="androidx.startup" />
+74-->[io.github.jan-tennert.supabase:storage-kt-android-debug:3.0.3] /home/rayhan/.gradle/caches/8.11.1/transforms/cc7466313fe1233e45742ef58b908d67/transformed/storage-kt-debug/AndroidManifest.xml:16:17-49
+75            <meta-data
+75-->[io.github.jan-tennert.supabase:auth-kt-android-debug:3.0.3] /home/rayhan/.gradle/caches/8.11.1/transforms/17b136df69c0c42d0e4f8a0f17be7eb0/transformed/auth-kt-debug/AndroidManifest.xml:14:13-16:52
+76                android:name="io.github.jan.supabase.auth.SupabaseInitializer"
+76-->[io.github.jan-tennert.supabase:auth-kt-android-debug:3.0.3] /home/rayhan/.gradle/caches/8.11.1/transforms/17b136df69c0c42d0e4f8a0f17be7eb0/transformed/auth-kt-debug/AndroidManifest.xml:15:17-79
+77                android:value="androidx.startup" />
+77-->[io.github.jan-tennert.supabase:auth-kt-android-debug:3.0.3] /home/rayhan/.gradle/caches/8.11.1/transforms/17b136df69c0c42d0e4f8a0f17be7eb0/transformed/auth-kt-debug/AndroidManifest.xml:16:17-49
+78            <meta-data
+78-->[androidx.lifecycle:lifecycle-process:2.8.7] /home/rayhan/.gradle/caches/8.11.1/transforms/7f1824eff6bfc5a4062355b5271bb0c9/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:29:13-31:52
+79                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+79-->[androidx.lifecycle:lifecycle-process:2.8.7] /home/rayhan/.gradle/caches/8.11.1/transforms/7f1824eff6bfc5a4062355b5271bb0c9/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:30:17-78
+80                android:value="androidx.startup" />
+80-->[androidx.lifecycle:lifecycle-process:2.8.7] /home/rayhan/.gradle/caches/8.11.1/transforms/7f1824eff6bfc5a4062355b5271bb0c9/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:31:17-49
+81            <meta-data
+81-->[com.russhwolf:multiplatform-settings-no-arg-android-debug:1.3.0] /home/rayhan/.gradle/caches/8.11.1/transforms/d17bd6fff2901e001ec2b005be3ad4ea/transformed/multiplatform-settings-no-arg-debug/AndroidManifest.xml:29:13-31:52
+82                android:name="com.russhwolf.settings.SettingsInitializer"
+82-->[com.russhwolf:multiplatform-settings-no-arg-android-debug:1.3.0] /home/rayhan/.gradle/caches/8.11.1/transforms/d17bd6fff2901e001ec2b005be3ad4ea/transformed/multiplatform-settings-no-arg-debug/AndroidManifest.xml:30:17-74
+83                android:value="androidx.startup" />
+83-->[com.russhwolf:multiplatform-settings-no-arg-android-debug:1.3.0] /home/rayhan/.gradle/caches/8.11.1/transforms/d17bd6fff2901e001ec2b005be3ad4ea/transformed/multiplatform-settings-no-arg-debug/AndroidManifest.xml:31:17-49
+84            <meta-data
+84-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:29:13-31:52
+85                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+85-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:30:17-85
+86                android:value="androidx.startup" />
+86-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:31:17-49
+87        </provider>
+88
+89        <activity
+89-->[androidx.compose.ui:ui-tooling-android:1.7.6] /home/rayhan/.gradle/caches/8.11.1/transforms/b6683ff7da3b0b7c9a9e0815d9d498df/transformed/ui-tooling-release/AndroidManifest.xml:23:9-25:39
+90            android:name="androidx.compose.ui.tooling.PreviewActivity"
+90-->[androidx.compose.ui:ui-tooling-android:1.7.6] /home/rayhan/.gradle/caches/8.11.1/transforms/b6683ff7da3b0b7c9a9e0815d9d498df/transformed/ui-tooling-release/AndroidManifest.xml:24:13-71
+91            android:exported="true" />
+91-->[androidx.compose.ui:ui-tooling-android:1.7.6] /home/rayhan/.gradle/caches/8.11.1/transforms/b6683ff7da3b0b7c9a9e0815d9d498df/transformed/ui-tooling-release/AndroidManifest.xml:25:13-36
+92
+93        <receiver
+93-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:34:9-52:20
+94            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+94-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:35:13-76
+95            android:directBootAware="false"
+95-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:36:13-44
+96            android:enabled="true"
+96-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:37:13-35
+97            android:exported="true"
+97-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:38:13-36
+98            android:permission="android.permission.DUMP" >
+98-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:39:13-57
+99            <intent-filter>
+99-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:40:13-42:29
+100                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+100-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:41:17-91
+100-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:41:25-88
+101            </intent-filter>
+102            <intent-filter>
+102-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:43:13-45:29
+103                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+103-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:44:17-85
+103-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:44:25-82
+104            </intent-filter>
+105            <intent-filter>
+105-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:46:13-48:29
+106                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+106-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:47:17-88
+106-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:47:25-85
+107            </intent-filter>
+108            <intent-filter>
+108-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:49:13-51:29
+109                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+109-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:50:17-95
+109-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/rayhan/.gradle/caches/8.11.1/transforms/545fe211350fe9be6b70faed8f3a96f3/transformed/profileinstaller-1.4.1/AndroidManifest.xml:50:25-92
+110            </intent-filter>
+111        </receiver>
+112    </application>
+113
+114</manifest>

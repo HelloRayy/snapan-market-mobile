@@ -1,117 +1,183 @@
-# 🤖 AGENTS.md — Instructions for AI Coding Agents
+# Repository Guidelines
 
-Dokumen ini adalah **panduan utama & aturan wajib (System Instructions)** yang dibaca oleh seluruh AI Coding Agent (Antigravity, Cursor, Copilot, Claude, dll.) saat repositori **Snapan Market Mobile** di-`git clone`.
-
----
-
-## 📌 OVERVIEW PROYEK
-
-- **Nama Proyek**: Snapan Market Mobile PWA
-- **Tech Stack**: React 18 + Vite + Tailwind CSS v4 + PWA (`vite-plugin-pwa`) + Supabase Auth & Database + Zustand.
-- **Tujuan**: Platform E-Commerce & Marketplace PWA mobile-first yang cepat, installable, dan berjalan offline.
+## Project Overview
+**Snapan Market Mobile** is a mobile-first Progressive Web App (PWA) that integrates an e-commerce marketplace with a Threads-style social networking forum designed exclusively for the **SMKN 8 Jakarta** school ecosystem. The platform enables students and staff to circulate preloved school supplies, commercialize creative vocational works (PPLG, DKV, Kuliner), place COD orders with designated campus meeting points, and interact in academic community discussion threads.
 
 ---
 
-## 💻 PEMBAGIAN ROLE WORKSTATION (LAPTOP A vs LAPTOP B)
+## Architecture & Data Flow
 
-Repositori ini dikembangkan menggunakan **Multi-Laptop Workstation Setup**:
-
-### 1. 🖥️ LAPTOP A — FRONTEND WORKSTATION
-- **Fokus Utama**: Mengembangkan tampilan UI/UX, komponen React, Halaman Web, Styling Tailwind, & PWA.
-- **Area Kerja**:
-  - `src/ui/pages/` (Halaman: Home, Cart, Profile, ProductDetail)
-  - `src/ui/components/` (Komponen UI dasar & marketplace primitives)
-  - `src/ui/store/` (State management Zustand)
-  - `src/ui/hooks/` (Custom hooks UI & PWA)
-  - `src/index.css` (Tailwind CSS v4 styling & theme)
-- **Aturan Laptop A**:
-  - **DILARANG** mengubah struktur tabel database atau SQL scripts secara sepihak.
-  - **WAJIB** mengonsumsi tipe data dari `src/types/supabase.ts` yang sudah diperbarui oleh Laptop B via `git pull`.
-
----
-
-### 2. 🗄️ LAPTOP B — BACKEND WORKSTATION
-- **Fokus Utama**: Mengembangkan Supabase Database Schema, SQL Queries, RLS Security Policies, & API Services.
-- **Area Kerja**:
-  - `/docs/supabase-guide.md` (Update SQL scripts schema & RLS policy)
-  - `src/services/api/` (Setup Supabase Client & API Service Functions)
-  - `src/types/supabase.ts` (Update interface tipe data Supabase sesuai skema tabel terbaru)
-  - `.env.example` (Konfigurasi environment variable backend)
-- **SOP 5-Langkah Wajib AI Agent Laptop B**:
-  1. **Tulis SQL & RLS**: Catat skema tabel baru & Row Level Security (RLS) di `/docs/supabase-guide.md`.
-  2. **Update Type Contract**: Tambahkan interface Row/Insert/Update di `src/types/supabase.ts`.
-  3. **Buat API Service**: Buat/update fungsi query di `src/services/api/<feature>Service.ts` dengan return type yang ketat.
-  4. **Type Check**: Jalankan `npx tsc --noEmit && npm run build` untuk memastikan 0 error.
-  5. **Push ke Git**: Lakukan `git commit` & `git push` agar Laptop A bisa langsung `git pull`.
-
----
-
-## 🚨 ATURAN EMAS SINKRONISASI AI AGENT (MANDATORY WORKFLOW)
-
-Setiap AI Agent (Antigravity, Cursor, Claude, Copilot, dll.) **WAJIB MEMATUHI 2 PROTOKOL SINKRONISASI BERIKUT**:
-
-### 1. 📥 PROTOKOL PRE-TASK: `git pull origin main` SEBELUM Mulai
-- **KAPAN**: Sebelum memulai analisis, membuat file baru, atau mengedit fitur apapun.
-- **AKSI**: Jalankan perintah `git pull origin main`.
-- **TUJUAN**: Memastikan repositori lokal 100% up-to-date dengan commit terbaru dari laptop/rekan workstation lain untuk mencegah *merge conflict* dan *outdated context*.
-
-### 2. 🚀 PROTOKOL POST-TASK: Auto `git commit` & `git push` Setelah Selesai
-- **KAPAN**: Segera setelah pekerjaan selesai dan lolos verifikasi build.
-- **URUTAN EKSEKUSI**:
-  1. `npx tsc --noEmit && npm run build` $\rightarrow$ Pastikan **0 Error**.
-  2. `git add .`
-  3. `git commit -m "<type>(<scope>): <deskripsi perubahan>"`
-  4. `git push -u origin main`
-- **TUJUAN**: Menjamin hasil kerja langsung ter-deploy otomatis di Vercel dan siap di-`git pull` oleh workstation lain secara instan.
-
----
-
-## 🔄 WORKFLOW KOLABORASI GIT (FRONTEND & BACKEND SYNC)
+### High-Level Architecture
+The application is built on **React 18 + TypeScript + Vite 5 + Tailwind CSS v4 + Zustand + Supabase**.
 
 ```
-[SEBELUM MULAI TASK] ───> 📥 git pull origin main (WAJIB SINKRON AWAL)
-                                │
-[LAPTOP B - BACKEND]            │               [LAPTOP A - FRONTEND]
- 1. Update Skema di Supabase    │                1. Gunakan tipe dari src/types/supabase.ts
- 2. Update SQL di docs/guide    │                2. Buat/Update UI Komponen & Pages di src/ui/
- 3. Update src/types/supabase.ts│                3. Lakukan pengujian tampilan & responsive
-                                │
-[SETELAH TASK SELESAI] ─────────┴───────────────> 🚀 Build Check (tsc + vite) -> git commit & push (WAJIB AUTO PUSH)
+┌────────────────────────────────────────────────────────┐
+│                   React 18 Frontend                    │
+│   App.tsx (Stateful Router & DOM Restoration)          │
+│   ├── ui/pages/ (Home, PostDetail, Search, Profile)    │
+│   ├── ui/components/ (Marketplace, Chat, Atomic UI)    │
+│   └── ui/store/ & ui/hooks/ (Zustand & Supabase Auth)  │
+└───────────────────────────┬────────────────────────────┘
+                            │ (Typed API Calls & Realtime)
+┌───────────────────────────▼────────────────────────────┐
+│               Service Layer (src/services/)             │
+│   ├── api/ (Auth, Posts, Orders, Comments, Storage)    │
+│   └── cache/ (feedCache.ts In-Memory Fast Cache)       │
+└───────────────────────────┬────────────────────────────┘
+                            │
+┌───────────────────────────▼────────────────────────────┐
+│                 Supabase Cloud Backend                 │
+│   PostgreSQL DB + GoTrue Auth + Realtime + Storage     │
+└────────────────────────────────────────────────────────┘
 ```
 
----
-
-## 🚨 DONTs (HAL YANG TIDAK BOLEH DILAKUKAN AI AGENT)
-
-1. ❌ **Jangan menghapus atau merusak struktur folder**:
-   - `ui/` -> Tampilan
-   - `services/` -> API & Data Fetching
-   - `types/` -> Interfaces TypeScript
-   - `utils/` -> Helper murni
-2. ❌ **Jangan membuat mock data lokal palsu** saat Supabase Client sudah tersedia di `src/services/api/supabase.ts`.
-3. ❌ **Jangan menggunakan relative path bertingkat** (seperti `../../../../`). Gunakan path alias `@/` (contoh: `@/ui/components/ui/Button`).
-4. ❌ **Jangan mengabaikan tipe data TypeScript**. Gunakan strict typing murni.
+### Data Flow Patterns
+1. **Client Service Invocations**: UI components call modular repository services in `src/services/api/` rather than querying Supabase directly.
+2. **Database to Domain Transformation**: PostgreSQL database rows (`snake_case` defined in `src/types/supabase.ts`) are mapped to clean frontend domain models (`camelCase` defined in `src/types/marketFeed.ts`, `src/types/product.ts`, `src/types/order.ts`).
+3. **Optimistic UI & Debounced Mutations**: Likes, reposts, and bookmarks update client state instantly with haptic feedback, while persisting changes to Supabase asynchronously.
+4. **Cache-First Feed Hydration**: `src/services/cache/feedCache.ts` loads in-memory cached posts for 0ms initial render, merging fresh asynchronous Supabase posts with mock fallback data.
+5. **Real-time Synchronization**: Supabase Channels (`realtimeService.ts`) listen for order updates, comment notifications, and live feed updates.
 
 ---
 
-## ⚡ PETUNJUK MEMULAI (POST GIT CLONE)
+## Key Directories
 
-Setelah `git clone`, jalankan langkah berikut:
+- **`src/ui/pages/`**: Full screen page views (`HomePage.tsx`, `PostDetailPage.tsx`, `ProfilePage.tsx`, `SearchPage.tsx`, `DirectMessagesPage.tsx`, `CampusMapPage.tsx`, `CheckoutPage.tsx`).
+- **`src/ui/components/`**:
+  - `ui/`: Atomic reusable primitives (`Button.tsx`, `Card.tsx`, `Input.tsx`, `Badge.tsx`, `ToastNotification.tsx`, `ConfirmActionModal.tsx`, `chat-bubble.tsx`).
+  - `marketplace/`: E-commerce & social thread cards (`MarketPostCard.tsx`, `CreatePostModal.tsx`, `BuyBottomSheet.tsx`, `MarketBottomNav.tsx`, `MarketHeader.tsx`).
+  - `chat/`: Direct messaging components (`ChatComposerBar.tsx`, `ChatTopBar.tsx`, `ChatProductCard.tsx`).
+  - `onboarding/`: Interactive onboarding carousel slides and splash screens.
+  - `navigation/`: Side drawer menu (`NavigationDrawer.tsx`).
+  - `pwa/`: PWA installation banner, landing page, and offline status bars.
+- **`src/ui/store/`**: Global state management via Zustand (`cartStore.ts`).
+- **`src/ui/hooks/`**: Custom hooks for auth (`useAuth.ts`), PWA install triggers (`usePWA.ts`), virtual keyboard detection (`useVirtualKeyboard.ts`), and smooth scroll physics (`useSmoothScroll.ts`).
+- **`src/services/api/`**: Supabase client (`supabase.ts`) and modular API services (Auth, Posts, Orders, Comments, Profiles, Storage, Notifications, Meeting Points, Realtime).
+- **`src/services/cache/`**: In-memory caching layer with TTL (`feedCache.ts`).
+- **`src/types/`**: Strict TypeScript interfaces (`supabase.ts`, `marketFeed.ts`, `product.ts`, `order.ts`, `user.ts`).
+- **`src/utils/`**: Pure utilities (`cn.ts` class merger, `formatters.ts` currency/timestamp helpers, `haptics.ts` tactile vibrations).
+- **`docs/`**: Comprehensive specifications, data contracts (`fe-to-be-data-contract.md`), and database SQL setup guides (`supabase-guide.md`, `complete-migration-seed.sql`).
+- **`public/`**: Static public assets, PWA manifest, and app icons.
 
+---
+
+## Development Commands
+
+### Daily Workflow
 ```bash
 # 1. Install dependencies
 npm install
 
-# 2. Buat file .env dari template
+# 2. Copy environment template
 cp .env.example .env
 
-# 3. Jalankan server lokal
+# 3. Start local development server
 npm run dev
+
+# 4. Start local development server accessible on local network (mobile debugging)
+npm run dev:host
 ```
 
-Untuk detail teknis lebih lanjut, baca dokumen pendukung di folder `/docs/`:
-- [/docs/architecture.md](file:///home/rayhan/Windows-D/project/snapan-market-mobile/docs/architecture.md)
-- [/docs/multi-laptop-setup.md](file:///home/rayhan/Windows-D/project/snapan-market-mobile/docs/multi-laptop-setup.md)
-- [/docs/coding-standards.md](file:///home/rayhan/Windows-D/project/snapan-market-mobile/docs/coding-standards.md)
-- [/docs/pwa-guide.md](file:///home/rayhan/Windows-D/project/snapan-market-mobile/docs/pwa-guide.md)
-- [/docs/supabase-guide.md](file:///home/rayhan/Windows-D/project/snapan-market-mobile/docs/supabase-guide.md)
+### Build & Quality Gates
+```bash
+# Type check without emitting JavaScript
+npx tsc --noEmit
+
+# Production build (Runs typecheck + Vite build)
+npm run build
+
+# Preview production build locally
+npm run preview
+
+# Run backend integration test against Supabase
+npx ts-node test-backend.ts
+```
+
+---
+
+## Code Conventions & Common Patterns
+
+### 1. Naming & File Conventions
+- **React Components**: PascalCase (e.g., `MarketPostCard.tsx`, `CreatePostModal.tsx`, `ButtonPrimary.tsx`).
+- **Hooks**: camelCase prefixed with `use` (e.g., `useAuth.ts`, `usePWA.ts`, `useVirtualKeyboard.ts`).
+- **Services & Helpers**: camelCase (e.g., `marketPostsService.ts`, `formatters.ts`, `cn.ts`).
+- **Types & Interfaces**: PascalCase (e.g., `MarketPostItem`, `SellerProfile`, `Database`).
+
+### 2. Path Aliases
+- **Mandatory `@/*` Alias**: Always use the path alias `@/` mapped to `src/`. Relative directory traversal (e.g., `../../../../`) is strictly prohibited.
+  ```typescript
+  // Correct
+  import { Button } from '@/ui/components/ui/Button';
+  import { formatRupiah } from '@/utils/formatters';
+
+  // Prohibited
+  import { Button } from '../../../ui/components/ui/Button';
+  ```
+
+### 3. Styling & Tailwind CSS v4
+- Styled using Tailwind CSS v4 with design tokens defined under `@theme` in `src/index.css`:
+  - **Brand Signature**: Electric Indigo (`--color-brand-primary: #3d38f5`, hover `#312bd9`, pastel `#eef0ff`, ring `rgba(61, 56, 245, 0.15)`).
+  - **Neutral Canvas**: Canvas mist `#f2f4f5`, pure white `#ffffff`, ink black `#000000`, slate ink `#332f2d`, muted gray `#787574`.
+  - **Typography**: Inter font with tabular numbers (`cv02, cv03, cv04, cv11, tnum`).
+- Use the `cn(...)` utility (`clsx` + `tailwind-merge`) for dynamic class combination:
+  ```typescript
+  import { cn } from '@/utils/cn';
+
+  export function CustomBadge({ className, isVerified }: Props) {
+    return (
+      <span className={cn('px-2 py-0.5 rounded-full text-xs font-semibold', isVerified ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700', className)}>
+        {isVerified ? 'Terverifikasi' : 'Reguler'}
+      </span>
+    );
+  }
+  ```
+
+### 4. GPU Performance & 120 FPS Mobile Optimization
+- Feeds and animated cards utilize `@utility feed-card-perf` (`contain: layout paint; transform: translateZ(0)`) to isolate GPU composite layers.
+- Form inputs enforce `font-size: 16px` on mobile screens to prevent disruptive iOS Safari viewport zoom.
+- Tactile feedback is triggered on interactive actions via `triggerHaptic('light' | 'medium' | 'selection' | 'error')` from `@/utils/haptics`.
+
+### 5. Routing & State Preservation (`App.tsx`)
+- Navigation relies on lightweight URL path + hash routing (`/@:username/post/:postId`, `/search`, `/messages`, `/profile`).
+- `HomePage` and `SearchPage` instances stay preserved in the DOM using conditional `block`/`hidden` classes, preserving scroll positions, active tab states, and search queries across page visits.
+- Double-back press within 2 seconds at the root route is guarded to prevent accidental PWA window exits.
+
+---
+
+## Important Files
+
+| File Path | Role & Importance |
+| :--- | :--- |
+| **`src/App.tsx`** | Application root managing stateful routing, deep linking, history back guards, scroll restoration, and navigation drawers. |
+| **`src/index.css`** | Primary stylesheet containing Tailwind v4 `@theme` design tokens, font features, keyframes, and GPU compositor utilities. |
+| **`vite.config.ts`** | Bundler configuration defining React, Tailwind v4, PWA service worker caching rules, manual chunk splitting, and `@/` path alias. |
+| **`src/services/api/supabase.ts`** | Supabase client instance configuration and social OAuth handlers. |
+| **`src/types/supabase.ts`** | Complete TypeScript database table contract matching the Supabase PostgreSQL schema. |
+| **`src/ui/store/cartStore.ts`** | Zustand persistent shopping cart store with LocalStorage hydration. |
+| **`docs/fe-to-be-data-contract.md`** | Official field transformation guide between database rows and frontend interface models. |
+
+---
+
+## Runtime & Tooling Preferences
+
+- **JavaScript Runtime**: Node.js (version `>= 18.0.0`) or Bun.
+- **Package Manager**: `npm` (strictly maintained with `package-lock.json`).
+- **Module System**: Pure ECMAScript Modules (`"type": "module"` in `package.json`).
+- **Bundler**: Vite 5 targeting `ES2020` with `cssCodeSplit: true` and vendor chunk splitting (`vendor-react`, `vendor-motion`, `vendor-icons`, `vendor-supabase`, `vendor-state`, `vendor-mappedin`, `vendor-three`).
+- **Compiler Mode**: TypeScript 5.5 in strict mode with `isolatedModules: true` and `noEmit: true`.
+
+---
+
+## Testing & QA
+
+### Quality Assurance Invariants
+1. **Zero Type Errors**: `npx tsc --noEmit` must pass with 0 warnings or errors prior to committing code.
+2. **Production Build Gate**: `npm run build` (`tsc && vite build`) must successfully generate bundles without breaking rollup chunking or asset resolution.
+3. **Strict Type Safety**: Never use `any` or loose typing. Always consume types from `src/types/supabase.ts` or feature domain contracts (`src/types/*.ts`).
+4. **No Fake Local Mocks When Backend Exists**: Use typed API queries in `src/services/api/` with graceful fallback handling.
+
+### Mandatory Multi-Workstation Git Workflow
+When working across workstations:
+1. **Pre-Task**: Always run `git pull origin main` before analyzing or modifying files.
+2. **Verification**: Run `npx tsc --noEmit && npm run build` to ensure clean build output.
+3. **Post-Task**: Run `git add .`, commit with conventional commit format (`git commit -m "<type>(<scope>): <description>"`), and push (`git push -u origin main`).

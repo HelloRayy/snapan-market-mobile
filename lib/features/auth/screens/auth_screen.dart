@@ -22,7 +22,7 @@ class PhoneNumberFormatter extends TextInputFormatter {
       digits = digits.substring(2);
     }
 
-    // 3. Batasi maksimal 11-12 digit lokal (misal: 81234567890)
+    // 3. Batasi maksimal 11-12 digit lokal
     if (digits.length > 12) {
       digits = digits.substring(0, 12);
     }
@@ -113,119 +113,6 @@ class _AuthScreenState extends State<AuthScreen> {
     } else {
       widget.onBack();
     }
-  }
-
-  void _openSelectionSheet({
-    required String title,
-    required String selectedValue,
-    required List<String> options,
-    required ValueChanged<String> onSelected,
-  }) {
-    HapticFeedback.selectionClick();
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Drag Handle
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFCBD5E1),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 18),
-
-                // Sheet Title
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.ink,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-                const SizedBox(height: 14),
-
-                // Options List (Wide format)
-                Flexible(
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: options.length,
-                    separatorBuilder: (context, index) =>
-                        const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                    itemBuilder: (context, index) {
-                      final option = options[index];
-                      final isSelected = option == selectedValue;
-
-                      return InkWell(
-                        borderRadius: BorderRadius.circular(14),
-                        onTap: () {
-                          HapticFeedback.selectionClick();
-                          onSelected(option);
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? const Color(0xFFEEF2FF)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                option,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: isSelected
-                                      ? FontWeight.w700
-                                      : FontWeight.w500,
-                                  color: isSelected
-                                      ? const Color(0xFF1D64EC)
-                                      : AppColors.ink,
-                                ),
-                              ),
-                              if (isSelected)
-                                const Icon(
-                                  Icons.check_circle_rounded,
-                                  color: Color(0xFF1D64EC),
-                                  size: 20,
-                                ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 8),
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   @override
@@ -552,7 +439,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   // ==========================================
-  // --- REGISTER FORM (FLOATING LABELS & WIDE DROPDOWN) ---
+  // --- REGISTER FORM (FLOATING LABELS & DROPDOWN) ---
   // ==========================================
   Widget _buildRegisterForm() {
     return Column(
@@ -572,7 +459,7 @@ class _AuthScreenState extends State<AuthScreen> {
           children: [
             Expanded(
               flex: 3,
-              child: _buildDropdownSelector(
+              child: _DropdownColumnBox(
                 label: 'Kelas',
                 selectedValue: _selectedGrade,
                 options: _gradeOptions,
@@ -582,7 +469,7 @@ class _AuthScreenState extends State<AuthScreen> {
             const SizedBox(width: 8),
             Expanded(
               flex: 4,
-              child: _buildDropdownSelector(
+              child: _DropdownColumnBox(
                 label: 'Jurusan',
                 selectedValue: _selectedMajor,
                 options: _majorOptions,
@@ -592,7 +479,7 @@ class _AuthScreenState extends State<AuthScreen> {
             const SizedBox(width: 8),
             Expanded(
               flex: 3,
-              child: _buildDropdownSelector(
+              child: _DropdownColumnBox(
                 label: 'No. Kelas',
                 selectedValue: _selectedClassNum,
                 options: _classNumOptions,
@@ -753,22 +640,127 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  // --- DROPDOWN SELECTOR WIDGET (1-TAP WIDE SELECTION SHEET) ---
-  Widget _buildDropdownSelector({
+  // --- SOCIAL AUTH BUTTON (Apple & Google) ---
+  Widget _buildSocialButton({
+    required Widget iconWidget,
     required String label,
-    required String selectedValue,
-    required List<String> options,
-    required ValueChanged<String> onSelected,
+    required VoidCallback onTap,
   }) {
+    return Material(
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(25),
+        side: const BorderSide(color: Color(0xFFE2E8F0)),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(25),
+        onTap: onTap,
+        child: Container(
+          height: 50,
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              iconWidget,
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.ink,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ==========================================
+// --- 1-TAP DROPDOWN BOX WITH WIDE FLOATING MENU ---
+// ==========================================
+class _DropdownColumnBox extends StatelessWidget {
+  final String label;
+  final String selectedValue;
+  final List<String> options;
+  final ValueChanged<String> onSelected;
+
+  const _DropdownColumnBox({
+    required this.label,
+    required this.selectedValue,
+    required this.options,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final GlobalKey boxKey = GlobalKey();
+
     return GestureDetector(
+      key: boxKey,
       behavior: HitTestBehavior.opaque,
-      onTap: () {
-        _openSelectionSheet(
-          title: 'Pilih $label',
-          selectedValue: selectedValue,
-          options: options,
-          onSelected: onSelected,
+      onTap: () async {
+        HapticFeedback.selectionClick();
+        final renderBox =
+            boxKey.currentContext?.findRenderObject() as RenderBox?;
+        if (renderBox == null) return;
+        final offset = renderBox.localToGlobal(Offset.zero);
+        final size = renderBox.size;
+
+        final selected = await showMenu<String>(
+          context: context,
+          position: RelativeRect.fromLTRB(
+            offset.dx,
+            offset.dy + size.height + 4,
+            offset.dx + size.width + 60,
+            offset.dy + size.height + 300,
+          ),
+          color: Colors.white,
+          elevation: 8,
+          shadowColor: Colors.black.withValues(alpha: 0.12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
+          ),
+          menuPadding: const EdgeInsets.symmetric(vertical: 4),
+          constraints: const BoxConstraints(minWidth: 150, maxWidth: 200),
+          items: options.map((opt) {
+            final isSelected = opt == selectedValue;
+            return PopupMenuItem<String>(
+              value: opt,
+              height: 42,
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    opt,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight:
+                          isSelected ? FontWeight.w700 : FontWeight.w500,
+                      color: isSelected ? AppColors.primary : AppColors.ink,
+                    ),
+                  ),
+                  if (isSelected)
+                    const Icon(
+                      Icons.check_rounded,
+                      color: AppColors.primary,
+                      size: 18,
+                    ),
+                ],
+              ),
+            );
+          }).toList(),
         );
+
+        if (selected != null) {
+          HapticFeedback.selectionClick();
+          onSelected(selected);
+        }
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -816,44 +808,6 @@ class _AuthScreenState extends State<AuthScreen> {
               ],
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  // --- SOCIAL AUTH BUTTON (Apple & Google) ---
-  Widget _buildSocialButton({
-    required Widget iconWidget,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return Material(
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(25),
-        side: const BorderSide(color: Color(0xFFE2E8F0)),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(25),
-        onTap: onTap,
-        child: Container(
-          height: 50,
-          alignment: Alignment.center,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              iconWidget,
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.ink,
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );

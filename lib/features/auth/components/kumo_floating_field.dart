@@ -49,25 +49,22 @@ class KumoFloatingField extends StatelessWidget {
         ),
         decoration: InputDecoration(
           labelText: label,
-          floatingLabelBehavior: FloatingLabelBehavior.auto,
+          floatingLabelBehavior: FloatingLabelBehavior.always,
           errorText: errorText,
           labelStyle: const TextStyle(
-            fontSize: 14.5,
-            fontWeight: FontWeight.w400,
-            color: Color(0xFF94A3B8),
-            letterSpacing: -0.1,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF475569), // Dark slate when unfocused
+            letterSpacing: -0.2,
           ),
           floatingLabelStyle: const TextStyle(
-            fontSize: 12.5,
+            fontSize: 13,
             fontWeight: FontWeight.w700,
             color: Color(0xFF1D64EC), // Kumo Blue Focus
             letterSpacing: -0.2,
           ),
           isDense: true,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 18,
-            vertical: 16,
-          ),
+          contentPadding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
             borderSide: const BorderSide(

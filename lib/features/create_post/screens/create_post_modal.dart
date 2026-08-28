@@ -691,21 +691,25 @@ class _CreatePostModalState extends State<CreatePostModal> {
         ),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Left: "Siapa pun dapat membalas & mengutip"
-          GestureDetector(
-            onTap: _showPrivacyPickerBottomSheet,
-            behavior: HitTestBehavior.opaque,
-            child: Text(
-              _audiencePrivacy,
-              style: const TextStyle(
-                fontSize: 12.5,
-                color: Color(0xFF94A3B8),
-                fontWeight: FontWeight.w400,
+          // Left: "Siapa pun dapat membalas & mengutip" (Flexible with ellipsis to prevent overflow)
+          Expanded(
+            child: GestureDetector(
+              onTap: _showPrivacyPickerBottomSheet,
+              behavior: HitTestBehavior.opaque,
+              child: Text(
+                _audiencePrivacy,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 12.5,
+                  color: Color(0xFF94A3B8),
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ),
           ),
+          const SizedBox(width: 12.0),
 
           // Right: "Posting" / "Jual" Pill Button
           GestureDetector(

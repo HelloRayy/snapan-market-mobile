@@ -22,6 +22,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   int _currentPage = 0;
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    for (final slide in onboardingSlides) {
+      if (!slide.isSvg) {
+        precacheImage(AssetImage(slide.assetPath), context);
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
@@ -215,7 +225,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             slide.assetPath,
                             fit: BoxFit.contain,
                             height: maxImgHeight,
-                            filterQuality: FilterQuality.high,
+                            cacheWidth: 600,
+                            filterQuality: FilterQuality.medium,
                           ),
                   ),
                 ),

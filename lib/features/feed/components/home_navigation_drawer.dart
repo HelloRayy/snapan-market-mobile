@@ -511,15 +511,17 @@ class _DrawerIconButtonState extends State<_DrawerIconButton> {
       },
       behavior: HitTestBehavior.opaque,
       child: AnimatedScale(
-        scale: _isPressed ? 0.95 : 1.0,
-        duration: const Duration(milliseconds: 75),
+        scale: _isPressed ? 0.96 : 1.0,
+        duration: const Duration(milliseconds: 150), // transition-all duration-150
         curve: Curves.easeOutCubic,
-        child: Container(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOutCubic,
           width: 32.0,
           height: 32.0,
           decoration: BoxDecoration(
             color: _isPressed
-                ? const Color(0xFFE2E8F0)
+                ? const Color(0x0D000000) // hover:bg-black/5
                 : Colors.transparent,
             shape: BoxShape.circle,
           ),
@@ -573,17 +575,19 @@ class _DrawerItemButtonState extends State<_DrawerItemButton> {
       },
       behavior: HitTestBehavior.opaque,
       child: AnimatedScale(
-        scale: _isPressed ? 0.98 : 1.0,
-        duration: const Duration(milliseconds: 75),
+        scale: _isPressed ? 0.98 : 1.0, // active:scale-[0.98]
+        duration: const Duration(milliseconds: 150), // transition-all duration-150
         curve: Curves.easeOutCubic,
-        child: Container(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150), // transition-all duration-150
+          curve: Curves.easeOutCubic,
           height: widget.isActiveHero ? 38.0 : 36.0,
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           decoration: BoxDecoration(
             color: widget.isActiveHero
-                ? const Color(0x0D000000) // Soft 5% neutral tint (clean & subtle)
+                ? const Color(0x0D000000) // 5% black matching hover:bg-black/5
                 : _isPressed
-                    ? const Color(0x08000000)
+                    ? const Color(0x0D000000) // hover:bg-black/5
                     : Colors.transparent,
             borderRadius: BorderRadius.circular(12.0),
           ),

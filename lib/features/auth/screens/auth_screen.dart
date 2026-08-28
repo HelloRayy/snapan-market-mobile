@@ -2,44 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/kumo_button.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
-import 'package:snapan_market/features/auth/components/google_logo.dart';
+import 'package:snapan_market/core/utils/phone_number_formatter.dart';
+import 'package:snapan_market/features/auth/components/auth_header.dart';
+import 'package:snapan_market/features/auth/components/dropdown_column_box.dart';
 import 'package:snapan_market/features/auth/components/kumo_floating_field.dart';
+import 'package:snapan_market/features/auth/components/social_auth_row.dart';
+import 'package:snapan_market/features/auth/models/auth_constants.dart';
 
 enum AuthMode { login, register }
-
-class PhoneNumberFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    var digits = newValue.text.replaceAll(RegExp(r'\D'), '');
-
-    if (digits.startsWith('0')) {
-      digits = digits.substring(1);
-    } else if (digits.startsWith('62')) {
-      digits = digits.substring(2);
-    }
-
-    if (digits.length > 12) {
-      digits = digits.substring(0, 12);
-    }
-
-    final StringBuffer buffer = StringBuffer();
-    for (int i = 0; i < digits.length; i++) {
-      if (i == 3 || i == 7) {
-        buffer.write('-');
-      }
-      buffer.write(digits[i]);
-    }
-
-    final formatted = buffer.toString();
-    return TextEditingValue(
-      text: formatted,
-      selection: TextSelection.collapsed(offset: formatted.length),
-    );
-  }
-}
 
 class AuthScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -60,8 +30,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   // --- LOGIN CONTROLLERS ---
   final TextEditingController _loginEmailController = TextEditingController();
-  final TextEditingController _loginPasswordController =
-      TextEditingController();
+  final TextEditingController _loginPasswordController = TextEditingController();
   bool _showLoginPassword = false;
   bool _rememberMe = true;
 
@@ -69,65 +38,49 @@ class _AuthScreenState extends State<AuthScreen> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _regPasswordController = TextEditingController();
-  final TextEditingController _regRepeatPasswordController =
-      TextEditingController();
+  final TextEditingController _regRepeatPasswordController = TextEditingController();
 
-  // --- FORM ERROR STATES ---
+  // --- ERROR STATES ---
   String? _loginEmailError;
   String? _loginPasswordError;
-
   String? _fullNameError;
   String? _phoneError;
   String? _regPasswordError;
   String? _regRepeatPasswordError;
 
-  // SMKN 8 Options
-  String _selectedGrade = 'X';
-  String _selectedMajor = 'DKV';
-  String _selectedClassNum = '1';
+  // --- SMKN 8 SELECTION STATE ---
+  String _selectedGrade = AuthConstants.gradeOptions.first;
+  String _selectedMajor = AuthConstants.majorOptions.first;
+  String _selectedClassNum = AuthConstants.classNumOptions.first;
 
   bool _showRegPassword = false;
   bool _showRegRepeatPassword = false;
 
-  final List<String> _gradeOptions = const ['X', 'XI', 'XII'];
-  final List<String> _majorOptions = const [
-    'DKV',
-    'LK',
-    'PPLG',
-    'PS',
-    'TJKT',
-  ];
-  final List<String> _classNumOptions = const ['1', '2', '3'];
-
   @override
   void initState() {
     super.initState();
-    // Clear errors when typing
-    _loginEmailController.addListener(() {
-      if (_loginEmailError != null) setState(() => _loginEmailError = null);
-    });
-    _loginPasswordController.addListener(() {
-      if (_loginPasswordError != null) {
-        setState(() => _loginPasswordError = null);
-      }
-    });
-    _fullNameController.addListener(() {
-      if (_fullNameError != null) setState(() => _fullNameError = null);
-    });
-    _phoneController.addListener(() {
-      if (_phoneError != null) setState(() => _phoneError = null);
-    });
-    _regPasswordController.addListener(() {
-      if (_regPasswordError != null) setState(() => _regPasswordError = null);
-      if (_regRepeatPasswordError != null) {
-        setState(() => _regRepeatPasswordError = null);
-      }
-    });
-    _regRepeatPasswordController.addListener(() {
-      if (_regRepeatPasswordError != null) {
-        setState(() => _regRepeatPasswordError = null);
-      }
-    });
+    _loginEmailController.addListener(() => _clearError(() => _loginEmailError = null));
+    _loginPasswordController.addListener(() => _clearError(() => _loginPasswordError = null));
+    _fullNameController.addListener(() => _clearError(() => _fullNameError = null));
+    _phoneController.addListener(() => _clearError(() => _phoneError = null));
+    _regPasswordController.addListener(() => _clearError(() {
+      _regPasswordError = null;
+      _regRepeatPasswordError = null;
+    }));
+    _regRepeatPasswordController.addListener(() => _clearError(() => _regRepeatPasswordError = null));
+  }
+
+  void _clearError(VoidCallback update) {
+    setState(update);
+  }
+
+  void _clearAllErrors() {
+    _loginEmailError = null;
+    _loginPasswordError = null;
+    _fullNameError = null;
+    _phoneError = null;
+    _regPasswordError = null;
+    _regRepeatPasswordError = null;
   }
 
   @override
@@ -146,26 +99,17 @@ class _AuthScreenState extends State<AuthScreen> {
     if (_authMode == AuthMode.register) {
       setState(() {
         _authMode = AuthMode.login;
-        _clearErrors();
+        _clearAllErrors();
       });
     } else {
       widget.onBack();
     }
   }
 
-  void _clearErrors() {
-    _loginEmailError = null;
-    _loginPasswordError = null;
-    _fullNameError = null;
-    _phoneError = null;
-    _regPasswordError = null;
-    _regRepeatPasswordError = null;
-  }
-
   // --- SUBMIT LOGIN VALIDATION ---
   void _submitLogin() {
     FocusManager.instance.primaryFocus?.unfocus();
-    setState(_clearErrors);
+    setState(_clearAllErrors);
 
     bool isValid = true;
 
@@ -173,7 +117,6 @@ class _AuthScreenState extends State<AuthScreen> {
       _loginEmailError = 'Masukkan nomor WhatsApp atau email';
       isValid = false;
     }
-
     if (_loginPasswordController.text.isEmpty) {
       _loginPasswordError = 'Masukkan kata sandi';
       isValid = false;
@@ -188,20 +131,20 @@ class _AuthScreenState extends State<AuthScreen> {
     widget.onSuccess();
   }
 
-  // --- SUBMIT REGISTER VALIDATION (PASSWORD MATCH CHECK) ---
+  // --- SUBMIT REGISTER VALIDATION ---
   void _submitRegister() {
     FocusManager.instance.primaryFocus?.unfocus();
-    setState(_clearErrors);
+    setState(_clearAllErrors);
 
     bool isValid = true;
 
-    // 1. Validasi Nama Lengkap
+    // 1. Nama Lengkap
     if (_fullNameController.text.trim().isEmpty) {
       _fullNameError = 'Nama lengkap wajib diisi';
       isValid = false;
     }
 
-    // 2. Validasi Nomor WhatsApp
+    // 2. Nomor WhatsApp
     final rawPhone = _phoneController.text.replaceAll(RegExp(r'\D'), '');
     if (rawPhone.isEmpty) {
       _phoneError = 'Nomor WhatsApp wajib diisi';
@@ -211,7 +154,7 @@ class _AuthScreenState extends State<AuthScreen> {
       isValid = false;
     }
 
-    // 3. Validasi Kata Sandi
+    // 3. Kata Sandi
     final pass = _regPasswordController.text;
     final repeatPass = _regRepeatPasswordController.text;
 
@@ -223,7 +166,7 @@ class _AuthScreenState extends State<AuthScreen> {
       isValid = false;
     }
 
-    // 4. Validasi Kesamaan Kata Sandi (Password Matching)
+    // 4. Kesamaan Kata Sandi
     if (repeatPass.isEmpty) {
       _regRepeatPasswordError = 'Ulangi kata sandi wajib diisi';
       isValid = false;
@@ -247,9 +190,7 @@ class _AuthScreenState extends State<AuthScreen> {
       color: Colors.transparent,
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
-        onTap: () {
-          FocusManager.instance.primaryFocus?.unfocus();
-        },
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Container(
           decoration: const BoxDecoration(
             gradient: AppColors.authGradient,
@@ -258,77 +199,15 @@ class _AuthScreenState extends State<AuthScreen> {
             bottom: false,
             child: Column(
               children: [
-                // --- TOP HEADER AREA (ISOLATED GPU LAYER) ---
-                RepaintBoundary(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Floating White Circular Back Button
-                        Container(
-                          width: 42,
-                          height: 42,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: const Color(0x10000000),
-                              width: 1,
-                            ),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Color(0x20000000),
-                                blurRadius: 6,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              customBorder: const CircleBorder(),
-                              onTap: _handleBack,
-                              child: const Center(
-                                child: Icon(
-                                  Icons.arrow_back_rounded,
-                                  color: AppColors.ink,
-                                  size: 20,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // Title Text (Indonesian)
-                        Center(
-                          child: Text(
-                            _authMode == AuthMode.login
-                                ? 'Masuk\nke Akun Kamu'
-                                : 'Daftar\nAkun Baru',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                              height: 1.25,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 20),
-                      ],
-                    ),
-                  ),
+                // Top Header with Title & Back Button
+                AuthHeader(
+                  title: _authMode == AuthMode.login
+                      ? 'Masuk\nke Akun Kamu'
+                      : 'Daftar\nAkun Baru',
+                  onBack: _handleBack,
                 ),
 
-                // --- BOTTOM WHITE CARD CONTAINER (SCROLLABLE & ISOLATED) ---
+                // Bottom Form Card
                 Expanded(
                   child: Container(
                     width: double.infinity,
@@ -363,14 +242,14 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   // ==========================================
-  // --- LOGIN FORM (FLOATING LABELS & VALIDATION) ---
+  // --- LOGIN FORM ---
   // ==========================================
   Widget _buildLoginForm() {
     return Column(
       children: [
         const SizedBox(height: 6),
 
-        // 1. WhatsApp / Email Floating Label Field
+        // 1. WhatsApp / Email Field
         KumoFloatingField(
           label: 'Nomor WhatsApp / Email',
           controller: _loginEmailController,
@@ -380,7 +259,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 20),
 
-        // 2. Password Floating Label Field
+        // 2. Password Field
         KumoFloatingField(
           label: 'Kata Sandi',
           controller: _loginPasswordController,
@@ -389,11 +268,7 @@ class _AuthScreenState extends State<AuthScreen> {
           onSubmitted: (_) => _submitLogin(),
           errorText: _loginPasswordError,
           suffixIcon: GestureDetector(
-            onTap: () {
-              setState(() {
-                _showLoginPassword = !_showLoginPassword;
-              });
-            },
+            onTap: () => setState(() => _showLoginPassword = !_showLoginPassword),
             child: Icon(
               _showLoginPassword
                   ? Icons.visibility_outlined
@@ -411,20 +286,14 @@ class _AuthScreenState extends State<AuthScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             GestureDetector(
-              onTap: () {
-                setState(() {
-                  _rememberMe = !_rememberMe;
-                });
-              },
+              onTap: () => setState(() => _rememberMe = !_rememberMe),
               child: Row(
                 children: [
                   Container(
                     width: 18,
                     height: 18,
                     decoration: BoxDecoration(
-                      color: _rememberMe
-                          ? const Color(0xFF1D64EC)
-                          : Colors.transparent,
+                      color: _rememberMe ? const Color(0xFF1D64EC) : Colors.transparent,
                       borderRadius: BorderRadius.circular(5),
                       border: Border.all(
                         color: _rememberMe
@@ -469,7 +338,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 24),
 
-        // 4. Kumo Primary Log In Button
+        // 4. Kumo Primary Button
         KumoButton.primary(
           text: 'Masuk',
           width: double.infinity,
@@ -480,52 +349,15 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 22),
 
-        // 5. Divider
-        const Row(
-          children: [
-            Expanded(child: Divider(color: AppColors.border)),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 14),
-              child: Text(
-                'Atau masuk dengan',
-                style: TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.lightMuted,
-                ),
-              ),
-            ),
-            Expanded(child: Divider(color: AppColors.border)),
-          ],
-        ),
-
-        const SizedBox(height: 20),
-
-        // 6. Social Buttons Row (Apple & Google)
-        Row(
-          children: [
-            Expanded(
-              child: _buildSocialButton(
-                iconWidget:
-                    const Icon(Icons.apple, size: 24, color: AppColors.ink),
-                label: 'Apple',
-                onTap: widget.onSuccess,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: _buildSocialButton(
-                iconWidget: const GoogleLogo(size: 20),
-                label: 'Google',
-                onTap: widget.onSuccess,
-              ),
-            ),
-          ],
+        // 5. Social Buttons
+        SocialAuthRow(
+          onAppleTap: widget.onSuccess,
+          onGoogleTap: widget.onSuccess,
         ),
 
         const SizedBox(height: 28),
 
-        // 7. Footer Register Link
+        // 6. Footer Register Link
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -543,7 +375,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 FocusManager.instance.primaryFocus?.unfocus();
                 setState(() {
                   _authMode = AuthMode.register;
-                  _clearErrors();
+                  _clearAllErrors();
                 });
               },
               child: const Padding(
@@ -565,14 +397,14 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   // ==========================================
-  // --- REGISTER FORM (FLOATING LABELS & VALIDATION) ---
+  // --- REGISTER FORM ---
   // ==========================================
   Widget _buildRegisterForm() {
     return Column(
       children: [
         const SizedBox(height: 6),
 
-        // 1. Full Name Floating Label Field
+        // 1. Full Name Field
         KumoFloatingField(
           label: 'Nama Lengkap',
           controller: _fullNameController,
@@ -581,35 +413,35 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 18),
 
-        // 2. Dropdown Grid 3 Kolom (Kelas, Jurusan, No. Kelas SMKN 8)
+        // 2. Dropdown Grid 3 Kolom
         Row(
           children: [
             Expanded(
               flex: 3,
-              child: _DropdownColumnBox(
+              child: DropdownColumnBox(
                 label: 'Kelas',
                 selectedValue: _selectedGrade,
-                options: _gradeOptions,
+                options: AuthConstants.gradeOptions,
                 onSelected: (val) => setState(() => _selectedGrade = val),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               flex: 4,
-              child: _DropdownColumnBox(
+              child: DropdownColumnBox(
                 label: 'Jurusan',
                 selectedValue: _selectedMajor,
-                options: _majorOptions,
+                options: AuthConstants.majorOptions,
                 onSelected: (val) => setState(() => _selectedMajor = val),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               flex: 3,
-              child: _DropdownColumnBox(
+              child: DropdownColumnBox(
                 label: 'No. Kelas',
                 selectedValue: _selectedClassNum,
-                options: _classNumOptions,
+                options: AuthConstants.classNumOptions,
                 onSelected: (val) => setState(() => _selectedClassNum = val),
               ),
             ),
@@ -618,7 +450,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 18),
 
-        // 3. WhatsApp / Phone Number Floating Label Field (xxx-xxxx-xxxx)
+        // 3. WhatsApp / Phone Number Field
         KumoFloatingField(
           label: 'Nomor WhatsApp / HP',
           controller: _phoneController,
@@ -656,18 +488,14 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 18),
 
-        // 4. Password Floating Label Field
+        // 4. Password Field
         KumoFloatingField(
           label: 'Kata Sandi',
           controller: _regPasswordController,
           obscureText: !_showRegPassword,
           errorText: _regPasswordError,
           suffixIcon: GestureDetector(
-            onTap: () {
-              setState(() {
-                _showRegPassword = !_showRegPassword;
-              });
-            },
+            onTap: () => setState(() => _showRegPassword = !_showRegPassword),
             child: Icon(
               _showRegPassword
                   ? Icons.visibility_outlined
@@ -680,7 +508,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 18),
 
-        // 5. Repeat Password Floating Label Field (Matches Password)
+        // 5. Repeat Password Field
         KumoFloatingField(
           label: 'Ulangi Kata Sandi',
           controller: _regRepeatPasswordController,
@@ -689,11 +517,7 @@ class _AuthScreenState extends State<AuthScreen> {
           onSubmitted: (_) => _submitRegister(),
           errorText: _regRepeatPasswordError,
           suffixIcon: GestureDetector(
-            onTap: () {
-              setState(() {
-                _showRegRepeatPassword = !_showRegRepeatPassword;
-              });
-            },
+            onTap: () => setState(() => _showRegRepeatPassword = !_showRegRepeatPassword),
             child: Icon(
               _showRegRepeatPassword
                   ? Icons.visibility_outlined
@@ -706,7 +530,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 24),
 
-        // 6. Kumo Primary Register Button
+        // 6. Kumo Primary Button
         KumoButton.primary(
           text: 'Daftar',
           width: double.infinity,
@@ -717,7 +541,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 24),
 
-        // 7. Footer "Sudah punya akun? Masuk"
+        // 7. Footer Login Link
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -735,7 +559,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 FocusManager.instance.primaryFocus?.unfocus();
                 setState(() {
                   _authMode = AuthMode.login;
-                  _clearErrors();
+                  _clearAllErrors();
                 });
               },
               child: const Padding(
@@ -753,183 +577,6 @@ class _AuthScreenState extends State<AuthScreen> {
           ],
         ),
       ],
-    );
-  }
-
-  // --- SOCIAL AUTH BUTTON (Apple & Google) ---
-  Widget _buildSocialButton({
-    required Widget iconWidget,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return Material(
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(25),
-        side: const BorderSide(color: Color(0xFFE2E8F0)),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(25),
-        onTap: onTap,
-        child: Container(
-          height: 50,
-          alignment: Alignment.center,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              iconWidget,
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.ink,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ==========================================
-// --- 1-TAP DROPDOWN BOX WITH WIDE FLOATING MENU ---
-// ==========================================
-class _DropdownColumnBox extends StatelessWidget {
-  final String label;
-  final String selectedValue;
-  final List<String> options;
-  final ValueChanged<String> onSelected;
-
-  const _DropdownColumnBox({
-    required this.label,
-    required this.selectedValue,
-    required this.options,
-    required this.onSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final GlobalKey boxKey = GlobalKey();
-
-    return GestureDetector(
-      key: boxKey,
-      behavior: HitTestBehavior.opaque,
-      onTap: () async {
-        FocusManager.instance.primaryFocus?.unfocus();
-        HapticFeedback.selectionClick();
-
-        final renderBox =
-            boxKey.currentContext?.findRenderObject() as RenderBox?;
-        if (renderBox == null) return;
-        final offset = renderBox.localToGlobal(Offset.zero);
-        final size = renderBox.size;
-
-        final selected = await showMenu<String>(
-          context: context,
-          position: RelativeRect.fromLTRB(
-            offset.dx,
-            offset.dy + size.height + 4,
-            offset.dx + size.width + 60,
-            offset.dy + size.height + 300,
-          ),
-          color: Colors.white,
-          elevation: 8,
-          shadowColor: Colors.black.withValues(alpha: 0.12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
-          ),
-          menuPadding: const EdgeInsets.symmetric(vertical: 4),
-          constraints: const BoxConstraints(minWidth: 150, maxWidth: 200),
-          items: options.map((opt) {
-            final isSelected = opt == selectedValue;
-            return PopupMenuItem<String>(
-              value: opt,
-              height: 42,
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    opt,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight:
-                          isSelected ? FontWeight.w700 : FontWeight.w500,
-                      color: isSelected ? AppColors.primary : AppColors.ink,
-                    ),
-                  ),
-                  if (isSelected)
-                    const Icon(
-                      Icons.check_rounded,
-                      color: Color(0xFF1D64EC),
-                      size: 18,
-                    ),
-                ],
-              ),
-            );
-          }).toList(),
-        );
-
-        FocusManager.instance.primaryFocus?.unfocus();
-
-        if (selected != null) {
-          HapticFeedback.selectionClick();
-          onSelected(selected);
-        }
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF64748B),
-                height: 1.1,
-              ),
-            ),
-            const SizedBox(height: 3),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: Text(
-                    selectedValue,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF0F172A),
-                      height: 1.2,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 4),
-                const Icon(
-                  Icons.keyboard_arrow_down_rounded,
-                  color: Color(0xFF64748B),
-                  size: 18,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

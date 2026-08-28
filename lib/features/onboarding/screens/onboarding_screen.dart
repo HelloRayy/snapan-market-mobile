@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:snapan_market/core/components/kumo_button.dart';
-import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/auth/screens/auth_screen.dart';
+import 'package:snapan_market/features/onboarding/components/onboarding_dot_indicators.dart';
+import 'package:snapan_market/features/onboarding/components/onboarding_slide_view.dart';
 import 'package:snapan_market/features/onboarding/models/onboarding_slide.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -79,11 +79,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 _currentPage = index;
               });
             },
-            itemCount: onboardingSlides.length + 1, // 4 slides + 1 auth slide
+            itemCount: onboardingSlides.length + 1, // 4 content slides + 1 auth slide
             itemBuilder: (context, index) {
               if (index < onboardingSlides.length) {
-                final slide = onboardingSlides[index];
-                return _buildSlideContent(slide);
+                return OnboardingSlideView(slide: onboardingSlides[index]);
               } else {
                 return AuthScreen(
                   onBack: () => _goToPage(onboardingSlides.length - 1),
@@ -116,27 +115,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Dot Indicator
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        onboardingSlides.length,
-                        (dotIndex) {
-                          final isSelected = dotIndex == _currentPage;
-                          return AnimatedContainer(
-                            duration: const Duration(milliseconds: 220),
-                            curve: Curves.easeOutCubic,
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            height: 7,
-                            width: isSelected ? 24 : 7,
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? const Color(0xFF1D64EC) // Kumo Blue
-                                  : const Color(0xFFE2E8F0),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          );
-                        },
-                      ),
+                    OnboardingDotIndicators(
+                      count: onboardingSlides.length,
+                      activeIndex: _currentPage,
                     ),
 
                     const SizedBox(height: 22),
@@ -194,78 +175,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
         ],
-      ),
-    );
-  }
-
-  // --- SLIDE CONTENT BUILDER (VERTICALLY CENTERED & LEFT-ALIGNED TEXT) ---
-  Widget _buildSlideContent(OnboardingSlide slide) {
-    return SafeArea(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final maxImgHeight = constraints.maxHeight * 0.44;
-
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 1. Top Visual Illustration Container (Centered)
-                Center(
-                  child: Container(
-                    constraints: BoxConstraints(maxHeight: maxImgHeight),
-                    child: slide.isSvg
-                        ? SvgPicture.asset(
-                            slide.assetPath,
-                            fit: BoxFit.contain,
-                            height: maxImgHeight,
-                          )
-                        : Image.asset(
-                            slide.assetPath,
-                            fit: BoxFit.contain,
-                            height: maxImgHeight,
-                            cacheWidth: 600,
-                            filterQuality: FilterQuality.medium,
-                          ),
-                  ),
-                ),
-
-                const SizedBox(height: 36),
-
-                // 2. Title (Rata Kiri / Left Aligned)
-                Text(
-                  slide.title,
-                  textAlign: TextAlign.left,
-                  style: const TextStyle(
-                    fontSize: 23,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.ink,
-                    height: 1.25,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                // 3. Description (Rata Kiri / Left Aligned)
-                Text(
-                  slide.description,
-                  textAlign: TextAlign.left,
-                  style: const TextStyle(
-                    fontSize: 14.5,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.muted,
-                    height: 1.55,
-                  ),
-                ),
-
-                // Bottom Spacing for floating buttons
-                const SizedBox(height: 100),
-              ],
-            ),
-          );
-        },
       ),
     );
   }

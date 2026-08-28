@@ -16,6 +16,7 @@ import 'package:snapan_market/features/create_post/models/create_post_types.dart
 /// - Pinned Bottom Footer: Audience selector + "Posting" pill button
 class CreatePostModal extends StatefulWidget {
   final PostMode initialMode;
+  final VoidCallback? onClose;
   final ValueChanged<Map<String, dynamic>>? onSubmitPost;
   final String currentUsername;
   final String currentUserAvatar;
@@ -23,6 +24,7 @@ class CreatePostModal extends StatefulWidget {
   const CreatePostModal({
     super.key,
     this.initialMode = PostMode.thread,
+    this.onClose,
     this.onSubmitPost,
     this.currentUsername = 'radityarayhannnn',
     this.currentUserAvatar =
@@ -190,7 +192,11 @@ class _CreatePostModalState extends State<CreatePostModal> {
         _images.isNotEmpty;
 
     if (!hasContent) {
-      Navigator.of(context).pop();
+      if (widget.onClose != null) {
+        widget.onClose!();
+      } else {
+        Navigator.of(context).pop();
+      }
       return;
     }
 
@@ -204,7 +210,11 @@ class _CreatePostModalState extends State<CreatePostModal> {
             isDestructiveAction: true,
             onPressed: () {
               Navigator.of(context).pop();
-              Navigator.of(context).pop();
+              if (widget.onClose != null) {
+                widget.onClose!();
+              } else {
+                Navigator.of(context).pop();
+              }
             },
             child: const Text('Buang'),
           ),

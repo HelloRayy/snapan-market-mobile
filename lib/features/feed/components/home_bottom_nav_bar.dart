@@ -29,18 +29,17 @@ enum HomeNavTab {
 
 /// Home Feed Bottom Navigation Bar
 ///
-/// 100% exact parity with `src/ui/components/marketplace/MarketBottomNav.tsx`:
-/// - Auto-detects virtual keyboard to prevent floating over mobile keyboard
-/// - 50px fixed bar height (`h-[50px]`) with SafeArea bottom padding (`env(safe-area-inset-bottom)`)
-/// - Frosted glass backdrop blur (`bg-white/95 backdrop-blur-md`) strictly clipped to bar rect
-/// - 1px subtle top border (`border-t border-neutral-200/80`) & upward elevation shadow (`shadow-[0_-2px_12px_rgba(0,0,0,0.03)]`)
-/// - 5-item grid layout (`max-w-md mx-auto h-[50px] grid grid-cols-5 px-1`):
+/// Exact translation of the design reference:
+/// - 50px fixed bar height (`h-[50px]`) with SafeArea bottom padding
+/// - Frosted glass backdrop blur (`bg-white/95 backdrop-blur-md`)
+/// - 1px subtle top border (0xFFF1F5F9) & upward elevation shadow
+/// - 5-item grid layout:
 ///   1. Home (Active pill 42x72px #F1F5F9, 24px icon fill-slate-900 / stroke text-neutral-400)
 ///   2. Pesan (24px Send icon with 8px #FF3040 red dot notification badge & white ring)
-///   3. Jual (48x48px elevated floating circle at -16px top outset with HIGH z-index, unclipped 4px white halo ring & blue glow)
+///   3. Center Action Button: 48x48px circle, bg #1D64EC, border #154EC1, 4px white halo shadow, dual blue ambient shadow
 ///   4. Aktivitas (24px Heart icon with rose-500 #F43F5E active color)
 ///   5. Profil (25x25px circular avatar with subtle 1.5px slate ring when active)
-/// - Tactile micro-tap scale animation (0.96) & dual haptic feedback
+/// - Tactile micro-tap scale animation (0.95) & dual haptic feedback
 class HomeBottomNavBar extends StatelessWidget {
   final HomeNavTab currentTab;
   final ValueChanged<HomeNavTab> onTabSelected;
@@ -55,7 +54,7 @@ class HomeBottomNavBar extends StatelessWidget {
     required this.currentTab,
     required this.onTabSelected,
     this.onCreateTap,
-    this.hasUnreadMessages = true, // Matches Web default: hasBadge: true on Pesan
+    this.hasUnreadMessages = true,
     this.hasUnreadActivity = false,
     this.userAvatar =
         'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
@@ -72,7 +71,7 @@ class HomeBottomNavBar extends StatelessWidget {
 
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
 
-    // 1. Frosted Glass Background Bar Layer (Clipped strictly so blur doesn't bleed)
+    // 1. Frosted Glass Background Bar Layer
     Widget frostedBar = Container(
       height: 50.0 + bottomPadding,
       decoration: BoxDecoration(
@@ -102,7 +101,7 @@ class HomeBottomNavBar extends StatelessWidget {
       );
     }
 
-    // 2. Navigation Items Layer (Rendered with HIGH z-index on top of frosted bar, UNCLIPPED for floating FAB)
+    // 2. Navigation Items Layer
     return Stack(
       clipBehavior: Clip.none,
       alignment: Alignment.bottomCenter,
@@ -110,17 +109,17 @@ class HomeBottomNavBar extends StatelessWidget {
         // Background Bar
         frostedBar,
 
-        // Foreground Nav Items & High Z-Index Floating Action Button
+        // Foreground Nav Items & Center Action Button
         SafeArea(
           top: false,
           bottom: true,
           child: Container(
             height: 50.0,
-            padding: const EdgeInsets.symmetric(horizontal: 4.0), // Matches Web px-1
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Tab 1: Home (Home Icon)
+                // Tab 1: Home
                 Expanded(
                   child: _NavTabItem(
                     tab: HomeNavTab.home,
@@ -145,10 +144,10 @@ class HomeBottomNavBar extends StatelessWidget {
                   ),
                 ),
 
-                // Tab 3: Jual (Elevated Floating Action Button with -16px Outset & High Z-Index)
+                // Tab 3: Center Action Button (Exact Reference Snippet)
                 Expanded(
                   child: Center(
-                    child: _FloatingCreateButton(
+                    child: _ReferenceCenterButton(
                       onTap: () {
                         if (onCreateTap != null) {
                           onCreateTap!();
@@ -160,21 +159,21 @@ class HomeBottomNavBar extends StatelessWidget {
                   ),
                 ),
 
-                // Tab 4: Aktivitas (Heart Icon with Rose-500 Color on Active)
+                // Tab 4: Aktivitas (Heart Icon)
                 Expanded(
                   child: _NavTabItem(
                     tab: HomeNavTab.activity,
                     isActive: currentTab == HomeNavTab.activity,
                     icon: Icons.favorite_border_rounded,
                     activeIcon: Icons.favorite_rounded,
-                    activeColor: const Color(0xFFF43F5E), // fill-rose-500
+                    activeColor: const Color(0xFFF43F5E), // rose-500
                     hasBadge: hasUnreadActivity,
                     tooltip: 'Aktivitas',
                     onTap: () => onTabSelected(HomeNavTab.activity),
                   ),
                 ),
 
-                // Tab 5: Profil (User Avatar with Active Slate Ring)
+                // Tab 5: Profil (User Avatar)
                 Expanded(
                   child: _NavTabItem(
                     tab: HomeNavTab.profile,
@@ -193,17 +192,24 @@ class HomeBottomNavBar extends StatelessWidget {
   }
 }
 
-/// Floating Center Action Button (48x48px Elevated Circle at -16px Outset with 4px Halo Ring & High Z-Index)
-class _FloatingCreateButton extends StatefulWidget {
+/// Center Action Button
+///
+/// 100% exact translation of snippet:
+/// - 48x48px circular button (`h-[47.998px] w-[47.998px] rounded-full`)
+/// - bg: `#1D64EC`
+/// - border: 1px `#154EC1`
+/// - shadow: 4px white halo (`oklab(0.999994 ... / 0.95) 0 0 0 4px`) + dual blue diffused shadow (`0 4px 6px -1px` & `0 2px 4px -2px`)
+/// - active scale 0.95
+class _ReferenceCenterButton extends StatefulWidget {
   final VoidCallback onTap;
 
-  const _FloatingCreateButton({required this.onTap});
+  const _ReferenceCenterButton({required this.onTap});
 
   @override
-  State<_FloatingCreateButton> createState() => _FloatingCreateButtonState();
+  State<_ReferenceCenterButton> createState() => _ReferenceCenterButtonState();
 }
 
-class _FloatingCreateButtonState extends State<_FloatingCreateButton> {
+class _ReferenceCenterButtonState extends State<_ReferenceCenterButton> {
   bool _isPressed = false;
 
   void _handleTapDown(TapDownDetails _) {
@@ -220,66 +226,57 @@ class _FloatingCreateButtonState extends State<_FloatingCreateButton> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 50.0,
-      width: 52.0,
-      child: OverflowBox(
-        maxHeight: 90.0,
-        maxWidth: 90.0,
-        alignment: Alignment.center,
-        child: Transform.translate(
-          offset: const Offset(0, -18.0), // Floating outset -18px
-          child: GestureDetector(
-            onTapDown: _handleTapDown,
-            onTapUp: _handleTapUp,
-            onTapCancel: _handleTapCancel,
-            onTap: () {
-              HapticFeedback.mediumImpact();
-              widget.onTap();
-            },
-            behavior: HitTestBehavior.opaque,
-            child: AnimatedScale(
-              scale: _isPressed ? 0.96 : 1.0,
-              duration: const Duration(milliseconds: 75),
-              curve: Curves.easeOutCubic,
-              child: Container(
-                width: 52.0,
-                height: 52.0,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFF3B82F6), // Kumo Blue 500
-                      Color(0xFF1D64EC), // Kumo Primary Blue
-                    ],
-                  ),
-                  border: Border.all(
-                    color: const Color(0xFF154EC1), // Kumo Primary Dark border
-                    width: 1.0,
-                  ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x2E0F172A), // Clean natural elevation shadow
-                      blurRadius: 8.0,
-                      offset: Offset(0, 3),
-                    ),
-                    BoxShadow(
-                      color: Color(0x14000000), // Subtle ambient shadow
-                      blurRadius: 3.0,
-                      offset: Offset(0, 1),
-                    ),
-                  ],
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.add_rounded,
-                    color: Colors.white,
-                    size: 28.0,
-                  ),
-                ),
+    return GestureDetector(
+      onTapDown: _handleTapDown,
+      onTapUp: _handleTapUp,
+      onTapCancel: _handleTapCancel,
+      onTap: () {
+        HapticFeedback.mediumImpact();
+        widget.onTap();
+      },
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedScale(
+        scale: _isPressed ? 0.95 : 1.0, // active:scale-95
+        duration: const Duration(milliseconds: 75),
+        curve: Curves.easeOutCubic,
+        child: Container(
+          width: 48.0,
+          height: 48.0,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: const Color(0xFF1D64EC), // bg-[#1d64ec]
+            border: Border.all(
+              color: const Color(0xFF154EC1), // border-[#154ec1]
+              width: 1.0,
+            ),
+            boxShadow: [
+              // 1. 4px White Halo Shadow (oklab(0.999994 ... / 0.95) 0 0 0 4px)
+              BoxShadow(
+                color: Colors.white.withValues(alpha: 0.95),
+                spreadRadius: 3.5,
+                blurRadius: 0,
               ),
+              // 2. oklab(0.623 ... / 0.3) 0px 4px 6px -1px
+              const BoxShadow(
+                color: Color(0x4D1D64EC),
+                blurRadius: 6.0,
+                offset: Offset(0, 4),
+                spreadRadius: -1.0,
+              ),
+              // 3. oklab(0.623 ... / 0.3) 0px 2px 4px -2px
+              const BoxShadow(
+                color: Color(0x4D1D64EC),
+                blurRadius: 4.0,
+                offset: Offset(0, 2),
+                spreadRadius: -2.0,
+              ),
+            ],
+          ),
+          child: const Center(
+            child: Icon(
+              Icons.add_rounded,
+              color: Colors.white,
+              size: 26.0,
             ),
           ),
         ),

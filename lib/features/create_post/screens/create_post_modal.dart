@@ -75,7 +75,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
   String _audiencePrivacy = 'Siapa pun dapat membalas & mengutip';
   bool _isSubmitting = false;
   bool _showSellingIntentBanner = false;
-
+  final GlobalKey _topicTriggerKey = GlobalKey();
   final List<String> _dummyImagesPool = [
     'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80',
     'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800&q=80',
@@ -489,6 +489,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
         const Icon(Icons.chevron_right_rounded, size: 14.0, color: AppColors.muted),
         const SizedBox(width: 2.0),
         GestureDetector(
+          key: _topicTriggerKey,
           onTap: _showTopicPickerPopup,
           behavior: HitTestBehavior.opaque,
           child: Text(
@@ -1089,165 +1090,209 @@ class _CreatePostModalState extends State<CreatePostModal> {
       ),
     );
   }
-  // Topic Picker Modal Popup Card (Matching Image #1 & Web CreatePostModal.tsx)
+  // Topic Picker Anchored Popover Modal (Positioned directly under "Komunitas atau topik")
   void _showTopicPickerPopup() {
     HapticFeedback.selectionClick();
     final customTopicController = TextEditingController();
 
-    showDialog(
-      context: context,
-      barrierColor: Colors.black.withValues(alpha: 0.35),
-      builder: (context) => Dialog(
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.transparent,
-        elevation: 24.0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0),
-          side: const BorderSide(color: Color(0xFFE2E8F0), width: 1.0),
-        ),
-        insetPadding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
-        child: Container(
-          width: 300.0,
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header: Topik Populer
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                child: Text(
-                  'TOPIK POPULER SMKN 8',
-                  style: TextStyle(
-                    fontSize: 11.0,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF64748B),
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 4.0),
+    final renderBox = _topicTriggerKey.currentContext?.findRenderObject() as RenderBox?;
+    final offset = renderBox?.localToGlobal(Offset.zero) ?? const Offset(60, 110);
+    final size = renderBox?.size ?? Size.zero;
 
-              // Preset Topics List
-              for (var t in kPresetTopics) ...[
-                InkWell(
-                  onTap: () {
-                    HapticFeedback.selectionClick();
-                    setState(() => _selectedTopic = t);
-                    Navigator.of(context).pop();
-                  },
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 7.0),
-                    child: Row(
-                      children: [
-                        Icon(
-                          t.isOfficial ? Icons.stars_rounded : Icons.tag_rounded,
-                          size: 16.0,
-                          color: t.isOfficial ? AppColors.primary : AppColors.muted,
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'Dismiss Topic Popover',
+      barrierColor: Colors.black.withValues(alpha: 0.20),
+      transitionDuration: const Duration(milliseconds: 150),
+      pageBuilder: (dialogContext, anim1, anim2) {
+        final screenWidth = MediaQuery.sizeOf(dialogContext).width;
+        final popoverLeft = (offset.dx - 12.0).clamp(16.0, screenWidth - 276.0);
+        final popoverTop = offset.dy + size.height + 6.0;
+
+        return Stack(
+          children: [
+            Positioned(
+              top: popoverTop,
+              left: popoverLeft,
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  width: 260.0,
+                  padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 4.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16.0), // rounded-2xl
+                    border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x1F000000), // shadow-xl elevation
+                        blurRadius: 24.0,
+                        offset: Offset(0, 10),
+                      ),
+                      BoxShadow(
+                        color: Color(0x0A000000),
+                        blurRadius: 6.0,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header: Topik Populer
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+                        child: Text(
+                          'TOPIK POPULER SMKN 8',
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF64748B),
+                            letterSpacing: 0.5,
+                          ),
                         ),
-                        const SizedBox(width: 8.0),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '#${t.name}',
-                                style: TextStyle(
-                                  fontSize: 13.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: t.isOfficial ? AppColors.primary : AppColors.ink,
+                      ),
+                      const SizedBox(height: 2.0),
+
+                      // Preset Topics List
+                      for (var t in kPresetTopics) ...[
+                        InkWell(
+                          onTap: () {
+                            HapticFeedback.selectionClick();
+                            setState(() => _selectedTopic = t);
+                            Navigator.of(dialogContext).pop();
+                          },
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  t.isOfficial ? Icons.stars_rounded : Icons.tag_rounded,
+                                  size: 16.0,
+                                  color: t.isOfficial ? AppColors.primary : AppColors.muted,
                                 ),
-                              ),
-                              if (t.subtitle != null) ...[
-                                const SizedBox(height: 1.0),
-                                Text(
-                                  t.subtitle!,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 11.0,
-                                    color: Color(0xFF94A3B8),
+                                const SizedBox(width: 8.0),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '#${t.name}',
+                                        style: TextStyle(
+                                          fontSize: 13.0,
+                                          fontWeight: FontWeight.w600,
+                                          color: t.isOfficial ? AppColors.primary : AppColors.ink,
+                                        ),
+                                      ),
+                                      if (t.subtitle != null) ...[
+                                        Text(
+                                          t.subtitle!,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontSize: 10.5,
+                                            color: Color(0xFF94A3B8),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
                                   ),
                                 ),
                               ],
-                            ],
+                            ),
                           ),
                         ),
                       ],
-                    ),
+
+                      const SizedBox(height: 4.0),
+                      const Divider(color: Color(0xFFF1F5F9), height: 1.0),
+                      const SizedBox(height: 4.0),
+
+                      // Custom Topic Input Field
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: customTopicController,
+                                maxLength: 20,
+                                style: const TextStyle(fontSize: 12.5, color: AppColors.ink),
+                                decoration: InputDecoration(
+                                  hintText: 'Ketik topik baru...',
+                                  hintStyle: const TextStyle(fontSize: 12.0, color: Color(0xFFCBD5E1)),
+                                  counterText: '',
+                                  filled: true,
+                                  fillColor: const Color(0xFFF8FAFC),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                                  ),
+                                ),
+                                onSubmitted: (val) {
+                                  if (val.trim().isNotEmpty) {
+                                    HapticFeedback.selectionClick();
+                                    setState(() {
+                                      _selectedTopic = TopicOption(
+                                        id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
+                                        name: val.trim().replaceAll('#', ''),
+                                      );
+                                    });
+                                    Navigator.of(dialogContext).pop();
+                                  }
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 4.0),
+                            IconButton(
+                              icon: const Icon(Icons.check_rounded, size: 18.0, color: AppColors.primary),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(minWidth: 28.0, minHeight: 28.0),
+                              onPressed: () {
+                                final val = customTopicController.text.trim();
+                                if (val.isNotEmpty) {
+                                  HapticFeedback.selectionClick();
+                                  setState(() {
+                                    _selectedTopic = TopicOption(
+                                      id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
+                                      name: val.replaceAll('#', ''),
+                                    );
+                                  });
+                                  Navigator.of(dialogContext).pop();
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-
-              const SizedBox(height: 6.0),
-              const Divider(color: Color(0xFFF1F5F9), height: 1.0),
-              const SizedBox(height: 6.0),
-
-              // Custom Topic Input Field
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: customTopicController,
-                        maxLength: 20,
-                        style: const TextStyle(fontSize: 13.0, color: AppColors.ink),
-                        decoration: InputDecoration(
-                          hintText: 'Ketik topik baru...',
-                          hintStyle: const TextStyle(fontSize: 12.5, color: Color(0xFFCBD5E1)),
-                          counterText: '',
-                          filled: true,
-                          fillColor: const Color(0xFFF8FAFC),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                            borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                            borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-                          ),
-                        ),
-                        onSubmitted: (val) {
-                          if (val.trim().isNotEmpty) {
-                            HapticFeedback.selectionClick();
-                            setState(() {
-                              _selectedTopic = TopicOption(
-                                id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
-                                name: val.trim().replaceAll('#', ''),
-                              );
-                            });
-                            Navigator.of(context).pop();
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 6.0),
-                    IconButton(
-                      icon: const Icon(Icons.check_rounded, size: 20.0, color: AppColors.primary),
-                      onPressed: () {
-                        final val = customTopicController.text.trim();
-                        if (val.isNotEmpty) {
-                          HapticFeedback.selectionClick();
-                          setState(() {
-                            _selectedTopic = TopicOption(
-                              id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
-                              name: val.replaceAll('#', ''),
-                            );
-                          });
-                          Navigator.of(context).pop();
-                        }
-                      },
-                    ),
-                  ],
-                ),
               ),
-            ],
+            ),
+          ],
+        );
+      },
+      transitionBuilder: (context, anim, secondaryAnim, child) {
+        return FadeTransition(
+          opacity: CurvedAnimation(parent: anim, curve: Curves.easeOutCubic),
+          child: ScaleTransition(
+            alignment: Alignment.topLeft,
+            scale: Tween<double>(begin: 0.92, end: 1.0).animate(
+              CurvedAnimation(parent: anim, curve: Curves.easeOutCubic),
+            ),
+            child: child,
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 

@@ -115,7 +115,7 @@ class HomeBottomNavBar extends StatelessWidget {
           bottom: true,
           child: Container(
             height: 50.0,
-            padding: const EdgeInsets.symmetric(horizontal: 24.0), // Compact center cluster
+            padding: const EdgeInsets.symmetric(horizontal: 12.0), // Balanced edge padding
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -144,10 +144,10 @@ class HomeBottomNavBar extends StatelessWidget {
                   ),
                 ),
 
-                // Tab 3: Center Action (Kumo In-Bar Primary Button)
+                // Tab 3: Center Action (Enlarged Floating Kumo FAB 56px with High Z-Index)
                 Expanded(
                   child: Center(
-                    child: _KumoInBarCreateButton(
+                    child: _FloatingKumoFabButton(
                       onTap: () {
                         if (onCreateTap != null) {
                           onCreateTap!();
@@ -192,17 +192,17 @@ class HomeBottomNavBar extends StatelessWidget {
   }
 }
 
-/// Center Action Button (In-Bar Kumo Primary Blue Button matching compact rule & Kumo style)
-class _KumoInBarCreateButton extends StatefulWidget {
+/// Center Floating Action Button (56x56px Elevated Kumo Circle with 4px White Halo Ring & High Z-Index)
+class _FloatingKumoFabButton extends StatefulWidget {
   final VoidCallback onTap;
 
-  const _KumoInBarCreateButton({required this.onTap});
+  const _FloatingKumoFabButton({required this.onTap});
 
   @override
-  State<_KumoInBarCreateButton> createState() => _KumoInBarCreateButtonState();
+  State<_FloatingKumoFabButton> createState() => _FloatingKumoFabButtonState();
 }
 
-class _KumoInBarCreateButtonState extends State<_KumoInBarCreateButton> {
+class _FloatingKumoFabButtonState extends State<_FloatingKumoFabButton> {
   bool _isPressed = false;
 
   void _handleTapDown(TapDownDetails _) {
@@ -219,49 +219,73 @@ class _KumoInBarCreateButtonState extends State<_KumoInBarCreateButton> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: _handleTapDown,
-      onTapUp: _handleTapUp,
-      onTapCancel: _handleTapCancel,
-      onTap: () {
-        HapticFeedback.mediumImpact();
-        widget.onTap();
-      },
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedScale(
-        scale: _isPressed ? 0.95 : 1.0,
-        duration: const Duration(milliseconds: 75),
-        curve: Curves.easeOutCubic,
-        child: Container(
-          width: 40.0,
-          height: 40.0,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFF3B82F6), // Kumo Blue 500
-                Color(0xFF1D64EC), // Kumo Primary Blue
-              ],
-            ),
-            border: Border.all(
-              color: const Color(0xFF154EC1), // Kumo Primary Dark border
-              width: 1.0,
-            ),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x2E1D64EC), // Subtle Kumo depth elevation
-                blurRadius: 6.0,
-                offset: Offset(0, 2),
+    return SizedBox(
+      height: 50.0,
+      width: 56.0,
+      child: OverflowBox(
+        maxHeight: 110.0,
+        maxWidth: 110.0,
+        alignment: Alignment.center,
+        child: Transform.translate(
+          offset: const Offset(0, -20.0), // Floating outset -20px above bar line
+          child: GestureDetector(
+            onTapDown: _handleTapDown,
+            onTapUp: _handleTapUp,
+            onTapCancel: _handleTapCancel,
+            onTap: () {
+              HapticFeedback.mediumImpact();
+              widget.onTap();
+            },
+            behavior: HitTestBehavior.opaque,
+            child: AnimatedScale(
+              scale: _isPressed ? 0.95 : 1.0, // active:scale-95
+              duration: const Duration(milliseconds: 75),
+              curve: Curves.easeOutCubic,
+              child: Container(
+                width: 56.0,
+                height: 56.0,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.95), // 4px clean white halo ring
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x331D64EC), // Subtle diffused blue ambient shadow
+                      blurRadius: 10.0,
+                      offset: Offset(0, 5),
+                    ),
+                    BoxShadow(
+                      color: Color(0x14000000), // Depth shadow
+                      blurRadius: 4.0,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(3.5), // The exact clean 4px white halo ring
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0xFF3B82F6), // Kumo Blue 500
+                        Color(0xFF1D64EC), // Kumo Primary Blue
+                      ],
+                    ),
+                    border: Border.all(
+                      color: const Color(0xFF154EC1), // border-[#154ec1]
+                      width: 0.8,
+                    ),
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.add_rounded,
+                      color: Colors.white,
+                      size: 28.0, // Enlarged bold plus icon
+                    ),
+                  ),
+                ),
               ),
-            ],
-          ),
-          child: const Center(
-            child: Icon(
-              Icons.add_rounded,
-              color: Colors.white,
-              size: 24.0,
             ),
           ),
         ),

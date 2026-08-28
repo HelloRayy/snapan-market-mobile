@@ -1,10 +1,9 @@
 import 'dart:ui';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
-/// Enum representing the 5 navigation tabs matching Snapan Market Kumo design
+/// Enum representing the 5 navigation tabs
 enum HomeNavTab {
   home,
   messages,
@@ -19,7 +18,7 @@ enum HomeNavTab {
       case HomeNavTab.messages:
         return 'Pesan';
       case HomeNavTab.create:
-        return 'Jual';
+        return 'Buat Postingan';
       case HomeNavTab.activity:
         return 'Aktivitas';
       case HomeNavTab.profile:
@@ -30,22 +29,22 @@ enum HomeNavTab {
 
 /// Home Feed Bottom Navigation Bar
 ///
-/// Compact In-Bar Composition with authentic Kumo UI visual styling:
-/// - In-Bar Flush Layout: 50px fixed bar height with zero broken overflow lines
-/// - Compact Center Grouping: 24px wide horizontal edge margin to cluster icons at center
-/// - Balanced Visual Weight: 5 items evenly distributed with uniform vertical alignment
-/// - Kumo UI Identity:
-///   1. Home (Kumo active pill 42x72px #F1F5F9, 26px ink icon)
-///   2. Pesan (26px Send icon with 8px #FF3040 red dot notification badge & white ring)
-///   3. Center Action (40x40px Kumo Primary Blue squircle/pill, #3B82F6 -> #1D64EC gradient, #154EC1 border, white "+" icon)
-///   4. Aktivitas (26px Heart icon with rose-500 #F43F5E active state)
-///   5. Profil (26x26px circular avatar with subtle slate border)
-/// - Touch target >= 44x44pt & tactile micro-tap scale (0.96)
+/// 100% exact match to reference screenshot:
+/// - 50px fixed bar height with SafeArea bottom awareness
+/// - Frosted glass backdrop blur (10px blur) with hairline top border (0xFFF1F5F9)
+/// - 5 iconic minimal vector glyphs:
+///   1. Home: Solid rounded house polygon
+///   2. Pesan: Curved rounded paperplane with red numeric badge "1"
+///   3. Center Action (+): 44x38px soft squircle pill container with plus icon
+///   4. Aktivitas: Clean outline heart (solid rose when active)
+///   5. Profil: Minimalist user glyph (circle head + shoulder arc) / avatar
+/// - Touch target >= 44x44pt & tactile micro-tap scale (0.95)
 class HomeBottomNavBar extends StatelessWidget {
   final HomeNavTab currentTab;
   final ValueChanged<HomeNavTab> onTabSelected;
   final VoidCallback? onCreateTap;
   final bool hasUnreadMessages;
+  final int unreadMessagesCount;
   final bool hasUnreadActivity;
   final String? userAvatar;
   final bool showBlur;
@@ -56,9 +55,9 @@ class HomeBottomNavBar extends StatelessWidget {
     required this.onTabSelected,
     this.onCreateTap,
     this.hasUnreadMessages = true,
+    this.unreadMessagesCount = 1,
     this.hasUnreadActivity = false,
-    this.userAvatar =
-        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
+    this.userAvatar,
     this.showBlur = true,
   });
 
@@ -72,21 +71,21 @@ class HomeBottomNavBar extends StatelessWidget {
 
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
 
-    // 1. Frosted Glass Background Bar Layer (Clean horizontal flush line)
+    // 1. Frosted Glass Background Bar Layer
     Widget frostedBar = Container(
       height: 50.0 + bottomPadding,
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.95),
         border: const Border(
           top: BorderSide(
-            color: Color(0xFFF1F5F9), // border-neutral-200/80
+            color: Color(0xFFF1F5F9),
             width: 1.0,
           ),
         ),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x08000000), // shadow-[0_-2px_12px_rgba(0,0,0,0.03)]
-            blurRadius: 12.0,
+            color: Color(0x06000000), // Ultra subtle elevation shadow
+            blurRadius: 10.0,
             offset: Offset(0, -2),
           ),
         ],
@@ -102,60 +101,61 @@ class HomeBottomNavBar extends StatelessWidget {
       );
     }
 
-    // 2. Navigation Items Layer (Constrained to exact 50px + bottomPadding height)
+    // 2. Navigation Items Layer (Constrained to 350px for tight, ergonomic spacing)
     return SizedBox(
       height: 50.0 + bottomPadding,
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.bottomCenter,
         children: [
-          // 1. Background Bar
+          // Background Bar
           Positioned.fill(
             child: frostedBar,
           ),
 
-          // 2. Foreground Nav Items Layer
+          // Foreground Nav Items
           Positioned.fill(
             child: SafeArea(
               top: false,
               bottom: true,
               child: Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 350.0), // Apple HIG compact container
+                  constraints: const BoxConstraints(maxWidth: 350.0),
                   child: SizedBox(
                     height: 50.0,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Tab 1: Home (Kumo Active Pill)
+                        // Tab 1: Home (Solid Rounded House Polygon)
                         Expanded(
-                          child: _NavTabItem(
-                            tab: HomeNavTab.home,
-                            isActive: currentTab == HomeNavTab.home,
-                            icon: CupertinoIcons.house,
-                            activeIcon: CupertinoIcons.house_fill,
+                          child: _CustomNavTabItem(
                             tooltip: 'Home',
+                            isActive: currentTab == HomeNavTab.home,
                             onTap: () => onTabSelected(HomeNavTab.home),
+                            child: _HomeGlyph(
+                              isActive: currentTab == HomeNavTab.home,
+                            ),
                           ),
                         ),
 
-                        // Tab 2: Pesan (Send Icon with Red Dot Badge)
+                        // Tab 2: Pesan (Curved Paperplane with Red Badge "1")
                         Expanded(
-                          child: _NavTabItem(
-                            tab: HomeNavTab.messages,
-                            isActive: currentTab == HomeNavTab.messages,
-                            icon: CupertinoIcons.paperplane,
-                            activeIcon: CupertinoIcons.paperplane_fill,
-                            hasBadge: hasUnreadMessages,
+                          child: _CustomNavTabItem(
                             tooltip: 'Pesan',
+                            isActive: currentTab == HomeNavTab.messages,
                             onTap: () => onTabSelected(HomeNavTab.messages),
+                            child: _PaperPlaneGlyph(
+                              isActive: currentTab == HomeNavTab.messages,
+                              hasBadge: hasUnreadMessages,
+                              badgeCount: unreadMessagesCount,
+                            ),
                           ),
                         ),
 
-                        // Tab 3: Center Action (Floating Kumo FAB with High Z-Index)
+                        // Tab 3: Center Action (Squircle Pill Container "+")
                         Expanded(
                           child: Center(
-                            child: _FloatingKumoFabButton(
+                            child: _CenterSquircleAction(
                               onTap: () {
                                 if (onCreateTap != null) {
                                   onCreateTap!();
@@ -167,30 +167,33 @@ class HomeBottomNavBar extends StatelessWidget {
                           ),
                         ),
 
-                        // Tab 4: Aktivitas (Heart Icon)
+                        // Tab 4: Aktivitas (Heart Glyph)
                         Expanded(
-                          child: _NavTabItem(
-                            tab: HomeNavTab.activity,
-                            isActive: currentTab == HomeNavTab.activity,
-                            icon: CupertinoIcons.heart,
-                            activeIcon: CupertinoIcons.heart_fill,
-                            activeColor: const Color(0xFFF43F5E), // rose-500
-                            hasBadge: hasUnreadActivity,
+                          child: _CustomNavTabItem(
                             tooltip: 'Aktivitas',
+                            isActive: currentTab == HomeNavTab.activity,
                             onTap: () => onTabSelected(HomeNavTab.activity),
+                            child: _HeartGlyph(
+                              isActive: currentTab == HomeNavTab.activity,
+                              hasBadge: hasUnreadActivity,
+                            ),
                           ),
                         ),
 
-                        // Tab 5: Profil (User Avatar with Outline/Solid transition)
+                        // Tab 5: Profil (Minimalist User Glyph / Avatar)
                         Expanded(
-                          child: _NavTabItem(
-                            tab: HomeNavTab.profile,
-                            isActive: currentTab == HomeNavTab.profile,
-                            icon: CupertinoIcons.person,
-                            activeIcon: CupertinoIcons.person_fill,
-                            userAvatar: userAvatar,
+                          child: _CustomNavTabItem(
                             tooltip: 'Profil',
+                            isActive: currentTab == HomeNavTab.profile,
                             onTap: () => onTabSelected(HomeNavTab.profile),
+                            child: userAvatar != null && userAvatar!.isNotEmpty
+                                ? _buildAvatarImage(
+                                    userAvatar!,
+                                    currentTab == HomeNavTab.profile,
+                                  )
+                                : _UserGlyph(
+                                    isActive: currentTab == HomeNavTab.profile,
+                                  ),
                           ),
                         ),
                       ],
@@ -204,241 +207,8 @@ class HomeBottomNavBar extends StatelessWidget {
       ),
     );
   }
-}
 
-/// Center Floating Action Button (56x56px Elevated Kumo Circle with 4px White Halo Ring & High Z-Index)
-class _FloatingKumoFabButton extends StatefulWidget {
-  final VoidCallback onTap;
-
-  const _FloatingKumoFabButton({required this.onTap});
-
-  @override
-  State<_FloatingKumoFabButton> createState() => _FloatingKumoFabButtonState();
-}
-
-class _FloatingKumoFabButtonState extends State<_FloatingKumoFabButton> {
-  bool _isPressed = false;
-
-  void _handleTapDown(TapDownDetails _) {
-    setState(() => _isPressed = true);
-  }
-
-  void _handleTapUp(TapUpDetails _) {
-    setState(() => _isPressed = false);
-  }
-
-  void _handleTapCancel() {
-    setState(() => _isPressed = false);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 50.0,
-      width: 56.0,
-      child: OverflowBox(
-        maxHeight: 110.0,
-        maxWidth: 110.0,
-        alignment: Alignment.center,
-        child: Transform.translate(
-          offset: const Offset(0, -20.0), // Floating outset -20px above bar line
-          child: GestureDetector(
-            onTapDown: _handleTapDown,
-            onTapUp: _handleTapUp,
-            onTapCancel: _handleTapCancel,
-            onTap: () {
-              HapticFeedback.mediumImpact();
-              widget.onTap();
-            },
-            behavior: HitTestBehavior.opaque,
-            child: AnimatedScale(
-              scale: _isPressed ? 0.95 : 1.0, // active:scale-95
-              duration: const Duration(milliseconds: 75),
-              curve: Curves.easeOutCubic,
-              child: Container(
-                width: 56.0,
-                height: 56.0,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.95), // 4px clean white halo ring
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x331D64EC), // Subtle diffused blue ambient shadow
-                      blurRadius: 10.0,
-                      offset: Offset(0, 5),
-                    ),
-                    BoxShadow(
-                      color: Color(0x14000000), // Depth shadow
-                      blurRadius: 4.0,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.all(3.5), // The exact clean 4px white halo ring
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: const LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0xFF3B82F6), // Kumo Blue 500
-                        Color(0xFF1D64EC), // Kumo Primary Blue
-                      ],
-                    ),
-                    border: Border.all(
-                      color: const Color(0xFF154EC1), // border-[#154ec1]
-                      width: 0.8,
-                    ),
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      CupertinoIcons.add,
-                      color: Colors.white,
-                      size: 28.0, // Enlarged bold plus icon
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Regular Nav Tab Item with Active Pill, Notification Badge, and Avatar support
-class _NavTabItem extends StatefulWidget {
-  final HomeNavTab tab;
-  final bool isActive;
-  final IconData? icon;
-  final IconData? activeIcon;
-  final Color? activeColor;
-  final bool hasBadge;
-  final String? userAvatar;
-  final String tooltip;
-  final VoidCallback onTap;
-
-  const _NavTabItem({
-    required this.tab,
-    required this.isActive,
-    this.icon,
-    this.activeIcon,
-    this.activeColor,
-    this.hasBadge = false,
-    this.userAvatar,
-    required this.tooltip,
-    required this.onTap,
-  });
-
-  @override
-  State<_NavTabItem> createState() => _NavTabItemState();
-}
-
-class _NavTabItemState extends State<_NavTabItem> {
-  bool _isPressed = false;
-
-  void _handleTapDown(TapDownDetails _) {
-    setState(() => _isPressed = true);
-  }
-
-  void _handleTapUp(TapUpDetails _) {
-    setState(() => _isPressed = false);
-  }
-
-  void _handleTapCancel() {
-    setState(() => _isPressed = false);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final effectiveIcon = widget.isActive
-        ? (widget.activeIcon ?? widget.icon)
-        : widget.icon;
-
-    final effectiveColor = widget.isActive
-        ? (widget.activeColor ?? AppColors.ink)
-        : const Color(0xFF94A3B8); // stroke-[1.8] text-neutral-400
-
-    return Semantics(
-      label: widget.tooltip,
-      child: GestureDetector(
-        onTapDown: _handleTapDown,
-        onTapUp: _handleTapUp,
-        onTapCancel: _handleTapCancel,
-        onTap: () {
-          HapticFeedback.selectionClick();
-          widget.onTap();
-        },
-        behavior: HitTestBehavior.opaque,
-        child: AnimatedScale(
-          scale: _isPressed ? 0.96 : 1.0,
-          duration: const Duration(milliseconds: 75),
-          curve: Curves.easeOutCubic,
-          child: Center(
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              curve: Curves.easeOutCubic,
-              height: 40.0,
-              width: widget.isActive ? 62.0 : 44.0, // Balanced compact active pill
-              decoration: BoxDecoration(
-                color: widget.isActive
-                    ? const Color(0xFFF1F5F9) // bg-neutral-100/90
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(12.0), // rounded-xl
-              ),
-              child: Center(
-                child: widget.tab == HomeNavTab.profile
-                    ? _buildProfileAvatar(widget.isActive)
-                    : _buildIconWithBadge(effectiveIcon, effectiveColor),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildIconWithBadge(IconData? iconData, Color color) {
-    if (iconData == null) return const SizedBox.shrink();
-
-    final iconWidget = Icon(
-      iconData,
-      size: 24.0, // 24px icon matching h-[23.99px]
-      color: color,
-    );
-
-    if (!widget.hasBadge) {
-      return iconWidget;
-    }
-
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        iconWidget,
-        // Red Notification Unread Badge (8px #FF3040 with 2px white ring)
-        Positioned(
-          top: -1.0,
-          right: -2.0,
-          child: Container(
-            width: 8.0,
-            height: 8.0,
-            decoration: BoxDecoration(
-              color: const Color(0xFFFF3040),
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: Colors.white,
-                width: 2.0, // 2px white ring
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildProfileAvatar(bool isActive) {
+  Widget _buildAvatarImage(String url, bool isActive) {
     return Container(
       width: 26.0,
       height: 26.0,
@@ -448,41 +218,460 @@ class _NavTabItemState extends State<_NavTabItem> {
           color: isActive ? AppColors.ink : const Color(0xFFCBD5E1),
           width: 1.0,
         ),
-        boxShadow: isActive
-            ? [
-                BoxShadow(
-                  color: AppColors.ink.withValues(alpha: 0.15),
-                  spreadRadius: 1.5,
-                ),
-              ]
-            : null,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(13.0),
-        child: widget.userAvatar != null && widget.userAvatar!.isNotEmpty
-            ? Image.network(
-                widget.userAvatar!,
-                width: 24.0,
-                height: 24.0,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    _buildAvatarFallback(isActive),
-              )
-            : _buildAvatarFallback(isActive),
+        child: Image.network(
+          url,
+          width: 24.0,
+          height: 24.0,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) =>
+              _UserGlyph(isActive: isActive),
+        ),
       ),
     );
   }
+}
 
-  Widget _buildAvatarFallback(bool isActive) {
-    return Container(
-      width: 24.0,
-      height: 24.0,
-      color: const Color(0xFFF1F5F9),
-      child: Icon(
-        isActive ? CupertinoIcons.person_fill : CupertinoIcons.person,
-        size: 16.0,
-        color: isActive ? AppColors.ink : const Color(0xFF94A3B8),
+/// Center Squircle Action Button (Soft translucent pill with "+" icon)
+class _CenterSquircleAction extends StatefulWidget {
+  final VoidCallback onTap;
+
+  const _CenterSquircleAction({required this.onTap});
+
+  @override
+  State<_CenterSquircleAction> createState() => _CenterSquircleActionState();
+}
+
+class _CenterSquircleActionState extends State<_CenterSquircleAction> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) => setState(() => _isPressed = false),
+      onTapCancel: () => setState(() => _isPressed = false),
+      onTap: () {
+        HapticFeedback.mediumImpact();
+        widget.onTap();
+      },
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedScale(
+        scale: _isPressed ? 0.94 : 1.0,
+        duration: const Duration(milliseconds: 75),
+        curve: Curves.easeOutCubic,
+        child: Container(
+          width: 44.0,
+          height: 38.0,
+          decoration: BoxDecoration(
+            color: const Color(0x14000000), // 8% gray translucent pill
+            borderRadius: BorderRadius.circular(14.0), // Rounded squircle
+          ),
+          child: const Center(
+            child: Icon(
+              Icons.add_rounded,
+              color: Color(0xFF475569), // Slate 600
+              size: 24.0,
+            ),
+          ),
+        ),
       ),
     );
+  }
+}
+
+/// Interactive Tab Button Wrapper with Semantics & Micro-Tap
+class _CustomNavTabItem extends StatefulWidget {
+  final Widget child;
+  final bool isActive;
+  final String tooltip;
+  final VoidCallback onTap;
+
+  const _CustomNavTabItem({
+    required this.child,
+    required this.isActive,
+    required this.tooltip,
+    required this.onTap,
+  });
+
+  @override
+  State<_CustomNavTabItem> createState() => _CustomNavTabItemState();
+}
+
+class _CustomNavTabItemState extends State<_CustomNavTabItem> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: widget.tooltip,
+      selected: widget.isActive,
+      button: true,
+      child: GestureDetector(
+        onTapDown: (_) => setState(() => _isPressed = true),
+        onTapUp: (_) => setState(() => _isPressed = false),
+        onTapCancel: () => setState(() => _isPressed = false),
+        onTap: () {
+          HapticFeedback.selectionClick();
+          widget.onTap();
+        },
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedScale(
+          scale: _isPressed ? 0.94 : 1.0,
+          duration: const Duration(milliseconds: 75),
+          curve: Curves.easeOutCubic,
+          child: Container(
+            height: 50.0,
+            alignment: Alignment.center,
+            child: widget.child,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 1. Home Glyph (Solid Rounded House Polygon)
+class _HomeGlyph extends StatelessWidget {
+  final bool isActive;
+
+  const _HomeGlyph({required this.isActive});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 24.0,
+      height: 24.0,
+      child: CustomPaint(
+        painter: _HomePainter(
+          color: isActive ? AppColors.ink : const Color(0xFF787574),
+          isActive: isActive,
+        ),
+      ),
+    );
+  }
+}
+
+class _HomePainter extends CustomPainter {
+  final Color color;
+  final bool isActive;
+
+  _HomePainter({required this.color, required this.isActive});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = isActive ? PaintingStyle.fill : PaintingStyle.stroke
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final w = size.width;
+    final h = size.height;
+
+    // Polygon house with rounded peak and corners matching screenshot
+    final path = Path();
+    path.moveTo(w * 0.5, h * 0.08); // Peak
+    path.lineTo(w * 0.92, h * 0.42); // Right roof
+    path.lineTo(w * 0.88, h * 0.82); // Right wall
+    path.quadraticBezierTo(w * 0.88, h * 0.94, w * 0.76, h * 0.94); // Bottom-right curve
+    path.lineTo(w * 0.24, h * 0.94); // Bottom
+    path.quadraticBezierTo(w * 0.12, h * 0.94, w * 0.12, h * 0.82); // Bottom-left curve
+    path.lineTo(w * 0.08, h * 0.42); // Left wall
+    path.close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _HomePainter oldDelegate) {
+    return oldDelegate.color != color || oldDelegate.isActive != isActive;
+  }
+}
+
+/// 2. Paper Plane Glyph (Curved Paperplane with Red Badge "1")
+class _PaperPlaneGlyph extends StatelessWidget {
+  final bool isActive;
+  final bool hasBadge;
+  final int badgeCount;
+
+  const _PaperPlaneGlyph({
+    required this.isActive,
+    this.hasBadge = false,
+    this.badgeCount = 1,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final plane = SizedBox(
+      width: 24.0,
+      height: 24.0,
+      child: CustomPaint(
+        painter: _PaperPlanePainter(
+          color: isActive ? AppColors.ink : const Color(0xFF787574),
+          isActive: isActive,
+        ),
+      ),
+    );
+
+    if (!hasBadge) {
+      return plane;
+    }
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        plane,
+        Positioned(
+          top: -4.0,
+          right: -6.0,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            constraints: const BoxConstraints(
+              minWidth: 16.0,
+              minHeight: 16.0,
+            ),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFF3B30), // iOS Red
+              shape: badgeCount > 9 ? BoxShape.rectangle : BoxShape.circle,
+              borderRadius: badgeCount > 9 ? BorderRadius.circular(8.0) : null,
+              border: Border.all(
+                color: Colors.white,
+                width: 1.5,
+              ),
+            ),
+            child: Center(
+              child: Text(
+                badgeCount > 99 ? '99+' : badgeCount.toString(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 10.0,
+                  fontWeight: FontWeight.w700,
+                  height: 1.1,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PaperPlanePainter extends CustomPainter {
+  final Color color;
+  final bool isActive;
+
+  _PaperPlanePainter({required this.color, required this.isActive});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = isActive ? PaintingStyle.fill : PaintingStyle.stroke
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final w = size.width;
+    final h = size.height;
+
+    // Curved paper plane pointing top-right
+    final path = Path();
+    path.moveTo(w * 0.90, h * 0.12);
+    path.lineTo(w * 0.15, h * 0.42);
+    path.quadraticBezierTo(w * 0.10, h * 0.46, w * 0.15, h * 0.54);
+    path.lineTo(w * 0.44, h * 0.62);
+    path.lineTo(w * 0.52, h * 0.91);
+    path.quadraticBezierTo(w * 0.58, h * 0.96, w * 0.64, h * 0.88);
+    path.close();
+
+    canvas.drawPath(path, paint);
+
+    // Center crease line when outline
+    if (!isActive) {
+      final linePaint = Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.8
+        ..strokeCap = StrokeCap.round;
+      canvas.drawLine(
+        Offset(w * 0.44, h * 0.62),
+        Offset(w * 0.90, h * 0.12),
+        linePaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _PaperPlanePainter oldDelegate) {
+    return oldDelegate.color != color || oldDelegate.isActive != isActive;
+  }
+}
+
+/// 4. Heart Glyph (Outline / Solid Heart)
+class _HeartGlyph extends StatelessWidget {
+  final bool isActive;
+  final bool hasBadge;
+
+  const _HeartGlyph({
+    required this.isActive,
+    this.hasBadge = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final heart = SizedBox(
+      width: 24.0,
+      height: 24.0,
+      child: CustomPaint(
+        painter: _HeartPainter(
+          color: isActive ? const Color(0xFFF43F5E) : const Color(0xFF787574),
+          isActive: isActive,
+        ),
+      ),
+    );
+
+    if (!hasBadge) return heart;
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        heart,
+        Positioned(
+          top: -1.0,
+          right: -2.0,
+          child: Container(
+            width: 7.0,
+            height: 7.0,
+            decoration: BoxDecoration(
+              color: const Color(0xFFFF3B30),
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 1.5),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _HeartPainter extends CustomPainter {
+  final Color color;
+  final bool isActive;
+
+  _HeartPainter({required this.color, required this.isActive});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = isActive ? PaintingStyle.fill : PaintingStyle.stroke
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final w = size.width;
+    final h = size.height;
+
+    final path = Path();
+    path.moveTo(w * 0.5, h * 0.82);
+    path.cubicTo(
+      w * 0.10, h * 0.55,
+      w * 0.05, h * 0.28,
+      w * 0.28, h * 0.16,
+    );
+    path.cubicTo(
+      w * 0.40, h * 0.10,
+      w * 0.48, h * 0.22,
+      w * 0.50, h * 0.30,
+    );
+    path.cubicTo(
+      w * 0.52, h * 0.22,
+      w * 0.60, h * 0.10,
+      w * 0.72, h * 0.16,
+    );
+    path.cubicTo(
+      w * 0.95, h * 0.28,
+      w * 0.90, h * 0.55,
+      w * 0.50, h * 0.82,
+    );
+    path.close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _HeartPainter oldDelegate) {
+    return oldDelegate.color != color || oldDelegate.isActive != isActive;
+  }
+}
+
+/// 5. Minimalist User Glyph (Circle head + Shoulder arc)
+class _UserGlyph extends StatelessWidget {
+  final bool isActive;
+
+  const _UserGlyph({required this.isActive});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 24.0,
+      height: 24.0,
+      child: CustomPaint(
+        painter: _UserPainter(
+          color: isActive ? AppColors.ink : const Color(0xFF787574),
+          isActive: isActive,
+        ),
+      ),
+    );
+  }
+}
+
+class _UserPainter extends CustomPainter {
+  final Color color;
+  final bool isActive;
+
+  _UserPainter({required this.color, required this.isActive});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = isActive ? PaintingStyle.fill : PaintingStyle.stroke
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final w = size.width;
+    final h = size.height;
+
+    // Head
+    canvas.drawCircle(Offset(w * 0.5, h * 0.32), w * 0.19, paint);
+
+    // Shoulder Arc
+    final shoulderPath = Path();
+    shoulderPath.moveTo(w * 0.15, h * 0.88);
+    shoulderPath.cubicTo(
+      w * 0.15, h * 0.60,
+      w * 0.85, h * 0.60,
+      w * 0.85, h * 0.88,
+    );
+
+    final arcPaint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawPath(shoulderPath, arcPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _UserPainter oldDelegate) {
+    return oldDelegate.color != color || oldDelegate.isActive != isActive;
   }
 }

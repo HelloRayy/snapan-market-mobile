@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/features/auth/components/google_logo.dart';
+import 'package:snapan_market/features/auth/components/kumo_auth_field.dart';
 
 enum AuthMode { login, register }
 
@@ -21,7 +23,7 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   AuthMode _authMode = AuthMode.login;
 
-  // --- LOGIN FORM CONTROLLERS ---
+  // --- LOGIN CONTROLLERS ---
   final TextEditingController _loginEmailController =
       TextEditingController(text: 'rabbirezwan07@gmail.com');
   final TextEditingController _loginPasswordController =
@@ -29,7 +31,7 @@ class _AuthScreenState extends State<AuthScreen> {
   bool _showLoginPassword = false;
   bool _rememberMe = true;
 
-  // --- REGISTER FORM CONTROLLERS ---
+  // --- REGISTER CONTROLLERS ---
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _regPasswordController = TextEditingController();
@@ -135,12 +137,12 @@ class _AuthScreenState extends State<AuthScreen> {
 
                     const SizedBox(height: 16),
 
-                    // Title Text
+                    // Title Text (Indonesian)
                     Center(
                       child: Text(
                         _authMode == AuthMode.login
-                            ? 'Sign in\nto your Account'
-                            : 'Sign up\nto your Account',
+                            ? 'Masuk\nke Akun Kamu'
+                            : 'Daftar\nAkun Baru',
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 28,
@@ -187,87 +189,48 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   // ==========================================
-  // --- LOGIN FORM WIDGET ---
+  // --- LOGIN FORM (INDONESIAN) ---
   // ==========================================
   Widget _buildLoginForm() {
     return Column(
       children: [
-        // 1. Email Field Box
-        _buildInputContainer(
+        // 1. Email Field Capsule
+        KumoAuthField(
           label: 'Email',
-          child: TextField(
-            controller: _loginEmailController,
-            keyboardType: TextInputType.emailAddress,
-            textInputAction: TextInputAction.next,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-              color: AppColors.ink,
-            ),
-            decoration: const InputDecoration(
-              isDense: true,
-              contentPadding: EdgeInsets.zero,
-              border: InputBorder.none,
-              hintText: 'rabbirezwan07@gmail.com',
-              hintStyle: TextStyle(
-                fontSize: 15,
-                color: AppColors.lightMuted,
-              ),
-            ),
-          ),
+          controller: _loginEmailController,
+          keyboardType: TextInputType.emailAddress,
+          hintText: 'rabbirezwan07@gmail.com',
         ),
 
         const SizedBox(height: 16),
 
-        // 2. Password Field Box
-        _buildInputContainer(
-          label: 'Password',
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _loginPasswordController,
-                  obscureText: !_showLoginPassword,
-                  textInputAction: TextInputAction.done,
-                  onSubmitted: (_) => widget.onSuccess(),
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.ink,
-                  ),
-                  decoration: const InputDecoration(
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                    border: InputBorder.none,
-                    hintText: '••••••••',
-                    hintStyle: TextStyle(
-                      fontSize: 15,
-                      color: AppColors.lightMuted,
-                    ),
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _showLoginPassword = !_showLoginPassword;
-                  });
-                },
-                child: Icon(
-                  _showLoginPassword
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
-                  color: AppColors.muted,
-                  size: 20,
-                ),
-              ),
-            ],
+        // 2. Password Field Capsule
+        KumoAuthField(
+          label: 'Kata Sandi',
+          controller: _loginPasswordController,
+          obscureText: !_showLoginPassword,
+          hintText: '••••••••',
+          textInputAction: TextInputAction.done,
+          onSubmitted: (_) => widget.onSuccess(),
+          suffixIcon: GestureDetector(
+            onTap: () {
+              setState(() {
+                _showLoginPassword = !_showLoginPassword;
+              });
+            },
+            child: Icon(
+              _showLoginPassword
+                  ? Icons.visibility_outlined
+                  : Icons.visibility_off_outlined,
+              color: AppColors.muted,
+              size: 20,
+            ),
           ),
         ),
 
         const SizedBox(height: 14),
 
-        // 3. Remember Me & Forget Password Row
+        // 3. Remember Me & Forgot Password Row
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -302,7 +265,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   const SizedBox(width: 8),
                   const Text(
-                    'Remember Me',
+                    'Ingat Saya',
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
@@ -315,7 +278,7 @@ class _AuthScreenState extends State<AuthScreen> {
             GestureDetector(
               onTap: () {},
               child: const Text(
-                'Forget Password',
+                'Lupa Kata Sandi?',
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -328,7 +291,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 24),
 
-        // 4. Solid Black Log in Button
+        // 4. Solid Black Log In Button
         SizedBox(
           width: double.infinity,
           height: 52,
@@ -344,7 +307,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
             child: const Text(
-              'Log in',
+              'Masuk',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
@@ -355,14 +318,14 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 22),
 
-        // 5. Or log in with Divider
+        // 5. Divider
         const Row(
           children: [
             Expanded(child: Divider(color: AppColors.border)),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 14),
               child: Text(
-                'Or log in with',
+                'Atau masuk dengan',
                 style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w500,
@@ -381,7 +344,7 @@ class _AuthScreenState extends State<AuthScreen> {
           children: [
             Expanded(
               child: _buildSocialButton(
-                icon: Icons.apple,
+                iconWidget: const Icon(Icons.apple, size: 24, color: AppColors.ink),
                 label: 'Apple',
                 onTap: widget.onSuccess,
               ),
@@ -389,7 +352,7 @@ class _AuthScreenState extends State<AuthScreen> {
             const SizedBox(width: 14),
             Expanded(
               child: _buildSocialButton(
-                icon: Icons.g_mobiledata_rounded,
+                iconWidget: const GoogleLogo(size: 20),
                 label: 'Google',
                 onTap: widget.onSuccess,
               ),
@@ -399,12 +362,12 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 28),
 
-        // 7. Bottom Register Link
+        // 7. Footer Register Link
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Don’t have account? ',
+              'Belum punya akun? ',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -412,17 +375,21 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
             GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTap: () {
                 setState(() {
                   _authMode = AuthMode.register;
                 });
               },
-              child: const Text(
-                'Register',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.linkBlue,
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                child: Text(
+                  'Daftar',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.linkBlue,
+                  ),
                 ),
               ),
             ),
@@ -433,33 +400,16 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   // ==========================================
-  // --- REGISTER FORM WIDGET ---
+  // --- REGISTER FORM (INDONESIAN) ---
   // ==========================================
   Widget _buildRegisterForm() {
     return Column(
       children: [
-        // 1. Full Name Box
-        _buildInputContainer(
-          label: 'Full Name',
-          child: TextField(
-            controller: _fullNameController,
-            textInputAction: TextInputAction.next,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-              color: AppColors.ink,
-            ),
-            decoration: const InputDecoration(
-              isDense: true,
-              contentPadding: EdgeInsets.zero,
-              border: InputBorder.none,
-              hintText: 'Rayhan Muhammad',
-              hintStyle: TextStyle(
-                fontSize: 15,
-                color: AppColors.lightMuted,
-              ),
-            ),
-          ),
+        // 1. Full Name Field Capsule
+        KumoAuthField(
+          label: 'Nama Lengkap',
+          controller: _fullNameController,
+          hintText: 'Rayhan Muhammad',
         ),
 
         const SizedBox(height: 16),
@@ -501,160 +451,90 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 16),
 
-        // 3. WhatsApp / Phone Number Box with Country Badge
-        _buildInputContainer(
-          label: 'WhatsApp / Phone Number',
-          child: Row(
-            children: [
-              // Badge 🇮🇩 +62
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEEF2F6),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('🇮🇩', style: TextStyle(fontSize: 13)),
-                    SizedBox(width: 4),
-                    Text(
-                      '+62',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.ink,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: TextField(
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(13),
-                  ],
-                  textInputAction: TextInputAction.next,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
+        // 3. WhatsApp / Phone Number Capsule
+        KumoAuthField(
+          label: 'Nomor WhatsApp / HP',
+          controller: _phoneController,
+          keyboardType: TextInputType.phone,
+          hintText: '812-3456-7890',
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(13),
+          ],
+          prefixWidget: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 4,
+            ),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEEF2F6),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('🇮🇩', style: TextStyle(fontSize: 13)),
+                SizedBox(width: 4),
+                Text(
+                  '+62',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
                     color: AppColors.ink,
                   ),
-                  decoration: const InputDecoration(
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                    border: InputBorder.none,
-                    hintText: '812-3456-7890',
-                    hintStyle: TextStyle(
-                      fontSize: 15,
-                      color: AppColors.lightMuted,
-                    ),
-                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
 
         const SizedBox(height: 16),
 
-        // 4. Password Field Box
-        _buildInputContainer(
-          label: 'Password',
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _regPasswordController,
-                  obscureText: !_showRegPassword,
-                  textInputAction: TextInputAction.next,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.ink,
-                  ),
-                  decoration: const InputDecoration(
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                    border: InputBorder.none,
-                    hintText: 'Minimal 6 karakter',
-                    hintStyle: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.lightMuted,
-                    ),
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _showRegPassword = !_showRegPassword;
-                  });
-                },
-                child: Icon(
-                  _showRegPassword
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
-                  color: AppColors.muted,
-                  size: 20,
-                ),
-              ),
-            ],
+        // 4. Password Field Capsule
+        KumoAuthField(
+          label: 'Kata Sandi',
+          controller: _regPasswordController,
+          obscureText: !_showRegPassword,
+          hintText: 'Minimal 6 karakter',
+          suffixIcon: GestureDetector(
+            onTap: () {
+              setState(() {
+                _showRegPassword = !_showRegPassword;
+              });
+            },
+            child: Icon(
+              _showRegPassword
+                  ? Icons.visibility_outlined
+                  : Icons.visibility_off_outlined,
+              color: AppColors.muted,
+              size: 20,
+            ),
           ),
         ),
 
         const SizedBox(height: 16),
 
-        // 5. Repeat Password Field Box
-        _buildInputContainer(
-          label: 'Repeat Password',
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _regRepeatPasswordController,
-                  obscureText: !_showRegRepeatPassword,
-                  textInputAction: TextInputAction.done,
-                  onSubmitted: (_) => widget.onSuccess(),
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.ink,
-                  ),
-                  decoration: const InputDecoration(
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                    border: InputBorder.none,
-                    hintText: 'Ulangi kata sandi',
-                    hintStyle: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.lightMuted,
-                    ),
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _showRegRepeatPassword = !_showRegRepeatPassword;
-                  });
-                },
-                child: Icon(
-                  _showRegRepeatPassword
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
-                  color: AppColors.muted,
-                  size: 20,
-                ),
-              ),
-            ],
+        // 5. Repeat Password Field Capsule
+        KumoAuthField(
+          label: 'Ulangi Kata Sandi',
+          controller: _regRepeatPasswordController,
+          obscureText: !_showRegRepeatPassword,
+          hintText: 'Ulangi kata sandi',
+          textInputAction: TextInputAction.done,
+          onSubmitted: (_) => widget.onSuccess(),
+          suffixIcon: GestureDetector(
+            onTap: () {
+              setState(() {
+                _showRegRepeatPassword = !_showRegRepeatPassword;
+              });
+            },
+            child: Icon(
+              _showRegRepeatPassword
+                  ? Icons.visibility_outlined
+                  : Icons.visibility_off_outlined,
+              color: AppColors.muted,
+              size: 20,
+            ),
           ),
         ),
 
@@ -676,7 +556,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
             child: const Text(
-              'Register',
+              'Daftar',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
@@ -687,12 +567,12 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 24),
 
-        // 7. Footer "I have account? Log in"
+        // 7. Footer "Sudah punya akun? Masuk"
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'I have account? ',
+              'Sudah punya akun? ',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -700,17 +580,21 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
             GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTap: () {
                 setState(() {
                   _authMode = AuthMode.login;
                 });
               },
-              child: const Text(
-                'Log in',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.linkBlue,
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                child: Text(
+                  'Masuk',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.linkBlue,
+                  ),
                 ),
               ),
             ),
@@ -720,37 +604,7 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  // --- HELPER CONTAINERS ---
-  Widget _buildInputContainer({
-    required String label,
-    required Widget child,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: AppColors.inputBg,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: AppColors.slateInk,
-            ),
-          ),
-          const SizedBox(height: 6),
-          child,
-        ],
-      ),
-    );
-  }
-
+  // --- DROPDOWN SELECTOR WIDGET ---
   Widget _buildDropdownSelector({
     required String label,
     required String selectedValue,
@@ -779,11 +633,11 @@ class _AuthScreenState extends State<AuthScreen> {
         }).toList();
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
         decoration: BoxDecoration(
-          color: AppColors.inputBg,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border),
+          color: const Color(0xFFF8FAFC),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -793,7 +647,7 @@ class _AuthScreenState extends State<AuthScreen> {
               style: const TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: AppColors.muted,
+                color: Color(0xFF64748B),
               ),
             ),
             const SizedBox(height: 4),
@@ -805,12 +659,12 @@ class _AuthScreenState extends State<AuthScreen> {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.ink,
+                    color: Color(0xFF0F172A),
                   ),
                 ),
                 const Icon(
                   Icons.keyboard_arrow_down_rounded,
-                  color: AppColors.muted,
+                  color: Color(0xFF64748B),
                   size: 18,
                 ),
               ],
@@ -821,8 +675,9 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
+  // --- SOCIAL AUTH BUTTON (Apple & Google) ---
   Widget _buildSocialButton({
-    required IconData icon,
+    required Widget iconWidget,
     required String label,
     required VoidCallback onTap,
   }) {
@@ -830,7 +685,7 @@ class _AuthScreenState extends State<AuthScreen> {
       color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(25),
-        side: const BorderSide(color: AppColors.border),
+        side: const BorderSide(color: Color(0xFFE2E8F0)),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(25),
@@ -841,7 +696,7 @@ class _AuthScreenState extends State<AuthScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 22, color: AppColors.ink),
+              iconWidget,
               const SizedBox(width: 8),
               Text(
                 label,

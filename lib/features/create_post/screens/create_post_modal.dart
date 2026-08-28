@@ -236,9 +236,12 @@ class _CreatePostModalState extends State<CreatePostModal> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      behavior: HitTestBehavior.opaque,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
         top: true,
         bottom: true,
         child: Column(
@@ -374,7 +377,8 @@ class _CreatePostModalState extends State<CreatePostModal> {
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 
   // 1. Top Header Bar (Absolute Centered Title matching Image #1)
@@ -785,8 +789,18 @@ class _CreatePostModalState extends State<CreatePostModal> {
             color: Color(0xFF0F172A),
           ),
           decoration: _buildCleanInputDecoration(
-            hint: 'Rp 0',
-            prefixText: _priceController.text.isNotEmpty ? 'Rp ' : null,
+            hint: '0',
+            prefixWidget: const Padding(
+              padding: EdgeInsets.only(left: 14.0, right: 4.0),
+              child: Text(
+                'Rp ',
+                style: TextStyle(
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF0F172A),
+                ),
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 14.0),
@@ -927,17 +941,13 @@ class _CreatePostModalState extends State<CreatePostModal> {
   }
   InputDecoration _buildCleanInputDecoration({
     required String hint,
-    String? prefixText,
+    Widget? prefixWidget,
   }) {
     return InputDecoration(
       hintText: hint,
       hintStyle: const TextStyle(fontSize: 13.5, color: Color(0xFF94A3B8)),
-      prefixText: prefixText,
-      prefixStyle: const TextStyle(
-        fontSize: 15.0,
-        fontWeight: FontWeight.w700,
-        color: Color(0xFF0F172A),
-      ),
+      prefixIcon: prefixWidget,
+      prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
       filled: true,
       fillColor: Colors.white,
       contentPadding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),

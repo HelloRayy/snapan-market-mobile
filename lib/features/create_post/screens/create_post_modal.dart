@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/utils/rupiah_input_formatter.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
 
 /// Full-Page Screen for Creating Threads & Selling Products
@@ -284,15 +285,13 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                 ),
                               ),
                             ),
-                            if (_postMode == PostMode.thread) ...[
-                              const SizedBox(height: 6.0),
-                              // Vertical Thread Connector Line
-                              Container(
-                                width: 2.0,
-                                height: 75.0, // Compact thread line
-                                color: const Color(0xFFE2E8F0),
-                              ),
-                            ],
+                            const SizedBox(height: 6.0),
+                            // Vertical Thread Connector Line (Runs down to switch row matching Image #1)
+                            Container(
+                              width: 2.0,
+                              height: _postMode == PostMode.thread ? 75.0 : 90.0,
+                              color: const Color(0xFFE2E8F0),
+                            ),
                           ],
                         ),
                         const SizedBox(width: 12.0),
@@ -767,12 +766,19 @@ class _CreatePostModalState extends State<CreatePostModal> {
         TextField(
           controller: _priceController,
           keyboardType: TextInputType.number,
-          style: const TextStyle(fontSize: 14.0, color: AppColors.ink),
+          inputFormatters: [
+            const RupiahInputFormatter(),
+          ],
+          style: const TextStyle(
+            fontSize: 14.5,
+            fontWeight: FontWeight.w600,
+            color: AppColors.ink,
+          ),
           decoration: _buildCleanInputDecoration(
-            hint: 'Masukkan nominal harga...',
+            hint: '0',
+            prefixText: 'Rp ',
           ),
         ),
-        const SizedBox(height: 14.0),
 
         // 3. Deskripsi Singkat
         _buildFieldLabel('Deskripsi Singkat'),
@@ -898,21 +904,29 @@ class _CreatePostModalState extends State<CreatePostModal> {
       ),
     );
   }
-
-  InputDecoration _buildCleanInputDecoration({required String hint}) {
+  InputDecoration _buildCleanInputDecoration({
+    required String hint,
+    String? prefixText,
+  }) {
     return InputDecoration(
       hintText: hint,
       hintStyle: const TextStyle(fontSize: 13.5, color: Color(0xFFCBD5E1)),
+      prefixText: prefixText,
+      prefixStyle: const TextStyle(
+        fontSize: 14.5,
+        fontWeight: FontWeight.w700,
+        color: AppColors.ink,
+      ),
       filled: true,
       fillColor: Colors.white,
       contentPadding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12.0),
-        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+        borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12.0),
-        borderSide: const BorderSide(color: AppColors.primary),
+        borderSide: const BorderSide(color: AppColors.primary, width: 1.6),
       ),
     );
   }

@@ -59,7 +59,7 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
                 <button
                   type="button"
                   onClick={onPostClick || (() => onTabChange('post'))}
-                  className="absolute -top-5.5 w-[52px] h-[52px] rounded-full bg-[#1d64ec] hover:bg-[#154ec1] border border-[#154ec1] active:scale-[0.96] text-white flex items-center justify-center shadow-lg shadow-blue-500/35 transition-transform duration-75 cursor-pointer z-10 overflow-hidden group"
+                  className="absolute -top-5.5 w-[52px] h-[52px] rounded-full bg-[#1d64ec] hover:bg-[#154ec1] border border-[#154ec1] active:scale-[0.96] text-white flex items-center justify-center shadow-md shadow-slate-900/15 transition-transform duration-75 cursor-pointer z-10 overflow-hidden group"
                   aria-label="Jual Produk Baru"
                   title="Jual Produk Baru"
                 >

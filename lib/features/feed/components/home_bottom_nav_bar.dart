@@ -251,33 +251,52 @@ class _FloatingCreateButtonState extends State<_FloatingCreateButton> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Color(0xFF3B82F6), // Kumo gradient top #3B82F6
-                      Color(0xFF1D64EC), // Kumo primary blue #1D64EC
+                      Color(0xFF3B82F6), // Kumo Blue 500
+                      Color(0xFF1D64EC), // Kumo Primary Blue
                     ],
                   ),
                   border: Border.all(
-                    color: AppColors.primaryDark, // #154EC1 clean border without white ring
+                    color: const Color(0xFF154EC1), // Kumo Primary Dark border
                     width: 1.0,
                   ),
                   boxShadow: const [
+                    // Clean natural elevation shadow without blue glow
                     BoxShadow(
-                      color: Color(0x591D64EC), // Enhanced 35% diffused blue glow shadow
-                      blurRadius: 10.0,
-                      offset: Offset(0, 5),
+                      color: Color(0x240F172A), // Slate 900 14% elevation
+                      blurRadius: 8.0,
+                      offset: Offset(0, 3),
                     ),
                     BoxShadow(
-                      color: Color(0x331D64EC),
-                      blurRadius: 4.0,
-                      offset: Offset(0, 2),
+                      color: Color(0x14000000), // Ambient shadow
+                      blurRadius: 3.0,
+                      offset: Offset(0, 1),
                     ),
                   ],
                 ),
-                child: const Center(
-                  child: Icon(
-                    Icons.add_rounded,
-                    color: Colors.white,
-                    size: 32.0, // Larger bold plus icon
-                  ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Kumo Inset Top Rim Highlight Shine (Exact Cloudflare Kumo button spec)
+                    Positioned(
+                      top: 1.0,
+                      left: 6.0,
+                      right: 6.0,
+                      height: 1.5,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.40),
+                          borderRadius: BorderRadius.circular(1.0),
+                        ),
+                      ),
+                    ),
+                    const Center(
+                      child: Icon(
+                        Icons.add_rounded,
+                        color: Colors.white,
+                        size: 30.0,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

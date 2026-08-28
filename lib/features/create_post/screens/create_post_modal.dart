@@ -649,7 +649,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
     );
   }
 
-  // "Jadikan Produk Jualan" Clean Switch Toggle Pill
+  // "Saya ingin Berjualan" Clean Bare Switch Toggle (Flush Left, No BG / No Border)
   Widget _buildSellingSwitchPill() {
     final isProduct = _postMode == PostMode.product;
 
@@ -661,48 +661,36 @@ class _CreatePostModalState extends State<CreatePostModal> {
         });
       },
       behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-        decoration: BoxDecoration(
-          color: isProduct ? const Color(0xFFEFF6FF) : const Color(0xFFF8FAFC),
-          borderRadius: BorderRadius.circular(20.0),
-          border: Border.all(
-            color: isProduct ? const Color(0xFFBFDBFE) : const Color(0xFFE2E8F0),
-            width: 1.0,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 36.0,
+            height: 22.0,
+            child: FittedBox(
+              fit: BoxFit.fill,
+              child: CupertinoSwitch(
+                value: isProduct,
+                activeTrackColor: AppColors.primary,
+                onChanged: (val) {
+                  HapticFeedback.selectionClick();
+                  setState(() {
+                    _postMode = val ? PostMode.product : PostMode.thread;
+                  });
+                },
+              ),
+            ),
           ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: 34.0,
-              height: 20.0,
-              child: FittedBox(
-                fit: BoxFit.fill,
-                child: CupertinoSwitch(
-                  value: isProduct,
-                  activeTrackColor: AppColors.primary,
-                  onChanged: (val) {
-                    HapticFeedback.selectionClick();
-                    setState(() {
-                      _postMode = val ? PostMode.product : PostMode.thread;
-                    });
-                  },
-                ),
-              ),
+          const SizedBox(width: 6.0),
+          Text(
+            'Saya ingin Berjualan',
+            style: TextStyle(
+              fontSize: 13.0,
+              fontWeight: isProduct ? FontWeight.w700 : FontWeight.w600,
+              color: isProduct ? AppColors.primary : const Color(0xFF475569),
             ),
-            const SizedBox(width: 7.0),
-            Text(
-              'Jadikan Produk Jualan',
-              style: TextStyle(
-                fontSize: 12.5,
-                fontWeight: isProduct ? FontWeight.w700 : FontWeight.w600,
-                color: isProduct ? AppColors.primary : const Color(0xFF475569),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

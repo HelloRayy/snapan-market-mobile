@@ -304,8 +304,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                               // Author Name + Topic Picker
                               _buildAuthorAndTopicLine(),
 
-                              const SizedBox(height: 4.0),
-
+                              const SizedBox(height: 8.0), // Clean 8px gap below username
                               // Main Textarea ("Apa yang baru?")
                               _buildMainTextInput(),
 
@@ -528,7 +527,8 @@ class _CreatePostModalState extends State<CreatePostModal> {
           color: Color(0xFF94A3B8),
         ),
         border: InputBorder.none,
-        contentPadding: const EdgeInsets.only(top: 2.0, bottom: 4.0),
+        isDense: true,
+        contentPadding: const EdgeInsets.only(top: 4.0, bottom: 6.0),
       ),
     );
   }

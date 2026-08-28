@@ -190,6 +190,7 @@ class HomeBottomNavBar extends StatelessWidget {
               ),
             ),
           ),
+        ),
       ],
     );
   }

@@ -6,6 +6,44 @@ import 'package:snapan_market/features/auth/components/kumo_floating_field.dart'
 
 enum AuthMode { login, register }
 
+class PhoneNumberFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // 1. Ambil hanya digit
+    var digits = newValue.text.replaceAll(RegExp(r'\D'), '');
+
+    // 2. Hapus awalan 0 atau 62 jika ada
+    if (digits.startsWith('0')) {
+      digits = digits.substring(1);
+    } else if (digits.startsWith('62')) {
+      digits = digits.substring(2);
+    }
+
+    // 3. Batasi maksimal 11-12 digit lokal (misal: 81234567890)
+    if (digits.length > 12) {
+      digits = digits.substring(0, 12);
+    }
+
+    // 4. Format xxx-xxxx-xxxx
+    final StringBuffer buffer = StringBuffer();
+    for (int i = 0; i < digits.length; i++) {
+      if (i == 3 || i == 7) {
+        buffer.write('-');
+      }
+      buffer.write(digits[i]);
+    }
+
+    final formatted = buffer.toString();
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+}
+
 class AuthScreen extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback onSuccess;
@@ -38,8 +76,9 @@ class _AuthScreenState extends State<AuthScreen> {
   final TextEditingController _regRepeatPasswordController =
       TextEditingController();
 
+  // SMKN 8 Options
   String _selectedGrade = 'X';
-  String _selectedMajor = 'PPLG';
+  String _selectedMajor = 'DKV';
   String _selectedClassNum = '1';
 
   bool _showRegPassword = false;
@@ -47,16 +86,13 @@ class _AuthScreenState extends State<AuthScreen> {
 
   final List<String> _gradeOptions = const ['X', 'XI', 'XII'];
   final List<String> _majorOptions = const [
-    'PPLG',
     'DKV',
-    'AKL',
-    'MPLB',
-    'KLN',
-    'HTL',
-    'ULW',
-    'TBS'
+    'LK',
+    'PPLG',
+    'PS',
+    'TJKT',
   ];
-  final List<String> _classNumOptions = const ['1', '2', '3', '4'];
+  final List<String> _classNumOptions = const ['1', '2', '3'];
 
   @override
   void dispose() {
@@ -77,6 +113,119 @@ class _AuthScreenState extends State<AuthScreen> {
     } else {
       widget.onBack();
     }
+  }
+
+  void _openSelectionSheet({
+    required String title,
+    required String selectedValue,
+    required List<String> options,
+    required ValueChanged<String> onSelected,
+  }) {
+    HapticFeedback.selectionClick();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Drag Handle
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFCBD5E1),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+
+                // Sheet Title
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.ink,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                const SizedBox(height: 14),
+
+                // Options List (Wide format)
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: options.length,
+                    separatorBuilder: (context, index) =>
+                        const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                    itemBuilder: (context, index) {
+                      final option = options[index];
+                      final isSelected = option == selectedValue;
+
+                      return InkWell(
+                        borderRadius: BorderRadius.circular(14),
+                        onTap: () {
+                          HapticFeedback.selectionClick();
+                          onSelected(option);
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? const Color(0xFFEEF2FF)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                option,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w700
+                                      : FontWeight.w500,
+                                  color: isSelected
+                                      ? const Color(0xFF1D64EC)
+                                      : AppColors.ink,
+                                ),
+                              ),
+                              if (isSelected)
+                                const Icon(
+                                  Icons.check_circle_rounded,
+                                  color: Color(0xFF1D64EC),
+                                  size: 20,
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -403,7 +552,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   // ==========================================
-  // --- REGISTER FORM (FLOATING LABELS) ---
+  // --- REGISTER FORM (FLOATING LABELS & WIDE DROPDOWN) ---
   // ==========================================
   Widget _buildRegisterForm() {
     return Column(
@@ -455,14 +604,13 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 18),
 
-        // 3. WhatsApp / Phone Number Floating Label Field
+        // 3. WhatsApp / Phone Number Floating Label Field (xxx-xxxx-xxxx)
         KumoFloatingField(
           label: 'Nomor WhatsApp / HP',
           controller: _phoneController,
           keyboardType: TextInputType.phone,
           inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly,
-            LengthLimitingTextInputFormatter(13),
+            PhoneNumberFormatter(),
           ],
           prefixWidget: Container(
             padding: const EdgeInsets.symmetric(
@@ -605,33 +753,22 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  // --- DROPDOWN SELECTOR WIDGET ---
+  // --- DROPDOWN SELECTOR WIDGET (1-TAP WIDE SELECTION SHEET) ---
   Widget _buildDropdownSelector({
     required String label,
     required String selectedValue,
     required List<String> options,
     required ValueChanged<String> onSelected,
   }) {
-    return PopupMenuButton<String>(
-      onSelected: onSelected,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      itemBuilder: (context) {
-        return options.map((opt) {
-          final isSelected = opt == selectedValue;
-          return PopupMenuItem<String>(
-            value: opt,
-            child: Text(
-              opt,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected ? AppColors.primary : AppColors.ink,
-              ),
-            ),
-          );
-        }).toList();
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        _openSelectionSheet(
+          title: 'Pilih $label',
+          selectedValue: selectedValue,
+          options: options,
+          onSelected: onSelected,
+        );
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),

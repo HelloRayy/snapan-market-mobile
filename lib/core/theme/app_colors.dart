@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Brand Primary
-  static const Color primary = Color(0xFF3D38F5);
-  static const Color primaryDark = Color(0xFF312BD9);
-  static const Color primaryPastel = Color(0xFFEEF0FF);
-  static const Color primaryRing = Color(0x263D38F5);
+  // Brand Primary (Kumo Pure Blue)
+  static const Color primary = Color(0xFF1D64EC);
+  static const Color primaryDark = Color(0xFF154EC1);
+  static const Color primaryPastel = Color(0xFFEFF6FF);
+  static const Color primaryRing = Color(0x261D64EC);
 
-  // Gradient Palette
-  static const Color gradientIndigo = Color(0xFF6366F1);
-  static const Color gradientLavender = Color(0xFF818CF8);
-  static const Color gradientSky = Color(0xFF93C5FD);
+  // Gradient Palette (Pure Kumo Blue Spectrum - 100% Pure Blue on AMOLED & sRGB)
+  static const Color gradientTop = Color(0xFF1D64EC); // Kumo Primary Blue
+  static const Color gradientMid = Color(0xFF3B82F6); // Blue 500
+  static const Color gradientBottom = Color(0xFF93C5FD); // Blue 300 / Sky
+
+  // Backward-compatible Aliases
+  static const Color gradientIndigo = gradientTop;
+  static const Color gradientLavender = gradientMid;
+  static const Color gradientSky = gradientBottom;
 
   // Neutral Canvas & Ink
   static const Color canvas = Color(0xFFF8FAFC);
@@ -33,9 +38,9 @@ class AppColors {
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: [
-      gradientIndigo,
-      gradientLavender,
-      gradientSky,
+      gradientTop,
+      gradientMid,
+      gradientBottom,
     ],
   );
 
@@ -44,8 +49,8 @@ class AppColors {
     end: Alignment.bottomRight,
     colors: [
       primary,
-      gradientIndigo,
-      gradientLavender,
+      gradientMid,
+      gradientBottom,
     ],
   );
 }

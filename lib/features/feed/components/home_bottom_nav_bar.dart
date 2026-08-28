@@ -29,12 +29,12 @@ enum HomeNavTab {
 
 /// Home Feed Bottom Navigation Bar
 ///
-/// 100% faithful Flutter translation of `src/ui/components/marketplace/MarketBottomNav.tsx`:
-/// - Auto-detects virtual keyboard (`MediaQuery.viewInsetsOf(context).bottom > 0`) to prevent floating over keyboard
-/// - 50px fixed height bar (`h-[50px]`) with SafeArea bottom padding (`env(safe-area-inset-bottom)`)
+/// 100% exact parity with `src/ui/components/marketplace/MarketBottomNav.tsx`:
+/// - Auto-detects virtual keyboard to prevent floating over mobile keyboard
+/// - 50px fixed bar height (`h-[50px]`) with SafeArea bottom padding (`env(safe-area-inset-bottom)`)
 /// - Frosted glass backdrop blur (`bg-white/95 backdrop-blur-md`) strictly clipped to bar rect
 /// - 1px subtle top border (`border-t border-neutral-200/80`) & upward elevation shadow (`shadow-[0_-2px_12px_rgba(0,0,0,0.03)]`)
-/// - 5-item grid layout (Exact Meta Threads standard):
+/// - 5-item grid layout (`max-w-md mx-auto h-[50px] grid grid-cols-5 px-1`):
 ///   1. Home (Active pill 42x72px #F1F5F9, 24px icon fill-slate-900 / stroke text-neutral-400)
 ///   2. Pesan (24px Send icon with 8px #FF3040 red dot notification badge & white ring)
 ///   3. Jual (48x48px elevated floating circle at -16px top outset with HIGH z-index, unclipped 4px white halo ring & blue glow)
@@ -57,13 +57,14 @@ class HomeBottomNavBar extends StatelessWidget {
     this.onCreateTap,
     this.hasUnreadMessages = true, // Matches Web default: hasBadge: true on Pesan
     this.hasUnreadActivity = false,
-    this.userAvatar,
+    this.userAvatar =
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
     this.showBlur = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Auto-detect virtual keyboard and active text inputs to prevent bottom nav from floating over the keyboard
+    // Auto-detect virtual keyboard to prevent floating over keyboard
     final isKeyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
     if (isKeyboardOpen) {
       return const SizedBox.shrink();
@@ -115,7 +116,7 @@ class HomeBottomNavBar extends StatelessWidget {
           bottom: true,
           child: Container(
             height: 50.0,
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 4.0), // Matches Web px-1
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -284,7 +285,7 @@ class _FloatingCreateButtonState extends State<_FloatingCreateButton> {
                     child: Icon(
                       Icons.add_rounded,
                       color: Colors.white,
-                      size: 30.0,
+                      size: 26.0,
                     ),
                   ),
                 ),

@@ -34,10 +34,12 @@ class KumoFloatingField extends StatefulWidget {
 class _KumoFloatingFieldState extends State<KumoFloatingField> {
   final FocusNode _focusNode = FocusNode();
   bool _isFocused = false;
+  late bool _hasText;
 
   @override
   void initState() {
     super.initState();
+    _hasText = widget.controller.text.isNotEmpty;
     _focusNode.addListener(_onFocusChange);
     widget.controller.addListener(_onTextChange);
   }
@@ -51,19 +53,25 @@ class _KumoFloatingFieldState extends State<KumoFloatingField> {
   }
 
   void _onFocusChange() {
-    setState(() {
-      _isFocused = _focusNode.hasFocus;
-    });
+    if (_isFocused != _focusNode.hasFocus) {
+      setState(() {
+        _isFocused = _focusNode.hasFocus;
+      });
+    }
   }
 
   void _onTextChange() {
-    setState(() {});
+    final nowHasText = widget.controller.text.isNotEmpty;
+    if (_hasText != nowHasText) {
+      setState(() {
+        _hasText = nowHasText;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final hasText = widget.controller.text.isNotEmpty;
-    final isFloating = _isFocused || hasText;
+    final isFloating = _isFocused || _hasText;
     final hasError = widget.errorText != null && widget.errorText!.isNotEmpty;
 
     return Column(
@@ -74,26 +82,24 @@ class _KumoFloatingFieldState extends State<KumoFloatingField> {
           clipBehavior: Clip.none,
           children: [
             // 1. Outer Container Box with Border & Focus Glow Ring
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              curve: Curves.easeOutCubic,
+            Container(
               height: 56,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color: hasError
-                      ? const Color(0xFFEF4444) // Error Red
+                      ? const Color(0xFFEF4444)
                       : _isFocused
-                          ? const Color(0xFF1D64EC) // Kumo Blue Focus
-                          : const Color(0xFFE2E8F0), // Subtle Border
+                          ? const Color(0xFF1D64EC)
+                          : const Color(0xFFE2E8F0),
                   width: _isFocused || hasError ? 1.5 : 1.2,
                 ),
                 boxShadow: _isFocused
                     ? [
                         BoxShadow(
                           color: const Color(0xFF1D64EC).withValues(alpha: 0.15),
-                          blurRadius: 8,
+                          blurRadius: 6,
                           offset: const Offset(0, 2),
                         ),
                       ]
@@ -155,7 +161,7 @@ class _KumoFloatingFieldState extends State<KumoFloatingField> {
               top: isFloating ? -8 : 17,
               child: IgnorePointer(
                 child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
+                  duration: const Duration(milliseconds: 140),
                   curve: Curves.easeOutCubic,
                   padding: const EdgeInsets.symmetric(horizontal: 5),
                   decoration: BoxDecoration(
@@ -163,7 +169,7 @@ class _KumoFloatingFieldState extends State<KumoFloatingField> {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: AnimatedDefaultTextStyle(
-                    duration: const Duration(milliseconds: 180),
+                    duration: const Duration(milliseconds: 140),
                     curve: Curves.easeOutCubic,
                     style: TextStyle(
                       fontSize: isFloating ? 11.5 : 14.5,

@@ -120,107 +120,115 @@ class _AuthScreenState extends State<AuthScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       resizeToAvoidBottomInset: true,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppColors.authGradient,
-        ),
-        child: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              // --- TOP HEADER AREA ---
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Floating White Circular Back Button
-                    Container(
-                      width: 42,
-                      height: 42,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: const Color(0x10000000),
-                          width: 1,
-                        ),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color(0x20000000),
-                            blurRadius: 6,
-                            offset: Offset(0, 2),
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: AppColors.authGradient,
+          ),
+          child: SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                // --- TOP HEADER AREA (GPU ISOLATED) ---
+                RepaintBoundary(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Floating White Circular Back Button
+                        Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: const Color(0x10000000),
+                              width: 1,
+                            ),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color(0x20000000),
+                                blurRadius: 6,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          customBorder: const CircleBorder(),
-                          onTap: _handleBack,
-                          child: const Center(
-                            child: Icon(
-                              Icons.arrow_back_rounded,
-                              color: AppColors.ink,
-                              size: 20,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              customBorder: const CircleBorder(),
+                              onTap: _handleBack,
+                              child: const Center(
+                                child: Icon(
+                                  Icons.arrow_back_rounded,
+                                  color: AppColors.ink,
+                                  size: 20,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
 
-                    const SizedBox(height: 16),
+                        const SizedBox(height: 16),
 
-                    // Title Text (Indonesian)
-                    Center(
-                      child: Text(
-                        _authMode == AuthMode.login
-                            ? 'Masuk\nke Akun Kamu'
-                            : 'Daftar\nAkun Baru',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          height: 1.25,
-                          letterSpacing: -0.5,
+                        // Title Text (Indonesian)
+                        Center(
+                          child: Text(
+                            _authMode == AuthMode.login
+                             ? 'Masuk\nke Akun Kamu'
+                             : 'Daftar\nAkun Baru',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                              height: 1.25,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
                         ),
+
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // --- BOTTOM WHITE CARD CONTAINER ---
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(32),
                       ),
                     ),
-
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              ),
-
-              // --- BOTTOM WHITE CARD CONTAINER ---
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(32),
+                    child: SingleChildScrollView(
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 28,
+                      ),
+                      child: _authMode == AuthMode.login
+                          ? _buildLoginForm()
+                          : _buildRegisterForm(),
                     ),
                   ),
-                  child: SingleChildScrollView(
-                    keyboardDismissBehavior:
-                        ScrollViewKeyboardDismissBehavior.onDrag,
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 28,
-                    ),
-                    child: _authMode == AuthMode.login
-                        ? _buildLoginForm()
-                        : _buildRegisterForm(),
-                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -581,22 +581,11 @@ class _DrawerItemButtonState extends State<_DrawerItemButton> {
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           decoration: BoxDecoration(
             color: widget.isActiveHero
-                ? const Color(0xFFF1F5F9)
+                ? const Color(0x0D000000) // Soft 5% neutral tint (clean & subtle)
                 : _isPressed
-                    ? const Color(0xFFF8FAFC)
+                    ? const Color(0x08000000)
                     : Colors.transparent,
-            borderRadius: BorderRadius.circular(
-              widget.isActiveHero ? 16.0 : 12.0,
-            ),
-            boxShadow: widget.isActiveHero
-                ? const [
-                    BoxShadow(
-                      color: Color(0x0D000000),
-                      blurRadius: 2.0,
-                      offset: Offset(0, 1),
-                    ),
-                  ]
-                : null,
+            borderRadius: BorderRadius.circular(12.0),
           ),
           child: Row(
             children: [

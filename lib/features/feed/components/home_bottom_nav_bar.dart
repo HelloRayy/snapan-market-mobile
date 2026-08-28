@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
-/// Enum representing the 5 navigation tabs matching Web MarketBottomNav
+/// Enum representing the 5 navigation tabs matching Snapan Market Kumo design
 enum HomeNavTab {
   home,
   messages,
@@ -29,17 +29,17 @@ enum HomeNavTab {
 
 /// Home Feed Bottom Navigation Bar
 ///
-/// Exact translation of the design reference:
-/// - 50px fixed bar height (`h-[50px]`) with SafeArea bottom padding
-/// - Frosted glass backdrop blur (`bg-white/95 backdrop-blur-md`)
-/// - 1px subtle top border (0xFFF1F5F9) & upward elevation shadow
-/// - 5-item grid layout:
-///   1. Home (Active pill 42x72px #F1F5F9, 24px icon fill-slate-900 / stroke text-neutral-400)
-///   2. Pesan (24px Send icon with 8px #FF3040 red dot notification badge & white ring)
-///   3. Center Action Button: 48x48px circle, bg #1D64EC, border #154EC1, 4px white halo shadow, dual blue ambient shadow
-///   4. Aktivitas (24px Heart icon with rose-500 #F43F5E active color)
-///   5. Profil (25x25px circular avatar with subtle 1.5px slate ring when active)
-/// - Tactile micro-tap scale animation (0.95) & dual haptic feedback
+/// Compact In-Bar Composition with authentic Kumo UI visual styling:
+/// - In-Bar Flush Layout: 50px fixed bar height with zero broken overflow lines
+/// - Compact Center Grouping: 24px wide horizontal edge margin to cluster icons at center
+/// - Balanced Visual Weight: 5 items evenly distributed with uniform vertical alignment
+/// - Kumo UI Identity:
+///   1. Home (Kumo active pill 42x72px #F1F5F9, 26px ink icon)
+///   2. Pesan (26px Send icon with 8px #FF3040 red dot notification badge & white ring)
+///   3. Center Action (40x40px Kumo Primary Blue squircle/pill, #3B82F6 -> #1D64EC gradient, #154EC1 border, white "+" icon)
+///   4. Aktivitas (26px Heart icon with rose-500 #F43F5E active state)
+///   5. Profil (26x26px circular avatar with subtle slate border)
+/// - Touch target >= 44x44pt & tactile micro-tap scale (0.96)
 class HomeBottomNavBar extends StatelessWidget {
   final HomeNavTab currentTab;
   final ValueChanged<HomeNavTab> onTabSelected;
@@ -71,7 +71,7 @@ class HomeBottomNavBar extends StatelessWidget {
 
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
 
-    // 1. Frosted Glass Background Bar Layer
+    // 1. Frosted Glass Background Bar Layer (Clean horizontal flush line)
     Widget frostedBar = Container(
       height: 50.0 + bottomPadding,
       decoration: BoxDecoration(
@@ -101,7 +101,7 @@ class HomeBottomNavBar extends StatelessWidget {
       );
     }
 
-    // 2. Navigation Items Layer
+    // 2. Navigation Items Layer (Compact Center Grouping)
     return Stack(
       clipBehavior: Clip.none,
       alignment: Alignment.bottomCenter,
@@ -109,17 +109,17 @@ class HomeBottomNavBar extends StatelessWidget {
         // Background Bar
         frostedBar,
 
-        // Foreground Nav Items & Center Action Button
+        // Foreground Nav Items (Grouped with 24px edge insets)
         SafeArea(
           top: false,
           bottom: true,
           child: Container(
             height: 50.0,
-            padding: const EdgeInsets.symmetric(horizontal: 16.0), // Edge padding to center buttons
+            padding: const EdgeInsets.symmetric(horizontal: 24.0), // Compact center cluster
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Tab 1: Home
+                // Tab 1: Home (Kumo Active Pill)
                 Expanded(
                   child: _NavTabItem(
                     tab: HomeNavTab.home,
@@ -144,10 +144,10 @@ class HomeBottomNavBar extends StatelessWidget {
                   ),
                 ),
 
-                // Tab 3: Center Action Button (Exact Reference Snippet)
+                // Tab 3: Center Action (Kumo In-Bar Primary Button)
                 Expanded(
                   child: Center(
-                    child: _ReferenceCenterButton(
+                    child: _KumoInBarCreateButton(
                       onTap: () {
                         if (onCreateTap != null) {
                           onCreateTap!();
@@ -192,24 +192,17 @@ class HomeBottomNavBar extends StatelessWidget {
   }
 }
 
-/// Center Action Button
-///
-/// 100% exact translation of snippet:
-/// - 48x48px circular button (`h-[47.998px] w-[47.998px] rounded-full`)
-/// - bg: `#1D64EC`
-/// - border: 1px `#154EC1`
-/// - shadow: 4px white halo (`oklab(0.999994 ... / 0.95) 0 0 0 4px`) + dual blue diffused shadow (`0 4px 6px -1px` & `0 2px 4px -2px`)
-/// - active scale 0.95
-class _ReferenceCenterButton extends StatefulWidget {
+/// Center Action Button (In-Bar Kumo Primary Blue Button matching compact rule & Kumo style)
+class _KumoInBarCreateButton extends StatefulWidget {
   final VoidCallback onTap;
 
-  const _ReferenceCenterButton({required this.onTap});
+  const _KumoInBarCreateButton({required this.onTap});
 
   @override
-  State<_ReferenceCenterButton> createState() => _ReferenceCenterButtonState();
+  State<_KumoInBarCreateButton> createState() => _KumoInBarCreateButtonState();
 }
 
-class _ReferenceCenterButtonState extends State<_ReferenceCenterButton> {
+class _KumoInBarCreateButtonState extends State<_KumoInBarCreateButton> {
   bool _isPressed = false;
 
   void _handleTapDown(TapDownDetails _) {
@@ -226,73 +219,49 @@ class _ReferenceCenterButtonState extends State<_ReferenceCenterButton> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 50.0,
-      width: 54.0,
-      child: OverflowBox(
-        maxHeight: 100.0,
-        maxWidth: 100.0,
-        alignment: Alignment.center,
-        child: Transform.translate(
-          offset: const Offset(0, -20.0), // Floating outset -20px
-          child: GestureDetector(
-            onTapDown: _handleTapDown,
-            onTapUp: _handleTapUp,
-            onTapCancel: _handleTapCancel,
-            onTap: () {
-              HapticFeedback.mediumImpact();
-              widget.onTap();
-            },
-            behavior: HitTestBehavior.opaque,
-            child: AnimatedScale(
-              scale: _isPressed ? 0.95 : 1.0, // active:scale-95
-              duration: const Duration(milliseconds: 75),
-              curve: Curves.easeOutCubic,
-              child: Container(
-                width: 54.0,
-                height: 54.0,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.95), // 4px pure white halo ring
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x331D64EC), // Subtle diffused blue ambient shadow
-                      blurRadius: 10.0,
-                      offset: Offset(0, 5),
-                    ),
-                    BoxShadow(
-                      color: Color(0x14000000), // Ambient depth shadow
-                      blurRadius: 4.0,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.all(4.0), // Clean 4px white halo ring
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: const LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0xFF3B82F6), // from-[#3b82f6]
-                        Color(0xFF1D64EC), // to-[#1d64ec]
-                      ],
-                    ),
-                    border: Border.all(
-                      color: const Color(0xFF154EC1), // border-[#154ec1]
-                      width: 0.8,
-                    ),
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.add_rounded,
-                      color: Colors.white,
-                      size: 26.0, // Enlarged plus icon
-                    ),
-                  ),
-                ),
+    return GestureDetector(
+      onTapDown: _handleTapDown,
+      onTapUp: _handleTapUp,
+      onTapCancel: _handleTapCancel,
+      onTap: () {
+        HapticFeedback.mediumImpact();
+        widget.onTap();
+      },
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedScale(
+        scale: _isPressed ? 0.95 : 1.0,
+        duration: const Duration(milliseconds: 75),
+        curve: Curves.easeOutCubic,
+        child: Container(
+          width: 40.0,
+          height: 40.0,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFF3B82F6), // Kumo Blue 500
+                Color(0xFF1D64EC), // Kumo Primary Blue
+              ],
+            ),
+            border: Border.all(
+              color: const Color(0xFF154EC1), // Kumo Primary Dark border
+              width: 1.0,
+            ),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x2E1D64EC), // Subtle Kumo depth elevation
+                blurRadius: 6.0,
+                offset: Offset(0, 2),
               ),
+            ],
+          ),
+          child: const Center(
+            child: Icon(
+              Icons.add_rounded,
+              color: Colors.white,
+              size: 24.0,
             ),
           ),
         ),
@@ -368,15 +337,15 @@ class _NavTabItemState extends State<_NavTabItem> {
         },
         behavior: HitTestBehavior.opaque,
         child: AnimatedScale(
-          scale: _isPressed ? 0.96 : 1.0, // Matches Web active:scale-[0.96]
+          scale: _isPressed ? 0.96 : 1.0,
           duration: const Duration(milliseconds: 75),
           curve: Curves.easeOutCubic,
           child: Center(
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               curve: Curves.easeOutCubic,
-              height: 42.0, // Subtle active indicator pill matching Threads h-[42px]
-              width: widget.isActive ? 72.0 : 48.0,
+              height: 40.0, // In-bar active indicator pill h-[40px]
+              width: widget.isActive ? 58.0 : 44.0,
               decoration: BoxDecoration(
                 color: widget.isActive
                     ? const Color(0xFFF1F5F9) // bg-neutral-100/90
@@ -400,7 +369,7 @@ class _NavTabItemState extends State<_NavTabItem> {
 
     final iconWidget = Icon(
       iconData,
-      size: 28.0, // Enlarged from 24.0 to 28.0
+      size: 26.0,
       color: color,
     );
 
@@ -414,8 +383,8 @@ class _NavTabItemState extends State<_NavTabItem> {
         iconWidget,
         // Red Notification Unread Badge (8px #FF3040 with 2px white ring)
         Positioned(
-          top: -1.5,
-          right: -2.5,
+          top: -1.0,
+          right: -2.0,
           child: Container(
             width: 8.0,
             height: 8.0,
@@ -435,8 +404,8 @@ class _NavTabItemState extends State<_NavTabItem> {
 
   Widget _buildProfileAvatar(bool isActive) {
     return Container(
-      width: 28.0,
-      height: 28.0,
+      width: 26.0,
+      height: 26.0,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
@@ -447,18 +416,18 @@ class _NavTabItemState extends State<_NavTabItem> {
             ? [
                 BoxShadow(
                   color: AppColors.ink.withValues(alpha: 0.15),
-                  spreadRadius: 1.5, // Matches Web ring-1.5 ring-slate-900/30
+                  spreadRadius: 1.5,
                 ),
               ]
             : null,
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(14.0),
+        borderRadius: BorderRadius.circular(13.0),
         child: widget.userAvatar != null && widget.userAvatar!.isNotEmpty
             ? Image.network(
                 widget.userAvatar!,
-                width: 25.5,
-                height: 25.5,
+                width: 24.0,
+                height: 24.0,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) =>
                     _buildAvatarFallback(isActive),
@@ -470,12 +439,12 @@ class _NavTabItemState extends State<_NavTabItem> {
 
   Widget _buildAvatarFallback(bool isActive) {
     return Container(
-      width: 25.5,
-      height: 25.5,
+      width: 24.0,
+      height: 24.0,
       color: const Color(0xFFF1F5F9),
       child: Icon(
         Icons.person_rounded,
-        size: 18.0,
+        size: 16.0,
         color: isActive ? AppColors.ink : const Color(0xFF94A3B8),
       ),
     );

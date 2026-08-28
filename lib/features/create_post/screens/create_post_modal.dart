@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/components/kumo_button.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/rupiah_input_formatter.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
@@ -759,11 +760,13 @@ class _CreatePostModalState extends State<CreatePostModal> {
           const SizedBox(width: 12.0),
 
           // Right: "Posting" Kumo UI Button (Unified for both modes)
-          _KumoPostButton(
-            canSubmit: canSubmit,
-            isSubmitting: _isSubmitting,
-            label: 'Posting',
-            onTap: canSubmit ? _handleSubmit : null,
+          KumoButton.primary(
+            text: 'Posting',
+            height: 38.0,
+            borderRadius: 19.0,
+            isLoading: _isSubmitting,
+            padding: const EdgeInsets.symmetric(horizontal: 22.0),
+            onPressed: canSubmit ? _handleSubmit : null,
           ),
         ],
       ),
@@ -1653,120 +1656,3 @@ class _MediaIconButtonState extends State<_MediaIconButton> {
   }
 }
 
-/// Kumo UI Pill Button for Posting (Supports Active & Disabled States)
-class _KumoPostButton extends StatefulWidget {
-  final bool canSubmit;
-  final bool isSubmitting;
-  final String label;
-  final VoidCallback? onTap;
-
-  const _KumoPostButton({
-    required this.canSubmit,
-    required this.isSubmitting,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  State<_KumoPostButton> createState() => _KumoPostButtonState();
-}
-
-class _KumoPostButtonState extends State<_KumoPostButton> {
-  bool _isPressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final canSubmit = widget.canSubmit;
-
-    return GestureDetector(
-      onTapDown: canSubmit ? (_) => setState(() => _isPressed = true) : null,
-      onTapUp: canSubmit ? (_) => setState(() => _isPressed = false) : null,
-      onTapCancel: canSubmit ? () => setState(() => _isPressed = false) : null,
-      onTap: () {
-        if (canSubmit && widget.onTap != null) {
-          HapticFeedback.mediumImpact();
-          widget.onTap!();
-        }
-      },
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedScale(
-        scale: _isPressed ? 0.95 : 1.0,
-        duration: const Duration(milliseconds: 100),
-        curve: Curves.easeOutCubic,
-        child: Container(
-          height: 38.0,
-          padding: const EdgeInsets.symmetric(horizontal: 22.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(19.0),
-            gradient: canSubmit
-                ? const LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFF3B82F6), // Blue 500
-                      Color(0xFF1D64EC), // Kumo Primary Blue
-                    ],
-                  )
-                : null,
-            color: canSubmit ? null : const Color(0xFFF8FAFC),
-            border: Border.all(
-              color: canSubmit
-                  ? const Color(0xFF154EC1)
-                  : const Color(0xFFE2E8F0),
-              width: 1.0,
-            ),
-            boxShadow: [
-              if (canSubmit)
-                BoxShadow(
-                  color: const Color(0xFF1D64EC).withValues(alpha: 0.28),
-                  blurRadius: 10.0,
-                  offset: const Offset(0, 3),
-                ),
-            ],
-          ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Inset top shine highlight for Kumo styling
-              if (canSubmit)
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: 1.0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.35),
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(19.0),
-                      ),
-                    ),
-                  ),
-                ),
-              widget.isSubmitting
-                  ? const SizedBox(
-                      width: 16.0,
-                      height: 16.0,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.0,
-                        color: Colors.white,
-                      ),
-                    )
-                  : Text(
-                      widget.label,
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.w700,
-                        color: canSubmit
-                            ? Colors.white
-                            : const Color(0xFF94A3B8),
-                        letterSpacing: -0.2,
-                      ),
-                    ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

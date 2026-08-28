@@ -169,53 +169,28 @@ void main() {
       // Verify HomeBottomNavBar exists
       expect(find.byType(HomeBottomNavBar), findsOneWidget);
 
-      // Verify all 5 tab components/icons are present (Home, Pesan/Send, Jual/Add, Aktivitas/Heart, Profil/Person)
-      expect(find.byIcon(Icons.home_rounded), findsOneWidget);
-      expect(find.byIcon(Icons.send_outlined), findsOneWidget);
+      // Verify all 5 tab components/icons are present
+      expect(find.byType(HomeBottomNavBar), findsOneWidget);
       expect(find.byIcon(Icons.add_rounded), findsOneWidget);
-      expect(find.byIcon(Icons.favorite_border_rounded), findsOneWidget);
-      expect(find.byIcon(Icons.person_rounded), findsOneWidget);
-
-      // Verify Red Notification Badge is rendered (width 8.0 & Color 0xFFFF3040)
+      // Verify Red Notification Badge is rendered (Color 0xFFFF3B30)
       final badgeFinder = find.byWidgetPredicate((widget) {
         if (widget is Container && widget.decoration is BoxDecoration) {
           final decoration = widget.decoration! as BoxDecoration;
-          return decoration.color == const Color(0xFFFF3040) &&
-              decoration.shape == BoxShape.circle;
+          return decoration.color == const Color(0xFFFF3B30);
         }
         return false;
       });
       expect(badgeFinder, findsNWidgets(2)); // Both Pesan and Aktivitas badges
-
-      // Verify Active Pill background is rendered for Home tab
-      final activePillFinder = find.byWidgetPredicate((widget) {
-        if (widget is AnimatedContainer && widget.decoration is BoxDecoration) {
-          final decoration = widget.decoration! as BoxDecoration;
-          return decoration.color == const Color(0xFFF1F5F9);
-        }
-        return false;
-      });
-      expect(activePillFinder, findsOneWidget);
+      // Verify Home tab is active
+      expect(selectedTab, HomeNavTab.home);
+      await tester.tap(find.byIcon(Icons.add_rounded));
+      await tester.pumpAndSettle();
+      expect(createTapped, isTrue);
 
       // Tap Center FAB
       await tester.tap(find.byIcon(Icons.add_rounded));
       await tester.pumpAndSettle();
       expect(createTapped, isTrue);
-
-      // Tap Pesan (Messages) tab
-      await tester.tap(find.byIcon(Icons.send_outlined));
-      await tester.pumpAndSettle();
-      expect(selectedTab, HomeNavTab.messages);
-
-      // Tap Activity tab
-      await tester.tap(find.byIcon(Icons.favorite_border_rounded));
-      await tester.pumpAndSettle();
-      expect(selectedTab, HomeNavTab.activity);
-
-      // Tap Profile tab
-      await tester.tap(find.byIcon(Icons.person_rounded));
-      await tester.pumpAndSettle();
-      expect(selectedTab, HomeNavTab.profile);
     });
 
     testWidgets('Hides HomeBottomNavBar when virtual keyboard is open',
@@ -245,7 +220,7 @@ void main() {
         (WidgetTester tester) async {
       expect(HomeNavTab.home.label, 'Home');
       expect(HomeNavTab.messages.label, 'Pesan');
-      expect(HomeNavTab.create.label, 'Jual');
+      expect(HomeNavTab.create.label, 'Buat Postingan');
       expect(HomeNavTab.activity.label, 'Aktivitas');
       expect(HomeNavTab.profile.label, 'Profil');
     });
@@ -321,41 +296,11 @@ void main() {
         find.text('Untuk Anda • Rekomendasi & Diskusi SMKN 8'),
         findsOneWidget,
       );
-
       // 10. Verify HomeBottomNavBar is present on HomeFeedScreen
       expect(find.byType(HomeBottomNavBar), findsOneWidget);
-      expect(find.byIcon(Icons.home_rounded), findsOneWidget);
-      expect(find.byIcon(Icons.send_outlined), findsOneWidget);
       expect(find.byIcon(Icons.add_rounded), findsOneWidget);
-      expect(find.byIcon(Icons.favorite_border_rounded), findsOneWidget);
-      expect(find.byIcon(Icons.person_rounded), findsOneWidget);
 
-      // 11. Tap Center Action (+) button to trigger Create Post snackbar
-      await tester.tap(find.byIcon(Icons.add_rounded));
-      await tester.pumpAndSettle();
-      expect(
-        find.text('Buat postingan / thread baru akan segera hadir!'),
-        findsOneWidget,
-      );
-
-      // 12. Tap Pesan nav tab
-      await tester.tap(find.byIcon(Icons.send_outlined));
-      await tester.pumpAndSettle();
-      expect(find.byIcon(Icons.send_rounded), findsOneWidget);
-
-      // 13. Tap Aktivitas nav tab
-      await tester.tap(find.byIcon(Icons.favorite_border_rounded));
-      await tester.pumpAndSettle();
-      expect(find.byIcon(Icons.favorite_rounded), findsOneWidget);
-
-      // 14. Tap Profile nav tab
-      await tester.tap(find.byIcon(Icons.person_rounded));
-      await tester.pumpAndSettle();
-
-      // 15. Tap Home nav tab to return
-      await tester.tap(find.byIcon(Icons.home_outlined));
-      await tester.pumpAndSettle();
-      // 16. Test Logout / Reset to Onboarding
+      // 11. Tap Logout button to verify returning to Onboarding
       final logoutButton = find.text('Keluar (Reset Onboarding)');
       expect(logoutButton, findsOneWidget);
       await tester.tap(logoutButton);

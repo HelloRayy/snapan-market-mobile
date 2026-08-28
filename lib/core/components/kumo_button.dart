@@ -5,46 +5,54 @@ enum KumoButtonVariant { primary, secondary, outline }
 
 class KumoButton extends StatefulWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final KumoButtonVariant variant;
   final Widget? iconRight;
   final Widget? iconLeft;
   final double height;
   final double? width;
   final double borderRadius;
+  final bool isLoading;
+  final EdgeInsetsGeometry? padding;
 
   const KumoButton({
     super.key,
     required this.text,
-    required this.onPressed,
+    this.onPressed,
     this.variant = KumoButtonVariant.primary,
     this.iconRight,
     this.iconLeft,
     this.height = 52,
     this.width,
     this.borderRadius = 16,
+    this.isLoading = false,
+    this.padding,
   });
 
   const KumoButton.primary({
     super.key,
     required this.text,
-    required this.onPressed,
+    this.onPressed,
     this.iconRight,
     this.iconLeft,
     this.height = 52,
     this.width,
     this.borderRadius = 16,
+    this.isLoading = false,
+    this.padding,
   }) : variant = KumoButtonVariant.primary;
 
   const KumoButton.secondary({
     super.key,
     required this.text,
-    required this.onPressed,
+    this.onPressed,
     this.iconRight,
     this.iconLeft,
     this.height = 52,
     this.width,
     this.borderRadius = 16,
+    this.isLoading = false,
+    this.padding,
   }) : variant = KumoButtonVariant.secondary;
 
   @override
@@ -56,26 +64,30 @@ class _KumoButtonState extends State<KumoButton> {
 
   @override
   Widget build(BuildContext context) {
+    final isEnabled = widget.onPressed != null && !widget.isLoading;
     final isPrimary = widget.variant == KumoButtonVariant.primary;
 
     return GestureDetector(
-      onTapDown: (_) {
-        setState(() => _isPressed = true);
-        HapticFeedback.selectionClick();
-      },
-      onTapUp: (_) => setState(() => _isPressed = false),
-      onTapCancel: () => setState(() => _isPressed = false),
-      onTap: widget.onPressed,
+      onTapDown: isEnabled
+          ? (_) {
+              setState(() => _isPressed = true);
+              HapticFeedback.selectionClick();
+            }
+          : null,
+      onTapUp: isEnabled ? (_) => setState(() => _isPressed = false) : null,
+      onTapCancel: isEnabled ? () => setState(() => _isPressed = false) : null,
+      onTap: isEnabled ? widget.onPressed : null,
+      behavior: HitTestBehavior.opaque,
       child: AnimatedScale(
-        scale: _isPressed ? 0.97 : 1.0,
-        duration: const Duration(milliseconds: 120),
+        scale: _isPressed ? 0.96 : 1.0,
+        duration: const Duration(milliseconds: 100),
         curve: Curves.easeOutCubic,
         child: Container(
           height: widget.height,
           width: widget.width,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(widget.borderRadius),
-            gradient: isPrimary
+            gradient: isEnabled && isPrimary
                 ? const LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -85,38 +97,44 @@ class _KumoButtonState extends State<KumoButton> {
                     ],
                   )
                 : null,
-            color: isPrimary ? null : Colors.white,
+            color: !isEnabled
+                ? const Color(0xFFF1F5F9)
+                : isPrimary
+                    ? null
+                    : Colors.white,
             border: Border.all(
-              color: isPrimary
-                  ? const Color(0xFF154EC1)
-                  : const Color(0xFFE5E7EB),
-              width: 1,
+              color: !isEnabled
+                  ? const Color(0xFFE2E8F0)
+                  : isPrimary
+                      ? const Color(0xFF154EC1)
+                      : const Color(0xFFE5E7EB),
+              width: 1.0,
             ),
             boxShadow: [
-              if (isPrimary) ...[
+              if (isEnabled && isPrimary)
                 BoxShadow(
-                  color: const Color(0xFF1D64EC).withValues(alpha: 0.25),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ] else ...[
+                  color: const Color(0xFF1D64EC).withValues(alpha: 0.28),
+                  blurRadius: 10.0,
+                  offset: const Offset(0, 3),
+                )
+              else if (isEnabled && !isPrimary)
                 const BoxShadow(
                   color: Color(0x0A000000),
-                  blurRadius: 3,
+                  blurRadius: 3.0,
                   offset: Offset(0, 1),
                 ),
-              ],
             ],
           ),
           child: Stack(
+            alignment: Alignment.center,
             children: [
-              // Inset Highlight Shadow for Primary Kumo
-              if (isPrimary)
+              // Inset Top Shine Highlight for Primary Kumo
+              if (isEnabled && isPrimary)
                 Positioned(
                   top: 0,
                   left: 0,
                   right: 0,
-                  height: 1,
+                  height: 1.0,
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.35),
@@ -129,32 +147,46 @@ class _KumoButtonState extends State<KumoButton> {
 
               Center(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (widget.iconLeft != null) ...[
-                        widget.iconLeft!,
-                        const SizedBox(width: 8),
-                      ],
-                      Text(
-                        widget.text,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: isPrimary ? FontWeight.w700 : FontWeight.w600,
-                          color: isPrimary
-                              ? Colors.white
-                              : const Color(0xFF111827),
-                          letterSpacing: -0.2,
+                  padding: widget.padding ??
+                      const EdgeInsets.symmetric(horizontal: 18.0),
+                  child: widget.isLoading
+                      ? const SizedBox(
+                          width: 16.0,
+                          height: 16.0,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.0,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (widget.iconLeft != null) ...[
+                              widget.iconLeft!,
+                              const SizedBox(width: 6.0),
+                            ],
+                            Text(
+                              widget.text,
+                              style: TextStyle(
+                                fontSize: 14.5,
+                                fontWeight: isPrimary
+                                    ? FontWeight.w700
+                                    : FontWeight.w600,
+                                color: !isEnabled
+                                    ? const Color(0xFF94A3B8)
+                                    : isPrimary
+                                        ? Colors.white
+                                        : const Color(0xFF111827),
+                                letterSpacing: -0.2,
+                              ),
+                            ),
+                            if (widget.iconRight != null) ...[
+                              const SizedBox(width: 6.0),
+                              widget.iconRight!,
+                            ],
+                          ],
                         ),
-                      ),
-                      if (widget.iconRight != null) ...[
-                        const SizedBox(width: 8),
-                        widget.iconRight!,
-                      ],
-                    ],
-                  ),
                 ),
               ),
             ],

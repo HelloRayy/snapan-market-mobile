@@ -113,76 +113,83 @@ class HomeBottomNavBar extends StatelessWidget {
         SafeArea(
           top: false,
           bottom: true,
-          child: SizedBox(
-            height: 50.0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Tab 1: Home (Kumo Active Pill)
-                _NavTabItem(
-                  tab: HomeNavTab.home,
-                  isActive: currentTab == HomeNavTab.home,
-                  icon: Icons.home_outlined,
-                  activeIcon: Icons.home_rounded,
-                  tooltip: 'Home',
-                  onTap: () => onTabSelected(HomeNavTab.home),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 350.0), // Apple HIG compact container
+              child: SizedBox(
+                height: 50.0,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Tab 1: Home (Kumo Active Pill)
+                    Expanded(
+                      child: _NavTabItem(
+                        tab: HomeNavTab.home,
+                        isActive: currentTab == HomeNavTab.home,
+                        icon: Icons.home_outlined,
+                        activeIcon: Icons.home_rounded,
+                        tooltip: 'Home',
+                        onTap: () => onTabSelected(HomeNavTab.home),
+                      ),
+                    ),
+
+                    // Tab 2: Pesan (Send Icon with Red Dot Badge)
+                    Expanded(
+                      child: _NavTabItem(
+                        tab: HomeNavTab.messages,
+                        isActive: currentTab == HomeNavTab.messages,
+                        icon: Icons.send_outlined,
+                        activeIcon: Icons.send_rounded,
+                        hasBadge: hasUnreadMessages,
+                        tooltip: 'Pesan',
+                        onTap: () => onTabSelected(HomeNavTab.messages),
+                      ),
+                    ),
+
+                    // Tab 3: Center Action (Floating Kumo FAB with High Z-Index)
+                    Expanded(
+                      child: Center(
+                        child: _FloatingKumoFabButton(
+                          onTap: () {
+                            if (onCreateTap != null) {
+                              onCreateTap!();
+                            } else {
+                              onTabSelected(HomeNavTab.create);
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+
+                    // Tab 4: Aktivitas (Heart Icon)
+                    Expanded(
+                      child: _NavTabItem(
+                        tab: HomeNavTab.activity,
+                        isActive: currentTab == HomeNavTab.activity,
+                        icon: Icons.favorite_border_rounded,
+                        activeIcon: Icons.favorite_rounded,
+                        activeColor: const Color(0xFFF43F5E), // rose-500
+                        hasBadge: hasUnreadActivity,
+                        tooltip: 'Aktivitas',
+                        onTap: () => onTabSelected(HomeNavTab.activity),
+                      ),
+                    ),
+
+                    // Tab 5: Profil (User Avatar)
+                    Expanded(
+                      child: _NavTabItem(
+                        tab: HomeNavTab.profile,
+                        isActive: currentTab == HomeNavTab.profile,
+                        userAvatar: userAvatar,
+                        tooltip: 'Profil',
+                        onTap: () => onTabSelected(HomeNavTab.profile),
+                      ),
+                    ),
+                  ],
                 ),
-
-                const SizedBox(width: 8.0), // 8px gap
-
-                // Tab 2: Pesan (Send Icon with Red Dot Badge)
-                _NavTabItem(
-                  tab: HomeNavTab.messages,
-                  isActive: currentTab == HomeNavTab.messages,
-                  icon: Icons.send_outlined,
-                  activeIcon: Icons.send_rounded,
-                  hasBadge: hasUnreadMessages,
-                  tooltip: 'Pesan',
-                  onTap: () => onTabSelected(HomeNavTab.messages),
-                ),
-
-                const SizedBox(width: 8.0), // 8px gap
-
-                // Tab 3: Center Action (Enlarged Floating Kumo FAB 56px with High Z-Index)
-                _FloatingKumoFabButton(
-                  onTap: () {
-                    if (onCreateTap != null) {
-                      onCreateTap!();
-                    } else {
-                      onTabSelected(HomeNavTab.create);
-                    }
-                  },
-                ),
-
-                const SizedBox(width: 8.0), // 8px gap
-
-                // Tab 4: Aktivitas (Heart Icon)
-                _NavTabItem(
-                  tab: HomeNavTab.activity,
-                  isActive: currentTab == HomeNavTab.activity,
-                  icon: Icons.favorite_border_rounded,
-                  activeIcon: Icons.favorite_rounded,
-                  activeColor: const Color(0xFFF43F5E), // rose-500
-                  hasBadge: hasUnreadActivity,
-                  tooltip: 'Aktivitas',
-                  onTap: () => onTabSelected(HomeNavTab.activity),
-                ),
-
-                const SizedBox(width: 8.0), // 8px gap
-
-                // Tab 5: Profil (User Avatar)
-                _NavTabItem(
-                  tab: HomeNavTab.profile,
-                  isActive: currentTab == HomeNavTab.profile,
-                  userAvatar: userAvatar,
-                  tooltip: 'Profil',
-                  onTap: () => onTabSelected(HomeNavTab.profile),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
       ],
     );
   }
@@ -355,23 +362,20 @@ class _NavTabItemState extends State<_NavTabItem> {
         },
         behavior: HitTestBehavior.opaque,
         child: AnimatedScale(
-          scale: _isPressed ? 0.98 : 1.0, // active:scale-[0.98]
+          scale: _isPressed ? 0.96 : 1.0,
           duration: const Duration(milliseconds: 75),
           curve: Curves.easeOutCubic,
-          child: Container(
-            width: 74.0, // Slot width matching w-[78.16px]
-            height: 50.0,
-            alignment: Alignment.center,
+          child: Center(
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               curve: Curves.easeOutCubic,
-              height: 42.0, // Full gray area h-[41.99px]
-              width: widget.isActive ? 70.0 : 48.0, // Full gray area w-[70.15px]
+              height: 40.0,
+              width: widget.isActive ? 62.0 : 44.0, // Balanced compact active pill
               decoration: BoxDecoration(
                 color: widget.isActive
-                    ? const Color(0xFFF1F5F9) // bg-[#ffffff/8] / neutral-100
+                    ? const Color(0xFFF1F5F9) // bg-neutral-100/90
                     : Colors.transparent,
-                borderRadius: BorderRadius.circular(10.0), // rounded-lg
+                borderRadius: BorderRadius.circular(12.0), // rounded-xl
               ),
               child: Center(
                 child: widget.tab == HomeNavTab.profile

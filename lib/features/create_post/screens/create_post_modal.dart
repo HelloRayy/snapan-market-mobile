@@ -284,14 +284,15 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 6.0),
-
-                            // Vertical Thread Connector Line
-                            Container(
-                              width: 2.0,
-                              height: 75.0, // Compact thread line matching 1-line initial state
-                              color: const Color(0xFFE2E8F0),
-                            ),
+                            if (_postMode == PostMode.thread) ...[
+                              const SizedBox(height: 6.0),
+                              // Vertical Thread Connector Line
+                              Container(
+                                width: 2.0,
+                                height: 75.0, // Compact thread line
+                                color: const Color(0xFFE2E8F0),
+                              ),
+                            ],
                           ],
                         ),
                         const SizedBox(width: 12.0),
@@ -306,11 +307,6 @@ class _CreatePostModalState extends State<CreatePostModal> {
                               const SizedBox(height: 2.0),
                               _buildMainTextInput(),
 
-                              // Product Fields (if postMode == product)
-                              if (_postMode == PostMode.product) ...[
-                                const SizedBox(height: 12.0),
-                                _buildProductFields(),
-                              ],
 
                               // Attached Images Horizontal Carousel
                               if (_images.isNotEmpty) ...[
@@ -351,6 +347,11 @@ class _CreatePostModalState extends State<CreatePostModal> {
                       ],
                     ),
 
+                    // Full-Width Product Fields (Positioned below the top author/toolbar block matching Image #1)
+                    if (_postMode == PostMode.product) ...[
+                      const SizedBox(height: 18.0),
+                      _buildProductFields(),
+                    ],
                     // Sub-Threads Chain (Only in Thread Mode - matching Image #1)
                     if (_postMode == PostMode.thread) ...[
                       if (_subThreads.isNotEmpty) ...[
@@ -521,7 +522,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
       decoration: InputDecoration(
         hintText: _postMode == PostMode.thread
             ? 'Apa yang baru?'
-            : 'Ceritakan tentang barang atau jasamu...',
+            : 'Tulis deskripsi atau rincian jualan...',
         hintStyle: const TextStyle(
           fontSize: 15.0,
           color: Color(0xFF94A3B8),

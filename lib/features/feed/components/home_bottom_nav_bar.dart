@@ -260,43 +260,24 @@ class _FloatingCreateButtonState extends State<_FloatingCreateButton> {
                     width: 1.0,
                   ),
                   boxShadow: const [
-                    // Clean natural elevation shadow without blue glow
                     BoxShadow(
-                      color: Color(0x240F172A), // Slate 900 14% elevation
+                      color: Color(0x2E0F172A), // Clean natural elevation shadow
                       blurRadius: 8.0,
                       offset: Offset(0, 3),
                     ),
                     BoxShadow(
-                      color: Color(0x14000000), // Ambient shadow
+                      color: Color(0x14000000), // Subtle ambient shadow
                       blurRadius: 3.0,
                       offset: Offset(0, 1),
                     ),
                   ],
                 ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // Kumo Inset Top Rim Highlight Shine (Exact Cloudflare Kumo button spec)
-                    Positioned(
-                      top: 1.0,
-                      left: 6.0,
-                      right: 6.0,
-                      height: 1.5,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.40),
-                          borderRadius: BorderRadius.circular(1.0),
-                        ),
-                      ),
-                    ),
-                    const Center(
-                      child: Icon(
-                        Icons.add_rounded,
-                        color: Colors.white,
-                        size: 30.0,
-                      ),
-                    ),
-                  ],
+                child: const Center(
+                  child: Icon(
+                    Icons.add_rounded,
+                    color: Colors.white,
+                    size: 28.0,
+                  ),
                 ),
               ),
             ),

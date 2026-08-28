@@ -59,7 +59,7 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
                 <button
                   type="button"
                   onClick={onPostClick || (() => onTabChange('post'))}
-                  className="absolute -top-5.5 w-[52px] h-[52px] rounded-full bg-[#1d64ec] hover:bg-[#154ec1] border border-[#154ec1] active:scale-[0.96] text-white flex items-center justify-center shadow-md shadow-slate-900/15 transition-transform duration-75 cursor-pointer z-10 overflow-hidden group"
+                  className="absolute -top-5 w-12 h-12 rounded-full bg-[#1d64ec] hover:bg-[#154ec1] border border-[#154ec1] active:scale-[0.96] text-white flex items-center justify-center shadow-md shadow-blue-500/30 ring-4 ring-white/95 transition-transform duration-75 cursor-pointer z-10 overflow-hidden group"
                   aria-label="Jual Produk Baru"
                   title="Jual Produk Baru"
                 >
@@ -67,7 +67,7 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
                   <span className="absolute inset-0 rounded-full bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] group-hover:from-[#2563eb] transition-opacity duration-150 pointer-events-none" />
 
                   {/* Plus Icon */}
-                  <Plus className="w-7 h-7 stroke-[2.4] text-white relative z-10" />
+                  <Plus className="w-6 h-6 stroke-[2.2] text-white relative z-10" />
                 </button>
               </div>
             );

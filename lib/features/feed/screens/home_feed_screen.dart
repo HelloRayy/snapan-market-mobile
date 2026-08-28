@@ -118,13 +118,15 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
           parent: AlwaysScrollableScrollPhysics(),
         ),
         slivers: [
-          // Sticky Switch Tab Bar ("Untuk Anda" & "Terbaru")
+          // Sticky Switch Tab Bar ("Untuk Anda" & "Terbaru") Isolated with RepaintBoundary
           SliverPersistentHeader(
             pinned: true,
             delegate: _SliverTabSwitchDelegate(
-              child: HomeFeedTabSwitch(
-                activeTab: _activeTab,
-                onTabChanged: _handleTabChanged,
+              child: RepaintBoundary(
+                child: HomeFeedTabSwitch(
+                  activeTab: _activeTab,
+                  onTabChanged: _handleTabChanged,
+                ),
               ),
             ),
           ),

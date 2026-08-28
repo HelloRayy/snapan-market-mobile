@@ -303,9 +303,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                             children: [
                               // Author Name + Topic Picker
                               _buildAuthorAndTopicLine(),
-
-                              const SizedBox(height: 8.0), // Clean 8px gap below username
-                              // Main Textarea ("Apa yang baru?")
+                              const SizedBox(height: 2.0),
                               _buildMainTextInput(),
 
                               // Product Fields (if postMode == product)
@@ -528,7 +526,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
         ),
         border: InputBorder.none,
         isDense: true,
-        contentPadding: const EdgeInsets.only(top: 4.0, bottom: 6.0),
+        contentPadding: EdgeInsets.zero,
       ),
     );
   }

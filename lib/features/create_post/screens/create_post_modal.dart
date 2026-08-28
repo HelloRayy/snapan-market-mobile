@@ -611,20 +611,24 @@ class _CreatePostModalState extends State<CreatePostModal> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Transform.scale(
-            scale: 0.75,
-            alignment: Alignment.centerLeft,
-            child: CupertinoSwitch(
-              value: _postMode == PostMode.product,
-              activeTrackColor: AppColors.primary,
-              onChanged: (val) {
-                HapticFeedback.selectionClick();
-                setState(() {
-                  _postMode = val ? PostMode.product : PostMode.thread;
-                });
-              },
+          SizedBox(
+            width: 38.0,
+            height: 22.0,
+            child: FittedBox(
+              fit: BoxFit.fill,
+              child: CupertinoSwitch(
+                value: _postMode == PostMode.product,
+                activeTrackColor: AppColors.primary,
+                onChanged: (val) {
+                  HapticFeedback.selectionClick();
+                  setState(() {
+                    _postMode = val ? PostMode.product : PostMode.thread;
+                  });
+                },
+              ),
             ),
           ),
+          const SizedBox(width: 6.0), // Tight clean gap
           Text(
             'Jual Barang',
             style: TextStyle(
@@ -781,8 +785,8 @@ class _CreatePostModalState extends State<CreatePostModal> {
             color: Color(0xFF0F172A),
           ),
           decoration: _buildCleanInputDecoration(
-            hint: '0',
-            prefixText: 'Rp ',
+            hint: 'Rp 0',
+            prefixText: _priceController.text.isNotEmpty ? 'Rp ' : null,
           ),
         ),
         const SizedBox(height: 14.0),

@@ -594,41 +594,49 @@ class _CreatePostModalState extends State<CreatePostModal> {
     );
   }
 
-  // "Jual Barang" Switch Pill (Row 2 - Matching Image #2)
+  // "Jual Barang" Clean Switch Toggle (Tanpa Background Container)
   Widget _buildSellingSwitchPill() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9), // Soft neutral pill bg
-        borderRadius: BorderRadius.circular(16.0),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Transform.scale(
-            scale: 0.75,
-            child: CupertinoSwitch(
-              value: _postMode == PostMode.product,
-              activeTrackColor: AppColors.primary,
-              onChanged: (val) {
-                HapticFeedback.selectionClick();
-                setState(() {
-                  _postMode = val ? PostMode.product : PostMode.thread;
-                });
-              },
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        setState(() {
+          _postMode = _postMode == PostMode.product
+              ? PostMode.thread
+              : PostMode.product;
+        });
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Transform.scale(
+              scale: 0.75,
+              child: CupertinoSwitch(
+                value: _postMode == PostMode.product,
+                activeTrackColor: AppColors.primary,
+                onChanged: (val) {
+                  HapticFeedback.selectionClick();
+                  setState(() {
+                    _postMode = val ? PostMode.product : PostMode.thread;
+                  });
+                },
+              ),
             ),
-          ),
-          const SizedBox(width: 2.0),
-          Text(
-            'Jual Barang',
-            style: TextStyle(
-              fontSize: 12.5,
-              fontWeight: FontWeight.w600,
-              color: _postMode == PostMode.product ? AppColors.primary : const Color(0xFF475569),
+            const SizedBox(width: 4.0),
+            Text(
+              'Jual Barang',
+              style: TextStyle(
+                fontSize: 13.0,
+                fontWeight: FontWeight.w600,
+                color: _postMode == PostMode.product
+                    ? AppColors.primary
+                    : const Color(0xFF475569),
+              ),
             ),
-          ),
-          const SizedBox(width: 4.0),
-        ],
+          ],
+        ),
       ),
     );
   }

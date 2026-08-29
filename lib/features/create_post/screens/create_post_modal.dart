@@ -43,6 +43,7 @@ class CreatePostModal extends StatefulWidget {
       PageRouteBuilder(
         opaque: true,
         barrierDismissible: false,
+        fullscreenDialog: true,
         pageBuilder: (context, animation, secondaryAnimation) =>
             CreatePostModal(
           initialMode: initialMode,
@@ -59,7 +60,7 @@ class CreatePostModal extends StatefulWidget {
             child: child,
           );
         },
-        transitionDuration: const Duration(milliseconds: 280),
+        transitionDuration: const Duration(milliseconds: 260),
       ),
     );
   }
@@ -270,8 +271,6 @@ class _CreatePostModalState extends State<CreatePostModal> {
 
   @override
   Widget build(BuildContext context) {
-    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       behavior: HitTestBehavior.opaque,
@@ -284,7 +283,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // 1. Top Header Bar
+              // 1. Top Header Bar (Zero-rebuild static bar)
               CreatePostHeaderBar(
                 postMode: _postMode,
                 onCancel: () => Navigator.of(context).pop(),
@@ -308,24 +307,27 @@ class _CreatePostModalState extends State<CreatePostModal> {
                 },
               ),
 
-              // 2. Scrollable Body Area with Vertical Thread Connector Line
+              // 2. Scrollable Body Area with Isolated Keyboard Inset Padding
               Expanded(
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  physics: const BouncingScrollPhysics(),
-                  padding: EdgeInsets.fromLTRB(
-                    16.0,
-                    12.0,
-                    16.0,
-                    keyboardHeight > 0 ? keyboardHeight + 80.0 : 20.0,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Selling Intent Suggestion Banner
-                      if (_showSellingIntentBanner)
-                        _buildSellingIntentBanner(),
-
+                child: Builder(
+                  builder: (context) {
+                    final keyboardHeight =
+                        MediaQuery.viewInsetsOf(context).bottom;
+                    return SingleChildScrollView(
+                      controller: _scrollController,
+                      physics: const BouncingScrollPhysics(),
+                      padding: EdgeInsets.fromLTRB(
+                        16.0,
+                        12.0,
+                        16.0,
+                        keyboardHeight > 0 ? keyboardHeight + 80.0 : 20.0,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Selling Intent Suggestion Banner
+                          if (_showSellingIntentBanner)
+                            _buildSellingIntentBanner(),
                       // Main Thread Block (Left Avatar + Line | Right Form)
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -528,11 +530,12 @@ class _CreatePostModalState extends State<CreatePostModal> {
                               setState(() => _selectedLocation = loc),
                         ),
                       ],
-                    ],
-                  ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
-
               // 3. Pinned Bottom Footer Bar
               CreatePostFooterBar(
                 audiencePrivacy: _audiencePrivacy,

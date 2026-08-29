@@ -56,14 +56,13 @@ class HomeBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
     if (bottomInset > 0) {
       return const SizedBox.shrink();
     }
 
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final bottomPadding = MediaQuery.paddingOf(context).bottom;
     final totalHeight = 50.0 + bottomPadding;
-
     return RepaintBoundary(
       child: SizedBox(
         height: totalHeight,

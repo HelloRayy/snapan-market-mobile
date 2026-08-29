@@ -2,12 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/features/create_post/models/create_post_types.dart';
 
-/// 7-Icon Thumb-Friendly Media Toolbar for Create Post
+/// 7-Icon Thumb-Friendly Media Toolbar with Quick Inline Emoji Scroller
 class CreatePostMediaToolbar extends StatelessWidget {
+  final bool showEmojiBar;
+  final bool showPollBuilder;
   final VoidCallback onPickImage;
   final VoidCallback onPickGif;
-  final VoidCallback onPickEmoji;
+  final VoidCallback onToggleEmoji;
+  final ValueChanged<String> onInsertEmoji;
   final VoidCallback onTogglePoll;
   final VoidCallback onPickTopic;
   final VoidCallback onPickLocation;
@@ -15,9 +19,12 @@ class CreatePostMediaToolbar extends StatelessWidget {
 
   const CreatePostMediaToolbar({
     super.key,
+    this.showEmojiBar = false,
+    this.showPollBuilder = false,
     required this.onPickImage,
     required this.onPickGif,
-    required this.onPickEmoji,
+    required this.onToggleEmoji,
+    required this.onInsertEmoji,
     required this.onTogglePoll,
     required this.onPickTopic,
     required this.onPickLocation,
@@ -26,62 +33,170 @@ class CreatePostMediaToolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        _MediaIconButton(
-          icon: CupertinoIcons.photo,
-          tooltip: 'Foto',
-          onTap: onPickImage,
-        ),
-        const SizedBox(width: 2.0),
-        _MediaIconButton(
-          icon: Icons.gif_box_outlined,
-          tooltip: 'GIF',
-          onTap: onPickGif,
-        ),
-        const SizedBox(width: 2.0),
-        _MediaIconButton(
-          icon: CupertinoIcons.smiley,
-          tooltip: 'Emoji',
-          onTap: onPickEmoji,
-        ),
-        const SizedBox(width: 2.0),
-        _MediaIconButton(
-          icon: CupertinoIcons.chart_bar_square,
-          tooltip: 'Polling',
-          onTap: onTogglePoll,
-        ),
-        const SizedBox(width: 2.0),
-        _MediaIconButton(
-          icon: Icons.scatter_plot_rounded,
-          tooltip: 'Topik',
-          onTap: onPickTopic,
-        ),
-        const SizedBox(width: 2.0),
-        _MediaIconButton(
-          icon: CupertinoIcons.location,
-          tooltip: 'Lokasi COD',
-          onTap: onPickLocation,
-        ),
-        const SizedBox(width: 2.0),
-        _MediaIconButton(
-          icon: CupertinoIcons.music_note_2,
-          tooltip: 'Audio',
-          onTap: onAudioTap,
+        // 1. Quick Emoji Carousel Bar (Rendered Directly Above Toolbar when smiley clicked)
+        if (showEmojiBar) ...[
+          SizedBox(
+            height: 38.0,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              itemCount: kPresetEmojis.length,
+              separatorBuilder: (context, index) => const SizedBox(width: 6.0),
+              itemBuilder: (context, idx) {
+                final emoji = kPresetEmojis[idx];
+                return _QuickEmojiPill(
+                  emoji: emoji,
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    onInsertEmoji(emoji);
+                  },
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 8.0),
+        ],
+
+        // 2. 7-Icon Media Action Bar
+        Row(
+          children: [
+            // 1. Foto
+            _MediaIconButton(
+              icon: CupertinoIcons.photo,
+              tooltip: 'Foto',
+              onTap: onPickImage,
+            ),
+            const SizedBox(width: 2.0),
+
+            // 2. GIF
+            _MediaIconButton(
+              icon: Icons.gif_box_outlined,
+              tooltip: 'GIF',
+              onTap: onPickGif,
+            ),
+            const SizedBox(width: 2.0),
+
+            // 3. Emoji (Toggles Inline Emoji Scroller)
+            _MediaIconButton(
+              icon: CupertinoIcons.smiley,
+              tooltip: 'Emoji',
+              isActive: showEmojiBar,
+              onTap: onToggleEmoji,
+            ),
+            const SizedBox(width: 2.0),
+
+            // 4. Polling
+            _MediaIconButton(
+              icon: CupertinoIcons.chart_bar_square,
+              tooltip: 'Polling',
+              isActive: showPollBuilder,
+              onTap: onTogglePoll,
+            ),
+            const SizedBox(width: 2.0),
+
+            // 5. Topik
+            _MediaIconButton(
+              icon: Icons.scatter_plot_rounded,
+              tooltip: 'Topik',
+              onTap: onPickTopic,
+            ),
+            const SizedBox(width: 2.0),
+
+            // 6. Lokasi COD
+            _MediaIconButton(
+              icon: CupertinoIcons.location,
+              tooltip: 'Lokasi COD',
+              onTap: onPickLocation,
+            ),
+            const SizedBox(width: 2.0),
+
+            // 7. Audio
+            _MediaIconButton(
+              icon: CupertinoIcons.music_note_2,
+              tooltip: 'Audio',
+              onTap: onAudioTap,
+            ),
+          ],
         ),
       ],
     );
   }
 }
 
+/// Quick Emoji Pill Item with Micro-Tap Scale Physics
+class _QuickEmojiPill extends StatefulWidget {
+  final String emoji;
+  final VoidCallback onTap;
+
+  const _QuickEmojiPill({
+    required this.emoji,
+    required this.onTap,
+  });
+
+  @override
+  State<_QuickEmojiPill> createState() => _QuickEmojiPillState();
+}
+
+class _QuickEmojiPillState extends State<_QuickEmojiPill> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) => setState(() => _isPressed = false),
+      onTapCancel: () => setState(() => _isPressed = false),
+      onTap: widget.onTap,
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedScale(
+        scale: _isPressed ? 0.88 : 1.0,
+        duration: const Duration(milliseconds: 70),
+        curve: Curves.easeOutCubic,
+        child: Container(
+          width: 36.0,
+          height: 36.0,
+          decoration: BoxDecoration(
+            color: const Color(0xFFF8FAFC),
+            borderRadius: BorderRadius.circular(12.0),
+            border: Border.all(
+              color: const Color(0xFFF1F5F9),
+              width: 1.0,
+            ),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x0A000000),
+                blurRadius: 4.0,
+                offset: Offset(0, 1),
+              ),
+            ],
+          ),
+          child: Center(
+            child: Text(
+              widget.emoji,
+              style: const TextStyle(fontSize: 18.0),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Action Icon Button for Media Toolbar (Supports Active Highlight State)
 class _MediaIconButton extends StatefulWidget {
   final IconData icon;
   final String tooltip;
+  final bool isActive;
   final VoidCallback onTap;
 
   const _MediaIconButton({
     required this.icon,
     required this.tooltip,
+    this.isActive = false,
     required this.onTap,
   });
 
@@ -112,14 +227,28 @@ class _MediaIconButtonState extends State<_MediaIconButton> {
           width: 36.0,
           height: 36.0,
           decoration: BoxDecoration(
-            color: _isPressed ? const Color(0x0F000000) : Colors.transparent,
+            color: widget.isActive
+                ? const Color(0xFFEFF6FF)
+                : _isPressed
+                    ? const Color(0x0F000000)
+                    : Colors.transparent,
             borderRadius: BorderRadius.circular(10.0),
+            border: widget.isActive
+                ? Border.all(
+                    color: const Color(0xFFBFDBFE),
+                    width: 1.0,
+                  )
+                : null,
           ),
           child: Center(
             child: Icon(
               widget.icon,
               size: 21.5,
-              color: _isPressed ? AppColors.ink : const Color(0xFF64748B),
+              color: widget.isActive
+                  ? AppColors.primary
+                  : _isPressed
+                      ? AppColors.ink
+                      : const Color(0xFF64748B),
             ),
           ),
         ),

@@ -7,6 +7,7 @@ import 'package:snapan_market/features/create_post/components/create_post_bottom
 import 'package:snapan_market/features/create_post/components/create_post_footer_bar.dart';
 import 'package:snapan_market/features/create_post/components/create_post_header_bar.dart';
 import 'package:snapan_market/features/create_post/components/create_post_media_toolbar.dart';
+import 'package:snapan_market/features/create_post/components/create_post_poll_builder.dart';
 import 'package:snapan_market/features/create_post/components/create_post_product_fields.dart';
 import 'package:snapan_market/features/create_post/components/create_post_selling_toggle.dart';
 import 'package:snapan_market/features/create_post/components/create_post_sub_threads.dart';
@@ -95,11 +96,12 @@ class _CreatePostModalState extends State<CreatePostModal> {
   SchoolPlace? _selectedLocation;
   PresetGif? _selectedGif;
   bool _showPoll = false;
+  bool _showEmojiBar = false;
   final List<TextEditingController> _pollOptionControllers = [
     TextEditingController(),
     TextEditingController(),
+    TextEditingController(),
   ];
-
   String _audiencePrivacy = 'Siapa pun dapat membalas & mengutip';
   bool _isSubmitting = false;
   bool _showSellingIntentBanner = false;
@@ -431,16 +433,44 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                   _buildGifPreview(),
                                 ],
 
-                                // Polling Options Block
+                                // Polling Options Block (Matching Image #1)
                                 if (_showPoll) ...[
-                                  const SizedBox(height: 10.0),
-                                  _buildPollInputs(),
+                                  CreatePostPollBuilder(
+                                    controllers: _pollOptionControllers,
+                                    onAddOption: () {
+                                      setState(() {
+                                        _pollOptionControllers
+                                            .add(TextEditingController());
+                                      });
+                                    },
+                                    onRemoveOption: (idx) {
+                                      setState(() {
+                                        if (_pollOptionControllers.length > 2) {
+                                          final removed = _pollOptionControllers
+                                              .removeAt(idx);
+                                          removed.dispose();
+                                        } else {
+                                          _pollOptionControllers[idx].clear();
+                                        }
+                                      });
+                                    },
+                                    onDismissPoll: () {
+                                      setState(() {
+                                        _showPoll = false;
+                                        for (var c in _pollOptionControllers) {
+                                          c.clear();
+                                        }
+                                      });
+                                    },
+                                  ),
                                 ],
 
                                 const SizedBox(height: 10.0),
 
                                 // 7-Icon Media Toolbar
                                 CreatePostMediaToolbar(
+                                  showEmojiBar: _showEmojiBar,
+                                  showPollBuilder: _showPoll,
                                   onPickImage: _handlePickImage,
                                   onPickGif: () =>
                                       CreatePostBottomSheets.showGifPickerBottomSheet(
@@ -448,12 +478,10 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                     onGifSelected: (gif) =>
                                         setState(() => _selectedGif = gif),
                                   ),
-                                  onPickEmoji: () =>
-                                      CreatePostBottomSheets.showEmojiPickerBottomSheet(
-                                    context: context,
-                                    onEmojiSelected: (emoji) =>
-                                        _captionController.text += emoji,
-                                  ),
+                                  onToggleEmoji: () =>
+                                      setState(() => _showEmojiBar = !_showEmojiBar),
+                                  onInsertEmoji: (emoji) =>
+                                      _captionController.text += emoji,
                                   onTogglePoll: () =>
                                       setState(() => _showPoll = !_showPoll),
                                   onPickTopic: () =>
@@ -735,35 +763,4 @@ class _CreatePostModalState extends State<CreatePostModal> {
     );
   }
 
-  Widget _buildPollInputs() {
-    return Container(
-      padding: const EdgeInsets.all(10.0),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(12.0),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-      ),
-      child: Column(
-        children: [
-          for (int i = 0; i < _pollOptionControllers.length; i++) ...[
-            TextField(
-              controller: _pollOptionControllers[i],
-              decoration: InputDecoration(
-                hintText: 'Pilihan ${i + 1}...',
-                hintStyle: const TextStyle(fontSize: 13.0, color: Color(0xFF94A3B8)),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-                ),
-              ),
-            ),
-            const SizedBox(height: 6.0),
-          ],
-        ],
-      ),
-    );
-  }
 }

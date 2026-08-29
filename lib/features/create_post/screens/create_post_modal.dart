@@ -635,154 +635,149 @@ class _CreatePostModalState extends State<CreatePostModal> {
   }
 
   Widget _buildImagesPreview() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // Bleed Edge-to-Edge full width across screen (Matching Image #2)
-        return Transform.translate(
-          offset: const Offset(-48.0, 0),
-          child: SizedBox(
-            width: constraints.maxWidth + 48.0 + 16.0,
-            height: 185.0,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.only(left: 48.0, right: 16.0),
-              itemCount: _images.length + 1,
-              separatorBuilder: (context, index) => const SizedBox(width: 10.0),
-              itemBuilder: (context, index) {
-                if (index == _images.length) {
-                  return GestureDetector(
-                    onTap: _handlePickImage,
-                    child: Container(
-                      width: 115.0,
-                      height: 185.0,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF8FAFC),
-                        borderRadius: BorderRadius.circular(16.0),
-                        border: Border.all(
-                          color: const Color(0xFFE2E8F0),
-                          width: 1.2,
+    final screenWidth = MediaQuery.sizeOf(context).width;
+
+    return Transform.translate(
+      offset: const Offset(-64.0, 0),
+      child: SizedBox(
+        width: screenWidth,
+        height: 185.0,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.only(left: 64.0, right: 16.0),
+          itemCount: _images.length + 1,
+          separatorBuilder: (context, index) => const SizedBox(width: 10.0),
+          itemBuilder: (context, index) {
+            if (index == _images.length) {
+              return GestureDetector(
+                onTap: _handlePickImage,
+                child: Container(
+                  width: 115.0,
+                  height: 185.0,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(16.0),
+                    border: Border.all(
+                      color: const Color(0xFFE2E8F0),
+                      width: 1.2,
+                    ),
+                  ),
+                  child: const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        CupertinoIcons.plus,
+                        size: 26.0,
+                        color: Color(0xFF64748B),
+                      ),
+                      SizedBox(height: 6.0),
+                      Text(
+                        'Tambah Foto',
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF64748B),
                         ),
                       ),
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            CupertinoIcons.plus,
-                            size: 26.0,
-                            color: Color(0xFF64748B),
-                          ),
-                          SizedBox(height: 6.0),
-                          Text(
-                            'Tambah Foto',
-                            style: TextStyle(
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF64748B),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
+                    ],
+                  ),
+                ),
+              );
+            }
 
-                return Stack(
-                  children: [
-                    Container(
+            return Stack(
+              children: [
+                Container(
+                  width: 155.0,
+                  height: 185.0,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16.0),
+                    border: Border.all(
+                      color: const Color(0xFFE2E8F0),
+                      width: 1.0,
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15.0),
+                    child: Image.network(
+                      _images[index],
                       width: 155.0,
                       height: 185.0,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16.0),
-                        border: Border.all(
-                          color: const Color(0xFFE2E8F0),
-                          width: 1.0,
-                        ),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 6.0,
+                  right: 6.0,
+                  child: GestureDetector(
+                    onTap: () => setState(() => _images.removeAt(index)),
+                    child: Container(
+                      padding: const EdgeInsets.all(5.0),
+                      decoration: const BoxDecoration(
+                        color: Color(0xB3000000),
+                        shape: BoxShape.circle,
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(15.0),
-                        child: Image.network(
-                          _images[index],
-                          width: 155.0,
-                          height: 185.0,
-                          fit: BoxFit.cover,
-                        ),
+                      child: const Icon(
+                        Icons.close_rounded,
+                        size: 14.0,
+                        color: Colors.white,
                       ),
                     ),
-                    Positioned(
-                      top: 6.0,
-                      right: 6.0,
-                      child: GestureDetector(
-                        onTap: () => setState(() => _images.removeAt(index)),
-                        child: Container(
-                          padding: const EdgeInsets.all(5.0),
-                          decoration: const BoxDecoration(
-                            color: Color(0xB3000000),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.close_rounded,
-                            size: 14.0,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-        );
-      },
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 
   Widget _buildGifPreview() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Transform.translate(
-          offset: const Offset(-48.0, 0),
-          child: SizedBox(
-            width: constraints.maxWidth + 48.0 + 16.0,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 48.0, right: 16.0),
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16.0),
-                    child: Image.network(
-                      _selectedGif!.url,
-                      height: 150.0,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Positioned(
-                    top: 6.0,
-                    right: 6.0,
-                    child: GestureDetector(
-                      onTap: () => setState(() => _selectedGif = null),
-                      child: Container(
-                        padding: const EdgeInsets.all(5.0),
-                        decoration: const BoxDecoration(
-                          color: Color(0xB3000000),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.close_rounded,
-                          size: 14.0,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+    final screenWidth = MediaQuery.sizeOf(context).width;
+
+    return Transform.translate(
+      offset: const Offset(-64.0, 0),
+      child: SizedBox(
+        width: screenWidth,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 64.0, right: 16.0),
+          child: Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16.0),
+                child: Image.network(
+                  _selectedGif!.url,
+                  height: 150.0,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
+              Positioned(
+                top: 6.0,
+                right: 6.0,
+                child: GestureDetector(
+                  onTap: () => setState(() => _selectedGif = null),
+                  child: Container(
+                    padding: const EdgeInsets.all(5.0),
+                    decoration: const BoxDecoration(
+                      color: Color(0xB3000000),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.close_rounded,
+                      size: 14.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 

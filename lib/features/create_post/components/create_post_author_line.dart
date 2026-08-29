@@ -34,9 +34,17 @@ class CreatePostAuthorLine extends StatelessWidget {
             letterSpacing: -0.2,
           ),
         ),
-        const SizedBox(width: 6.0),
+        const SizedBox(width: 4.0),
 
-        // Topic Tag Badge Trigger ("#Komunitas atau topik")
+        // Chevron Right Separator
+        const Icon(
+          Icons.chevron_right_rounded,
+          size: 16.0,
+          color: Color(0xFF94A3B8),
+        ),
+        const SizedBox(width: 2.0),
+
+        // Topic Selector Breadcrumb ("Komunitas atau topik" / "#Topic")
         GestureDetector(
           key: topicTriggerKey,
           onTap: () {
@@ -44,43 +52,53 @@ class CreatePostAuthorLine extends StatelessWidget {
             onTopicTriggerTap();
           },
           behavior: HitTestBehavior.opaque,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
-            decoration: BoxDecoration(
-              color: selectedTopic != null ? const Color(0xFFEFF6FF) : const Color(0xFFF1F5F9),
-              borderRadius: BorderRadius.circular(12.0),
-              border: Border.all(
-                color: selectedTopic != null ? const Color(0xFFBFDBFE) : const Color(0xFFE2E8F0),
-                width: 1.0,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (selectedTopic != null) ...[
+                Icon(
+                  selectedTopic!.isOfficial
+                      ? Icons.stars_rounded
+                      : Icons.tag_rounded,
+                  size: 14.0,
+                  color: selectedTopic!.isOfficial
+                      ? AppColors.primary
+                      : const Color(0xFF0F172A),
+                ),
+                const SizedBox(width: 3.0),
                 Text(
-                  selectedTopic != null ? '#${selectedTopic!.name}' : '# Topik',
+                  selectedTopic!.name,
                   style: TextStyle(
-                    fontSize: 11.5,
-                    fontWeight: selectedTopic != null ? FontWeight.w700 : FontWeight.w500,
-                    color: selectedTopic != null ? AppColors.primary : const Color(0xFF64748B),
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w600,
+                    color: selectedTopic!.isOfficial
+                        ? AppColors.primary
+                        : const Color(0xFF0F172A),
                   ),
                 ),
-                if (selectedTopic != null) ...[
-                  const SizedBox(width: 4.0),
-                  GestureDetector(
-                    onTap: () {
-                      HapticFeedback.selectionClick();
-                      onTopicClear();
-                    },
-                    child: const Icon(
-                      Icons.close_rounded,
-                      size: 12.0,
-                      color: AppColors.primary,
-                    ),
+                const SizedBox(width: 4.0),
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    onTopicClear();
+                  },
+                  child: const Icon(
+                    Icons.close_rounded,
+                    size: 14.0,
+                    color: Color(0xFF94A3B8),
                   ),
-                ],
+                ),
+              ] else ...[
+                const Text(
+                  'Komunitas atau topik',
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF64748B),
+                  ),
+                ),
               ],
-            ),
+            ],
           ),
         ),
       ],

@@ -222,24 +222,10 @@ class _MediaIconButtonState extends State<_MediaIconButton> {
         scale: _isPressed ? 0.90 : 1.0,
         duration: const Duration(milliseconds: 60),
         curve: Curves.easeOutCubic,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 100),
+        child: Container(
           width: 36.0,
           height: 36.0,
-          decoration: BoxDecoration(
-            color: widget.isActive
-                ? const Color(0xFFEFF6FF)
-                : _isPressed
-                    ? const Color(0x0F000000)
-                    : Colors.transparent,
-            borderRadius: BorderRadius.circular(10.0),
-            border: widget.isActive
-                ? Border.all(
-                    color: const Color(0xFFBFDBFE),
-                    width: 1.0,
-                  )
-                : null,
-          ),
+          color: Colors.transparent,
           child: Center(
             child: Icon(
               widget.icon,

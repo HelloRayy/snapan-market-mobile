@@ -39,24 +39,46 @@ class CreatePostMediaToolbar extends StatelessWidget {
       children: [
         // 1. Quick Emoji Carousel Bar (Rendered Directly Above Toolbar when smiley clicked)
         if (showEmojiBar) ...[
-          SizedBox(
-            height: 38.0,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              itemCount: kPresetEmojis.length,
-              separatorBuilder: (context, index) => const SizedBox(width: 6.0),
-              itemBuilder: (context, idx) {
-                final emoji = kPresetEmojis[idx];
-                return _QuickEmojiPill(
-                  emoji: emoji,
-                  onTap: () {
-                    HapticFeedback.selectionClick();
-                    onInsertEmoji(emoji);
-                  },
-                );
-              },
-            ),
+          Builder(
+            builder: (context) {
+              final screenWidth = MediaQuery.sizeOf(context).width;
+              return SizedBox(
+                height: 38.0,
+                child: Transform.translate(
+                  offset: const Offset(-64.0, 0),
+                  child: OverflowBox(
+                    minWidth: screenWidth,
+                    maxWidth: screenWidth,
+                    minHeight: 38.0,
+                    maxHeight: 38.0,
+                    alignment: Alignment.topLeft,
+                    child: SizedBox(
+                      width: screenWidth,
+                      height: 38.0,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        clipBehavior: Clip.none,
+                        padding: const EdgeInsets.only(left: 64.0, right: 16.0),
+                        itemCount: kPresetEmojis.length,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(width: 6.0),
+                        itemBuilder: (context, idx) {
+                          final emoji = kPresetEmojis[idx];
+                          return _QuickEmojiPill(
+                            emoji: emoji,
+                            onTap: () {
+                              HapticFeedback.selectionClick();
+                              onInsertEmoji(emoji);
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
           const SizedBox(height: 8.0),
         ],

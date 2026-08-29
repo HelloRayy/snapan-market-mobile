@@ -318,10 +318,11 @@ class _CreatePostModalState extends State<CreatePostModal> {
                     return SingleChildScrollView(
                       controller: _scrollController,
                       physics: const BouncingScrollPhysics(),
+                      clipBehavior: Clip.none,
                       padding: EdgeInsets.fromLTRB(
-                        16.0,
+                        0.0,
                         12.0,
-                        16.0,
+                        0.0,
                         keyboardHeight > 0 ? keyboardHeight + 80.0 : 20.0,
                       ),
                       child: Column(
@@ -329,235 +330,268 @@ class _CreatePostModalState extends State<CreatePostModal> {
                         children: [
                           // Selling Intent Suggestion Banner
                           if (_showSellingIntentBanner)
-                            _buildSellingIntentBanner(),
-                      // Main Thread Block (Left Avatar + Line | Right Form)
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Left Column: Avatar & Vertical Thread Connector Line
-                          Column(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(18.0),
-                                child: Image.network(
-                                  widget.currentUserAvatar,
-                                  width: 36.0,
-                                  height: 36.0,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Container(
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: _buildSellingIntentBanner(),
+                            ),
+                          // Main Thread Block (Left Avatar + Line | Right Form)
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: IntrinsicHeight(
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Left Column: Avatar & Vertical Thread Connector Line
+                                  SizedBox(
                                     width: 36.0,
-                                    height: 36.0,
-                                    color: const Color(0xFFF1F5F9),
-                                    child: const Icon(
-                                      Icons.person_rounded,
-                                      size: 20.0,
-                                      color: AppColors.muted,
+                                    child: Column(
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(18.0),
+                                          child: Image.network(
+                                            widget.currentUserAvatar,
+                                            width: 36.0,
+                                            height: 36.0,
+                                            fit: BoxFit.cover,
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    Container(
+                                              width: 36.0,
+                                              height: 36.0,
+                                              color: const Color(0xFFF1F5F9),
+                                              child: const Icon(
+                                                Icons.person_rounded,
+                                                size: 20.0,
+                                                color: AppColors.muted,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 6.0),
+                                        if (_postMode == PostMode.thread)
+                                          Expanded(
+                                            child: Container(
+                                              width: 2.0,
+                                              color: const Color(0xFFE2E8F0),
+                                            ),
+                                          ),
+                                      ],
                                     ),
                                   ),
-                                ),
-                              ),
-                              const SizedBox(height: 6.0),
-                              Container(
-                                width: 2.0,
-                                height: _postMode == PostMode.thread
-                                    ? 75.0
-                                    : 90.0,
-                                color: const Color(0xFFE2E8F0),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(width: 12.0),
+                                const SizedBox(width: 12.0),
 
-                          // Right Column: Author Header, Textarea, Toolbar, Toggle, Forms
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Author Name + Topic Picker
-                                CreatePostAuthorLine(
-                                  authorName: widget.currentUserName,
-                                  selectedTopic: _selectedTopic,
-                                  topicTriggerKey: _topicTriggerKey,
-                                  onTopicTriggerTap: () =>
-                                      CreatePostBottomSheets.showTopicPickerPopup(
-                                    context: context,
-                                    triggerKey: _topicTriggerKey,
-                                    onTopicSelected: (t) =>
-                                        setState(() => _selectedTopic = t),
-                                  ),
-                                  onTopicClear: () =>
-                                      setState(() => _selectedTopic = null),
-                                ),
-                                const SizedBox(height: 2.0),
-
-                                // 100% Borderless Main Caption Input
-                                TextField(
-                                  controller: _captionController,
-                                  minLines: 1,
-                                  maxLines: null,
-                                  keyboardType: TextInputType.multiline,
-                                  style: const TextStyle(
-                                    fontSize: 15.0,
-                                    color: AppColors.ink,
-                                    height: 1.35,
-                                  ),
-                                  decoration: InputDecoration(
-                                    hintText: _postMode == PostMode.thread
-                                        ? 'Apa yang baru?'
-                                        : 'Ceritakan tentang produk jualanmu...',
-                                    hintStyle: const TextStyle(
-                                      fontSize: 15.0,
-                                      color: Color(0xFF94A3B8),
-                                    ),
-                                    border: InputBorder.none,
-                                    enabledBorder: InputBorder.none,
-                                    focusedBorder: InputBorder.none,
-                                    errorBorder: InputBorder.none,
-                                    disabledBorder: InputBorder.none,
-                                    filled: false,
-                                    isDense: true,
-                                    contentPadding: EdgeInsets.zero,
-                                  ),
-                                ),
-
-                                // Attached Images Preview
-                                if (_images.isNotEmpty) ...[
-                                  const SizedBox(height: 12.0),
-                                  _buildImagesPreview(),
-                                ],
-
-                                // Selected GIF Preview
-                                if (_selectedGif != null) ...[
-                                  const SizedBox(height: 10.0),
-                                  _buildGifPreview(),
-                                ],
-
-                                // Polling Options Block (Matching Image #1)
-                                if (_showPoll) ...[
-                                  CreatePostPollBuilder(
-                                    controllers: _pollOptionControllers,
-                                    onAddOption: () {
-                                      setState(() {
-                                        _pollOptionControllers
-                                            .add(TextEditingController());
-                                      });
-                                    },
-                                    onRemoveOption: (idx) {
-                                      setState(() {
-                                        if (_pollOptionControllers.length > 2) {
-                                          final removed = _pollOptionControllers
-                                              .removeAt(idx);
-                                          removed.dispose();
-                                        } else {
-                                          _pollOptionControllers[idx].clear();
-                                        }
-                                      });
-                                    },
-                                    onDismissPoll: () {
-                                      setState(() {
-                                        _showPoll = false;
-                                        for (var c in _pollOptionControllers) {
-                                          c.clear();
-                                        }
-                                      });
-                                    },
-                                  ),
-                                ],
-
-                                const SizedBox(height: 10.0),
-
-                                // 7-Icon Media Toolbar
-                                CreatePostMediaToolbar(
-                                  showEmojiBar: _showEmojiBar,
-                                  showPollBuilder: _showPoll,
-                                  onPickImage: _handlePickImage,
-                                  onPickGif: () =>
-                                      CreatePostBottomSheets.showGifPickerBottomSheet(
-                                    context: context,
-                                    onGifSelected: (gif) =>
-                                        setState(() => _selectedGif = gif),
-                                  ),
-                                  onToggleEmoji: () =>
-                                      setState(() => _showEmojiBar = !_showEmojiBar),
-                                  onInsertEmoji: (emoji) =>
-                                      _captionController.text += emoji,
-                                  onTogglePoll: () =>
-                                      setState(() => _showPoll = !_showPoll),
-                                  onPickTopic: () =>
-                                      CreatePostBottomSheets.showTopicPickerPopup(
-                                    context: context,
-                                    triggerKey: _topicTriggerKey,
-                                    onTopicSelected: (t) =>
-                                        setState(() => _selectedTopic = t),
-                                  ),
-                                  onPickLocation: () =>
-                                      CreatePostBottomSheets.showLocationPickerBottomSheet(
-                                    context: context,
-                                    onLocationSelected: (loc) =>
-                                        setState(() => _selectedLocation = loc),
-                                  ),
-                                  onAudioTap: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Audio clip segera hadir'),
-                                        duration: Duration(seconds: 1),
-                                        behavior: SnackBarBehavior.floating,
+                                // Right Column: Author Header, Textarea, Toolbar, Toggle, Forms
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Author Name + Topic Picker
+                                      CreatePostAuthorLine(
+                                        authorName: widget.currentUserName,
+                                        selectedTopic: _selectedTopic,
+                                        topicTriggerKey: _topicTriggerKey,
+                                        onTopicTriggerTap: () =>
+                                            CreatePostBottomSheets
+                                                .showTopicPickerPopup(
+                                          context: context,
+                                          triggerKey: _topicTriggerKey,
+                                          onTopicSelected: (t) => setState(
+                                              () => _selectedTopic = t),
+                                        ),
+                                        onTopicClear: () => setState(
+                                            () => _selectedTopic = null),
                                       ),
-                                    );
-                                  },
-                                ),
+                                      const SizedBox(height: 2.0),
 
-                                const SizedBox(height: 8.0),
+                                      // 100% Borderless Main Caption Input
+                                      TextField(
+                                        controller: _captionController,
+                                        minLines: 1,
+                                        maxLines: null,
+                                        keyboardType: TextInputType.multiline,
+                                        style: const TextStyle(
+                                          fontSize: 15.0,
+                                          color: AppColors.ink,
+                                          height: 1.35,
+                                        ),
+                                        decoration: InputDecoration(
+                                          hintText: _postMode == PostMode.thread
+                                              ? 'Apa yang baru?'
+                                              : 'Ceritakan tentang produk jualanmu...',
+                                          hintStyle: const TextStyle(
+                                            fontSize: 15.0,
+                                            color: Color(0xFF94A3B8),
+                                          ),
+                                          border: InputBorder.none,
+                                          enabledBorder: InputBorder.none,
+                                          focusedBorder: InputBorder.none,
+                                          errorBorder: InputBorder.none,
+                                          disabledBorder: InputBorder.none,
+                                          filled: false,
+                                          isDense: true,
+                                          contentPadding: EdgeInsets.zero,
+                                        ),
+                                      ),
 
-                                // "Saya ingin Berjualan" Clean Bare Switch Toggle
-                                CreatePostSellingToggle(
-                                  isProductMode: _postMode == PostMode.product,
-                                  onToggle: (isProduct) => setState(() {
-                                    _postMode = isProduct
-                                        ? PostMode.product
-                                        : PostMode.thread;
-                                  }),
+                                      // Attached Images Preview
+                                      if (_images.isNotEmpty) ...[
+                                        const SizedBox(height: 12.0),
+                                        _buildImagesPreview(),
+                                      ],
+
+                                      // Selected GIF Preview
+                                      if (_selectedGif != null) ...[
+                                        const SizedBox(height: 10.0),
+                                        _buildGifPreview(),
+                                      ],
+
+                                      // Polling Options Block (Matching Image #1)
+                                      if (_showPoll) ...[
+                                        CreatePostPollBuilder(
+                                          controllers: _pollOptionControllers,
+                                          onAddOption: () {
+                                            setState(() {
+                                              _pollOptionControllers
+                                                  .add(TextEditingController());
+                                            });
+                                          },
+                                          onRemoveOption: (idx) {
+                                            setState(() {
+                                              if (_pollOptionControllers
+                                                      .length >
+                                                  2) {
+                                                final removed =
+                                                    _pollOptionControllers
+                                                        .removeAt(idx);
+                                                removed.dispose();
+                                              } else {
+                                                _pollOptionControllers[idx]
+                                                    .clear();
+                                              }
+                                            });
+                                          },
+                                          onDismissPoll: () {
+                                            setState(() {
+                                              _showPoll = false;
+                                              for (var c
+                                                  in _pollOptionControllers) {
+                                                c.clear();
+                                              }
+                                            });
+                                          },
+                                        ),
+                                      ],
+
+                                      const SizedBox(height: 10.0),
+
+                                      // 7-Icon Media Toolbar
+                                      CreatePostMediaToolbar(
+                                        showEmojiBar: _showEmojiBar,
+                                        showPollBuilder: _showPoll,
+                                        onPickImage: _handlePickImage,
+                                        onPickGif: () => CreatePostBottomSheets
+                                            .showGifPickerBottomSheet(
+                                          context: context,
+                                          onGifSelected: (gif) => setState(
+                                              () => _selectedGif = gif),
+                                        ),
+                                        onToggleEmoji: () => setState(
+                                            () => _showEmojiBar =
+                                                !_showEmojiBar),
+                                        onInsertEmoji: (emoji) =>
+                                            _captionController.text += emoji,
+                                        onTogglePoll: () => setState(
+                                            () => _showPoll = !_showPoll),
+                                        onPickTopic: () =>
+                                            CreatePostBottomSheets
+                                                .showTopicPickerPopup(
+                                          context: context,
+                                          triggerKey: _topicTriggerKey,
+                                          onTopicSelected: (t) => setState(
+                                              () => _selectedTopic = t),
+                                        ),
+                                        onPickLocation: () =>
+                                            CreatePostBottomSheets
+                                                .showLocationPickerBottomSheet(
+                                          context: context,
+                                          onLocationSelected: (loc) => setState(
+                                              () => _selectedLocation = loc),
+                                        ),
+                                        onAudioTap: () {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                  'Audio clip segera hadir'),
+                                              duration: Duration(seconds: 1),
+                                              behavior:
+                                                  SnackBarBehavior.floating,
+                                            ),
+                                          );
+                                        },
+                                      ),
+
+                                      const SizedBox(height: 8.0),
+
+                                      // "Saya ingin Berjualan" Clean Bare Switch Toggle
+                                      CreatePostSellingToggle(
+                                        isProductMode:
+                                            _postMode == PostMode.product,
+                                        onToggle: (isProduct) => setState(() {
+                                          _postMode = isProduct
+                                              ? PostMode.product
+                                              : PostMode.thread;
+                                        }),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 8.0),
-
-                      // Thread Continuation Chain vs Product Rich Fields
-                      if (_postMode == PostMode.thread) ...[
-                        CreatePostSubThreads(
-                          subThreads: _subThreads,
-                          currentUserAvatar: widget.currentUserAvatar,
-                          onAddSubThread: _handleAddSubThread,
-                          onRemoveSubThread: (idx) =>
-                              setState(() => _subThreads.removeAt(idx)),
                         ),
-                      ] else ...[
-                        CreatePostProductFields(
-                          productTitleController: _productTitleController,
-                          priceController: _priceController,
-                          descController: _descController,
-                          titleKey: _titleKey,
-                          priceKey: _priceKey,
-                          descKey: _descKey,
-                          titleFocusNode: _titleFocusNode,
-                          priceFocusNode: _priceFocusNode,
-                          descFocusNode: _descFocusNode,
-                          selectedLocation: _selectedLocation,
-                          onPickLocation: () =>
-                              CreatePostBottomSheets.showLocationPickerBottomSheet(
-                            context: context,
-                            onLocationSelected: (loc) =>
-                                setState(() => _selectedLocation = loc),
+
+                        if (_postMode == PostMode.product)
+                          const SizedBox(height: 8.0),
+                          // Thread Continuation Chain vs Product Rich Fields
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: _postMode == PostMode.thread
+                                ? CreatePostSubThreads(
+                                    subThreads: _subThreads,
+                                    currentUserAvatar: widget.currentUserAvatar,
+                                    onAddSubThread: _handleAddSubThread,
+                                    onRemoveSubThread: (idx) => setState(
+                                        () => _subThreads.removeAt(idx)),
+                                  )
+                                : CreatePostProductFields(
+                                    productTitleController:
+                                        _productTitleController,
+                                    priceController: _priceController,
+                                    descController: _descController,
+                                    titleKey: _titleKey,
+                                    priceKey: _priceKey,
+                                    descKey: _descKey,
+                                    titleFocusNode: _titleFocusNode,
+                                    priceFocusNode: _priceFocusNode,
+                                    descFocusNode: _descFocusNode,
+                                    selectedLocation: _selectedLocation,
+                                    onPickLocation: () =>
+                                        CreatePostBottomSheets
+                                            .showLocationPickerBottomSheet(
+                                      context: context,
+                                      onLocationSelected: (loc) => setState(
+                                          () => _selectedLocation = loc),
+                                    ),
+                                    onLocationSelected: (loc) => setState(
+                                        () => _selectedLocation = loc),
+                                  ),
                           ),
-                          onLocationSelected: (loc) =>
-                              setState(() => _selectedLocation = loc),
-                        ),
-                      ],
                         ],
                       ),
                     );
@@ -637,99 +671,121 @@ class _CreatePostModalState extends State<CreatePostModal> {
   Widget _buildImagesPreview() {
     final screenWidth = MediaQuery.sizeOf(context).width;
 
-    return Transform.translate(
-      offset: const Offset(-64.0, 0),
-      child: SizedBox(
-        width: screenWidth,
-        height: 185.0,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.only(left: 64.0, right: 16.0),
-          itemCount: _images.length + 1,
-          separatorBuilder: (context, index) => const SizedBox(width: 10.0),
-          itemBuilder: (context, index) {
-            if (index == _images.length) {
-              return GestureDetector(
-                onTap: _handlePickImage,
-                child: Container(
-                  width: 115.0,
-                  height: 185.0,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8FAFC),
-                    borderRadius: BorderRadius.circular(16.0),
-                    border: Border.all(
-                      color: const Color(0xFFE2E8F0),
-                      width: 1.2,
-                    ),
-                  ),
-                  child: const Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        CupertinoIcons.plus,
-                        size: 26.0,
-                        color: Color(0xFF64748B),
-                      ),
-                      SizedBox(height: 6.0),
-                      Text(
-                        'Tambah Foto',
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF64748B),
+    return SizedBox(
+      height: 185.0,
+      child: Transform.translate(
+        offset: const Offset(-64.0, 0),
+        child: OverflowBox(
+          minWidth: screenWidth,
+          maxWidth: screenWidth,
+          minHeight: 185.0,
+          maxHeight: 185.0,
+          alignment: Alignment.topLeft,
+          child: SizedBox(
+            width: screenWidth,
+            height: 185.0,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              clipBehavior: Clip.none,
+              padding: const EdgeInsets.only(left: 64.0, right: 16.0),
+              itemCount: _images.length + 1,
+              separatorBuilder: (context, index) => const SizedBox(width: 10.0),
+              itemBuilder: (context, index) {
+                if (index == _images.length) {
+                  return GestureDetector(
+                    onTap: _handlePickImage,
+                    child: Container(
+                      width: 115.0,
+                      height: 185.0,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(16.0),
+                        border: Border.all(
+                          color: const Color(0xFFE2E8F0),
+                          width: 1.2,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              );
-            }
-
-            return Stack(
-              children: [
-                Container(
-                  width: 155.0,
-                  height: 185.0,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16.0),
-                    border: Border.all(
-                      color: const Color(0xFFE2E8F0),
-                      width: 1.0,
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            CupertinoIcons.plus,
+                            size: 26.0,
+                            color: Color(0xFF64748B),
+                          ),
+                          SizedBox(height: 6.0),
+                          Text(
+                            'Tambah Foto',
+                            style: TextStyle(
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF64748B),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15.0),
-                    child: Image.network(
-                      _images[index],
+                  );
+                }
+
+                return Stack(
+                  children: [
+                    Container(
                       width: 155.0,
                       height: 185.0,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 6.0,
-                  right: 6.0,
-                  child: GestureDetector(
-                    onTap: () => setState(() => _images.removeAt(index)),
-                    child: Container(
-                      padding: const EdgeInsets.all(5.0),
-                      decoration: const BoxDecoration(
-                        color: Color(0xB3000000),
-                        shape: BoxShape.circle,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16.0),
+                        border: Border.all(
+                          color: const Color(0xFFE2E8F0),
+                          width: 1.0,
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.close_rounded,
-                        size: 14.0,
-                        color: Colors.white,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15.0),
+                        child: Image.network(
+                          _images[index],
+                          width: 155.0,
+                          height: 185.0,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(
+                            width: 155.0,
+                            height: 185.0,
+                            color: const Color(0xFFF1F5F9),
+                            child: const Icon(
+                              Icons.image_outlined,
+                              size: 32.0,
+                              color: AppColors.muted,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              ],
-            );
-          },
+                    Positioned(
+                      top: 6.0,
+                      right: 6.0,
+                      child: GestureDetector(
+                        onTap: () => setState(() => _images.removeAt(index)),
+                        child: Container(
+                          padding: const EdgeInsets.all(5.0),
+                          decoration: const BoxDecoration(
+                            color: Color(0xB3000000),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.close_rounded,
+                            size: 14.0,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
         ),
       ),
     );
@@ -738,43 +794,64 @@ class _CreatePostModalState extends State<CreatePostModal> {
   Widget _buildGifPreview() {
     final screenWidth = MediaQuery.sizeOf(context).width;
 
-    return Transform.translate(
-      offset: const Offset(-64.0, 0),
-      child: SizedBox(
-        width: screenWidth,
-        child: Padding(
-          padding: const EdgeInsets.only(left: 64.0, right: 16.0),
-          child: Stack(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16.0),
-                child: Image.network(
-                  _selectedGif!.url,
-                  height: 150.0,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              Positioned(
-                top: 6.0,
-                right: 6.0,
-                child: GestureDetector(
-                  onTap: () => setState(() => _selectedGif = null),
-                  child: Container(
-                    padding: const EdgeInsets.all(5.0),
-                    decoration: const BoxDecoration(
-                      color: Color(0xB3000000),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.close_rounded,
-                      size: 14.0,
-                      color: Colors.white,
+    return SizedBox(
+      height: 150.0,
+      child: Transform.translate(
+        offset: const Offset(-64.0, 0),
+        child: OverflowBox(
+          minWidth: screenWidth,
+          maxWidth: screenWidth,
+          minHeight: 150.0,
+          maxHeight: 150.0,
+          alignment: Alignment.topLeft,
+          child: SizedBox(
+            width: screenWidth,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 64.0, right: 16.0),
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16.0),
+                    child: Image.network(
+                      _selectedGif!.url,
+                      height: 150.0,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          Container(
+                        height: 150.0,
+                        width: double.infinity,
+                        color: const Color(0xFFF1F5F9),
+                        child: const Icon(
+                          Icons.gif_box_outlined,
+                          size: 32.0,
+                          color: AppColors.muted,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  Positioned(
+                    top: 6.0,
+                    right: 6.0,
+                    child: GestureDetector(
+                      onTap: () => setState(() => _selectedGif = null),
+                      child: Container(
+                        padding: const EdgeInsets.all(5.0),
+                        decoration: const BoxDecoration(
+                          color: Color(0xB3000000),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.close_rounded,
+                          size: 14.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

@@ -139,21 +139,23 @@ class HomeBottomNavBar extends StatelessWidget {
                             ),
                           ),
 
-                          // Tab 3: Center Floating Kumo Action Button (+)
+                          // Tab 3: Center Floating Kumo Action Button (+) Elevated above Navbar
                           Expanded(
                             child: Center(
-                              child: FloatingKumoFabButton(
-                                onTap: () {
-                                  if (onCreateTap != null) {
-                                    onCreateTap!();
-                                  } else {
-                                    onTabSelected(HomeNavTab.create);
-                                  }
-                                },
+                              child: Transform.translate(
+                                offset: const Offset(0, -10.0),
+                                child: FloatingKumoFabButton(
+                                  onTap: () {
+                                    if (onCreateTap != null) {
+                                      onCreateTap!();
+                                    } else {
+                                      onTabSelected(HomeNavTab.create);
+                                    }
+                                  },
+                                ),
                               ),
                             ),
                           ),
-
                           // Tab 4: Aktivitas
                           Expanded(
                             child: CustomNavTabItem(

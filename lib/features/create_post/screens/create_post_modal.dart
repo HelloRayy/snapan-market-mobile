@@ -102,7 +102,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
     TextEditingController(),
     TextEditingController(),
   ];
-  String _audiencePrivacy = 'Siapa pun dapat membalas & mengutip';
+  String _audiencePrivacy = 'Semua orang dapat membalas';
   bool _isSubmitting = false;
   bool _showSellingIntentBanner = false;
 

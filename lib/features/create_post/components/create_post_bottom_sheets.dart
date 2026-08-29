@@ -370,9 +370,9 @@ class CreatePostBottomSheets {
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            title: const Text('Siapa pun dapat membalas & mengutip'),
+            title: const Text('Semua orang dapat membalas'),
             onTap: () {
-              onPrivacySelected('Siapa pun dapat membalas & mengutip');
+              onPrivacySelected('Semua orang dapat membalas');
               Navigator.of(context).pop();
             },
           ),

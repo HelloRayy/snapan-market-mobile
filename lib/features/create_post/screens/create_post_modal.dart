@@ -608,35 +608,43 @@ class _CreatePostModalState extends State<CreatePostModal> {
 
   Widget _buildImagesPreview() {
     return SizedBox(
-      height: 90.0,
+      height: 185.0,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         itemCount: _images.length + 1,
-        separatorBuilder: (context, index) => const SizedBox(width: 8.0),
+        separatorBuilder: (context, index) => const SizedBox(width: 10.0),
         itemBuilder: (context, index) {
           if (index == _images.length) {
             return GestureDetector(
               onTap: _handlePickImage,
               child: Container(
-                width: 80.0,
+                width: 115.0,
+                height: 185.0,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5F9),
-                  borderRadius: BorderRadius.circular(10.0),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(16.0),
+                  border: Border.all(
+                    color: const Color(0xFFE2E8F0),
+                    width: 1.2,
+                  ),
                 ),
                 child: const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
                       CupertinoIcons.plus,
-                      size: 20.0,
-                      color: AppColors.muted,
+                      size: 26.0,
+                      color: Color(0xFF64748B),
                     ),
-                    SizedBox(height: 4.0),
+                    SizedBox(height: 6.0),
                     Text(
-                      'Tambah',
-                      style: TextStyle(fontSize: 11.0, color: AppColors.muted),
+                      'Tambah Foto',
+                      style: TextStyle(
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF64748B),
+                      ),
                     ),
                   ],
                 ),
@@ -646,29 +654,40 @@ class _CreatePostModalState extends State<CreatePostModal> {
 
           return Stack(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10.0),
-                child: Image.network(
-                  _images[index],
-                  width: 80.0,
-                  height: 90.0,
-                  fit: BoxFit.cover,
+              Container(
+                width: 155.0,
+                height: 185.0,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16.0),
+                  border: Border.all(
+                    color: const Color(0xFFE2E8F0),
+                    width: 1.0,
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15.0),
+                  child: Image.network(
+                    _images[index],
+                    width: 155.0,
+                    height: 185.0,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               Positioned(
-                top: 4.0,
-                right: 4.0,
+                top: 6.0,
+                right: 6.0,
                 child: GestureDetector(
                   onTap: () => setState(() => _images.removeAt(index)),
                   child: Container(
-                    padding: const EdgeInsets.all(3.0),
+                    padding: const EdgeInsets.all(5.0),
                     decoration: const BoxDecoration(
-                      color: Color(0xCC000000),
+                      color: Color(0xB3000000),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
                       Icons.close_rounded,
-                      size: 12.0,
+                      size: 14.0,
                       color: Colors.white,
                     ),
                   ),

@@ -23,7 +23,7 @@ class PostSubmenuPopover extends StatefulWidget {
     this.onReport,
   });
 
-  /// Shows the popover anchored to the tap position or top right
+  /// Shows the popover anchored to the tap position with transparent background
   static Future<void> show({
     required BuildContext context,
     required MarketPostModel post,
@@ -40,17 +40,16 @@ class PostSubmenuPopover extends StatefulWidget {
       context: context,
       barrierDismissible: true,
       barrierLabel: 'PostSubmenu',
-      barrierColor: Colors.black.withValues(alpha: 0.25),
-      transitionDuration: const Duration(milliseconds: 180),
+      barrierColor: Colors.transparent, // Latar belakang bening tanpa overlay gelap
+      transitionDuration: const Duration(milliseconds: 160),
       pageBuilder: (ctx, anim1, anim2) {
-        final screenWidth = MediaQuery.of(ctx).size.width;
         final topOffset = position?.dy ?? 120.0;
-        final rightOffset = 16.0;
+        final rightOffset = 12.0;
 
         return Stack(
           children: [
             Positioned(
-              top: (topOffset - 10.0).clamp(60.0, MediaQuery.of(ctx).size.height - 280.0),
+              top: (topOffset - 6.0).clamp(50.0, MediaQuery.of(ctx).size.height - 240.0),
               right: rightOffset,
               child: Material(
                 color: Colors.transparent,
@@ -76,7 +75,7 @@ class PostSubmenuPopover extends StatefulWidget {
         return FadeTransition(
           opacity: curved,
           child: ScaleTransition(
-            scale: Tween<double>(begin: 0.92, end: 1.0).animate(curved),
+            scale: Tween<double>(begin: 0.94, end: 1.0).animate(curved),
             alignment: Alignment.topRight,
             child: child,
           ),
@@ -116,11 +115,11 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
         : widget.post.seller.name;
 
     return Container(
-      width: 230.0,
-      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
+      width: 188.0,
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18.0),
+        borderRadius: BorderRadius.circular(14.0),
         border: Border.all(
           color: const Color(0xFFE2E8F0),
           width: 0.8,
@@ -128,12 +127,12 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
         boxShadow: const [
           BoxShadow(
             color: Color(0x1F000000),
-            blurRadius: 32.0,
-            offset: Offset(0, 12),
+            blurRadius: 24.0,
+            offset: Offset(0, 8),
           ),
           BoxShadow(
             color: Color(0x0A000000),
-            blurRadius: 8.0,
+            blurRadius: 6.0,
             offset: Offset(0, 2),
           ),
         ],
@@ -146,12 +145,12 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
           _PopoverItem(
             icon: _isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
             iconColor: _isSaved ? AppColors.primary : AppColors.slateInk,
-            label: _isSaved ? 'Hapus dari Markah' : 'Simpan ke Markah',
+            label: _isSaved ? 'Hapus Markah' : 'Simpan Markah',
             onTap: () {
               setState(() => _isSaved = !_isSaved);
               widget.onToggleSave();
               Navigator.pop(context);
-              _showFeedback(_isSaved ? 'Disimpan ke markah tersimpan ✨' : 'Dihapus dari markah');
+              _showFeedback(_isSaved ? 'Disimpan ke markah ✨' : 'Dihapus dari markah');
             },
           ),
 
@@ -162,11 +161,11 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
             onTap: () {
               Clipboard.setData(ClipboardData(text: 'https://snapan.id/post/${widget.post.id}'));
               Navigator.pop(context);
-              _showFeedback('Tautan berhasil disalin ke papan klip 🔗');
+              _showFeedback('Tautan disalin ke papan klip 🔗');
             },
           ),
 
-          const Divider(height: 9.0, thickness: 0.7, color: Color(0xFFF1F5F9)),
+          const Divider(height: 6.0, thickness: 0.6, color: Color(0xFFF1F5F9)),
 
           // 3. Senyapkan User
           _PopoverItem(
@@ -175,33 +174,33 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
             onTap: () {
               widget.onMuteAuthor?.call();
               Navigator.pop(context);
-              _showFeedback('Notifikasi dari $authorHandle disenyapkan 🔕');
+              _showFeedback('Notifikasi $authorHandle disenyapkan 🔕');
             },
           ),
 
           // 4. Sembunyikan Postingan
           _PopoverItem(
             icon: Icons.visibility_off_outlined,
-            label: 'Sembunyikan Postingan',
+            label: 'Sembunyikan Post',
             onTap: () {
               widget.onHidePost?.call();
               Navigator.pop(context);
-              _showFeedback('Postingan disembunyikan dari feed Anda 👁️');
+              _showFeedback('Postingan disembunyikan 👁️');
             },
           ),
 
-          const Divider(height: 9.0, thickness: 0.7, color: Color(0xFFF1F5F9)),
+          const Divider(height: 6.0, thickness: 0.6, color: Color(0xFFF1F5F9)),
 
-          // 5. Laporkan Postingan (Destructive)
+          // 5. Laporkan Postingan (Destructive Red)
           _PopoverItem(
             icon: Icons.flag_outlined,
             iconColor: const Color(0xFFDC2626),
             textColor: const Color(0xFFDC2626),
-            label: 'Laporkan Postingan',
+            label: 'Laporkan Post',
             onTap: () {
               widget.onReport?.call();
               Navigator.pop(context);
-              _showFeedback('Laporan terkirim, terima kasih atas masukan Anda 🚩');
+              _showFeedback('Laporan terkirim, terima kasih 🚩');
             },
           ),
         ],
@@ -245,24 +244,24 @@ class _PopoverItemState extends State<_PopoverItem> {
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.5),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12.0),
+          borderRadius: BorderRadius.circular(10.0),
           color: _isPressed ? const Color(0xFFF8FAFC) : Colors.transparent,
         ),
         child: Row(
           children: [
             Icon(
               widget.icon,
-              size: 17.5,
+              size: 15.0,
               color: widget.iconColor ?? AppColors.slateInk,
             ),
-            const SizedBox(width: 10.0),
+            const SizedBox(width: 8.0),
             Expanded(
               child: Text(
                 widget.label,
                 style: TextStyle(
-                  fontSize: 13.5,
+                  fontSize: 12.5,
                   fontWeight: FontWeight.w500,
                   color: widget.textColor ?? AppColors.ink,
                   letterSpacing: -0.1,

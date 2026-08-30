@@ -121,7 +121,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _handleImageClick(List<String> images, int index) {
+  void _handleImageClick(MarketPostModel item, int index) {
+    if (item.images.isEmpty || index >= item.images.length) return;
+    _openImageViewer(item.images[index]);
+  }
+
+  void _openImageViewer(String imageUrl) {
     showDialog(
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.9),
@@ -133,7 +138,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             InteractiveViewer(
               child: Image.network(
-                images[index],
+                imageUrl,
                 fit: BoxFit.contain,
               ),
             ),
@@ -157,6 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+
 
   void _handleEditProfile() {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -341,8 +347,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     key: ValueKey(replyThread.id),
                     thread: replyThread,
                     onPostClick: _handlePostClick,
-                    onImageClick: _handleImageClick,
+                    onImageClick: (imgs, idx) => _openImageViewer(imgs[idx]),
                   );
+
                 },
               )
             else

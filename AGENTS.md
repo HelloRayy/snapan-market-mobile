@@ -12,6 +12,14 @@
 2. **100% Focus on Direct Codebase Generation**:
    - Focus directly on generating, refactoring, and updating codebase files (`lib/`, `src/`, `docs/`, etc.) with high taste and strict syntactic/architectural correctness.
    - Directly write correct, clean, and production-ready code in one pass.
+3. **Mandatory Web-to-Mobile Frontend Slicing SOP (`docs/agent-frontend-slicing-sop.md`)**:
+   - For all frontend slicing tasks and `/goal` autonomous executions:
+     - **Source of Truth**: 100% React/Tailwind codebase in `src/ui/pages/` and `src/ui/components/`.
+     - **Target Fidelity**: Guaranteed >= 90% (93%-96%) visual and spatial parity.
+     - **Scope Isolation**: Strictly bounded to the single page requested by user without unprompted sub-pages.
+     - **Mock-Only Policy**: 100% typed local mock datasets in `lib/features/<feature>/models/` during frontend phase (zero live backend queries).
+     - **Dual Validation Audit**: Execute Codebase Token Inspection + Visual Parity Audit before completion.
+
 
 ---
 

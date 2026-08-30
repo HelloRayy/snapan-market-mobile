@@ -16,13 +16,25 @@ const ProfileUserModel kDefaultProfileUser = ProfileUserModel(
     'Joki Coding',
     'Kuliner',
   ],
-
+  link: 'https://instagram.com/radityarayhannnn',
+  showSalesStats: true,
   followersCount: 142,
   soldCount: 24,
   rating: 4.9,
   reviewsCount: 18,
   isVerified: true,
 );
+
+/// Preset Avatars matching PRESET_AVATARS in src/ui/pages/EditProfilePage.tsx
+const List<String> kPresetAvatars = [
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80',
+  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80',
+  'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&q=80',
+  'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&q=80',
+  'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&q=80',
+  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&q=80',
+];
+
 
 /// Mock Replies List for "Balasan" Tab matching MOCK_USER_REPLIES in src/data/mockMarketData.ts
 final List<ProfileReplyThreadModel> kMockUserReplies = [

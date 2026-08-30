@@ -14,6 +14,8 @@ import 'package:snapan_market/features/profile/components/profile_reply_thread_c
 import 'package:snapan_market/features/profile/components/profile_media_grid.dart';
 import 'package:snapan_market/features/profile/models/profile_user_model.dart';
 import 'package:snapan_market/features/profile/models/mock_profile_data.dart';
+import 'package:snapan_market/features/profile/screens/edit_profile_screen.dart';
+
 
 /// Full Profile Screen matching ProfilePage.tsx 1:1
 ///
@@ -188,16 +190,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
 
-  void _handleEditProfile() {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Fitur Edit Profil akan segera hadir!'),
-        duration: Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
+  void _handleEditProfile() async {
+    HapticFeedback.lightImpact();
+    final updated = await Navigator.of(context).push<ProfileUserModel>(
+      MaterialPageRoute(
+        builder: (_) => EditProfileScreen(
+          initialUser: _user,
+          onSave: (savedUser) {
+            setState(() {
+              _user = savedUser;
+              _allUserPosts = _allUserPosts.map((p) {
+                return p.copyWith(
+                  seller: p.seller.copyWith(
+                    name: savedUser.name,
+                    username: savedUser.username,
+                    avatar: savedUser.avatar,
+                    classGroup: savedUser.classGroup,
+                  ),
+                );
+              }).toList();
+            });
+          },
+        ),
       ),
     );
+
+    if (updated != null && mounted) {
+      setState(() {
+        _user = updated;
+      });
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Profil berhasil diperbarui ✨'),
+          duration: Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
+
 
   void _handleDirectMessage() {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();

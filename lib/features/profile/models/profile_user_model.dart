@@ -9,6 +9,8 @@ class ProfileUserModel {
   final String bio;
   final String classGroup;
   final List<String> tags;
+  final String? link;
+  final bool showSalesStats;
   final int followersCount;
   final int soldCount;
   final double rating;
@@ -23,6 +25,8 @@ class ProfileUserModel {
     required this.bio,
     required this.classGroup,
     required this.tags,
+    this.link,
+    this.showSalesStats = true,
     this.followersCount = 142,
     this.soldCount = 24,
     this.rating = 4.9,
@@ -38,6 +42,8 @@ class ProfileUserModel {
     String? bio,
     String? classGroup,
     List<String>? tags,
+    String? link,
+    bool? showSalesStats,
     int? followersCount,
     int? soldCount,
     double? rating,
@@ -52,6 +58,8 @@ class ProfileUserModel {
       bio: bio ?? this.bio,
       classGroup: classGroup ?? this.classGroup,
       tags: tags ?? this.tags,
+      link: link ?? this.link,
+      showSalesStats: showSalesStats ?? this.showSalesStats,
       followersCount: followersCount ?? this.followersCount,
       soldCount: soldCount ?? this.soldCount,
       rating: rating ?? this.rating,
@@ -59,6 +67,7 @@ class ProfileUserModel {
       isVerified: isVerified ?? this.isVerified,
     );
   }
+
 }
 
 /// Reply Thread Model for Balasan Tab matching UserReplyThread from src/types/marketFeed.ts

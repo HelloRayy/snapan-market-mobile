@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/utils/string_utils.dart';
 import 'package:snapan_market/features/profile/models/profile_user_model.dart';
+
+
 
 /// Profile Info Header matching ProfilePage.tsx 1:1
 /// Displays:
@@ -252,9 +255,7 @@ class ProfileInfoHeader extends StatelessWidget {
             runSpacing: 6.0,
             children: [
               ...user.tags.map((rawTag) {
-                final tag = rawTag
-                    .replaceAll(RegExp(r'[\u{1F300}-\u{1FAFF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]', unicode: true), '')
-                    .trim();
+                final tag = StringUtils.cleanTag(rawTag);
                 return Container(
                   padding: const EdgeInsets.symmetric(horizontal: 11.0, vertical: 4.0),
                   decoration: BoxDecoration(
@@ -272,6 +273,7 @@ class ProfileInfoHeader extends StatelessWidget {
                   ),
                 );
               }),
+
               if (isOwnProfile)
                 GestureDetector(
                   onTap: onEditInterests,

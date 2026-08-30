@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/profile/components/discard_changes_dialog.dart';
 import 'package:snapan_market/features/profile/components/edit_profile_avatar_section.dart';
 import 'package:snapan_market/features/profile/components/edit_profile_chips_editor.dart';
@@ -10,7 +11,7 @@ import 'package:snapan_market/features/profile/models/profile_user_model.dart';
 /// Features:
 /// - Header Bar with Back navigation & Unsaved Changes Guard
 /// - Name & Avatar Selector with 6-Preset Avatars Accordion
-/// - @username, Bio with live x/150 counter, Class & Major fields
+/// - @username, Bio with isolated ValueListenable live counter, Class & Major fields
 /// - Interactive Interest Chips Editor (add via enter/comma, remove via X)
 /// - External Link, Sales Stats Toggle, and Profile Privacy info
 /// - Permanently Fixed Dual Action CTA Bar (Discard & Save)
@@ -30,11 +31,11 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  late TextEditingController _nameController;
-  late TextEditingController _usernameController;
-  late TextEditingController _bioController;
-  late TextEditingController _classController;
-  late TextEditingController _linkController;
+  late final TextEditingController _nameController;
+  late final TextEditingController _usernameController;
+  late final TextEditingController _bioController;
+  late final TextEditingController _classController;
+  late final TextEditingController _linkController;
 
   late String _avatar;
   late List<String> _tags;
@@ -55,10 +56,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _avatar = widget.initialUser.avatar;
     _tags = List<String>.from(widget.initialUser.tags);
     _showSalesStats = widget.initialUser.showSalesStats;
-
-    _bioController.addListener(() {
-      setState(() {});
-    });
   }
 
   @override
@@ -135,18 +132,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(50.0),
           child: Container(
-            color: Colors.white,
+            color: AppColors.white,
             child: SafeArea(
               bottom: false,
               child: Container(
                 height: 50.0,
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 decoration: const BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.white,
                   border: Border(
                     bottom: BorderSide(
                       color: Color(0xFFF1F5F9),
@@ -163,7 +160,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       icon: const Icon(
                         Icons.arrow_back_rounded,
                         size: 22.0,
-                        color: Color(0xFF0F172A),
+                        color: AppColors.ink,
                       ),
                       tooltip: 'Kembali',
                       onPressed: _handleAttemptExit,
@@ -175,7 +172,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       style: TextStyle(
                         fontSize: 17.0,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF0F172A),
+                        color: AppColors.ink,
                         letterSpacing: -0.3,
                       ),
                     ),
@@ -210,8 +207,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
 
                     // Row 2: Nama Pengguna (@username)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 14.0),
+                    _FormRow(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -220,7 +216,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             style: TextStyle(
                               fontSize: 14.0,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF0F172A),
+                              color: AppColors.ink,
                               letterSpacing: -0.1,
                             ),
                           ),
@@ -232,7 +228,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 style: TextStyle(
                                   fontSize: 15.5,
                                   fontWeight: FontWeight.w700,
-                                  color: Colors.black,
+                                  color: AppColors.ink,
                                 ),
                               ),
                               const SizedBox(width: 2.0),
@@ -243,13 +239,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   style: const TextStyle(
                                     fontSize: 15.5,
                                     fontWeight: FontWeight.w700,
-                                    color: Colors.black,
+                                    color: AppColors.ink,
                                   ),
                                   decoration: const InputDecoration(
                                     hintText: 'radityarayhannnn',
                                     hintStyle: TextStyle(
                                       fontSize: 15.5,
-                                      color: Color(0xFF94A3B8),
+                                      color: AppColors.lightMuted,
                                       fontWeight: FontWeight.normal,
                                     ),
                                     border: InputBorder.none,
@@ -265,11 +261,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
 
-                    const Divider(height: 1.0, thickness: 0.8, color: Color(0xFFF1F5F9)),
-
-                    // Row 3: Bio with live counter (max 150 chars)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 14.0),
+                    // Row 3: Bio with live counter (isolated ValueListenable for 0ms typing lag)
+                    _FormRow(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -281,16 +274,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 style: TextStyle(
                                   fontSize: 14.0,
                                   fontWeight: FontWeight.w600,
-                                  color: Color(0xFF0F172A),
+                                  color: AppColors.ink,
                                   letterSpacing: -0.1,
                                 ),
                               ),
-                              Text(
-                                '${_bioController.text.length}/150',
-                                style: const TextStyle(
-                                  fontSize: 11.5,
-                                  color: Color(0xFF94A3B8),
-                                  fontFeatures: [FontFeature.tabularFigures()],
+                              ValueListenableBuilder<TextEditingValue>(
+                                valueListenable: _bioController,
+                                builder: (context, value, _) => Text(
+                                  '${value.text.length}/150',
+                                  style: const TextStyle(
+                                    fontSize: 11.5,
+                                    color: AppColors.lightMuted,
+                                    fontFeatures: [FontFeature.tabularFigures()],
+                                  ),
                                 ),
                               ),
                             ],
@@ -303,14 +299,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             minLines: 2,
                             style: const TextStyle(
                               fontSize: 14.5,
-                              color: Color(0xFF0F172A),
+                              color: AppColors.ink,
                               height: 1.35,
                             ),
                             decoration: const InputDecoration(
                               hintText: 'Tulis bio singkat tentang Anda...',
                               hintStyle: TextStyle(
                                 fontSize: 14.5,
-                                color: Color(0xFF94A3B8),
+                                color: AppColors.lightMuted,
                               ),
                               border: InputBorder.none,
                               isDense: true,
@@ -322,11 +318,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
 
-                    const Divider(height: 1.0, thickness: 0.8, color: Color(0xFFF1F5F9)),
-
                     // Row 4: Kelas & Jurusan
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 14.0),
+                    _FormRow(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -335,7 +328,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             style: TextStyle(
                               fontSize: 14.0,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF0F172A),
+                              color: AppColors.ink,
                               letterSpacing: -0.1,
                             ),
                           ),
@@ -345,13 +338,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             maxLength: 40,
                             style: const TextStyle(
                               fontSize: 15.5,
-                              color: Color(0xFF0F172A),
+                              color: AppColors.ink,
                             ),
                             decoration: const InputDecoration(
                               hintText: 'Contoh: XII PPLG 1',
                               hintStyle: TextStyle(
                                 fontSize: 15.5,
-                                color: Color(0xFF94A3B8),
+                                color: AppColors.lightMuted,
                               ),
                               border: InputBorder.none,
                               isDense: true,
@@ -363,21 +356,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
 
-                    const Divider(height: 1.0, thickness: 0.8, color: Color(0xFFF1F5F9)),
-
                     // Row 5: Minat Chips Editor
-                    EditProfileChipsEditor(
-                      tags: _tags,
-                      onTagsChanged: (updatedTags) {
-                        setState(() => _tags = updatedTags);
-                      },
+                    _FormRow(
+                      child: EditProfileChipsEditor(
+                        tags: _tags,
+                        onTagsChanged: (updatedTags) {
+                          setState(() => _tags = updatedTags);
+                        },
+                      ),
                     ),
 
-                    const Divider(height: 1.0, thickness: 0.8, color: Color(0xFFF1F5F9)),
-
                     // Row 6: Tautan (Link / Instagram / WA)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 14.0),
+                    _FormRow(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -389,14 +379,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 style: TextStyle(
                                   fontSize: 14.0,
                                   fontWeight: FontWeight.w600,
-                                  color: Color(0xFF0F172A),
+                                  color: AppColors.ink,
                                   letterSpacing: -0.1,
                                 ),
                               ),
                               Icon(
                                 Icons.chevron_right_rounded,
                                 size: 18.0,
-                                color: Color(0xFF94A3B8),
+                                color: AppColors.lightMuted,
                               ),
                             ],
                           ),
@@ -406,13 +396,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             maxLength: 100,
                             style: const TextStyle(
                               fontSize: 15.0,
-                              color: Color(0xFF0F172A),
+                              color: AppColors.ink,
                             ),
                             decoration: const InputDecoration(
                               hintText: 'https://instagram.com/... atau https://wa.me/...',
                               hintStyle: TextStyle(
                                 fontSize: 14.0,
-                                color: Color(0xFF94A3B8),
+                                color: AppColors.lightMuted,
                               ),
                               border: InputBorder.none,
                               isDense: true,
@@ -424,11 +414,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
 
-                    const Divider(height: 1.0, thickness: 0.8, color: Color(0xFFF1F5F9)),
-
                     // Row 7: Toggle - Tampilkan statistik penjualan
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 14.0),
+                    _FormRow(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -437,7 +424,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             style: TextStyle(
                               fontSize: 14.5,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF0F172A),
+                              color: AppColors.ink,
                               letterSpacing: -0.1,
                             ),
                           ),
@@ -454,7 +441,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(13.0),
                                 color: _showSalesStats
-                                    ? const Color(0xFF1D64EC)
+                                    ? AppColors.primary
                                     : const Color(0xFFCBD5E1),
                               ),
                               alignment: _showSalesStats
@@ -480,11 +467,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
 
-                    const Divider(height: 1.0, thickness: 0.8, color: Color(0xFFF1F5F9)),
-
                     // Row 8: Privasi profil
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 14.0),
+                    _FormRow(
+                      showDivider: false,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: const [
@@ -493,7 +478,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             style: TextStyle(
                               fontSize: 14.5,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF0F172A),
+                              color: AppColors.ink,
                               letterSpacing: -0.1,
                             ),
                           ),
@@ -504,7 +489,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 'Publik',
                                 style: TextStyle(
                                   fontSize: 13.5,
-                                  color: Color(0xFF94A3B8),
+                                  color: AppColors.lightMuted,
                                   fontWeight: FontWeight.normal,
                                 ),
                               ),
@@ -512,7 +497,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               Icon(
                                 Icons.chevron_right_rounded,
                                 size: 16.0,
-                                color: Color(0xFF94A3B8),
+                                color: AppColors.lightMuted,
                               ),
                             ],
                           ),
@@ -528,7 +513,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             Container(
               padding: const EdgeInsets.fromLTRB(20.0, 12.0, 20.0, 16.0),
               decoration: const BoxDecoration(
-                color: Colors.white,
+                color: AppColors.white,
                 border: Border(
                   top: BorderSide(
                     color: Color(0xFFF1F5F9),
@@ -554,10 +539,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         child: OutlinedButton(
                           onPressed: _handleAttemptExit,
                           style: OutlinedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: const Color(0xFF0F172A),
+                            backgroundColor: AppColors.white,
+                            foregroundColor: AppColors.ink,
                             side: const BorderSide(
-                              color: Color(0xFFE2E8F0),
+                              color: AppColors.border,
                               width: 1.0,
                             ),
                             shape: RoundedRectangleBorder(
@@ -569,7 +554,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             style: TextStyle(
                               fontSize: 15.0,
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF0F172A),
+                              color: AppColors.ink,
                             ),
                           ),
                         ),
@@ -586,7 +571,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           onPressed: _handleSave,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF101010),
-                            foregroundColor: Colors.white,
+                            foregroundColor: AppColors.white,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(24.0),
@@ -597,7 +582,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             style: TextStyle(
                               fontSize: 15.0,
                               fontWeight: FontWeight.w700,
-                              color: Colors.white,
+                              color: AppColors.white,
                             ),
                           ),
                         ),
@@ -610,6 +595,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Declarative wrapper for individual form rows with consistent vertical padding and dividers
+class _FormRow extends StatelessWidget {
+  final Widget child;
+  final bool showDivider;
+
+  const _FormRow({
+    required this.child,
+    this.showDivider = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 14.0),
+          child: child,
+        ),
+        if (showDivider)
+          const Divider(
+            height: 1.0,
+            thickness: 0.8,
+            color: Color(0xFFF1F5F9),
+          ),
+      ],
     );
   }
 }

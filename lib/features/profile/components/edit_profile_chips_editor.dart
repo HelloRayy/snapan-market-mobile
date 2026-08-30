@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/utils/string_utils.dart';
 
 /// Interactive Interest/Bakat Chips Editor matching EditProfilePage.tsx
 ///
 /// Features:
 /// - Chip pills with 'X' delete buttons
 /// - Inline input field for '+ Tambah minat...' with comma & enter parser
-/// - Automatic Unicode emoji sanitization
+/// - Canonical Unicode emoji sanitization via StringUtils
 /// - Tactile haptic feedback on add/remove
 class EditProfileChipsEditor extends StatefulWidget {
   final List<String> tags;
@@ -26,15 +27,10 @@ class _EditProfileChipsEditorState extends State<EditProfileChipsEditor> {
   final TextEditingController _inputController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
-  String _cleanTag(String raw) {
-    return raw
-        .replaceAll(RegExp(r'[\u{1F300}-\u{1FAFF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]', unicode: true), '')
-        .trim();
-  }
-
   void _handleAddTag(String rawTag) {
-    final clean = _cleanTag(rawTag);
+    final clean = StringUtils.cleanTag(rawTag);
     if (clean.isEmpty) return;
+
 
     if (widget.tags.any((t) => t.toLowerCase() == clean.toLowerCase())) {
       HapticFeedback.lightImpact();

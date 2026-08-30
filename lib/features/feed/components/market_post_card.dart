@@ -3,7 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
 import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
+import 'package:snapan_market/features/feed/components/post_submenu_popover.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
+
+
 
 /// Interactive Feed & Detail Card Component for Threads and Product Posts
 ///
@@ -154,70 +157,27 @@ class _MarketPostCardState extends State<MarketPostCard>
     widget.onRepostToggle?.call(updated);
   }
 
-  void _showOptionsMenu(BuildContext context) {
+  void _showOptionsMenu(BuildContext context, [Offset? tapPosition]) {
     if (widget.onMoreOptionsClick != null) {
       widget.onMoreOptionsClick!();
       return;
     }
 
-    showModalBottomSheet(
+    PostSubmenuPopover.show(
       context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 36.0,
-                height: 4.0,
-                margin: const EdgeInsets.only(bottom: 16.0),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFCBD5E1),
-                  borderRadius: BorderRadius.circular(2.0),
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.bookmark_border_rounded, color: Color(0xFF334155)),
-                title: const Text('Simpan Postingan', style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF0F172A))),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Postingan disimpan ke bookmark')),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.link_rounded, color: Color(0xFF334155)),
-                title: const Text('Salin Tautan', style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF0F172A))),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  Clipboard.setData(ClipboardData(text: 'https://snapan.id/post/${widget.item.id}'));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Tautan disalin ke papan klip')),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.report_problem_outlined, color: Color(0xFFEF4444)),
-                title: const Text('Laporkan Konten', style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFFEF4444))),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Laporan terkirim. Terima kasih atas masukan Anda.')),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
+      post: widget.item,
+      isSaved: widget.item.isSaved,
+      position: tapPosition,
+      onToggleSave: () {
+        final updated = widget.item.copyWith(isSaved: !widget.item.isSaved);
+        widget.onPostClick?.call(updated);
+      },
+      onHidePost: () {},
+      onMuteAuthor: () {},
+      onReport: () {},
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -503,7 +463,7 @@ class _MarketPostCardState extends State<MarketPostCard>
             ),
             const SizedBox(width: 2.0),
             GestureDetector(
-              onTap: () => _showOptionsMenu(context),
+              onTapDown: (details) => _showOptionsMenu(context, details.globalPosition),
               behavior: HitTestBehavior.opaque,
               child: Container(
                 width: 36.0,
@@ -516,6 +476,7 @@ class _MarketPostCardState extends State<MarketPostCard>
                 ),
               ),
             ),
+
           ],
         ),
       ],
@@ -631,7 +592,7 @@ class _MarketPostCardState extends State<MarketPostCard>
             ),
             const SizedBox(width: 2.0),
             GestureDetector(
-              onTap: () => _showOptionsMenu(context),
+              onTapDown: (details) => _showOptionsMenu(context, details.globalPosition),
               behavior: HitTestBehavior.opaque,
               child: Container(
                 width: 36.0,
@@ -644,6 +605,7 @@ class _MarketPostCardState extends State<MarketPostCard>
                 ),
               ),
             ),
+
           ],
         ),
       ],

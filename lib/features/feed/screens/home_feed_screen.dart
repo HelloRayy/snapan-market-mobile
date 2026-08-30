@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+
 import 'package:snapan_market/features/feed/components/home_feed_header.dart';
 import 'package:snapan_market/features/feed/components/home_feed_tab_switch.dart';
 import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart';
@@ -164,7 +166,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   void _handlePostClick(MarketPostModel item) {
     Navigator.push(
       context,
-      MaterialPageRoute(
+      AppSlidePageRoute(
         builder: (context) => PostDetailScreen(post: item),
       ),
     );
@@ -184,7 +186,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   void _handleUserClick(String username) {
     Navigator.push(
       context,
-      MaterialPageRoute(
+      AppSlidePageRoute(
         builder: (context) => ProfileScreen(
           username: username,
           onBack: () => Navigator.pop(context),
@@ -192,6 +194,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
       ),
     );
   }
+
 
   void _handleImageClick(MarketPostModel item, int imageIndex) {
     showDialog(

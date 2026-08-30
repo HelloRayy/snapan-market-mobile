@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+
 import 'package:snapan_market/features/feed/components/market_post_card.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
@@ -141,7 +143,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _handlePostClick(MarketPostModel post) {
     HapticFeedback.lightImpact();
     Navigator.of(context).push(
-      MaterialPageRoute(
+      AppSlidePageRoute(
         builder: (_) => PostDetailScreen(post: post),
       ),
     );
@@ -189,11 +191,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-
   void _handleEditProfile() async {
     HapticFeedback.lightImpact();
     final updated = await Navigator.of(context).push<ProfileUserModel>(
-      MaterialPageRoute(
+      AppSlidePageRoute(
         builder: (_) => EditProfileScreen(
           initialUser: _user,
           onSave: (savedUser) {
@@ -201,6 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               _user = savedUser;
               _allUserPosts = _allUserPosts.map((p) {
                 return p.copyWith(
+
                   seller: p.seller.copyWith(
                     name: savedUser.name,
                     username: savedUser.username,

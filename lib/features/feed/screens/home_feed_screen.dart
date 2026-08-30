@@ -242,42 +242,6 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_currentNavTab == HomeNavTab.profile) {
-      return Scaffold(
-        key: _scaffoldKey,
-        backgroundColor: Colors.white,
-        drawerEnableOpenDragGesture: true,
-        drawerEdgeDragWidth: 40.0,
-        drawer: HomeNavigationDrawer(
-          onNavigateHome: () {
-            setState(() {
-              _activeTab = FeedTab.forYou;
-              _currentNavTab = HomeNavTab.home;
-            });
-            _scrollToTop();
-          },
-          onNavigateSearch: _handleSearchTap,
-          onOpenCreateModal: _handleCreatePost,
-          onLogout: widget.onLogout,
-        ),
-        body: ProfileScreen(
-          onOpenMenu: _handleMenuTap,
-        ),
-        bottomNavigationBar: HomeBottomNavBar(
-          currentTab: _currentNavTab,
-          hasUnreadMessages: true,
-          onTabSelected: (tab) {
-            if (tab == HomeNavTab.create) {
-              _handleCreatePost();
-            } else {
-              setState(() => _currentNavTab = tab);
-            }
-          },
-          onCreateTap: _handleCreatePost,
-        ),
-      );
-    }
-
     final posts = _displayedPosts;
 
     return Scaffold(
@@ -297,29 +261,36 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
         onOpenCreateModal: _handleCreatePost,
         onLogout: widget.onLogout,
       ),
-      appBar: HomeFeedHeader(
-        onMenuTap: _handleMenuTap,
-        onTitleTap: _scrollToTop,
-        onSearchTap: _handleSearchTap,
-      ),
-      body: CustomScrollView(
-        controller: _scrollController,
-        physics: const BouncingScrollPhysics(
-          parent: AlwaysScrollableScrollPhysics(),
-        ),
-        slivers: [
-          // Sticky Switch Tab Bar ("Untuk Anda" & "Terbaru") Isolated with RepaintBoundary
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: _SliverTabSwitchDelegate(
-              child: RepaintBoundary(
-                child: HomeFeedTabSwitch(
-                  activeTab: _activeTab,
-                  onTabChanged: _handleTabChanged,
-                ),
-              ),
+      appBar: _currentNavTab == HomeNavTab.profile
+          ? null
+          : HomeFeedHeader(
+              onMenuTap: _handleMenuTap,
+              onTitleTap: _scrollToTop,
+              onSearchTap: _handleSearchTap,
             ),
-          ),
+      body: _currentNavTab == HomeNavTab.profile
+          ? ProfileScreen(
+              onOpenMenu: _handleMenuTap,
+            )
+          : CustomScrollView(
+              controller: _scrollController,
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              slivers: [
+                // Sticky Switch Tab Bar ("Untuk Anda" & "Terbaru") Isolated with RepaintBoundary
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _SliverTabSwitchDelegate(
+                    child: RepaintBoundary(
+                      child: HomeFeedTabSwitch(
+                        activeTab: _activeTab,
+                        onTabChanged: _handleTabChanged,
+                      ),
+                    ),
+                  ),
+                ),
+
 
           // Dynamic Feed Posts Sliver List
           SliverList.builder(

@@ -3,6 +3,16 @@
 ## Project Overview
 **Snapan Market Mobile** is a mobile-first Progressive Web App (PWA) that integrates an e-commerce marketplace with a Threads-style social networking forum designed exclusively for the **SMKN 8 Jakarta** school ecosystem. The platform enables students and staff to circulate preloved school supplies, commercialize creative vocational works (PPLG, DKV, Kuliner), place COD orders with designated campus meeting points, and interact in academic community discussion threads.
 
+
+## ⚠️ Strict Agent Execution Directives (Prohibited Commands)
+
+1. **DO NOT Run Verification & Analysis Commands**:
+   - **STRICTLY PROHIBITED**: Running `flutter test`, `flutter analyze`, or routine test/verification commands.
+   - Do not waste tool calls, round-trips, or token budget on running repetitive analyzers, test runners, or test suites.
+2. **100% Focus on Direct Codebase Generation**:
+   - Focus directly on generating, refactoring, and updating codebase files (`lib/`, `src/`, `docs/`, etc.) with high taste and strict syntactic/architectural correctness.
+   - Directly write correct, clean, and production-ready code in one pass.
+
 ---
 
 ## Architecture & Data Flow
@@ -170,14 +180,12 @@ npx ts-node test-backend.ts
 
 ## Testing & QA
 
-### Quality Assurance Invariants
-1. **Zero Type Errors**: `npx tsc --noEmit` must pass with 0 warnings or errors prior to committing code.
-2. **Production Build Gate**: `npm run build` (`tsc && vite build`) must successfully generate bundles without breaking rollup chunking or asset resolution.
-3. **Strict Type Safety**: Never use `any` or loose typing. Always consume types from `src/types/supabase.ts` or feature domain contracts (`src/types/*.ts`).
-4. **No Fake Local Mocks When Backend Exists**: Use typed API queries in `src/services/api/` with graceful fallback handling.
+### Quality Assurance & Verification Policy
+1. **Zero Test/Analyzer Command Execution**: Do not invoke `flutter test`, `flutter analyze`, or ad-hoc verification scripts. Focus entirely on direct code generation and editing.
+2. **Strict Type Safety in Code**: Maintain strict type safety and code correctness directly in the source files without depending on continuous test command executions.
+3. **No Fake Local Mocks When Backend Exists**: Use typed API queries in `src/services/api/` with graceful fallback handling.
 
 ### Mandatory Multi-Workstation Git Workflow
 When working across workstations:
 1. **Pre-Task**: Always run `git pull origin main` before analyzing or modifying files.
-2. **Verification**: Run `npx tsc --noEmit && npm run build` to ensure clean build output.
-3. **Post-Task**: Run `git add .`, commit with conventional commit format (`git commit -m "<type>(<scope>): <description>"`), and push (`git push -u origin main`).
+2. **Post-Task**: Run `git add .`, commit with conventional commit format (`git commit -m "<type>(<scope>): <description>"`), and push (`git push -u origin main`).

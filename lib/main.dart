@@ -47,7 +47,7 @@ class AppRoot extends StatefulWidget {
 }
 
 class _AppRootState extends State<AppRoot> {
-  bool _isOnboarded = false;
+  bool _isOnboarded = true;
 
   @override
   Widget build(BuildContext context) {

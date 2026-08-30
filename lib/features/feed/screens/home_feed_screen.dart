@@ -4,6 +4,9 @@ import 'package:snapan_market/features/feed/components/home_feed_header.dart';
 import 'package:snapan_market/features/feed/components/home_feed_tab_switch.dart';
 import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart';
 import 'package:snapan_market/features/feed/components/home_navigation_drawer.dart';
+import 'package:snapan_market/features/feed/components/market_post_card.dart';
+import 'package:snapan_market/features/feed/models/market_post_model.dart';
+import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
 import 'package:snapan_market/features/create_post/screens/create_post_modal.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
 
@@ -11,8 +14,7 @@ import 'package:snapan_market/features/create_post/models/create_post_types.dart
 ///
 /// Features sticky [HomeFeedHeader] with tactile action controls,
 /// sticky [HomeFeedTabSwitch] for "Untuk Anda" and "Terbaru" feed modes,
-/// scroll-to-top behavior, and a modular layout ready for upcoming
-/// feed slices (Post Cards, Threads, and Bottom Navigation).
+/// scroll-to-top behavior, dynamic [MarketPostCard] list feed, and bottom navigation.
 class HomeFeedScreen extends StatefulWidget {
   final VoidCallback? onLogout;
 
@@ -30,6 +32,23 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   final ScrollController _scrollController = ScrollController();
   FeedTab _activeTab = FeedTab.forYou;
   HomeNavTab _currentNavTab = HomeNavTab.home;
+
+  // Dynamic Feed Posts list initialized with rich Indonesian school dataset
+  late List<MarketPostModel> _posts;
+
+  @override
+  void initState() {
+    super.initState();
+    _posts = List<MarketPostModel>.from(kMockMarketPosts);
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    // Auto syncs mock dataset on every Hot Reload (r)
+    _posts = List<MarketPostModel>.from(kMockMarketPosts);
+  }
+
 
   @override
   void dispose() {
@@ -67,10 +86,45 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
       context,
       initialMode: mode,
       onSubmitPost: (data) {
+        final postMode = data['mode'] as String? ?? 'thread';
+        final caption = data['caption'] as String? ?? '';
+        final locationTag = data['location'] as String?;
+        final price = data['price'] as int?;
+        final stock = data['stock'] as int?;
+        final images = (data['images'] as List<dynamic>?)?.cast<String>() ?? [];
+
+        final newPost = MarketPostModel(
+          id: 'post-user-${DateTime.now().millisecondsSinceEpoch}',
+          postType: postMode,
+          seller: const SellerModel(
+            id: 'current-user-1',
+            name: 'Akun Anda',
+            username: 'saya',
+            avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+            classGroup: 'XII PPLG 1',
+            isVerified: true,
+          ),
+          caption: caption.isNotEmpty ? caption : 'Postingan baru dari SMKN 8 Jakarta',
+          images: images,
+          locationTag: locationTag,
+          price: price,
+          stock: stock,
+          timestamp: 'Baru saja',
+          likesCount: 0,
+          commentsCount: 0,
+          repostsCount: 0,
+          isLiked: false,
+          isReposted: false,
+        );
+
+        setState(() {
+          _posts.insert(0, newPost);
+        });
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              data['mode'] == 'product'
+              postMode == 'product'
                   ? 'Produk berhasil dipasang ke katalog COD SMKN 8!'
                   : 'Utas berhasil diposting ke feed!',
             ),
@@ -88,11 +142,125 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
     });
   }
 
+  void _handleLikeToggle(MarketPostModel updatedItem) {
+    final index = _posts.indexWhere((p) => p.id == updatedItem.id);
+    if (index != -1) {
+      setState(() {
+        _posts[index] = updatedItem;
+      });
+    }
+  }
+
+  void _handleRepostToggle(MarketPostModel updatedItem) {
+    final index = _posts.indexWhere((p) => p.id == updatedItem.id);
+    if (index != -1) {
+      setState(() {
+        _posts[index] = updatedItem;
+      });
+    }
+  }
+
+  void _handlePostClick(MarketPostModel item) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PostDetailScreen(post: item),
+      ),
+    );
+  }
+
+  void _handleTopicClick(String topic) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Menampilkan postingan topik #$topic'),
+        duration: const Duration(seconds: 1),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  void _handleUserClick(String username) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Membuka profil @$username'),
+        duration: const Duration(seconds: 1),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  void _handleImageClick(MarketPostModel item, int imageIndex) {
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            GestureDetector(
+              onTap: () => Navigator.pop(ctx),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16.0),
+                child: Image.network(
+                  item.images[imageIndex],
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, _, _) => Container(
+                    padding: const EdgeInsets.all(32.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                    child: const Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.broken_image_outlined, size: 48.0, color: AppColors.muted),
+                        SizedBox(height: 12.0),
+                        Text('Gambar tidak dapat dimuat', style: TextStyle(color: AppColors.ink)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 8.0,
+              right: 8.0,
+              child: GestureDetector(
+                onTap: () => Navigator.pop(ctx),
+                child: Container(
+                  padding: const EdgeInsets.all(6.0),
+                  decoration: const BoxDecoration(
+                    color: Color(0x80000000),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.close_rounded, color: Colors.white, size: 20.0),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<MarketPostModel> get _displayedPosts {
+    if (_activeTab == FeedTab.latest) {
+      // For "Terbaru" tab, sort by latest posts
+      return _posts.reversed.toList();
+    }
+    return _posts;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final posts = _displayedPosts;
+
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: AppColors.canvas,
+      backgroundColor: Colors.white,
       drawerEnableOpenDragGesture: true,
       drawerEdgeDragWidth: 40.0,
       drawer: HomeNavigationDrawer(
@@ -131,91 +299,69 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
             ),
           ),
 
-          // Placeholder container for upcoming slicing components:
-          // Filter Tabs, Feed Post Cards, Threads Discussion, etc.
+          // Dynamic Feed Posts Sliver List
+          SliverList.builder(
+            itemCount: posts.length,
+            itemBuilder: (context, index) {
+              final post = posts[index];
+              return MarketPostCard(
+                key: ValueKey(post.id),
+                item: post,
+                onLikeToggle: _handleLikeToggle,
+                onRepostToggle: _handleRepostToggle,
+                onPostClick: _handlePostClick,
+                onTopicClick: _handleTopicClick,
+                onUserClick: _handleUserClick,
+                onImageClick: _handleImageClick,
+              );
+            },
+          ),
+
+          // End of Feed Footer
           SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-              child: Container(
-                padding: const EdgeInsets.all(20.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16.0),
-                  border: Border.all(color: const Color(0xFFF1F5F9)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryPastel,
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          child: Icon(
-                            _activeTab == FeedTab.forYou
-                                ? Icons.explore_outlined
-                                : Icons.access_time_rounded,
-                            color: AppColors.primary,
-                            size: 20.0,
-                          ),
-                        ),
-                        const SizedBox(width: 12.0),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Feed Beranda Aktif',
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.ink,
-                                ),
-                              ),
-                              const SizedBox(height: 2.0),
-                              Text(
-                                _activeTab == FeedTab.forYou
-                                    ? 'Untuk Anda • Rekomendasi & Diskusi SMKN 8'
-                                    : 'Terbaru • Aktivitas & Produk Baru SMKN 8',
-                                style: const TextStyle(
-                                  fontSize: 13.0,
-                                  color: AppColors.muted,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+            child: Container(
+              color: AppColors.canvas,
+              padding: const EdgeInsets.symmetric(vertical: 28.0, horizontal: 16.0),
+              child: Column(
+                children: [
+                  Container(
+                    width: 32.0,
+                    height: 3.0,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE2E8F0),
+                      borderRadius: BorderRadius.circular(2.0),
                     ),
-                    if (widget.onLogout != null) ...[
-                      const SizedBox(height: 16.0),
-                      const Divider(color: Color(0xFFF1F5F9)),
-                      const SizedBox(height: 8.0),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton.icon(
-                          onPressed: widget.onLogout,
-                          icon: const Icon(
-                            Icons.logout_rounded,
-                            size: 16.0,
-                            color: AppColors.muted,
-                          ),
-                          label: const Text(
-                            'Keluar (Reset Onboarding)',
-                            style: TextStyle(
-                              fontSize: 13.0,
-                              color: AppColors.muted,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                  ),
+                  const SizedBox(height: 14.0),
+                  const Text(
+                    'Scroll ke bawah untuk memuat postingan baru',
+                    style: TextStyle(
+                      fontSize: 13.0,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF94A3B8),
+                    ),
+                  ),
+                  if (widget.onLogout != null) ...[
+                    const SizedBox(height: 16.0),
+                    TextButton.icon(
+                      onPressed: widget.onLogout,
+                      icon: const Icon(
+                        Icons.logout_rounded,
+                        size: 16.0,
+                        color: AppColors.muted,
+                      ),
+                      label: const Text(
+                        'Keluar (Reset Onboarding)',
+                        style: TextStyle(
+                          fontSize: 13.0,
+                          color: AppColors.muted,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                    ],
+                    ),
                   ],
-                ),
+                  const SizedBox(height: 24.0),
+                ],
               ),
             ),
           ),
@@ -241,13 +387,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
 class _SliverTabSwitchDelegate extends SliverPersistentHeaderDelegate {
   final Widget child;
 
-  const _SliverTabSwitchDelegate({required this.child});
-
-  @override
-  double get minExtent => 47.0;
-
-  @override
-  double get maxExtent => 47.0;
+  _SliverTabSwitchDelegate({required this.child});
 
   @override
   Widget build(
@@ -257,6 +397,12 @@ class _SliverTabSwitchDelegate extends SliverPersistentHeaderDelegate {
   ) {
     return child;
   }
+
+  @override
+  double get maxExtent => 47.0;
+
+  @override
+  double get minExtent => 47.0;
 
   @override
   bool shouldRebuild(covariant _SliverTabSwitchDelegate oldDelegate) {

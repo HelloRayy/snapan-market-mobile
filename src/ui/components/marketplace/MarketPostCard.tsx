@@ -386,7 +386,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                     e.stopPropagation();
                     onUserClick?.(item.seller.username || item.seller.name);
                   }}
-                  className="font-semibold text-[14.5px] text-slate-900 truncate hover:underline shrink-1 max-w-[45%] cursor-pointer"
+                  className="font-semibold text-[14.5px] text-slate-900 truncate hover:underline shrink-1 max-w-[62%] cursor-pointer"
                 >
                   {item.seller.name}
                 </span>
@@ -531,7 +531,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                     e.stopPropagation();
                     onUserClick?.(item.seller.username || item.seller.name);
                   }}
-                  className="font-semibold text-[14.5px] text-slate-900 truncate hover:underline shrink-1 max-w-[45%] cursor-pointer"
+                  className="font-semibold text-[14.5px] text-slate-900 truncate hover:underline shrink-1 max-w-[62%] cursor-pointer"
                 >
                   {item.seller.name}
                 </span>

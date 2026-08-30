@@ -244,7 +244,7 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
     reply: {
       id: 'rep-demo-1',
       content: 'Bisa COD di depan lab PPLG 1 waktu istirahat pertama gak kak? Mau beli 2 pcs.',
-      timestamp: '15m lalu',
+      timestamp: '15m',
       likesCount: 4,
       isLiked: false,
       repostsCount: 1,
@@ -454,7 +454,7 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
                     { label: 'text-lg (18px)', weight: 'font-semibold', sample: 'Detail Postingan & Komentar' },
                     { label: 'text-base (16px)', weight: 'font-normal', sample: 'Teks Deskripsi & Caption Feed Produk' },
                     { label: 'text-[14.5px]', weight: 'font-medium', sample: 'Nama Siswa, Kelas & Username Threads' },
-                    { label: 'text-xs (12px)', weight: 'font-normal', sample: 'Timestamp Cerdas · 2j lalu · 15 terjual' },
+                    { label: 'text-xs (12px)', weight: 'font-normal', sample: 'Timestamp Cerdas · 2j · 15 terjual' },
                   ].map((typo, idx) => (
                     <div key={idx} className="py-3.5 flex items-center justify-between gap-4">
                       <div className="w-36 shrink-0">

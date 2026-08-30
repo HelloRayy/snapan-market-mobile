@@ -255,7 +255,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       const newBatch: MarketPostItem[] = MOCK_MARKET_POSTS.map((base, idx) => ({
         ...base,
         id: `post-auto-${page}-${idx}-${Date.now()}`,
-        timestamp: `${page * 2}j lalu`,
+        timestamp: `${page * 2}j`,
         likesCount: base.likesCount + Math.floor(Math.random() * 10),
       }));
       setItems((prev) => [...prev, ...newBatch]);

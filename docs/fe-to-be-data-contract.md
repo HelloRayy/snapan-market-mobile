@@ -138,7 +138,7 @@ interface MarketPostItem {
   likesCount: number;
   commentsCount: number;
   repostsCount: number;
-  timestamp: string; // FE formatter mengonversi created_at -> '10m lalu'
+  timestamp: string; // FE formatter mengonversi created_at -> '10m', '2j'
   isLiked: boolean; // Computed dari apakah auth.uid() ada di post_likes
   isReposted: boolean; // Computed dari post_reposts
   isSaved: boolean; // Computed dari post_bookmarks

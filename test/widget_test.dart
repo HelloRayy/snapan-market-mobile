@@ -7,11 +7,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:snapan_market/core/components/kumo_button.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/utils/formatters.dart';
 import 'package:snapan_market/features/feed/components/home_feed_header.dart';
 import 'package:snapan_market/features/feed/components/home_feed_tab_switch.dart';
 import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart';
 import 'package:snapan_market/features/create_post/screens/create_post_modal.dart';
 import 'package:snapan_market/features/feed/screens/home_feed_screen.dart';
+import 'package:snapan_market/features/feed/components/market_post_card.dart';
+import 'package:snapan_market/features/feed/models/market_post_model.dart';
+import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
+import 'package:snapan_market/features/feed/components/post_comment_item.dart';
+import 'package:snapan_market/features/feed/components/comment_input_bar.dart';
+import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
 import 'package:snapan_market/main.dart';
 
 final Uint8List _kTransparentImage = Uint8List.fromList(<int>[
@@ -491,40 +498,36 @@ void main() {
       // 7. Verify Initial Active Feed Tab is "Untuk Anda"
       expect(find.text('Untuk Anda'), findsOneWidget);
       expect(find.text('Terbaru'), findsOneWidget);
-      expect(find.text('Feed Beranda Aktif'), findsOneWidget);
-      expect(
-        find.text('Untuk Anda • Rekomendasi & Diskusi SMKN 8'),
-        findsOneWidget,
-      );
+      expect(find.byType(MarketPostCard), findsWidgets);
 
       // 8. Switch Tab to "Terbaru"
       await tester.tap(find.text('Terbaru'));
       await tester.pumpAndSettle();
 
-      // Verify Feed content reflects "Terbaru"
-      expect(
-        find.text('Terbaru • Aktivitas & Produk Baru SMKN 8'),
-        findsOneWidget,
-      );
+      // Verify Feed content reflects "Terbaru" and renders posts
+      expect(find.byType(MarketPostCard), findsWidgets);
+
       // 9. Switch Tab back to "Untuk Anda"
       await tester.tap(find.text('Untuk Anda'));
       await tester.pumpAndSettle();
 
       // Verify Feed content reflects "Untuk Anda"
-      expect(
-        find.text('Untuk Anda • Rekomendasi & Diskusi SMKN 8'),
-        findsOneWidget,
-      );
+      expect(find.byType(MarketPostCard), findsWidgets);
       // 10. Verify HomeBottomNavBar is present on HomeFeedScreen
       expect(find.byType(HomeBottomNavBar), findsOneWidget);
       expect(find.byIcon(Icons.add_rounded), findsOneWidget);
 
-      // 11. Tap Logout button to verify returning to Onboarding
+      // 11. Scroll to bottom and tap Logout button to verify returning to Onboarding
       final logoutButton = find.text('Keluar (Reset Onboarding)');
+      await tester.scrollUntilVisible(
+        logoutButton,
+        500.0,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
       expect(logoutButton, findsOneWidget);
       await tester.tap(logoutButton);
       await tester.pumpAndSettle();
-
       // Verify returning to Onboarding
       expect(find.text('Pusat Jual Beli Warga SMKN 8 Jakarta'), findsOneWidget);
     });
@@ -733,6 +736,493 @@ void main() {
 
       // Verify sub-thread input is dismissed
       expect(find.text('Lanjutan utas...'), findsNothing);
+    });
+  });
+
+  group('MarketPostCard Widget & Interaction Tests', () {
+    testWidgets('Renders Community Thread Post with Avatar, Topic, Multi-Thread, and Action Bar',
+        (WidgetTester tester) async {
+      const threadPost = MarketPostModel(
+        id: 'test-thread-1',
+        postType: 'thread',
+        seller: SellerModel(
+          id: 'u1',
+          name: 'Raymond Chin',
+          avatar: 'http://example.com/avatar.png',
+          classGroup: 'XII PPLG 1',
+          isVerified: true,
+          username: 'raymondchins',
+        ),
+        caption: 'Ada kenalan UI engineer untuk kolaborasi PWA kilat? 🚀',
+        images: ['http://example.com/image1.png'],
+        topicTag: 'frontend',
+        isOfficialTopic: true,
+        topicIcon: 'threads',
+        totalThreadParts: 2,
+        likesCount: 466,
+        commentsCount: 12,
+        repostsCount: 9,
+        timestamp: '1j',
+        isLiked: false,
+      );
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: MarketPostCard(item: threadPost),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify Author Name & Verified Badge
+      expect(find.text('Raymond Chin'), findsOneWidget);
+      expect(find.byIcon(Icons.verified_rounded), findsOneWidget);
+
+      // Verify Threads Topic Glyph and Tag
+      expect(find.text('frontend'), findsOneWidget);
+      expect(find.byType(ThreadsTopicGlyph), findsOneWidget);
+
+      // Verify Timestamp and More Options (3-dots)
+      expect(find.text('1j'), findsOneWidget);
+      expect(find.byIcon(Icons.more_horiz_rounded), findsOneWidget);
+
+      // Verify Caption & Multi-Thread badge (1/2)
+      expect(find.textContaining('Ada kenalan UI engineer'), findsOneWidget);
+      expect(find.text('1/2'), findsOneWidget);
+
+      // Verify Vector Action Bar Icons
+      expect(find.byType(FeedHeartIcon), findsOneWidget);
+      expect(find.byType(FeedCommentIcon), findsOneWidget);
+      expect(find.byType(FeedRepostIcon), findsOneWidget);
+      expect(find.byType(FeedShareIcon), findsOneWidget);
+
+      // Verify Action Bar counters
+      expect(find.text('466'), findsOneWidget);
+      expect(find.text('12'), findsOneWidget);
+      expect(find.text('9'), findsOneWidget);
+
+      // Verify No stock indicator on pure thread post
+      expect(find.byIcon(Icons.inventory_2_outlined), findsNothing);
+    });
+    testWidgets('Renders Market Product Post with COD Location Tag and Stock Indicator Pill',
+        (WidgetTester tester) async {
+      const productPost = MarketPostModel(
+        id: 'test-product-1',
+        postType: 'product',
+        title: 'Jasa Desain UI/UX & PWA Kilat',
+        seller: SellerModel(
+          id: 'u1',
+          name: 'Faiz Intifada',
+          avatar: 'http://example.com/avatar.png',
+          classGroup: 'XII DKV 2',
+          isVerified: false,
+          username: 'faizintifada',
+        ),
+        caption: 'Open order jasa pembuatan UI/UX & Engineering PWA!',
+        images: [
+          'http://example.com/img1.png',
+          'http://example.com/img2.png',
+        ],
+        price: 150000,
+        stock: 7,
+        locationTag: 'Lab Komputer PPLG',
+        likesCount: 245,
+        commentsCount: 18,
+        repostsCount: 5,
+        timestamp: '3j',
+      );
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: MarketPostCard(item: productPost),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify Author name and class (no topic tag)
+      expect(find.text('Faiz Intifada'), findsOneWidget);
+      expect(find.text('XII DKV 2'), findsOneWidget);
+
+      // Verify COD Location Tag
+      expect(find.text('Lab Komputer PPLG'), findsOneWidget);
+      expect(find.byIcon(Icons.location_on_outlined), findsOneWidget);
+
+      // Verify Stock Indicator Pill (7)
+      expect(find.byIcon(Icons.inventory_2_outlined), findsOneWidget);
+      expect(find.text('7'), findsOneWidget);
+    });
+
+    testWidgets('Interactive Like & Repost toggling updates UI state and counters reactively',
+        (WidgetTester tester) async {
+      MarketPostModel? toggledLikeItem;
+      MarketPostModel? toggledRepostItem;
+
+      const initialPost = MarketPostModel(
+        id: 'test-interactive-1',
+        postType: 'thread',
+        seller: SellerModel(
+          id: 'u1',
+          name: 'Raymond Chin',
+          avatar: 'http://example.com/avatar.png',
+          classGroup: 'XII PPLG 1',
+        ),
+        caption: 'Testing reactive interactions',
+        likesCount: 10,
+        commentsCount: 2,
+        repostsCount: 3,
+        timestamp: '15m',
+        isLiked: false,
+        isReposted: false,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: MarketPostCard(
+              item: initialPost,
+              onLikeToggle: (item) => toggledLikeItem = item,
+              onRepostToggle: (item) => toggledRepostItem = item,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Initial state: 10 likes, FeedHeartIcon with isLiked: false
+      expect(find.text('10'), findsOneWidget);
+      expect(find.byType(FeedHeartIcon), findsOneWidget);
+      final initialHeart = tester.widget<FeedHeartIcon>(find.byType(FeedHeartIcon));
+      expect(initialHeart.isLiked, isFalse);
+
+      // Tap Like button
+      final likeButtonFinder = find.byType(FeedHeartIcon);
+      await tester.tap(likeButtonFinder);
+      await tester.pumpAndSettle();
+
+      // Verified state: 11 likes, FeedHeartIcon with isLiked: true, callback invoked
+      expect(find.text('11'), findsOneWidget);
+      final likedHeart = tester.widget<FeedHeartIcon>(find.byType(FeedHeartIcon));
+      expect(likedHeart.isLiked, isTrue);
+      expect(toggledLikeItem, isNotNull);
+      expect(toggledLikeItem!.isLiked, isTrue);
+      expect(toggledLikeItem!.likesCount, 11);
+
+      // Tap Like button again to unlike
+      await tester.tap(find.byType(FeedHeartIcon));
+      await tester.pumpAndSettle();
+      expect(find.text('10'), findsOneWidget);
+      final unlikedHeart = tester.widget<FeedHeartIcon>(find.byType(FeedHeartIcon));
+      expect(unlikedHeart.isLiked, isFalse);
+      expect(toggledLikeItem!.isLiked, isFalse);
+      expect(toggledLikeItem!.likesCount, 10);
+
+      // Tap Repost button
+      final repostButtonFinder = find.byType(FeedRepostIcon);
+      await tester.tap(repostButtonFinder);
+      await tester.pumpAndSettle();
+
+      // Verified state: 4 reposts, FeedRepostIcon with isReposted: true
+      expect(find.text('4'), findsOneWidget);
+      final repostedIcon = tester.widget<FeedRepostIcon>(find.byType(FeedRepostIcon));
+      expect(repostedIcon.isReposted, isTrue);
+      expect(toggledRepostItem, isNotNull);
+      expect(toggledRepostItem!.isReposted, isTrue);
+      expect(toggledRepostItem!.repostsCount, 4);
+    });
+    testWidgets('Triggers callbacks on post, topic, user, and image tap',
+        (WidgetTester tester) async {
+      bool postClicked = false;
+      String? clickedTopic;
+      String? clickedUser;
+      int? clickedImageIdx;
+
+      const postItem = MarketPostModel(
+        id: 'test-callbacks-1',
+        postType: 'product',
+        seller: SellerModel(
+          id: 'u1',
+          name: 'Ibu Kantin',
+          avatar: 'http://example.com/avatar.png',
+          classGroup: 'Kantin SMKN 8',
+          username: 'kantin_smkn8',
+        ),
+        caption: 'Tahu Walik Renyah!',
+        topicTag: 'Kantin',
+        images: ['http://example.com/tahu.png'],
+        timestamp: '5m',
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: MarketPostCard(
+              item: postItem,
+              onPostClick: (_) => postClicked = true,
+              onTopicClick: (topic) => clickedTopic = topic,
+              onUserClick: (user) => clickedUser = user,
+              onImageClick: (_, idx) => clickedImageIdx = idx,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap Topic Tag
+      await tester.tap(find.text('Kantin'));
+      await tester.pumpAndSettle();
+      expect(clickedTopic, 'Kantin');
+
+      // Tap Author Name
+      await tester.tap(find.text('Ibu Kantin'));
+      await tester.pumpAndSettle();
+      expect(clickedUser, 'kantin_smkn8');
+
+      // Tap Image to trigger onImageClick
+      await tester.tap(find.byType(AspectRatio));
+      await tester.pumpAndSettle();
+      expect(clickedImageIdx, 0);
+
+      // Tap Comment button to trigger post click
+      await tester.tap(find.byType(FeedCommentIcon));
+      await tester.pumpAndSettle();
+      expect(postClicked, isTrue);
+    });
+    testWidgets('Header row uses full-width spaceBetween with flush-right 3-dots button',
+        (WidgetTester tester) async {
+      const post = MarketPostModel(
+        id: 'test-header-layout',
+        postType: 'thread',
+        seller: SellerModel(
+          id: 'u1',
+          name: 'Raymond Chin',
+          avatar: 'http://example.com/avatar.png',
+          classGroup: 'XII PPLG 1',
+          isVerified: true,
+        ),
+        caption: 'Testing header row flex alignment',
+        topicTag: 'frontend',
+        isOfficialTopic: true,
+        timestamp: '2m',
+      );
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: MarketPostCard(item: post),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify Header Row structure
+      final headerRowFinder = find.byWidgetPredicate((widget) {
+        return widget is Row &&
+            widget.mainAxisAlignment == MainAxisAlignment.spaceBetween &&
+            widget.children.length == 3; // Expanded, SizedBox(8), Row(Timestamp + MoreOptions)
+      });
+      expect(headerRowFinder, findsOneWidget);
+
+      // Verify 3-dots More Options button is rendered at the right side
+      final moreOptionsFinder = find.byIcon(Icons.more_horiz_rounded);
+      expect(moreOptionsFinder, findsOneWidget);
+      final moreOptionsContainer = tester.widget<Container>(
+        find.ancestor(of: moreOptionsFinder, matching: find.byType(Container)).first,
+      );
+      expect(moreOptionsContainer.constraints?.minWidth, 36.0);
+      expect(moreOptionsContainer.constraints?.minHeight, 36.0);
+    });
+  });
+
+  group('HomeFeedScreen Dynamic Feed Integration Tests', () {
+    testWidgets('Renders MarketPostCard items from dataset and end-of-feed footer',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: HomeFeedScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify MarketPostCard items rendered in feed
+      expect(find.byType(MarketPostCard), findsWidgets);
+
+      // Verify first author name is present
+      expect(find.text('Raymond Chin'), findsWidgets);
+
+      // Scroll down to check footer
+      await tester.scrollUntilVisible(
+        find.text('Scroll ke bawah untuk memuat postingan baru'),
+        500.0,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+      // Verify end-of-feed footer text
+      expect(find.text('Scroll ke bawah untuk memuat postingan baru'), findsOneWidget);
+    });
+
+    testWidgets('Switching between "Untuk Anda" and "Terbaru" tabs updates feed list',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: HomeFeedScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap "Terbaru" tab
+      final terbaruTabFinder = find.text('Terbaru');
+      expect(terbaruTabFinder, findsOneWidget);
+      await tester.tap(terbaruTabFinder);
+      await tester.pumpAndSettle();
+
+      // Feed remains populated with MarketPostCard items
+      expect(find.byType(MarketPostCard), findsWidgets);
+    });
+  });
+
+  group('Core Formatters Utility Unit Tests', () {
+    test('formatSmartTimestamp cleans legacy relative strings with "lalu"', () {
+      expect(formatSmartTimestamp('15m lalu'), '15m');
+      expect(formatSmartTimestamp('1j lalu'), '1j');
+      expect(formatSmartTimestamp('2h lalu'), '2h');
+      expect(formatSmartTimestamp('3d lalu'), '3h');
+      expect(formatSmartTimestamp('10 menit lalu'), '10m');
+      expect(formatSmartTimestamp('2 jam lalu'), '2j');
+      expect(formatSmartTimestamp('5 hari lalu'), '5h');
+      expect(formatSmartTimestamp('Baru saja'), 'Baru saja');
+      expect(formatSmartTimestamp(''), 'Baru saja');
+      expect(formatSmartTimestamp(null), 'Baru saja');
+    });
+
+    test('formatSmartTimestamp preserves already-concise strings', () {
+      expect(formatSmartTimestamp('15m'), '15m');
+      expect(formatSmartTimestamp('2j'), '2j');
+      expect(formatSmartTimestamp('3h'), '3h');
+      expect(formatSmartTimestamp('10m'), '10m');
+    });
+
+    test('formatSmartTimestamp formats dynamic DateTime correctly', () {
+      final now = DateTime.now();
+      // < 1 minute
+      expect(formatSmartTimestamp(now.subtract(const Duration(seconds: 10))), 'Baru saja');
+      // < 1 hour
+      expect(formatSmartTimestamp(now.subtract(const Duration(minutes: 25))), '25m');
+      // < 24 hours
+      expect(formatSmartTimestamp(now.subtract(const Duration(hours: 4))), '4j');
+      // < 7 days
+      expect(formatSmartTimestamp(now.subtract(const Duration(days: 3))), '3h');
+
+      // Same year older date
+      final sameYearDate = DateTime(now.year, 8, 17, 10, 0);
+      final result = formatSmartTimestampDetailed(sameYearDate);
+      expect(result.display, contains('17 Agu'));
+      expect(result.full, contains('17 Agustus ${now.year} pukul 10:00 WIB'));
+    });
+
+    test('formatRupiah formats IDR currency correctly', () {
+      expect(formatRupiah(150000), 'Rp 150.000');
+      expect(formatRupiah(10000), 'Rp 10.000');
+      expect(formatRupiah(0), 'Rp 0');
+      expect(formatRupiah(2500000), 'Rp 2.500.000');
+    });
+
+    test('formatCompactNumber formats large counts into k and M suffixes', () {
+      expect(formatCompactNumber(466), '466');
+      expect(formatCompactNumber(1200), '1.2k');
+      expect(formatCompactNumber(1500000), '1.5M');
+    });
+
+    test('stripEmojis removes emojis cleanly', () {
+      expect(stripEmojis('Open Order 🚀✨'), 'Open Order');
+      expect(stripEmojis('Tahu Walik 🥟🔥'), 'Tahu Walik');
+    });
+
+    test('toUsernameSlug converts name to valid slug', () {
+      expect(toUsernameSlug('Raymond Chin'), 'raymondchin');
+      expect(toUsernameSlug('Faiz Intifada'), 'faizintifada');
+      expect(toUsernameSlug(null), 'user');
+    });
+  });
+
+  group('PostDetailScreen & Comment Slicing 1:1 Tests', () {
+    testWidgets('Renders PostDetailScreen 1:1 matching Web layout and Image #1',
+        (WidgetTester tester) async {
+      final targetPost = kMockMarketPosts[0]; // post-thread-1
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: PostDetailScreen(post: targetPost),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // 1. Verify Top Header Bar
+      expect(find.text('Postingan'), findsOneWidget);
+      expect(find.byIcon(Icons.arrow_back_rounded), findsOneWidget);
+
+      // 2. Verify Focused Post (Detail Variant)
+      expect(find.byType(MarketPostCard), findsOneWidget);
+      expect(find.text('Raymond Chin'), findsWidgets);
+      expect(find.text('frontend'), findsOneWidget);
+      expect(find.text('1/2'), findsOneWidget);
+      expect(find.text('466'), findsOneWidget);
+      expect(find.text('9'), findsOneWidget);
+
+      // 3. Verify Section Divider
+      expect(find.text('Komentar (3)'), findsOneWidget);
+      expect(find.text('Urutkan dari Terbaru'), findsOneWidget);
+
+      // 4. Verify Author Thread Continuation (Part 2/2)
+      expect(find.text('Pembuat Utas'), findsOneWidget);
+      expect(find.text('2/2'), findsOneWidget);
+      expect(find.textContaining('Requirement: Paham React/Next.js'), findsOneWidget);
+
+      // 5. Verify User Comments
+      expect(find.text('zura.wk'), findsOneWidget);
+      expect(find.textContaining('Saya open collab mas!'), findsOneWidget);
+      expect(find.text('lisayayaa_'), findsOneWidget);
+      expect(find.textContaining('Bisa sekalian kerjakan Supabase Auth'), findsOneWidget);
+
+      // 6. Verify Nested Reply by Author
+      expect(find.textContaining('Mantap kak, nanti kita diskusiin'), findsOneWidget);
+
+      // 7. Verify Floating Bottom CommentInputBar
+      expect(find.byType(CommentInputBar), findsOneWidget);
+      expect(find.text('Kirim'), findsOneWidget);
+    });
+
+    testWidgets('Tapping reply on a comment updates input bar banner',
+        (WidgetTester tester) async {
+      final targetPost = kMockMarketPosts[0];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: PostDetailScreen(post: targetPost),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Find and tap "Balas" button on a comment
+      final replyButtons = find.text('Balas');
+      expect(replyButtons, findsWidgets);
+      await tester.tap(replyButtons.first);
+      await tester.pumpAndSettle();
+
+      // Verify replying banner appears
+      expect(find.textContaining('Membalas'), findsOneWidget);
+      expect(find.text('Batal'), findsOneWidget);
+
+      // Tap "Batal"
+      await tester.tap(find.text('Batal'));
+      await tester.pumpAndSettle();
+      expect(find.text('Batal'), findsNothing);
     });
   });
 }

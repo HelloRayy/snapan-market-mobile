@@ -27,17 +27,20 @@ class ProfileScreen extends StatefulWidget {
   final String? username;
   final VoidCallback? onBack;
   final VoidCallback? onOpenMenu;
+  final bool showAppBar;
 
   const ProfileScreen({
     super.key,
     this.username,
     this.onBack,
     this.onOpenMenu,
+    this.showAppBar = true,
   });
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
+
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final ScrollController _scrollController = ScrollController();
@@ -227,33 +230,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         })
         .toList();
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: HomeFeedHeader(
-        onBackTap: widget.onBack,
-        onMenuTap: widget.onOpenMenu,
-        onTitleTap: () {
-          if (_scrollController.hasClients) {
-            _scrollController.animateTo(
-              0,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOutCubic,
-            );
-          }
-        },
-        onSearchTap: () {
-          setState(() {
-            _showSearch = !_showSearch;
-            if (!_showSearch) _searchQuery = '';
-          });
-        },
+    final Widget bodyScrollView = CustomScrollView(
+      controller: _scrollController,
+      physics: const BouncingScrollPhysics(
+        parent: AlwaysScrollableScrollPhysics(),
       ),
-      body: CustomScrollView(
-        controller: _scrollController,
-        physics: const BouncingScrollPhysics(
-          parent: AlwaysScrollableScrollPhysics(),
-        ),
-        slivers: [
+      slivers: [
+
           // Collapsible Search Bar when active
           if (_showSearch)
             SliverToBoxAdapter(
@@ -470,14 +453,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ],
 
-          // Bottom Safe Area Spacing
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 40.0),
-          ),
         ],
-      ),
-    );
+      );
+
+    if (widget.showAppBar) {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        appBar: HomeFeedHeader(
+          onBackTap: widget.onBack,
+          onMenuTap: widget.onOpenMenu,
+          onTitleTap: () {
+            if (_scrollController.hasClients) {
+              _scrollController.animateTo(
+                0,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+              );
+            }
+          },
+          onSearchTap: () {
+            setState(() {
+              _showSearch = !_showSearch;
+              if (!_showSearch) _searchQuery = '';
+            });
+          },
+        ),
+        body: bodyScrollView,
+      );
+    }
+
+    return bodyScrollView;
   }
+
 }
 
 class _SliverProfileTabDelegate extends SliverPersistentHeaderDelegate {

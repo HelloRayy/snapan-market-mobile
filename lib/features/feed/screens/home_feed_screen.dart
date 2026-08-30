@@ -261,18 +261,22 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
         onOpenCreateModal: _handleCreatePost,
         onLogout: widget.onLogout,
       ),
-      appBar: _currentNavTab == HomeNavTab.profile
-          ? null
-          : HomeFeedHeader(
-              onMenuTap: _handleMenuTap,
-              onTitleTap: _scrollToTop,
-              onSearchTap: _handleSearchTap,
-            ),
+      appBar: HomeFeedHeader(
+        onMenuTap: _handleMenuTap,
+        onTitleTap: () {
+          if (_currentNavTab == HomeNavTab.home) {
+            _scrollToTop();
+          }
+        },
+        onSearchTap: _handleSearchTap,
+      ),
       body: _currentNavTab == HomeNavTab.profile
           ? ProfileScreen(
+              showAppBar: false,
               onOpenMenu: _handleMenuTap,
             )
           : CustomScrollView(
+
               controller: _scrollController,
               physics: const BouncingScrollPhysics(
                 parent: AlwaysScrollableScrollPhysics(),

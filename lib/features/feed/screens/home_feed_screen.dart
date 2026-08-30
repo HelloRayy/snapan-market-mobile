@@ -9,8 +9,11 @@ import 'package:snapan_market/features/feed/components/home_navigation_drawer.da
 import 'package:snapan_market/features/feed/components/market_post_card.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
+import 'package:snapan_market/features/messages/screens/direct_messages_screen.dart';
 import 'package:snapan_market/features/profile/screens/profile_screen.dart';
+
 import 'package:snapan_market/features/create_post/screens/create_post_modal.dart';
+
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
 
 /// Main Home Feed Screen
@@ -264,21 +267,26 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
         onOpenCreateModal: _handleCreatePost,
         onLogout: widget.onLogout,
       ),
-      appBar: HomeFeedHeader(
-        onMenuTap: _handleMenuTap,
-        onTitleTap: () {
-          if (_currentNavTab == HomeNavTab.home) {
-            _scrollToTop();
-          }
-        },
-        onSearchTap: _handleSearchTap,
-      ),
+      appBar: (_currentNavTab == HomeNavTab.messages)
+          ? null
+          : HomeFeedHeader(
+              onMenuTap: _handleMenuTap,
+              onTitleTap: () {
+                if (_currentNavTab == HomeNavTab.home) {
+                  _scrollToTop();
+                }
+              },
+              onSearchTap: _handleSearchTap,
+            ),
       body: _currentNavTab == HomeNavTab.profile
           ? ProfileScreen(
               showAppBar: false,
               onOpenMenu: _handleMenuTap,
             )
-          : CustomScrollView(
+          : _currentNavTab == HomeNavTab.messages
+              ? const DirectMessagesScreen(showBackButton: false)
+              : CustomScrollView(
+
 
               controller: _scrollController,
               physics: const BouncingScrollPhysics(

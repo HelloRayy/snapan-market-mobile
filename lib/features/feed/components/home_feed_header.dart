@@ -10,12 +10,14 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onMenuTap;
   final VoidCallback? onTitleTap;
   final VoidCallback? onSearchTap;
+  final VoidCallback? onBackTap;
 
   const HomeFeedHeader({
     super.key,
     this.onMenuTap,
     this.onTitleTap,
     this.onSearchTap,
+    this.onBackTap,
   });
 
   @override
@@ -35,12 +37,13 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Left Action: Menu Button (36x36 circular button)
+              // Left Action: Back or Menu Button (36x36 circular button)
               _HeaderIconButton(
-                icon: Icons.menu_rounded,
-                tooltip: 'Menu Navigasi',
-                onTap: onMenuTap,
+                icon: onBackTap != null ? Icons.arrow_back_rounded : Icons.menu_rounded,
+                tooltip: onBackTap != null ? 'Kembali' : 'Menu Navigasi',
+                onTap: onBackTap ?? onMenuTap,
               ),
+
 
               // Center: Brand Logotype ("Snapan Market")
               _HeaderLogotypeButton(

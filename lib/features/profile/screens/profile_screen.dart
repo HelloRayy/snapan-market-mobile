@@ -3,9 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/components/market_post_card.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
-import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
-import 'package:snapan_market/features/profile/components/profile_header_app_bar.dart';
+import 'package:snapan_market/features/feed/components/home_feed_header.dart';
 import 'package:snapan_market/features/profile/components/profile_info_header.dart';
+
 import 'package:snapan_market/features/profile/components/profile_action_buttons.dart';
 import 'package:snapan_market/features/profile/components/profile_tab_bar.dart';
 import 'package:snapan_market/features/profile/components/profile_reply_thread_card.dart';
@@ -229,16 +229,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: ProfileHeaderAppBar(
-        showSearch: _showSearch,
-        searchQuery: _searchQuery,
-        onSearchChanged: (val) => setState(() => _searchQuery = val),
-        onToggleSearch: () {
-          setState(() {
-            _showSearch = !_showSearch;
-            if (!_showSearch) _searchQuery = '';
-          });
-        },
+      appBar: HomeFeedHeader(
         onBackTap: widget.onBack,
         onMenuTap: widget.onOpenMenu,
         onTitleTap: () {
@@ -250,6 +241,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             );
           }
         },
+        onSearchTap: () {
+          setState(() {
+            _showSearch = !_showSearch;
+            if (!_showSearch) _searchQuery = '';
+          });
+        },
       ),
       body: CustomScrollView(
         controller: _scrollController,
@@ -257,12 +254,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
           parent: AlwaysScrollableScrollPhysics(),
         ),
         slivers: [
+          // Collapsible Search Bar when active
+          if (_showSearch)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 4.0),
+                child: Container(
+                  height: 40.0,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(12.0),
+                    border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
+                  ),
+                  child: Row(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(left: 12.0, right: 8.0),
+                        child: Icon(
+                          Icons.search_rounded,
+                          size: 18.0,
+                          color: Color(0xFF94A3B8),
+                        ),
+                      ),
+                      Expanded(
+                        child: TextField(
+                          autofocus: true,
+                          controller: TextEditingController(text: _searchQuery)
+                            ..selection = TextSelection.fromPosition(
+                              TextPosition(offset: _searchQuery.length),
+                            ),
+                          onChanged: (val) => setState(() => _searchQuery = val),
+                          style: const TextStyle(
+                            fontSize: 13.5,
+                            color: Color(0xFF0F172A),
+                            fontWeight: FontWeight.normal,
+                          ),
+                          decoration: const InputDecoration(
+                            hintText: 'Cari utas atau media di profil...',
+                            hintStyle: TextStyle(
+                              fontSize: 13.5,
+                              color: Color(0xFF94A3B8),
+                              fontWeight: FontWeight.normal,
+                            ),
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.symmetric(vertical: 8.0),
+                          ),
+                        ),
+                      ),
+                      if (_searchQuery.isNotEmpty)
+                        GestureDetector(
+                          onTap: () => setState(() => _searchQuery = ''),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Icon(
+                              Icons.cancel_rounded,
+                              size: 16.0,
+                              color: Color(0xFF94A3B8),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
           // 1. Profile Bio & Information Header
           SliverToBoxAdapter(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ProfileInfoHeader(
+
                   user: _user,
                   isOwnProfile: _isOwnProfile,
                   onEditInterests: _handleEditProfile,

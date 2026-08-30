@@ -153,53 +153,59 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                child: Stack(
+                  alignment: Alignment.center,
                   children: [
-                    // Back Button (40x40 circular tap area)
-                    IconButton(
-                      icon: const Icon(
-                        Icons.arrow_back_rounded,
-                        size: 22.0,
-                        color: AppColors.ink,
-                      ),
-                      tooltip: 'Kembali',
-                      onPressed: _handleAttemptExit,
-                    ),
-
-                    // Centered Title
-                    const Text(
-                      'Edit Profile',
-                      style: TextStyle(
-                        fontSize: 17.0,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.ink,
-                        letterSpacing: -0.3,
-                      ),
-                    ),
-
-                    // Right action: Simpan button if keyboard is active, else spacer
-                    if (isKeyboardOpen)
-                      TextButton(
-                        onPressed: _handleSave,
-                        style: TextButton.styleFrom(
-                          foregroundColor: AppColors.primary,
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    // Truly Centered Title (Dead center of the entire screen width)
+                    const Center(
+                      child: Text(
+                        'Edit Profile',
+                        style: TextStyle(
+                          fontSize: 17.0,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.ink,
+                          letterSpacing: -0.3,
                         ),
-                        child: const Text(
-                          'Simpan',
-                          style: TextStyle(
-                            fontSize: 15.0,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.primary,
+                      ),
+                    ),
+
+                    // Left Back Button
+                    Positioned(
+                      left: 0,
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.arrow_back_rounded,
+                          size: 22.0,
+                          color: AppColors.ink,
+                        ),
+                        tooltip: 'Kembali',
+                        onPressed: _handleAttemptExit,
+                      ),
+                    ),
+
+                    // Right action: Simpan button if keyboard is active
+                    if (isKeyboardOpen)
+                      Positioned(
+                        right: 0,
+                        child: TextButton(
+                          onPressed: _handleSave,
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.primary,
+                            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          ),
+                          child: const Text(
+                            'Simpan',
+                            style: TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.primary,
+                            ),
                           ),
                         ),
-                      )
-                    else
-                      const SizedBox(width: 48.0),
+                      ),
                   ],
                 ),
+
               ),
             ),
           ),

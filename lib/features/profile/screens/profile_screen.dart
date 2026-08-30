@@ -73,6 +73,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _initProfileData();
   }
 
+  @override
+  void didUpdateWidget(covariant ProfileScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _initProfileData();
+  }
+
+
   void _initProfileData() {
     if (_isOwnProfile) {
       _user = kDefaultProfileUser;

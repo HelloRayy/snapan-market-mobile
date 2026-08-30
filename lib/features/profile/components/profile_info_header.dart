@@ -251,22 +251,27 @@ class ProfileInfoHeader extends StatelessWidget {
             spacing: 6.0,
             runSpacing: 6.0,
             children: [
-              ...user.tags.map((tag) => Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 11.0, vertical: 4.0),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF4F4F5),
-                      borderRadius: BorderRadius.circular(20.0),
-                      border: Border.all(color: const Color(0xFFE4E4E7), width: 0.8),
+              ...user.tags.map((rawTag) {
+                final tag = rawTag
+                    .replaceAll(RegExp(r'[\u{1F300}-\u{1FAFF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]', unicode: true), '')
+                    .trim();
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 11.0, vertical: 4.0),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF4F4F5),
+                    borderRadius: BorderRadius.circular(20.0),
+                    border: Border.all(color: const Color(0xFFE4E4E7), width: 0.8),
+                  ),
+                  child: Text(
+                    tag,
+                    style: const TextStyle(
+                      fontSize: 13.0,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF1E293B),
                     ),
-                    child: Text(
-                      tag,
-                      style: const TextStyle(
-                        fontSize: 13.0,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF1E293B),
-                      ),
-                    ),
-                  )),
+                  ),
+                );
+              }),
               if (isOwnProfile)
                 GestureDetector(
                   onTap: onEditInterests,
@@ -289,6 +294,7 @@ class ProfileInfoHeader extends StatelessWidget {
                 ),
             ],
           ),
+
 
         ],
       ),

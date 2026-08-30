@@ -101,7 +101,7 @@ class ProfileTabBar extends StatelessWidget {
         },
         behavior: HitTestBehavior.opaque,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12.0),
+          padding: const EdgeInsets.symmetric(vertical: 10.5),
           alignment: Alignment.center,
           child: Text(
             title,

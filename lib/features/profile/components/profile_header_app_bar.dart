@@ -24,7 +24,7 @@ class ProfileHeaderAppBar extends StatelessWidget implements PreferredSizeWidget
   });
 
   @override
-  Size get preferredSize => Size.fromHeight(showSearch ? 102.0 : 52.0);
+  Size get preferredSize => Size.fromHeight(showSearch ? 106.0 : 54.0);
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +40,9 @@ class ProfileHeaderAppBar extends StatelessWidget implements PreferredSizeWidget
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Top Action Row (Height: 52px)
+            // Top Action Row (Height: 53px)
             SizedBox(
-              height: 52.0,
+              height: 53.5,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4.0),
                 child: Row(

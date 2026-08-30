@@ -7,6 +7,7 @@ import 'package:snapan_market/features/feed/components/home_navigation_drawer.da
 import 'package:snapan_market/features/feed/components/market_post_card.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
+import 'package:snapan_market/features/profile/screens/profile_screen.dart';
 import 'package:snapan_market/features/create_post/screens/create_post_modal.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
 
@@ -181,12 +182,13 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   }
 
   void _handleUserClick(String username) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Membuka profil @$username'),
-        duration: const Duration(seconds: 1),
-        behavior: SnackBarBehavior.floating,
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProfileScreen(
+          username: username,
+          onBack: () => Navigator.pop(context),
+        ),
       ),
     );
   }
@@ -200,38 +202,22 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            GestureDetector(
-              onTap: () => Navigator.pop(ctx),
+            InteractiveViewer(
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(16.0),
+                borderRadius: BorderRadius.circular(12.0),
                 child: Image.network(
                   item.images[imageIndex],
                   fit: BoxFit.contain,
-                  errorBuilder: (_, _, _) => Container(
-                    padding: const EdgeInsets.all(32.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
-                    child: const Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.broken_image_outlined, size: 48.0, color: AppColors.muted),
-                        SizedBox(height: 12.0),
-                        Text('Gambar tidak dapat dimuat', style: TextStyle(color: AppColors.ink)),
-                      ],
-                    ),
-                  ),
                 ),
               ),
             ),
             Positioned(
-              top: 8.0,
-              right: 8.0,
+              top: 10.0,
+              right: 10.0,
               child: GestureDetector(
                 onTap: () => Navigator.pop(ctx),
                 child: Container(
-                  padding: const EdgeInsets.all(6.0),
+                  padding: const EdgeInsets.all(8.0),
                   decoration: const BoxDecoration(
                     color: Color(0x80000000),
                     shape: BoxShape.circle,
@@ -256,6 +242,42 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_currentNavTab == HomeNavTab.profile) {
+      return Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: Colors.white,
+        drawerEnableOpenDragGesture: true,
+        drawerEdgeDragWidth: 40.0,
+        drawer: HomeNavigationDrawer(
+          onNavigateHome: () {
+            setState(() {
+              _activeTab = FeedTab.forYou;
+              _currentNavTab = HomeNavTab.home;
+            });
+            _scrollToTop();
+          },
+          onNavigateSearch: _handleSearchTap,
+          onOpenCreateModal: _handleCreatePost,
+          onLogout: widget.onLogout,
+        ),
+        body: ProfileScreen(
+          onOpenMenu: _handleMenuTap,
+        ),
+        bottomNavigationBar: HomeBottomNavBar(
+          currentTab: _currentNavTab,
+          hasUnreadMessages: true,
+          onTabSelected: (tab) {
+            if (tab == HomeNavTab.create) {
+              _handleCreatePost();
+            } else {
+              setState(() => _currentNavTab = tab);
+            }
+          },
+          onCreateTap: _handleCreatePost,
+        ),
+      );
+    }
+
     final posts = _displayedPosts;
 
     return Scaffold(

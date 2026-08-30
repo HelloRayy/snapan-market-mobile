@@ -69,8 +69,9 @@ class ProfileMediaGrid extends StatelessWidget {
           crossAxisCount: 3,
           crossAxisSpacing: 3.0,
           mainAxisSpacing: 3.0,
-          childAspectRatio: 3 / 4,
+          childAspectRatio: 1.0,
         ),
+
         itemBuilder: (context, index) {
           final item = mediaItems[index];
           return GestureDetector(

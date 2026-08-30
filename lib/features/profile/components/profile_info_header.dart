@@ -213,13 +213,28 @@ class ProfileInfoHeader extends StatelessWidget {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text('⭐ ', style: TextStyle(fontSize: 12.0)),
-                    Text(
-                      '${user.rating} (${user.reviewsCount})',
-                      style: const TextStyle(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF0F172A),
+                    const Icon(
+                      Icons.star_rounded,
+                      size: 16.0,
+                      color: Color(0xFFEAB308),
+                    ),
+                    const SizedBox(width: 2.0),
+                    RichText(
+                      text: TextSpan(
+                        style: const TextStyle(
+                          fontSize: 14.0,
+                          color: Color(0xFF64748B),
+                        ),
+                        children: [
+                          TextSpan(
+                            text: '${user.rating} ',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF0F172A),
+                            ),
+                          ),
+                          TextSpan(text: '(${user.reviewsCount})'),
+                        ],
                       ),
                     ),
                   ],
@@ -227,6 +242,7 @@ class ProfileInfoHeader extends StatelessWidget {
               ],
             ],
           ),
+
 
           const SizedBox(height: 12.0),
 

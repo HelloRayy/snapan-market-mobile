@@ -10,12 +10,13 @@ const ProfileUserModel kDefaultProfileUser = ProfileUserModel(
   bio: 'Building scalable mobile applications & web apps with clean architecture.',
   classGroup: 'XII PPLG 1',
   tags: [
-    '💻 Web PWA',
-    '🎨 UI/UX',
-    '👕 Preloved',
-    '⚡ Joki Coding',
-    '🍱 Kuliner',
+    'Web PWA',
+    'UI/UX',
+    'Preloved',
+    'Joki Coding',
+    'Kuliner',
   ],
+
   followersCount: 142,
   soldCount: 24,
   rating: 4.9,

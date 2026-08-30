@@ -112,7 +112,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         avatar: matched.seller.avatar,
         bio: 'Siswa SMKN 8 Jakarta · Jurusan ${matched.seller.classGroup?.split(' ').last ?? 'PPLG'}.',
         classGroup: matched.seller.classGroup ?? 'XII PPLG 2',
-        tags: const ['📱 Mobile Dev', '🎨 UI/UX', '📷 Fotografi', '💼 Project PJBL'],
+        tags: const ['Mobile Dev', 'UI/UX', 'Fotografi', 'Project PJBL'],
+
         followersCount: 289,
         soldCount: 42,
         rating: 4.9,

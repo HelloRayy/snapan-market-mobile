@@ -74,10 +74,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // Filter user's own posts from mock feed
       _allUserPosts = kMockMarketPosts.where((p) {
         return p.seller.username == 'radityarayhannnn' ||
-            p.seller.id == 'user-1' ||
-            p.seller.id == 'user-thread-1' ||
-            p.seller.id == 'user-current-1';
+            p.seller.id == 'user-var-1' ||
+            p.seller.id == 'user-var-4' ||
+            p.seller.id == 'user-var-5';
+      }).map((p) {
+        return p.copyWith(
+          seller: p.seller.copyWith(
+            name: _user.name,
+            username: _user.username,
+            avatar: _user.avatar,
+            classGroup: _user.classGroup,
+            isVerified: _user.isVerified,
+          ),
+        );
       }).toList();
+
       _allUserReplies = List.from(kMockUserReplies);
     } else {
       final cleanUsername = widget.username!.replaceAll('@', '');

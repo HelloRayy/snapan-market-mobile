@@ -53,26 +53,16 @@ class ProfileInfoHeader extends StatelessWidget {
                           ),
                         ),
                         if (user.isVerified) ...[
-                          const SizedBox(width: 4.0),
-                          Container(
-                            width: 18.0,
-                            height: 18.0,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFF1D64EC),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.check_rounded,
-                                size: 12.0,
-                                color: Colors.white,
-                              ),
-                            ),
+                          const SizedBox(width: 4.5),
+                          const Icon(
+                            Icons.verified_rounded,
+                            size: 19.0,
+                            color: Color(0xFF1D64EC),
                           ),
                         ],
                       ],
                     ),
-                    const SizedBox(height: 3.0),
+                    const SizedBox(height: 2.5),
                     Text(
                       '@${user.username.replaceAll('@', '')} · ${user.classGroup}',
                       style: const TextStyle(
@@ -82,6 +72,7 @@ class ProfileInfoHeader extends StatelessWidget {
                         letterSpacing: -0.1,
                       ),
                     ),
+
                   ],
                 ),
               ),
@@ -245,16 +236,16 @@ class ProfileInfoHeader extends StatelessWidget {
             runSpacing: 6.0,
             children: [
               ...user.tags.map((tag) => Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.5),
+                    padding: const EdgeInsets.symmetric(horizontal: 11.0, vertical: 4.0),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF1F5F9),
+                      color: const Color(0xFFF4F4F5),
                       borderRadius: BorderRadius.circular(20.0),
-                      border: Border.all(color: const Color(0xFFE2E8F0), width: 0.5),
+                      border: Border.all(color: const Color(0xFFE4E4E7), width: 0.8),
                     ),
                     child: Text(
                       tag,
                       style: const TextStyle(
-                        fontSize: 12.5,
+                        fontSize: 13.0,
                         fontWeight: FontWeight.w500,
                         color: Color(0xFF1E293B),
                       ),
@@ -264,11 +255,11 @@ class ProfileInfoHeader extends StatelessWidget {
                 GestureDetector(
                   onTap: onEditInterests,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 9.0, vertical: 4.5),
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF1F5F9),
+                      color: const Color(0xFFF4F4F5),
                       borderRadius: BorderRadius.circular(20.0),
-                      border: Border.all(color: const Color(0xFFE2E8F0), width: 0.5),
+                      border: Border.all(color: const Color(0xFFE4E4E7), width: 0.8),
                     ),
                     child: const Text(
                       '+',
@@ -282,6 +273,7 @@ class ProfileInfoHeader extends StatelessWidget {
                 ),
             ],
           ),
+
         ],
       ),
     );

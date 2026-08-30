@@ -427,10 +427,11 @@ class _SliverProfileTabDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  double get maxExtent => 48.0;
+  double get maxExtent => 47.0;
 
   @override
-  double get minExtent => 48.0;
+  double get minExtent => 47.0;
+
 
 
   @override

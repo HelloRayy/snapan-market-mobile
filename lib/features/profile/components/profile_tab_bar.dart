@@ -8,8 +8,8 @@ enum ProfileTab {
 }
 
 /// 3-Tab Sliding Switcher for Profile Screen (Utas, Balasan, Media)
-/// Matching ProfilePage.tsx with animated 2px underline indicator
-class ProfileTabBar extends StatelessWidget {
+/// Matching ProfilePage.tsx with 47px fixed height and animated 2px underline indicator
+class ProfileTabBar extends StatelessWidget implements PreferredSizeWidget {
   final ProfileTab activeTab;
   final ValueChanged<ProfileTab> onTabChanged;
 
@@ -18,6 +18,9 @@ class ProfileTabBar extends StatelessWidget {
     required this.activeTab,
     required this.onTabChanged,
   });
+
+  @override
+  Size get preferredSize => const Size.fromHeight(47.0);
 
   @override
   Widget build(BuildContext context) {
@@ -35,16 +38,18 @@ class ProfileTabBar extends StatelessWidget {
     }
 
     return Container(
+      height: 47.0,
       decoration: const BoxDecoration(
         color: Colors.white,
         border: Border(
           bottom: BorderSide(color: Color(0xFFF1F5F9), width: 0.5),
         ),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: Stack(
         children: [
+          // 3-Tab Row stretching full height
           Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildTabItem(
                 title: 'Utas',
@@ -65,14 +70,14 @@ class ProfileTabBar extends StatelessWidget {
           ),
 
           // Smooth Sliding Underline Indicator
-          SizedBox(
-            height: 2.0,
-            child: AnimatedAlign(
-              duration: const Duration(milliseconds: 220),
-              curve: Curves.easeOutCubic,
-              alignment: Alignment(indicatorAlignment, 0),
-              child: FractionallySizedBox(
-                widthFactor: 1 / 3,
+          AnimatedAlign(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOutCubic,
+            alignment: Alignment(indicatorAlignment, 1.0),
+            child: FractionallySizedBox(
+              widthFactor: 1 / 3,
+              child: Align(
+                alignment: Alignment.bottomCenter,
                 child: Container(
                   height: 2.0,
                   decoration: BoxDecoration(
@@ -100,9 +105,7 @@ class ProfileTabBar extends StatelessWidget {
           onTabChanged(tab);
         },
         behavior: HitTestBehavior.opaque,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10.5),
-          alignment: Alignment.center,
+        child: Center(
           child: Text(
             title,
             style: TextStyle(

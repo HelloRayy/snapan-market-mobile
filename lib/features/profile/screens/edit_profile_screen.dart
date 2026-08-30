@@ -124,6 +124,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 80.0;
+
     return PopScope(
       canPop: !_hasChanges,
       onPopInvokedWithResult: (didPop, _) {
@@ -177,14 +179,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
 
-                    // Empty spacer for balance
-                    const SizedBox(width: 48.0),
+                    // Right action: Simpan button if keyboard is active, else spacer
+                    if (isKeyboardOpen)
+                      TextButton(
+                        onPressed: _handleSave,
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.primary,
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        ),
+                        child: const Text(
+                          'Simpan',
+                          style: TextStyle(
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      )
+                    else
+                      const SizedBox(width: 48.0),
                   ],
                 ),
               ),
             ),
           ),
         ),
+
         body: Column(
           children: [
             // Scrollable Form Fields Area
@@ -509,89 +529,91 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             ),
 
-            // Permanently Fixed Bottom Dual Action CTA Bar
-            Container(
-              padding: const EdgeInsets.fromLTRB(20.0, 12.0, 20.0, 16.0),
-              decoration: const BoxDecoration(
-                color: AppColors.white,
-                border: Border(
-                  top: BorderSide(
-                    color: Color(0xFFF1F5F9),
-                    width: 1.0,
-                  ),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0x0A000000),
-                    blurRadius: 16.0,
-                    offset: Offset(0, -4),
-                  ),
-                ],
-              ),
-              child: SafeArea(
-                top: false,
-                child: Row(
-                  children: [
-                    // Discard Button (Left)
-                    Expanded(
-                      child: SizedBox(
-                        height: 46.0,
-                        child: OutlinedButton(
-                          onPressed: _handleAttemptExit,
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: AppColors.white,
-                            foregroundColor: AppColors.ink,
-                            side: const BorderSide(
-                              color: AppColors.border,
-                              width: 1.0,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24.0),
-                            ),
-                          ),
-                          child: const Text(
-                            'Discard',
-                            style: TextStyle(
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.ink,
-                            ),
-                          ),
-                        ),
-                      ),
+            // Permanently Fixed Bottom Dual Action CTA Bar (Hidden when software keyboard is open)
+            if (!isKeyboardOpen)
+              Container(
+                padding: const EdgeInsets.fromLTRB(20.0, 12.0, 20.0, 16.0),
+                decoration: const BoxDecoration(
+                  color: AppColors.white,
+                  border: Border(
+                    top: BorderSide(
+                      color: Color(0xFFF1F5F9),
+                      width: 1.0,
                     ),
-
-                    const SizedBox(width: 12.0),
-
-                    // Save Button (Right)
-                    Expanded(
-                      child: SizedBox(
-                        height: 46.0,
-                        child: ElevatedButton(
-                          onPressed: _handleSave,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF101010),
-                            foregroundColor: AppColors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24.0),
-                            ),
-                          ),
-                          child: const Text(
-                            'Save',
-                            style: TextStyle(
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.white,
-                            ),
-                          ),
-                        ),
-                      ),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x0A000000),
+                      blurRadius: 16.0,
+                      offset: Offset(0, -4),
                     ),
                   ],
                 ),
+                child: SafeArea(
+                  top: false,
+                  child: Row(
+                    children: [
+                      // Discard Button (Left)
+                      Expanded(
+                        child: SizedBox(
+                          height: 46.0,
+                          child: OutlinedButton(
+                            onPressed: _handleAttemptExit,
+                            style: OutlinedButton.styleFrom(
+                              backgroundColor: AppColors.white,
+                              foregroundColor: AppColors.ink,
+                              side: const BorderSide(
+                                color: AppColors.border,
+                                width: 1.0,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24.0),
+                              ),
+                            ),
+                            child: const Text(
+                              'Discard',
+                              style: TextStyle(
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.ink,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(width: 12.0),
+
+                      // Save Button (Right)
+                      Expanded(
+                        child: SizedBox(
+                          height: 46.0,
+                          child: ElevatedButton(
+                            onPressed: _handleSave,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF101010),
+                              foregroundColor: AppColors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24.0),
+                              ),
+                            ),
+                            child: const Text(
+                              'Save',
+                              style: TextStyle(
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
+
           ],
         ),
       ),

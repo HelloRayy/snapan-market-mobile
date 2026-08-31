@@ -474,39 +474,76 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           filter: brightness(1.08) !important;
           transform: translateY(-1px) scale(1.01) !important;
         }
-        /* 🎠 6 Profile Cards Carousel Styling */
-        .django-cards-carousel {
+        /* 🎠 Infinite Smooth Auto-Scrolling Marquee with Left/Right Edge Opacity Fade */
+        .django-marquee-wrapper {
+          position: relative !important;
+          width: 100% !important;
+          max-width: 100vw !important;
+          overflow: hidden !important;
+          padding: 24px 0 !important;
+          box-sizing: border-box !important;
+          mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%) !important;
+          -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%) !important;
+        }
+
+        .django-marquee-track {
           display: flex !important;
           flex-direction: row !important;
-          gap: 20px !important;
-          width: 100% !important;
-          max-width: 100% !important;
-          overflow-x: auto !important;
-          scroll-snap-type: x mandatory !important;
-          padding: 20px 24px !important;
+          gap: 24px !important;
+          width: max-content !important;
+          will-change: transform !important;
+          animation: djangoMarqueeScroll 40s linear infinite !important;
           box-sizing: border-box !important;
-          scrollbar-width: none !important;
-          -webkit-overflow-scrolling: touch !important;
-          cursor: grab !important;
         }
-        .django-cards-carousel::-webkit-scrollbar {
-          display: none !important;
+
+        .django-marquee-track:hover {
+          animation-play-state: paused !important;
         }
-        .django-cards-carousel > .framer-a910ey {
+
+        .django-marquee-track > .framer-a910ey {
           flex: 0 0 auto !important;
-          scroll-snap-align: center !important;
           width: 480px !important;
           max-width: 86vw !important;
           margin: 0 !important;
-          transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease !important;
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease !important;
+          cursor: pointer !important;
         }
-        .django-cards-carousel > .framer-a910ey:hover {
-          transform: translateY(-4px) scale(1.01) !important;
+
+        .django-marquee-track > .framer-a910ey:hover {
+          transform: translateY(-6px) scale(1.015) !important;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
         }
+
+        @keyframes djangoMarqueeScroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(calc(-50% - 12px));
+          }
+        }
+
         @media (max-width: 809.98px) {
-          .django-cards-carousel > .framer-a910ey {
-            width: 340px !important;
-            max-width: 88vw !important;
+          .django-marquee-wrapper {
+            padding: 16px 0 !important;
+            mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%) !important;
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%) !important;
+          }
+          .django-marquee-track {
+            animation-duration: 28s !important;
+            gap: 16px !important;
+          }
+          .django-marquee-track > .framer-a910ey {
+            width: 330px !important;
+            max-width: 86vw !important;
+          }
+          @keyframes djangoMarqueeScroll {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(calc(-50% - 8px));
+            }
           }
         }
 

@@ -174,6 +174,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
 
         if (clean.length >= 3) {
           // Centang Hijau + Label Available (Valid & Aman)
+          input.style.paddingRight = '72px';
           if (statusBadge) {
             statusBadge.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
             statusBadge.style.background = '#ecfdf5';
@@ -189,6 +190,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           }
         } else if (clean.length > 0) {
           // Sedang Mengetik (< 3 karakter)
+          input.style.paddingRight = '12px';
           if (statusBadge) {
             statusBadge.innerHTML = `<span style="font-size: 15px; font-weight: 600; color: #1d64ec;">@</span>`;
             statusBadge.style.background = '#eef4ff';
@@ -204,6 +206,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           }
         } else {
           // Kosong (Default)
+          input.style.paddingRight = '12px';
           if (statusBadge) {
             statusBadge.innerHTML = `<span style="font-size: 15px; font-weight: 500; color: #787574;">@</span>`;
             statusBadge.style.background = '#ffffff';
@@ -552,9 +555,15 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         }
 
         /* Input Capsule Sizing & Centering */
-        .framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h {
+        .framer-1oduyj0 {
           width: 360px !important;
           min-width: 320px !important;
+        }
+        .framer-1wlgcwd {
+          width: 255px !important;
+          min-width: 230px !important;
+        }
+        .framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h {
           height: 52px !important;
           min-height: 52px !important;
           max-height: 52px !important;
@@ -585,12 +594,12 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           height: 100% !important;
           line-height: 52px !important;
           width: 100% !important;
-          padding-right: 78px !important;
+          padding-right: 12px !important;
           display: flex !important;
           align-items: center !important;
           margin: 0 !important;
           font-weight: 700 !important;
-          font-size: 15px !important;
+          font-size: 14.5px !important;
           letter-spacing: -0.2px !important;
         }
         @media (max-width: 809.98px) {
@@ -598,7 +607,6 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
             line-height: 48px !important;
             font-size: 14px !important;
             font-weight: 700 !important;
-            padding-right: 70px !important;
           }
         }
 

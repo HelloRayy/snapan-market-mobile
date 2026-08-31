@@ -208,15 +208,28 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           transform: translateY(-4px) scale(1.015) !important;
         }
 
-        /* Button Tap & Spring Physics */
-        button, a, input[type="submit"] {
+        /* 💎 Cloudflare Kumo UI Button Styling (All CTA Action Buttons) */
+        [data-framer-name="Button"], 
+        [data-framer-name*="CTA"], 
+        a[href*="app.pop.site"],
+        .framer-192wfb0 {
+          background: linear-gradient(180deg, #3b82f6 0%, #1d64ec 100%) !important;
+          box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.35), 0 4px 14px 0 rgba(29, 100, 236, 0.35) !important;
+          border: 1px solid #154ec1 !important;
+          color: #ffffff !important;
+          border-radius: 9999px !important;
           transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;
         }
-        button:active, a:active {
-          transform: scale(0.96) !important;
+        [data-framer-name="Button"]:hover, 
+        [data-framer-name*="CTA"]:hover,
+        a[href*="app.pop.site"]:hover {
+          filter: brightness(1.08) !important;
+          transform: translateY(-1px) scale(1.01) !important;
         }
-        button:hover, a:hover {
-          filter: brightness(1.05);
+        [data-framer-name="Button"]:active, 
+        [data-framer-name*="CTA"]:active,
+        a[href*="app.pop.site"]:active {
+          transform: scale(0.96) !important;
         }
 
         /* Accessibility & Test Mode */

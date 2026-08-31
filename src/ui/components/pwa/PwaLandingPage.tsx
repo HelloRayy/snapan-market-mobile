@@ -576,6 +576,27 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         }
         .framer-sdhxzw .framer-8r7xto {
           margin-top: 8px !important;
+          width: 100% !important;
+        }
+        .framer-sdhxzw .framer-1c5m59g {
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: stretch !important;
+          gap: 16px !important;
+          width: 100% !important;
+        }
+        .framer-sdhxzw [data-framer-name="Feature Simple"],
+        .framer-sdhxzw .framer-1p2c0r4,
+        .framer-sdhxzw .framer-1jz2pvg,
+        .framer-sdhxzw .framer-11kd95v,
+        .framer-sdhxzw .framer-xlz7uj {
+          height: 100% !important;
+          min-height: 250px !important;
+          display: flex !important;
+          flex-direction: column !important;
+          justify-content: flex-start !important;
+          flex: 1 1 0 !important;
+          box-sizing: border-box !important;
         }
         @media (max-width: 809.98px) {
           .framer-sdhxzw {

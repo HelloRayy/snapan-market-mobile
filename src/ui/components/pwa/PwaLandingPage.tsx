@@ -147,40 +147,80 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
       }
 
       const capsule = input.closest('.framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h') as HTMLElement | null;
+      let warnTimeout: ReturnType<typeof setTimeout> | null = null;
 
-      const validate = () => {
-        const val = input.value;
-        if (!val) {
+      const triggerAlert = () => {
+        if (warnBadge) {
+          warnBadge.style.display = 'inline-flex';
+          warnBadge.style.opacity = '1';
+        }
+        if (capsule) {
+          capsule.style.borderColor = '#e11d48';
+          capsule.style.boxShadow = '0 0 0 3px rgba(225, 29, 72, 0.15)';
+        }
+        triggerHaptic('error');
+
+        if (warnTimeout) clearTimeout(warnTimeout);
+        warnTimeout = setTimeout(() => {
           if (warnBadge) warnBadge.style.display = 'none';
           if (capsule) {
-            capsule.style.borderColor = '#d7dde0';
-            capsule.style.boxShadow = 'none';
+            capsule.style.borderColor = input.value ? '#1d64ec' : '#d7dde0';
+            capsule.style.boxShadow = input.value ? '0 0 0 3px rgba(29, 100, 236, 0.12)' : 'none';
           }
-          return true;
+        }, 1800);
+      };
+
+      // 1. Block forbidden keys on keydown (Space, Uppercase, Special Symbols)
+      const handleKeyDown = (e: KeyboardEvent) => {
+        // Izinkan tombol kontrol/navigasi (Backspace, Delete, Arrow, Tab, Enter, dll)
+        if (e.ctrlKey || e.metaKey || e.altKey) return;
+        if (['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter', 'Escape', 'Home', 'End'].includes(e.key)) {
+          return;
         }
 
-        // Hanya huruf kecil dan angka (a-z, 0-9)
-        const isValid = /^[a-z0-9]+$/.test(val);
+        // Blokir SPASI
+        if (e.key === ' ' || e.code === 'Space') {
+          e.preventDefault();
+          triggerAlert();
+          return;
+        }
 
-        if (!isValid) {
-          if (warnBadge) warnBadge.style.display = 'inline-flex';
-          if (capsule) {
-            capsule.style.borderColor = '#e11d48';
-            capsule.style.boxShadow = '0 0 0 3px rgba(225, 29, 72, 0.15)';
+        // Blokir HURUF BESAR (KAPITAL) & SIMBOL
+        if (e.key.length === 1) {
+          // Hanya izinkan a-z (huruf kecil) dan 0-9 (angka)
+          if (!/^[a-z0-9]$/.test(e.key)) {
+            e.preventDefault();
+            triggerAlert();
+            return;
           }
-          triggerHaptic('error');
-          return false;
-        } else {
+        }
+      };
+
+      // 2. Sanitize on input (untuk paste, mobile keyboard autocomplete, drag & drop)
+      const handleInput = () => {
+        const raw = input.value;
+        const sanitized = raw.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+        if (raw !== sanitized) {
+          input.value = sanitized;
+          triggerAlert();
+        } else if (sanitized.length > 0) {
           if (warnBadge) warnBadge.style.display = 'none';
           if (capsule) {
             capsule.style.borderColor = '#1d64ec';
             capsule.style.boxShadow = '0 0 0 3px rgba(29, 100, 236, 0.12)';
           }
-          return true;
+        } else {
+          if (warnBadge) warnBadge.style.display = 'none';
+          if (capsule) {
+            capsule.style.borderColor = '#d7dde0';
+            capsule.style.boxShadow = 'none';
+          }
         }
       };
 
-      input.addEventListener('input', validate);
+      input.addEventListener('keydown', handleKeyDown);
+      input.addEventListener('input', handleInput);
     });
   }, [isMobile]);
 

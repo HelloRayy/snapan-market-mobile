@@ -259,7 +259,28 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           40%, 80% { transform: translateX(6px); }
         }
 
-
+        /* 🔤 2-Line Hero H1 Headline */
+        .framer-apv9m0 {
+          max-width: 1100px !important;
+          margin: 0 auto !important;
+        }
+        .framer-apv9m0 h1 {
+          font-size: 84px !important;
+          line-height: 1.05 !important;
+          letter-spacing: -2.8px !important;
+          text-align: center !important;
+          margin: 0 !important;
+        }
+        @media (max-width: 809.98px) {
+          .framer-apv9m0 {
+            max-width: 100% !important;
+          }
+          .framer-apv9m0 h1 {
+            font-size: 44px !important;
+            line-height: 1.1 !important;
+            letter-spacing: -1.2px !important;
+          }
+        }
 
         /* Buttons Row Centering */
         [data-framer-name="Buttons"], .framer-12tlorp, .framer-j6nqnh {

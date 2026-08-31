@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { popSiteHtml } from './popSiteHtml';
 import { popSiteMobileHtml } from './popSiteMobileHtml';
@@ -14,6 +14,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
   const { promptInstall } = usePWA();
   const [showCustomInstallModal, setShowCustomInstallModal] = useState(false);
   const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 810 : false));
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -23,8 +24,50 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // 1. Interactive Motion Physics & Scroll-Triggered Reveal Observer
   useEffect(() => {
-    // Intercept clicks on claim buttons, install actions, or login
+    const root = containerRef.current;
+    if (!root) return;
+
+    // Jika prefer-reduced-motion aktif (misal saat visual test), jangan sembunyikan elemen
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
+    const elementsToAnimate = root.querySelectorAll(
+      '#main > div > div, [data-framer-component-type="Stack"] > div[style*="position"], section, [data-framer-name*="Section"], [data-framer-name*="Bento"], [data-framer-name*="Theme"], [data-framer-name*="FAQ"]'
+    );
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('pop-motion-visible');
+          }
+        });
+      },
+      {
+        rootMargin: '0px 0px -40px 0px',
+        threshold: 0.08,
+      }
+    );
+
+    elementsToAnimate.forEach((el, index) => {
+      if (index === 0 || el.getBoundingClientRect().top < 400) {
+        el.classList.add('pop-motion-hero');
+        return;
+      }
+      el.classList.add('pop-motion-init');
+      observer.observe(el);
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isMobile]);
+
+  // 2. Intercept clicks on claim buttons, install actions, or login
+  useEffect(() => {
     const handleGlobalClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (!target) return;
@@ -60,9 +103,68 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="min-h-screen w-full bg-white font-gt-standard overflow-x-hidden antialiased select-none"
+      className="min-h-screen w-full bg-white font-gt-standard overflow-x-hidden antialiased select-none relative"
     >
-      <div dangerouslySetInnerHTML={{ __html: isMobile ? popSiteMobileHtml : popSiteHtml }} />
+      {/* Dynamic 120 FPS Motion Physics Stylesheet */}
+      <style>{`
+        /* Staggered Scroll-Reveal Animation */
+        .pop-motion-init {
+          opacity: 0;
+          transform: translateY(28px) scale(0.985);
+          transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+          will-change: opacity, transform;
+        }
+        .pop-motion-visible {
+          opacity: 1 !important;
+          transform: translateY(0) scale(1) !important;
+        }
+
+        /* Hero Stagger Entrance */
+        .pop-motion-hero {
+          animation: popHeroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        @keyframes popHeroFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        /* Hover Zoom on Interactive Theme Cards & Images */
+        a:has(img), [data-framer-component-type="Stack"]:has(img) {
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease !important;
+        }
+        a:has(img):hover, [data-framer-component-type="Stack"]:has(img):hover {
+          transform: translateY(-4px) scale(1.015) !important;
+        }
+
+        /* Button Tap & Spring Physics */
+        button, a, input[type="submit"] {
+          transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;
+        }
+        button:active, a:active {
+          transform: scale(0.96) !important;
+        }
+        button:hover, a:hover {
+          filter: brightness(1.05);
+        }
+
+        /* Accessibility & Test Mode */
+        @media (prefers-reduced-motion: reduce) {
+          .pop-motion-init, .pop-motion-hero {
+            opacity: 1 !important;
+            transform: none !important;
+            animation: none !important;
+            transition: none !important;
+          }
+        }
+      `}</style>
+
+      <div ref={containerRef} dangerouslySetInnerHTML={{ __html: isMobile ? popSiteMobileHtml : popSiteHtml }} />
 
       <CustomPwaInstallModal
         isOpen={showCustomInstallModal}

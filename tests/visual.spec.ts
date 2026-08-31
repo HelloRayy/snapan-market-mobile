@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('1:1 Pop.site Visual Regression Suite', () => {
   test('Desktop Viewport (1440x900) - 1:1 Pixel Parity', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/app', { waitUntil: 'networkidle' });
 
@@ -33,6 +34,7 @@ test.describe('1:1 Pop.site Visual Regression Suite', () => {
   });
 
   test('Mobile Viewport (390x844) - 1:1 Pixel Parity', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/app', { waitUntil: 'networkidle' });
 

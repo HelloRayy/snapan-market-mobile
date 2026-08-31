@@ -336,17 +336,20 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         }
 
         /* 📱 5-Phone Fan-Out Real-Time Parallax Physics (1:1 pop.site) */
+        .framer-1jtpo7w-container,
+        .framer-1ae4mtt-container,
+        .framer-1p6dlg7-container,
+        .framer-fxtokh-container,
+        .framer-yysfgz-container,
         [data-framer-name="Mockup"] {
           will-change: transform !important;
           cursor: default !important;
         }
 
-        /* 🌊 Staggered Viewport Scroll-Reveal Physics */
+        /* 🌊 Smooth Viewport Entrance Physics (100% Guaranteed Visible) */
         .pop-motion-init {
-          opacity: 0;
-          transform: translateY(28px);
-          transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
-          will-change: opacity, transform;
+          opacity: 1 !important;
+          will-change: transform, opacity !important;
         }
         .pop-motion-visible {
           opacity: 1 !important;

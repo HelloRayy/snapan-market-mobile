@@ -24,7 +24,64 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // 1. Viewport Entrance Motion System (IntersectionObserver + Scroll Fallback)
+  useEffect(() => {
+    const root = containerRef.current;
+    if (!root) return;
 
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
+    const targetElements = root.querySelectorAll<HTMLElement>(
+      'section, .framer-1c5m59g > div, .django-marquee-wrapper, .framer-14dz49g, .framer-p5xoen, footer, .framer-1fqlk99, .framer-1yxsbyq'
+    );
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('pop-in-view');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        root: null,
+        rootMargin: '0px 0px -40px 0px',
+        threshold: 0.05,
+      }
+    );
+
+    const handleScrollCheck = () => {
+      const triggerBottom = window.innerHeight * 0.95;
+      targetElements.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < triggerBottom) {
+          el.classList.add('pop-in-view');
+        }
+      });
+    };
+
+    targetElements.forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      // If already in viewport on mount, trigger immediately
+      if (rect.top < window.innerHeight * 0.92) {
+        el.classList.add('pop-reveal', 'pop-in-view');
+      } else {
+        el.classList.add('pop-reveal');
+        observer.observe(el);
+      }
+    });
+
+    window.addEventListener('scroll', handleScrollCheck, { passive: true });
+    setTimeout(handleScrollCheck, 120);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('scroll', handleScrollCheck);
+    };
+  }, [isMobile]);
 
   // 2. Real-time Username Input Validation & Warn Alert
   useEffect(() => {
@@ -258,6 +315,25 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           20%, 60% { transform: translateX(-6px); }
           40%, 80% { transform: translateX(6px); }
         }
+
+        /* 🌊 Viewport Entrance Motion System */
+        .pop-reveal {
+          opacity: 0;
+          transform: translateY(32px);
+          transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) !important;
+          will-change: opacity, transform;
+        }
+
+        .pop-reveal.pop-in-view {
+          opacity: 1 !important;
+          transform: translateY(0px) !important;
+        }
+
+        /* Bento cards cascade stagger delay */
+        .framer-1p2c0r4.pop-reveal { transition-delay: 0ms !important; }
+        .framer-1jz2pvg.pop-reveal { transition-delay: 90ms !important; }
+        .framer-11kd95v.pop-reveal { transition-delay: 180ms !important; }
+        .framer-xlz7uj.pop-reveal  { transition-delay: 270ms !important; }
 
         /* 🔤 2-Line Hero H1 Headline */
         .framer-apv9m0 {

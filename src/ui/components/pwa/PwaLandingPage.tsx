@@ -119,7 +119,8 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           warnBadge.style.cssText = `
             display: none;
             position: absolute;
-            bottom: -36px;
+            top: -42px;
+            bottom: auto;
             left: 50%;
             transform: translateX(-50%);
             background: #fff1f2;
@@ -129,13 +130,13 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
             font-weight: 600;
             padding: 5px 14px;
             border-radius: 9999px;
-            box-shadow: 0 6px 18px rgba(225, 29, 72, 0.08);
+            box-shadow: 0 6px 18px rgba(225, 29, 72, 0.10);
             white-space: nowrap;
             z-index: 50;
             align-items: center;
             gap: 6px;
             pointer-events: none;
-            animation: popBadgeEnter 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+            animation: popBadgeEnterTop 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
           `;
           warnBadge.innerHTML = `
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -158,12 +159,10 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           return true;
         }
 
-        // Cek apakah ada huruf besar, spasi, atau simbol selain huruf kecil & angka (a-z, 0-9)
-        const hasCapital = /[A-Z]/.test(val);
-        const hasSpace = /\s/.test(val);
-        const hasInvalidChar = /[^a-z0-9]/.test(val);
+        // Hanya huruf kecil dan angka (a-z, 0-9)
+        const isValid = /^[a-z0-9]+$/.test(val);
 
-        if (hasCapital || hasSpace || hasInvalidChar) {
+        if (!isValid) {
           if (warnBadge) warnBadge.style.display = 'inline-flex';
           if (capsule) {
             capsule.style.borderColor = '#e11d48';
@@ -203,7 +202,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         const input = document.querySelector<HTMLInputElement>('input[name="username"]');
         if (input && input.value) {
           const val = input.value;
-          const isInvalid = /[A-Z]/.test(val) || /\s/.test(val) || /[^a-z0-9]/.test(val);
+          const isInvalid = !/^[a-z0-9]+$/.test(val);
           if (isInvalid) {
             triggerHaptic('error');
             const capsule = input.closest('.framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h') as HTMLElement | null;

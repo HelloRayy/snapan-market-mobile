@@ -208,6 +208,16 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           transform: translateY(-4px) scale(1.015) !important;
         }
 
+        /* Buttons Row Centering */
+        [data-framer-name="Buttons"], .framer-12tlorp, .framer-j6nqnh {
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 12px !important;
+          margin: 0 auto !important;
+        }
+
         /* Input Capsule Sizing & Centering */
         .framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h {
           width: 280px !important;
@@ -216,6 +226,9 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           min-height: 52px !important;
           max-height: 52px !important;
           box-sizing: border-box !important;
+          display: flex !important;
+          align-items: center !important;
+          margin: 0 !important;
         }
         @media (max-width: 809.98px) {
           .framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h {
@@ -225,6 +238,79 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
             min-height: 48px !important;
             max-height: 48px !important;
           }
+        }
+
+        .framer-1oduyj0 input, .framer-1wlgcwd input, .framer-7j981h input {
+          height: 100% !important;
+          line-height: 52px !important;
+          display: flex !important;
+          align-items: center !important;
+          margin: 0 !important;
+        }
+        @media (max-width: 809.98px) {
+          .framer-1oduyj0 input, .framer-1wlgcwd input, .framer-7j981h input {
+            line-height: 48px !important;
+          }
+        }
+
+        .framer-g63eua-container, .framer-upoedb-container {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          height: 52px !important;
+          margin: 0 !important;
+        }
+        @media (max-width: 809.98px) {
+          .framer-g63eua-container, .framer-upoedb-container {
+            height: 48px !important;
+          }
+        }
+
+        /* 💎 Kumo Biru CTA Button Styling */
+        [data-framer-name="Button"], 
+        .framer-192wfb0 {
+          height: 52px !important;
+          min-height: 52px !important;
+          max-height: 52px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          box-sizing: border-box !important;
+          margin: 0 !important;
+          padding: 0 26px !important;
+          background: linear-gradient(180deg, #3b82f6 0%, #1d64ec 100%) !important;
+          box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.35), 0 4px 14px 0 rgba(29, 100, 236, 0.32) !important;
+          border: 1px solid #154ec1 !important;
+          color: #ffffff !important;
+          transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;
+        }
+        [data-framer-name="Button"] > div, .framer-192wfb0 > div {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          height: 100% !important;
+        }
+        [data-framer-name="Button"] p, .framer-192wfb0 p {
+          margin: 0 !important;
+          line-height: 1 !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+        }
+        @media (max-width: 809.98px) {
+          [data-framer-name="Button"], 
+          .framer-192wfb0 {
+            height: 48px !important;
+            min-height: 48px !important;
+            max-height: 48px !important;
+          }
+        }
+        [data-framer-name="Button"]:hover, .framer-192wfb0:hover {
+          filter: brightness(1.08) !important;
+          transform: translateY(-1px) scale(1.01) !important;
+        }
+        [data-framer-name="Button"]:active, .framer-192wfb0:active {
+          transform: scale(0.96) !important;
         }
 
         /* Button Tap & Spring Physics */

@@ -147,7 +147,14 @@ export function App() {
   // Dynamic Route Checks
   const isMapRoute = currentRoute === '/map' || window.location.hash === '#map';
   const isColorsRoute = currentRoute === '/colors' || window.location.hash === '#colors';
-  const isDownloadRoute = currentRoute === '/download' || window.location.hash === '#download';
+  const isDownloadRoute =
+    currentRoute === '/download' ||
+    currentRoute === '/app' ||
+    currentRoute === '/get' ||
+    window.location.hash === '#download' ||
+    window.location.hash === '#app' ||
+    window.location.hash === '#get';
+
   const isOnboardingRoute = currentRoute === '/onboarding' || window.location.hash === '#onboarding';
   const isSearchRoute = currentRoute === '/search' || window.location.hash === '#search';
   const isMessagesRoute = currentRoute === '/messages' || currentRoute === '/direct' || window.location.hash === '#messages' || window.location.hash === '#direct';

@@ -24,83 +24,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // 1. Interactive Motion Physics, Scroll-Triggered Reveal & 5-Phone Fan-Out Observer
-  useEffect(() => {
-    const root = containerRef.current;
-    if (!root) return;
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      return;
-    }
-
-    // A. 5-Phone Fan-Out Real-Time Scroll Parallax Driver (1:1 pop.site)
-    const p0 = root.querySelector<HTMLElement>('.framer-1jtpo7w-container');
-    const p1 = root.querySelector<HTMLElement>('.framer-1ae4mtt-container');
-    const p2 = root.querySelector<HTMLElement>('.framer-1p6dlg7-container');
-    const p3 = root.querySelector<HTMLElement>('.framer-fxtokh-container');
-    const p4 = root.querySelector<HTMLElement>('.framer-yysfgz-container');
-    const phoneContainers = [p0, p1, p2, p3, p4].filter(Boolean) as HTMLElement[];
-
-    const updatePhoneScrollParallax = () => {
-      if (phoneContainers.length < 5) return;
-      const scrollY = window.scrollY;
-      const progress = Math.min(1, Math.max(0, scrollY / 650));
-      const ease = 1 - Math.pow(1 - progress, 2);
-
-      const isMobileView = window.innerWidth < 810;
-      const baseOuter = isMobileView ? 54 : 106.83;
-      const targetOuter = isMobileView ? 10 : 30.0;
-      const baseInner = isMobileView ? 45 : 89.1068;
-      const targetInner = 0;
-
-      const curOuter = baseOuter - (baseOuter - targetOuter) * ease;
-      const curInner = baseInner - (baseInner - targetInner) * ease;
-
-      if (p0) p0.style.transform = `matrix(1, 0, 0, 1, 0, ${curOuter.toFixed(2)})`;
-      if (p1) p1.style.transform = `matrix(1, 0, 0, 1, 0, ${curInner.toFixed(2)})`;
-      if (p2) p2.style.transform = `matrix(1, 0, 0, 1, 0, 0)`;
-      if (p3) p3.style.transform = `matrix(1, 0, 0, 1, 0, ${curInner.toFixed(2)})`;
-      if (p4) p4.style.transform = `matrix(1, 0, 0, 1, 0, ${curOuter.toFixed(2)})`;
-    };
-
-    // B. General Section Scroll-Reveal
-    const elementsToAnimate = root.querySelectorAll(
-      '.framer-1c5m59g > div, .django-marquee-wrapper, .framer-14dz49g, .framer-p5xoen, footer, .framer-1fqlk99, .framer-1yxsbyq'
-    );
-
-    const handleScrollReveal = () => {
-      const triggerBottom = window.innerHeight * 0.94;
-      elementsToAnimate.forEach((el) => {
-        const rect = el.getBoundingClientRect();
-        if (rect.top < triggerBottom) {
-          el.classList.add('pop-motion-visible');
-          el.classList.remove('pop-motion-init');
-        }
-      });
-    };
-
-    const handleScroll = () => {
-      updatePhoneScrollParallax();
-      handleScrollReveal();
-    };
-
-    elementsToAnimate.forEach((el, idx) => {
-      el.classList.add('pop-motion-init');
-      // Assign staggered transition delay for Bento cards
-      if (el.parentElement?.classList.contains('framer-1c5m59g')) {
-        (el as HTMLElement).style.transitionDelay = `${idx * 100}ms`;
-      }
-    });
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    // Initial sync
-    updatePhoneScrollParallax();
-    setTimeout(handleScrollReveal, 80);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [isMobile]);
 
   // 2. Real-time Username Input Validation & Warn Alert
   useEffect(() => {
@@ -335,26 +259,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           40%, 80% { transform: translateX(6px); }
         }
 
-        /* 📱 5-Phone Fan-Out Real-Time Parallax Physics (1:1 pop.site) */
-        .framer-1jtpo7w-container,
-        .framer-1ae4mtt-container,
-        .framer-1p6dlg7-container,
-        .framer-fxtokh-container,
-        .framer-yysfgz-container,
-        [data-framer-name="Mockup"] {
-          will-change: transform !important;
-          cursor: default !important;
-        }
 
-        /* 🌊 Smooth Viewport Entrance Physics (100% Guaranteed Visible) */
-        .pop-motion-init {
-          opacity: 1 !important;
-          will-change: transform, opacity !important;
-        }
-        .pop-motion-visible {
-          opacity: 1 !important;
-          transform: translateY(0px) !important;
-        }
 
         /* Buttons Row Centering */
         [data-framer-name="Buttons"], .framer-12tlorp, .framer-j6nqnh {

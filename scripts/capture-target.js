@@ -2,22 +2,19 @@ import { chromium } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
-async function captureTarget(targetUrl, specBaseName = 'visual.spec.ts') {
-  console.log(`🚀 [Playwright Capture] Membuka URL target: ${targetUrl}...`);
-  
-  const browser = await chromium.launch({ headless: true });
+async function captureViewport(browser, { name, width, height, url, snapshotDir }) {
+  console.log(`🚀 [Playwright Capture] Memotret ${name} (${width}x${height})...`);
+
   const context = await browser.newContext({
-    viewport: { width: 1440, height: 900 },
-    deviceScaleFactor: 2,
+    viewport: { width, height },
+    deviceScaleFactor: 1,
   });
 
   const page = await context.newPage();
 
   try {
-    await page.goto(targetUrl, { waitUntil: 'networkidle', timeout: 45000 });
+    await page.goto(url, { waitUntil: 'networkidle', timeout: 45000 });
 
-    // 1. Tunggu webfonts & trigger lazy loading gambar dengan smooth scroll
-    console.log('⏳ [Playwright Capture] Menunggu webfonts & memicu scroll assets...');
     await page.evaluate(async () => {
       await document.fonts.ready;
       window.scrollTo(0, document.body.scrollHeight);
@@ -26,8 +23,6 @@ async function captureTarget(targetUrl, specBaseName = 'visual.spec.ts') {
       await new Promise((r) => setTimeout(r, 1000));
     });
 
-    // 2. Bekukan animasi berulang & transisi
-    console.log('❄️ [Playwright Capture] Membekukan CSS animations & transitions...');
     await page.addStyleTag({
       content: `
         *, *::before, *::after {
@@ -37,37 +32,54 @@ async function captureTarget(targetUrl, specBaseName = 'visual.spec.ts') {
       `,
     });
 
-    // 3. Pause semua video HTML5
-    await page.evaluate(() => {
-      document.querySelectorAll('video').forEach((v) => {
-        v.pause();
-        v.currentTime = 0;
-      });
-    });
-
-    // 4. Siapkan snapshot directory
-    const snapshotDir = path.resolve(`tests/${specBaseName}-snapshots`);
-    fs.mkdirSync(snapshotDir, { recursive: true });
-
-    const targetPath = path.resolve('target.png');
-    const testSnapshotPath = path.join(snapshotDir, 'target-linux.png');
+    const snapshotPath = path.join(snapshotDir, `target-${name}-linux.png`);
     const videos = page.locator('video');
 
-    console.log(`📸 [Playwright Capture] Menyimpan baseline screenshot ke: ${targetPath}`);
-    await page.screenshot({ path: targetPath, fullPage: true, animations: 'disabled', mask: [videos] });
-    await page.screenshot({ path: testSnapshotPath, fullPage: true, animations: 'disabled', mask: [videos] });
+    await page.screenshot({
+      path: snapshotPath,
+      fullPage: true,
+      animations: 'disabled',
+      mask: [videos],
+    });
 
-    // 5. Simpan full rendered DOM HTML
-    const renderedHtml = await page.content();
-    fs.writeFileSync('target-rendered.html', renderedHtml);
-
-    console.log(`✅ [Playwright Capture] Sukses! Snapshot baseline tersimpan di: ${testSnapshotPath}`);
+    console.log(`✅ [Playwright Capture] Baseline ${name} tersimpan di: ${snapshotPath}`);
   } catch (err) {
-    console.error('❌ [Playwright Capture] Error:', err);
+    console.error(`❌ [Playwright Capture] Error pada ${name}:`, err.message);
+  } finally {
+    await context.close();
+  }
+}
+
+async function run() {
+  const url = process.argv[2] || 'https://pop.site/';
+  const snapshotDir = path.resolve('tests/visual.spec.ts-snapshots');
+  fs.mkdirSync(snapshotDir, { recursive: true });
+
+  const browser = await chromium.launch({ headless: true });
+
+  try {
+    // 1. Desktop Viewport (1440x900)
+    await captureViewport(browser, {
+      name: 'desktop',
+      width: 1440,
+      height: 900,
+      url,
+      snapshotDir,
+    });
+
+    // 2. Mobile Viewport (390x844)
+    await captureViewport(browser, {
+      name: 'mobile',
+      width: 390,
+      height: 844,
+      url,
+      snapshotDir,
+    });
+
+    console.log('\n🎉 [Playwright Capture] Seluruh baseline dual-viewport berhasil diambil!');
   } finally {
     await browser.close();
   }
 }
 
-const target = process.argv[2] || 'https://pop.site/';
-captureTarget(target);
+run();

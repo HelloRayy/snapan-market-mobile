@@ -474,8 +474,40 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           filter: brightness(1.08) !important;
           transform: translateY(-1px) scale(1.01) !important;
         }
-        [data-framer-name="Button"]:active, .framer-192wfb0:active {
-          transform: scale(0.96) !important;
+        /* 🎠 6 Profile Cards Carousel Styling */
+        .django-cards-carousel {
+          display: flex !important;
+          flex-direction: row !important;
+          gap: 20px !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          overflow-x: auto !important;
+          scroll-snap-type: x mandatory !important;
+          padding: 20px 24px !important;
+          box-sizing: border-box !important;
+          scrollbar-width: none !important;
+          -webkit-overflow-scrolling: touch !important;
+          cursor: grab !important;
+        }
+        .django-cards-carousel::-webkit-scrollbar {
+          display: none !important;
+        }
+        .django-cards-carousel > .framer-a910ey {
+          flex: 0 0 auto !important;
+          scroll-snap-align: center !important;
+          width: 480px !important;
+          max-width: 86vw !important;
+          margin: 0 !important;
+          transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease !important;
+        }
+        .django-cards-carousel > .framer-a910ey:hover {
+          transform: translateY(-4px) scale(1.01) !important;
+        }
+        @media (max-width: 809.98px) {
+          .django-cards-carousel > .framer-a910ey {
+            width: 340px !important;
+            max-width: 88vw !important;
+          }
         }
 
         /* Button Tap & Spring Physics */

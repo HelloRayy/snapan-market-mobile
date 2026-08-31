@@ -146,10 +146,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         availableBadge.style.cssText = `
           display: none;
           align-items: center;
-          position: absolute;
-          right: 8px;
-          top: 50%;
-          transform: translateY(-50%);
+          justify-content: center;
           background: #ecfdf5;
           color: #059669;
           border: 1px solid #a7f3d0;
@@ -157,10 +154,12 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           font-weight: 600;
           padding: 3px 8px;
           border-radius: 9999px;
+          margin-left: auto;
+          margin-right: 0;
           flex-shrink: 0;
           letter-spacing: 0.2px;
           user-select: none;
-          animation: popBadgeEnter 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+          animation: popAvailableBadge 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
         `;
         availableBadge.textContent = 'Available';
         inputWrapper.appendChild(availableBadge);
@@ -394,6 +393,17 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           }
         }
 
+        @keyframes popAvailableBadge {
+          from {
+            opacity: 0;
+            transform: scale(0.92);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
         @keyframes capsuleShake {
           0%, 100% { transform: translateX(0); }
           20%, 60% { transform: translateX(-6px); }
@@ -614,16 +624,25 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         .framer-1oduyj0 > div:last-child,
         .framer-1wlgcwd > div:last-child,
         .framer-7j981h > div:last-child {
-          position: relative !important;
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          height: 100% !important;
           padding-left: 14px !important;
           padding-right: 8px !important;
+          overflow: hidden !important;
         }
 
-        .framer-1oduyj0 input, .framer-1wlgcwd input, .framer-7j981h input, input[name="username"] {
+        .framer-1oduyj0 input,
+        .framer-1wlgcwd input,
+        .framer-7j981h input,
+        input[name="username"] {
           height: 100% !important;
           line-height: 52px !important;
-          width: 100% !important;
-          padding-right: 12px !important;
+          flex: 1 !important;
+          width: 0 !important;
+          min-width: 0 !important;
+          padding-right: 8px !important;
           display: flex !important;
           align-items: center !important;
           margin: 0 !important;
@@ -632,7 +651,10 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           letter-spacing: -0.2px !important;
         }
         @media (max-width: 809.98px) {
-          .framer-1oduyj0 input, .framer-1wlgcwd input, .framer-7j981h input, input[name="username"] {
+          .framer-1oduyj0 input,
+          .framer-1wlgcwd input,
+          .framer-7j981h input,
+          input[name="username"] {
             line-height: 48px !important;
             font-size: 14px !important;
             font-weight: 700 !important;

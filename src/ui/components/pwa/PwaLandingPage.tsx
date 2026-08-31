@@ -67,7 +67,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
 
     // B. General Section Scroll-Reveal Observer
     const elementsToAnimate = root.querySelectorAll(
-      '#main > div > div, [data-framer-component-type="Stack"] > div[style*="position"], section, [data-framer-name*="Section"], [data-framer-name*="Bento"], [data-framer-name*="Theme"], [data-framer-name*="FAQ"]'
+      '.framer-1c5m59g > div, .django-marquee-wrapper, .framer-14dz49g, .framer-p5xoen, footer, [data-framer-name="FAQ"], [data-framer-name="Pricing"], .framer-1fqlk99, .framer-1yxsbyq'
     );
 
     const observer = new IntersectionObserver(

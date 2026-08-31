@@ -544,14 +544,43 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           }
         }
 
-        /* Buttons Row Centering */
-        [data-framer-name="Buttons"], .framer-12tlorp, .framer-j6nqnh {
+        /* Buttons Row Centering & Left-Alignment */
+        [data-framer-name="Buttons"], .framer-12tlorp {
           display: flex !important;
           flex-direction: row !important;
           align-items: center !important;
           justify-content: center !important;
           gap: 12px !important;
           margin: 0 auto !important;
+        }
+
+        .framer-ezeuh3 {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: flex-start !important;
+          justify-content: flex-start !important;
+          text-align: left !important;
+        }
+
+        .framer-j6nqnh {
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          justify-content: flex-start !important;
+          gap: 12px !important;
+          margin: 0 !important;
+          width: 100% !important;
+        }
+
+        /* Remove No Credit Card badge & icon */
+        .framer-febujt,
+        .framer-6bn1it,
+        [data-framer-name*="Credit-card-not-found"],
+        .framer-132shz0,
+        .framer-1ngb15z,
+        .framer-86h115,
+        .framer-v9llom {
+          display: none !important;
         }
 
         /* Input Capsule Sizing & Centering */

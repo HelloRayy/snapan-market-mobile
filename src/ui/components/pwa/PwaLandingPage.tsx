@@ -522,16 +522,21 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           }
         }
 
-        .framer-1oduyj0 input, .framer-1wlgcwd input, .framer-7j981h input {
+        .framer-1oduyj0 input, .framer-1wlgcwd input, .framer-7j981h input, input[name="username"] {
           height: 100% !important;
           line-height: 52px !important;
           display: flex !important;
           align-items: center !important;
           margin: 0 !important;
+          font-weight: 700 !important;
+          font-size: 15px !important;
+          letter-spacing: -0.2px !important;
         }
         @media (max-width: 809.98px) {
-          .framer-1oduyj0 input, .framer-1wlgcwd input, .framer-7j981h input {
+          .framer-1oduyj0 input, .framer-1wlgcwd input, .framer-7j981h input, input[name="username"] {
             line-height: 48px !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
           }
         }
 

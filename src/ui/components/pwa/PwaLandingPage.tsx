@@ -509,7 +509,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           min-height: 185px !important;
           display: flex !important;
           flex-direction: row !important;
-          align-items: center !important;
+          align-items: flex-start !important;
           margin: 0 !important;
           box-sizing: border-box !important;
           transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease !important;
@@ -522,6 +522,8 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           height: 112px !important;
           border-radius: 12px !important;
           overflow: hidden !important;
+          align-self: flex-start !important;
+          margin-top: 2px !important;
         }
 
         .django-marquee-track .framer-1rvfl3v {

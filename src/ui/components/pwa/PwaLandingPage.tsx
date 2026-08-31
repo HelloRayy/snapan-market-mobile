@@ -65,9 +65,9 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
       }
     }
 
-    // B. Safe Leaf Element Scroll-Reveal Observer (Never touches sticky sections to prevent overlap bugs)
+    // B. General Section Scroll-Reveal Observer
     const elementsToAnimate = root.querySelectorAll(
-      '[data-framer-name*="Theme"], [data-framer-name*="FAQ"], .snapan-profile-cards-container > div, [data-framer-name="Feature Simple"]'
+      '#main > div > div, [data-framer-component-type="Stack"] > div[style*="position"], section, [data-framer-name*="Section"], [data-framer-name*="Bento"], [data-framer-name*="Theme"], [data-framer-name*="FAQ"]'
     );
 
     const observer = new IntersectionObserver(
@@ -79,12 +79,16 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         });
       },
       {
-        rootMargin: '0px 0px -30px 0px',
+        rootMargin: '0px 0px -40px 0px',
         threshold: 0.08,
       }
     );
 
-    elementsToAnimate.forEach((el) => {
+    elementsToAnimate.forEach((el, index) => {
+      if (index === 0 || el.getBoundingClientRect().top < 400 || el.closest('[data-framer-name="Mockup"]')) {
+        el.classList.add('pop-motion-hero');
+        return;
+      }
       el.classList.add('pop-motion-init');
       observer.observe(el);
     });
@@ -204,137 +208,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           transform: translateY(-4px) scale(1.015) !important;
         }
 
-        /* Center Buttons Container and perfectly align children */
-        [data-framer-name="Buttons"], .framer-12tlorp, .framer-j6nqnh {
-          display: flex !important;
-          flex-direction: row !important;
-          align-items: center !important;
-          justify-content: center !important;
-          gap: 12px !important;
-          margin: 0 auto !important;
-        }
-
-        /* Fix Input Capsule & Button Height Alignment */
-        .framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h {
-          width: 280px !important;
-          min-width: 250px !important;
-          height: 52px !important;
-          min-height: 52px !important;
-          max-height: 52px !important;
-          box-sizing: border-box !important;
-          display: flex !important;
-          align-items: center !important;
-          margin: 0 !important;
-        }
-        @media (max-width: 809.98px) {
-          .framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h {
-            width: 240px !important;
-            min-width: 210px !important;
-            height: 48px !important;
-            min-height: 48px !important;
-            max-height: 48px !important;
-          }
-        }
-
-        /* Perfectly Center Inner Input Text & @ Prefix */
-        .framer-1oduyj0 input, .framer-1wlgcwd input, .framer-7j981h input {
-          height: 100% !important;
-          line-height: 52px !important;
-          display: flex !important;
-          align-items: center !important;
-          margin: 0 !important;
-        }
-        @media (max-width: 809.98px) {
-          .framer-1oduyj0 input, .framer-1wlgcwd input, .framer-7j981h input {
-            line-height: 48px !important;
-          }
-        }
-
-        .framer-g63eua-container, .framer-upoedb-container {
-          display: flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          height: 52px !important;
-          margin: 0 !important;
-        }
-        @media (max-width: 809.98px) {
-          .framer-g63eua-container, .framer-upoedb-container {
-            height: 48px !important;
-          }
-        }
-
-        /* 💎 Kumo Biru Color Styling (CTA Buttons) with exact matching height & perfect centering */
-        [data-framer-name="Button"], 
-        .framer-192wfb0 {
-          height: 52px !important;
-          min-height: 52px !important;
-          max-height: 52px !important;
-          display: inline-flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          box-sizing: border-box !important;
-          margin: 0 !important;
-          padding: 0 26px !important;
-          background: linear-gradient(180deg, #3b82f6 0%, #1d64ec 100%) !important;
-          box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.35), 0 4px 14px 0 rgba(29, 100, 236, 0.32) !important;
-          border: 1px solid #154ec1 !important;
-          color: #ffffff !important;
-          transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;
-        }
-        [data-framer-name="Button"] > div, .framer-192wfb0 > div {
-          display: flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          height: 100% !important;
-        }
-        [data-framer-name="Button"] p, .framer-192wfb0 p {
-          margin: 0 !important;
-          line-height: 1 !important;
-          display: flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-        }
-        @media (max-width: 809.98px) {
-          [data-framer-name="Button"], 
-          .framer-192wfb0 {
-            height: 48px !important;
-            min-height: 48px !important;
-            max-height: 48px !important;
-          }
-        }
-        [data-framer-name="Button"]:hover, .framer-192wfb0:hover {
-          filter: brightness(1.08) !important;
-          transform: translateY(-1px) scale(1.01) !important;
-        }
-        [data-framer-name="Button"]:active, .framer-192wfb0:active {
-          transform: scale(0.96) !important;
-        }
-
-        /* 👥 3 Profile Cards Layout & Hover Physics (No-Overlap Guaranteed) */
-        .snapan-profile-cards-container {
-          display: flex !important;
-          flex-direction: row !important;
-          gap: 24px !important;
-          justify-content: center !important;
-          align-items: stretch !important;
-          width: 100% !important;
-          max-width: 1200px !important;
-          margin: 48px auto 48px auto !important;
-          padding: 0 20px !important;
-          box-sizing: border-box !important;
-          position: relative !important;
-          z-index: 10 !important;
-          flex-wrap: wrap !important;
-        }
-        .snapan-profile-cards-container > div {
-          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease !important;
-        }
-        .snapan-profile-cards-container > div:hover {
-          transform: translateY(-6px) scale(1.02) !important;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
-        }
-
-        /* General Button Spring Physics */
+        /* Button Tap & Spring Physics */
         button, a, input[type="submit"] {
           transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;
         }

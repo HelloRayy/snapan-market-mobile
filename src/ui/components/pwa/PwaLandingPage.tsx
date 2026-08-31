@@ -36,65 +36,51 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
     // A. 5-Phone Fan-Out Mockup Physics
     const phoneMockups = root.querySelectorAll<HTMLElement>('[data-framer-name="Mockup"]');
     if (phoneMockups.length >= 5) {
-      const phoneObserver = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              phoneMockups.forEach((phone, idx) => {
-                phone.classList.remove('pop-phone-init');
-                if (idx === 2) {
-                  phone.classList.add('pop-phone-center-active');
-                } else if (idx === 1 || idx === 3) {
-                  phone.classList.add('pop-phone-inner-active');
-                } else {
-                  phone.classList.add('pop-phone-outer-active');
-                }
-              });
-            }
-          });
-        },
-        { threshold: 0.15 }
-      );
-
       phoneMockups.forEach((phone) => {
         phone.classList.add('pop-phone-init');
       });
 
-      if (phoneMockups[0].parentElement) {
-        phoneObserver.observe(phoneMockups[0].parentElement);
-      }
+      // Immediate staggered activation
+      setTimeout(() => {
+        phoneMockups.forEach((phone, idx) => {
+          phone.classList.remove('pop-phone-init');
+          if (idx === 2) {
+            phone.classList.add('pop-phone-center-active');
+          } else if (idx === 1 || idx === 3) {
+            phone.classList.add('pop-phone-inner-active');
+          } else {
+            phone.classList.add('pop-phone-outer-active');
+          }
+        });
+      }, 50);
     }
 
     // B. General Section Scroll-Reveal Observer
     const elementsToAnimate = root.querySelectorAll(
-      '.framer-1c5m59g > div, .django-marquee-wrapper, .framer-14dz49g, .framer-p5xoen, footer, [data-framer-name="FAQ"], [data-framer-name="Pricing"], .framer-1fqlk99, .framer-1yxsbyq'
+      '.framer-1c5m59g > div, .django-marquee-wrapper, .framer-14dz49g, .framer-p5xoen, footer, .framer-1fqlk99, .framer-1yxsbyq'
     );
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('pop-motion-visible');
-          }
-        });
-      },
-      {
-        rootMargin: '0px 0px -40px 0px',
-        threshold: 0.08,
-      }
-    );
+    const handleScrollReveal = () => {
+      const triggerBottom = window.innerHeight * 0.92;
+      elementsToAnimate.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < triggerBottom) {
+          el.classList.add('pop-motion-visible');
+          el.classList.remove('pop-motion-init');
+        }
+      });
+    };
 
-    elementsToAnimate.forEach((el, index) => {
-      if (index === 0 || el.getBoundingClientRect().top < 400 || el.closest('[data-framer-name="Mockup"]')) {
-        el.classList.add('pop-motion-hero');
-        return;
-      }
+    elementsToAnimate.forEach((el) => {
       el.classList.add('pop-motion-init');
-      observer.observe(el);
     });
 
+    window.addEventListener('scroll', handleScrollReveal, { passive: true });
+    // Trigger on initial frame
+    setTimeout(handleScrollReveal, 100);
+
     return () => {
-      observer.disconnect();
+      window.removeEventListener('scroll', handleScrollReveal);
     };
   }, [isMobile]);
 
@@ -331,47 +317,62 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           40%, 80% { transform: translateX(6px); }
         }
 
-        /* 📱 5-Phone Fan-Out Staggered Elevation Physics */
+        /* 📱 5-Phone Fan-Out The Arch Elevation Matrix (1:1 pop.site) */
         .pop-phone-init {
           opacity: 0;
-          transform: translateY(45px) scale(0.96);
-          transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+          transform: translateY(140px);
+          transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
           will-change: opacity, transform;
         }
         .pop-phone-center-active {
           opacity: 1 !important;
-          transform: translateY(0) scale(1) !important;
-          transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease !important;
+          transform: translateY(0px) !important;
+          transition: opacity 0.85s 0s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s 0s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
         .pop-phone-inner-active {
           opacity: 1 !important;
-          transform: translateY(0) scale(1) !important;
-          transition: opacity 0.75s 0.12s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease !important;
+          transform: translateY(89.1068px) !important;
+          transition: opacity 0.85s 0.12s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s 0.12s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
         .pop-phone-outer-active {
           opacity: 1 !important;
-          transform: translateY(0) scale(1) !important;
-          transition: opacity 0.75s 0.24s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease !important;
+          transform: translateY(106.83px) !important;
+          transition: opacity 0.85s 0.24s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s 0.24s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
 
-        /* 📱 Steady Smartphone Mockups (Zero Hover Jumps or Shifts) */
-        [data-framer-name="Mockup"],
-        .framer-1a4i4r5,
-        .framer-m036tq,
-        .framer-1makd8f,
-        .framer-18a7bvi {
-          transform: none !important;
-          transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1) !important;
-          cursor: default !important;
+        @media (max-width: 809.98px) {
+          .pop-phone-center-active {
+            transform: translateY(0px) !important;
+          }
+          .pop-phone-inner-active {
+            transform: translateY(45px) !important;
+          }
+          .pop-phone-outer-active {
+            transform: translateY(54px) !important;
+          }
         }
-        [data-framer-name="Mockup"]:hover,
-        .framer-1a4i4r5:hover,
-        .framer-m036tq:hover,
-        .framer-1makd8f:hover,
-        .framer-18a7bvi:hover,
-        [data-framer-name="Mockup"] *:hover {
-          transform: none !important;
-          box-shadow: none !important;
+
+        /* Steady hover: stay in arch position without jumping */
+        .pop-phone-center-active:hover {
+          transform: translateY(0px) !important;
+        }
+        .pop-phone-inner-active:hover {
+          transform: translateY(89.1068px) !important;
+        }
+        .pop-phone-outer-active:hover {
+          transform: translateY(106.83px) !important;
+        }
+
+        /* 🌊 Staggered Viewport Scroll-Reveal Physics */
+        .pop-motion-init {
+          opacity: 0;
+          transform: translateY(28px);
+          transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+          will-change: opacity, transform;
+        }
+        .pop-motion-visible {
+          opacity: 1 !important;
+          transform: translateY(0px) !important;
         }
 
         /* Buttons Row Centering */

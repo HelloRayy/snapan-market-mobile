@@ -314,6 +314,30 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           transform: scale(0.96) !important;
         }
 
+        /* 👥 3 Profile Cards Layout & Hover Physics (No-Overlap Guaranteed) */
+        .snapan-profile-cards-container {
+          display: flex !important;
+          flex-direction: row !important;
+          gap: 24px !important;
+          justify-content: center !important;
+          align-items: stretch !important;
+          width: 100% !important;
+          max-width: 1200px !important;
+          margin: 48px auto 48px auto !important;
+          padding: 0 20px !important;
+          box-sizing: border-box !important;
+          position: relative !important;
+          z-index: 10 !important;
+          flex-wrap: wrap !important;
+        }
+        .snapan-profile-cards-container > div {
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease !important;
+        }
+        .snapan-profile-cards-container > div:hover {
+          transform: translateY(-6px) scale(1.02) !important;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
+        }
+
         /* General Button Spring Physics */
         button, a, input[type="submit"] {
           transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;

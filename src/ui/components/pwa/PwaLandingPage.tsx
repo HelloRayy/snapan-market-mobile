@@ -223,15 +223,32 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           }
         }
 
-        /* Button Tap & Spring Physics (Original Sleek Black Style) */
-        button, a, input[type="submit"], [data-framer-name="Button"] {
+        /* 💎 Kumo Biru Color Styling (CTA Buttons) */
+        [data-framer-name="Button"], 
+        .framer-192wfb0 {
+          background: linear-gradient(180deg, #3b82f6 0%, #1d64ec 100%) !important;
+          box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.35), 0 4px 14px 0 rgba(29, 100, 236, 0.32) !important;
+          border: 1px solid #154ec1 !important;
+          color: #ffffff !important;
           transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;
         }
-        button:active, a:active, [data-framer-name="Button"]:active {
+        [data-framer-name="Button"]:hover, .framer-192wfb0:hover {
+          filter: brightness(1.08) !important;
+          transform: translateY(-1px) scale(1.01) !important;
+        }
+        [data-framer-name="Button"]:active, .framer-192wfb0:active {
           transform: scale(0.96) !important;
         }
-        button:hover, a:hover, [data-framer-name="Button"]:hover {
-          filter: brightness(1.12);
+
+        /* General Button Spring Physics */
+        button, a, input[type="submit"] {
+          transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;
+        }
+        button:active, a:active {
+          transform: scale(0.96) !important;
+        }
+        button:hover, a:hover {
+          filter: brightness(1.05);
         }
 
         /* Accessibility & Test Mode */

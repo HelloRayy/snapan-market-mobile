@@ -538,6 +538,15 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           transform: none !important;
         }
 
+        /* 🏷️ Feature Tag Pill Spacing */
+        .framer-cqd791 {
+          gap: 8px !important;
+          width: max-content !important;
+          padding: 4px 12px !important;
+          align-items: center !important;
+          display: inline-flex !important;
+        }
+
         @keyframes djangoMarqueeScroll {
           0% {
             transform: translateX(0);

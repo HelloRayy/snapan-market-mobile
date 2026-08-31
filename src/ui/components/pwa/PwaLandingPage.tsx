@@ -210,15 +210,15 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
 
         /* Fix Input Capsule Width so it never collapses */
         .framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h {
-          width: 250px !important;
-          min-width: 220px !important;
+          width: 280px !important;
+          min-width: 250px !important;
           height: 52px !important;
           box-sizing: border-box !important;
         }
         @media (max-width: 809.98px) {
           .framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h {
-            width: 220px !important;
-            min-width: 190px !important;
+            width: 240px !important;
+            min-width: 210px !important;
             height: 48px !important;
           }
         }

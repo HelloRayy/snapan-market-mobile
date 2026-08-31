@@ -547,6 +547,50 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           display: inline-flex !important;
         }
 
+        /* 📦 Compact Layout for Features Section */
+        .framer-sdhxzw {
+          padding: 60px 24px 40px !important;
+        }
+        .framer-sdhxzw .framer-dggxux {
+          gap: 16px !important;
+        }
+        .framer-sdhxzw .framer-12h6gbf {
+          max-width: 960px !important;
+        }
+        .framer-sdhxzw .framer-12h6gbf h1 {
+          font-size: 68px !important;
+          line-height: 1.05 !important;
+          letter-spacing: -2.2px !important;
+          margin: 0 !important;
+        }
+        .framer-sdhxzw .framer-1n10pgs {
+          gap: 10px !important;
+          margin-top: 4px !important;
+          margin-bottom: 8px !important;
+        }
+        .framer-sdhxzw .framer-cgn049 h3 {
+          font-size: 20px !important;
+          line-height: 1.3 !important;
+          letter-spacing: -0.02em !important;
+          margin: 0 !important;
+        }
+        .framer-sdhxzw .framer-8r7xto {
+          margin-top: 8px !important;
+        }
+        @media (max-width: 809.98px) {
+          .framer-sdhxzw {
+            padding: 40px 16px 24px !important;
+          }
+          .framer-sdhxzw .framer-12h6gbf h1 {
+            font-size: 38px !important;
+            line-height: 1.1 !important;
+            letter-spacing: -1.2px !important;
+          }
+          .framer-sdhxzw .framer-cgn049 h3 {
+            font-size: 16px !important;
+          }
+        }
+
         @keyframes djangoMarqueeScroll {
           0% {
             transform: translateX(0);

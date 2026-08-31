@@ -354,23 +354,24 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           transition: opacity 0.75s 0.24s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease !important;
         }
 
-        /* 🔍 Interactive 3D Hover Depth Focus on Phones */
-        [data-framer-name="Mockup"] {
-          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, z-index 0.1s !important;
-          cursor: pointer;
+        /* 📱 Steady Smartphone Mockups (Zero Hover Jumps or Shifts) */
+        [data-framer-name="Mockup"],
+        .framer-1a4i4r5,
+        .framer-m036tq,
+        .framer-1makd8f,
+        .framer-18a7bvi {
+          transform: none !important;
+          transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1) !important;
+          cursor: default !important;
         }
-        [data-framer-name="Mockup"]:hover {
-          transform: translateY(-10px) scale(1.03) !important;
-          z-index: 20 !important;
-          box-shadow: 0 40px 80px -15px rgba(0, 0, 0, 0.22) !important;
-        }
-
-        /* Hover Zoom on Interactive Theme Cards & Images */
-        a:has(img), [data-framer-component-type="Stack"]:has(img) {
-          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease !important;
-        }
-        a:has(img):hover, [data-framer-component-type="Stack"]:has(img):hover {
-          transform: translateY(-4px) scale(1.015) !important;
+        [data-framer-name="Mockup"]:hover,
+        .framer-1a4i4r5:hover,
+        .framer-m036tq:hover,
+        .framer-1makd8f:hover,
+        .framer-18a7bvi:hover,
+        [data-framer-name="Mockup"] *:hover {
+          transform: none !important;
+          box-shadow: none !important;
         }
 
         /* Buttons Row Centering */

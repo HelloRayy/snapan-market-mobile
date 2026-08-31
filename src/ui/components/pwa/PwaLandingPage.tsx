@@ -535,8 +535,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         }
 
         .django-marquee-track > .framer-a910ey:hover {
-          transform: translateY(-6px) scale(1.015) !important;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
+          transform: none !important;
         }
 
         @keyframes djangoMarqueeScroll {

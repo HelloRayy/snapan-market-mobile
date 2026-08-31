@@ -132,7 +132,55 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
       }
 
       const capsule = input.closest('.framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h') as HTMLElement | null;
+      const statusBadge = capsule ? (capsule.querySelector('div:first-child') as HTMLElement | null) : null;
+      if (statusBadge) {
+        statusBadge.style.transition = 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+      }
+
       let warnTimeout: ReturnType<typeof setTimeout> | null = null;
+
+      const updateVisualState = () => {
+        const raw = input.value;
+        const clean = raw.replace(/^@+/, '');
+
+        if (clean.length >= 3) {
+          // Centang Hijau (Valid & Aman)
+          if (statusBadge) {
+            statusBadge.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+            statusBadge.style.background = '#ecfdf5';
+            statusBadge.style.color = '#10b981';
+            statusBadge.style.borderRightColor = '#a7f3d0';
+          }
+          if (capsule) {
+            capsule.style.borderColor = '#10b981';
+            capsule.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.12)';
+          }
+        } else if (clean.length > 0) {
+          // Sedang Mengetik (< 3 karakter)
+          if (statusBadge) {
+            statusBadge.innerHTML = `<span style="font-size: 15px; font-weight: 600; color: #1d64ec;">@</span>`;
+            statusBadge.style.background = '#eef4ff';
+            statusBadge.style.color = '#1d64ec';
+            statusBadge.style.borderRightColor = '#dbeafe';
+          }
+          if (capsule) {
+            capsule.style.borderColor = '#1d64ec';
+            capsule.style.boxShadow = '0 0 0 3px rgba(29, 100, 236, 0.12)';
+          }
+        } else {
+          // Kosong (Default)
+          if (statusBadge) {
+            statusBadge.innerHTML = `<span style="font-size: 15px; font-weight: 500; color: #787574;">@</span>`;
+            statusBadge.style.background = '#ffffff';
+            statusBadge.style.color = '#787574';
+            statusBadge.style.borderRightColor = '#d7dde0';
+          }
+          if (capsule) {
+            capsule.style.borderColor = '#d7dde0';
+            capsule.style.boxShadow = 'none';
+          }
+        }
+      };
 
       const triggerAlert = () => {
         if (warnBadge) {
@@ -148,17 +196,22 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         if (warnTimeout) clearTimeout(warnTimeout);
         warnTimeout = setTimeout(() => {
           if (warnBadge) warnBadge.style.display = 'none';
-          if (capsule) {
-            capsule.style.borderColor = input.value ? '#1d64ec' : '#d7dde0';
-            capsule.style.boxShadow = input.value ? '0 0 0 3px rgba(29, 100, 236, 0.12)' : 'none';
-          }
+          updateVisualState();
         }, 1800);
       };
 
-      // 1. Block forbidden keys on keydown (Space, Uppercase, Special Symbols)
+      // 1. Block forbidden keys on keydown & Auto-handle backspace at prefix
       const handleKeyDown = (e: KeyboardEvent) => {
-        // Izinkan tombol kontrol/navigasi (Backspace, Delete, Arrow, Tab, Enter, dll)
         if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+        // Jika hanya sisa "@" dan user tekan Backspace, kosongkan langsung
+        if (e.key === 'Backspace' && (input.value === '@' || (input.selectionStart === 1 && input.value.length === 1))) {
+          e.preventDefault();
+          input.value = '';
+          updateVisualState();
+          return;
+        }
+
         if (['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter', 'Escape', 'Home', 'End'].includes(e.key)) {
           return;
         }
@@ -170,10 +223,9 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           return;
         }
 
-        // Blokir HURUF BESAR (KAPITAL) & SIMBOL
+        // Blokir HURUF BESAR & SIMBOL selain a-z, 0-9, _, .
         if (e.key.length === 1) {
-          // Hanya izinkan a-z (huruf kecil) dan 0-9 (angka)
-          if (!/^[a-z0-9]$/.test(e.key)) {
+          if (!/^[a-z0-9_.]$/.test(e.key.toLowerCase())) {
             e.preventDefault();
             triggerAlert();
             return;
@@ -181,27 +233,18 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         }
       };
 
-      // 2. Sanitize on input (untuk paste, mobile keyboard autocomplete, drag & drop)
+      // 2. Format with "@" prefix automatically on input
       const handleInput = () => {
         const raw = input.value;
-        const sanitized = raw.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const clean = raw.replace(/^@+/, '').toLowerCase().replace(/[^a-z0-9_.]/g, '');
 
-        if (raw !== sanitized) {
-          input.value = sanitized;
-          triggerAlert();
-        } else if (sanitized.length > 0) {
-          if (warnBadge) warnBadge.style.display = 'none';
-          if (capsule) {
-            capsule.style.borderColor = '#1d64ec';
-            capsule.style.boxShadow = '0 0 0 3px rgba(29, 100, 236, 0.12)';
-          }
+        if (clean.length > 0) {
+          input.value = '@' + clean;
         } else {
-          if (warnBadge) warnBadge.style.display = 'none';
-          if (capsule) {
-            capsule.style.borderColor = '#d7dde0';
-            capsule.style.boxShadow = 'none';
-          }
+          input.value = '';
         }
+
+        updateVisualState();
       };
 
       input.addEventListener('keydown', handleKeyDown);
@@ -226,8 +269,8 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         // Cek apakah ada input username di halaman
         const input = document.querySelector<HTMLInputElement>('input[name="username"]');
         if (input && input.value) {
-          const val = input.value;
-          const isInvalid = !/^[a-z0-9]+$/.test(val);
+          const val = input.value.replace(/^@+/, '').trim();
+          const isInvalid = !/^[a-z0-9_.]+$/.test(val);
           if (isInvalid) {
             triggerHaptic('error');
             const capsule = input.closest('.framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h') as HTMLElement | null;

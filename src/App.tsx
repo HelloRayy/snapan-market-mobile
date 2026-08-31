@@ -382,7 +382,7 @@ export function App() {
   };
 
   return (
-    <div className="relative min-h-screen max-w-full w-full bg-pure-white text-slate-ink overflow-x-hidden font-gt-standard">
+    <div className="relative min-h-screen max-w-full w-full bg-pure-white text-slate-ink overflow-x-clip font-gt-standard">
       {/* Render Dedicated PWA Download Landing Page if route is /download */}
       {isDownloadRoute ? (
         <PwaLandingPage onProceedToWeb={navigateToWeb} />

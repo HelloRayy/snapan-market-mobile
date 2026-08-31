@@ -103,7 +103,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="min-h-screen w-full bg-white font-gt-standard overflow-x-hidden antialiased select-none relative"
+      className="min-h-screen w-full bg-white font-gt-standard overflow-x-clip antialiased select-none relative"
     >
       {/* Dynamic 120 FPS Motion Physics Stylesheet */}
       <style>{`

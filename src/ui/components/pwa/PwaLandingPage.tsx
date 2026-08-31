@@ -98,7 +98,94 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
     };
   }, [isMobile]);
 
-  // 2. Intercept clicks on claim buttons, install actions, or login
+  // 2. Real-time Username Input Validation & Warn Alert
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const inputs = container.querySelectorAll<HTMLInputElement>('input[name="username"]');
+
+    inputs.forEach((input) => {
+      // Buat elemen warning alert badge jika belum ada
+      const parentRow = input.closest('[data-framer-name="Buttons"], .framer-12tlorp, .framer-j6nqnh') as HTMLElement | null;
+      let warnBadge: HTMLElement | null = null;
+      
+      if (parentRow) {
+        parentRow.style.position = 'relative';
+        warnBadge = parentRow.querySelector('.username-warn-badge') as HTMLElement | null;
+        if (!warnBadge) {
+          warnBadge = document.createElement('div');
+          warnBadge.className = 'username-warn-badge';
+          warnBadge.style.cssText = `
+            display: none;
+            position: absolute;
+            bottom: -36px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            color: #e11d48;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 5px 14px;
+            border-radius: 9999px;
+            box-shadow: 0 6px 18px rgba(225, 29, 72, 0.08);
+            white-space: nowrap;
+            z-index: 50;
+            align-items: center;
+            gap: 6px;
+            pointer-events: none;
+            animation: popBadgeEnter 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+          `;
+          warnBadge.innerHTML = `
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Hanya huruf kecil tanpa kapital, spasi, atau simbol</span>
+          `;
+          parentRow.appendChild(warnBadge);
+        }
+      }
+
+      const capsule = input.closest('.framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h') as HTMLElement | null;
+
+      const validate = () => {
+        const val = input.value;
+        if (!val) {
+          if (warnBadge) warnBadge.style.display = 'none';
+          if (capsule) {
+            capsule.style.borderColor = '#d7dde0';
+            capsule.style.boxShadow = 'none';
+          }
+          return true;
+        }
+
+        // Cek apakah ada huruf besar, spasi, atau simbol selain huruf kecil & angka (a-z, 0-9)
+        const hasCapital = /[A-Z]/.test(val);
+        const hasSpace = /\s/.test(val);
+        const hasInvalidChar = /[^a-z0-9]/.test(val);
+
+        if (hasCapital || hasSpace || hasInvalidChar) {
+          if (warnBadge) warnBadge.style.display = 'inline-flex';
+          if (capsule) {
+            capsule.style.borderColor = '#e11d48';
+            capsule.style.boxShadow = '0 0 0 3px rgba(225, 29, 72, 0.15)';
+          }
+          triggerHaptic('error');
+          return false;
+        } else {
+          if (warnBadge) warnBadge.style.display = 'none';
+          if (capsule) {
+            capsule.style.borderColor = '#1d64ec';
+            capsule.style.boxShadow = '0 0 0 3px rgba(29, 100, 236, 0.12)';
+          }
+          return true;
+        }
+      };
+
+      input.addEventListener('input', validate);
+    });
+  }, [isMobile]);
+
+  // 3. Intercept clicks on claim buttons, install actions, or login
   useEffect(() => {
     const handleGlobalClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -108,9 +195,31 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
       if (!btn) return;
 
       const text = (btn.textContent || '').trim().toLowerCase();
-      if (text.includes('claim') || text.includes('create account') || text.includes('pasang') || text.includes('install')) {
+      if (text.includes('claim') || text.includes('create account') || text.includes('pasang') || text.includes('install') || text.includes('download')) {
         e.preventDefault();
         e.stopPropagation();
+
+        // Cek apakah ada input username di halaman
+        const input = document.querySelector<HTMLInputElement>('input[name="username"]');
+        if (input && input.value) {
+          const val = input.value;
+          const isInvalid = /[A-Z]/.test(val) || /\s/.test(val) || /[^a-z0-9]/.test(val);
+          if (isInvalid) {
+            triggerHaptic('error');
+            const capsule = input.closest('.framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h') as HTMLElement | null;
+            if (capsule) {
+              capsule.style.animation = 'capsuleShake 0.4s ease';
+              setTimeout(() => {
+                capsule.style.animation = '';
+              }, 400);
+            }
+            return;
+          }
+          try {
+            localStorage.setItem('snapan_reserved_username', val);
+          } catch {}
+        }
+
         triggerHaptic('medium');
         setShowCustomInstallModal(true);
       } else if (text.includes('log in') || text.includes('buka web') || text.includes('sign in')) {
@@ -164,6 +273,23 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
             opacity: 1;
             transform: translateY(0);
           }
+        }
+
+        @keyframes popBadgeEnter {
+          from {
+            opacity: 0;
+            transform: translate(-50%, 6px) scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: translate(-50%, 0) scale(1);
+          }
+        }
+
+        @keyframes capsuleShake {
+          0%, 100% { transform: translateX(0); }
+          20%, 60% { transform: translateX(-6px); }
+          40%, 80% { transform: translateX(6px); }
         }
 
         /* 📱 5-Phone Fan-Out Staggered Elevation Physics */

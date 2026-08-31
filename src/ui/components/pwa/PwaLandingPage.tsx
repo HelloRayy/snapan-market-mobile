@@ -65,9 +65,9 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
       }
     }
 
-    // B. General Section Scroll-Reveal Observer
+    // B. Safe Leaf Element Scroll-Reveal Observer (Never touches sticky sections to prevent overlap bugs)
     const elementsToAnimate = root.querySelectorAll(
-      '#main > div > div, [data-framer-component-type="Stack"] > div[style*="position"], section, [data-framer-name*="Section"], [data-framer-name*="Bento"], [data-framer-name*="Theme"], [data-framer-name*="FAQ"]'
+      '[data-framer-name*="Theme"], [data-framer-name*="FAQ"], .snapan-profile-cards-container > div, [data-framer-name="Feature Simple"]'
     );
 
     const observer = new IntersectionObserver(
@@ -79,16 +79,12 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         });
       },
       {
-        rootMargin: '0px 0px -40px 0px',
+        rootMargin: '0px 0px -30px 0px',
         threshold: 0.08,
       }
     );
 
-    elementsToAnimate.forEach((el, index) => {
-      if (index === 0 || el.getBoundingClientRect().top < 400 || el.closest('[data-framer-name="Mockup"]')) {
-        el.classList.add('pop-motion-hero');
-        return;
-      }
+    elementsToAnimate.forEach((el) => {
       el.classList.add('pop-motion-init');
       observer.observe(el);
     });

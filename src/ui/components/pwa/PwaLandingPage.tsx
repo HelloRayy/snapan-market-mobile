@@ -137,6 +137,32 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         statusBadge.style.transition = 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
       }
 
+      // Buat label badge "Available" di sebelah kanan input jika belum ada
+      const inputWrapper = input.parentElement;
+      let availableBadge = inputWrapper ? (inputWrapper.querySelector('.username-available-tag') as HTMLElement | null) : null;
+      if (inputWrapper && !availableBadge) {
+        availableBadge = document.createElement('span');
+        availableBadge.className = 'username-available-tag';
+        availableBadge.style.cssText = `
+          display: none;
+          align-items: center;
+          background: #ecfdf5;
+          color: #059669;
+          border: 1px solid #a7f3d0;
+          font-size: 11px;
+          font-weight: 600;
+          padding: 3px 8px;
+          border-radius: 9999px;
+          margin-left: 8px;
+          flex-shrink: 0;
+          letter-spacing: 0.2px;
+          user-select: none;
+          animation: popBadgeEnter 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+        `;
+        availableBadge.textContent = 'Available';
+        inputWrapper.appendChild(availableBadge);
+      }
+
       let warnTimeout: ReturnType<typeof setTimeout> | null = null;
 
       const updateVisualState = () => {
@@ -144,12 +170,15 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         const clean = raw.replace(/^@+/, '');
 
         if (clean.length >= 3) {
-          // Centang Hijau (Valid & Aman)
+          // Centang Hijau + Label Available (Valid & Aman)
           if (statusBadge) {
             statusBadge.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
             statusBadge.style.background = '#ecfdf5';
             statusBadge.style.color = '#10b981';
             statusBadge.style.borderRightColor = '#a7f3d0';
+          }
+          if (availableBadge) {
+            availableBadge.style.display = 'inline-flex';
           }
           if (capsule) {
             capsule.style.borderColor = '#10b981';
@@ -163,6 +192,9 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
             statusBadge.style.color = '#1d64ec';
             statusBadge.style.borderRightColor = '#dbeafe';
           }
+          if (availableBadge) {
+            availableBadge.style.display = 'none';
+          }
           if (capsule) {
             capsule.style.borderColor = '#1d64ec';
             capsule.style.boxShadow = '0 0 0 3px rgba(29, 100, 236, 0.12)';
@@ -174,6 +206,9 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
             statusBadge.style.background = '#ffffff';
             statusBadge.style.color = '#787574';
             statusBadge.style.borderRightColor = '#d7dde0';
+          }
+          if (availableBadge) {
+            availableBadge.style.display = 'none';
           }
           if (capsule) {
             capsule.style.borderColor = '#d7dde0';

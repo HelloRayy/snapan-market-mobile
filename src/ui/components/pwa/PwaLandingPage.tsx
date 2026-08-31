@@ -24,16 +24,51 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // 1. Interactive Motion Physics & Scroll-Triggered Reveal Observer
+  // 1. Interactive Motion Physics, Scroll-Triggered Reveal & 5-Phone Fan-Out Observer
   useEffect(() => {
     const root = containerRef.current;
     if (!root) return;
 
-    // Jika prefer-reduced-motion aktif (misal saat visual test), jangan sembunyikan elemen
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return;
     }
 
+    // A. 5-Phone Fan-Out Mockup Physics
+    const phoneMockups = root.querySelectorAll<HTMLElement>('[data-framer-name="Mockup"]');
+    if (phoneMockups.length >= 5) {
+      const phoneObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              phoneMockups.forEach((phone, idx) => {
+                phone.classList.remove('pop-phone-init');
+                if (idx === 2) {
+                  // Center Phone (Sofia Delgado) - Rises First
+                  phone.classList.add('pop-phone-center-active');
+                } else if (idx === 1 || idx === 3) {
+                  // Inner Flanking Phones (Shape & Hayley) - Rises Second
+                  phone.classList.add('pop-phone-inner-active');
+                } else {
+                  // Outer Flanking Phones (John & Jason) - Rises Third
+                  phone.classList.add('pop-phone-outer-active');
+                }
+              });
+            }
+          });
+        },
+        { threshold: 0.15 }
+      );
+
+      phoneMockups.forEach((phone) => {
+        phone.classList.add('pop-phone-init');
+      });
+
+      if (phoneMockups[0].parentElement) {
+        phoneObserver.observe(phoneMockups[0].parentElement);
+      }
+    }
+
+    // B. General Section Scroll-Reveal Observer
     const elementsToAnimate = root.querySelectorAll(
       '#main > div > div, [data-framer-component-type="Stack"] > div[style*="position"], section, [data-framer-name*="Section"], [data-framer-name*="Bento"], [data-framer-name*="Theme"], [data-framer-name*="FAQ"]'
     );
@@ -53,7 +88,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
     );
 
     elementsToAnimate.forEach((el, index) => {
-      if (index === 0 || el.getBoundingClientRect().top < 400) {
+      if (index === 0 || el.getBoundingClientRect().top < 400 || el.closest('[data-framer-name="Mockup"]')) {
         el.classList.add('pop-motion-hero');
         return;
       }
@@ -134,6 +169,40 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           }
         }
 
+        /* 📱 5-Phone Fan-Out Staggered Elevation Physics */
+        .pop-phone-init {
+          opacity: 0;
+          transform: translateY(45px) scale(0.96);
+          transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+          will-change: opacity, transform;
+        }
+        .pop-phone-center-active {
+          opacity: 1 !important;
+          transform: translateY(0) scale(1) !important;
+          transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease !important;
+        }
+        .pop-phone-inner-active {
+          opacity: 1 !important;
+          transform: translateY(0) scale(1) !important;
+          transition: opacity 0.75s 0.12s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease !important;
+        }
+        .pop-phone-outer-active {
+          opacity: 1 !important;
+          transform: translateY(0) scale(1) !important;
+          transition: opacity 0.75s 0.24s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease !important;
+        }
+
+        /* 🔍 Interactive 3D Hover Depth Focus on Phones */
+        [data-framer-name="Mockup"] {
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, z-index 0.1s !important;
+          cursor: pointer;
+        }
+        [data-framer-name="Mockup"]:hover {
+          transform: translateY(-10px) scale(1.03) !important;
+          z-index: 20 !important;
+          box-shadow: 0 40px 80px -15px rgba(0, 0, 0, 0.22) !important;
+        }
+
         /* Hover Zoom on Interactive Theme Cards & Images */
         a:has(img), [data-framer-component-type="Stack"]:has(img) {
           transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease !important;
@@ -155,7 +224,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
 
         /* Accessibility & Test Mode */
         @media (prefers-reduced-motion: reduce) {
-          .pop-motion-init, .pop-motion-hero {
+          .pop-motion-init, .pop-motion-hero, .pop-phone-init, .pop-phone-center-active, .pop-phone-inner-active, .pop-phone-outer-active {
             opacity: 1 !important;
             transform: none !important;
             animation: none !important;

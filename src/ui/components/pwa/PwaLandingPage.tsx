@@ -493,6 +493,54 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           }
         }
 
+        /* 🔤 Fitur Lengkap Warga Sekolah Section */
+        .framer-si78pz {
+          max-width: 950px !important;
+          margin: 0 auto !important;
+        }
+        .framer-si78pz h2,
+        .framer-qy62tp h2 {
+          font-size: 64px !important;
+          line-height: 1.1 !important;
+          letter-spacing: -2px !important;
+          text-align: center !important;
+        }
+        @media (max-width: 809.98px) {
+          .framer-si78pz h2,
+          .framer-qy62tp h2 {
+            font-size: 38px !important;
+            line-height: 1.15 !important;
+            letter-spacing: -1.2px !important;
+          }
+        }
+
+        .framer-ov81n8 {
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 12px !important;
+          width: 100% !important;
+          max-width: 1000px !important;
+          margin: 0 auto !important;
+          overflow: visible !important;
+        }
+        .framer-ov81n8 .framer-1egzuuq,
+        .framer-ov81n8 div[data-framer-component-type="RichTextContainer"] {
+          width: auto !important;
+          max-width: 900px !important;
+          flex: none !important;
+        }
+        .framer-ov81n8 h3 {
+          white-space: nowrap !important;
+          text-align: center !important;
+        }
+        @media (max-width: 809.98px) {
+          .framer-ov81n8 h3 {
+            white-space: normal !important;
+          }
+        }
+
         /* Buttons Row Centering */
         [data-framer-name="Buttons"], .framer-12tlorp, .framer-j6nqnh {
           display: flex !important;

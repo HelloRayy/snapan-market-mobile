@@ -139,26 +139,36 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
 
       // Buat label badge "Available" di sebelah kanan input jika belum ada
       const inputWrapper = input.parentElement;
+      if (inputWrapper) {
+        inputWrapper.style.position = 'relative';
+      }
       let availableBadge = inputWrapper ? (inputWrapper.querySelector('.username-available-tag') as HTMLElement | null) : null;
       if (inputWrapper && !availableBadge) {
         availableBadge = document.createElement('span');
         availableBadge.className = 'username-available-tag';
         availableBadge.style.cssText = `
           display: none;
+          position: absolute;
+          right: 12px;
+          top: 50%;
+          transform: translateY(-50%);
           align-items: center;
           justify-content: center;
           background: #ecfdf5;
           color: #059669;
           border: 1px solid #a7f3d0;
           font-size: 11px;
-          font-weight: 600;
-          padding: 3px 8px;
+          font-weight: 700;
+          line-height: 1;
+          height: 24px;
+          padding: 0 9px;
           border-radius: 9999px;
-          margin-left: auto;
-          margin-right: 0;
-          flex-shrink: 0;
           letter-spacing: 0.2px;
           user-select: none;
+          pointer-events: none;
+          z-index: 10;
+          box-sizing: border-box;
+          margin: 0;
           animation: popAvailableBadge 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
         `;
         availableBadge.textContent = 'Available';
@@ -173,7 +183,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
 
         if (clean.length >= 3) {
           // Centang Hijau + Label Available (Valid & Aman)
-          input.style.paddingRight = '72px';
+          input.style.paddingRight = '78px';
           if (statusBadge) {
             statusBadge.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
             statusBadge.style.background = '#ecfdf5';
@@ -182,6 +192,10 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           }
           if (availableBadge) {
             availableBadge.style.display = 'inline-flex';
+            availableBadge.style.position = 'absolute';
+            availableBadge.style.right = '12px';
+            availableBadge.style.top = '50%';
+            availableBadge.style.transform = 'translateY(-50%)';
           }
           if (capsule) {
             capsule.style.borderColor = '#10b981';
@@ -396,11 +410,11 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         @keyframes popAvailableBadge {
           from {
             opacity: 0;
-            transform: scale(0.92);
+            transform: translateY(-50%) scale(0.9);
           }
           to {
             opacity: 1;
-            transform: scale(1);
+            transform: translateY(-50%) scale(1);
           }
         }
 
@@ -627,10 +641,35 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           display: flex !important;
           flex-direction: row !important;
           align-items: center !important;
+          position: relative !important;
           height: 100% !important;
           padding-left: 14px !important;
           padding-right: 8px !important;
           overflow: hidden !important;
+        }
+
+        .username-available-tag {
+          position: absolute !important;
+          right: 12px !important;
+          top: 50% !important;
+          transform: translateY(-50%) !important;
+          align-items: center !important;
+          justify-content: center !important;
+          background: #ecfdf5 !important;
+          color: #059669 !important;
+          border: 1px solid #a7f3d0 !important;
+          font-size: 11px !important;
+          font-weight: 700 !important;
+          line-height: 1 !important;
+          height: 24px !important;
+          padding: 0 9px !important;
+          border-radius: 9999px !important;
+          letter-spacing: 0.2px !important;
+          user-select: none !important;
+          pointer-events: none !important;
+          z-index: 10 !important;
+          box-sizing: border-box !important;
+          margin: 0 !important;
         }
 
         .framer-1oduyj0 input,

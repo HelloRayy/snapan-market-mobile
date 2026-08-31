@@ -8,7 +8,12 @@
     "dev:host": "vite --host",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:visual": "playwright test",
+    "capture:target": "node scripts/capture-target.js",
+    "extract:computed": "node scripts/extract-computed.js",
+    "analyze:diff": "node scripts/analyze-diff.js"
+
   },
   "dependencies": {
     "@cloudflare/kumo": "^2.9.1",
@@ -26,12 +31,14 @@
     "zustand": "^4.5.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/vite": "^4.0.0",
     "@types/node": "^22.5.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "esbuild": "^0.24.2",
+    "pngjs": "^7.0.0",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.5.3",
     "vite": "^5.4.1",

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pop Site - Free Personal Site Builder &amp; Linktree Alternative</title>
+  <link rel="icon" href="https://framerusercontent.com/images/K9dDDIVcr8GTjlz3h0uT98mXA.png" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Google Sans Flex & Inter & Instrument Serif -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+
+  <style>
+    @font-face {
+      font-family: 'Google Sans Flex Variable';
+      font-style: normal;
+      font-weight: 100 1000;
+      font-display: swap;
+      src: url('https://fonts.gstatic.com/s/googlesansflex/v22/t5t7IQcYNIWbFgDgAAzZ34auoVyXurOmfyca.woff2') format('woff2');
+    }
+
+    body {
+      font-family: 'Google Sans Flex Variable', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #ffffff;
+      color: #171717;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    .hero-heading {
+      letter-spacing: -0.04em;
+      line-height: 0.98;
+    }
+
+    .phone-container {
+      perspective: 1200px;
+    }
+
+    .phone-mockup {
+      width: 290px;
+      height: 590px;
+      border-radius: 46px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.08);
+      background-color: #000;
+      flex-shrink: 0;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .phone-mockup:hover {
+      transform: translateY(-8px);
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .phone-bezel {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-size: 100% 100%;
+      z-index: 10;
+    }
+
+    /* Custom subtle scrollbar */
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-white">
+
+  <!-- ================= TOP NAVIGATION BAR ================= -->
+  <header class="w-full border-b border-neutral-100/60 bg-white/90 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-[1280px] mx-auto px-6 sm:px-8 h-[72px] flex items-center justify-between">
+      
+      <!-- Left: Official Logo SVG -->
+      <a href="/" class="flex items-center gap-1 group py-1" aria-label="Pop.site Home">
+        <svg width="99" height="24" viewBox="0 0 99 24" fill="none" class="h-6 w-auto text-neutral-900 fill-current">
+          <mask id="logo-mask" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="99" height="24">
+            <path d="M98.9973 0H0V24H98.9973V0Z" fill="white"/>
+          </mask>
+          <g mask="url(#logo-mask)">
+            <path d="M86.3934 9.31858C86.0026 8.32726 85.3628 7.55735 84.4741 7.00885C83.586 6.4423 82.484 6.15929 81.1688 6.15929C79.7827 6.15929 78.5389 6.50442 77.437 7.19469C76.3356 7.88496 75.4559 8.83168 74.798 10.0354C74.1583 11.2391 73.8384 12.5841 73.8384 14.0708C73.8384 15.292 74.0783 16.3365 74.5581 17.2035C75.038 18.0706 75.7225 18.7434 76.6107 19.2212C77.517 19.6991 78.5832 19.9381 79.8094 19.9381C80.8047 19.9381 81.7376 19.7522 82.6082 19.3805C83.4793 19.0088 84.2342 18.4869 84.874 17.8142C85.5318 17.1239 86.0117 16.3184 86.3134 15.3982H83.2213C82.9372 16.0179 82.5016 16.5042 81.9152 16.8584C81.3469 17.1945 80.689 17.3628 79.9426 17.3628C78.9478 17.3628 78.1833 17.0618 77.6502 16.4602C77.1171 15.8586 76.8506 15 76.8506 13.885C76.8506 13.8573 76.8506 13.8297 76.8516 13.8021L86.5266 13.7788L86.6866 12.7965C86.8998 11.469 86.8023 10.3099 86.3934 9.31858ZM83.7278 11.7876H77.1747C77.2355 11.606 77.3053 11.4292 77.3837 11.2566C77.7569 10.4777 78.2548 9.85858 78.8764 9.39823C79.5161 8.93788 80.2273 8.70796 81.0089 8.70796C81.9685 8.70796 82.6973 8.99097 83.1947 9.55752C83.7102 10.106 83.8877 10.8494 83.7278 11.7876ZM69.9429 2.44248L69.3 6.50442L68.8879 9.10619L67.224 19.6195H70.3428L72.0066 9.10619L72.4187 6.50442L73.0617 2.44248H69.9429ZM66.7975 6.50442L66.3711 9.10619H74.5011L74.9009 6.50442H66.7975ZM66.4468 0.477876C66.1445 0.159292 65.7537 0 65.2739 0C64.8826 0 64.5094 0.106195 64.1543 0.318584C63.8164 0.530973 63.5413 0.805487 63.328 1.14159C63.1324 1.4777 63.0348 1.84088 63.0348 2.23009C63.0348 2.69044 63.1857 3.07965 63.488 3.39823C63.8078 3.69929 64.1986 3.84956 64.6608 3.84956C65.0516 3.84956 65.4157 3.74336 65.7537 3.53097C66.0912 3.31858 66.3668 3.04407 66.58 2.70796C66.7933 2.35381 66.8999 1.99115 66.8999 1.61947C66.8999 1.15912 66.7485 0.778938 66.4468 0.477876ZM62.6883 6.50442L60.6091 19.6195H63.7279L65.807 6.50442H62.6883ZM57.0868 12.3186L54.8744 11.6018C53.8796 11.2657 53.3816 10.7347 53.3816 10.0088C53.3816 9.53097 53.5597 9.15929 53.9148 8.89381C54.2703 8.62832 54.7677 8.49558 55.4075 8.49558C56.0472 8.49558 56.5094 8.66389 56.8469 9C57.2025 9.31858 57.3891 9.76991 57.4067 10.354H60.3921C60.3921 9.52195 60.197 8.79664 59.8057 8.17699C59.4149 7.53982 58.8642 7.04442 58.153 6.69027C57.4424 6.33611 56.607 6.15929 55.6474 6.15929C54.0304 6.15929 52.751 6.54 51.8089 7.30088C50.8674 8.04425 50.3962 9.0531 50.3962 10.3274C50.3962 11.1945 50.6451 11.9113 51.1425 12.4779C51.6581 13.0264 52.3687 13.4512 53.275 13.7522L55.5408 14.4956C56.0206 14.6549 56.3586 14.8407 56.5537 15.0531C56.7493 15.2655 56.8469 15.5575 56.8469 15.9292C56.8469 16.4071 56.6251 16.7963 56.1805 17.0973C55.754 17.3984 55.1857 17.5487 54.4745 17.5487C53.7633 17.5487 53.2308 17.3804 52.8219 17.0442C52.4135 16.7081 52.1912 16.2568 52.1555 15.6903H49.1433C49.1433 16.9646 49.6146 17.991 50.5561 18.7699C51.4981 19.5308 52.7334 19.9115 54.2613 19.9115C55.4165 19.9115 56.4119 19.7432 57.2467 19.4071C58.0821 19.0529 58.7219 18.5485 59.166 17.8938C59.6282 17.2391 59.859 16.4777 59.859 15.6106C59.859 14.7966 59.6282 14.1239 59.166 13.5929C58.7219 13.0619 58.0288 12.6372 57.0868 12.3186ZM44.3623 9C43.9183 8.09735 43.287 7.39805 42.4698 6.90265C41.6701 6.40726 40.7547 6.15929 39.7242 6.15929C38.747 6.15929 37.885 6.36265 37.1386 6.76991C36.4098 7.15912 35.7791 7.72566 35.246 8.46903L35.3527 6.50442H32.4472L29.6776 24H32.7873L33.78 17.5221C34.0998 18.248 34.6596 18.832 35.4593 19.2743C36.259 19.7166 37.1562 19.9381 38.1515 19.9381C39.4667 19.9381 40.6396 19.6019 41.6701 18.9292C42.7187 18.2565 43.5451 17.3273 44.1491 16.1416C44.7531 14.9559 45.0554 13.6019 45.0554 12.0796C45.0554 10.9115 44.8246 9.88513 44.3623 9ZM41.3502 14.7611C40.977 15.5044 40.4615 16.0975 39.8042 16.5398C39.1644 16.9646 38.4447 17.177 37.6451 17.177C36.6497 17.177 35.8682 16.885 35.2993 16.3009C34.7486 15.6993 34.473 14.8848 34.473 13.8584C34.473 12.9202 34.6687 12.0796 35.0594 11.3363C35.4502 10.5929 35.9748 9.99982 36.6321 9.55752C37.2895 9.11522 38.0092 8.89381 38.7913 8.89381C39.7685 8.89381 40.533 9.20336 41.0837 9.82301C41.6525 10.4246 41.9367 11.2391 41.9367 12.2655C41.9367 13.1857 41.741 14.0177 41.3502 14.7611ZM29.1967 9C28.6812 8.09735 27.953 7.39805 27.011 6.90265C26.0689 6.40726 24.9675 6.15929 23.7056 6.15929C22.6394 6.15929 21.6355 6.36265 20.6935 6.76991C19.7515 7.15912 18.9252 7.71664 18.2145 8.44248C17.5215 9.15027 16.9707 9.9823 16.5618 10.9381C16.1711 11.8763 15.9754 12.8936 15.9754 13.9912C15.9754 15.1768 16.2329 16.2212 16.7484 17.1239C17.2816 18.009 18.0189 18.6993 18.9609 19.1947C19.9205 19.6901 21.0224 19.9381 22.2662 19.9381C23.3324 19.9381 24.3363 19.7347 25.2783 19.3274C26.2203 18.9202 27.0376 18.3627 27.7307 17.6549C28.4413 16.9471 28.9926 16.1241 29.3833 15.1858C29.7922 14.2301 29.9964 13.2037 29.9964 12.1062C29.9964 10.9205 29.7299 9.88513 29.1967 9ZM26.2113 14.7876C25.8205 15.531 25.2959 16.115 24.6386 16.5398C23.9812 16.9646 23.2525 17.177 22.4528 17.177C21.4399 17.177 20.6402 16.8674 20.0538 16.2478C19.4673 15.6281 19.1741 14.7966 19.1741 13.7522C19.1741 12.832 19.3698 12.009 19.7606 11.2832C20.1695 10.5573 20.7026 9.9823 21.3599 9.55752C22.0172 9.11522 22.746 8.89381 23.5457 8.89381C24.541 8.89381 25.3316 9.21239 25.9181 9.84956C26.5045 10.4692 26.7977 11.3007 26.7977 12.3451C26.7977 13.2303 26.6021 14.0442 26.2113 14.7876ZM14.6847 9C14.2406 8.09735 13.6094 7.39805 12.7922 6.90265C11.9925 6.40726 11.0771 6.15929 10.0466 6.15929C9.0694 6.15929 8.20735 6.36265 7.46099 6.76991C6.73221 7.15912 6.10153 7.72566 5.56842 8.46903L5.67504 6.50442H2.76955L0 24H3.10968L4.10234 17.5221C4.42221 18.248 4.98199 18.832 5.78166 19.2743C6.58134 19.7166 7.47858 19.9381 8.47391 19.9381C9.78911 19.9381 10.962 19.6019 11.9925 18.9292C13.0411 18.2565 13.8675 17.3273 14.4715 16.1416C15.0755 14.9559 15.0755 13.6019 15.0755 12.0796C15.0755 10.9115 15.1469 9.88513 14.6847 9ZM11.6726 14.7611C11.2994 15.5044 10.7839 16.0975 10.1266 16.5398C9.48683 16.9646 8.76712 17.177 7.96745 17.177C6.97212 17.177 6.19057 16.885 5.62173 16.3009C5.07102 15.6993 4.7954 14.8848 4.7954 13.8584C4.7954 12.9202 4.99105 12.0796 5.38183 11.3363C5.7726 10.5929 6.29719 9.99982 6.95452 9.55752C7.61186 9.11522 8.33157 8.89381 9.11365 8.89381C10.0909 8.89381 10.8553 9.20336 11.4061 9.82301C11.9749 10.4246 12.259 11.2391 12.259 12.2655C12.259 13.1857 12.0634 14.0177 11.6726 14.7611Z" fill="#171717"/>
+            <path d="M87.9995 2.9993L89.5 0L91.0005 2.9993L94 4.5L91.0005 6.0007L89.5 9L87.9995 6.0007L85 4.5L87.9995 2.9993Z" fill="#171717"/>
+          </g>
+        </svg>
+      </a>
+
+      <!-- Center / Right Links -->
+      <nav class="flex items-center gap-7">
+        <div class="hidden md:flex items-center gap-6 text-[14px] font-medium text-neutral-800">
+          <a href="https://pop.site/pricing" class="hover:text-neutral-500 transition-colors">Pricing</a>
+          <a href="https://pop.site/sections" class="hover:text-neutral-500 transition-colors">Sections</a>
+          <a href="https://pop.site/blog" class="hover:text-neutral-500 transition-colors">Blog</a>
+          <a href="https://pop.site/featured" class="hover:text-neutral-500 transition-colors">Featured</a>
+          <a href="https://pop.site/memberships" class="hover:text-neutral-500 transition-colors">Memberships</a>
+        </div>
+
+        <div class="hidden md:block h-4 w-px bg-neutral-200/80"></div>
+
+        <div class="flex items-center gap-5 text-[14px] font-medium">
+          <a href="https://app.pop.site" target="_blank" class="text-neutral-800 hover:text-neutral-500 transition-colors">Create Account</a>
+          <a href="https://app.pop.site?signin" target="_blank" class="text-neutral-800 hover:text-neutral-500 transition-colors">Log In</a>
+        </div>
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- ================= HERO SECTION ================= -->
+  <main class="flex-1 flex flex-col items-center pt-10 md:pt-14 pb-12 overflow-hidden">
+    
+    <!-- Top Pill Badge -->
+    <div class="mb-7">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg border border-neutral-200/80 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] text-[13px] font-medium text-neutral-800">
+        <svg class="w-3.5 h-3.5 text-sky-500 fill-current" viewBox="0 0 24 24">
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+        </svg>
+        <span>Join 10K+ Site Makers</span>
+      </div>
+    </div>
+
+    <!-- Main Headline (Exact Typography, Pure Black Sans-Serif) -->
+    <div class="max-w-4xl px-4 text-center">
+      <h1 class="hero-heading text-[52px] sm:text-[72px] md:text-[88px] lg:text-[96px] font-black text-neutral-900 tracking-[-0.045em] select-none">
+        The site builder with<br/>zero learning curve.
+      </h1>
+      
+      <!-- Subheadline -->
+      <p class="mt-5 text-[18px] sm:text-[20px] text-neutral-500 font-normal tracking-tight max-w-xl mx-auto leading-relaxed">
+        Launch a site that actually looks pro, from your phone or desktop.
+      </p>
+    </div>
+
+    <!-- Claim Username Form -->
+    <div class="mt-8 w-full max-w-md px-4 flex flex-col items-center">
+      <form class="w-full flex flex-col sm:flex-row items-center justify-center gap-2.5" onsubmit="event.preventDefault(); window.open('https://app.pop.site', '_blank');">
+        
+        <!-- Input Box with Suffix -->
+        <div class="w-full sm:w-auto flex-1 flex items-center justify-between bg-neutral-100/90 border border-neutral-200/80 rounded-2xl px-4 py-2.5 transition focus-within:border-neutral-400 focus-within:bg-white focus-within:ring-2 focus-within:ring-neutral-100">
+          <input 
+            type="text" 
+            placeholder="yourname" 
+            class="bg-transparent text-[15px] text-neutral-900 placeholder:text-neutral-400 focus:outline-none w-full"
+            id="username-input"
+          />
+          <span class="text-neutral-400 font-medium text-[15px] pl-1 select-none">.pop.site</span>
+        </div>
+
+        <!-- CTA Button -->
+        <button 
+          type="submit"
+          class="w-full sm:w-auto whitespace-nowrap bg-neutral-900 hover:bg-black text-white font-medium text-[14.5px] px-5 py-3 rounded-full shadow-[0_4px_14px_rgba(0,0,0,0.18)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.25)] transition-all active:scale-[0.98]"
+        >
+          Claim your pop.site
+        </button>
+      </form>
+
+      <!-- Trust Indicator -->
+      <div class="mt-3.5 flex items-center gap-1.5 text-neutral-400 text-[12.5px] font-normal">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="20" height="14" x="2" y="5" rx="2"/>
+          <line x1="2" x2="22" y1="10" y2="10"/>
+          <line x1="1" x2="23" y1="1" y2="23" class="stroke-neutral-400"/>
+        </svg>
+        <span>No credit card required to start</span>
+      </div>
+    </div>
+
+    <!-- ================= PHONE SHOWCASE CAROUSEL ================= -->
+    <div class="w-full mt-14 pt-4 pb-12 phone-container relative">
+      <div class="flex items-center justify-center gap-6 sm:gap-8 px-6 overflow-x-auto hide-scrollbar">
+        
+        <!-- Phone 1 (Sofia Delgado / Green-Cream Theme) -->
+        <div class="phone-mockup">
+          <img 
+            src="https://framerusercontent.com/images/B5hQQjZTaCqWNhCywO7Tsyfslc.jpg?width=804&height=1748" 
+            alt="Sofia Delgado Profile" 
+            class="phone-screen"
+            loading="lazy"
+          />
+          <div class="phone-bezel" style="background-image: url('https://framerusercontent.com/images/a9gc2DlbpkkZlsKZRlBfRklZyY.png');"></div>
+        </div>
+
+        <!-- Phone 2 (Oliur / Dark Creative Portfolio) -->
+        <div class="phone-mockup">
+          <img 
+            src="https://framerusercontent.com/images/mTeoTkqiaI38uPj8b3LOrVSElQE.png?width=804&height=1792" 
+            alt="Creator Profile" 
+            class="phone-screen"
+            loading="lazy"
+          />
+          <div class="phone-bezel" style="background-image: url('https://framerusercontent.com/images/a9gc2DlbpkkZlsKZRlBfRklZyY.png');"></div>
+        </div>
+
+        <!-- Phone 3 (Django Degree / Editorial Blue) -->
+        <div class="phone-mockup">
+          <img 
+            src="https://framerusercontent.com/images/IcNMJpgyMGgRY6j3wmwEwZKn3dg.png?width=1206&height=2688" 
+            alt="Django Degree Profile" 
+            class="phone-screen"
+            loading="lazy"
+          />
+          <div class="phone-bezel" style="background-image: url('https://framerusercontent.com/images/a9gc2DlbpkkZlsKZRlBfRklZyY.png');"></div>
+        </div>
+
+        <!-- Phone 4 (Modern Minimalist / Purple Accent) -->
+        <div class="phone-mockup">
+          <img 
+            src="https://framerusercontent.com/images/6YWK2DSlMSB5fdhj26NEv60Te1s.png?width=1206&height=2688" 
+            alt="Minimalist Portfolio" 
+            class="phone-screen"
+            loading="lazy"
+          />
+          <div class="phone-bezel" style="background-image: url('https://framerusercontent.com/images/a9gc2DlbpkkZlsKZRlBfRklZyY.png');"></div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Floating Chat Badge Icon (Bottom Right) -->
+  <button 
+    aria-label="Support Chat" 
+    class="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-neutral-950 text-white flex items-center justify-center shadow-2xl hover:scale-105 transition-transform active:scale-95 z-50"
+    onclick="window.open('https://pop.site', '_blank')"
+  >
+    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+      <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
+    </svg>
+  </button>
+
+</body>
+</html>

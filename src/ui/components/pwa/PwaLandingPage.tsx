@@ -6,7 +6,6 @@ import {
   ArrowRight,
   ShieldCheck,
   Zap,
-  Smartphone,
   Sparkles,
   MapPin,
   MessageSquare,
@@ -21,6 +20,11 @@ import {
   Users,
   Search,
   ArrowUpRight,
+  TrendingUp,
+  BarChart3,
+  MousePointerClick,
+  Smartphone,
+  Laptop,
 } from 'lucide-react';
 import { usePWA } from '@/ui/hooks/usePWA';
 import { CustomPwaInstallModal } from './CustomPwaInstallModal';
@@ -35,7 +39,6 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
   const [copied, setCopied] = useState(false);
   const [claimUsername, setClaimUsername] = useState('');
   const [showCustomInstallModal, setShowCustomInstallModal] = useState(false);
-  const [activePlatform, setActivePlatform] = useState<'android' | 'ios' | 'desktop'>('android');
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   const handleInstallClick = () => {
@@ -81,72 +84,62 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
 
   const faqs = [
     {
-      q: 'Apakah aplikasi Snapan Market ini berbayar?',
-      a: 'Tidak sama sekali. 100% gratis untuk seluruh siswa, guru, dan staff SMKN 8 Jakarta tanpa biaya admin, potongan transaksi, atau langganan.',
+      q: 'Is Snapan Market free for all SMKN 8 students?',
+      a: 'Yes, 100% free! There are zero subscription fees, zero transaction fees, and zero hidden costs for students and teachers of SMKN 8 Jakarta.',
     },
     {
-      q: 'Bagaimana cara transaksi COD di sekolah?',
-      a: 'Saat memesan barang, Anda dan penjual memilih Titik Temu COD resmi (Kantin Belakang, Lab Komputer, Lapangan, atau Perpustakaan) pada jam istirahat atau sepulang sekolah.',
+      q: 'How does campus COD (Cash On Delivery) work?',
+      a: 'When ordering an item or service, you and the seller choose an official school meeting point (such as Kantin Belakang, Lab PPLG, Lapangan, or Perpustakaan) during recess or after school.',
     },
     {
-      q: 'Kenapa menggunakan teknologi Progressive Web App (PWA)?',
-      a: 'PWA memberikan pengalaman aplikasi native yang sangat ringan (< 3MB), tidak memakan memori HP, dapat dipasang langsung tanpa ribet buka Play Store, dan tetap bisa dibuka offline.',
+      q: 'Why is it delivered as a Progressive Web App (PWA)?',
+      a: 'PWAs offer instantaneous 1-tap installation without needing app store downloads, take up virtually zero storage (<3MB), work offline with 0ms cache, and run at a silky smooth 120 FPS.',
     },
     {
-      q: 'Siapa saja yang bisa memajang produk atau jasa?',
-      a: 'Seluruh warga SMKN 8 Jakarta! Mulai dari jual barang preloved (seragam, buku, kalkulator), jasa joki coding/desain, hingga produk makanan & kue buatan siswa Kuliner.',
+      q: 'Can I sell vocational projects and creative work?',
+      a: 'Absolutely! PPLG students can sell coding templates & websites, DKV students can offer graphic design & merchandise, and Culinary students can sell bakery & snacks.',
     },
   ];
 
   return (
-    <div className="min-h-screen w-full bg-[#fafafc] text-slate-900 font-gt-standard select-none overflow-x-hidden antialiased selection:bg-[#1d64ec] selection:text-white">
+    <div className="min-h-screen w-full bg-[#fafafc] text-slate-950 font-gt-standard select-none overflow-x-hidden antialiased selection:bg-[#1d64ec] selection:text-white">
       
       {/* =========================================================================
-          1. FLOATING PILL HEADER NAVBAR (Exact pop.site layout)
+          1. EXACT POP.SITE FLOATING PILL NAVBAR
       ========================================================================= */}
       <div className="fixed top-3 sm:top-5 inset-x-0 z-50 flex justify-center px-3 pointer-events-none">
-        <header className="pointer-events-auto w-full max-w-4xl bg-white/90 backdrop-blur-xl border border-neutral-200/80 rounded-full px-3.5 sm:px-5 py-2.5 shadow-[0_8px_30px_rgba(0,0,0,0.06)] flex items-center justify-between transition-all">
+        <header className="pointer-events-auto w-full max-w-5xl bg-white/85 backdrop-blur-xl border border-neutral-200/80 rounded-full px-4 sm:px-6 py-2.5 shadow-[0_8px_30px_rgba(0,0,0,0.06)] flex items-center justify-between transition-all">
           {/* Logo & Brand Tag */}
           <div className="flex items-center gap-2.5 cursor-pointer" onClick={handleProceed}>
             <div className="h-7 w-7 rounded-lg bg-[#000000] text-white flex items-center justify-center font-black text-xs shadow-xs">
               S8
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-sm text-slate-950 tracking-tight">
-                snapan.site
+              <span className="font-extrabold text-[15px] text-slate-950 tracking-tight">
+                pop.site
               </span>
-              <span className="hidden md:inline-block text-[11px] font-semibold text-[#1d64ec] bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100/70">
-                SMKN 8
+              <span className="text-[10.5px] font-semibold text-[#1d64ec] bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100/70">
+                snapan.site
               </span>
             </div>
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-6 text-[13px] font-semibold text-neutral-600">
-            <a href="#fitur" className="hover:text-slate-950 transition-colors">Fitur COD</a>
-            <a href="#vokasi" className="hover:text-slate-950 transition-colors">Karya Vokasi</a>
-            <a href="#testimoni" className="hover:text-slate-950 transition-colors">Testimoni</a>
-            <a href="#panduan" className="hover:text-slate-950 transition-colors">Cara Pasang</a>
-            <a href="#faq" className="hover:text-slate-950 transition-colors">FAQ</a>
+          <nav className="hidden md:flex items-center gap-7 text-[13px] font-medium text-neutral-600">
+            <a href="#features" className="hover:text-slate-950 transition-colors">Pricing</a>
+            <a href="#features" className="hover:text-slate-950 transition-colors">Sections</a>
+            <a href="#themes" className="hover:text-slate-950 transition-colors">Featured</a>
+            <a href="#analytics" className="hover:text-slate-950 transition-colors">Memberships</a>
           </nav>
 
           {/* Right Action Buttons */}
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={handleShareLink}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-neutral-100/80 hover:bg-neutral-200/70 text-xs font-semibold text-slate-800 transition-all cursor-pointer active:scale-95"
-            >
-              <Share2 className="w-3.5 h-3.5 text-[#1d64ec]" />
-              <span className="hidden sm:inline">{copied ? 'Tersalin!' : 'Bagikan'}</span>
-            </button>
-
-            <button
-              type="button"
               onClick={handleProceed}
-              className="hidden sm:flex items-center px-3.5 py-1.5 text-xs font-semibold text-neutral-700 hover:text-slate-950 transition-colors cursor-pointer"
+              className="text-xs font-semibold text-neutral-700 hover:text-slate-950 px-3 py-1.5 cursor-pointer transition-colors"
             >
-              Buka Web
+              Log In
             </button>
 
             <button
@@ -154,159 +147,149 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
               onClick={handleInstallClick}
               className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#000000] hover:bg-[#1a1a1a] active:scale-95 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
             >
-              <Download className="w-3.5 h-3.5" />
-              <span>Pasang</span>
+              <span>Create Account</span>
             </button>
           </div>
         </header>
       </div>
 
       {/* =========================================================================
-          2. HERO SECTION (Exact pop.site Typography & Claim Input Bar)
+          2. EXACT POP.SITE HERO SECTION
       ========================================================================= */}
-      <section className="pt-28 sm:pt-36 pb-16 px-4 sm:px-6 max-w-4xl mx-auto text-center space-y-7">
+      <section className="pt-28 sm:pt-36 pb-16 px-4 sm:px-6 max-w-5xl mx-auto text-center space-y-7">
         
         {/* Social Proof Pill Badge */}
-        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white border border-neutral-200 shadow-2xs text-xs font-semibold text-slate-800 animate-in fade-in zoom-in-95 duration-500">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-neutral-200 shadow-2xs text-xs font-semibold text-slate-800 animate-in fade-in zoom-in-95 duration-500">
           <div className="flex -space-x-1.5 items-center">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&q=80" alt="Avatar" className="w-5 h-5 rounded-full border border-white object-cover" />
-            <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=60&q=80" alt="Avatar" className="w-5 h-5 rounded-full border border-white object-cover" />
-            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=60&q=80" alt="Avatar" className="w-5 h-5 rounded-full border border-white object-cover" />
+            <img src="https://framerusercontent.com/images/faaNGs13tJFdVwu9AmLhWZQ4iKY.png" alt="Avatar" className="w-5 h-5 rounded-full border border-white object-cover" />
+            <img src="https://framerusercontent.com/images/dvasWTfovyZZuh8eTWbsvvQw80U.png" alt="Avatar" className="w-5 h-5 rounded-full border border-white object-cover" />
+            <img src="https://framerusercontent.com/images/SOnU8rT2yRS5jR2ov0U1eC6T0.png" alt="Avatar" className="w-5 h-5 rounded-full border border-white object-cover" />
           </div>
-          <span>Bergabung dengan 1.200+ Siswa SMKN 8</span>
+          <span>Join 10K+ Site Makers</span>
         </div>
 
-        {/* Master Headline (Large font with Serif Accent) */}
+        {/* Master Headline (Satoshi + Instrument Serif Italic) */}
         <div className="space-y-3 max-w-3xl mx-auto">
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-slate-950 tracking-tight leading-[1.08]">
-            Pasar sekolah dengan <br className="hidden sm:inline" />
-            <span className="font-serif italic font-normal text-[#1d64ec]">zero ribet & zero fee.</span>
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-slate-950 tracking-tight leading-[1.06]">
+            The site builder with <br className="hidden sm:inline" />
+            <span className="font-serif italic font-normal text-[#1d64ec]">zero learning curve.</span>
           </h1>
           <p className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed max-w-xl mx-auto pt-1">
-            Jual beli perlengkapan sekolah, karya vokasi PPLG/DKV/Kuliner, dan diskusi akademik langsung dari HP atau laptop Anda.
+            Launch a site that actually looks pro, from your phone or desktop. Pasar digital & forum resmi warga SMKN 8 Jakarta.
           </p>
         </div>
 
-        {/* Interactive Claim & Install Input Bar (Exact pop.site claim bar) */}
+        {/* Interactive Claim & Install Input Bar */}
         <div className="pt-2 max-w-lg mx-auto">
           <form onSubmit={handleClaim} className="flex items-center bg-white border border-neutral-200/90 rounded-2xl sm:rounded-full p-1.5 shadow-[0_10px_30px_rgba(0,0,0,0.05)] focus-within:border-[#1d64ec] focus-within:ring-2 focus-within:ring-blue-100 transition-all">
-            <div className="flex items-center pl-3.5 pr-1 flex-1 min-w-0 text-slate-900">
-              <span className="text-neutral-400 font-semibold text-sm">@</span>
+            <div className="flex items-center pl-4 pr-1 flex-1 min-w-0 text-slate-900">
               <input
                 type="text"
                 value={claimUsername}
                 onChange={(e) => setClaimUsername(e.target.value)}
-                placeholder="nama-kamu"
-                className="w-full bg-transparent px-1.5 py-2 text-sm font-semibold text-slate-900 placeholder:text-neutral-300 focus:outline-none"
+                placeholder="yourname"
+                className="w-full bg-transparent px-1 py-2 text-sm font-semibold text-slate-900 placeholder:text-neutral-300 focus:outline-none"
               />
-              <span className="text-xs font-mono text-neutral-400 font-medium hidden sm:inline">.snapan.site</span>
+              <span className="text-xs font-mono text-neutral-400 font-medium">.pop.site</span>
             </div>
 
             <button
               type="submit"
               className="h-10 sm:h-11 px-5 sm:px-6 rounded-xl sm:rounded-full bg-[#000000] hover:bg-[#1a1a1a] active:scale-95 text-white font-bold text-xs sm:text-sm shadow-xs flex items-center justify-center gap-1.5 transition-all shrink-0 cursor-pointer"
             >
-              <span>Klaim & Pasang</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <span>Claim your pop.site</span>
             </button>
           </form>
 
           {/* Micro Guarantee Copy */}
           <div className="pt-3 flex items-center justify-center gap-4 text-xs text-neutral-500 font-medium">
-            <span>⚡ 1-Tap Install PWA</span>
+            <span>No credit card required to start</span>
             <span>·</span>
-            <span>💾 Sangat Ringan (&lt;3MB)</span>
+            <span>There's no complex editor to learn</span>
             <span>·</span>
-            <span>🛡️ 100% Gratis</span>
+            <span>Go live in minutes, not weeks</span>
           </div>
         </div>
 
         {/* =========================================================================
-            3. HERO SHOWCASE MOCKUP CARDS (pop.site live showcase card)
+            3. EXACT POP.SITE HERO PREVIEW SHOWCASE (Django Degree Testimonial)
         ========================================================================= */}
-        <div className="pt-8 max-w-3xl mx-auto">
-          <div className="relative bg-white border border-neutral-200/90 rounded-3xl p-4 sm:p-7 shadow-[0_24px_60px_rgba(0,0,0,0.06)] overflow-hidden text-left space-y-4">
+        <div className="pt-8 max-w-4xl mx-auto">
+          <div className="relative bg-white border border-neutral-200/90 rounded-3xl p-4 sm:p-8 shadow-[0_24px_60px_rgba(0,0,0,0.06)] overflow-hidden text-left space-y-6">
             
-            {/* Top Device Bar */}
-            <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-neutral-200" />
-                <span className="w-2.5 h-2.5 rounded-full bg-neutral-200" />
-                <span className="w-2.5 h-2.5 rounded-full bg-neutral-200" />
+            {/* Top Browser Bar */}
+            <div className="flex items-center justify-between pb-4 border-b border-neutral-100">
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-neutral-200" />
+                <span className="w-3 h-3 rounded-full bg-neutral-200" />
+                <span className="w-3 h-3 rounded-full bg-neutral-200" />
               </div>
-              <div className="flex items-center gap-1 px-3 py-0.5 rounded-md bg-neutral-50 text-[11px] font-mono text-neutral-400 border border-neutral-100">
-                <span>app.snapan.id</span>
+              <div className="flex items-center gap-1 px-4 py-1 rounded-md bg-neutral-50 text-xs font-mono text-neutral-400 border border-neutral-100">
+                <span>django.pop.site</span>
               </div>
-              <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                ● Live Feed
-              </span>
+              <div className="w-10" />
             </div>
 
-            {/* Profile Bar Showcase */}
-            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-neutral-50/70 border border-neutral-100">
-              <div className="flex items-center gap-3">
-                <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&q=80"
-                  alt="Profile"
-                  className="w-11 h-11 rounded-full object-cover ring-2 ring-white"
-                />
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="text-sm font-bold text-slate-900">Sarah Anastasya</h3>
-                    <span className="w-3.5 h-3.5 rounded-full bg-[#1d64ec] text-white flex items-center justify-center text-[8px] font-bold">✓</span>
+            {/* Showcase Grid: Left Phone Card, Right Testimonial */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+              
+              {/* Django Profile Card */}
+              <div className="p-6 rounded-2xl bg-neutral-50/80 border border-neutral-100 space-y-4">
+                <div className="flex items-center gap-3.5">
+                  <img
+                    src="https://framerusercontent.com/images/KqkGbSLtwSpCaNdUkG8IFD3kNoA.jpg?width=300&height=300"
+                    alt="Django Degree"
+                    className="w-14 h-14 rounded-full object-cover ring-2 ring-white shadow-xs"
+                  />
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <h3 className="text-base font-bold text-slate-950">Django Degree</h3>
+                      <span className="w-4 h-4 rounded-full bg-[#1d64ec] text-white flex items-center justify-center text-[9px] font-bold">✓</span>
+                    </div>
+                    <p className="text-xs text-neutral-500 font-mono">django.pop.site</p>
+                    <span className="inline-block mt-1 text-[11px] font-bold text-slate-900 bg-white px-2 py-0.5 rounded-full border border-neutral-200/70">
+                      102K Followers
+                    </span>
                   </div>
-                  <p className="text-xs text-neutral-500">@sarahanas · XII PPLG 1</p>
                 </div>
-              </div>
-              <div className="text-right">
-                <span className="text-xs font-bold text-slate-900">142</span>
-                <span className="text-xs text-neutral-400 font-normal"> pengikut</span>
-                <span className="mx-1.5 text-neutral-300">·</span>
-                <span className="text-xs font-bold text-slate-900">⭐ 4.9</span>
-              </div>
-            </div>
 
-            {/* Live Feed Item Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
-              {/* Product 1 */}
-              <div className="p-4 rounded-2xl bg-white border border-neutral-100 shadow-2xs space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 text-[#1d64ec] text-[10.5px] font-bold">
-                    Alat Belajar
-                  </span>
-                  <span className="text-[11px] text-neutral-400">10m lalu</span>
-                </div>
-                <h4 className="text-xs font-bold text-slate-900 line-clamp-1">
-                  Kalkulator Casio FX-991EX Original
-                </h4>
-                <p className="text-[11.5px] text-slate-600 line-clamp-2 leading-relaxed">
-                  Masih mulus 99%, tombol empuk. Siap COD di kantin belakang jam istirahat kedua.
+                <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                  Creator & Product Designer. Sharing daily design insights, templates, and digital school supplies.
                 </p>
-                <div className="flex items-center justify-between pt-2 border-t border-neutral-100">
-                  <span className="text-sm font-black text-slate-950">Rp 185.000</span>
-                  <span className="text-[11px] font-medium text-slate-500">📍 Kantin Belakang</span>
+
+                {/* Quick Action Buttons */}
+                <div className="space-y-2 pt-2">
+                  <div className="p-3 rounded-xl bg-white border border-neutral-200/70 flex items-center justify-between text-xs font-bold text-slate-900 hover:border-neutral-300 transition-colors">
+                    <div className="flex items-center gap-2">
+                      <ShoppingBag className="w-4 h-4 text-[#1d64ec]" />
+                      <span>Kalkulator Casio FX-991EX (Preloved)</span>
+                    </div>
+                    <span>Rp 185K</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white border border-neutral-200/70 flex items-center justify-between text-xs font-bold text-slate-900 hover:border-neutral-300 transition-colors">
+                    <div className="flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-emerald-600" />
+                      <span>Template Landing Page PJBL Vokasi</span>
+                    </div>
+                    <span>Rp 35K</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Product 2 */}
-              <div className="p-4 rounded-2xl bg-white border border-neutral-100 shadow-2xs space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[10.5px] font-bold">
-                    Karya PPLG
-                  </span>
-                  <span className="text-[11px] text-neutral-400">25m lalu</span>
+              {/* Right Big Quote Card */}
+              <div className="p-6 sm:p-8 rounded-2xl bg-[#000000] text-white space-y-4">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-xs font-semibold text-blue-200">
+                  <Star className="w-3.5 h-3.5 fill-blue-400 text-blue-400" />
+                  <span>Featured Creator</span>
                 </div>
-                <h4 className="text-xs font-bold text-slate-900 line-clamp-1">
-                  Source Code Landing Page Portofolio
-                </h4>
-                <p className="text-[11.5px] text-slate-600 line-clamp-2 leading-relaxed">
-                  Template portofolio siap pakai untuk tugas akhir PJBL. Responsive dan clean code.
+                <blockquote className="text-xl sm:text-2xl font-serif italic text-white/95 leading-snug">
+                  "My site was done before I finished my coffee. I now get over 100K visitors a month to my Pop Site."
+                </blockquote>
+                <p className="text-xs text-neutral-400 font-mono">
+                  Django Degree · django.pop.site
                 </p>
-                <div className="flex items-center justify-between pt-2 border-t border-neutral-100">
-                  <span className="text-sm font-black text-slate-950">Rp 35.000</span>
-                  <span className="text-[11px] font-medium text-slate-500">📍 Lab PPLG</span>
-                </div>
               </div>
+
             </div>
 
           </div>
@@ -314,253 +297,216 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
       </section>
 
       {/* =========================================================================
-          4. FEATURE HIGHLIGHTS / TESTIMONIAL QUOTE (Exact pop.site block)
+          4. EXACT POP.SITE SECTION: AUTOMATED SEO, DOMAINS & METADATA
       ========================================================================= */}
-      <section id="testimoni" className="py-16 px-4 sm:px-6 max-w-4xl mx-auto">
-        <div className="p-8 sm:p-12 rounded-3xl bg-[#000000] text-white text-left space-y-6 relative overflow-hidden">
-          {/* Subtle Ambient light */}
-          <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/15 rounded-full blur-3xl pointer-events-none" />
+      <section id="features" className="py-16 px-4 sm:px-6 max-w-5xl mx-auto space-y-12">
+        <div className="text-center space-y-3 max-w-2xl mx-auto">
+          <span className="text-xs font-bold text-[#1d64ec] uppercase tracking-wider bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+            New Automated
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight leading-tight">
+            SEO automated. Domains included. <br />
+            <span className="font-serif italic font-normal text-[#1d64ec]">Metadata handled.</span>
+          </h2>
+          <p className="text-sm sm:text-base text-slate-600">
+            Pop Site automates everything for you. Zero maintenance, zero manual configuration.
+          </p>
+        </div>
 
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-xs font-semibold text-blue-200 border border-white/10">
-            <Sparkles className="w-3.5 h-3.5 text-[#1d64ec]" />
-            <span>Pengalaman Warga SMKN 8</span>
+        {/* Bento Grid 3 Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          {/* Bento 1: SEO is automated */}
+          <div className="p-7 rounded-3xl bg-white border border-neutral-200/90 shadow-2xs space-y-4">
+            <div className="w-10 h-10 rounded-2xl bg-blue-50 text-[#1d64ec] flex items-center justify-center">
+              <Search className="w-5 h-5" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-950">SEO is automated</h3>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+              Your site's SEO is handled automatically by Pop Site. Structured markup and indexing ready out-of-the-box.
+            </p>
           </div>
 
-          <blockquote className="text-xl sm:text-3xl font-serif italic text-white/95 leading-snug max-w-2xl">
-            "Kalkulator dan seragam jurusan saya langsung laku sebelum jam istirahat pertama selesai. COD-nya aman langsung di kantin sekolah."
-          </blockquote>
+          {/* Bento 2: Domains are included */}
+          <div className="p-7 rounded-3xl bg-white border border-neutral-200/90 shadow-2xs space-y-4">
+            <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center">
+              <Globe className="w-5 h-5" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-950">Domains are included</h3>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+              You get a free Pop Site domain, or easily connect your own custom school domain in just one click.
+            </p>
+          </div>
 
-          <div className="flex items-center gap-3 pt-2">
+          {/* Bento 3: Metadata is handled */}
+          <div className="p-7 rounded-3xl bg-white border border-neutral-200/90 shadow-2xs space-y-4">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-950">Metadata is handled</h3>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+              Your metadata and OpenGraph social preview tags are automatically created and updated for you.
+            </p>
+          </div>
+
+        </div>
+
+        {/* Large Responsive Preview Card (Exact Pop.site WYeXLQfd4HWciZeQrD0RgF5V8Dw.png mockup) */}
+        <div className="p-6 sm:p-10 rounded-3xl bg-white border border-neutral-200/90 shadow-2xs space-y-6 text-center">
+          <div className="max-w-md mx-auto space-y-2">
+            <h3 className="text-2xl font-bold text-slate-950">Desktop & mobile views</h3>
+            <p className="text-xs sm:text-sm text-slate-600">
+              Pop Sites are automatically responsive across all devices with instant PWA capabilities.
+            </p>
+          </div>
+
+          <div className="relative rounded-2xl overflow-hidden border border-neutral-100 bg-neutral-50 shadow-inner">
             <img
-              src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&q=80"
-              alt="Dimas"
-              className="w-10 h-10 rounded-full object-cover border border-white/20"
+              src="https://framerusercontent.com/images/WYeXLQfd4HWciZeQrD0RgF5V8Dw.png?width=2648&height=1994"
+              alt="Desktop and mobile responsive view"
+              className="w-full h-auto object-cover max-h-[420px]"
             />
-            <div>
-              <p className="text-sm font-bold text-white">Dimas Wicaksono</p>
-              <p className="text-xs text-neutral-400 font-mono">dimas.snapan.site · XII DKV 2</p>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          5. EXACT POP.SITE SECTION: BUILT-IN ANALYTICS
+      ========================================================================= */}
+      <section id="analytics" className="py-16 px-4 sm:px-6 max-w-5xl mx-auto space-y-12">
+        <div className="text-center space-y-3 max-w-2xl mx-auto">
+          <span className="text-xs font-bold text-[#1d64ec] uppercase tracking-wider bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+            Included on Pro
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight leading-tight">
+            Built-in Analytics that go beyond <br />
+            <span className="font-serif italic font-normal text-[#1d64ec]">what others offer.</span>
+          </h2>
+          <p className="text-sm sm:text-base text-slate-600">
+            Advanced UTM campaign tracking, live visitor alerts, and device telemetry.
+          </p>
+        </div>
+
+        {/* Analytics Image Showcase */}
+        <div className="relative rounded-3xl bg-[#000000] p-6 sm:p-10 border border-neutral-800 shadow-2xl text-white overflow-hidden space-y-8">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
+
+          {/* Feature List Chips */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 text-center">
+            <div className="p-3 rounded-2xl bg-white/5 border border-white/10 text-xs font-semibold">
+              Track button clicks
+            </div>
+            <div className="p-3 rounded-2xl bg-white/5 border border-white/10 text-xs font-semibold">
+              Get live alerts
+            </div>
+            <div className="p-3 rounded-2xl bg-white/5 border border-white/10 text-xs font-semibold">
+              UTM tracking
+            </div>
+            <div className="p-3 rounded-2xl bg-white/5 border border-white/10 text-xs font-semibold">
+              Device analytics
+            </div>
+            <div className="p-3 rounded-2xl bg-white/5 border border-white/10 text-xs font-semibold">
+              Referral sources
+            </div>
+            <div className="p-3 rounded-2xl bg-white/5 border border-white/10 text-xs font-semibold">
+              Geo intelligence
+            </div>
+          </div>
+
+          {/* Exact Analytics Screenshot from Pop.site */}
+          <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+            <img
+              src="https://framerusercontent.com/images/pcuazrEIpAoQPBPbCjblc9C1YJY.png?width=1280&height=720"
+              alt="Pop Site Analytics Dashboard"
+              className="w-full h-auto object-cover"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          6. EXACT POP.SITE SECTION: THEMES THAT LOOK DESIGNER-MADE
+      ========================================================================= */}
+      <section id="themes" className="py-16 px-4 sm:px-6 max-w-5xl mx-auto space-y-12">
+        <div className="text-center space-y-3 max-w-2xl mx-auto">
+          <span className="text-xs font-bold text-[#1d64ec] uppercase tracking-wider bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+            New Themes
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight leading-tight">
+            Themes that look <br />
+            <span className="font-serif italic font-normal text-[#1d64ec]">designer-made.</span>
+          </h2>
+          <p className="text-sm sm:text-base text-slate-600">
+            New themes added monthly. Everything is pre-built — just customize and launch.
+          </p>
+        </div>
+
+        {/* Gallery Grid of Pop.site Themes */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+          <div className="rounded-2xl overflow-hidden border border-neutral-200/90 bg-white shadow-2xs hover:shadow-md transition-all group cursor-pointer">
+            <img src="https://framerusercontent.com/images/jvWQK1OAcvujJal5mRbPS1GGzuI.jpg?scale-down-to=512&width=1920&height=1440" alt="Theme 1" className="w-full h-48 sm:h-64 object-cover group-hover:scale-105 transition-transform duration-500" />
+            <div className="p-3.5 text-xs font-bold text-slate-900 flex justify-between items-center">
+              <span>Minimalist Portfolio</span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-neutral-400" />
+            </div>
+          </div>
+
+          <div className="rounded-2xl overflow-hidden border border-neutral-200/90 bg-white shadow-2xs hover:shadow-md transition-all group cursor-pointer">
+            <img src="https://framerusercontent.com/images/4cRxw5WzNfrPAjGUiEtbGYKewQw.jpg?scale-down-to=512&width=1920&height=1440" alt="Theme 2" className="w-full h-48 sm:h-64 object-cover group-hover:scale-105 transition-transform duration-500" />
+            <div className="p-3.5 text-xs font-bold text-slate-900 flex justify-between items-center">
+              <span>Editorial Magazine</span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-neutral-400" />
+            </div>
+          </div>
+
+          <div className="rounded-2xl overflow-hidden border border-neutral-200/90 bg-white shadow-2xs hover:shadow-md transition-all group cursor-pointer">
+            <img src="https://framerusercontent.com/images/00EUntV8RMJM5PyskAclGChN9s8.jpg?scale-down-to=512&width=1920&height=1440" alt="Theme 3" className="w-full h-48 sm:h-64 object-cover group-hover:scale-105 transition-transform duration-500" />
+            <div className="p-3.5 text-xs font-bold text-slate-900 flex justify-between items-center">
+              <span>Creator Showcase</span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-neutral-400" />
+            </div>
+          </div>
+
+          <div className="rounded-2xl overflow-hidden border border-neutral-200/90 bg-white shadow-2xs hover:shadow-md transition-all group cursor-pointer">
+            <img src="https://framerusercontent.com/images/ANN0pcYUTu1irgW2Shitk6Y.jpg?scale-down-to=512&width=1920&height=1440" alt="Theme 4" className="w-full h-48 sm:h-64 object-cover group-hover:scale-105 transition-transform duration-500" />
+            <div className="p-3.5 text-xs font-bold text-slate-900 flex justify-between items-center">
+              <span>Digital Store</span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-neutral-400" />
+            </div>
+          </div>
+
+          <div className="rounded-2xl overflow-hidden border border-neutral-200/90 bg-white shadow-2xs hover:shadow-md transition-all group cursor-pointer">
+            <img src="https://framerusercontent.com/images/U7ONvjSO4tFRexJCBv69x0O7I.jpg?scale-down-to=512&width=1920&height=1440" alt="Theme 5" className="w-full h-48 sm:h-64 object-cover group-hover:scale-105 transition-transform duration-500" />
+            <div className="p-3.5 text-xs font-bold text-slate-900 flex justify-between items-center">
+              <span>Bento Personal Hub</span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-neutral-400" />
+            </div>
+          </div>
+
+          <div className="rounded-2xl overflow-hidden border border-neutral-200/90 bg-white shadow-2xs hover:shadow-md transition-all group cursor-pointer">
+            <img src="https://framerusercontent.com/images/FslHXXxXCDOMyOJzYO89SJJlvXA.jpg?scale-down-to=512&width=1920&height=1440" alt="Theme 6" className="w-full h-48 sm:h-64 object-cover group-hover:scale-105 transition-transform duration-500" />
+            <div className="p-3.5 text-xs font-bold text-slate-900 flex justify-between items-center">
+              <span>Dark Mode Tech</span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-neutral-400" />
             </div>
           </div>
         </div>
       </section>
 
       {/* =========================================================================
-          5. BENTO GRID FEATURES (Exact pop.site Bento styling)
+          7. FAQ ACCORDION (Exact pop.site FAQ)
       ========================================================================= */}
-      <section id="fitur" className="py-12 px-4 sm:px-6 max-w-4xl mx-auto space-y-10">
-        <div className="text-center space-y-2 max-w-lg mx-auto">
-          <span className="text-xs font-bold text-[#1d64ec] uppercase tracking-wider">Fitur Utama</span>
+      <section className="py-16 px-4 sm:px-6 max-w-3xl mx-auto space-y-8">
+        <div className="text-center space-y-2">
           <h2 className="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight">
-            Dibuat Khusus untuk Kebutuhan SMKN 8.
+            Frequently Asked Questions
           </h2>
           <p className="text-sm text-slate-600">
-            Setiap fitur dirancang untuk kemudahan transaksi dan interaksi siswa sehari-hari.
+            Everything you need to know about Pop Site & Snapan Market.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Card 1 */}
-          <div className="p-7 rounded-3xl bg-white border border-neutral-200/80 shadow-2xs hover:shadow-md transition-all space-y-3">
-            <div className="w-10 h-10 rounded-2xl bg-blue-50 text-[#1d64ec] flex items-center justify-center">
-              <MapPin className="w-5 h-5" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-950 tracking-tight">
-              Titik Temu COD Kampus Resmi
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
-              Pilih lokasi pertemuan aman di lingkungan sekolah seperti Kantin Belakang, Lab PPLG, Lab DKV, Perpustakaan, atau Lapangan Upacara.
-            </p>
-          </div>
-
-          {/* Card 2 */}
-          <div id="vokasi" className="p-7 rounded-3xl bg-white border border-neutral-200/80 shadow-2xs hover:shadow-md transition-all space-y-3">
-            <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center">
-              <ShoppingBag className="w-5 h-5" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-950 tracking-tight">
-              Komersialisasi Karya Vokasi
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
-              Monetisasi hasil karya jurusan: Jasa pembuatan web/aplikasi (PPLG), merchandise & desain grafis (DKV), serta kue & catering (Kuliner).
-            </p>
-          </div>
-
-          {/* Card 3 */}
-          <div className="p-7 rounded-3xl bg-white border border-neutral-200/80 shadow-2xs hover:shadow-md transition-all space-y-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
-              <MessageSquare className="w-5 h-5" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-950 tracking-tight">
-              Threads & Forum Diskusi Sekolah
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
-              Bukan cuma jual beli, tapi juga ruang berbagi info tugas, tips ujian kejuruan, pengumuman OSIS, dan diskusi antar kelas.
-            </p>
-          </div>
-
-          {/* Card 4 */}
-          <div className="p-7 rounded-3xl bg-white border border-neutral-200/80 shadow-2xs hover:shadow-md transition-all space-y-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <Zap className="w-5 h-5" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-950 tracking-tight">
-              PWA 0ms Fast Feed Cache
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
-              Arsitektur in-memory cache instan. Feed langsung terbuka tanpa loading berputar, hemat kuota internet, dan mulus 120 FPS.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          6. INSTALLATION GUIDE TABS (Exact pop.site step guide)
-      ========================================================================= */}
-      <section id="panduan" className="py-12 px-4 sm:px-6 max-w-4xl mx-auto">
-        <div className="p-7 sm:p-10 rounded-3xl bg-white border border-neutral-200/90 shadow-2xs space-y-8">
-          <div className="text-center space-y-2 max-w-md mx-auto">
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
-              Cara Pasang dalam 3 Detik
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600">
-              Pilih perangkat yang Anda gunakan sekarang:
-            </p>
-          </div>
-
-          {/* Platform Pills */}
-          <div className="flex items-center justify-center gap-2">
-            <button
-              type="button"
-              onClick={() => setActivePlatform('android')}
-              className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                activePlatform === 'android'
-                  ? 'bg-[#000000] text-white shadow-xs'
-                  : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200/60'
-              }`}
-            >
-              Android (Chrome)
-            </button>
-            <button
-              type="button"
-              onClick={() => setActivePlatform('ios')}
-              className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                activePlatform === 'ios'
-                  ? 'bg-[#000000] text-white shadow-xs'
-                  : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200/60'
-              }`}
-            >
-              iPhone (Safari)
-            </button>
-            <button
-              type="button"
-              onClick={() => setActivePlatform('desktop')}
-              className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                activePlatform === 'desktop'
-                  ? 'bg-[#000000] text-white shadow-xs'
-                  : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200/60'
-              }`}
-            >
-              Laptop / PC
-            </button>
-          </div>
-
-          {/* Steps Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {activePlatform === 'android' && (
-              <>
-                <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-100 space-y-2">
-                  <span className="w-6 h-6 rounded-full bg-[#000000] text-white text-xs font-bold flex items-center justify-center">1</span>
-                  <h4 className="text-xs font-bold text-slate-950">Buka di Chrome</h4>
-                  <p className="text-xs text-neutral-500 font-normal leading-relaxed">
-                    Buka situs ini di browser Google Chrome pada ponsel Android Anda.
-                  </p>
-                </div>
-                <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-100 space-y-2">
-                  <span className="w-6 h-6 rounded-full bg-[#000000] text-white text-xs font-bold flex items-center justify-center">2</span>
-                  <h4 className="text-xs font-bold text-slate-950">Tap Pasang</h4>
-                  <p className="text-xs text-neutral-500 font-normal leading-relaxed">
-                    Klik tombol "Pasang" di atas atau banner instalasi otomatis.
-                  </p>
-                </div>
-                <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-100 space-y-2">
-                  <span className="w-6 h-6 rounded-full bg-[#000000] text-white text-xs font-bold flex items-center justify-center">3</span>
-                  <h4 className="text-xs font-bold text-slate-950">Icon Siap di HP</h4>
-                  <p className="text-xs text-neutral-500 font-normal leading-relaxed">
-                    Aplikasi langsung terpasang di homescreen HP tanpa lewat PlayStore.
-                  </p>
-                </div>
-              </>
-            )}
-
-            {activePlatform === 'ios' && (
-              <>
-                <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-100 space-y-2">
-                  <span className="w-6 h-6 rounded-full bg-[#000000] text-white text-xs font-bold flex items-center justify-center">1</span>
-                  <h4 className="text-xs font-bold text-slate-950">Buka di Safari</h4>
-                  <p className="text-xs text-neutral-500 font-normal leading-relaxed">
-                    Pastikan Anda membuka halaman ini di browser Safari iPhone.
-                  </p>
-                </div>
-                <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-100 space-y-2">
-                  <span className="w-6 h-6 rounded-full bg-[#000000] text-white text-xs font-bold flex items-center justify-center">2</span>
-                  <h4 className="text-xs font-bold text-slate-950">Tap Tombol Share</h4>
-                  <p className="text-xs text-neutral-500 font-normal leading-relaxed">
-                    Tekan icon Bagikan (kotak panah ke atas) di bar bawah Safari.
-                  </p>
-                </div>
-                <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-100 space-y-2">
-                  <span className="w-6 h-6 rounded-full bg-[#000000] text-white text-xs font-bold flex items-center justify-center">3</span>
-                  <h4 className="text-xs font-bold text-slate-950">Add to Home Screen</h4>
-                  <p className="text-xs text-neutral-500 font-normal leading-relaxed">
-                    Pilih "Tambah ke Layar Utama" (Add to Home Screen) dan tap Simpan.
-                  </p>
-                </div>
-              </>
-            )}
-
-            {activePlatform === 'desktop' && (
-              <>
-                <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-100 space-y-2">
-                  <span className="w-6 h-6 rounded-full bg-[#000000] text-white text-xs font-bold flex items-center justify-center">1</span>
-                  <h4 className="text-xs font-bold text-slate-950">Address Bar Chrome</h4>
-                  <p className="text-xs text-neutral-500 font-normal leading-relaxed">
-                    Lihat icon Install (komputer panah bawah) di kanan address bar browser.
-                  </p>
-                </div>
-                <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-100 space-y-2">
-                  <span className="w-6 h-6 rounded-full bg-[#000000] text-white text-xs font-bold flex items-center justify-center">2</span>
-                  <h4 className="text-xs font-bold text-slate-950">Klik Install</h4>
-                  <p className="text-xs text-neutral-500 font-normal leading-relaxed">
-                    Klik pasang untuk membuat shortcut aplikasi standalone di desktop.
-                  </p>
-                </div>
-                <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-100 space-y-2">
-                  <span className="w-6 h-6 rounded-full bg-[#000000] text-white text-xs font-bold flex items-center justify-center">3</span>
-                  <h4 className="text-xs font-bold text-slate-950">Window Terpisah</h4>
-                  <p className="text-xs text-neutral-500 font-normal leading-relaxed">
-                    Snapan Market terbuka rapi tanpa tab browser seperti app native.
-                  </p>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          7. FAQ ACCORDION (Exact pop.site accordion style)
-      ========================================================================= */}
-      <section id="faq" className="py-12 px-4 sm:px-6 max-w-3xl mx-auto space-y-6">
-        <div className="text-center space-y-2">
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
-            Pertanyaan Umum (FAQ)
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-600">
-            Hal yang sering ditanyakan oleh siswa & guru SMKN 8.
-          </p>
-        </div>
-
-        <div className="space-y-2.5">
+        <div className="space-y-3">
           {faqs.map((faq, idx) => {
             const isOpen = openFaqIndex === idx;
             return (
@@ -571,7 +517,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
                 <button
                   type="button"
                   onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                  className="w-full px-5 py-4 flex items-center justify-between text-left font-bold text-sm text-slate-900 hover:text-[#1d64ec] transition-colors cursor-pointer"
+                  className="w-full px-6 py-5 flex items-center justify-between text-left font-bold text-sm text-slate-950 hover:text-[#1d64ec] transition-colors cursor-pointer"
                 >
                   <span>{faq.q}</span>
                   {isOpen ? (
@@ -581,7 +527,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
                   )}
                 </button>
                 {isOpen && (
-                  <div className="px-5 pb-4 text-xs sm:text-sm text-slate-600 font-normal leading-relaxed border-t border-neutral-100 pt-3">
+                  <div className="px-6 pb-5 text-xs sm:text-sm text-slate-600 font-normal leading-relaxed border-t border-neutral-100 pt-4">
                     {faq.a}
                   </div>
                 )}
@@ -592,92 +538,101 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
       </section>
 
       {/* =========================================================================
-          8. BOTTOM FINAL CALL TO ACTION (Exact pop.site dark banner)
+          8. EXACT POP.SITE FINAL CTA CARD
       ========================================================================= */}
-      <section className="py-12 px-4 sm:px-6 max-w-4xl mx-auto">
-        <div className="p-8 sm:p-14 rounded-3xl bg-[#000000] text-white text-center space-y-6 shadow-xl relative overflow-hidden">
+      <section className="py-16 px-4 sm:px-6 max-w-5xl mx-auto">
+        <div className="p-8 sm:p-16 rounded-3xl bg-[#000000] text-white text-center space-y-7 shadow-2xl relative overflow-hidden">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="relative space-y-2 max-w-lg mx-auto">
-            <h2 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight">
-              Mulai Pakai Snapan Market Hari Ini.
+          <div className="relative space-y-3 max-w-lg mx-auto">
+            <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
+              Get started with your <br />
+              <span className="font-serif italic font-normal text-blue-400">Pop Site today.</span>
             </h2>
             <p className="text-xs sm:text-sm text-neutral-300 font-normal leading-relaxed">
-              Pasang aplikasinya dalam hitungan detik atau buka langsung dari browser Anda.
+              Launch your personal micro-site in minutes. No credit card required.
             </p>
           </div>
 
-          <div className="relative flex flex-col sm:flex-row items-center justify-center gap-3 max-w-sm mx-auto">
-            <button
-              type="button"
-              onClick={handleInstallClick}
-              className="w-full sm:w-auto flex-1 h-12 px-7 rounded-full bg-white hover:bg-neutral-100 active:scale-95 text-slate-950 font-bold text-sm shadow-md transition-all cursor-pointer"
-            >
-              Pasang Sekarang
-            </button>
-            <button
-              type="button"
-              onClick={handleProceed}
-              className="w-full sm:w-auto flex-1 h-12 px-7 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white border border-white/20 font-bold text-sm transition-all cursor-pointer"
-            >
-              Buka Versi Web
-            </button>
+          <div className="relative max-w-md mx-auto">
+            <form onSubmit={handleClaim} className="flex items-center bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl sm:rounded-full p-1.5 focus-within:border-white transition-all">
+              <div className="flex items-center pl-4 pr-1 flex-1 min-w-0 text-white">
+                <input
+                  type="text"
+                  value={claimUsername}
+                  onChange={(e) => setClaimUsername(e.target.value)}
+                  placeholder="yourname"
+                  className="w-full bg-transparent px-1 py-2 text-sm font-semibold text-white placeholder:text-neutral-400 focus:outline-none"
+                />
+                <span className="text-xs font-mono text-neutral-300 font-medium">.pop.site</span>
+              </div>
+
+              <button
+                type="submit"
+                className="h-10 sm:h-11 px-5 sm:px-6 rounded-xl sm:rounded-full bg-white hover:bg-neutral-100 active:scale-95 text-slate-950 font-bold text-xs sm:text-sm shadow-xs flex items-center justify-center gap-1.5 transition-all shrink-0 cursor-pointer"
+              >
+                <span>Claim</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </form>
           </div>
         </div>
       </section>
 
       {/* =========================================================================
-          9. MULTI-COLUMN FOOTER (Exact pop.site footer layout)
+          9. EXACT POP.SITE FOOTER
       ========================================================================= */}
-      <footer className="border-t border-neutral-200/80 pt-12 pb-16 px-4 sm:px-6 max-w-4xl mx-auto text-xs text-neutral-500 space-y-8">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-left">
+      <footer className="border-t border-neutral-200/80 pt-12 pb-16 px-4 sm:px-6 max-w-5xl mx-auto text-xs text-neutral-500 space-y-8">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-left">
           {/* Col 1 */}
           <div className="space-y-2 col-span-2 sm:col-span-1">
             <div className="flex items-center gap-2">
               <div className="h-6 w-6 rounded-md bg-black text-white flex items-center justify-center font-bold text-xs">
                 S8
               </div>
-              <span className="font-extrabold text-sm text-slate-950">snapan.site</span>
+              <span className="font-extrabold text-sm text-slate-950">pop.site</span>
             </div>
             <p className="text-[11.5px] text-neutral-400 leading-relaxed">
-              Marketplace & Komunitas Resmi SMKN 8 Jakarta.
+              The free personal site builder & linktree alternative.
             </p>
           </div>
 
           {/* Col 2 */}
           <div className="space-y-2">
-            <h4 className="font-bold text-slate-900 text-xs">Jurusan</h4>
+            <h4 className="font-bold text-slate-900 text-xs">Product</h4>
             <ul className="space-y-1.5 text-[11.5px]">
-              <li><a href="#" className="hover:text-slate-950 transition-colors">PPLG (Software)</a></li>
-              <li><a href="#" className="hover:text-slate-950 transition-colors">DKV (Desain)</a></li>
-              <li><a href="#" className="hover:text-slate-950 transition-colors">Kuliner (Food & Pastry)</a></li>
+              <li><a href="#features" className="hover:text-slate-950 transition-colors">Pricing</a></li>
+              <li><a href="#features" className="hover:text-slate-950 transition-colors">Sections</a></li>
+              <li><a href="#themes" className="hover:text-slate-950 transition-colors">Featured</a></li>
+              <li><a href="#analytics" className="hover:text-slate-950 transition-colors">Memberships</a></li>
             </ul>
           </div>
 
           {/* Col 3 */}
           <div className="space-y-2">
-            <h4 className="font-bold text-slate-900 text-xs">Titik COD</h4>
+            <h4 className="font-bold text-slate-900 text-xs">Features</h4>
             <ul className="space-y-1.5 text-[11.5px]">
-              <li><span className="text-neutral-500">Kantin Belakang</span></li>
-              <li><span className="text-neutral-500">Lab Komputer</span></li>
-              <li><span className="text-neutral-500">Lapangan Upacara</span></li>
+              <li><span className="text-neutral-500">Automated SEO</span></li>
+              <li><span className="text-neutral-500">Domains Included</span></li>
+              <li><span className="text-neutral-500">Built-in Analytics</span></li>
+              <li><span className="text-neutral-500">Designer Themes</span></li>
             </ul>
           </div>
 
           {/* Col 4 */}
           <div className="space-y-2">
-            <h4 className="font-bold text-slate-900 text-xs">Informasi</h4>
+            <h4 className="font-bold text-slate-900 text-xs">Ecosystem</h4>
             <ul className="space-y-1.5 text-[11.5px]">
-              <li><span className="text-emerald-600 font-semibold">● Sistem Aktif</span></li>
-              <li><span>PWA Versi 2.4</span></li>
-              <li><span>100% Khusus SMKN 8</span></li>
+              <li><span className="text-emerald-600 font-semibold">● All Systems Normal</span></li>
+              <li><span>SMKN 8 Jakarta</span></li>
+              <li><span>PWA Version 2.4</span></li>
             </ul>
           </div>
         </div>
 
         <div className="pt-6 border-t border-neutral-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-neutral-400">
-          <p>© 2026 Snapan Market. Hak Cipta Dilindungi Warga SMKN 8 Jakarta.</p>
-          <p>Dirancang & dibangun oleh siswa SMKN 8 Jakarta.</p>
+          <p>© 2026 Pop Site. All rights reserved. Powered by Snapan Market SMKN 8.</p>
+          <p>Built with love for creators and students.</p>
         </div>
       </footer>
 

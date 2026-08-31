@@ -34,32 +34,33 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
     }
 
     // A. 5-Phone Fan-Out Real-Time Scroll Parallax Driver (1:1 pop.site)
-    const phoneMockups = root.querySelectorAll<HTMLElement>('[data-framer-name="Mockup"]');
+    const p0 = root.querySelector<HTMLElement>('.framer-1jtpo7w-container');
+    const p1 = root.querySelector<HTMLElement>('.framer-1ae4mtt-container');
+    const p2 = root.querySelector<HTMLElement>('.framer-1p6dlg7-container');
+    const p3 = root.querySelector<HTMLElement>('.framer-fxtokh-container');
+    const p4 = root.querySelector<HTMLElement>('.framer-yysfgz-container');
+    const phoneContainers = [p0, p1, p2, p3, p4].filter(Boolean) as HTMLElement[];
 
     const updatePhoneScrollParallax = () => {
-      if (phoneMockups.length < 5) return;
+      if (phoneContainers.length < 5) return;
       const scrollY = window.scrollY;
-      const progress = Math.min(1, Math.max(0, scrollY / 750));
-      const ease = 1 - Math.pow(1 - progress, 2.5);
+      const progress = Math.min(1, Math.max(0, scrollY / 650));
+      const ease = 1 - Math.pow(1 - progress, 2);
 
       const isMobileView = window.innerWidth < 810;
       const baseOuter = isMobileView ? 54 : 106.83;
-      const targetOuter = isMobileView ? 20 : 41.5474;
+      const targetOuter = isMobileView ? 10 : 30.0;
       const baseInner = isMobileView ? 45 : 89.1068;
-      const targetInner = isMobileView ? 0 : 2.06323;
+      const targetInner = 0;
 
       const curOuter = baseOuter - (baseOuter - targetOuter) * ease;
       const curInner = baseInner - (baseInner - targetInner) * ease;
 
-      phoneMockups.forEach((phone, idx) => {
-        if (idx === 2) {
-          phone.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
-        } else if (idx === 1 || idx === 3) {
-          phone.style.transform = `matrix(1, 0, 0, 1, 0, ${curInner.toFixed(4)})`;
-        } else {
-          phone.style.transform = `matrix(1, 0, 0, 1, 0, ${curOuter.toFixed(4)})`;
-        }
-      });
+      if (p0) p0.style.transform = `matrix(1, 0, 0, 1, 0, ${curOuter.toFixed(2)})`;
+      if (p1) p1.style.transform = `matrix(1, 0, 0, 1, 0, ${curInner.toFixed(2)})`;
+      if (p2) p2.style.transform = `matrix(1, 0, 0, 1, 0, 0)`;
+      if (p3) p3.style.transform = `matrix(1, 0, 0, 1, 0, ${curInner.toFixed(2)})`;
+      if (p4) p4.style.transform = `matrix(1, 0, 0, 1, 0, ${curOuter.toFixed(2)})`;
     };
 
     // B. General Section Scroll-Reveal
@@ -68,7 +69,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
     );
 
     const handleScrollReveal = () => {
-      const triggerBottom = window.innerHeight * 0.92;
+      const triggerBottom = window.innerHeight * 0.94;
       elementsToAnimate.forEach((el) => {
         const rect = el.getBoundingClientRect();
         if (rect.top < triggerBottom) {
@@ -83,14 +84,18 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
       handleScrollReveal();
     };
 
-    elementsToAnimate.forEach((el) => {
+    elementsToAnimate.forEach((el, idx) => {
       el.classList.add('pop-motion-init');
+      // Assign staggered transition delay for Bento cards
+      if (el.parentElement?.classList.contains('framer-1c5m59g')) {
+        (el as HTMLElement).style.transitionDelay = `${idx * 100}ms`;
+      }
     });
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     // Initial sync
     updatePhoneScrollParallax();
-    setTimeout(handleScrollReveal, 100);
+    setTimeout(handleScrollReveal, 80);
 
     return () => {
       window.removeEventListener('scroll', handleScroll);

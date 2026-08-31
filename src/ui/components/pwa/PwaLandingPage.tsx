@@ -358,6 +358,31 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           }
         }
 
+        /* 🔤 Semudah Posting Section Headline (Consistent 64px) */
+        .framer-1jz7gk6 h1,
+        .framer-qdt69g h1,
+        .framer-69jfqs h1 {
+          font-size: 64px !important;
+          line-height: 1.1 !important;
+          letter-spacing: -2px !important;
+          max-width: 950px !important;
+          margin: 0 auto !important;
+          text-align: center !important;
+        }
+        .framer-qdt69g {
+          max-width: 950px !important;
+          margin: 0 auto !important;
+        }
+        @media (max-width: 809.98px) {
+          .framer-1jz7gk6 h1,
+          .framer-qdt69g h1,
+          .framer-69jfqs h1 {
+            font-size: 38px !important;
+            line-height: 1.15 !important;
+            letter-spacing: -1.2px !important;
+          }
+        }
+
         /* Buttons Row Centering */
         [data-framer-name="Buttons"], .framer-12tlorp, .framer-j6nqnh {
           display: flex !important;

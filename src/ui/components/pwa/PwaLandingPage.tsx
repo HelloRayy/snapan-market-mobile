@@ -208,6 +208,21 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           transform: translateY(-4px) scale(1.015) !important;
         }
 
+        /* Fix Input Capsule Width so it never collapses */
+        .framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h {
+          width: 250px !important;
+          min-width: 220px !important;
+          height: 52px !important;
+          box-sizing: border-box !important;
+        }
+        @media (max-width: 809.98px) {
+          .framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h {
+            width: 220px !important;
+            min-width: 190px !important;
+            height: 48px !important;
+          }
+        }
+
         /* Button Tap & Spring Physics (Original Sleek Black Style) */
         button, a, input[type="submit"], [data-framer-name="Button"] {
           transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;

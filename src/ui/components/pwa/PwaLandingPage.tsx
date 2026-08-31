@@ -596,6 +596,56 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           width: 100% !important;
         }
 
+        /* Responsive Mobile Buttons & Inputs Stack (< 810px) */
+        @media (max-width: 809.98px) {
+          .framer-L2aG3 .framer-12tlorp,
+          .framer-L2aG3 .framer-j6nqnh,
+          .framer-12tlorp,
+          .framer-j6nqnh,
+          [data-framer-name="Buttons"] {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 10px !important;
+            width: 100% !important;
+            max-width: 320px !important;
+            margin: 0 auto !important;
+          }
+
+          .framer-L2aG3 .framer-1oduyj0,
+          .framer-L2aG3 .framer-1wlgcwd,
+          .framer-1oduyj0,
+          .framer-1wlgcwd,
+          .framer-7j981h {
+            width: 100% !important;
+            max-width: 320px !important;
+            min-width: 0 !important;
+            height: 50px !important;
+            box-sizing: border-box !important;
+          }
+
+          .framer-L2aG3 .framer-g63eua-container,
+          .framer-L2aG3 .framer-upoedb-container,
+          .framer-g63eua-container,
+          .framer-upoedb-container {
+            width: 100% !important;
+            max-width: 320px !important;
+            height: 50px !important;
+          }
+
+          .framer-L2aG3 [data-framer-name="Button"],
+          .framer-L2aG3 .framer-192wfb0,
+          .framer-192wfb0,
+          [data-framer-name="Button"] a {
+            width: 100% !important;
+            height: 50px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+          }
+        }
+
         /* Remove No Credit Card badge & icon */
         .framer-febujt,
         .framer-6bn1it,
@@ -607,7 +657,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           display: none !important;
         }
 
-        /* Input Capsule Sizing & Centering */
+        /* Input Capsule Sizing & Centering (Desktop Default) */
         .framer-1oduyj0 {
           width: 360px !important;
           min-width: 320px !important;
@@ -624,15 +674,6 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           display: flex !important;
           align-items: center !important;
           margin: 0 !important;
-        }
-        @media (max-width: 809.98px) {
-          .framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h {
-            width: 275px !important;
-            min-width: 240px !important;
-            height: 48px !important;
-            min-height: 48px !important;
-            max-height: 48px !important;
-          }
         }
 
         .framer-1oduyj0 > div:last-child,
@@ -885,12 +926,62 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
             padding: 40px 16px 24px !important;
           }
           .framer-sdhxzw .framer-12h6gbf h1 {
-            font-size: 38px !important;
+            font-size: clamp(26px, 7.5vw, 36px) !important;
             line-height: 1.1 !important;
-            letter-spacing: -1.2px !important;
+            letter-spacing: -1px !important;
           }
           .framer-sdhxzw .framer-cgn049 h3 {
-            font-size: 16px !important;
+            font-size: 15px !important;
+          }
+          .framer-sdhxzw .framer-1c5m59g,
+          .framer-L2aG3 .framer-1c5m59g,
+          .framer-1c5m59g {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 12px !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+          }
+          .framer-sdhxzw [data-framer-name="Feature Simple"],
+          .framer-sdhxzw .framer-1p2c0r4,
+          .framer-sdhxzw .framer-1jz2pvg,
+          .framer-sdhxzw .framer-11kd95v,
+          .framer-sdhxzw .framer-xlz7uj,
+          .framer-L2aG3 .framer-1p2c0r4,
+          .framer-L2aG3 .framer-1jz2pvg,
+          .framer-L2aG3 .framer-11kd95v,
+          .framer-L2aG3 .framer-xlz7uj,
+          .framer-1p2c0r4,
+          .framer-1jz2pvg,
+          .framer-11kd95v,
+          .framer-xlz7uj {
+            height: auto !important;
+            min-height: 180px !important;
+            padding: 16px 12px !important;
+            flex: none !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+          }
+          .framer-eh09rc {
+            width: 100% !important;
+          }
+          .framer-eh09rc p {
+            word-break: normal !important;
+            overflow-wrap: break-word !important;
+            white-space: normal !important;
+          }
+          .framer-g1iski p {
+            font-size: 14.5px !important;
+            font-weight: 700 !important;
+            line-height: 1.25 !important;
+          }
+          .framer-1c38d89 p {
+            font-size: 12px !important;
+            line-height: 1.35 !important;
           }
         }
 

@@ -489,6 +489,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         .django-marquee-track {
           display: flex !important;
           flex-direction: row !important;
+          align-items: stretch !important;
           gap: 24px !important;
           width: max-content !important;
           will-change: transform !important;
@@ -504,9 +505,31 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           flex: 0 0 auto !important;
           width: 480px !important;
           max-width: 86vw !important;
+          height: auto !important;
+          min-height: 185px !important;
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
           margin: 0 !important;
+          box-sizing: border-box !important;
           transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease !important;
           cursor: pointer !important;
+        }
+
+        .django-marquee-track .framer-49zkyx {
+          flex: none !important;
+          width: 112px !important;
+          height: 112px !important;
+          border-radius: 12px !important;
+          overflow: hidden !important;
+        }
+
+        .django-marquee-track .framer-1rvfl3v {
+          flex: 1 !important;
+          display: flex !important;
+          flex-direction: column !important;
+          justify-content: space-between !important;
+          gap: 12px !important;
         }
 
         .django-marquee-track > .framer-a910ey:hover {

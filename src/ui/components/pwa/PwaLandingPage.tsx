@@ -431,14 +431,28 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           flex-direction: row !important;
           align-items: center !important;
           justify-content: center !important;
-          gap: 8px !important;
-          width: auto !important;
-          max-width: 100% !important;
+          gap: 12px !important;
+          width: 100% !important;
+          max-width: 1000px !important;
           margin: 0 auto !important;
           overflow: visible !important;
         }
+        .framer-dpcl3b .framer-rp7zj0,
+        .framer-dpcl3b .framer-cgn049,
+        .framer-dpcl3b .framer-1egzuuq,
+        .framer-dpcl3b div[data-framer-component-type="RichTextContainer"] {
+          width: auto !important;
+          max-width: 900px !important;
+          flex: none !important;
+        }
         .framer-dpcl3b h3 {
+          white-space: nowrap !important;
           text-align: center !important;
+        }
+        @media (max-width: 809.98px) {
+          .framer-dpcl3b h3 {
+            white-space: normal !important;
+          }
         }
 
         /* Buttons Row Centering */

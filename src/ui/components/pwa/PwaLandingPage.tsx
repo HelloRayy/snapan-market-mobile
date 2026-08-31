@@ -33,29 +33,36 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
       return;
     }
 
-    // A. 5-Phone Fan-Out Mockup Physics
+    // A. 5-Phone Fan-Out Real-Time Scroll Parallax Driver (1:1 pop.site)
     const phoneMockups = root.querySelectorAll<HTMLElement>('[data-framer-name="Mockup"]');
-    if (phoneMockups.length >= 5) {
-      phoneMockups.forEach((phone) => {
-        phone.classList.add('pop-phone-init');
+
+    const updatePhoneScrollParallax = () => {
+      if (phoneMockups.length < 5) return;
+      const scrollY = window.scrollY;
+      const progress = Math.min(1, Math.max(0, scrollY / 750));
+      const ease = 1 - Math.pow(1 - progress, 2.5);
+
+      const isMobileView = window.innerWidth < 810;
+      const baseOuter = isMobileView ? 54 : 106.83;
+      const targetOuter = isMobileView ? 20 : 41.5474;
+      const baseInner = isMobileView ? 45 : 89.1068;
+      const targetInner = isMobileView ? 0 : 2.06323;
+
+      const curOuter = baseOuter - (baseOuter - targetOuter) * ease;
+      const curInner = baseInner - (baseInner - targetInner) * ease;
+
+      phoneMockups.forEach((phone, idx) => {
+        if (idx === 2) {
+          phone.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
+        } else if (idx === 1 || idx === 3) {
+          phone.style.transform = `matrix(1, 0, 0, 1, 0, ${curInner.toFixed(4)})`;
+        } else {
+          phone.style.transform = `matrix(1, 0, 0, 1, 0, ${curOuter.toFixed(4)})`;
+        }
       });
+    };
 
-      // Immediate staggered activation
-      setTimeout(() => {
-        phoneMockups.forEach((phone, idx) => {
-          phone.classList.remove('pop-phone-init');
-          if (idx === 2) {
-            phone.classList.add('pop-phone-center-active');
-          } else if (idx === 1 || idx === 3) {
-            phone.classList.add('pop-phone-inner-active');
-          } else {
-            phone.classList.add('pop-phone-outer-active');
-          }
-        });
-      }, 50);
-    }
-
-    // B. General Section Scroll-Reveal Observer
+    // B. General Section Scroll-Reveal
     const elementsToAnimate = root.querySelectorAll(
       '.framer-1c5m59g > div, .django-marquee-wrapper, .framer-14dz49g, .framer-p5xoen, footer, .framer-1fqlk99, .framer-1yxsbyq'
     );
@@ -71,16 +78,22 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
       });
     };
 
+    const handleScroll = () => {
+      updatePhoneScrollParallax();
+      handleScrollReveal();
+    };
+
     elementsToAnimate.forEach((el) => {
       el.classList.add('pop-motion-init');
     });
 
-    window.addEventListener('scroll', handleScrollReveal, { passive: true });
-    // Trigger on initial frame
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Initial sync
+    updatePhoneScrollParallax();
     setTimeout(handleScrollReveal, 100);
 
     return () => {
-      window.removeEventListener('scroll', handleScrollReveal);
+      window.removeEventListener('scroll', handleScroll);
     };
   }, [isMobile]);
 
@@ -317,50 +330,10 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           40%, 80% { transform: translateX(6px); }
         }
 
-        /* 📱 5-Phone Fan-Out The Arch Elevation Matrix (1:1 pop.site) */
-        .pop-phone-init {
-          opacity: 0;
-          transform: translateY(140px);
-          transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-          will-change: opacity, transform;
-        }
-        .pop-phone-center-active {
-          opacity: 1 !important;
-          transform: translateY(0px) !important;
-          transition: opacity 0.85s 0s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s 0s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        }
-        .pop-phone-inner-active {
-          opacity: 1 !important;
-          transform: translateY(89.1068px) !important;
-          transition: opacity 0.85s 0.12s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s 0.12s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        }
-        .pop-phone-outer-active {
-          opacity: 1 !important;
-          transform: translateY(106.83px) !important;
-          transition: opacity 0.85s 0.24s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s 0.24s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        }
-
-        @media (max-width: 809.98px) {
-          .pop-phone-center-active {
-            transform: translateY(0px) !important;
-          }
-          .pop-phone-inner-active {
-            transform: translateY(45px) !important;
-          }
-          .pop-phone-outer-active {
-            transform: translateY(54px) !important;
-          }
-        }
-
-        /* Steady hover: stay in arch position without jumping */
-        .pop-phone-center-active:hover {
-          transform: translateY(0px) !important;
-        }
-        .pop-phone-inner-active:hover {
-          transform: translateY(89.1068px) !important;
-        }
-        .pop-phone-outer-active:hover {
-          transform: translateY(106.83px) !important;
+        /* 📱 5-Phone Fan-Out Real-Time Parallax Physics (1:1 pop.site) */
+        [data-framer-name="Mockup"] {
+          will-change: transform !important;
+          cursor: default !important;
         }
 
         /* 🌊 Staggered Viewport Scroll-Reveal Physics */

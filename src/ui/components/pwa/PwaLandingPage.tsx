@@ -146,6 +146,10 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         availableBadge.style.cssText = `
           display: none;
           align-items: center;
+          position: absolute;
+          right: 8px;
+          top: 50%;
+          transform: translateY(-50%);
           background: #ecfdf5;
           color: #059669;
           border: 1px solid #a7f3d0;
@@ -153,7 +157,6 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           font-weight: 600;
           padding: 3px 8px;
           border-radius: 9999px;
-          margin-left: 8px;
           flex-shrink: 0;
           letter-spacing: 0.2px;
           user-select: none;
@@ -502,8 +505,8 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
 
         /* Input Capsule Sizing & Centering */
         .framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h {
-          width: 280px !important;
-          min-width: 250px !important;
+          width: 360px !important;
+          min-width: 320px !important;
           height: 52px !important;
           min-height: 52px !important;
           max-height: 52px !important;
@@ -514,17 +517,27 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         }
         @media (max-width: 809.98px) {
           .framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h {
-            width: 240px !important;
-            min-width: 210px !important;
+            width: 275px !important;
+            min-width: 240px !important;
             height: 48px !important;
             min-height: 48px !important;
             max-height: 48px !important;
           }
         }
 
+        .framer-1oduyj0 > div:last-child,
+        .framer-1wlgcwd > div:last-child,
+        .framer-7j981h > div:last-child {
+          position: relative !important;
+          padding-left: 14px !important;
+          padding-right: 8px !important;
+        }
+
         .framer-1oduyj0 input, .framer-1wlgcwd input, .framer-7j981h input, input[name="username"] {
           height: 100% !important;
           line-height: 52px !important;
+          width: 100% !important;
+          padding-right: 78px !important;
           display: flex !important;
           align-items: center !important;
           margin: 0 !important;
@@ -537,6 +550,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
             line-height: 48px !important;
             font-size: 14px !important;
             font-weight: 700 !important;
+            padding-right: 70px !important;
           }
         }
 

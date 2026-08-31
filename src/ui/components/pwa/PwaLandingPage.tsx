@@ -208,6 +208,25 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           transform: translateY(-4px) scale(1.015) !important;
         }
 
+        /* Input Capsule Sizing & Centering */
+        .framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h {
+          width: 280px !important;
+          min-width: 250px !important;
+          height: 52px !important;
+          min-height: 52px !important;
+          max-height: 52px !important;
+          box-sizing: border-box !important;
+        }
+        @media (max-width: 809.98px) {
+          .framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h {
+            width: 240px !important;
+            min-width: 210px !important;
+            height: 48px !important;
+            min-height: 48px !important;
+            max-height: 48px !important;
+          }
+        }
+
         /* Button Tap & Spring Physics */
         button, a, input[type="submit"] {
           transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;

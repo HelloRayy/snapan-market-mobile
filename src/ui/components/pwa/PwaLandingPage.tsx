@@ -383,6 +383,21 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           }
         }
 
+        .framer-dpcl3b {
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 8px !important;
+          width: auto !important;
+          max-width: 100% !important;
+          margin: 0 auto !important;
+          overflow: visible !important;
+        }
+        .framer-dpcl3b h3 {
+          text-align: center !important;
+        }
+
         /* Buttons Row Centering */
         [data-framer-name="Buttons"], .framer-12tlorp, .framer-j6nqnh {
           display: flex !important;

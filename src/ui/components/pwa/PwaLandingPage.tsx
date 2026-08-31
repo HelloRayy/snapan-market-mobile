@@ -48,13 +48,13 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
       },
       {
         root: null,
-        rootMargin: '0px 0px -40px 0px',
-        threshold: 0.05,
+        rootMargin: '0px 0px -100px 0px',
+        threshold: 0.15,
       }
     );
 
     const handleScrollCheck = () => {
-      const triggerBottom = window.innerHeight * 0.95;
+      const triggerBottom = window.innerHeight * 0.85;
       targetElements.forEach((el) => {
         const rect = el.getBoundingClientRect();
         if (rect.top < triggerBottom) {
@@ -316,11 +316,11 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           40%, 80% { transform: translateX(6px); }
         }
 
-        /* 🌊 Viewport Entrance Motion System */
+        /* 🌊 Viewport Entrance Motion System (Gradual & Noticeable) */
         .pop-reveal {
           opacity: 0;
-          transform: translateY(32px);
-          transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) !important;
+          transform: translateY(48px);
+          transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) !important;
           will-change: opacity, transform;
         }
 
@@ -331,9 +331,9 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
 
         /* Bento cards cascade stagger delay */
         .framer-1p2c0r4.pop-reveal { transition-delay: 0ms !important; }
-        .framer-1jz2pvg.pop-reveal { transition-delay: 90ms !important; }
-        .framer-11kd95v.pop-reveal { transition-delay: 180ms !important; }
-        .framer-xlz7uj.pop-reveal  { transition-delay: 270ms !important; }
+        .framer-1jz2pvg.pop-reveal { transition-delay: 120ms !important; }
+        .framer-11kd95v.pop-reveal { transition-delay: 240ms !important; }
+        .framer-xlz7uj.pop-reveal  { transition-delay: 360ms !important; }
 
         /* 🔤 2-Line Hero H1 Headline */
         .framer-apv9m0 {

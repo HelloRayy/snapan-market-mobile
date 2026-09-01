@@ -68,23 +68,36 @@ export function useAppNavigation() {
     return false;
   });
 
-  const [currentRoute, setCurrentRoute] = useState<string>(window.location.pathname);
+  const [currentRoute, setCurrentRoute] = useState<string>(() => {
+    if (typeof window === 'undefined') return '/download';
+    const path = window.location.pathname;
+    if (path === '/' || path === '') return '/download';
+    return path;
+  });
   const [selectedPost, setSelectedPost] = useState<MarketPostItem | null>(null);
   const [activeChatThreadId, setActiveChatThreadId] = useState<string | null>(() => getChatThreadFromLocation());
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
 
   const isPostDetailActiveRef = useRef<boolean>(false);
-  const postDetailOriginRouteRef = useRef<string>('/');
+  const postDetailOriginRouteRef = useRef<string>('/home');
   const postDetailOriginScrollYRef = useRef<number>(0);
   const lastBackPressTimeRef = useRef<number>(0);
+
+  // Auto-redirect base / to /download
+  useEffect(() => {
+    if (typeof window !== 'undefined' && (window.location.pathname === '/' || window.location.pathname === '')) {
+      window.history.replaceState({}, '', '/download');
+      setCurrentRoute('/download');
+    }
+  }, []);
 
   const navigateToHome = useCallback(() => {
     triggerHaptic('light');
     setSelectedPost(null);
     setActiveChatThreadId(null);
-    setCurrentRoute('/');
-    window.history.pushState({}, '', '/');
+    setCurrentRoute('/home');
+    window.history.pushState({}, '', '/home');
   }, []);
 
   const navigateToSearch = useCallback(() => {
@@ -182,7 +195,7 @@ export function useAppNavigation() {
           setIsDrawerOpen(false);
           return;
         }
-        if (currentRoute !== '/') {
+        if (currentRoute !== '/home' && currentRoute !== '/download') {
           navigateToHome();
           return;
         }

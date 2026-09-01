@@ -49,8 +49,8 @@ export function App() {
   const isProfileRoute = currentRoute.startsWith('/@') || currentRoute.startsWith('/profile');
   const isColorsRoute = currentRoute === '/colors' || window.location.hash === '#colors';
   const isMapRoute = currentRoute === '/map' || window.location.hash === '#map';
-  const isDownloadLandingRoute = currentRoute === '/download' || window.location.hash === '#download';
-  const isHomeRoute = !isSearchRoute && !isMessagesRoute && !isProfileRoute && !isColorsRoute && !isMapRoute && !isDownloadLandingRoute;
+  const isDownloadLandingRoute = currentRoute === '/download' || currentRoute === '/' || window.location.hash === '#download';
+  const isHomeRoute = currentRoute === '/home' || (!isSearchRoute && !isMessagesRoute && !isProfileRoute && !isColorsRoute && !isMapRoute && !isDownloadLandingRoute);
 
   const targetProfileUsername = isProfileRoute
     ? currentRoute.replace('/@', '').replace('/profile/', '').split('/')[0]

@@ -34,7 +34,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
     }
 
     const targetElements = root.querySelectorAll<HTMLElement>(
-      'section, .framer-1c5m59g > div, .developer-section-header, .django-marquee-wrapper, .framer-14dz49g, .framer-p5xoen, footer, .framer-1fqlk99, .framer-1yxsbyq'
+      'section, .framer-1c5m59g > div, .django-marquee-wrapper, .developer-section-header, .framer-14dz49g, .framer-p5xoen, footer, .framer-1fqlk99, .framer-1yxsbyq'
     );
 
     const observer = new IntersectionObserver(
@@ -797,67 +797,6 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           filter: brightness(1.08) !important;
           transform: translateY(-1px) scale(1.01) !important;
         }
-        /* 🛠️ Engineering Team / Developer Section Header */
-        .developer-section-header {
-          display: flex !important;
-          flex-direction: column !important;
-          align-items: center !important;
-          justify-content: center !important;
-          text-align: center !important;
-          margin: 64px auto 24px auto !important;
-          padding: 0 20px !important;
-          max-width: 720px !important;
-          width: 100% !important;
-          box-sizing: border-box !important;
-          position: relative !important;
-          z-index: 10 !important;
-        }
-
-        .developer-badge-pill {
-          display: inline-flex !important;
-          align-items: center !important;
-          gap: 6px !important;
-          padding: 6px 14px !important;
-          background: #eef0ff !important;
-          border: 1px solid #d8dbfe !important;
-          border-radius: 9999px !important;
-          margin-bottom: 14px !important;
-          box-shadow: 0 2px 8px rgba(61, 56, 245, 0.08) !important;
-        }
-
-        .developer-badge-pill span:first-child {
-          font-size: 13px !important;
-          line-height: 1 !important;
-        }
-
-        .developer-badge-pill span:last-child {
-          font-size: 12px !important;
-          font-weight: 700 !important;
-          color: #3d38f5 !important;
-          letter-spacing: 0.2px !important;
-          line-height: 1 !important;
-        }
-
-        .developer-section-header h2 {
-          font-family: 'Inter', sans-serif !important;
-          font-size: 32px !important;
-          font-weight: 800 !important;
-          color: #111827 !important;
-          letter-spacing: -0.03em !important;
-          line-height: 1.2 !important;
-          margin: 0 0 10px 0 !important;
-        }
-
-        .developer-section-header p {
-          font-family: 'Inter', sans-serif !important;
-          font-size: 15px !important;
-          font-weight: 450 !important;
-          color: #6b7280 !important;
-          line-height: 1.5 !important;
-          margin: 0 !important;
-          max-width: 520px !important;
-        }
-
         /* 🎠 Infinite Smooth Auto-Scrolling Marquee with Left/Right Edge Opacity Fade */
         .django-marquee-wrapper {
           position: relative !important;
@@ -920,6 +859,29 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
 
         .django-marquee-track > .framer-a910ey:hover {
           transform: none !important;
+        }
+
+        /* 🧹 Remove Excessive Whitespace & Compact Collection / Team Section */
+        .framer-1jz7gk6 {
+          gap: 16px !important;
+          padding: 24px 16px 16px !important;
+        }
+        @media (max-width: 809.98px) {
+          .framer-1jz7gk6 {
+            gap: 12px !important;
+            padding: 16px 12px 12px !important;
+          }
+        }
+
+        .developer-section-header {
+          margin: 8px auto 4px auto !important;
+          padding: 0 16px !important;
+          opacity: 1 !important;
+        }
+
+        .django-marquee-wrapper {
+          padding: 8px 0 !important;
+          margin-top: 0 !important;
         }
 
         /* 🏷️ Feature Tag Pill Spacing */
@@ -1056,22 +1018,6 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         }
 
         @media (max-width: 809.98px) {
-          .developer-section-header {
-            margin: 36px auto 12px auto !important;
-            padding: 0 16px !important;
-          }
-          .developer-section-header h2 {
-            font-size: 24px !important;
-            letter-spacing: -0.02em !important;
-          }
-          .developer-section-header p {
-            font-size: 13.5px !important;
-            line-height: 1.45 !important;
-          }
-          .developer-badge-pill {
-            padding: 4px 12px !important;
-            margin-bottom: 8px !important;
-          }
           .django-marquee-wrapper {
             padding: 16px 0 !important;
             mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%) !important;

@@ -34,7 +34,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
     }
 
     const targetElements = root.querySelectorAll<HTMLElement>(
-      'section, .framer-1c5m59g > div, .django-marquee-wrapper, .developer-section-header, .framer-14dz49g, .framer-p5xoen, footer, .framer-1fqlk99, .framer-1yxsbyq'
+      'section, .framer-1c5m59g > div, .django-marquee-wrapper, .framer-14dz49g, .framer-p5xoen, footer, .framer-1fqlk99, .framer-1yxsbyq'
     );
 
     const observer = new IntersectionObserver(
@@ -871,12 +871,6 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
             gap: 12px !important;
             padding: 16px 12px 12px !important;
           }
-        }
-
-        .developer-section-header {
-          margin: 8px auto 4px auto !important;
-          padding: 0 16px !important;
-          opacity: 1 !important;
         }
 
         .django-marquee-wrapper {

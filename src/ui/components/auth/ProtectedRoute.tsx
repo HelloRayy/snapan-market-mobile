@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '@/ui/hooks/useAuth';
-import { Button } from '../ui/Button';
+import { Button } from '@/ui/components/ui/Button';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

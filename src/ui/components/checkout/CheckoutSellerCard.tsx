@@ -1,7 +1,7 @@
 import React from 'react';
 import { User } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
-import { ClickableVerifiedBadge } from '../marketplace/VerifiedBadgeModal';
+import { ClickableVerifiedBadge } from '@/ui/components/marketplace/VerifiedBadgeModal';
 import { triggerHaptic } from '@/utils/haptics';
 
 interface CheckoutSellerCardProps {

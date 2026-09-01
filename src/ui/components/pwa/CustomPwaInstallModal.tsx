@@ -1,6 +1,6 @@
 import React from 'react';
 import { Download, Sparkles, X, ShieldCheck, Zap, Star } from 'lucide-react';
-import { ButtonPrimary } from '../ui/ButtonPrimary';
+import { ButtonPrimary } from '@/ui/components/ui/ButtonPrimary';
 import personLoginBgSvg from '@/assets/new-market-asset/person-login-bg.svg';
 
 interface CustomPwaInstallModalProps {

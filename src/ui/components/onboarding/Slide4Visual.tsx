@@ -1,5 +1,5 @@
 import React from 'react';
-import personLoginBgSvg from '../../../assets/new-market-asset/person-login-bg.svg';
+import personLoginBgSvg from '@/assets/new-market-asset/person-login-bg.svg';
 
 export const Slide4Visual: React.FC = () => {
   return (

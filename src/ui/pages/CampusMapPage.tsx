@@ -1,5 +1,5 @@
 import React from 'react';
-import { Campus2DMap } from '../components/map/Campus2DMap';
+import { Campus2DMap } from '@/ui/components/map/Campus2DMap';
 
 interface CampusMapPageProps {
   onBack?: () => void;

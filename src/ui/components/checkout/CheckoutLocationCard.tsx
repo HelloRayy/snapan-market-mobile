@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MapPin, Maximize2, Sparkles, ChevronRight } from 'lucide-react';
 import { RoomZone, SCHOOL_BUILDING_OUTLINES } from '@/data/mockSchoolMapData';
-import { Campus2DMap } from '../map/Campus2DMap';
+import { Campus2DMap } from '@/ui/components/map/Campus2DMap';
 import { triggerHaptic } from '@/utils/haptics';
 
 interface CheckoutLocationCardProps {

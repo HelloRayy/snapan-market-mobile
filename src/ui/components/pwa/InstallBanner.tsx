@@ -1,7 +1,7 @@
 import React from 'react';
 import { Download, X } from 'lucide-react';
 import { usePWA } from '@/ui/hooks/usePWA';
-import { ButtonPrimary } from '../ui/ButtonPrimary';
+import { ButtonPrimary } from '@/ui/components/ui/ButtonPrimary';
 
 export const InstallBanner: React.FC = () => {
   const { isInstallable, promptInstall } = usePWA();

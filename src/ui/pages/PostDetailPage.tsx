@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { MarketPostItem, PostComment } from '@/types/marketFeed';
-import { MarketPostCard } from '../components/marketplace/MarketPostCard';
-import { PostCommentItem } from '../components/marketplace/PostCommentItem';
-import { CommentInputBar } from '../components/marketplace/CommentInputBar';
-import { StickyBuyBar } from '../components/marketplace/StickyBuyBar';
-import { BuyBottomSheet } from '../components/marketplace/BuyBottomSheet';
-import { CommentDetailPage } from '../components/marketplace/CommentDetailPage';
+import { MarketPostCard } from '@/ui/components/marketplace/MarketPostCard';
+import { PostCommentItem } from '@/ui/components/marketplace/PostCommentItem';
+import { CommentInputBar } from '@/ui/components/marketplace/CommentInputBar';
+import { StickyBuyBar } from '@/ui/components/marketplace/StickyBuyBar';
+import { BuyBottomSheet } from '@/ui/components/marketplace/BuyBottomSheet';
+import { CommentDetailPage } from '@/ui/components/marketplace/CommentDetailPage';
 import { CheckoutPage } from './CheckoutPage';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '@/ui/hooks/useAuth';
 import { triggerHaptic } from '@/utils/haptics';
 import { toUsernameSlug } from '@/utils/formatters';
 

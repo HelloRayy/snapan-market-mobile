@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Heart } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
-import { CheckoutHeroImage } from '../components/checkout/CheckoutHeroImage';
-import { CheckoutProductHeader } from '../components/checkout/CheckoutProductHeader';
-import { CheckoutDescription } from '../components/checkout/CheckoutDescription';
-import { CheckoutSellerCard } from '../components/checkout/CheckoutSellerCard';
+import { CheckoutHeroImage } from '@/ui/components/checkout/CheckoutHeroImage';
+import { CheckoutProductHeader } from '@/ui/components/checkout/CheckoutProductHeader';
+import { CheckoutDescription } from '@/ui/components/checkout/CheckoutDescription';
+import { CheckoutSellerCard } from '@/ui/components/checkout/CheckoutSellerCard';
 import { triggerHaptic } from '@/utils/haptics';
 
 interface CheckoutPageProps {

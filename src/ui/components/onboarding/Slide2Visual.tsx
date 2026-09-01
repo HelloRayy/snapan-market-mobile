@@ -1,5 +1,5 @@
 import React from 'react';
-import market2Img from '../../../assets/new-market-asset/market-2 1.webp';
+import market2Img from '@/assets/new-market-asset/market-2 1.webp';
 
 export const Slide2Visual: React.FC = () => {
   return (

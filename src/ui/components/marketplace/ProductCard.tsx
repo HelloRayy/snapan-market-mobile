@@ -1,9 +1,9 @@
 import React from 'react';
 import { ShoppingBag, CheckCircle2 } from 'lucide-react';
 import { Product } from '@/types/product';
-import { Card } from '../ui/Card';
-import { Badge } from '../ui/Badge';
-import { ButtonPrimary } from '../ui/ButtonPrimary';
+import { Card } from '@/ui/components/ui/Card';
+import { Badge } from '@/ui/components/ui/Badge';
+import { ButtonPrimary } from '@/ui/components/ui/ButtonPrimary';
 import { RatingStars } from './RatingStars';
 import { formatRupiah, formatCompactNumber } from '@/utils/formatters';
 import { useCartStore } from '@/ui/store/cartStore';

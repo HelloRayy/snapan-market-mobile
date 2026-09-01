@@ -1,5 +1,5 @@
 import React from 'react';
-import market3Img from '../../../assets/new-market-asset/market-3 1.webp';
+import market3Img from '@/assets/new-market-asset/market-3 1.webp';
 
 export const Slide3Visual: React.FC = () => {
   return (

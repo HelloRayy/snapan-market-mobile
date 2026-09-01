@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { AlertCircle, Loader2, Headphones } from 'lucide-react';
-import { ButtonPrimary } from '../../ui/ButtonPrimary';
+import { ButtonPrimary } from '@/ui/components/ui/ButtonPrimary';
 
 interface AuthOtpVerificationSheetProps {
   otpDigits: string[];

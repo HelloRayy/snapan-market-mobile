@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChevronRight, PartyPopper, MoreHorizontal } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
-import { ClickableVerifiedBadge } from '../VerifiedBadgeModal';
+import { ClickableVerifiedBadge } from '@/ui/components/marketplace/VerifiedBadgeModal';
 import { formatSmartTimestamp } from '@/utils/formatters';
 import { ThreadsTopicIcon } from '@/ui/components/icons';
 

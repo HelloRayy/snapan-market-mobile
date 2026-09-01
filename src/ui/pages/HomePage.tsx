@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Loader2, Sparkles } from 'lucide-react';
-import { MarketHeader } from '../components/marketplace/MarketHeader';
-import { MarketPostCard } from '../components/marketplace/MarketPostCard';
-import { CreatePostModal } from '../components/marketplace/CreatePostModal';
-import { InstallBanner } from '../components/pwa/InstallBanner';
-import { OfflineBanner } from '../components/pwa/OfflineBanner';
+import { MarketHeader } from '@/ui/components/marketplace/MarketHeader';
+import { MarketPostCard } from '@/ui/components/marketplace/MarketPostCard';
+import { CreatePostModal } from '@/ui/components/marketplace/CreatePostModal';
+import { InstallBanner } from '@/ui/components/pwa/InstallBanner';
+import { OfflineBanner } from '@/ui/components/pwa/OfflineBanner';
 import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
 import { MarketPostItem } from '@/types/marketFeed';
-import { useCartStore } from '../store/cartStore';
-import { useAuth } from '../hooks/useAuth';
+import { useCartStore } from '@/ui/store/cartStore';
+import { useAuth } from '@/ui/hooks/useAuth';
 import { getMarketPosts, createMarketPost, mapSupabasePostToFeedItem } from '@/services/api/marketPostsService';
-import { PullToRefreshIndicator } from '../components/marketplace/PullToRefreshIndicator';
+import { PullToRefreshIndicator } from '@/ui/components/marketplace/PullToRefreshIndicator';
 import { triggerHaptic } from '@/utils/haptics';
 import { saveFeedCache, loadFeedCache } from '@/services/cache/feedCache';
 

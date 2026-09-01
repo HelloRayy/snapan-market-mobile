@@ -10,17 +10,17 @@ import {
   Search,
   X,
 } from 'lucide-react';
-import { MarketPostCard } from '../components/marketplace/MarketPostCard';
-import { ReplyThreadCard } from '../components/marketplace/ReplyThreadCard';
+import { MarketPostCard } from '@/ui/components/marketplace/MarketPostCard';
+import { ReplyThreadCard } from '@/ui/components/marketplace/ReplyThreadCard';
 import { EditProfilePage, EditProfileData } from './EditProfilePage';
-import { SettingsBottomSheet } from '../components/profile/SettingsBottomSheet';
-import { MediaLightboxModal } from '../components/marketplace/MediaLightboxModal';
-import { ClickableVerifiedBadge } from '../components/marketplace/VerifiedBadgeModal';
-import { SnapanLogotype } from '../components/marketplace/MarketHeader';
-import { CreatePostModal } from '../components/marketplace/CreatePostModal';
+import { SettingsBottomSheet } from '@/ui/components/profile/SettingsBottomSheet';
+import { MediaLightboxModal } from '@/ui/components/marketplace/MediaLightboxModal';
+import { ClickableVerifiedBadge } from '@/ui/components/marketplace/VerifiedBadgeModal';
+import { SnapanLogotype } from '@/ui/components/marketplace/MarketHeader';
+import { CreatePostModal } from '@/ui/components/marketplace/CreatePostModal';
 import { MOCK_MARKET_POSTS, MOCK_USER_REPLIES } from '@/data/mockMarketData';
 import { MarketPostItem } from '@/types/marketFeed';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '@/ui/hooks/useAuth';
 import { createMarketPost } from '@/services/api/marketPostsService';
 import { triggerHaptic } from '@/utils/haptics';
 

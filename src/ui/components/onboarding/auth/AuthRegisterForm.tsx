@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { User, Lock, Eye, EyeOff, ChevronDown, Check, AlertCircle, Loader2 } from 'lucide-react';
-import { ButtonPrimary } from '../../ui/ButtonPrimary';
-import { ButtonSecondary } from '../../ui/ButtonSecondary';
-import { Checkbox } from '../../ui/Checkbox';
+import { ButtonPrimary } from '@/ui/components/ui/ButtonPrimary';
+import { ButtonSecondary } from '@/ui/components/ui/ButtonSecondary';
+import { Checkbox } from '@/ui/components/ui/Checkbox';
 
 interface AuthRegisterFormProps {
   fullName: string;

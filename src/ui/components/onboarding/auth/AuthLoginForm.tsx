@@ -1,8 +1,8 @@
 import React from 'react';
 import { Mail, Lock, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
-import { ButtonPrimary } from '../../ui/ButtonPrimary';
-import { ButtonSecondary } from '../../ui/ButtonSecondary';
-import { Checkbox } from '../../ui/Checkbox';
+import { ButtonPrimary } from '@/ui/components/ui/ButtonPrimary';
+import { ButtonSecondary } from '@/ui/components/ui/ButtonSecondary';
+import { Checkbox } from '@/ui/components/ui/Checkbox';
 
 interface AuthLoginFormProps {
   loginIdentifier: string;

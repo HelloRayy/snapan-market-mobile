@@ -1,5 +1,5 @@
 import React from 'react';
-import market1Svg from '../../../assets/new-market-asset/market-1 1.svg';
+import market1Svg from '@/assets/new-market-asset/market-1 1.svg';
 
 export const Slide1Visual: React.FC = () => {
   return (

@@ -5,8 +5,8 @@ import { Slide2Visual } from './Slide2Visual';
 import { Slide3Visual } from './Slide3Visual';
 import { Slide4Visual } from './Slide4Visual';
 import { AuthSlideVisual } from './AuthSlideVisual';
-import { ButtonPrimary } from '../ui/ButtonPrimary';
-import { ButtonSecondary } from '../ui/ButtonSecondary';
+import { ButtonPrimary } from '@/ui/components/ui/ButtonPrimary';
+import { ButtonSecondary } from '@/ui/components/ui/ButtonSecondary';
 
 interface OnboardingScreenProps {
   onComplete: () => void;

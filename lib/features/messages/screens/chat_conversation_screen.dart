@@ -1,15 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
-import 'package:snapan_market/core/theme/app_colors.dart';
-import 'package:snapan_market/features/messages/components/chat_composer_bar.dart';
-import 'package:snapan_market/features/messages/components/chat_product_card.dart';
-import 'package:snapan_market/features/messages/models/chat_message_model.dart';
-import 'package:snapan_market/features/messages/models/conversation_model.dart';
-import 'package:snapan_market/features/messages/models/mock_messages_data.dart';
-import 'package:snapan_market/features/profile/screens/profile_screen.dart';
+import "package:snapan_market/features/map/screens/campus_map_screen.dart";
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:snapan_market/core/navigation/app_slide_page_route.dart";
+import "package:snapan_market/core/theme/app_colors.dart";
+import "package:snapan_market/features/messages/components/chat_composer_bar.dart";
+import "package:snapan_market/features/messages/components/chat_product_card.dart";
+import "package:snapan_market/features/messages/models/chat_message_model.dart";
+import "package:snapan_market/features/messages/models/conversation_model.dart";
+import "package:snapan_market/features/messages/models/mock_messages_data.dart";
+import "package:snapan_market/features/profile/screens/profile_screen.dart";
 
-/// Layar ruang obrolan 1-on-1 Direct Messaging
+/// Layar ruang obrolan 1-on-1 Direct Messaging (1:1 ActiveChatOverlay.tsx)
 class ChatConversationScreen extends StatefulWidget {
   final ConversationModel conversation;
 
@@ -29,12 +30,14 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.conversation.id == '17845432127501402') {
+    if (widget.conversation.id == "17892348123791823") {
+      _messages = List.from(kInitialDimasMessages);
+    } else if (widget.conversation.id == "17845432127501402") {
       _messages = List.from(kInitialSarahMessages);
     } else {
       _messages = [
         ChatMessageModel(
-          id: 'msg-init',
+          id: "msg-init",
           senderId: widget.conversation.user.username,
           text: widget.conversation.lastMessage,
           timestamp: widget.conversation.timestamp,
@@ -50,20 +53,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
     super.dispose();
   }
 
-  void _handleSendMessage(String text) {
-    final newMsg = ChatMessageModel(
-      id: 'msg-${DateTime.now().millisecondsSinceEpoch}',
-      senderId: 'saya',
-      text: text,
-      timestamp: 'Baru saja',
-      isMe: true,
-      status: MessageStatus.sent,
-    );
-
-    setState(() {
-      _messages.add(newMsg);
-    });
-
+  void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
@@ -75,8 +65,43 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
     });
   }
 
+  void _handleSendMessage(String text) {
+    final now = DateTime.now();
+    final timeStr = "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
+
+    final newMsg = ChatMessageModel(
+      id: "msg-${now.millisecondsSinceEpoch}",
+      senderId: "saya",
+      text: text,
+      timestamp: timeStr,
+      isMe: true,
+      status: MessageStatus.sent,
+    );
+
+    setState(() {
+      _messages.add(newMsg);
+    });
+    _scrollToBottom();
+
+    // Auto-Reply simulation matching ActiveChatOverlay.tsx
+    Future.delayed(const Duration(milliseconds: 1200), () {
+      if (!mounted) return;
+      final replyMsg = ChatMessageModel(
+        id: "reply-${DateTime.now().millisecondsSinceEpoch}",
+        senderId: widget.conversation.user.username,
+        text: "Halo! Pesan kamu sudah diterima yaa 👍 Btw barangnya masih ready dan bisa COD di area sekolah!",
+        timestamp: timeStr,
+        isMe: false,
+      );
+      setState(() {
+        _messages.add(replyMsg);
+      });
+      _scrollToBottom();
+    });
+  }
+
   void _handleViewProfile() {
-    HapticFeedback.lightImpact();
+    HapticFeedback.selectionClick();
     Navigator.of(context).push(
       AppSlidePageRoute(
         builder: (_) => ProfileScreen(
@@ -87,10 +112,35 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
     );
   }
 
+  void _handleReportUser() {
+    HapticFeedback.mediumImpact();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Laporan terhadap @${widget.conversation.user.username} telah dikirim ke admin sekolah."),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _handleClearChat() {
+    HapticFeedback.mediumImpact();
+    setState(() {
+      _messages.clear();
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Obrolan telah dibersihkan."),
+        behavior: SnackBarBehavior.floating,
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF6F7F9),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(56.0),
         child: SafeArea(
@@ -114,9 +164,9 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                   icon: const Icon(
                     Icons.arrow_back_rounded,
                     size: 22.0,
-                    color: AppColors.ink,
+                    color: Color(0xFF0F172A),
                   ),
-                  tooltip: 'Kembali',
+                  tooltip: "Kembali",
                   onPressed: () => Navigator.of(context).pop(),
                 ),
 
@@ -157,17 +207,17 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                             ),
                             if (widget.conversation.user.isOnline)
                               Positioned(
-                                bottom: -1.0,
-                                right: -1.0,
+                                bottom: -0.5,
+                                right: -0.5,
                                 child: Container(
-                                  width: 11.0,
-                                  height: 11.0,
+                                  width: 12.0,
+                                  height: 12.0,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: const Color(0xFF31A24C),
                                     border: Border.all(
                                       color: Colors.white,
-                                      width: 1.8,
+                                      width: 2.0,
                                     ),
                                   ),
                                 ),
@@ -177,7 +227,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
 
                         const SizedBox(width: 10.0),
 
-                        // Nama dan Kelas / Status
+                        // Nama dan Status Aktif
                         Expanded(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -193,7 +243,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                                       style: const TextStyle(
                                         fontSize: 14.5,
                                         fontWeight: FontWeight.w700,
-                                        color: AppColors.ink,
+                                        color: Color(0xFF0F172A),
                                         letterSpacing: -0.2,
                                       ),
                                     ),
@@ -211,8 +261,8 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                               const SizedBox(height: 1.5),
                               Text(
                                 widget.conversation.user.isOnline
-                                    ? '${widget.conversation.user.classGroup ?? 'Siswa'} · Aktif sekarang'
-                                    : widget.conversation.user.classGroup ?? 'Siswa SMKN 8',
+                                    ? "Aktif sekarang"
+                                    : (widget.conversation.user.classGroup ?? "Siswa SMKN 8"),
                                 style: TextStyle(
                                   fontSize: 11.5,
                                   color: widget.conversation.user.isOnline
@@ -231,15 +281,53 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                   ),
                 ),
 
-                // Tombol Lihat Profil Kanan
-                IconButton(
+                // Submenu Dropdown 3 Dots
+                PopupMenuButton<String>(
                   icon: const Icon(
-                    Icons.info_outline_rounded,
+                    Icons.more_vert_rounded,
                     size: 21.0,
                     color: Color(0xFF64748B),
                   ),
-                  tooltip: 'Info Profil',
-                  onPressed: _handleViewProfile,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                  onSelected: (value) {
+                    if (value == "profile") _handleViewProfile();
+                    if (value == "report") _handleReportUser();
+                    if (value == "clear") _handleClearChat();
+                  },
+                  itemBuilder: (ctx) => [
+                    const PopupMenuItem(
+                      value: "profile",
+                      child: Row(
+                        children: [
+                          Icon(Icons.person_outline_rounded, size: 18.0, color: Color(0xFF0F172A)),
+                          SizedBox(width: 10.0),
+                          Text("Lihat Profil", style: TextStyle(fontSize: 13.5)),
+                        ],
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: "report",
+                      child: Row(
+                        children: [
+                          Icon(Icons.shield_outlined, size: 18.0, color: Color(0xFF0F172A)),
+                          SizedBox(width: 10.0),
+                          Text("Laporkan Pengguna", style: TextStyle(fontSize: 13.5)),
+                        ],
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: "clear",
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete_outline_rounded, size: 18.0, color: Colors.red),
+                          SizedBox(width: 10.0),
+                          Text("Bersihkan Obrolan", style: TextStyle(fontSize: 13.5, color: Colors.red)),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -248,26 +336,42 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
       ),
       body: Column(
         children: [
-          // Stream Percakapan
+          // Stream Percakapan dengan Background #F6F7F9
           Expanded(
             child: ListView(
               controller: _scrollController,
-              padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
+              padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 14.0),
               children: [
                 // Kartu Konteks Produk jika ada
                 if (widget.conversation.productContext != null)
-                  ChatProductCard(
-                    product: widget.conversation.productContext!,
-                    onViewProduct: () {
-                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Membuka katalog "${widget.conversation.productContext!.title}"'),
-                          behavior: SnackBarBehavior.floating,
-                          duration: const Duration(seconds: 1),
-                        ),
-                      );
-                    },
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 2.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: ChatProductCard(
+                        product: widget.conversation.productContext!,
+                        location: widget.conversation.id == "17892348123791823" ? "Lab Fisika Lt 2" : "Kantin Belakang SMKN 8",
+                        onViewProduct: () {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("Membuka katalog \"${widget.conversation.productContext!.title}\""),
+                              behavior: SnackBarBehavior.floating,
+                              duration: const Duration(seconds: 1),
+                            ),
+                          );
+                        },
+                        onCheckLocation: () {
+                          Navigator.of(context).push(
+                            AppSlidePageRoute(
+                              builder: (_) => CampusMapScreen(
+                                onBack: () => Navigator.pop(context),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
 
                 // Bubble Pesan
@@ -287,7 +391,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
 
   Widget _buildChatBubble(ChatMessageModel msg) {
     if (msg.isMe) {
-      // Pesan Keluar (Saya) - Warna Biru / Gelap Kumo
+      // Pesan Keluar (Saya) - Warna Biru Kumo #1D64EC (1:1 chat-bubble.tsx)
       return Padding(
         padding: const EdgeInsets.only(bottom: 8.0),
         child: Row(
@@ -296,17 +400,24 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
           children: [
             Container(
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.76,
+                maxWidth: MediaQuery.of(context).size.width * 0.82,
               ),
               padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
               decoration: const BoxDecoration(
-                color: AppColors.primary,
+                color: Color(0xFF1D64EC),
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(18.0),
-                  topRight: Radius.circular(18.0),
-                  bottomLeft: Radius.circular(18.0),
+                  topLeft: Radius.circular(20.0),
+                  topRight: Radius.circular(20.0),
+                  bottomLeft: Radius.circular(20.0),
                   bottomRight: Radius.circular(4.0),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0x101D64EC),
+                    blurRadius: 4.0,
+                    offset: Offset(0, 1),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -314,9 +425,10 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                   Text(
                     msg.text,
                     style: const TextStyle(
-                      fontSize: 14.0,
+                      fontSize: 14.5,
                       color: Colors.white,
-                      height: 1.35,
+                      height: 1.38,
+                      letterSpacing: -0.1,
                     ),
                   ),
                   const SizedBox(height: 3.0),
@@ -326,15 +438,16 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                       Text(
                         msg.timestamp,
                         style: TextStyle(
-                          fontSize: 10.5,
-                          color: Colors.white.withValues(alpha: 0.75),
+                          fontSize: 11.0,
+                          color: Colors.white.withValues(alpha: 0.85),
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
-                      const SizedBox(width: 3.0),
-                      Icon(
+                      const SizedBox(width: 4.0),
+                      const Icon(
                         Icons.done_all_rounded,
-                        size: 13.0,
-                        color: Colors.white.withValues(alpha: 0.9),
+                        size: 14.0,
+                        color: Colors.white,
                       ),
                     ],
                   ),
@@ -345,7 +458,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
         ),
       );
     } else {
-      // Pesan Masuk (Lawan Bicara) - Abu-abu Lembut
+      // Pesan Masuk (Lawan Bicara) - Putih dengan Border Halus (1:1 chat-bubble.tsx)
       return Padding(
         padding: const EdgeInsets.only(bottom: 8.0),
         child: Row(
@@ -354,17 +467,28 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
           children: [
             Container(
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.76,
+                maxWidth: MediaQuery.of(context).size.width * 0.82,
               ),
               padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
-              decoration: const BoxDecoration(
-                color: Color(0xFFF1F5F9),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(18.0),
-                  topRight: Radius.circular(18.0),
-                  bottomRight: Radius.circular(18.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20.0),
+                  topRight: Radius.circular(20.0),
+                  bottomRight: Radius.circular(20.0),
                   bottomLeft: Radius.circular(4.0),
                 ),
+                border: Border.all(
+                  color: const Color(0xFFE2E8F0),
+                  width: 0.8,
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x06000000),
+                    blurRadius: 4.0,
+                    offset: Offset(0, 1),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -372,17 +496,22 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                   Text(
                     msg.text,
                     style: const TextStyle(
-                      fontSize: 14.0,
-                      color: AppColors.ink,
-                      height: 1.35,
+                      fontSize: 14.5,
+                      color: Color(0xFF0F172A),
+                      height: 1.38,
+                      letterSpacing: -0.1,
                     ),
                   ),
                   const SizedBox(height: 3.0),
-                  Text(
-                    msg.timestamp,
-                    style: const TextStyle(
-                      fontSize: 10.5,
-                      color: Color(0xFF94A3B8),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      msg.timestamp,
+                      style: const TextStyle(
+                        fontSize: 11.0,
+                        color: Color(0xFF94A3B8),
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ],

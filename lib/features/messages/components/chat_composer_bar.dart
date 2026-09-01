@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:snapan_market/core/theme/app_colors.dart';
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:snapan_market/core/theme/app_colors.dart";
 
 /// Bar input composer chat bawah 1:1 matching ChatComposerBar.tsx
 class ChatComposerBar extends StatefulWidget {
@@ -10,7 +10,7 @@ class ChatComposerBar extends StatefulWidget {
   const ChatComposerBar({
     super.key,
     required this.onSendMessage,
-    this.placeholder = 'Ketik pesan...',
+    this.placeholder = "Ketik pesan...",
   });
 
   @override
@@ -49,20 +49,20 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
 
   @override
   Widget build(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
     return Container(
       padding: EdgeInsets.fromLTRB(
-        12.0,
-        8.0,
-        12.0,
-        MediaQuery.of(context).padding.bottom > 0
-            ? MediaQuery.of(context).padding.bottom + 6.0
-            : 12.0,
+        14.0,
+        10.0,
+        14.0,
+        bottomPadding > 0 ? bottomPadding + 6.0 : 12.0,
       ),
       decoration: const BoxDecoration(
         color: Colors.white,
         border: Border(
           top: BorderSide(
-            color: Color(0xFFE2E8F0),
+            color: Color(0xFFF1F5F9),
             width: 0.8,
           ),
         ),
@@ -70,7 +70,7 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Input Teks Kapsul
+          // Text Input Pill
           Expanded(
             child: Container(
               height: 42.0,
@@ -85,8 +85,8 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) => _handleSend(),
                 style: const TextStyle(
-                  fontSize: 14.5,
-                  color: AppColors.ink,
+                  fontSize: 15.0,
+                  color: Color(0xFF0F172A),
                 ),
                 decoration: InputDecoration(
                   hintText: widget.placeholder,
@@ -102,9 +102,9 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
             ),
           ),
 
-          const SizedBox(width: 8.0),
+          const SizedBox(width: 10.0),
 
-          // Tombol Kirim Bundar Kumo Blue
+          // Circular Kumo Primary Blue Send Button
           GestureDetector(
             onTap: _canSend ? _handleSend : null,
             child: AnimatedContainer(
@@ -113,11 +113,21 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
               height: 42.0,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: _canSend ? AppColors.primary : const Color(0xFFE2E8F0),
+                gradient: _canSend
+                    ? const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color(0xFF3B82F6),
+                          Color(0xFF1D64EC),
+                        ],
+                      )
+                    : null,
+                color: _canSend ? null : const Color(0xFFE2E8F0),
                 boxShadow: _canSend
                     ? [
                         BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.3),
+                          color: const Color(0xFF1D64EC).withValues(alpha: 0.35),
                           blurRadius: 8.0,
                           offset: const Offset(0, 2),
                         ),

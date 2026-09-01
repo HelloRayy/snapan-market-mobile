@@ -995,6 +995,22 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
         }
 
         @media (max-width: 809.98px) {
+          .developer-section-header {
+            margin: 36px auto 12px auto !important;
+            padding: 0 16px !important;
+          }
+          .developer-section-header h2 {
+            font-size: 24px !important;
+            letter-spacing: -0.02em !important;
+          }
+          .developer-section-header p {
+            font-size: 13.5px !important;
+            line-height: 1.45 !important;
+          }
+          .developer-badge-pill {
+            padding: 4px 12px !important;
+            margin-bottom: 8px !important;
+          }
           .django-marquee-wrapper {
             padding: 16px 0 !important;
             mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%) !important;

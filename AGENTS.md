@@ -98,10 +98,13 @@ npm run dev:host
 
 ### Build & Quality Gates
 ```bash
+# Validate HTML templates tag balance (popSiteHtml & popSiteMobileHtml)
+npm run validate:html
+
 # Type check without emitting JavaScript
 npx tsc --noEmit
 
-# Production build (Runs typecheck + Vite build)
+# Production build (Runs HTML validation + typecheck + Vite build)
 npm run build
 
 # Preview production build locally
@@ -110,6 +113,10 @@ npm run preview
 # Run backend integration test against Supabase
 npx ts-node test-backend.ts
 ```
+
+### ⚠️ Landing Page Modification Directive
+1. **CSS-First Styling**: When hiding or tweaking landing page elements, always prefer modifying `src/ui/components/pwa/pwaLanding.css` (e.g. `display: none !important;`) rather than cutting raw HTML strings.
+2. **Mandatory Tag Validation**: If raw HTML templates in `popSiteHtml.ts` or `popSiteMobileHtml.ts` are edited, run `npm run validate:html` to guarantee 100% tag balance.
 
 ---
 

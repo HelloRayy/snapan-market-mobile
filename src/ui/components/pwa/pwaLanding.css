@@ -442,6 +442,12 @@ h3[data-styles-preset="wX3pidG6I"] *,
   letter-spacing: -0.01em !important;
 }
 
+/* 🚫 Explicitly Removed Description Text */
+.framer-g6aqmf,
+.framer-i3lms {
+  display: none !important;
+}
+
 /* 🎯 Headline to Subtitle Vertical Gap Calibration (Reduced from 40px to 12px) */
 .framer-69jfqs,
 .framer-fr588r,

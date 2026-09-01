@@ -370,6 +370,47 @@ input[name="username"] {
   }
 }
 
+/* 🔤 Headline Typography Resizing & Refinement (Crisp, Elegant, Proportional) */
+
+/* Global H1 Elements & Main Hero Heading */
+.pwa-landing-page h1,
+.framer-11r0vn9,
+.framer-styles-preset-11r0vn9,
+.framer-styles-preset-11r0vn9.rich-text-wrapper h1,
+.framer-text.framer-styles-preset-11r0vn9,
+h1[data-styles-preset="pza6alzI0"] {
+  --framer-font-size: clamp(38px, 4.6vw, 56px) !important;
+  font-size: clamp(38px, 4.6vw, 56px) !important;
+  line-height: 1.1 !important;
+  letter-spacing: -1.8px !important;
+}
+
+/* Global H2 Elements & Section Headings */
+.pwa-landing-page h2,
+.framer-1rugks9,
+.framer-styles-preset-1rugks9,
+.framer-styles-preset-1rugks9.rich-text-wrapper h2,
+.framer-text.framer-styles-preset-1rugks9,
+h2[data-styles-preset="srTedcJki"] {
+  --framer-font-size: clamp(28px, 3.2vw, 38px) !important;
+  font-size: clamp(28px, 3.2vw, 38px) !important;
+  line-height: 1.16 !important;
+  letter-spacing: -1px !important;
+}
+
+/* Global H3 Elements & Subheadings */
+.pwa-landing-page h3,
+.framer-1o3yn0,
+.framer-styles-preset-1o3yn0,
+.framer-styles-preset-1o3yn0.rich-text-wrapper h3,
+.framer-text.framer-styles-preset-1o3yn0,
+h3[data-styles-preset="wX3pidG6I"] {
+  --framer-font-size: clamp(16px, 1.6vw, 19px) !important;
+  font-size: clamp(16px, 1.6vw, 19px) !important;
+  line-height: 1.35 !important;
+  letter-spacing: -0.02em !important;
+}
+
 /* 🏷️ Feature Tag Pill Spacing */
 .framer-cqd791 {
   gap: 8px !important;
@@ -381,27 +422,27 @@ input[name="username"] {
 
 /* 📦 Compact Layout for Features Section */
 .framer-sdhxzw {
-  padding: 60px 24px 40px !important;
+  padding: 50px 24px 36px !important;
 }
 .framer-sdhxzw .framer-dggxux {
-  gap: 16px !important;
+  gap: 14px !important;
 }
 .framer-sdhxzw .framer-12h6gbf {
-  max-width: 960px !important;
+  max-width: 860px !important;
 }
 .framer-sdhxzw .framer-12h6gbf h1 {
-  font-size: 68px !important;
-  line-height: 1.05 !important;
-  letter-spacing: -2.2px !important;
+  font-size: clamp(34px, 3.6vw, 44px) !important;
+  line-height: 1.12 !important;
+  letter-spacing: -1.2px !important;
   margin: 0 !important;
 }
 .framer-sdhxzw .framer-1n10pgs {
-  gap: 10px !important;
+  gap: 8px !important;
   margin-top: 4px !important;
-  margin-bottom: 8px !important;
+  margin-bottom: 6px !important;
 }
 .framer-sdhxzw .framer-cgn049 h3 {
-  font-size: 20px !important;
+  font-size: 18px !important;
   line-height: 1.3 !important;
   letter-spacing: -0.02em !important;
   margin: 0 !important;
@@ -432,16 +473,51 @@ input[name="username"] {
 }
 
 @media (max-width: 809.98px) {
+  .pwa-landing-page h1,
+  .framer-11r0vn9,
+  .framer-styles-preset-11r0vn9,
+  .framer-styles-preset-11r0vn9.rich-text-wrapper h1,
+  .framer-text.framer-styles-preset-11r0vn9,
+  h1[data-styles-preset="pza6alzI0"] {
+    --framer-font-size: clamp(26px, 6.8vw, 34px) !important;
+    font-size: clamp(26px, 6.8vw, 34px) !important;
+    line-height: 1.15 !important;
+    letter-spacing: -0.8px !important;
+  }
+
+  .pwa-landing-page h2,
+  .framer-1rugks9,
+  .framer-styles-preset-1rugks9,
+  .framer-styles-preset-1rugks9.rich-text-wrapper h2,
+  .framer-text.framer-styles-preset-1rugks9,
+  h2[data-styles-preset="srTedcJki"] {
+    --framer-font-size: clamp(20px, 5.2vw, 26px) !important;
+    font-size: clamp(20px, 5.2vw, 26px) !important;
+    line-height: 1.18 !important;
+    letter-spacing: -0.5px !important;
+  }
+
+  .pwa-landing-page h3,
+  .framer-1o3yn0,
+  .framer-styles-preset-1o3yn0,
+  .framer-styles-preset-1o3yn0.rich-text-wrapper h3,
+  .framer-text.framer-styles-preset-1o3yn0,
+  h3[data-styles-preset="wX3pidG6I"] {
+    --framer-font-size: 15px !important;
+    font-size: 15px !important;
+    line-height: 1.35 !important;
+  }
+
   .framer-sdhxzw {
-    padding: 40px 16px 24px !important;
+    padding: 36px 16px 20px !important;
   }
   .framer-sdhxzw .framer-12h6gbf h1 {
-    font-size: clamp(26px, 7.5vw, 36px) !important;
-    line-height: 1.1 !important;
-    letter-spacing: -1px !important;
+    font-size: clamp(22px, 6.2vw, 28px) !important;
+    line-height: 1.15 !important;
+    letter-spacing: -0.7px !important;
   }
   .framer-sdhxzw .framer-cgn049 h3 {
-    font-size: 15px !important;
+    font-size: 14.5px !important;
   }
   .framer-sdhxzw .framer-1c5m59g,
   .framer-L2aG3 .framer-1c5m59g,

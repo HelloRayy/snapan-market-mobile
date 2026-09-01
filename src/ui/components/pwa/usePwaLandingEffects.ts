@@ -302,28 +302,24 @@ export function usePwaLandingEffects({
           e.preventDefault();
           onProceedToWeb();
         }
-      } else if (text.includes('denah') || text.includes('map')) {
+      } else if (text.includes('fitur') || text === 'fitur') {
         e.preventDefault();
         triggerHaptic('light');
-        window.location.hash = '/map';
-      } else if (text.includes('fitur')) {
-        e.preventDefault();
-        triggerHaptic('light');
-        const featuresEl = document.querySelector('.framer-sdhxzw');
+        const featuresEl = document.querySelector('.framer-sdhxzw, [data-framer-name="Collection Section"]');
         if (featuresEl) {
           featuresEl.scrollIntoView({ behavior: 'smooth' });
         }
-      } else if (text.includes('forum') || text.includes('cod')) {
+      } else if (text.includes('klaim') || text.includes('claim')) {
         e.preventDefault();
         triggerHaptic('light');
-        const forumEl = document.querySelector('.framer-1jz7gk6');
-        if (forumEl) {
-          forumEl.scrollIntoView({ behavior: 'smooth' });
+        const claimEl = document.querySelector('.framer-1fqlk99, .framer-rawiv7, .framer-l69iqf');
+        if (claimEl) {
+          claimEl.scrollIntoView({ behavior: 'smooth' });
         }
       } else if (text.includes('support')) {
         e.preventDefault();
         triggerHaptic('light');
-        const supportEl = document.querySelector('.framer-rawiv7, .framer-l69iqf');
+        const supportEl = document.querySelector('.framer-axvdsa, .framer-9agg0o');
         if (supportEl) {
           supportEl.scrollIntoView({ behavior: 'smooth' });
         }

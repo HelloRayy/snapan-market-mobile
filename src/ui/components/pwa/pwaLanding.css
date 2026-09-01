@@ -448,6 +448,28 @@ h3[data-styles-preset="wX3pidG6I"] *,
   display: none !important;
 }
 
+/* 🧭 Landing In-Page Scroll Navigation */
+.framer-eijdno {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 20px !important;
+}
+
+.framer-eijdno a {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: rgba(18, 18, 18, 0.75) !important;
+  text-decoration: none !important;
+  transition: color 0.15s ease !important;
+  cursor: pointer !important;
+}
+
+.framer-eijdno a:hover {
+  color: #000000 !important;
+}
+
 /* 🎯 Headline to Subtitle Vertical Gap Calibration (Reduced from 40px to 12px) */
 .framer-69jfqs,
 .framer-fr588r,

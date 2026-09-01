@@ -761,6 +761,83 @@ h3[data-styles-preset="wX3pidG6I"] *,
   }
 }
 
+/* 🏢 Support by Sponsor / Partner Infinite Logo Marquee (Kanan ke Kiri) */
+@keyframes supportLogoMarquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.framer-rawiv7,
+.framer-l69iqf,
+.framer-1ef5tr8-container,
+.framer-1qfu0rf-container {
+  overflow: hidden !important;
+  width: 100% !important;
+  max-width: 100vw !important;
+  display: block !important;
+  mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%) !important;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%) !important;
+}
+
+.framer-rawiv7 section,
+.framer-l69iqf section,
+.framer-1ef5tr8-container section,
+.framer-1qfu0rf-container section {
+  overflow: hidden !important;
+  width: 100% !important;
+  max-width: 100vw !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.framer-rawiv7 section ul,
+.framer-l69iqf section ul,
+.framer-1ef5tr8-container section ul,
+.framer-1qfu0rf-container section ul {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 40px !important;
+  width: max-content !important;
+  min-width: 200% !important;
+  will-change: transform !important;
+  animation: supportLogoMarquee 30s linear infinite !important;
+  list-style: none !important;
+  padding: 12px 0 !important;
+  margin: 0 !important;
+}
+
+.framer-rawiv7 section ul:hover,
+.framer-l69iqf section ul:hover,
+.framer-1ef5tr8-container section ul:hover,
+.framer-1qfu0rf-container section ul:hover {
+  animation-play-state: paused !important;
+}
+
+.framer-rawiv7 section ul li,
+.framer-l69iqf section ul li,
+.framer-1ef5tr8-container section ul li,
+.framer-1qfu0rf-container section ul li {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  opacity: 0.85 !important;
+  transition: opacity 0.2s ease, transform 0.2s ease !important;
+}
+
+.framer-rawiv7 section ul li:hover,
+.framer-l69iqf section ul li:hover,
+.framer-1ef5tr8-container section ul li:hover,
+.framer-1qfu0rf-container section ul li:hover {
+  opacity: 1 !important;
+  transform: scale(1.05) !important;
+}
+
 /* 🕹️ Interactive Button Springs */
 button, a, input[type="submit"] {
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;

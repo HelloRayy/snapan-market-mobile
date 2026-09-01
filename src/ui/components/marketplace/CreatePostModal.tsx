@@ -1,29 +1,20 @@
-import React, { useState } from 'react';
-import {
-  X,
-  Image as ImageIcon,
-  MapPin,
-  PartyPopper,
-  Sparkles,
-  ChevronRight,
-  Play,
-  Volume2,
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Image as ImageIcon, MapPin, Sparkles, Play, Volume2 } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { triggerHaptic } from '@/utils/haptics';
-import { ThreadsTopicIcon } from '@/ui/components/icons';
 import { ConfirmActionModal } from '@/ui/components/ui/ConfirmActionModal';
-import {
-  TopicOption,
-  PRESET_TOPICS,
-  RICH_SCHOOL_PLACES,
-} from './create-post/types';
+import { TopicOption, RICH_SCHOOL_PLACES } from './create-post/types';
 import { CreatePostLocationPicker } from './create-post/CreatePostLocationPicker';
 import { CreatePostProductFields } from './create-post/CreatePostProductFields';
 import { CreatePostHeader } from './create-post/CreatePostHeader';
 import { CreatePostFooter } from './create-post/CreatePostFooter';
 import { CreatePostDraftsSheet } from './create-post/CreatePostDraftsSheet';
 import { CreatePostMediaToolbar } from './create-post/CreatePostMediaToolbar';
+import { CreatePostTopicSelector } from './create-post/CreatePostTopicSelector';
+import { CreatePostPollBuilder } from './create-post/CreatePostPollBuilder';
+import { CreatePostSubThreadsList } from './create-post/CreatePostSubThreadsList';
+import { usePostDrafts } from './create-post/usePostDrafts';
+
 interface CreatePostModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -57,10 +48,9 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
   const [locationInput, setLocationInput] = useState<string>('');
   const [images, setImages] = useState<string[]>([]);
   const [selectedTopic, setSelectedTopic] = useState<TopicOption | null>(null);
-  const [customTopicInput, setCustomTopicInput] = useState('');
   const [showTopicDropdown, setShowTopicDropdown] = useState(false);
 
-  // Meta Threads 7-Icon Action States
+  // Action States
   const [showEmojiBar, setShowEmojiBar] = useState(false);
   const [showLocationPicker, setShowLocationPicker] = useState(false);
   const [locationSearchQuery, setLocationSearchQuery] = useState('');
@@ -71,65 +61,69 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
   const [pollOptions, setPollOptions] = useState<string[]>(['', '', '']);
   const [showVoiceNote, setShowVoiceNote] = useState(false);
 
-  // Draft Management State
-  const [showDiscardAlert, setShowDiscardAlert] = useState(false);
-  const [showDraftsSheet, setShowDraftsSheet] = useState(false);
-  const [showDeleteDraftConfirm, setShowDeleteDraftConfirm] = useState(false);
-  const [savedDraft, setSavedDraft] = useState<any | null>(null);
+  // Drafts Hook
+  const {
+    savedDraft,
+    showDraftsSheet,
+    setShowDraftsSheet,
+    showDiscardAlert,
+    setShowDiscardAlert,
+    showDeleteDraftConfirm,
+    setShowDeleteDraftConfirm,
+    refreshSavedDraft,
+    saveCurrentDraft,
+    deleteSavedDraft,
+  } = usePostDrafts();
 
-  // Sync initialMode when modal opens
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOpen) {
       setPostMode(initialMode);
       refreshSavedDraft();
     }
-  }, [isOpen, initialMode]);
+  }, [isOpen, initialMode, refreshSavedDraft]);
 
-  const refreshSavedDraft = () => {
-    try {
-      const stored = localStorage.getItem('snapan_thread_draft');
-      if (stored) {
-        setSavedDraft(JSON.parse(stored));
-      } else {
-        setSavedDraft(null);
-      }
-    } catch {
-      setSavedDraft(null);
-    }
+  const handleRestoreDraft = () => {
+    if (!savedDraft) return;
+    setCaption(savedDraft.caption || '');
+    setImages(savedDraft.images || []);
+    setProductTitle(savedDraft.productTitle || '');
+    setPriceInput(savedDraft.priceInput || '');
+    setPostMode(savedDraft.postMode || 'thread');
+    setSubThreads(savedDraft.subThreads || []);
+    setSelectedTopic(savedDraft.selectedTopic || null);
+    setShowDraftsSheet(false);
+    triggerHaptic('selection');
   };
 
-  // Filtered places based on locationSearchQuery
-  const filteredPlaces = RICH_SCHOOL_PLACES.filter(
-    (p) =>
-      p.name.toLowerCase().includes(locationSearchQuery.toLowerCase()) ||
-      p.subtitle.toLowerCase().includes(locationSearchQuery.toLowerCase())
-  );
-
-  // Smart Intent Detection: detect selling keywords when in thread mode
-  const isSellingKeywordDetected =
-    postMode === 'thread' &&
-    /\b(jual|dijual|wts|preloved|harga|rp|slot|ongkir|ready|stok|beli)\b/i.test(caption);
+  const handleInsertEmoji = (emoji: string) => {
+    setCaption((prev) => prev + emoji);
+  };
 
   const handleAddDummyImage = () => {
-    const dummyPics = [
-      'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80',
-      'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800&q=80',
-      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80',
+    const dummyPool = [
+      'https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&q=80',
+      'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=600&q=80',
+      'https://images.unsplash.com/photo-1588702547923-7093a6c3ba33?w=600&q=80',
+      'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&q=80',
     ];
-    const nextPic = dummyPics[images.length % dummyPics.length];
-    setImages([...images, nextPic]);
+    const pick = dummyPool[images.length % dummyPool.length];
+    setImages((prev) => [...prev, pick]);
+    triggerHaptic('light');
   };
 
   const handleRemoveImage = (index: number) => {
-    setImages(images.filter((_, i) => i !== index));
+    setImages((prev) => prev.filter((_, i) => i !== index));
+    triggerHaptic('light');
   };
 
-  // Sub-Thread Chaining Handlers (Tambahkan ke Utas)
   const handleAddSubThread = () => {
-    setSubThreads((prev) => [
-      ...prev,
-      { id: `subthread-${Date.now()}`, caption: '', images: [] },
-    ]);
+    setSubThreads((prev) => [...prev, { id: `sub-${Date.now()}`, caption: '', images: [] }]);
+    triggerHaptic('light');
+  };
+
+  const handleRemoveSubThread = (id: string) => {
+    setSubThreads((prev) => prev.filter((st) => st.id !== id));
+    triggerHaptic('light');
   };
 
   const handleUpdateSubThreadCaption = (id: string, text: string) => {
@@ -138,70 +132,34 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     );
   };
 
-  const handleRemoveSubThread = (id: string) => {
-    setSubThreads((prev) => prev.filter((st) => st.id !== id));
-  };
-
   const handleAddSubThreadImage = (id: string) => {
-    const dummyPics = [
-      'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80',
-      'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800&q=80',
-      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80',
-    ];
+    const sampleImage = 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=600&q=80';
+    setSubThreads((prev) =>
+      prev.map((st) => (st.id === id ? { ...st, images: [...st.images, sampleImage] } : st))
+    );
+    triggerHaptic('light');
+  };
+
+  const handleRemoveSubThreadImage = (subThreadId: string, imgIndex: number) => {
     setSubThreads((prev) =>
       prev.map((st) =>
-        st.id === id
-          ? { ...st, images: [...st.images, dummyPics[st.images.length % dummyPics.length]] }
+        st.id === subThreadId
+          ? { ...st, images: st.images.filter((_, idx) => idx !== imgIndex) }
           : st
       )
     );
+    triggerHaptic('light');
   };
 
-  const handleRemoveSubThreadImage = (id: string, imgIndex: number) => {
-    setSubThreads((prev) =>
-      prev.map((st) =>
-        st.id === id
-          ? { ...st, images: st.images.filter((_, i) => i !== imgIndex) }
-          : st
-      )
-    );
-  };
+  const isSellingKeywordDetected =
+    postMode === 'thread' &&
+    /\b(jual|harga|rp|nego|preloved|titip|ready|cod)\b/i.test(caption);
 
-  const handleSelectTopic = (topic: TopicOption) => {
-    setSelectedTopic(topic);
-    setShowTopicDropdown(false);
-  };
-
-  const handleCustomTopicSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && customTopicInput.trim()) {
-      const cleanTopic = customTopicInput.trim().slice(0, 20);
-      setSelectedTopic({
-        id: `custom-${Date.now()}`,
-        name: cleanTopic,
-        isOfficial: false,
-      });
-      setCustomTopicInput('');
-      setShowTopicDropdown(false);
-    }
-  };
-
-  // Poll Handlers
-  const handleUpdatePollOption = (index: number, val: string) => {
-    const next = [...pollOptions];
-    next[index] = val;
-    setPollOptions(next);
-  };
-
-  const handleRemovePollOption = (index: number) => {
-    if (pollOptions.length > 2) {
-      setPollOptions(pollOptions.filter((_, i) => i !== index));
-    }
-  };
-
-  // Emoji Insert Handler
-  const handleInsertEmoji = (emoji: string) => {
-    setCaption((prev) => prev + emoji);
-  };
+  const filteredPlaces = RICH_SCHOOL_PLACES.filter(
+    (p) =>
+      p.name.toLowerCase().includes(locationSearchQuery.toLowerCase()) ||
+      p.subtitle.toLowerCase().includes(locationSearchQuery.toLowerCase())
+  );
 
   const canPost =
     caption.trim().length > 0 ||
@@ -227,7 +185,6 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
         : 1
       : undefined;
 
-    // Sub-threads as structured continuation items (Part 2, 3, etc.)
     const validSubThreads = subThreads.filter(
       (st) => st.caption.trim().length > 0 || st.images.length > 0
     );
@@ -281,7 +238,10 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
       onSubmitPost(newPost);
     }
 
-    // Reset & Close
+    resetAndClose();
+  };
+
+  const resetAndClose = () => {
     setCaption('');
     setImages([]);
     setSelectedGif(null);
@@ -316,49 +276,6 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
     }
   };
 
-  const handleConfirmDiscard = () => {
-    setCaption('');
-    setImages([]);
-    setSelectedGif(null);
-    setSelectedLocation(null);
-    setShowPollBuilder(false);
-    setShowVoiceNote(false);
-    setSubThreads([]);
-    setProductTitle('');
-    setProductDescription('');
-    setPriceInput('');
-    setStockInput('');
-    setLocationInput('');
-    setSelectedTopic(null);
-    setShowDiscardAlert(false);
-    onClose();
-  };
-
-  const handleSaveDraft = () => {
-    const draft = {
-      caption,
-      subThreads,
-      productTitle,
-      productDescription,
-      priceInput,
-      stockInput,
-      locationInput,
-      images,
-      selectedTopic,
-      postMode,
-      selectedLocation,
-      timestamp: Date.now(),
-    };
-    try {
-      localStorage.setItem('snapan_thread_draft', JSON.stringify(draft));
-      refreshSavedDraft();
-    } catch {
-      // ignore
-    }
-    setShowDiscardAlert(false);
-    onClose();
-  };
-
   const handleInputFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const target = e.currentTarget;
     setTimeout(() => {
@@ -373,9 +290,6 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
       className="fixed inset-0 z-50 bg-white flex flex-col font-gt-standard overflow-hidden transform-gpu animate-sheet-slide h-[100dvh] max-h-[100dvh]"
       style={{ willChange: 'transform' }}
     >
-      {/* ========================================================================= */}
-      {/* 🗺️ DEDICATED "PILIH TEMPAT" SCREEN (Matching Meta Threads Reference Layout) */}
-      {/* ========================================================================= */}
       {showLocationPicker ? (
         <CreatePostLocationPicker
           onBack={() => setShowLocationPicker(false)}
@@ -389,9 +303,6 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
           filteredPlaces={filteredPlaces}
         />
       ) : (
-        /* ========================================================================= */
-        /* 📝 MAIN THREAD / PRODUCT FORM SCREEN                                      */
-        /* ========================================================================= */
         <>
           <CreatePostHeader
             postMode={postMode}
@@ -403,143 +314,32 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
             hasSavedDraft={!!savedDraft}
           />
 
-          {/* Form Scrollable Body */}
           <div data-lenis-prevent className="p-4 pb-48 overflow-y-auto flex-1 relative max-w-lg mx-auto w-full overscroll-contain scroll-pb-40 scrollbar-none touch-pan-y">
-            {/* 1. Top Section: Avatar + Username + Caption + Images + Action Icons */}
             <div className="flex gap-2.5 items-start">
-              {/* Left Column: Avatar + Connector Line */}
               <div className="flex flex-col items-center shrink-0 w-8 self-stretch py-0.5">
                 <div className="w-8 h-8 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
-                  <img
-                    src={currentUser.avatar}
-                    alt={currentUser.name}
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={currentUser.avatar} alt={currentUser.name} className="w-full h-full object-cover" />
                 </div>
-
                 <div className="w-[1.5px] bg-neutral-200 flex-1 my-1 min-h-[14px]" />
               </div>
 
-              {/* Right Column */}
               <div className="flex-1 min-w-0 flex flex-col justify-between">
                 <div>
-                  {/* Username + Inline Topic Selector Header */}
                   <div className="flex items-center gap-1.5 flex-wrap relative leading-none">
-                    <span className="font-bold text-[14.5px] text-slate-900">
-                      {currentUser.username}
-                    </span>
-
-                    {/* Topic Selector Button */}
-                    <div className="relative inline-flex items-center">
-                      <button
-                        type="button"
-                        onClick={() => setShowTopicDropdown(!showTopicDropdown)}
-                        className="flex items-center gap-x-1 text-base h-[21px] leading-snug transition-all cursor-pointer select-none"
-                      >
-                        <span className="h-[21px] leading-snug flex items-center">
-                          <ChevronRight className="w-3.5 h-3.5 text-slate-400 stroke-[2] shrink-0" />
-                        </span>
-                        {selectedTopic ? (
-                          <span
-                            className={`flex items-center gap-x-1 font-semibold text-base h-[21px] leading-snug hover:opacity-80 transition-opacity ${
-                              selectedTopic.isOfficial
-                                ? 'text-[#1d64ec]'
-                                : 'text-slate-900'
-                            }`}
-                          >
-                            {selectedTopic.isOfficial &&
-                              (selectedTopic.icon === 'party-popper' ? (
-                                <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
-                              ) : (
-                                <ThreadsTopicIcon className="w-3.5 h-3.5 text-[#1d64ec] fill-current shrink-0" />
-                              ))}
-                            <span className="leading-snug">{selectedTopic.name}</span>
-                          </span>
-                        ) : (
-                          <span className="text-slate-500 hover:text-slate-800 font-normal text-[14px] h-[21px] leading-snug flex items-center transition-colors">
-                            Komunitas atau topik
-                          </span>
-                        )}
-                      </button>
-
-                      {/* Dropdown Popover */}
-                      {showTopicDropdown && (
-                        <>
-                          <div
-                            className="fixed inset-0 z-40"
-                            onClick={() => setShowTopicDropdown(false)}
-                          />
-                          <div className="absolute top-full -right-6 sm:right-auto sm:left-0 mt-1.5 w-64 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-neutral-200/90 z-50 p-2 transform-gpu animate-in fade-in slide-in-from-top-2 duration-150 font-gt-standard">
-                            <div className="px-3 py-1.5 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                              Topik Populer SMKN 8
-                            </div>
-
-                            <div className="space-y-0.5">
-                              {PRESET_TOPICS.map((topic) => (
-                                <button
-                                  key={topic.id}
-                                  type="button"
-                                  onClick={() => handleSelectTopic(topic)}
-                                  className="w-full text-left px-3 py-2 rounded-xl hover:bg-neutral-100/90 transition-colors flex items-center justify-between group cursor-pointer"
-                                >
-                                  <div className="flex items-center gap-2 min-w-0">
-                                    {topic.isOfficial &&
-                                      (topic.icon === 'party-popper' ? (
-                                        <PartyPopper className="w-4 h-4 text-[#1d64ec] stroke-[2.2] shrink-0" />
-                                      ) : (
-                                        <ThreadsTopicIcon className="w-4 h-4 text-[#1d64ec] fill-current shrink-0" />
-                                      ))}
-                                    <div>
-                                      <div
-                                        className={`text-[14px] font-semibold ${
-                                          topic.isOfficial ? 'text-[#1d64ec]' : 'text-slate-900'
-                                        }`}
-                                      >
-                                        {topic.name}
-                                      </div>
-                                      {topic.subtitle && (
-                                        <div className="text-[11.5px] text-slate-500 font-normal truncate">
-                                          {topic.subtitle}
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </button>
-                              ))}
-                            </div>
-
-                            {/* Custom Topic Input */}
-                            <div className="mt-2 pt-2 border-t border-neutral-100 px-2 space-y-1">
-                              <div className="relative flex items-center">
-                                <input
-                                  type="text"
-                                  maxLength={20}
-                                  placeholder="Ketik topik baru..."
-                                  value={customTopicInput}
-                                  onChange={(e) => setCustomTopicInput(e.target.value)}
-                                  onKeyDown={handleCustomTopicSubmit}
-                                  className="w-full pl-2.5 pr-11 py-1.5 text-[12.5px] rounded-lg border border-neutral-200 focus:outline-none focus:border-[#1d64ec] bg-neutral-50 text-slate-900"
-                                />
-                                <span className="absolute right-2 text-[10px] font-semibold text-slate-400 pointer-events-none tabular-nums">
-                                  {customTopicInput.length}/20
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      )}
-                    </div>
+                    <span className="font-bold text-[14.5px] text-slate-900">{currentUser.username}</span>
+                    <CreatePostTopicSelector
+                      selectedTopic={selectedTopic}
+                      onSelectTopic={setSelectedTopic}
+                      showDropdown={showTopicDropdown}
+                      onToggleDropdown={() => setShowTopicDropdown(!showTopicDropdown)}
+                      onCloseDropdown={() => setShowTopicDropdown(false)}
+                    />
                   </div>
 
-                  {/* Caption Textarea */}
                   <textarea
                     autoFocus
                     rows={1}
-                    placeholder={
-                      postMode === 'product'
-                        ? 'Tulis deskripsi atau rincian jualan...'
-                        : 'Apa yang baru?'
-                    }
+                    placeholder={postMode === 'product' ? 'Tulis deskripsi atau rincian jualan...' : 'Apa yang baru?'}
                     value={caption}
                     onFocus={handleInputFocus}
                     onChange={(e) => {
@@ -550,7 +350,6 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     className="w-full mt-1 text-[14.5px] text-slate-900 placeholder:text-slate-400 focus:outline-none resize-none bg-transparent leading-snug overflow-hidden"
                   />
 
-                  {/* Location Tag (High WCAG Contrast >= 7.0:1) */}
                   {selectedLocation && (
                     <div className="pt-1.5 pb-0.5 flex items-center gap-1.5 text-[13px] text-slate-600 font-medium leading-snug animate-toast-pop select-none">
                       <MapPin className="w-3.5 h-3.5 text-slate-600 stroke-[2] shrink-0" />
@@ -566,7 +365,6 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     </div>
                   )}
 
-                  {/* Smart Intent Auto-Detection Banner */}
                   {isSellingKeywordDetected && (
                     <div className="my-2 p-2.5 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-between gap-2 transform-gpu animate-toast-pop">
                       <div className="flex items-center gap-1.5 text-[12px] font-semibold text-[#1d64ec]">
@@ -583,69 +381,18 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     </div>
                   )}
 
-                  {/* 📊 Polling UI (Matching Meta Threads Reference Styling) */}
                   {showPollBuilder && (
-                    <div className="my-3 space-y-2 text-slate-900 text-base leading-snug transform-gpu animate-toast-pop select-none">
-                      <div className="flex flex-col gap-y-2 leading-snug">
-                        {pollOptions.map((opt, idx) => (
-                          <div key={idx} className="relative flex items-center">
-                            <input
-                              type="text"
-                              placeholder={`Opsi ${idx + 1}...`}
-                              value={opt}
-                              onChange={(e) => {
-                                handleUpdatePollOption(idx, e.target.value);
-                                if (
-                                  idx === pollOptions.length - 1 &&
-                                  e.target.value.trim().length > 0 &&
-                                  pollOptions.length < 4
-                                ) {
-                                  setPollOptions((prev) => [...prev, '']);
-                                }
-                              }}
-                              className="w-full p-3 bg-neutral-100 font-semibold rounded-xl border border-neutral-200/90 h-[46.6px] text-[14.5px] leading-snug text-slate-900 placeholder:text-neutral-400 focus:outline-none focus:border-[#1d64ec] focus:bg-white transition-all"
-                            />
-                            {pollOptions.length > 2 && (
-                              <button
-                                type="button"
-                                onClick={() => handleRemovePollOption(idx)}
-                                className="absolute right-3 p-1 text-neutral-400 hover:text-rose-600 transition-colors cursor-pointer"
-                                title="Hapus opsi"
-                              >
-                                <X className="w-4 h-4 stroke-[2]" />
-                              </button>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Footer: [Berakhir dalam 24 jam] --- [Hapus polling] */}
-                      <div className="flex items-center justify-between h-[21px] px-1 leading-snug select-none">
-                        <span className="text-neutral-400 text-xs leading-snug font-normal">
-                          Berakhir dalam 24 jam
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setShowPollBuilder(false);
-                            setPollOptions(['', '', '']);
-                          }}
-                          className="inline-flex items-center h-[16.8px] text-rose-500 hover:text-rose-600 font-semibold text-xs leading-snug cursor-pointer hover:underline"
-                        >
-                          Hapus polling
-                        </button>
-                      </div>
-                    </div>
+                    <CreatePostPollBuilder
+                      pollOptions={pollOptions}
+                      setPollOptions={setPollOptions}
+                      onClose={() => setShowPollBuilder(false)}
+                    />
                   )}
 
-                  {/* 🎵 Voice Note Attachment Badge */}
                   {showVoiceNote && (
                     <div className="my-2.5 p-2.5 rounded-2xl bg-neutral-900 text-white flex items-center justify-between gap-3 shadow-md transform-gpu animate-toast-pop">
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <button
-                          type="button"
-                          className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white shrink-0 cursor-pointer"
-                        >
+                        <button type="button" className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white shrink-0 cursor-pointer">
                           <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
                         </button>
                         <div className="flex items-center gap-1">
@@ -653,54 +400,28 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                           <span className="text-[12px] font-semibold">Rekaman Suara (0:14)</span>
                         </div>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => setShowVoiceNote(false)}
-                        className="p-1 text-white/60 hover:text-white transition-colors cursor-pointer"
-                      >
+                      <button type="button" onClick={() => setShowVoiceNote(false)} className="p-1 text-white/60 hover:text-white transition-colors cursor-pointer">
                         <X className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   )}
 
-                  {/* Uploaded Images Gallery & GIF Preview (Edge-to-Edge Screen Full Bleed) */}
                   {(images.length > 0 || selectedGif) && (
                     <div className="-ml-[52px] pl-[52px] -mr-4 pr-4 w-[calc(100%+68px)] flex items-center gap-2.5 overflow-x-auto py-2 scrollbar-none touch-pan-x select-none">
                       {selectedGif && (
                         <div className="relative w-28 h-24 rounded-2xl overflow-hidden border-2 border-[#1d64ec] shadow-2xs group shrink-0">
-                          <img
-                            src={selectedGif}
-                            alt="GIF Attachment"
-                            className="w-full h-full object-cover"
-                          />
-                          <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded-md bg-black/70 text-white text-[9px] font-bold">
-                            GIF
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => setSelectedGif(null)}
-                            className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center cursor-pointer"
-                          >
+                          <img src={selectedGif} alt="GIF Attachment" className="w-full h-full object-cover" />
+                          <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded-md bg-black/70 text-white text-[9px] font-bold">GIF</span>
+                          <button type="button" onClick={() => setSelectedGif(null)} className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center cursor-pointer">
                             <X className="w-3 h-3 stroke-[2.5]" />
                           </button>
                         </div>
                       )}
 
                       {images.map((imgUrl, idx) => (
-                        <div
-                          key={idx}
-                          className="relative w-24 h-24 rounded-2xl overflow-hidden border border-neutral-200 shadow-2xs group shrink-0"
-                        >
-                          <img
-                            src={imgUrl}
-                            alt={`Upload preview ${idx + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveImage(idx)}
-                            className="absolute top-1.5 right-1.5 w-5.5 h-5.5 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center backdrop-blur-xs transition-transform active:scale-90 cursor-pointer"
-                          >
+                        <div key={idx} className="relative w-24 h-24 rounded-2xl overflow-hidden border border-neutral-200 shadow-2xs group shrink-0">
+                          <img src={imgUrl} alt={`Upload preview ${idx + 1}`} className="w-full h-full object-cover" />
+                          <button type="button" onClick={() => handleRemoveImage(idx)} className="absolute top-1.5 right-1.5 w-5.5 h-5.5 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center backdrop-blur-xs transition-transform active:scale-90 cursor-pointer">
                             <X className="w-3 h-3 stroke-[2.5]" />
                           </button>
                         </div>
@@ -756,119 +477,25 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
               </div>
             </div>
 
-            {/* 2. Chained Sub-Threads (Utas Bersambung) */}
-            {subThreads.map((st, index) => (
-              <div key={st.id} className="flex gap-2.5 items-start mt-2 transform-gpu animate-toast-pop">
-                <div className="flex flex-col items-center shrink-0 w-8 self-stretch py-0.5">
-                  <div className="w-8 h-8 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0">
-                    <img
-                      src={currentUser.avatar}
-                      alt={currentUser.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="w-[1.5px] bg-neutral-200 flex-1 my-1 min-h-[14px]" />
-                </div>
+            <CreatePostSubThreadsList
+              subThreads={subThreads}
+              currentUser={currentUser}
+              onRemoveSubThread={handleRemoveSubThread}
+              onUpdateCaption={handleUpdateSubThreadCaption}
+              onAddSubThreadImage={handleAddSubThreadImage}
+              onRemoveSubThreadImage={handleRemoveSubThreadImage}
+              onAddSubThread={handleAddSubThread}
+              onFocusInput={handleInputFocus}
+            />
 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 leading-none">
-                      <span className="font-bold text-[14.5px] text-slate-900">
-                        {currentUser.username}
-                      </span>
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11.5px] tabular-nums select-none">
-                        {index + 2}/{1 + subThreads.length}
-                      </span>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveSubThread(st.id)}
-                      className="w-6 h-6 rounded-full hover:bg-neutral-100 flex items-center justify-center text-neutral-400 hover:text-slate-800 transition-colors cursor-pointer"
-                      title="Hapus sambungan utas"
-                    >
-                      <X className="w-4 h-4 stroke-[2]" />
-                    </button>
-                  </div>
-
-                  <textarea
-                    rows={1}
-                    placeholder="Lanjutkan utas..."
-                    value={st.caption}
-                    onFocus={handleInputFocus}
-                    onChange={(e) => {
-                      handleUpdateSubThreadCaption(st.id, e.target.value);
-                      e.target.style.height = 'auto';
-                      e.target.style.height = `${e.target.scrollHeight}px`;
-                    }}
-                    className="w-full mt-1 text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none resize-none bg-transparent leading-snug overflow-hidden"
-                  />
-
-                  {st.images.length > 0 && (
-                    <div className="-ml-[52px] pl-[52px] -mr-4 pr-4 w-[calc(100%+68px)] flex items-center gap-2.5 overflow-x-auto py-2 scrollbar-none touch-pan-x select-none">
-                      {st.images.map((img, imgIdx) => (
-                        <div
-                          key={imgIdx}
-                          className="relative w-20 h-20 rounded-2xl overflow-hidden border border-neutral-200 shadow-2xs shrink-0"
-                        >
-                          <img src={img} alt="Attachment" className="w-full h-full object-cover" />
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveSubThreadImage(st.id, imgIdx)}
-                            className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center cursor-pointer"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-2 pt-1.5 select-none">
-                    <button
-                      type="button"
-                      onClick={() => handleAddSubThreadImage(st.id)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100/90 hover:bg-neutral-200/80 active:scale-95 text-slate-800 text-[12px] font-semibold transition-all cursor-pointer"
-                    >
-                      <ImageIcon className="w-3.5 h-3.5 text-slate-700 stroke-[2]" />
-                      <span>{st.images.length > 0 ? `Foto (${st.images.length})` : 'Foto'}</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            {/* 3. Bottom Interactive "Tambahkan ke utas" Chaining Button */}
-            {postMode === 'thread' && (
-              <div className="flex gap-2.5 items-center mt-2 pt-1 select-none">
-                <div className="flex flex-col items-center shrink-0 w-8">
-                  <div className="w-4 h-4 rounded-full overflow-hidden border border-neutral-200/80 opacity-60 shrink-0">
-                    <img
-                      src={currentUser.avatar}
-                      alt={currentUser.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleAddSubThread}
-                  className="py-1 text-left text-[14px] text-neutral-400 hover:text-slate-800 active:text-slate-900 active:scale-95 transition-all cursor-pointer select-none font-normal"
-                >
-                  Tambahkan ke utas
-                </button>
-              </div>
-            )}
-
-            {/* 4. Product Mode Fields (Original Rich Seller Form) */}
             {postMode === 'product' && (
               <CreatePostProductFields
                 productTitle={productTitle}
                 onProductTitleChange={setProductTitle}
-                priceInput={priceInput}
-                onPriceInputChange={setPriceInput}
                 productDescription={productDescription}
                 onProductDescriptionChange={setProductDescription}
+                priceInput={priceInput}
+                onPriceInputChange={setPriceInput}
                 locationInput={locationInput}
                 onLocationInputChange={setLocationInput}
                 onInputFocus={handleInputFocus}
@@ -876,73 +503,78 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
             )}
           </div>
 
-          {/* Floating Bottom Sticky Action Footer */}
-          <CreatePostFooter onSubmit={handleSubmit} canPost={canPost} />
+          <CreatePostFooter
+            canPost={canPost}
+            onSubmit={handleSubmit}
+          />
+
+          <ConfirmActionModal
+            isOpen={showDiscardAlert}
+            onClose={() => setShowDiscardAlert(false)}
+            title="Simpan atau buang draf?"
+            description="Jika dibuang, teks dan media yang kamu masukkan akan hilang."
+            actions={[
+              {
+                label: 'Simpan Draf',
+                variant: 'primary',
+                onClick: () => {
+                  saveCurrentDraft({
+                    caption,
+                    subThreads,
+                    productTitle,
+                    priceInput,
+                    postMode,
+                    images,
+                    selectedTopic,
+                  });
+                  resetAndClose();
+                },
+              },
+              {
+                label: 'Buang',
+                variant: 'destructive',
+                onClick: resetAndClose,
+              },
+              {
+                label: 'Batal',
+                variant: 'cancel',
+                onClick: () => setShowDiscardAlert(false),
+              },
+            ]}
+          />
+
+          <CreatePostDraftsSheet
+            isOpen={showDraftsSheet}
+            onClose={() => setShowDraftsSheet(false)}
+            savedDraft={savedDraft}
+            onSelectDraft={handleRestoreDraft}
+            onRequestDeleteDraft={() => setShowDeleteDraftConfirm(true)}
+          />
+
+          <ConfirmActionModal
+            isOpen={showDeleteDraftConfirm}
+            onClose={() => setShowDeleteDraftConfirm(false)}
+            title="Hapus draf?"
+            description="Draf ini akan dihapus permanen dan tidak dapat dipulihkan."
+            actions={[
+              {
+                label: 'Hapus Draf',
+                variant: 'destructive',
+                onClick: () => {
+                  deleteSavedDraft();
+                  setShowDeleteDraftConfirm(false);
+                  setShowDraftsSheet(false);
+                },
+              },
+              {
+                label: 'Batal',
+                variant: 'cancel',
+                onClick: () => setShowDeleteDraftConfirm(false),
+              },
+            ]}
+          />
         </>
       )}
-
-      {/* Reusable Threads-style Save Draft / Discard Alert Modal */}
-      <ConfirmActionModal
-        isOpen={showDiscardAlert}
-        onClose={() => setShowDiscardAlert(false)}
-        title="Simpan ke draf?"
-        description="Simpan ke konsep untuk diedit dan diposting di lain waktu."
-        actions={[
-          {
-            label: 'Simpan',
-            variant: 'primary',
-            onClick: handleSaveDraft,
-          },
-          {
-            label: 'Jangan simpan',
-            variant: 'destructive',
-            onClick: handleConfirmDiscard,
-          },
-          {
-            label: 'Batal',
-            variant: 'cancel',
-            onClick: () => setShowDiscardAlert(false),
-          },
-        ]}
-      />
-
-      {/* Saved Drafts Bottom Sheet */}
-      <CreatePostDraftsSheet
-        isOpen={showDraftsSheet}
-        onClose={() => setShowDraftsSheet(false)}
-        savedDraft={savedDraft}
-        onSelectDraft={(draft) => {
-          if (draft.caption) setCaption(draft.caption);
-          if (draft.images) setImages(draft.images);
-          if (draft.selectedTopic) setSelectedTopic(draft.selectedTopic);
-          setShowDraftsSheet(false);
-        }}
-        onRequestDeleteDraft={() => setShowDeleteDraftConfirm(true)}
-      />
-
-      {/* Delete Draft Confirmation Dialog */}
-      <ConfirmActionModal
-        isOpen={showDeleteDraftConfirm}
-        onClose={() => setShowDeleteDraftConfirm(false)}
-        title="Hapus draf?"
-        description="Draf yang tersimpan akan dihapus secara permanen."
-        actions={[
-          {
-            label: 'Hapus Draf',
-            variant: 'destructive',
-            onClick: () => {
-              localStorage.removeItem('snapan_thread_draft');
-              setSavedDraft(null);
-              setShowDeleteDraftConfirm(false);
-            },
-          },
-          {
-            label: 'Batal',
-            variant: 'cancel',
-            onClick: () => setShowDeleteDraftConfirm(false),
-          },
-        ]}
-      />
     </div>
   );
 };

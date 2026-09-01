@@ -1,0 +1,534 @@
+/* ==========================================================================
+   Snapan Market PWA Landing Page Stylesheet (120 FPS GPU Optimized)
+   ========================================================================== */
+
+/* 🚀 Hero Stagger Entrance */
+.pop-motion-hero {
+  animation: popHeroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes popHeroFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popBadgeEnterTop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 6px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@keyframes popAvailableBadge {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+@keyframes capsuleShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+/* 🌊 Viewport Entrance Motion System (Gradual & Noticeable) */
+.pop-reveal {
+  opacity: 0;
+  transform: translateY(48px);
+  transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  will-change: opacity, transform;
+}
+
+.pop-reveal.pop-in-view {
+  opacity: 1 !important;
+  transform: translateY(0px) !important;
+}
+
+/* Bento cards cascade stagger delay */
+.framer-1p2c0r4.pop-reveal { transition-delay: 0ms !important; }
+.framer-1jz2pvg.pop-reveal { transition-delay: 120ms !important; }
+.framer-11kd95v.pop-reveal { transition-delay: 240ms !important; }
+.framer-xlz7uj.pop-reveal  { transition-delay: 360ms !important; }
+
+/* 📱 Responsive Mobile Viewport Overrides */
+@media (max-width: 809.98px) {
+  html, body, #main, [data-framer-name="Desktop"], .framer-L2aG3 {
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+}
+
+/* 🎯 Username Input Capsule & Available Badge */
+.framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h {
+  width: 320px !important;
+  min-width: 280px !important;
+  height: 52px !important;
+  min-height: 52px !important;
+  max-height: 52px !important;
+  border-radius: 9999px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  margin: 0 !important;
+}
+
+@media (max-width: 809.98px) {
+  .framer-1oduyj0, .framer-1wlgcwd, .framer-7j981h {
+    width: 275px !important;
+    min-width: 240px !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
+  }
+}
+
+.framer-1oduyj0 > div:last-child,
+.framer-1wlgcwd > div:last-child,
+.framer-7j981h > div:last-child {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  position: relative !important;
+  height: 100% !important;
+  padding-left: 14px !important;
+  padding-right: 8px !important;
+  overflow: hidden !important;
+}
+
+.username-available-tag {
+  position: absolute !important;
+  right: 12px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #ecfdf5 !important;
+  color: #059669 !important;
+  border: 1px solid #a7f3d0 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  height: 24px !important;
+  padding: 0 9px !important;
+  border-radius: 9999px !important;
+  letter-spacing: 0.2px !important;
+  user-select: none !important;
+  pointer-events: none !important;
+  z-index: 10 !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+}
+
+.framer-1oduyj0 input,
+.framer-1wlgcwd input,
+.framer-7j981h input,
+input[name="username"] {
+  height: 100% !important;
+  line-height: 52px !important;
+  flex: 1 !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  padding-right: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  font-weight: 700 !important;
+  font-size: 14.5px !important;
+  letter-spacing: -0.2px !important;
+}
+
+@media (max-width: 809.98px) {
+  .framer-1oduyj0 input,
+  .framer-1wlgcwd input,
+  .framer-7j981h input,
+  input[name="username"] {
+    line-height: 48px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+  }
+}
+
+.framer-g63eua-container, .framer-upoedb-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 52px !important;
+  margin: 0 !important;
+}
+
+@media (max-width: 809.98px) {
+  .framer-g63eua-container, .framer-upoedb-container {
+    height: 48px !important;
+  }
+}
+
+/* 💎 Kumo Biru CTA Button Styling */
+[data-framer-name="Button"], 
+.framer-192wfb0 {
+  height: 52px !important;
+  min-height: 52px !important;
+  max-height: 52px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 0 26px !important;
+  background: linear-gradient(180deg, #3b82f6 0%, #1d64ec 100%) !important;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.35), 0 4px 14px 0 rgba(29, 100, 236, 0.32) !important;
+  border: 1px solid #154ec1 !important;
+  color: #ffffff !important;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;
+}
+
+[data-framer-name="Button"] > div, .framer-192wfb0 > div {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 100% !important;
+}
+
+[data-framer-name="Button"] p, .framer-192wfb0 p {
+  margin: 0 !important;
+  line-height: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+@media (max-width: 809.98px) {
+  [data-framer-name="Button"], 
+  .framer-192wfb0 {
+    height: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
+  }
+}
+
+[data-framer-name="Button"]:hover, .framer-192wfb0:hover {
+  filter: brightness(1.08) !important;
+  transform: translateY(-1px) scale(1.01) !important;
+}
+
+/* 🎠 Infinite Smooth Auto-Scrolling Marquee with Edge Fades */
+.django-marquee-wrapper {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 100vw !important;
+  overflow: hidden !important;
+  padding: 8px 0 !important;
+  box-sizing: border-box !important;
+  mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%) !important;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%) !important;
+}
+
+.django-marquee-track {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 24px !important;
+  width: max-content !important;
+  will-change: transform !important;
+  animation: djangoMarqueeScroll 40s linear infinite !important;
+  box-sizing: border-box !important;
+}
+
+.django-marquee-track:hover {
+  animation-play-state: paused !important;
+}
+
+.django-marquee-track > .framer-a910ey {
+  flex: 0 0 auto !important;
+  width: 480px !important;
+  max-width: 86vw !important;
+  height: auto !important;
+  min-height: 185px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease !important;
+  cursor: pointer !important;
+}
+
+.django-marquee-track .framer-49zkyx {
+  flex: none !important;
+  width: 112px !important;
+  height: 112px !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  align-self: flex-start !important;
+  margin-top: 2px !important;
+}
+
+.django-marquee-track .framer-1rvfl3v {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+
+.django-marquee-track > .framer-a910ey:hover {
+  transform: none !important;
+}
+
+/* 🧹 Remove Excessive Whitespace & Compact Collection / Team Section */
+.framer-1jz7gk6 {
+  gap: 16px !important;
+  padding: 24px 16px 16px !important;
+}
+
+@media (max-width: 809.98px) {
+  .framer-1jz7gk6 {
+    gap: 12px !important;
+    padding: 16px 12px 12px !important;
+  }
+}
+
+/* 🏢 Support by Infinite Smooth Marquee System */
+.framer-1ef5tr8-container,
+.framer-1qfu0rf-container {
+  width: 100% !important;
+  max-width: 100vw !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.framer-1ef5tr8-container section,
+.framer-1qfu0rf-container section {
+  width: 100% !important;
+  max-width: 100vw !important;
+  overflow: hidden !important;
+  mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%) !important;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%) !important;
+}
+
+.framer-1ef5tr8-container ul,
+.framer-1qfu0rf-container ul {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 36px !important;
+  width: max-content !important;
+  will-change: transform !important;
+  animation: supportLogosScroll 35s linear infinite !important;
+  transform: none !important;
+}
+
+.framer-1ef5tr8-container ul:hover,
+.framer-1qfu0rf-container ul:hover {
+  animation-play-state: paused !important;
+}
+
+.framer-1ef5tr8-container ul > li,
+.framer-1qfu0rf-container ul > li {
+  flex: 0 0 auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+@keyframes supportLogosScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@media (max-width: 809.98px) {
+  .framer-1ef5tr8-container ul,
+  .framer-1qfu0rf-container ul {
+    animation-duration: 22s !important;
+    gap: 24px !important;
+  }
+  .framer-1ef5tr8-container section,
+  .framer-1qfu0rf-container section {
+    mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%) !important;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%) !important;
+  }
+}
+
+/* 🏷️ Feature Tag Pill Spacing */
+.framer-cqd791 {
+  gap: 8px !important;
+  width: max-content !important;
+  padding: 4px 12px !important;
+  align-items: center !important;
+  display: inline-flex !important;
+}
+
+/* 📦 Compact Layout for Features Section */
+.framer-sdhxzw {
+  padding: 60px 24px 40px !important;
+}
+.framer-sdhxzw .framer-dggxux {
+  gap: 16px !important;
+}
+.framer-sdhxzw .framer-12h6gbf {
+  max-width: 960px !important;
+}
+.framer-sdhxzw .framer-12h6gbf h1 {
+  font-size: 68px !important;
+  line-height: 1.05 !important;
+  letter-spacing: -2.2px !important;
+  margin: 0 !important;
+}
+.framer-sdhxzw .framer-1n10pgs {
+  gap: 10px !important;
+  margin-top: 4px !important;
+  margin-bottom: 8px !important;
+}
+.framer-sdhxzw .framer-cgn049 h3 {
+  font-size: 20px !important;
+  line-height: 1.3 !important;
+  letter-spacing: -0.02em !important;
+  margin: 0 !important;
+}
+.framer-sdhxzw .framer-8r7xto {
+  margin-top: 8px !important;
+  width: 100% !important;
+}
+.framer-sdhxzw .framer-1c5m59g {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 16px !important;
+  width: 100% !important;
+}
+.framer-sdhxzw [data-framer-name="Feature Simple"],
+.framer-sdhxzw .framer-1p2c0r4,
+.framer-sdhxzw .framer-1jz2pvg,
+.framer-sdhxzw .framer-11kd95v,
+.framer-sdhxzw .framer-xlz7uj {
+  height: 100% !important;
+  min-height: 250px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  flex: 1 1 0 !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 809.98px) {
+  .framer-sdhxzw {
+    padding: 40px 16px 24px !important;
+  }
+  .framer-sdhxzw .framer-12h6gbf h1 {
+    font-size: clamp(26px, 7.5vw, 36px) !important;
+    line-height: 1.1 !important;
+    letter-spacing: -1px !important;
+  }
+  .framer-sdhxzw .framer-cgn049 h3 {
+    font-size: 15px !important;
+  }
+  .framer-sdhxzw .framer-1c5m59g,
+  .framer-L2aG3 .framer-1c5m59g,
+  .framer-1c5m59g {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .framer-sdhxzw [data-framer-name="Feature Simple"],
+  .framer-sdhxzw .framer-1p2c0r4,
+  .framer-sdhxzw .framer-1jz2pvg,
+  .framer-sdhxzw .framer-11kd95v,
+  .framer-sdhxzw .framer-xlz7uj,
+  .framer-L2aG3 .framer-1p2c0r4,
+  .framer-L2aG3 .framer-1jz2pvg,
+  .framer-L2aG3 .framer-11kd95v,
+  .framer-L2aG3 .framer-xlz7uj,
+  .framer-1p2c0r4,
+  .framer-1jz2pvg,
+  .framer-11kd95v,
+  .framer-xlz7uj {
+    height: auto !important;
+    min-height: 180px !important;
+    padding: 16px 12px !important;
+    flex: none !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  .framer-eh09rc { width: 100% !important; }
+  .framer-eh09rc p {
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+  }
+  .framer-g1iski p {
+    font-size: 14.5px !important;
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+  }
+  .framer-1c38d89 p {
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+  }
+}
+
+@keyframes djangoMarqueeScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-50% - 12px)); }
+}
+
+@media (max-width: 809.98px) {
+  .django-marquee-wrapper {
+    padding: 16px 0 !important;
+    mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%) !important;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%) !important;
+  }
+  .django-marquee-track {
+    animation-duration: 28s !important;
+    gap: 16px !important;
+  }
+  .django-marquee-track > .framer-a910ey {
+    width: 330px !important;
+    max-width: 86vw !important;
+  }
+  @keyframes djangoMarqueeScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-50% - 8px)); }
+  }
+}
+
+/* 🕹️ Interactive Button Springs */
+button, a, input[type="submit"] {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;
+}
+button:active, a:active {
+  transform: scale(0.96) !important;
+}
+button:hover, a:hover {
+  filter: brightness(1.05);
+}
+
+/* ♿ Accessibility Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .pop-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}

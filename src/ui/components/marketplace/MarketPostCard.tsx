@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Heart, MoreHorizontal, Box, Repeat2, Send, PartyPopper, ChevronRight, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { ToastNotification } from '@/ui/components/ui/ToastNotification';
-import { formatSmartTimestamp } from '@/utils/formatters';
 import { MediaLightboxModal } from './MediaLightboxModal';
 import { PostSubmenuDropdown } from './PostSubmenuDropdown';
-import { ClickableVerifiedBadge } from './VerifiedBadgeModal';
 import { togglePostBookmark } from '@/services/api/bookmarkService';
 import { triggerHaptic } from '@/utils/haptics';
-import { ProgressiveImage } from '@/ui/components/ui/ProgressiveImage';
-import { ThreadsTopicIcon, SmoothCommentIcon } from '@/ui/components/icons';
+import { PostCardHeader } from './post-card/PostCardHeader';
+import { PostCardMediaGallery } from './post-card/PostCardMediaGallery';
+import { PostCardActionBar } from './post-card/PostCardActionBar';
 
 interface MarketPostCardProps {
   item: MarketPostItem;
@@ -38,8 +36,10 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
 
   const [isSaved, setIsSaved] = useState(item.isSaved || false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -56,74 +56,16 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
       if (item.id && item.seller?.id) {
         await togglePostBookmark(item.id, item.seller.id, !nextState);
       }
-    } catch (err) {
-      // Graceful fallback for guest/offline
-    }
-  };
-
-  // Fullscreen Media Lightbox State
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-
-  // Drag to Scroll Refs for Multi-Image Carousel (Zero-re-render 120 FPS + Pointer Capture)
-  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
-  const isMouseDownRef = React.useRef(false);
-  const startXRef = React.useRef(0);
-  const scrollLeftRef = React.useRef(0);
-  const hasDraggedRef = React.useRef(false);
-
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.button !== 0 && e.pointerType === 'mouse') return;
-    if (!scrollContainerRef.current) return;
-    isMouseDownRef.current = true;
-    hasDraggedRef.current = false;
-    startXRef.current = e.clientX;
-    scrollLeftRef.current = scrollContainerRef.current.scrollLeft;
-
-    if (e.pointerType === 'mouse') {
-      try {
-        e.currentTarget.setPointerCapture(e.pointerId);
-      } catch {}
-    }
-  };
-
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isMouseDownRef.current || !scrollContainerRef.current) return;
-    const dx = e.clientX - startXRef.current;
-    if (Math.abs(dx) > 3) {
-      hasDraggedRef.current = true;
-      scrollContainerRef.current.scrollLeft = scrollLeftRef.current - dx * 1.3;
-    }
-  };
-
-  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    isMouseDownRef.current = false;
-    if (e.pointerType === 'mouse') {
-      try {
-        e.currentTarget.releasePointerCapture(e.pointerId);
-      } catch {}
-    }
-  };
-
-  const handleImageClick = (e: React.MouseEvent, index: number) => {
-    e.stopPropagation();
-    if (hasDraggedRef.current) {
-      hasDraggedRef.current = false;
-      return;
-    }
-    triggerHaptic('selection');
-    setSelectedImageIndex(index);
-    setIsLightboxOpen(true);
+    } catch {}
   };
 
   const handleLikeToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
+    triggerHaptic('light');
     if (isLiked) {
-      triggerHaptic('light');
       setIsLiked(false);
-      setLikesCount((prev) => prev - 1);
+      setLikesCount((prev) => Math.max(0, prev - 1));
     } else {
-      triggerHaptic('medium');
       setIsLiked(true);
       setLikesCount((prev) => prev + 1);
     }
@@ -159,199 +101,21 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           text: shareText,
           url: shareUrl,
         });
-      } catch (err) {
-        // User cancelled native share dialog
-      }
+      } catch {}
     } else {
       try {
         await navigator.clipboard.writeText(shareUrl);
         showToast('Tautan postingan berhasil disalin');
-      } catch (err) {
+      } catch {
         showToast('Tautan disalin ke papan klip');
       }
     }
   };
 
-  // Content Snippets used in both variants
-  const renderImages = (_isDetail?: boolean) => (
-    <>
-      {item.images && item.images.length === 1 && (
-        <div
-          onClick={(e) => handleImageClick(e, 0)}
-          className="relative w-full rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[420px] aspect-[4/5] sm:aspect-[16/10] mt-2.5 cursor-pointer touch-pan-y"
-        >
-          <ProgressiveImage
-            src={item.images[0]}
-            alt={item.caption}
-            className="w-full h-full object-cover hover:scale-[1.01] transition-transform duration-300 pointer-events-none select-none"
-          />
-          <div className="absolute inset-0 rounded-[18px] ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
-        </div>
-      )}
-
-      {item.images && item.images.length > 1 && (
-        <div
-          ref={scrollContainerRef}
-          data-lenis-prevent
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
-          onClick={(e) => e.stopPropagation()}
-          className={`flex gap-2.5 overflow-x-auto scrollbar-none mt-2.5 cursor-grab active:cursor-grabbing select-none overscroll-x-contain touch-auto ${
-            _isDetail
-              ? '-mx-3.5 pl-3.5 pr-3.5 w-[calc(100%+28px)] max-w-[calc(100%+28px)]'
-              : '-ml-[62px] -mr-3.5 pl-[62px] pr-3.5 w-[calc(100%+76px)] max-w-[calc(100%+76px)]'
-          }`}
-          style={{ WebkitOverflowScrolling: 'touch', touchAction: 'auto' }}
-        >
-          {item.images.map((imgUrl, idx) => (
-            <div
-              key={idx}
-              onClick={(e) => handleImageClick(e, idx)}
-              className="relative shrink-0 w-[84%] sm:w-[76%] rounded-[18px] overflow-hidden border border-black/[0.08] shadow-2xs bg-neutral-100 max-h-[420px] aspect-[4/5] sm:aspect-[16/10] cursor-pointer touch-pan-y"
-            >
-              <ProgressiveImage
-                src={imgUrl}
-                alt={`${item.caption} - ${idx + 1}`}
-                className="w-full h-full object-cover pointer-events-none select-none"
-              />
-              <div className="absolute inset-0 rounded-[18px] ring-1 ring-inset ring-black/10 pointer-events-none z-10" />
-            </div>
-          ))}
-        </div>
-      )}
-    </>
-  );
-
-  const renderActionBar = () => (
-    <div className="pt-1 flex items-center justify-between text-slate-700 font-normal -ml-1.5 select-none max-w-full">
-      {/* Left Action Buttons Container (Threads Nested Flex Layout) */}
-      <div className="flex items-center gap-2 text-slate-700 text-sm font-normal cursor-pointer select-none">
-        {/* 1. Suka (Like) Slot */}
-        <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer">
-          <div className="flex items-stretch font-normal cursor-pointer">
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.96 }}
-              onClick={handleLikeToggle}
-              className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer select-none group active:bg-neutral-100 rounded-full transition-colors"
-              aria-label={`Sukai postingan. ${likesCount} suka`}
-            >
-              <motion.div
-                animate={isLiked ? { scale: [1, 1.45, 0.88, 1.15, 1], rotate: [0, -10, 10, -4, 0] } : { scale: 1, rotate: 0 }}
-                transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
-              >
-                <Heart
-                  className={`w-[19px] h-[19px] stroke-[1.85] transition-colors duration-200 ${
-                    isLiked ? 'fill-rose-500 text-rose-500 stroke-rose-500' : 'text-slate-700'
-                  }`}
-                />
-              </motion.div>
-              {likesCount > 0 && (
-                <motion.span
-                  key={likesCount}
-                  initial={{ opacity: 0.6, y: -2 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.15 }}
-                  className={`font-medium text-[13.5px] tabular-nums tracking-tight transition-colors duration-200 ${
-                    isLiked ? 'text-rose-600 font-bold' : 'text-slate-700'
-                  }`}
-                >
-                  {likesCount}
-                </motion.span>
-              )}
-            </motion.button>
-          </div>
-        </div>
-
-        {/* 2. Balas (Comment) Slot */}
-        <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer">
-          <div className="flex items-stretch font-normal cursor-pointer">
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.96 }}
-              onClick={(e) => {
-                e.stopPropagation();
-                onPostClick?.(item);
-              }}
-              className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer transition-colors text-slate-700 group select-none active:bg-neutral-100 rounded-full"
-              aria-label={`Komentar postingan. ${item.commentsCount} komentar`}
-            >
-              <SmoothCommentIcon className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
-              {item.commentsCount > 0 && (
-                <span className="font-medium text-[13.5px] text-slate-700 tabular-nums tracking-tight">{item.commentsCount}</span>
-              )}
-            </motion.button>
-          </div>
-        </div>
-
-        {/* 3. Posting Ulang (Repost) Slot */}
-        <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer">
-          <div className="flex items-stretch font-normal cursor-pointer">
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.96 }}
-              onClick={handleRepostToggle}
-              className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer transition-colors select-none group active:bg-neutral-100 rounded-full"
-              aria-label={`Post ulang postingan. ${repostsCount} posting ulang`}
-            >
-              <motion.div
-                animate={isReposted ? { rotate: [0, 180], scale: [1, 1.3, 0.9, 1.05, 1] } : { rotate: 0, scale: 1 }}
-                transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
-              >
-                <Repeat2
-                  className={`w-[19px] h-[19px] stroke-[1.85] transition-colors duration-200 ${
-                    isReposted ? 'text-emerald-500 stroke-emerald-500' : 'text-slate-700'
-                  }`}
-                />
-              </motion.div>
-              {repostsCount > 0 && (
-                <motion.span
-                  key={repostsCount}
-                  initial={{ opacity: 0.6, y: -2 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.15 }}
-                  className={`font-medium text-[13.5px] tabular-nums tracking-tight transition-colors duration-200 ${
-                    isReposted ? 'text-emerald-600 font-bold' : 'text-slate-700'
-                  }`}
-                >
-                  {repostsCount}
-                </motion.span>
-              )}
-            </motion.button>
-          </div>
-        </div>
-
-        {/* 4. Bagikan (Share) Slot */}
-        <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer">
-          <div className="flex items-stretch px-0.5 font-normal cursor-pointer">
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.96 }}
-              onClick={handleShare}
-              className="flex items-center justify-center p-2 min-h-[36px] min-w-[36px] cursor-pointer transition-colors text-slate-700 group select-none active:bg-neutral-100 rounded-full"
-              aria-label="Bagikan postingan"
-              title="Bagikan / Kirim"
-            >
-              <Send className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-slate-900 transition-colors duration-200" />
-            </motion.button>
-          </div>
-        </div>
-      </div>
-
-      {/* 5. Stock Indicator: Compact Inline Pill [ 📦 3 ] (Zero-Wrap Guaranteed) */}
-      {item.postType !== 'thread' && !!item.price && item.price > 0 && item.stock !== undefined && item.stock > 0 && (
-        <div
-          className="flex items-center gap-1 min-h-[26px] px-2 py-0.5 text-neutral-600 bg-neutral-100/90 border border-neutral-200/60 rounded-full text-[12px] select-none ml-auto shrink-0 whitespace-nowrap font-medium transition-colors"
-          title={`Sisa stok: ${item.stock} item`}
-        >
-          <Box className="w-3.5 h-3.5 stroke-[1.8] text-neutral-500 shrink-0" />
-          <span className="font-semibold text-slate-800 tabular-nums tracking-tight whitespace-nowrap">{item.stock}</span>
-        </div>
-      )}
-    </div>
-  );
+  const handleImageClick = (idx: number) => {
+    setSelectedImageIndex(idx);
+    setIsLightboxOpen(true);
+  };
 
   return (
     <article
@@ -361,121 +125,20 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
       }`}
     >
       {variant === 'detail' ? (
-        /* DETAIL PAGE VARIANT: Single column, caption & images aligned full-width with top header avatar */
+        /* DETAIL PAGE VARIANT */
         <div className="space-y-2.5">
-          {/* Top Header Row: Profile Picture + Name + Class/Timestamp + More Options (...) */}
-          <div className="flex items-center justify-between gap-2 min-w-0">
-            <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
-              <div
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onUserClick?.(item.seller.username || item.seller.name);
-                }}
-                className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 cursor-pointer active:scale-95 transition-transform"
-              >
-                <img
-                  src={item.seller.avatar}
-                  alt={item.seller.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+          <PostCardHeader
+            item={item}
+            onUserClick={onUserClick}
+            onTopicClick={onTopicClick}
+            onToggleMenu={(e) => {
+              e.stopPropagation();
+              setIsMenuOpen((prev) => !prev);
+            }}
+            isMenuOpen={isMenuOpen}
+            variant="detail"
+          />
 
-              <div className="flex items-center gap-1 min-w-0 flex-1 overflow-hidden">
-                <span
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onUserClick?.(item.seller.username || item.seller.name);
-                  }}
-                  className="font-semibold text-[14.5px] text-slate-900 truncate hover:underline shrink-1 max-w-[62%] cursor-pointer"
-                >
-                  {item.seller.name}
-                </span>
-
-                {item.seller.isVerified && (
-                  <ClickableVerifiedBadge sellerName={item.seller.name} className="w-[16px] h-[16px] shrink-0" />
-                )}
-
-                {item.topicTag ? (
-                  <div className="flex items-center gap-x-0.5 shrink-1 min-w-0 overflow-hidden ml-0.5 h-[21px] leading-snug">
-                    {/* Subtle Grey Chevron Arrow Separator */}
-                    <span className="h-[21px] leading-snug flex items-center">
-                      <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2] shrink-0" />
-                    </span>
-
-                    {/* Render special blue icon if official topic */}
-                    {item.isOfficialTopic && (
-                      item.topicIcon === 'presentation' || item.topicIcon === 'party-popper' ? (
-                        <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
-                      ) : (
-                        <ThreadsTopicIcon className="w-3.5 h-3.5 text-[#1d64ec] fill-current shrink-0" />
-                      )
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onTopicClick?.(item.topicTag!);
-                      }}
-                      className={`font-semibold text-base h-[21px] leading-snug transition-colors cursor-pointer truncate max-w-[140px] sm:max-w-[220px] flex items-center ${
-                        item.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-900 hover:underline'
-                      }`}
-                    >
-                      <span className="leading-snug">{item.topicTag}</span>
-                    </button>
-                  </div>
-                ) : (
-                  <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
-                    {item.seller.classGroup}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-1 shrink-0 ml-auto">
-              <span
-                className="text-[12px] sm:text-[12.5px] font-normal text-slate-500 whitespace-nowrap tabular-nums cursor-default select-none"
-                title={formatSmartTimestamp(item.timestamp).full}
-              >
-                {formatSmartTimestamp(item.timestamp).display}
-              </span>
-              <div className="relative">
-                <button
-                  type="button"
-                  id={`post-detail-options-btn-${item.id}`}
-                  data-submenu-trigger="true"
-                  aria-haspopup="menu"
-                  aria-expanded={isMenuOpen}
-                  aria-controls={`post-detail-options-menu-${item.id}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsMenuOpen((prev) => !prev);
-                  }}
-                  className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer"
-                  aria-label="Opsi postingan"
-                >
-                  <MoreHorizontal className="w-4 h-4" />
-                </button>
-                <PostSubmenuDropdown
-                  isOpen={isMenuOpen}
-                  onClose={() => setIsMenuOpen(false)}
-                  authorName={item.seller.name}
-                  authorUsername={item.seller.username}
-                  isSaved={isSaved}
-                  onToggleSave={handleBookmarkToggle}
-                  onCopyLink={handleShare}
-                  onReport={() => {
-                    showToast('Laporan terkirim, terima kasih atas masukan Anda');
-                  }}
-                  align="right"
-                  menuId={`post-detail-options-menu-${item.id}`}
-                  triggerId={`post-detail-options-btn-${item.id}`}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Caption Text: Full Width Aligned with Avatar (UX Reading Flow text-base leading-snug) */}
           <div className="text-base text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere]">
             <FormattedText text={item.caption} />
             {item.totalThreadParts && item.totalThreadParts > 1 && (
@@ -485,10 +148,13 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             )}
           </div>
 
-          {/* Product Images: Full Width */}
-          {renderImages(true)}
+          <PostCardMediaGallery
+            images={item.images}
+            caption={item.caption}
+            onImageClick={handleImageClick}
+            isDetail={true}
+          />
 
-          {/* Location Tag (Placed under media for optimal UX flow) */}
           {item.locationTag && (
             <div className="pt-1 flex items-center gap-1.5 text-[12px] sm:text-[12.5px] text-slate-600 font-medium leading-snug">
               <MapPin className="w-3.5 h-3.5 text-slate-500 stroke-[2] shrink-0" />
@@ -496,13 +162,24 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             </div>
           )}
 
-          {/* Action Bar */}
-          {renderActionBar()}
+          <PostCardActionBar
+            item={item}
+            isLiked={isLiked}
+            likesCount={likesCount}
+            onToggleLike={handleLikeToggle}
+            isReposted={isReposted}
+            repostsCount={repostsCount}
+            onToggleRepost={handleRepostToggle}
+            onCommentClick={(e) => {
+              e.stopPropagation();
+              onPostClick?.(item);
+            }}
+            onShare={handleShare}
+          />
         </div>
       ) : (
-        /* FEED VARIANT: Two-column layout with left Avatar and right Content Column */
+        /* FEED VARIANT */
         <div className="flex gap-3 items-start min-w-0">
-          {/* Left Column: Avatar + Profile Click Zone */}
           <div className="flex flex-col items-center shrink-0">
             <div
               onClick={(e) => {
@@ -521,104 +198,19 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             </div>
           </div>
 
-          {/* Right Column: Content starting directly under Name */}
           <div className="flex-1 min-w-0 space-y-1 overflow-visible">
-            {/* Header Row: Name + Verified + (Topic OR Class) + Timestamp + More Options (...) */}
-            <div className="flex items-center justify-between gap-2 min-w-0">
-              <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
-                <span
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onUserClick?.(item.seller.username || item.seller.name);
-                  }}
-                  className="font-semibold text-[14.5px] text-slate-900 truncate hover:underline shrink-1 max-w-[62%] cursor-pointer"
-                >
-                  {item.seller.name}
-                </span>
-                {item.seller.isVerified && (
-                  <ClickableVerifiedBadge sellerName={item.seller.name} className="w-[16px] h-[16px] shrink-0" />
-                )}
+            <PostCardHeader
+              item={item}
+              onUserClick={onUserClick}
+              onTopicClick={onTopicClick}
+              onToggleMenu={(e) => {
+                e.stopPropagation();
+                setIsMenuOpen((prev) => !prev);
+              }}
+              isMenuOpen={isMenuOpen}
+              variant="feed"
+            />
 
-                {item.topicTag ? (
-                  <div className="flex items-center gap-x-0.5 shrink-1 min-w-0 overflow-hidden ml-0.5 h-[21px] leading-snug">
-                    {/* Chevron Arrow Separator */}
-                    <span className="h-[21px] leading-snug flex items-center">
-                      <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2] shrink-0" />
-                    </span>
-
-                    {/* Render special blue icon if official topic */}
-                    {item.isOfficialTopic && (
-                      item.topicIcon === 'presentation' || item.topicIcon === 'party-popper' ? (
-                        <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
-                      ) : (
-                        <ThreadsTopicIcon className="w-3.5 h-3.5 text-[#1d64ec] fill-current shrink-0" />
-                      )
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onTopicClick?.(item.topicTag!);
-                      }}
-                      className={`font-semibold text-base h-[21px] leading-snug transition-colors cursor-pointer truncate max-w-[135px] sm:max-w-[200px] flex items-center ${
-                        item.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-900 hover:underline'
-                      }`}
-                    >
-                      <span className="leading-snug">{item.topicTag}</span>
-                    </button>
-                  </div>
-                ) : (
-                  <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
-                    {item.seller.classGroup}
-                  </span>
-                )}
-              </div>
-
-              <div className="flex items-center gap-1 shrink-0 ml-auto">
-                <span
-                  className="text-[12px] sm:text-[12.5px] font-normal text-slate-500 whitespace-nowrap tabular-nums cursor-default select-none"
-                  title={formatSmartTimestamp(item.timestamp).full}
-                >
-                  {formatSmartTimestamp(item.timestamp).display}
-                </span>
-                <div className="relative">
-                  <button
-                    type="button"
-                    id={`post-feed-options-btn-${item.id}`}
-                    data-submenu-trigger="true"
-                    aria-haspopup="menu"
-                    aria-expanded={isMenuOpen}
-                    aria-controls={`post-feed-options-menu-${item.id}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsMenuOpen((prev) => !prev);
-                    }}
-                    className="text-slate-500 hover:text-slate-900 p-1 rounded-full hover:bg-neutral-100 transition-colors shrink-0 cursor-pointer"
-                    aria-label="Opsi postingan"
-                  >
-                    <MoreHorizontal className="w-4 h-4" />
-                  </button>
-                  <PostSubmenuDropdown
-                    isOpen={isMenuOpen}
-                    onClose={() => setIsMenuOpen(false)}
-                    authorName={item.seller.name}
-                    authorUsername={item.seller.username}
-                    isSaved={isSaved}
-                    onToggleSave={handleBookmarkToggle}
-                    onCopyLink={handleShare}
-                    onReport={() => {
-                      showToast('Laporan terkirim, terima kasih atas masukan Anda');
-                    }}
-                    align="right"
-                    menuId={`post-feed-options-menu-${item.id}`}
-                    triggerId={`post-feed-options-btn-${item.id}`}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Caption Text: Indented under name (UX Reading Flow text-base leading-snug) */}
             <div className="text-base text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere]">
               <FormattedText text={item.caption} />
               {item.totalThreadParts && item.totalThreadParts > 1 && (
@@ -628,10 +220,13 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               )}
             </div>
 
-            {/* Product Images */}
-            {renderImages(false)}
+            <PostCardMediaGallery
+              images={item.images}
+              caption={item.caption}
+              onImageClick={handleImageClick}
+              isDetail={false}
+            />
 
-            {/* Location Tag (Placed under media for optimal UX flow) */}
             {item.locationTag && (
               <div className="pt-1 flex items-center gap-1.5 text-[12px] sm:text-[12.5px] text-slate-600 font-medium leading-snug">
                 <MapPin className="w-3.5 h-3.5 text-slate-500 stroke-[2] shrink-0" />
@@ -639,13 +234,42 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               </div>
             )}
 
-            {/* Action Bar */}
-            {renderActionBar()}
+            <PostCardActionBar
+              item={item}
+              isLiked={isLiked}
+              likesCount={likesCount}
+              onToggleLike={handleLikeToggle}
+              isReposted={isReposted}
+              repostsCount={repostsCount}
+              onToggleRepost={handleRepostToggle}
+              onCommentClick={(e) => {
+                e.stopPropagation();
+                onPostClick?.(item);
+              }}
+              onShare={handleShare}
+            />
           </div>
         </div>
       )}
 
-      {/* Fullscreen Media Lightbox Modal */}
+      {/* Submenu Dropdown */}
+      <PostSubmenuDropdown
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        authorName={item.seller.name}
+        authorUsername={item.seller.username}
+        isSaved={isSaved}
+        onToggleSave={handleBookmarkToggle}
+        onCopyLink={handleShare}
+        onReport={() => {
+          showToast('Laporan terkirim, terima kasih atas masukan Anda');
+        }}
+        align="right"
+        menuId={`post-options-menu-${item.id}`}
+        triggerId={`post-options-btn-${item.id}`}
+      />
+
+      {/* Lightbox Modal */}
       <MediaLightboxModal
         isOpen={isLightboxOpen}
         images={item.images || []}
@@ -697,8 +321,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
         }}
       />
 
-
-      {/* Floating Feedback Toast Notification */}
+      {/* Toast */}
       <ToastNotification
         message={toastMessage}
         onClose={() => setToastMessage(null)}

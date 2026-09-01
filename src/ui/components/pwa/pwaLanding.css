@@ -1022,6 +1022,168 @@ footer.snapan-modern-footer {
   }
 }
 
+/* 📱 Mobile UX & Visual Parity Polish (@media (max-width: 809.98px)) */
+@media (max-width: 809.98px) {
+  /* Hide stray absolute floating cursor & emoji decorations on small viewports */
+  [data-framer-name="Cursor"],
+  [data-framer-name="Heart"],
+  [data-framer-name="Shaka"],
+  .framer-1n10pgs,
+  .framer-dpcl3b,
+  .framer-xx4wuj,
+  .framer-4i1r1a,
+  .framer-i98wsb,
+  .framer-1p1ol6d,
+  .framer-1ni4kpa,
+  .framer-12g5jzd,
+  .framer-xri8pe,
+  .framer-yu37p4,
+  .framer-ze0ml2,
+  .framer-1aovx7k,
+  .framer-1065pyd,
+  .framer-8y2g5t {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Prevent text and badge truncation */
+  .framer-p5xoen,
+  .framer-4048gq,
+  .framer-3r5b7y,
+  .framer-y9q2y0 {
+    width: auto !important;
+    max-width: 100% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 4px 12px !important;
+    box-sizing: border-box !important;
+  }
+
+  .framer-5xoy2v,
+  .framer-5xoy2v p {
+    width: auto !important;
+    max-width: 100% !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+  }
+
+  /* Testimonial cards mobile responsiveness */
+  .django-marquee-track > .framer-a910ey {
+    width: 350px !important;
+    max-width: 88vw !important;
+    padding: 16px 14px !important;
+    gap: 12px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .django-marquee-track .framer-49zkyx {
+    flex: none !important;
+    width: 72px !important;
+    height: 72px !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+  }
+
+  .django-marquee-track .framer-1rvfl3v {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    overflow: hidden !important;
+  }
+
+  .django-marquee-track .framer-ge2pjj p {
+    font-size: 13px !important;
+    line-height: 1.35 !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .django-marquee-track .framer-112cyyx {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+
+  .django-marquee-track .framer-nt3uyk {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 4px !important;
+    flex-wrap: wrap !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  .django-marquee-track .framer-k1m35t,
+  .django-marquee-track .framer-k1m35t p {
+    font-size: 12px !important;
+    white-space: nowrap !important;
+    font-weight: 600 !important;
+  }
+
+  .django-marquee-track .framer-62yqfw,
+  .django-marquee-track .framer-62yqfw p,
+  .django-marquee-track .framer-62yqfw span {
+    font-size: 11px !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    min-width: max-content !important;
+  }
+
+  .django-marquee-track .framer-13dme8e {
+    flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 3px !important;
+  }
+
+  .django-marquee-track .framer-alpens p {
+    font-size: 11.5px !important;
+  }
+
+  /* Prevent iOS Safari viewport zoom on form inputs */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"],
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /* Top Mobile Navigation Links */
+  .framer-eijdno {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 16px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .framer-eijdno a {
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    color: #111827 !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    transition: color 0.15s ease !important;
+  }
+
+  .framer-eijdno a:hover {
+    color: #3d38f5 !important;
+  }
+}
+
 /* 🕹️ Interactive Button Springs */
 button, a, input[type="submit"] {
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;

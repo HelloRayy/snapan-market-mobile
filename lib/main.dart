@@ -19,16 +19,9 @@ class SnapanMarketApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        fontFamily: '.SF Pro Text',
-        fontFamilyFallback: const [
-          'SF Pro Display',
-          'SF Pro Text',
-          '-apple-system',
-          'San Francisco',
-          'Helvetica Neue',
-          'Roboto',
-          'sans-serif',
-        ],
+        textTheme: GoogleFonts.interTextTheme(
+          ThemeData.light().textTheme,
+        ),
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColors.primary,
           primary: AppColors.primary,

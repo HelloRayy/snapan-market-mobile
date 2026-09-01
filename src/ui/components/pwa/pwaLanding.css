@@ -374,11 +374,24 @@ input[name="username"] {
 
 /* Global H1 Elements & Main Hero Heading */
 .pwa-landing-page h1,
+.pwa-landing-page h1 *,
+.pwa-landing-page h1 .framer-text,
+.pwa-landing-page h1 span,
+.framer-qdt69g h1,
+.framer-qdt69g h1 *,
+.framer-apv9m0 h1,
+.framer-apv9m0 h1 *,
+.framer-1vcz0h h1,
+.framer-1vcz0h h1 *,
+.framer-sdhxzw h1,
+.framer-sdhxzw h1 *,
 .framer-11r0vn9,
 .framer-styles-preset-11r0vn9,
+.framer-styles-preset-11r0vn9 *,
 .framer-styles-preset-11r0vn9.rich-text-wrapper h1,
 .framer-text.framer-styles-preset-11r0vn9,
-h1[data-styles-preset="pza6alzI0"] {
+h1[data-styles-preset="pza6alzI0"],
+h1[data-styles-preset="pza6alzI0"] * {
   --framer-font-size: 48px !important;
   font-size: 48px !important;
   line-height: 1.1 !important;
@@ -387,11 +400,20 @@ h1[data-styles-preset="pza6alzI0"] {
 
 /* Global H2 Elements & Section Headings */
 .pwa-landing-page h2,
+.pwa-landing-page h2 *,
+.pwa-landing-page h2 .framer-text,
+.pwa-landing-page h2 span,
+.framer-si78pz h2,
+.framer-si78pz h2 *,
+.framer-16y5npb h2,
+.framer-16y5npb h2 *,
 .framer-1rugks9,
 .framer-styles-preset-1rugks9,
+.framer-styles-preset-1rugks9 *,
 .framer-styles-preset-1rugks9.rich-text-wrapper h2,
 .framer-text.framer-styles-preset-1rugks9,
-h2[data-styles-preset="srTedcJki"] {
+h2[data-styles-preset="srTedcJki"],
+h2[data-styles-preset="srTedcJki"] * {
   --framer-font-size: 36px !important;
   font-size: 36px !important;
   line-height: 1.15 !important;
@@ -400,11 +422,16 @@ h2[data-styles-preset="srTedcJki"] {
 
 /* Global H3 Elements & Subheadings */
 .pwa-landing-page h3,
+.pwa-landing-page h3 *,
+.pwa-landing-page h3 .framer-text,
+.pwa-landing-page h3 span,
 .framer-1o3yn0,
 .framer-styles-preset-1o3yn0,
+.framer-styles-preset-1o3yn0 *,
 .framer-styles-preset-1o3yn0.rich-text-wrapper h3,
 .framer-text.framer-styles-preset-1o3yn0,
-h3[data-styles-preset="wX3pidG6I"] {
+h3[data-styles-preset="wX3pidG6I"],
+h3[data-styles-preset="wX3pidG6I"] * {
   --framer-font-size: 19px !important;
   font-size: 19px !important;
   line-height: 1.35 !important;
@@ -474,11 +501,24 @@ h3[data-styles-preset="wX3pidG6I"] {
 
 @media (max-width: 809.98px) {
   .pwa-landing-page h1,
+  .pwa-landing-page h1 *,
+  .pwa-landing-page h1 .framer-text,
+  .pwa-landing-page h1 span,
+  .framer-qdt69g h1,
+  .framer-qdt69g h1 *,
+  .framer-apv9m0 h1,
+  .framer-apv9m0 h1 *,
+  .framer-1vcz0h h1,
+  .framer-1vcz0h h1 *,
+  .framer-sdhxzw h1,
+  .framer-sdhxzw h1 *,
   .framer-11r0vn9,
   .framer-styles-preset-11r0vn9,
+  .framer-styles-preset-11r0vn9 *,
   .framer-styles-preset-11r0vn9.rich-text-wrapper h1,
   .framer-text.framer-styles-preset-11r0vn9,
-  h1[data-styles-preset="pza6alzI0"] {
+  h1[data-styles-preset="pza6alzI0"],
+  h1[data-styles-preset="pza6alzI0"] * {
     --framer-font-size: clamp(30px, 7.5vw, 38px) !important;
     font-size: clamp(30px, 7.5vw, 38px) !important;
     line-height: 1.14 !important;
@@ -486,11 +526,20 @@ h3[data-styles-preset="wX3pidG6I"] {
   }
 
   .pwa-landing-page h2,
+  .pwa-landing-page h2 *,
+  .pwa-landing-page h2 .framer-text,
+  .pwa-landing-page h2 span,
+  .framer-si78pz h2,
+  .framer-si78pz h2 *,
+  .framer-16y5npb h2,
+  .framer-16y5npb h2 *,
   .framer-1rugks9,
   .framer-styles-preset-1rugks9,
+  .framer-styles-preset-1rugks9 *,
   .framer-styles-preset-1rugks9.rich-text-wrapper h2,
   .framer-text.framer-styles-preset-1rugks9,
-  h2[data-styles-preset="srTedcJki"] {
+  h2[data-styles-preset="srTedcJki"],
+  h2[data-styles-preset="srTedcJki"] * {
     --framer-font-size: clamp(22px, 5.5vw, 28px) !important;
     font-size: clamp(22px, 5.5vw, 28px) !important;
     line-height: 1.18 !important;
@@ -498,11 +547,16 @@ h3[data-styles-preset="wX3pidG6I"] {
   }
 
   .pwa-landing-page h3,
+  .pwa-landing-page h3 *,
+  .pwa-landing-page h3 .framer-text,
+  .pwa-landing-page h3 span,
   .framer-1o3yn0,
   .framer-styles-preset-1o3yn0,
+  .framer-styles-preset-1o3yn0 *,
   .framer-styles-preset-1o3yn0.rich-text-wrapper h3,
   .framer-text.framer-styles-preset-1o3yn0,
-  h3[data-styles-preset="wX3pidG6I"] {
+  h3[data-styles-preset="wX3pidG6I"],
+  h3[data-styles-preset="wX3pidG6I"] * {
     --framer-font-size: 16px !important;
     font-size: 16px !important;
     line-height: 1.35 !important;

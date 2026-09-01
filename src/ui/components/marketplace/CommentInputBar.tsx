@@ -101,7 +101,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
                 ? `Balas postingan @${targetAuthor.replace(/^@/, '')}...`
                 : 'Tulis balasan...'
             }
-            className="flex-1 min-w-0 bg-neutral-100 hover:bg-neutral-100/80 focus:bg-white border border-transparent focus:border-[#3d38f5] rounded-full px-3.5 sm:px-4 h-10 text-[15px] sm:text-[14px] text-slate-900 placeholder:text-neutral-400 focus:outline-none transition-all shadow-2xs"
+            className="flex-1 min-w-0 bg-neutral-100 hover:bg-neutral-100/80 focus:bg-white border border-transparent focus:border-[#3d38f5] rounded-full px-3.5 sm:px-4 h-10 text-[16px] sm:text-[14px] text-slate-900 placeholder:text-neutral-400 focus:outline-none transition-all shadow-2xs"
           />
           <button
             type="submit"
@@ -200,7 +200,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
                 ? `Tulis balasan untuk @${targetAuthor.replace(/^@/, '')}...`
                 : 'Tulis balasan / tanggapan...'
             }
-            className="flex-1 min-w-0 bg-transparent border-none text-[15px] sm:text-[14px] text-slate-900 placeholder:text-neutral-400 focus:outline-none px-2 h-9 leading-snug"
+            className="flex-1 min-w-0 bg-transparent border-none text-[16px] sm:text-[14px] text-slate-900 placeholder:text-neutral-400 focus:outline-none px-2 h-9 leading-snug"
           />
 
           {/* Send Button CTA */}

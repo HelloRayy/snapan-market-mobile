@@ -109,7 +109,7 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
               placeholder="Cari postingan, produk, jajanan, atau akun..."
               value={searchValue}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="bg-transparent text-slate-900 placeholder:text-neutral-400 outline-none flex-1 text-[15px] font-normal leading-snug h-full px-1"
+              className="bg-transparent text-slate-900 placeholder:text-neutral-400 outline-none flex-1 text-[16px] sm:text-[15px] font-normal leading-snug h-full px-1"
             />
             {searchValue && (
               <button

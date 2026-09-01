@@ -87,7 +87,7 @@ export const CreatePostMediaToolbar: React.FC<CreatePostMediaToolbarProps> = ({
                 className="relative w-20 h-16 rounded-xl overflow-hidden border border-neutral-200 hover:border-[#1d64ec] shrink-0 group cursor-pointer transition-all"
               >
                 <img src={gif.url} alt={gif.title} className="w-full h-full object-cover" />
-                <span className="absolute inset-x-0 bottom-0 bg-black/60 text-white text-[9px] font-semibold truncate px-1 py-0.5 text-center">
+                <span className="absolute inset-x-0 bottom-0 bg-black/60 text-white text-[11px] font-semibold truncate px-1 py-0.5 text-center">
                   {gif.title}
                 </span>
               </button>

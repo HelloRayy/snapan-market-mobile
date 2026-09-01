@@ -311,10 +311,10 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
                       {/* Unread Circular Badge or More Button on Right */}
                       {hasUnread ? (
                         <span
-                          className={`shrink-0 rounded-full bg-[#1d64ec] text-white font-bold flex items-center justify-center leading-none ${
+                          className={`shrink-0 rounded-full bg-[#1d64ec] text-white font-bold flex items-center justify-center leading-none tabular-nums ${
                             (conv.unreadCount || 0) < 10
                               ? 'w-5 h-5 min-w-5 aspect-square text-[11px]'
-                              : 'min-w-[20px] h-5 px-1.5 text-[10.5px]'
+                              : 'min-w-[20px] h-5 px-1.5 text-[11px]'
                           }`}
                         >
                           {conv.unreadCount}

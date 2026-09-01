@@ -38,7 +38,7 @@ export const ChatComposerBar: React.FC<ChatComposerBarProps> = ({
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={placeholder}
-          className="flex-1 min-w-0 bg-[#f4f5f7] hover:bg-[#ebedf1] focus:bg-white border border-transparent focus:border-[#1d64ec] rounded-full px-4.5 h-10 text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none focus:shadow-xs transition-all"
+          className="flex-1 min-w-0 bg-[#f4f5f7] hover:bg-[#ebedf1] focus:bg-white border border-transparent focus:border-[#1d64ec] rounded-full px-4.5 h-10 text-[16px] sm:text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none focus:shadow-xs transition-all"
         />
 
         {/* Circular Kumo Primary Blue Send Button */}

@@ -300,7 +300,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
                   )}
 
                   {activeComment.user.isAuthor && (
-                    <span className="relative inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[5px] text-[10.5px] font-medium text-white bg-[#18181b] border border-black/40 shadow-2xs overflow-hidden shrink-0 select-none">
+                    <span className="relative inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[5px] text-[11.5px] font-medium text-white bg-[#18181b] border border-black/40 shadow-2xs overflow-hidden shrink-0 select-none">
                       <span className="absolute inset-0 rounded-[inherit] bg-gradient-to-b from-neutral-700/60 to-neutral-900/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
                       <Crown className="w-2.5 h-2.5 text-white fill-white relative z-10 shrink-0" />
                       <span className="relative z-10 leading-none">Pembuat Utas</span>

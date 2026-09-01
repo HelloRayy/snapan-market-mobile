@@ -261,7 +261,7 @@ input[name="username"] {
 
 .django-marquee-track > .framer-a910ey {
   flex: 0 0 auto !important;
-  width: 480px !important;
+  width: 560px !important;
   max-width: 86vw !important;
   height: auto !important;
   min-height: 185px !important;
@@ -752,7 +752,7 @@ h3[data-styles-preset="wX3pidG6I"] *,
     gap: 16px !important;
   }
   .django-marquee-track > .framer-a910ey {
-    width: 330px !important;
+    width: 380px !important;
     max-width: 86vw !important;
   }
   @keyframes djangoMarqueeScroll {

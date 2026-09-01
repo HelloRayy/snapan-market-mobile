@@ -112,6 +112,7 @@
 }
 
 .username-available-tag {
+  display: none !important;
   position: absolute !important;
   right: 12px !important;
   top: 50% !important;
@@ -133,6 +134,11 @@
   z-index: 10 !important;
   box-sizing: border-box !important;
   margin: 0 !important;
+}
+
+.username-available-tag.is-available {
+  display: inline-flex !important;
+  animation: popAvailableBadge 0.2s cubic-bezier(0.16, 1, 0.3, 1) both !important;
 }
 
 .framer-1oduyj0 input,

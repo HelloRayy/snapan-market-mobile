@@ -134,6 +134,7 @@ export function usePwaLandingEffects({
         availableBadge = document.createElement('span');
         availableBadge.className = 'username-available-tag';
         availableBadge.textContent = 'Available';
+        availableBadge.style.setProperty('display', 'none', 'important');
         inputWrapper.appendChild(availableBadge);
       }
 
@@ -152,11 +153,8 @@ export function usePwaLandingEffects({
             statusBadge.style.borderRightColor = '#a7f3d0';
           }
           if (availableBadge) {
-            availableBadge.style.display = 'inline-flex';
-            availableBadge.style.position = 'absolute';
-            availableBadge.style.right = '12px';
-            availableBadge.style.top = '50%';
-            availableBadge.style.transform = 'translateY(-50%)';
+            availableBadge.classList.add('is-available');
+            availableBadge.style.setProperty('display', 'inline-flex', 'important');
           }
           if (capsule) {
             capsule.style.borderColor = '#10b981';
@@ -171,7 +169,8 @@ export function usePwaLandingEffects({
             statusBadge.style.borderRightColor = '#dbeafe';
           }
           if (availableBadge) {
-            availableBadge.style.display = 'none';
+            availableBadge.classList.remove('is-available');
+            availableBadge.style.setProperty('display', 'none', 'important');
           }
           if (capsule) {
             capsule.style.borderColor = '#1d64ec';
@@ -186,7 +185,8 @@ export function usePwaLandingEffects({
             statusBadge.style.borderRightColor = '#d7dde0';
           }
           if (availableBadge) {
-            availableBadge.style.display = 'none';
+            availableBadge.classList.remove('is-available');
+            availableBadge.style.setProperty('display', 'none', 'important');
           }
           if (capsule) {
             capsule.style.borderColor = '#d7dde0';
@@ -257,6 +257,7 @@ export function usePwaLandingEffects({
 
       input.addEventListener('keydown', handleKeyDown);
       input.addEventListener('input', handleInput);
+      updateVisualState();
     });
   }, [isMobile, containerRef]);
 

@@ -878,6 +878,71 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
           margin-top: 0 !important;
         }
 
+        /* 🏢 Support by Infinite Smooth Marquee System */
+        .framer-1ef5tr8-container,
+        .framer-1qfu0rf-container {
+          width: 100% !important;
+          max-width: 100vw !important;
+          overflow: hidden !important;
+          position: relative !important;
+        }
+
+        .framer-1ef5tr8-container section,
+        .framer-1qfu0rf-container section {
+          width: 100% !important;
+          max-width: 100vw !important;
+          overflow: hidden !important;
+          mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%) !important;
+          -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%) !important;
+        }
+
+        .framer-1ef5tr8-container ul,
+        .framer-1qfu0rf-container ul {
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          gap: 36px !important;
+          width: max-content !important;
+          will-change: transform !important;
+          animation: supportLogosScroll 35s linear infinite !important;
+          transform: none !important;
+        }
+
+        .framer-1ef5tr8-container ul:hover,
+        .framer-1qfu0rf-container ul:hover {
+          animation-play-state: paused !important;
+        }
+
+        .framer-1ef5tr8-container ul > li,
+        .framer-1qfu0rf-container ul > li {
+          flex: 0 0 auto !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+        }
+
+        @keyframes supportLogosScroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+
+        @media (max-width: 809.98px) {
+          .framer-1ef5tr8-container ul,
+          .framer-1qfu0rf-container ul {
+            animation-duration: 22s !important;
+            gap: 24px !important;
+          }
+          .framer-1ef5tr8-container section,
+          .framer-1qfu0rf-container section {
+            mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%) !important;
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%) !important;
+          }
+        }
+
         /* 🏷️ Feature Tag Pill Spacing */
         .framer-cqd791 {
           gap: 8px !important;

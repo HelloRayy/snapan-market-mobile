@@ -261,7 +261,36 @@ export function usePwaLandingEffects({
     });
   }, [isMobile, containerRef]);
 
-  // 3. Global Click Interception
+  // 3. Support by Partner Logo Infinite Smooth Marquee System
+  useEffect(() => {
+    const root = containerRef.current;
+    if (!root) return;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
+    const tickers = root.querySelectorAll<HTMLElement>(
+      '.framer-rawiv7 ul, .framer-l69iqf ul, .framer-1ef5tr8-container ul, .framer-1qfu0rf-container ul, .framer-hxu555-container ul, .framer-axvdsa ul'
+    );
+
+    tickers.forEach((ul) => {
+      if (ul.dataset.marqueeInitialized) return;
+      ul.dataset.marqueeInitialized = 'true';
+
+      // Duplicate children for seamless infinite wrap
+      const originalItems = Array.from(ul.children);
+      originalItems.forEach((item) => {
+        const clone = item.cloneNode(true) as HTMLElement;
+        clone.setAttribute('aria-hidden', 'true');
+        ul.appendChild(clone);
+      });
+
+      ul.classList.add('support-marquee-track');
+    });
+  }, [containerRef, isMobile]);
+
+  // 4. Global Click Interception
   useEffect(() => {
     const handleGlobalClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;

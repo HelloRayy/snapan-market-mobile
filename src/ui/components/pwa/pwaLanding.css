@@ -431,11 +431,15 @@ h2[data-styles-preset="srTedcJki"] * {
 .framer-styles-preset-1o3yn0.rich-text-wrapper h3,
 .framer-text.framer-styles-preset-1o3yn0,
 h3[data-styles-preset="wX3pidG6I"],
-h3[data-styles-preset="wX3pidG6I"] * {
-  --framer-font-size: 19px !important;
-  font-size: 19px !important;
-  line-height: 1.35 !important;
-  letter-spacing: -0.02em !important;
+h3[data-styles-preset="wX3pidG6I"] *,
+.framer-cgn049 h3,
+.framer-cgn049 h3 *,
+.framer-1n10pgs h3,
+.framer-1n10pgs h3 * {
+  --framer-font-size: 16px !important;
+  font-size: 16px !important;
+  line-height: 1.45 !important;
+  letter-spacing: -0.01em !important;
 }
 
 /* 🏷️ Feature Tag Pill Spacing */
@@ -556,10 +560,14 @@ h3[data-styles-preset="wX3pidG6I"] * {
   .framer-styles-preset-1o3yn0.rich-text-wrapper h3,
   .framer-text.framer-styles-preset-1o3yn0,
   h3[data-styles-preset="wX3pidG6I"],
-  h3[data-styles-preset="wX3pidG6I"] * {
-    --framer-font-size: 16px !important;
-    font-size: 16px !important;
-    line-height: 1.35 !important;
+  h3[data-styles-preset="wX3pidG6I"] *,
+  .framer-cgn049 h3,
+  .framer-cgn049 h3 *,
+  .framer-1n10pgs h3,
+  .framer-1n10pgs h3 * {
+    --framer-font-size: 14.5px !important;
+    font-size: 14.5px !important;
+    line-height: 1.4 !important;
   }
 
   .framer-sdhxzw {

@@ -180,13 +180,13 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
       ) : (
         /* FEED VARIANT */
         <div className="flex gap-3 items-start min-w-0">
-          <div className="flex flex-col items-center shrink-0">
+          <div className="relative shrink-0">
             <div
               onClick={(e) => {
                 e.stopPropagation();
                 onUserClick?.(item.seller.username || item.seller.name);
               }}
-              className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 cursor-pointer active:scale-95 transition-transform"
+              className="w-[42px] h-[42px] rounded-full overflow-hidden border border-neutral-200/80 shadow-2xs shrink-0 cursor-pointer active:scale-95 transition-transform"
             >
               <img
                 src={item.seller.avatar}
@@ -195,6 +195,12 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
                 decoding="async"
                 className="w-full h-full object-cover"
               />
+            </div>
+            <div
+              className="absolute -bottom-0.5 -right-0.5 w-[18px] h-[18px] bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] rounded-full ring-2 ring-white shadow-xs flex items-center justify-center text-white text-[11px] font-bold select-none pointer-events-none"
+              aria-hidden="true"
+            >
+              +
             </div>
           </div>
 
@@ -211,7 +217,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
               variant="feed"
             />
 
-            <div className="text-base text-slate-900 font-normal leading-snug break-words [overflow-wrap:anywhere]">
+            <div className="text-[15px] text-slate-900 font-normal leading-[1.35] break-words [overflow-wrap:anywhere]">
               <FormattedText text={item.caption} />
               {item.totalThreadParts && item.totalThreadParts > 1 && (
                 <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-500 font-semibold text-[11px] tabular-nums select-none ml-1.5 align-middle">

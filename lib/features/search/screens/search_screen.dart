@@ -92,7 +92,6 @@ class _SearchScreenState extends State<SearchScreen> {
       MaterialPageRoute(
         builder: (_) => PostDetailScreen(
           post: post,
-          onBack: () => Navigator.of(context).pop(),
         ),
       ),
     );
@@ -103,11 +102,11 @@ class _SearchScreenState extends State<SearchScreen> {
     if (_searchQuery.trim().isEmpty) return [];
     final q = _searchQuery.toLowerCase().trim();
     return mockMarketPosts.where((post) {
-      final inTitle = post.title.toLowerCase().contains(q);
+      final inTitle = post.title?.toLowerCase().contains(q) ?? false;
       final inDesc = post.description.toLowerCase().contains(q);
       final inSeller = post.sellerName.toLowerCase().contains(q);
       final inDept = post.department.toLowerCase().contains(q);
-      final inCategory = post.category.toLowerCase().contains(q);
+      final inCategory = post.category?.toLowerCase().contains(q) ?? false;
       return inTitle || inDesc || inSeller || inDept || inCategory;
     }).toList();
   }
@@ -167,11 +166,11 @@ class _SearchScreenState extends State<SearchScreen> {
     // 1. Idle State (No Query) -> Flat Suggested Accounts (No Tren Topik, No Container Card)
     if (!hasQuery) {
       return ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
         children: [
           // Section Heading: "Saran ikuti"
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6.0),
+            padding: const EdgeInsets.only(top: 4.0, bottom: 2.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: const [
@@ -199,12 +198,13 @@ class _SearchScreenState extends State<SearchScreen> {
           // Flat Suggested Accounts List
           ListView.separated(
             shrinkWrap: true,
+            padding: EdgeInsets.zero,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: _visibleSuggestedCount.clamp(0, _accounts.length),
             separatorBuilder: (_, __) => const Divider(
               color: Color(0xFFF1F5F9),
               height: 1.0,
-              thickness: 0.8,
+              thickness: 1.0,
             ),
             itemBuilder: (_, idx) {
               final acc = _accounts[idx];
@@ -344,9 +344,9 @@ class _SearchScreenState extends State<SearchScreen> {
       itemBuilder: (_, idx) {
         final post = matchingPosts[idx];
         return MarketPostCard(
-          post: post,
-          onTap: () => _navigateToPostDetail(post),
-          onUserTap: () => _navigateToProfile(post.sellerUsername),
+          item: post,
+          onPostClick: (_) => _navigateToPostDetail(post),
+          onUserClick: (_) => _navigateToProfile(post.sellerUsername),
         );
       },
     );

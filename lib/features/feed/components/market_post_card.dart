@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -200,7 +201,7 @@ class _MarketPostCardState extends State<MarketPostCard>
         ),
         decoration: const BoxDecoration(
           border: Border(
-            bottom: BorderSide(color: Color(0xFFF1F5F9), width: 0.5),
+            bottom: BorderSide(color: Color(0xFFF1F5F9), width: 1.0),
           ),
         ),
         child: Column(
@@ -209,7 +210,7 @@ class _MarketPostCardState extends State<MarketPostCard>
             // Top Header Row: 36x36 Avatar, Author Name, Verified Badge, Chevron ›, Topic Tag / Class, Timestamp, 3-dots
             _buildDetailHeaderRow(context),
 
-            const SizedBox(height: 10.0),
+            const SizedBox(height: 6.0),
 
             // Full Width Caption Text with Multi-Thread indicator badge
             _buildCaptionText(),
@@ -246,7 +247,7 @@ class _MarketPostCardState extends State<MarketPostCard>
           padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
           decoration: const BoxDecoration(
             border: Border(
-              bottom: BorderSide(color: Color(0xFFF1F5F9), width: 0.5),
+              bottom: BorderSide(color: Color(0xFFF1F5F9), width: 1.0),
             ),
           ),
 
@@ -266,7 +267,7 @@ class _MarketPostCardState extends State<MarketPostCard>
                     // Header Line (Author Name, Verified, Topic/Class, Timestamp, Options)
                     _buildHeaderRow(context),
 
-                    const SizedBox(height: 4.0),
+                    const SizedBox(height: 2.0),
 
                     // Caption Text with Multi-Thread indicator badge
                     _buildCaptionText(),
@@ -297,48 +298,91 @@ class _MarketPostCardState extends State<MarketPostCard>
     );
   }
 
-  /// 36x36px circular avatar with subtle border and shadow
+  /// 42x42px circular avatar with subtle border, shadow, and '+' follow badge
   Widget _buildAuthorAvatar(BuildContext context) {
     return GestureDetector(
       onTap: () {
         widget.onUserClick?.call(widget.item.seller.username ?? widget.item.seller.name);
       },
-      child: Container(
-        width: 36.0,
-        height: 36.0,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x0D000000),
-              blurRadius: 4.0,
-              offset: Offset(0, 1),
-            ),
-          ],
-        ),
-        child: ClipOval(
-          child: Image.network(
-            widget.item.seller.avatar,
-            width: 36.0,
-            height: 36.0,
-            fit: BoxFit.cover,
-            errorBuilder: (_, _, _) => Container(
-              color: AppColors.primaryPastel,
-              child: Center(
-                child: Text(
-                  widget.item.seller.name.isNotEmpty
-                      ? widget.item.seller.name[0].toUpperCase()
-                      : 'U',
-                  style: const TextStyle(
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
+      child: SizedBox(
+        width: 44.0,
+        height: 44.0,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              width: 42.0,
+              height: 42.0,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x0D000000),
+                    blurRadius: 4.0,
+                    offset: Offset(0, 1),
+                  ),
+                ],
+              ),
+              child: ClipOval(
+                child: Image.network(
+                  widget.item.seller.avatar,
+                  width: 42.0,
+                  height: 42.0,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => Container(
+                    color: AppColors.primaryPastel,
+                    child: Center(
+                      child: Text(
+                        widget.item.seller.name.isNotEmpty
+                            ? widget.item.seller.name[0].toUpperCase()
+                            : 'U',
+                        style: const TextStyle(
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: Container(
+                width: 17.5,
+                height: 17.5,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFF3B82F6), // Kumo Blue 500
+                      Color(0xFF1D64EC), // Kumo Primary Blue
+                    ],
+                  ),
+                  border: Border.all(color: Colors.white, width: 1.8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF1D64EC).withValues(alpha: 0.25),
+                      blurRadius: 3.0,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.add,
+                    size: 11.5,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -348,36 +392,34 @@ class _MarketPostCardState extends State<MarketPostCard>
   Widget _buildHeaderRow(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Left Side: Expanded flex container for author, badge, topic/class
         Expanded(
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Author Name (flex: 3 for priority over topic tag)
-              Flexible(
-                flex: 3,
-                child: GestureDetector(
-                  onTap: () {
-                    widget.onUserClick?.call(widget.item.seller.username ?? widget.item.seller.name);
-                  },
-                  child: Text(
-                    widget.item.seller.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 14.5,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF0F172A),
-                      letterSpacing: -0.2,
-                    ),
+              // 1. Author Name (Primary Priority - Takes natural width without being truncated by topic)
+              GestureDetector(
+                onTap: () {
+                  widget.onUserClick?.call(widget.item.seller.username ?? widget.item.seller.name);
+                },
+                child: Text(
+                  widget.item.seller.name,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF0F172A),
+                    letterSpacing: -0.2,
+                    height: 1.15,
                   ),
                 ),
               ),
-              // Verified Checkmark Badge
+
+              // Verified Checkmark Badge (Always attached to Name)
               if (widget.item.seller.isVerified) ...[
-                const SizedBox(width: 3.5),
+                const SizedBox(width: 4.0),
                 const Icon(
                   Icons.verified_rounded,
                   size: 15.5,
@@ -385,15 +427,15 @@ class _MarketPostCardState extends State<MarketPostCard>
                 ),
               ],
 
-              // Topic Tag OR Class Group
+              // 2. Secondary Priority: Topic Tag (If exists -> class removed; topic takes remaining width and truncates)
               if (widget.item.topicTag != null) ...[
-                const SizedBox(width: 3.0),
+                const SizedBox(width: 4.0),
                 const Icon(
                   Icons.chevron_right_rounded,
                   size: 14.0,
                   color: Color(0xFF94A3B8),
                 ),
-                const SizedBox(width: 1.0),
+                const SizedBox(width: 4.0),
                 if (widget.item.isOfficialTopic) ...[
                   if (widget.item.topicIcon == 'presentation' || widget.item.topicIcon == 'party-popper')
                     const Icon(
@@ -406,10 +448,9 @@ class _MarketPostCardState extends State<MarketPostCard>
                       size: 13.5,
                       color: Color(0xFF1D64EC),
                     ),
-                  const SizedBox(width: 2.0),
+                  const SizedBox(width: 4.0),
                 ],
                 Flexible(
-                  flex: 2,
                   child: GestureDetector(
                     onTap: () => widget.onTopicClick?.call(widget.item.topicTag!),
                     child: Text(
@@ -422,14 +463,15 @@ class _MarketPostCardState extends State<MarketPostCard>
                         color: widget.item.isOfficialTopic
                             ? const Color(0xFF1D64EC)
                             : const Color(0xFF0F172A),
+                        height: 1.15,
                       ),
                     ),
                   ),
                 ),
-              ] else ...[
+              ] else if (widget.item.seller.name.length <= 14 && widget.item.seller.classGroup.isNotEmpty) ...[
+                // 3. Last Priority: Class Group (Only when NO topic AND name is short <= 14 chars)
                 const SizedBox(width: 4.0),
                 Flexible(
-                  flex: 2,
                   child: Text(
                     widget.item.seller.classGroup,
                     maxLines: 1,
@@ -438,6 +480,7 @@ class _MarketPostCardState extends State<MarketPostCard>
                       fontSize: 13.0,
                       fontWeight: FontWeight.normal,
                       color: Color(0xFF94A3B8),
+                      height: 1.15,
                     ),
                   ),
                 ),
@@ -456,27 +499,27 @@ class _MarketPostCardState extends State<MarketPostCard>
             Text(
               formatSmartTimestamp(widget.item.timestamp),
               style: const TextStyle(
-                fontSize: 12.0,
+                fontSize: 13.0,
                 fontWeight: FontWeight.normal,
-                color: Color(0xFF64748B),
+                color: Color(0xFF94A3B8),
+                height: 1.15,
+                fontFeatures: [FontFeature.tabularFigures()],
               ),
             ),
-            const SizedBox(width: 2.0),
+            const SizedBox(width: 4.0),
             GestureDetector(
               onTapDown: (details) => _showOptionsMenu(context, details.globalPosition),
               behavior: HitTestBehavior.opaque,
               child: Container(
-                width: 36.0,
-                height: 36.0,
+                padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
                 alignment: Alignment.center,
                 child: const Icon(
                   Icons.more_horiz_rounded,
-                  size: 17.0,
-                  color: Color(0xFF64748B),
+                  size: 16.0,
+                  color: Color(0xFF94A3B8),
                 ),
               ),
             ),
-
           ],
         ),
       ],
@@ -497,39 +540,44 @@ class _MarketPostCardState extends State<MarketPostCard>
             children: [
               _buildAuthorAvatar(context),
               const SizedBox(width: 10.0),
-              Flexible(
-                child: GestureDetector(
-                  onTap: () {
-                    widget.onUserClick?.call(widget.item.seller.username ?? widget.item.seller.name);
-                  },
-                  child: Text(
-                    widget.item.seller.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 14.5,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF0F172A),
-                    ),
+
+              // 1. Author Name (Primary Priority - Takes natural width)
+              GestureDetector(
+                onTap: () {
+                  widget.onUserClick?.call(widget.item.seller.username ?? widget.item.seller.name);
+                },
+                child: Text(
+                  widget.item.seller.name,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF0F172A),
+                    letterSpacing: -0.2,
+                    height: 1.15,
                   ),
                 ),
               ),
+
+              // Verified Checkmark Badge (Always attached to Name)
               if (widget.item.seller.isVerified) ...[
-                const SizedBox(width: 3.5),
+                const SizedBox(width: 4.0),
                 const Icon(
                   Icons.verified_rounded,
                   size: 15.0,
                   color: AppColors.primary,
                 ),
               ],
+
+              // 2. Secondary Priority: Topic Tag (If exists -> class removed; topic takes remaining width and truncates)
               if (widget.item.topicTag != null) ...[
                 const SizedBox(width: 4.0),
                 const Icon(
                   Icons.chevron_right_rounded,
-                  size: 16.0,
+                  size: 14.0,
                   color: Color(0xFF94A3B8),
                 ),
-                const SizedBox(width: 2.0),
+                const SizedBox(width: 4.0),
                 if (widget.item.isOfficialTopic) ...[
                   if (widget.item.topicIcon == 'presentation')
                     const PresentationTopicGlyph()
@@ -552,12 +600,14 @@ class _MarketPostCardState extends State<MarketPostCard>
                         color: widget.item.isOfficialTopic
                             ? AppColors.primary
                             : const Color(0xFF0F172A),
+                        height: 1.15,
                       ),
                     ),
                   ),
                 ),
-              ] else ...[
-                const SizedBox(width: 6.0),
+              ] else if (widget.item.seller.name.length <= 14 && widget.item.seller.classGroup.isNotEmpty) ...[
+                // 3. Last Priority: Class Group (Only when NO topic AND name is short <= 14 chars)
+                const SizedBox(width: 4.0),
                 Flexible(
                   child: Text(
                     widget.item.seller.classGroup,
@@ -567,6 +617,7 @@ class _MarketPostCardState extends State<MarketPostCard>
                       fontSize: 13.0,
                       fontWeight: FontWeight.normal,
                       color: Color(0xFF94A3B8),
+                      height: 1.15,
                     ),
                   ),
                 ),
@@ -577,7 +628,7 @@ class _MarketPostCardState extends State<MarketPostCard>
 
         const SizedBox(width: 8.0),
 
-        // Right Side: Timestamp + 3-dots button (Flush right)
+        // Right Side: Timestamp + 3-dots button
         Row(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -585,27 +636,26 @@ class _MarketPostCardState extends State<MarketPostCard>
             Text(
               formatSmartTimestamp(widget.item.timestamp),
               style: const TextStyle(
-                fontSize: 12.0,
+                fontSize: 13.0,
                 fontWeight: FontWeight.normal,
-                color: Color(0xFF64748B),
+                color: Color(0xFF94A3B8),
+                height: 1.15,
               ),
             ),
-            const SizedBox(width: 2.0),
+            const SizedBox(width: 4.0),
             GestureDetector(
               onTapDown: (details) => _showOptionsMenu(context, details.globalPosition),
               behavior: HitTestBehavior.opaque,
               child: Container(
-                width: 36.0,
-                height: 36.0,
+                padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
                 alignment: Alignment.center,
                 child: const Icon(
                   Icons.more_horiz_rounded,
-                  size: 17.0,
-                  color: Color(0xFF64748B),
+                  size: 16.0,
+                  color: Color(0xFF94A3B8),
                 ),
               ),
             ),
-
           ],
         ),
       ],
@@ -647,7 +697,7 @@ class _MarketPostCardState extends State<MarketPostCard>
       ),
       style: const TextStyle(
         fontSize: 14.5,
-        height: 1.35,
+        height: 1.25,
         fontWeight: FontWeight.normal,
         color: Color(0xFF0F172A),
       ),
@@ -831,6 +881,7 @@ class _MarketPostCardState extends State<MarketPostCard>
                   fontSize: 13.0,
                   fontWeight: _isLiked ? FontWeight.w700 : FontWeight.w500,
                   color: _isLiked ? const Color(0xFFE11D48) : const Color(0xFF334155),
+                  fontFeatures: const [FontFeature.tabularFigures()],
                 ),
               ),
             ],
@@ -862,6 +913,7 @@ class _MarketPostCardState extends State<MarketPostCard>
                   fontSize: 13.0,
                   fontWeight: FontWeight.w500,
                   color: Color(0xFF334155),
+                  fontFeatures: [FontFeature.tabularFigures()],
                 ),
               ),
             ],
@@ -898,6 +950,7 @@ class _MarketPostCardState extends State<MarketPostCard>
                   fontSize: 13.0,
                   fontWeight: _isReposted ? FontWeight.w700 : FontWeight.w500,
                   color: _isReposted ? const Color(0xFF10B981) : const Color(0xFF334155),
+                  fontFeatures: const [FontFeature.tabularFigures()],
                 ),
               ),
             ],

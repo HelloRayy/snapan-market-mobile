@@ -505,13 +505,18 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                     <button
                       type="button"
                       onClick={(e) => toggleFollow(account.id, e)}
-                      className={`shrink-0 px-4 py-1.5 rounded-xl text-[13.5px] font-semibold transition-all active:scale-95 cursor-pointer leading-tight mt-0.5 ${
+                      className={`relative shrink-0 w-[88px] h-[34px] rounded-[11px] text-[13px] font-semibold transition-all active:scale-[0.94] flex items-center justify-center cursor-pointer select-none overflow-hidden ${
                         isFollowing
-                          ? 'border border-neutral-200 text-neutral-400 bg-neutral-50 hover:bg-neutral-100'
-                          : 'border border-neutral-300 text-slate-900 bg-white hover:bg-neutral-100 shadow-2xs'
+                          ? 'border border-neutral-300 text-slate-700 bg-white hover:bg-neutral-50 shadow-2xs font-semibold'
+                          : 'border border-zinc-900 text-white bg-gradient-to-b from-zinc-800 to-zinc-950 hover:from-zinc-700 shadow-md shadow-black/25 font-bold'
                       }`}
                     >
-                      {isFollowing ? 'Mengikuti' : 'Ikuti'}
+                      {!isFollowing && (
+                        <span className="absolute inset-x-0 top-0 h-[1.2px] bg-white/35 pointer-events-none" />
+                      )}
+                      <span className="relative z-10 tracking-tight">
+                        {isFollowing ? 'Mengikuti' : 'Ikuti'}
+                      </span>
                     </button>
                   </div>
                 );
@@ -672,13 +677,18 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                           <button
                             type="button"
                             onClick={(e) => toggleFollow(account.id, e)}
-                            className={`shrink-0 px-4 py-1.5 rounded-xl text-[13.5px] font-semibold transition-all active:scale-95 cursor-pointer leading-tight mt-0.5 ${
+                            className={`relative shrink-0 w-[88px] h-[34px] rounded-[11px] text-[13px] font-semibold transition-all active:scale-[0.94] flex items-center justify-center cursor-pointer select-none overflow-hidden ${
                               isFollowing
-                                ? 'border border-neutral-200 text-neutral-400 bg-neutral-50 hover:bg-neutral-100'
-                                : 'border border-neutral-300 text-slate-900 bg-white hover:bg-neutral-100 shadow-2xs'
+                                ? 'border border-neutral-300 text-slate-700 bg-white hover:bg-neutral-50 shadow-2xs font-semibold'
+                                : 'border border-zinc-900 text-white bg-gradient-to-b from-zinc-800 to-zinc-950 hover:from-zinc-700 shadow-md shadow-black/25 font-bold'
                             }`}
                           >
-                            {isFollowing ? 'Mengikuti' : 'Ikuti'}
+                            {!isFollowing && (
+                              <span className="absolute inset-x-0 top-0 h-[1.2px] bg-white/35 pointer-events-none" />
+                            )}
+                            <span className="relative z-10 tracking-tight">
+                              {isFollowing ? 'Mengikuti' : 'Ikuti'}
+                            </span>
                           </button>
                         </div>
                       );

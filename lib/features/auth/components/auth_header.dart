@@ -35,7 +35,7 @@ class AuthHeader extends StatelessWidget {
                 ),
                 boxShadow: const [
                   BoxShadow(
-                    color: Color(0x20000000),
+                    color: Color(0x0D000000),
                     blurRadius: 6,
                     offset: Offset(0, 2),
                   ),

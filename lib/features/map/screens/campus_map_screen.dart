@@ -92,7 +92,11 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
                             shape: BoxShape.circle,
                             border: Border.all(color: const Color(0xFFE2E8F0), width: 0.8),
                             boxShadow: const [
-                              BoxShadow(color: Color(0x0F000000), blurRadius: 10.0),
+                              BoxShadow(
+                                color: Color(0x0A000000),
+                                blurRadius: 8.0,
+                                offset: Offset(0, 2),
+                              ),
                             ],
                           ),
                           child: IconButton(
@@ -109,7 +113,11 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
                             borderRadius: BorderRadius.circular(16.0),
                             border: Border.all(color: const Color(0xFFE2E8F0), width: 0.8),
                             boxShadow: const [
-                              BoxShadow(color: Color(0x0F000000), blurRadius: 10.0),
+                              BoxShadow(
+                                color: Color(0x0A000000),
+                                blurRadius: 8.0,
+                                offset: Offset(0, 2),
+                              ),
                             ],
                           ),
                           child: Row(
@@ -138,7 +146,11 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
                         borderRadius: BorderRadius.circular(20.0),
                         border: Border.all(color: const Color(0xFFE2E8F0), width: 0.8),
                         boxShadow: const [
-                          BoxShadow(color: Color(0x0F000000), blurRadius: 10.0),
+                          BoxShadow(
+                            color: Color(0x0A000000),
+                            blurRadius: 8.0,
+                            offset: Offset(0, 2),
+                          ),
                         ],
                       ),
                       child: Row(
@@ -291,8 +303,8 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
                   // Action Button: Select Location
                   KumoButton(
                     text: "Pilih Titik COD Ini",
-                    icon: Icons.check_circle_outline_rounded,
-                    onTap: () {
+                    iconLeft: const Icon(Icons.check_circle_outline_rounded, size: 18.0, color: Colors.white),
+                    onPressed: () {
                       if (widget.onSelectLocation != null) {
                         widget.onSelectLocation!(
                           _selectedRoom.name,

@@ -7,9 +7,11 @@ import "package:snapan_market/features/checkout/components/checkout_location_car
 import "package:snapan_market/features/checkout/components/checkout_price_breakdown.dart";
 import "package:snapan_market/features/checkout/components/checkout_product_header.dart";
 import "package:snapan_market/features/checkout/components/checkout_seller_card.dart";
-import "package:snapan_market/features/checkout/models/checkout_models.dart";
 import "package:snapan_market/features/feed/models/market_post_model.dart";
+import "package:snapan_market/features/locations/models/campus_location_spot.dart";
+import "package:snapan_market/features/locations/screens/campus_locations_picker_screen.dart";
 import "package:snapan_market/features/map/screens/campus_map_screen.dart";
+import "package:snapan_market/features/messages/models/conversation_model.dart";
 import "package:snapan_market/features/messages/screens/chat_conversation_screen.dart";
 import "package:snapan_market/features/profile/screens/profile_screen.dart";
 
@@ -29,14 +31,14 @@ class CheckoutScreen extends StatefulWidget {
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   bool _isLiked = false;
-  late CheckoutSpot _selectedSpot;
+  late CampusLocationSpot _selectedSpot;
   final TextEditingController _noteController = TextEditingController();
   bool _isOrdering = false;
 
   @override
   void initState() {
     super.initState();
-    _selectedSpot = kDefaultCampusSpots[0];
+    _selectedSpot = kCampusLocationSpots[0];
   }
 
   @override
@@ -45,22 +47,46 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     super.dispose();
   }
 
+  void _openLocationPicker() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => CampusLocationsPickerScreen(
+          selectedSpot: _selectedSpot,
+          onSpotSelected: (spot) {
+            setState(() => _selectedSpot = spot);
+          },
+        ),
+      ),
+    );
+  }
+
   void _openMapPicker() {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => CampusMapScreen(
           onBack: () => Navigator.of(context).pop(),
           onSelectLocation: (roomName, floor, category) {
-            setState(() {
-              _selectedSpot = CheckoutSpot(
+            final matched = kCampusLocationSpots.firstWhere(
+              (s) => s.name.toLowerCase().contains(roomName.toLowerCase()) ||
+                     roomName.toLowerCase().contains(s.name.toLowerCase()),
+              orElse: () => CampusLocationSpot(
                 id: roomName.toLowerCase().replaceAll(" ", "-"),
                 name: roomName,
-                building: "Area SMKN 8",
+                code: roomName.toUpperCase(),
+                buildingName: "Area SMKN 8 Semarang",
                 floor: floor,
+                category: LocationCategory.lobby,
                 categoryLabel: category,
-                hint: "Titik temu yang dipilih dari denah 2D sekolah.",
-              );
-            });
+                description: "Titik temu yang dipilih dari denah 2D sekolah.",
+                codSafetyHint: "Janjian saat jam istirahat atau waktu luang.",
+                bestTime: "Jam istirahat sekolah",
+                pinPosition: const Offset(500, 400),
+                iconData: Icons.place_rounded,
+                themeColor: const Color(0xFF3D38F5),
+              ),
+            );
+
+            setState(() => _selectedSpot = matched);
             Navigator.of(context).pop();
           },
         ),
@@ -130,7 +156,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
               const SizedBox(height: 8.0),
               Text(
-                "Temui ${widget.post.sellerName} di ${_selectedSpot.name} saat jam istirahat sekolah.",
+                "Temui ${widget.post.sellerName} di ${_selectedSpot.name} (${_selectedSpot.buildingName}) saat jam istirahat sekolah.",
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 13.5,
@@ -144,17 +170,30 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               // Action 1: Chat Seller
               KumoButton(
                 text: "Kirim Pesan ke Penjual",
-                icon: Icons.chat_bubble_outline_rounded,
-                onTap: () {
+                iconLeft: const Icon(Icons.chat_bubble_outline_rounded, size: 18.0, color: Colors.white),
+                onPressed: () {
                   Navigator.of(ctx).pop();
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => ChatConversationScreen(
-                        conversationId: "conv-${widget.post.id}",
-                        recipientName: widget.post.sellerName,
-                        recipientUsername: widget.post.sellerUsername,
-                        recipientAvatar: widget.post.sellerAvatar,
-                        productCardPost: widget.post,
+                        conversation: ConversationModel(
+                          id: "conv-${widget.post.id}",
+                          user: ConversationUser(
+                            name: widget.post.sellerName,
+                            username: widget.post.sellerUsername,
+                            avatar: widget.post.sellerAvatar,
+                            classGroup: widget.post.department,
+                            isVerified: widget.post.seller.isVerified,
+                          ),
+                          lastMessage: "Halo, saya tertarik dengan ${widget.post.title ?? 'produk ini'}",
+                          timestamp: "Baru saja",
+                          isSeller: true,
+                          productContext: ProductContext(
+                            title: widget.post.title ?? "Produk",
+                            price: formatRupiah(widget.post.price ?? 0),
+                            image: widget.post.imageUrls.isNotEmpty ? widget.post.imageUrls.first : null,
+                          ),
+                        ),
                       ),
                     ),
                   );
@@ -163,21 +202,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               const SizedBox(height: 10.0),
 
               // Action 2: Back to Home
-              OutlinedButton(
+              KumoButton.secondary(
+                text: "Kembali ke Beranda",
+                width: double.infinity,
                 onPressed: () {
                   Navigator.of(ctx).pop();
                   Navigator.of(context).pop();
                 },
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF0F172A),
-                  side: const BorderSide(color: Color(0xFFE2E8F0), width: 1.0),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.0)),
-                  minimumSize: const Size(double.infinity, 48.0),
-                ),
-                child: const Text(
-                  "Kembali ke Beranda",
-                  style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w700),
-                ),
               ),
             ],
           ),
@@ -249,7 +280,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 // Hero Image Carousel
                 CheckoutHeroImage(
                   images: widget.post.imageUrls,
-                  title: widget.post.title,
+                  title: widget.post.title ?? "Produk",
                 ),
                 const SizedBox(height: 14.0),
 
@@ -290,11 +321,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (_) => ChatConversationScreen(
-                                conversationId: "conv-${widget.post.id}",
-                                recipientName: widget.post.sellerName,
-                                recipientUsername: widget.post.sellerUsername,
-                                recipientAvatar: widget.post.sellerAvatar,
-                                productCardPost: widget.post,
+                                conversation: ConversationModel(
+                                  id: "conv-${widget.post.id}",
+                                  user: ConversationUser(
+                                    name: widget.post.sellerName,
+                                    username: widget.post.sellerUsername,
+                                    avatar: widget.post.sellerAvatar,
+                                    classGroup: widget.post.department,
+                                    isVerified: widget.post.seller.isVerified,
+                                  ),
+                                  lastMessage: "Halo, saya tertarik dengan ${widget.post.title ?? 'produk ini'}",
+                                  timestamp: "Baru saja",
+                                  isSeller: true,
+                                  productContext: ProductContext(
+                                    title: widget.post.title ?? "Produk",
+                                    price: formatRupiah(widget.post.price ?? 0),
+                                    image: widget.post.imageUrls.isNotEmpty ? widget.post.imageUrls.first : null,
+                                  ),
+                                ),
                               ),
                             ),
                           );
@@ -302,9 +346,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       ),
                       const SizedBox(height: 12.0),
 
-                      // Location Card with Blueprint Picker
+                      // Location Card with Blueprint & Spot Selector
                       CheckoutLocationCard(
                         selectedSpot: _selectedSpot,
+                        onSelectSpotTap: _openLocationPicker,
                         onSelectMapTap: _openMapPicker,
                       ),
                       const SizedBox(height: 12.0),
@@ -320,43 +365,40 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              "Catatan untuk Penjual (Opsional)",
-                              style: TextStyle(
-                                fontSize: 13.5,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF0F172A),
-                                letterSpacing: -0.2,
-                              ),
+                            Row(
+                              children: const [
+                                Icon(Icons.edit_note_rounded, size: 18.0, color: Color(0xFF334155)),
+                                SizedBox(width: 8.0),
+                                Text(
+                                  "Catatan untuk Penjual",
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFF0F172A),
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 8.0),
+                            const SizedBox(height: 10.0),
                             TextField(
                               controller: _noteController,
-                              maxLines: 3,
-                              style: const TextStyle(
-                                fontSize: 13.5,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF0F172A),
-                              ),
+                              maxLines: 2,
+                              style: const TextStyle(fontSize: 13.0, color: Color(0xFF0F172A)),
                               decoration: InputDecoration(
-                                hintText: "Contoh: Bawa pas jam istirahat pertama di meja kantin nomor 4 ya kak.",
-                                hintStyle: const TextStyle(
-                                  fontSize: 12.5,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color(0xFF94A3B8),
-                                ),
+                                hintText: "Misal: Aku pakai jaket hoodie abu-abu di meja pojok...",
+                                hintStyle: const TextStyle(fontSize: 12.5, color: Color(0xFF94A3B8)),
                                 filled: true,
                                 fillColor: const Color(0xFFF8FAFC),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12.0),
+                                  borderRadius: BorderRadius.circular(10.0),
                                   borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 0.8),
                                 ),
                                 enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12.0),
+                                  borderRadius: BorderRadius.circular(10.0),
                                   borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 0.8),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12.0),
+                                  borderRadius: BorderRadius.circular(10.0),
                                   borderSide: const BorderSide(color: Color(0xFF3D38F5), width: 1.2),
                                 ),
                                 contentPadding: const EdgeInsets.all(12.0),
@@ -367,8 +409,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       ),
                       const SizedBox(height: 12.0),
 
-                      // Price Breakdown
-                      CheckoutPriceBreakdown(productPrice: widget.post.price),
+                      // Price Breakdown Card
+                      CheckoutPriceBreakdown(
+                        price: widget.post.price ?? 0,
+                        originalPrice: widget.post.originalPrice,
+                      ),
                       const SizedBox(height: 24.0),
                     ],
                   ),
@@ -377,50 +422,84 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ),
           ),
 
-          // 3. Sticky Bottom Buy Dock Bar
+          // 3. Sticky Bottom CTA Bar
           Container(
-            color: Colors.white,
-            padding: EdgeInsets.only(
-              left: 16.0,
-              right: 16.0,
-              top: 12.0,
-              bottom: bottomPadding > 0 ? bottomPadding + 8.0 : 14.0,
+            padding: EdgeInsets.fromLTRB(
+              16.0,
+              12.0,
+              16.0,
+              bottomPadding > 0 ? bottomPadding + 8.0 : 16.0,
             ),
-            decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: Color(0xFFF1F5F9), width: 0.8)),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: const Border(top: BorderSide(color: Color(0xFFF1F5F9), width: 0.8)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 10.0,
+                  offset: const Offset(0, -4),
+                ),
+              ],
             ),
             child: Row(
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      "Total COD",
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF64748B),
-                      ),
-                    ),
-                    Text(
-                      formatRupiah(widget.post.price),
-                      style: const TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w900,
-                        color: Color(0xFF3D38F5),
-                        letterSpacing: -0.3,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 16.0),
-
+                // Total Price Column
                 Expanded(
-                  child: KumoButton(
-                    text: _isOrdering ? "Memproses..." : "Pesankan Sekarang",
-                    icon: Icons.shopping_bag_outlined,
-                    onTap: _isOrdering ? null : _handleOrderSubmit,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Total Pembayaran (COD)",
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF64748B),
+                        ),
+                      ),
+                      const SizedBox(height: 2.0),
+                      Text(
+                        formatRupiah(widget.post.price ?? 0),
+                        style: const TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF0F172A),
+                          letterSpacing: -0.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Order Button
+                SizedBox(
+                  width: 170.0,
+                  height: 48.0,
+                  child: ElevatedButton(
+                    onPressed: _isOrdering ? null : _handleOrderSubmit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF3D38F5),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.0)),
+                    ),
+                    child: _isOrdering
+                        ? const SizedBox(
+                            width: 20.0,
+                            height: 20.0,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : const Text(
+                            "Buat Pesanan COD",
+                            style: TextStyle(
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.2,
+                            ),
+                          ),
                   ),
                 ),
               ],

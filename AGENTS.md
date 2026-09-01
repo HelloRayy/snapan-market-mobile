@@ -60,6 +60,26 @@ The application is built on **React 18 + TypeScript + Vite 5 + Tailwind CSS v4 +
 
 ## Key Directories
 
+### 1. Flutter Mobile App (`lib/`)
+- **`lib/main.dart`**: Global app bootstrap, unified GoogleFonts Inter typography theme, and root widget tree.
+- **`lib/core/`**:
+  - `theme/`: Global color tokens (`app_colors.dart`).
+  - `components/`: Atomic cross-screen widgets (`kumo_button.dart`).
+  - `utils/`: Formatters, string helpers, and rupiah formatters.
+  - `navigation/`: Custom page route transitions (`app_slide_page_route.dart`).
+- **`lib/features/`**: Feature-first modular architecture:
+  - `feed/`: Home feed timeline, post cards, post detail screens, and models.
+  - `locations/`: Campus COD meeting points (`models/campus_location_spot.dart`, `components/`, `screens/campus_locations_picker_screen.dart`).
+  - `checkout/`: In-app checkout flow, price breakdowns, and seller cards.
+  - `map/`: 2D blueprint interactive campus map (`campus_map_screen.dart`, `campus_2d_blueprint_painter.dart`).
+  - `messages/`: Direct messages & room chat (`chat_conversation_screen.dart`, `chat_product_card.dart`).
+  - `search/`: Semantic search & account discovery (`search_screen.dart`).
+  - `create_post/`: Multi-type thread & product creator modal with media toolbar.
+  - `profile/`: Student profiles, stats, and edit profile screens.
+  - `activity/`: Notifications and activity feeds.
+  - `auth/` & `onboarding/`: Authentication & onboarding walkthrough carousels.
+
+### 2. React 18 PWA (`src/`)
 - **`src/ui/pages/`**: Full screen page views (`HomePage.tsx`, `PostDetailPage.tsx`, `ProfilePage.tsx`, `SearchPage.tsx`, `DirectMessagesPage.tsx`, `CampusMapPage.tsx`, `CheckoutPage.tsx`).
 - **`src/ui/components/`**:
   - `ui/`: Atomic reusable primitives (`Button.tsx`, `Card.tsx`, `Input.tsx`, `Badge.tsx`, `ToastNotification.tsx`, `ConfirmActionModal.tsx`, `chat-bubble.tsx`).

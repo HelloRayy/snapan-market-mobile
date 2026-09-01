@@ -2,12 +2,19 @@ import "package:flutter/material.dart";
 import "package:snapan_market/core/utils/formatters.dart";
 
 class CheckoutPriceBreakdown extends StatelessWidget {
-  final int productPrice;
+  final int price;
+  final int? originalPrice;
 
-  const CheckoutPriceBreakdown({super.key, required this.productPrice});
+  const CheckoutPriceBreakdown({
+    super.key,
+    required this.price,
+    this.originalPrice,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final hasDiscount = originalPrice != null && originalPrice! > price;
+    final discountAmount = hasDiscount ? originalPrice! - price : 0;
     return Container(
       padding: const EdgeInsets.all(14.0),
       decoration: BoxDecoration(
@@ -34,9 +41,19 @@ class CheckoutPriceBreakdown extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text("Harga Barang", style: TextStyle(fontSize: 12.5, color: Color(0xFF64748B))),
-              Text(formatRupiah(productPrice), style: const TextStyle(fontSize: 13.0, fontWeight: FontWeight.w600, color: Color(0xFF0F172A))),
+              Text(formatRupiah(price), style: const TextStyle(fontSize: 13.0, fontWeight: FontWeight.w600, color: Color(0xFF0F172A))),
             ],
           ),
+          if (hasDiscount) ...[
+            const SizedBox(height: 6.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("Potongan Diskon", style: TextStyle(fontSize: 12.5, color: Color(0xFFEA580C))),
+                Text("-${formatRupiah(discountAmount)}", style: const TextStyle(fontSize: 13.0, fontWeight: FontWeight.w700, color: Color(0xFFEA580C))),
+              ],
+            ),
+          ],
           const SizedBox(height: 6.0),
 
           // Admin Fee Row
@@ -57,7 +74,7 @@ class CheckoutPriceBreakdown extends StatelessWidget {
             children: [
               const Text("Total Bayar di Lokasi", style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
               Text(
-                formatRupiah(productPrice),
+                formatRupiah(price),
                 style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w900, color: Color(0xFF3D38F5)),
               ),
             ],

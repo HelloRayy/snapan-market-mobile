@@ -1,6 +1,7 @@
+import 'package:flutter/foundation.dart';
+
 typedef MarketPost = MarketPostModel;
 const mockMarketPosts = kMockMarketPosts;
-import 'package:flutter/foundation.dart';
 
 /// Model representing a seller or author of a post
 @immutable

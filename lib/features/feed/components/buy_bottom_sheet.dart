@@ -63,9 +63,9 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
         boxShadow: [
           BoxShadow(
-            color: Color(0x26000000),
-            blurRadius: 30.0,
-            offset: Offset(0, -8),
+            color: Color(0x0F000000),
+            blurRadius: 20.0,
+            offset: Offset(0, -4),
           ),
         ],
       ),

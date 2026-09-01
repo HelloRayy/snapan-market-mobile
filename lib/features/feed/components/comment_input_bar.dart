@@ -195,9 +195,9 @@ class _CommentInputBarState extends State<CommentInputBar> {
                     border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
                     boxShadow: const [
                       BoxShadow(
-                        color: Color(0x14000000),
-                        blurRadius: 16.0,
-                        offset: Offset(0, 4),
+                        color: Color(0x08000000),
+                        blurRadius: 8.0,
+                        offset: Offset(0, 2),
                       ),
                     ],
                   ),

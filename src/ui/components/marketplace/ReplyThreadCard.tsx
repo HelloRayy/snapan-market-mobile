@@ -242,28 +242,28 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
         >
           {/* Header Row: Name + Verified + (Topic OR Class) + Timestamp + More Options (...) */}
           <div className="flex items-center justify-between gap-2 min-w-0">
-            <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+            <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden leading-none">
+              {/* 1. Author Name (Primary Priority - Shrink 0, never truncated before secondary elements) */}
               <span
                 onClick={(e) => {
                   e.stopPropagation();
                   onUserClick?.(parentPost.seller.username || parentPost.seller.name);
                 }}
-                className="font-semibold text-[15.5px] text-slate-900 truncate hover:underline shrink-1 max-w-[45%] cursor-pointer"
+                className="font-semibold text-[15px] text-slate-900 tracking-tight shrink-0 hover:underline cursor-pointer leading-none"
               >
                 {parentPost.seller.name}
               </span>
+
+              {/* Verified Badge */}
               {parentPost.seller.isVerified && (
-                <ClickableVerifiedBadge sellerName={parentPost.seller.name} className="w-[17.5px] h-[17.5px] shrink-0" />
+                <ClickableVerifiedBadge sellerName={parentPost.seller.name} className="w-[15px] h-[15px] shrink-0" />
               )}
 
+              {/* 2. Secondary Priority: Topic Tag */}
               {parentPost.topicTag ? (
-                <div className="flex items-center gap-x-1 shrink-1 min-w-0 overflow-hidden ml-0.5 h-[21px] leading-snug">
-                  {/* Subtle Grey Chevron Arrow Separator */}
-                  <span className="h-[21px] leading-snug flex items-center">
-                    <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2] shrink-0" />
-                  </span>
+                <div className="flex items-center gap-1 min-w-0 flex-1 overflow-hidden leading-none">
+                  <ChevronRight className="w-3 h-3 text-neutral-400 stroke-[2.5] shrink-0" />
 
-                  {/* Render special blue icon if official topic */}
                   {parentPost.isOfficialTopic && (
                     parentPost.topicIcon === 'presentation' || parentPost.topicIcon === 'party-popper' ? (
                       <PartyPopper className="w-3.5 h-3.5 text-[#1d64ec] stroke-[2.2] shrink-0" />
@@ -278,17 +278,20 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
                       e.stopPropagation();
                       onTopicClick?.(parentPost.topicTag!);
                     }}
-                    className={`font-semibold text-base h-[21px] leading-snug transition-colors cursor-pointer truncate max-w-[135px] sm:max-w-[200px] flex items-center ${
+                    className={`font-semibold text-[15px] tracking-tight leading-none transition-colors cursor-pointer truncate flex-1 min-w-0 text-left ${
                       parentPost.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-900 hover:underline'
                     }`}
                   >
-                    <span className="leading-snug">{parentPost.topicTag}</span>
+                    <span className="truncate">{parentPost.topicTag}</span>
                   </button>
                 </div>
               ) : (
-                <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
-                  {parentPost.seller.classGroup}
-                </span>
+                /* 3. Last Priority: Class Group */
+                parentPost.seller.name.length <= 14 && parentPost.seller.classGroup && (
+                  <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 flex-1 leading-none">
+                    {parentPost.seller.classGroup}
+                  </span>
+                )
               )}
             </div>
 

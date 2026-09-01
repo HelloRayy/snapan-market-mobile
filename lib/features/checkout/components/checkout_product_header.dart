@@ -23,7 +23,7 @@ class CheckoutProductHeader extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8.0),
               ),
               child: Text(
-                post.category.isNotEmpty ? post.category : "Karya Siswa",
+                (post.category != null && post.category!.isNotEmpty) ? post.category! : "Karya Siswa",
                 style: const TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w700,
@@ -54,7 +54,7 @@ class CheckoutProductHeader extends StatelessWidget {
 
         // Product Title
         Text(
-          post.title.isNotEmpty ? post.title : "Produk Tanpa Judul",
+          (post.title != null && post.title!.isNotEmpty) ? post.title! : "Produk Tanpa Judul",
           style: const TextStyle(
             fontSize: 18.0,
             fontWeight: FontWeight.w800,
@@ -67,7 +67,7 @@ class CheckoutProductHeader extends StatelessWidget {
 
         // Formatted Price in Rupiah
         Text(
-          formatRupiah(post.price),
+          formatRupiah(post.price ?? 0),
           style: const TextStyle(
             fontSize: 20.0,
             fontWeight: FontWeight.w900,

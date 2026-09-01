@@ -23,7 +23,7 @@ export const PostCardHeader: React.FC<PostCardHeaderProps> = ({
   variant = 'feed',
 }) => {
   return (
-    <div className="flex items-center justify-between gap-2 min-w-0">
+    <div className="flex items-start justify-between gap-2 min-w-0">
       <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
         {variant === 'detail' && (
           <div
@@ -37,26 +37,27 @@ export const PostCardHeader: React.FC<PostCardHeaderProps> = ({
           </div>
         )}
 
-        <div className="flex items-center gap-1 min-w-0 flex-1 overflow-hidden">
+        <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden leading-none">
+          {/* 1. Author Name (Primary Priority - Shrink 0, never truncated before secondary elements) */}
           <span
             onClick={(e) => {
               e.stopPropagation();
               onUserClick?.(item.seller.username || item.seller.name);
             }}
-            className="font-semibold text-[14.5px] text-slate-900 truncate hover:underline shrink-1 max-w-[62%] cursor-pointer"
+            className="font-semibold text-[15px] text-slate-900 tracking-tight shrink-0 hover:underline cursor-pointer leading-none"
           >
             {item.seller.name}
           </span>
 
+          {/* Verified Badge (Always attached to Name) */}
           {item.seller.isVerified && (
-            <ClickableVerifiedBadge sellerName={item.seller.name} className="w-[16px] h-[16px] shrink-0" />
+            <ClickableVerifiedBadge sellerName={item.seller.name} className="w-[15px] h-[15px] shrink-0" />
           )}
 
+          {/* 2. Secondary Priority: Topic Tag (If exists -> class removed; topic truncates if space constrained) */}
           {item.topicTag ? (
-            <div className="flex items-center gap-x-0.5 shrink-1 min-w-0 overflow-hidden ml-0.5 h-[21px] leading-snug">
-              <span className="h-[21px] leading-snug flex items-center">
-                <ChevronRight className="w-3.5 h-3.5 text-neutral-400 stroke-[2] shrink-0" />
-              </span>
+            <div className="flex items-center gap-1 min-w-0 flex-1 overflow-hidden leading-none">
+              <ChevronRight className="w-3 h-3 text-neutral-400 stroke-[2.5] shrink-0" />
 
               {item.isOfficialTopic &&
                 (item.topicIcon === 'presentation' || item.topicIcon === 'party-popper' ? (
@@ -71,29 +72,32 @@ export const PostCardHeader: React.FC<PostCardHeaderProps> = ({
                   e.stopPropagation();
                   onTopicClick?.(item.topicTag!);
                 }}
-                className={`font-semibold text-base h-[21px] leading-snug transition-colors cursor-pointer truncate max-w-[140px] sm:max-w-[220px] flex items-center ${
+                className={`font-semibold text-[15px] tracking-tight leading-none transition-colors cursor-pointer truncate flex-1 min-w-0 text-left ${
                   item.isOfficialTopic ? 'text-[#1d64ec] hover:underline' : 'text-slate-900 hover:underline'
                 }`}
               >
-                <span className="leading-snug">{item.topicTag}</span>
+                <span className="truncate">{item.topicTag}</span>
               </button>
             </div>
           ) : (
-            <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 shrink">
-              {item.seller.classGroup}
-            </span>
+            /* 3. Last Priority: Class Group (Only if NO topic AND name is short <= 14 chars) */
+            item.seller.name.length <= 14 && item.seller.classGroup && (
+              <span className="text-[13.5px] font-normal text-neutral-400 truncate min-w-0 flex-1 leading-none">
+                {item.seller.classGroup}
+              </span>
+            )
           )}
         </div>
       </div>
 
-      <div className="flex items-center gap-1 shrink-0 ml-auto">
+      <div className="flex items-center gap-1.5 shrink-0 ml-auto leading-none">
         <span
-          className="text-[12px] sm:text-[12.5px] font-normal text-slate-500 whitespace-nowrap tabular-nums cursor-default select-none"
+          className="text-[13px] font-normal text-neutral-400 whitespace-nowrap tabular-nums cursor-default select-none leading-none"
           title={formatSmartTimestamp(item.timestamp).full}
         >
           {formatSmartTimestamp(item.timestamp).display}
         </span>
-        <div className="relative">
+        <div className="relative flex items-center">
           <button
             type="button"
             id={`post-options-btn-${item.id}`}
@@ -102,7 +106,7 @@ export const PostCardHeader: React.FC<PostCardHeaderProps> = ({
             aria-expanded={isMenuOpen}
             aria-controls={`post-options-menu-${item.id}`}
             onClick={onToggleMenu}
-            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-neutral-100 text-neutral-400 hover:text-slate-700 transition-colors cursor-pointer"
+            className="w-5 h-5 flex items-center justify-center rounded-full hover:bg-neutral-100 text-neutral-400 hover:text-slate-700 transition-colors cursor-pointer"
             aria-label="Opsi postingan lainnya"
           >
             <MoreHorizontal className="w-4 h-4" />

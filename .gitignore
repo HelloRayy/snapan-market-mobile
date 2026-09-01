@@ -76,3 +76,8 @@ android/.gradle/
 android/app/build/
 android/local.properties
 *.iml
+
+# Test and visual regression outputs
+test-results/
+playwright-report/
+*.json.dump

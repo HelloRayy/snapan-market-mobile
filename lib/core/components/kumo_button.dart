@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-enum KumoButtonVariant { primary, secondary, outline }
+enum KumoButtonVariant { primary, secondary, outline, black }
 
 class KumoButton extends StatefulWidget {
   final String text;
@@ -42,6 +42,19 @@ class KumoButton extends StatefulWidget {
     this.padding,
   }) : variant = KumoButtonVariant.primary;
 
+  const KumoButton.black({
+    super.key,
+    required this.text,
+    this.onPressed,
+    this.iconRight,
+    this.iconLeft,
+    this.height = 52,
+    this.width,
+    this.borderRadius = 16,
+    this.isLoading = false,
+    this.padding,
+  }) : variant = KumoButtonVariant.black;
+
   const KumoButton.secondary({
     super.key,
     required this.text,
@@ -54,7 +67,6 @@ class KumoButton extends StatefulWidget {
     this.isLoading = false,
     this.padding,
   }) : variant = KumoButtonVariant.secondary;
-
   @override
   State<KumoButton> createState() => _KumoButtonState();
 }
@@ -66,6 +78,8 @@ class _KumoButtonState extends State<KumoButton> {
   Widget build(BuildContext context) {
     final isEnabled = widget.onPressed != null && !widget.isLoading;
     final isPrimary = widget.variant == KumoButtonVariant.primary;
+    final isBlack = widget.variant == KumoButtonVariant.black;
+    final isDark = isPrimary || isBlack;
 
     return GestureDetector(
       onTapDown: isEnabled
@@ -87,19 +101,24 @@ class _KumoButtonState extends State<KumoButton> {
           width: widget.width,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(widget.borderRadius),
-            gradient: isEnabled && isPrimary
-                ? const LinearGradient(
+            gradient: isEnabled && isDark
+                ? LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFF3B82F6), // Blue 500
-                      Color(0xFF1D64EC), // Kumo Primary Blue
-                    ],
+                    colors: isPrimary
+                        ? const [
+                            Color(0xFF3B82F6), // Blue 500
+                            Color(0xFF1D64EC), // Kumo Primary Blue
+                          ]
+                        : const [
+                            Color(0xFF334155), // Slate 700 / Top Specular Light
+                            Color(0xFF0F172A), // Slate 900 / Deep Ink Base
+                          ],
                   )
                 : null,
             color: !isEnabled
                 ? const Color(0xFFF1F5F9)
-                : isPrimary
+                : isDark
                     ? null
                     : Colors.white,
             border: Border.all(
@@ -107,7 +126,9 @@ class _KumoButtonState extends State<KumoButton> {
                   ? const Color(0xFFE2E8F0)
                   : isPrimary
                       ? const Color(0xFF154EC1)
-                      : const Color(0xFFE5E7EB),
+                      : isBlack
+                          ? const Color(0xFF0F172A)
+                          : const Color(0xFFE5E7EB),
               width: 1.0,
             ),
             boxShadow: [
@@ -117,7 +138,13 @@ class _KumoButtonState extends State<KumoButton> {
                   blurRadius: 10.0,
                   offset: const Offset(0, 3),
                 )
-              else if (isEnabled && !isPrimary)
+              else if (isEnabled && isBlack)
+                BoxShadow(
+                  color: const Color(0xFF0F172A).withValues(alpha: 0.28),
+                  blurRadius: 10.0,
+                  offset: const Offset(0, 3),
+                )
+              else if (isEnabled && !isDark)
                 const BoxShadow(
                   color: Color(0x0A000000),
                   blurRadius: 3.0,
@@ -128,8 +155,8 @@ class _KumoButtonState extends State<KumoButton> {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // Inset Top Shine Highlight for Primary Kumo
-              if (isEnabled && isPrimary)
+              // Inset Top Shine Highlight for Primary/Black Kumo
+              if (isEnabled && isDark)
                 Positioned(
                   top: 0,
                   left: 0,
@@ -169,16 +196,16 @@ class _KumoButtonState extends State<KumoButton> {
                             Text(
                               widget.text,
                               style: TextStyle(
-                                fontSize: 14.5,
-                                fontWeight: isPrimary
+                                fontSize: widget.height < 40 ? 12.5 : 14.5,
+                                fontWeight: isDark
                                     ? FontWeight.w700
                                     : FontWeight.w600,
                                 color: !isEnabled
                                     ? const Color(0xFF94A3B8)
-                                    : isPrimary
+                                    : isDark
                                         ? Colors.white
                                         : const Color(0xFF111827),
-                                letterSpacing: -0.2,
+                                letterSpacing: -0.1,
                               ),
                             ),
                             if (widget.iconRight != null) ...[

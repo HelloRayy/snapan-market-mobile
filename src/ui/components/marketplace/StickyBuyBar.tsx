@@ -40,10 +40,10 @@ export const StickyBuyBar: React.FC<StickyBuyBarProps> = ({
         <button
           type="button"
           onClick={onBuyClick}
-          className="relative inline-flex items-center justify-between flex-1 h-11 px-5 rounded-full text-white font-medium text-[13.5px] bg-[#3d38f5] border border-[#312bd9] shadow-md shadow-indigo-500/20 active:scale-[0.97] transition-transform duration-75 cursor-pointer overflow-hidden select-none group"
+          className="relative inline-flex items-center justify-between flex-1 h-11 px-5 rounded-full text-white font-medium text-[13.5px] bg-[#1d64ec] border border-[#154ec1] shadow-md shadow-blue-500/25 active:scale-[0.97] transition-transform duration-75 cursor-pointer overflow-hidden select-none group"
         >
           {/* Kumo Inset Top Rim Highlight Gradient */}
-          <span className="absolute inset-0 rounded-full bg-gradient-to-b from-[#5550f7] to-[#3d38f5] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] group-hover:from-[#4944f6] transition-opacity duration-150 pointer-events-none" />
+          <span className="absolute inset-0 rounded-full bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] group-hover:from-[#2563eb] transition-opacity duration-150 pointer-events-none" />
 
           {/* Left Label */}
           <span className="relative z-10 flex items-center gap-1.5 shrink-0 font-medium">

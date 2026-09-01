@@ -1,14 +1,16 @@
 import "package:flutter/material.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
-import "package:snapan_market/features/checkout/models/checkout_models.dart";
+import "package:snapan_market/features/locations/models/campus_location_spot.dart";
 
 class CheckoutLocationCard extends StatelessWidget {
-  final CheckoutSpot selectedSpot;
+  final CampusLocationSpot selectedSpot;
+  final VoidCallback onSelectSpotTap;
   final VoidCallback onSelectMapTap;
 
   const CheckoutLocationCard({
     super.key,
     required this.selectedSpot,
+    required this.onSelectSpotTap,
     required this.onSelectMapTap,
   });
 
@@ -95,7 +97,7 @@ class CheckoutLocationCard extends StatelessWidget {
 
           // Selected Spot Box
           GestureDetector(
-            onTap: onSelectMapTap,
+            onTap: onSelectSpotTap,
             child: Container(
               padding: const EdgeInsets.all(12.0),
               decoration: BoxDecoration(
@@ -148,7 +150,7 @@ class CheckoutLocationCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 2.0),
                         Text(
-                          selectedSpot.hint,
+                          selectedSpot.codSafetyHint,
                           style: const TextStyle(
                             fontSize: 11.5,
                             fontWeight: FontWeight.w400,

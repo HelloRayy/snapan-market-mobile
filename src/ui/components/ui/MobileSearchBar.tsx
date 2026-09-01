@@ -102,7 +102,7 @@ export const MobileSearchBar = forwardRef<MobileSearchBarRef, MobileSearchBarPro
                     ? 'bg-neutral-100 border-neutral-300'
                     : 'bg-neutral-100/90 hover:bg-neutral-200/60 border-neutral-200/70'
                 }`
-              : `h-11 pl-2.5 pr-3 bg-neutral-100/90 rounded-[22px] border border-neutral-200/70 focus-within:bg-white focus-within:border-slate-400 focus-within:shadow-2xs`
+              : `h-11 pl-2.5 pr-3 bg-white rounded-[22px] border border-neutral-200 shadow-2xs focus-within:border-slate-400 focus-within:shadow-xs`
           } text-slate-900`}
         >
           {/* Left Icon (Search or Back Button) */}
@@ -144,10 +144,10 @@ export const MobileSearchBar = forwardRef<MobileSearchBarRef, MobileSearchBarPro
                 transition={{ duration: 0.15 }}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={handleClear}
-                className="w-4 h-4 rounded-full bg-neutral-300 hover:bg-neutral-400 text-white flex items-center justify-center cursor-pointer active:scale-90 shrink-0 transition-colors"
+                className="w-4.5 h-4.5 rounded-full bg-slate-900 hover:bg-black text-white flex items-center justify-center cursor-pointer active:scale-90 shrink-0 transition-colors shadow-2xs"
                 aria-label="Hapus pencarian"
               >
-                <X className="w-2.5 h-2.5 stroke-[3]" />
+                <X className="w-2.5 h-2.5 stroke-[3] text-white" />
               </motion.button>
             ) : (
               rightAction && <div className="shrink-0">{rightAction}</div>

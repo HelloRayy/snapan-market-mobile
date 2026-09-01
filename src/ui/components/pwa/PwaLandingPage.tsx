@@ -316,7 +316,7 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
       if (!btn) return;
 
       const text = (btn.textContent || '').trim().toLowerCase();
-      if (text.includes('claim') || text.includes('create account') || text.includes('pasang') || text.includes('install') || text.includes('download')) {
+      if (text.includes('claim') || text.includes('create account') || text.includes('daftar') || text.includes('pasang') || text.includes('install') || text.includes('download')) {
         e.preventDefault();
         e.stopPropagation();
 
@@ -343,10 +343,35 @@ export const PwaLandingPage: React.FC<PwaLandingPageProps> = ({ onProceedToWeb }
 
         triggerHaptic('medium');
         setShowCustomInstallModal(true);
-      } else if (text.includes('log in') || text.includes('buka web') || text.includes('sign in')) {
+      } else if (text.includes('log in') || text.includes('masuk web') || text.includes('buka web') || text.includes('sign in')) {
         if (onProceedToWeb) {
           e.preventDefault();
           onProceedToWeb();
+        }
+      } else if (text.includes('denah') || text.includes('map')) {
+        e.preventDefault();
+        triggerHaptic('light');
+        window.location.hash = '/map';
+      } else if (text.includes('fitur')) {
+        e.preventDefault();
+        triggerHaptic('light');
+        const featuresEl = document.querySelector('.framer-sdhxzw');
+        if (featuresEl) {
+          featuresEl.scrollIntoView({ behavior: 'smooth' });
+        }
+      } else if (text.includes('forum') || text.includes('cod')) {
+        e.preventDefault();
+        triggerHaptic('light');
+        const forumEl = document.querySelector('.framer-1jz7gk6');
+        if (forumEl) {
+          forumEl.scrollIntoView({ behavior: 'smooth' });
+        }
+      } else if (text.includes('support')) {
+        e.preventDefault();
+        triggerHaptic('light');
+        const supportEl = document.querySelector('.framer-rawiv7, .framer-l69iqf');
+        if (supportEl) {
+          supportEl.scrollIntoView({ behavior: 'smooth' });
         }
       }
     };

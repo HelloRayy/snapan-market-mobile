@@ -1,3 +1,7 @@
+import "package:snapan_market/features/search/screens/search_screen.dart";
+import "package:snapan_market/features/checkout/screens/checkout_screen.dart";
+import "package:snapan_market/features/map/screens/campus_map_screen.dart";
+import "package:snapan_market/features/activity/screens/activity_screen.dart";
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -76,13 +80,24 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
     _scaffoldKey.currentState?.openDrawer();
   }
 
+  void _handleMapTap() {
+    Navigator.push(
+      context,
+      AppSlidePageRoute(
+        builder: (context) => CampusMapScreen(
+          onBack: () => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
+
   void _handleSearchTap() {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Pencarian akan segera hadir pada slicing berikutnya!'),
-        duration: Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
+    Navigator.push(
+      context,
+      AppSlidePageRoute(
+        builder: (context) => SearchScreen(
+          onBack: () => Navigator.pop(context),
+        ),
       ),
     );
   }
@@ -264,6 +279,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
           _scrollToTop();
         },
         onNavigateSearch: _handleSearchTap,
+        onNavigateMap: _handleMapTap,
         onOpenCreateModal: _handleCreatePost,
         onLogout: widget.onLogout,
       ),
@@ -285,7 +301,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
             )
           : _currentNavTab == HomeNavTab.messages
               ? const DirectMessagesScreen(showBackButton: false)
-              : CustomScrollView(
+              : _currentNavTab == HomeNavTab.activity
+                  ? const ActivityScreen()
+                  : CustomScrollView(
 
 
               controller: _scrollController,

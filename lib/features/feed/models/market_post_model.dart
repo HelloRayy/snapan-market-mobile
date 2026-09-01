@@ -1,3 +1,5 @@
+typedef MarketPost = MarketPostModel;
+const mockMarketPosts = kMockMarketPosts;
 import 'package:flutter/foundation.dart';
 
 /// Model representing a seller or author of a post
@@ -246,6 +248,13 @@ class MarketPostModel {
 
   bool get isProduct => postType == 'product';
   bool get isThread => postType == 'thread';
+  String get sellerName => seller.name;
+  String get sellerUsername => seller.username ?? seller.name;
+  String get sellerAvatar => seller.avatar;
+  String get department => seller.classGroup;
+  String get description => caption;
+  List<String> get imageUrls => images;
+
 
   MarketPostModel copyWith({
     String? id,

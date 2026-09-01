@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/screens/home_feed_screen.dart';
 import 'package:snapan_market/features/onboarding/screens/onboarding_screen.dart';
@@ -18,15 +19,9 @@ class SnapanMarketApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        fontFamily: '.SF Pro Text',
-        fontFamilyFallback: const [
-          '-apple-system',
-          'SF Pro Display',
-          'SF Pro Text',
-          'San Francisco',
-          'Helvetica Neue',
-          'Roboto',
-        ],
+        textTheme: GoogleFonts.interTextTheme(
+          ThemeData.light().textTheme,
+        ),
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColors.primary,
           primary: AppColors.primary,

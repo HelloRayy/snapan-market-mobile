@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/features/search/models/search_models.dart";
 
 class SuggestedAccountTile extends StatelessWidget {
@@ -19,9 +18,9 @@ class SuggestedAccountTile extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+        padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 12.0),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Avatar
             ClipRRect(
@@ -46,86 +45,76 @@ class SuggestedAccountTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          account.username,
-                          style: const TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF0F172A),
-                            letterSpacing: -0.2,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (account.isVerified) ...[
-                        const SizedBox(width: 4.0),
-                        const Icon(Icons.verified, size: 14.0, color: AppColors.primary),
-                      ],
-                    ],
+                  Text(
+                    account.username,
+                    style: const TextStyle(
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF0F172A),
+                      letterSpacing: -0.2,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 1.5),
+                  const SizedBox(height: 2.0),
                   Text(
                     account.fullName,
                     style: const TextStyle(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 13.0,
+                      fontWeight: FontWeight.w400,
                       color: Color(0xFF64748B),
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   if (account.bio.isNotEmpty) ...[
-                    const SizedBox(height: 2.0),
+                    const SizedBox(height: 4.0),
                     Text(
                       account.bio,
                       style: const TextStyle(
-                        fontSize: 12.0,
+                        fontSize: 13.0,
                         fontWeight: FontWeight.w400,
-                        color: Color(0xFF475569),
-                        height: 1.25,
+                        color: Color(0xFF334155),
+                        height: 1.3,
                       ),
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
-                  const SizedBox(height: 2.0),
+                  const SizedBox(height: 6.0),
                   Text(
                     account.followersCount,
                     style: const TextStyle(
                       fontSize: 11.5,
-                      fontWeight: FontWeight.w400,
+                      fontWeight: FontWeight.w500,
                       color: Color(0xFF94A3B8),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 10.0),
+            const SizedBox(width: 12.0),
 
             // Follow Button
             GestureDetector(
               onTap: onFollowTap,
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 6.0),
+                duration: const Duration(milliseconds: 150),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 7.0),
                 decoration: BoxDecoration(
-                  color: account.isFollowing ? Colors.white : const Color(0xFF0F172A),
-                  borderRadius: BorderRadius.circular(16.0),
+                  color: account.isFollowing ? const Color(0xFFF8FAFC) : Colors.white,
+                  borderRadius: BorderRadius.circular(12.0),
                   border: Border.all(
-                    color: account.isFollowing ? const Color(0xFFCBD5E1) : const Color(0xFF0F172A),
+                    color: account.isFollowing ? const Color(0xFFE2E8F0) : const Color(0xFFCBD5E1),
                     width: 1.0,
                   ),
                 ),
                 child: Text(
                   account.isFollowing ? "Mengikuti" : "Ikuti",
                   style: TextStyle(
-                    fontSize: 12.5,
+                    fontSize: 13.0,
                     fontWeight: FontWeight.w600,
-                    color: account.isFollowing ? const Color(0xFF0F172A) : Colors.white,
+                    color: account.isFollowing ? const Color(0xFF94A3B8) : const Color(0xFF0F172A),
                     letterSpacing: -0.1,
                   ),
                 ),

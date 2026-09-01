@@ -6,7 +6,6 @@ import "package:snapan_market/features/feed/screens/post_detail_screen.dart";
 import "package:snapan_market/features/profile/screens/profile_screen.dart";
 import "package:snapan_market/features/search/components/search_bar_header.dart";
 import "package:snapan_market/features/search/components/suggested_account_tile.dart";
-import "package:snapan_market/features/search/components/trending_tag_tile.dart";
 import "package:snapan_market/features/search/models/search_models.dart";
 
 class SearchScreen extends StatefulWidget {
@@ -165,30 +164,30 @@ class _SearchScreenState extends State<SearchScreen> {
     List<MarketPost> matchingPosts,
     List<SuggestedAccount> matchingAccounts,
   ) {
-    // 1. Idle State (No Query) -> Suggested Accounts & Trending Tags
+    // 1. Idle State (No Query) -> Flat Suggested Accounts (No Tren Topik, No Container Card)
     if (!hasQuery) {
       return ListView(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         children: [
-          // Section 1: Suggested Creators & Students
+          // Section Heading: "Saran ikuti"
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(vertical: 6.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: const [
                 Text(
-                  "Saran untuk Anda",
+                  "Saran ikuti",
                   style: TextStyle(
-                    fontSize: 14.5,
+                    fontSize: 15.0,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF0F172A),
                     letterSpacing: -0.2,
                   ),
                 ),
                 Text(
-                  "Warga SMKN 8",
+                  "Rekomendasi",
                   style: TextStyle(
-                    fontSize: 12.0,
+                    fontSize: 12.5,
                     fontWeight: FontWeight.w500,
                     color: Color(0xFF94A3B8),
                   ),
@@ -197,76 +196,50 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
           ),
 
-          ..._accounts.take(_visibleSuggestedCount).map((acc) {
-            return SuggestedAccountTile(
-              account: acc,
-              onTap: () => _navigateToProfile(acc.username),
-              onFollowTap: () => _toggleFollow(acc.id),
-            );
-          }),
+          // Flat Suggested Accounts List
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _visibleSuggestedCount.clamp(0, _accounts.length),
+            separatorBuilder: (_, __) => const Divider(
+              color: Color(0xFFF1F5F9),
+              height: 1.0,
+              thickness: 0.8,
+            ),
+            itemBuilder: (_, idx) {
+              final acc = _accounts[idx];
+              return SuggestedAccountTile(
+                account: acc,
+                onTap: () => _navigateToProfile(acc.username),
+                onFollowTap: () => _toggleFollow(acc.id),
+              );
+            },
+          ),
 
           if (_visibleSuggestedCount < _accounts.length)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
-              child: OutlinedButton(
-                onPressed: () {
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              child: InkWell(
+                onTap: () {
                   setState(() {
                     _visibleSuggestedCount = (_visibleSuggestedCount + 5).clamp(0, _accounts.length);
                   });
                 },
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF0F172A),
-                  side: const BorderSide(color: Color(0xFFE2E8F0), width: 0.8),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                ),
-                child: const Text(
-                  "Lihat Lebih Banyak",
-                  style: TextStyle(fontSize: 13.0, fontWeight: FontWeight.w600),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Center(
+                    child: Text(
+                      "Lihat saran lainnya (${_accounts.length - _visibleSuggestedCount})",
+                      style: const TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF1D64EC),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
-
-          const SizedBox(height: 12.0),
-          const Divider(color: Color(0xFFF1F5F9), height: 1.0, thickness: 0.8),
-          const SizedBox(height: 12.0),
-
-          // Section 2: Trending Tags
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Row(
-              children: const [
-                Icon(Icons.trending_up, size: 16.0, color: AppColors.primary),
-                SizedBox(width: 6.0),
-                Text(
-                  "Sedang Hangat di Sekolah",
-                  style: TextStyle(
-                    fontSize: 14.5,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF0F172A),
-                    letterSpacing: -0.2,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          ...kTrendingTags.asMap().entries.map((entry) {
-            final idx = entry.key + 1;
-            final tag = entry.value;
-            return TrendingTagTile(
-              rank: idx,
-              tag: tag.tag,
-              postCount: tag.posts,
-              onTap: () {
-                _searchController.text = tag.tag;
-                _handleQueryChange(tag.tag);
-                _handleExecuteSearch();
-              },
-            );
-          }),
-
-          const SizedBox(height: 24.0),
         ],
       );
     }
@@ -274,13 +247,13 @@ class _SearchScreenState extends State<SearchScreen> {
     // 2. Typing State (Has Query but Not Submitted)
     if (!_isSubmitted) {
       return ListView(
-        padding: const EdgeInsets.symmetric(vertical: 4.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
         children: [
           // Instant search submit row
           InkWell(
             onTap: _handleExecuteSearch,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+              padding: const EdgeInsets.symmetric(vertical: 14.0),
               child: Row(
                 children: [
                   const Icon(Icons.search, size: 18.0, color: Color(0xFF64748B)),
@@ -307,7 +280,7 @@ class _SearchScreenState extends State<SearchScreen> {
           // Matching Creators Preview
           if (matchingAccounts.isNotEmpty) ...[
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
               child: const Text(
                 "Profil Terkait",
                 style: TextStyle(
@@ -317,13 +290,24 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
               ),
             ),
-            ...matchingAccounts.take(3).map((acc) {
-              return SuggestedAccountTile(
-                account: acc,
-                onTap: () => _navigateToProfile(acc.username),
-                onFollowTap: () => _toggleFollow(acc.id),
-              );
-            }),
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: matchingAccounts.take(3).length,
+              separatorBuilder: (_, __) => const Divider(
+                color: Color(0xFFF1F5F9),
+                height: 1.0,
+                thickness: 0.8,
+              ),
+              itemBuilder: (_, idx) {
+                final acc = matchingAccounts[idx];
+                return SuggestedAccountTile(
+                  account: acc,
+                  onTap: () => _navigateToProfile(acc.username),
+                  onFollowTap: () => _toggleFollow(acc.id),
+                );
+              },
+            ),
           ],
         ],
       );
@@ -332,10 +316,10 @@ class _SearchScreenState extends State<SearchScreen> {
     // 3. Submitted Search Results (Tabs: Top, Latest, Profiles)
     if (_activeTab == SearchResultsTab.profiles) {
       if (matchingAccounts.isEmpty) {
-        return _buildEmptyState("Tidak ada profil ditemukan untuk "$_searchQuery"");
+        return _buildEmptyState("Tidak ada profil ditemukan untuk \"$_searchQuery\"");
       }
       return ListView.separated(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         itemCount: matchingAccounts.length,
         separatorBuilder: (_, __) => const Divider(color: Color(0xFFF1F5F9), height: 1.0, thickness: 0.5),
         itemBuilder: (_, idx) {
@@ -351,7 +335,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
     // Posts Tabs (Top or Latest)
     if (matchingPosts.isEmpty) {
-      return _buildEmptyState("Tidak ada postingan ditemukan untuk "$_searchQuery"");
+      return _buildEmptyState("Tidak ada postingan ditemukan untuk \"$_searchQuery\"");
     }
 
     return ListView.builder(

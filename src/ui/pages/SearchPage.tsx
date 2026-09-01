@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { SlidersHorizontal, ArrowLeft, Users, TrendingUp, ChevronRight, Search } from 'lucide-react';
+import { SlidersHorizontal, ArrowLeft, Users, ChevronRight, Search } from 'lucide-react';
 import { MobileSearchBar, MobileSearchBarRef } from '@/ui/components/ui/MobileSearchBar';
-import { ClickableVerifiedBadge } from '@/ui/components/marketplace/VerifiedBadgeModal';
 import { MarketPostCard } from '@/ui/components/marketplace/MarketPostCard';
 import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
 import { MarketPostItem } from '@/types/marketFeed';
@@ -154,14 +153,6 @@ const INITIAL_SUGGESTED_ACCOUNTS: SuggestedAccount[] = [
     bio: 'Support umkm to be outstanding overseas!',
     followersCount: '4 pengikut',
   },
-];
-
-const TRENDING_TAGS = [
-  { id: '1', tag: 'snapandev', posts: '1.8 rb utas' },
-  { id: '2', tag: 'vibe coding', posts: '3.4 rb utas' },
-  { id: '3', tag: 'MarketDay', posts: '1.2 rb utas' },
-  { id: '4', tag: 'PPLG1', posts: '856 utas' },
-  { id: '5', tag: 'Kantin8', posts: '2.4 rb utas' },
 ];
 
 type SearchTab = 'top' | 'latest' | 'profiles';
@@ -434,12 +425,12 @@ export const SearchPage: React.FC<SearchPageProps> = ({
 
             {/* Direct Matched Accounts (If Any) */}
             {scoredAccounts.length > 0 && (
-              <div className="divide-y divide-neutral-100 bg-white rounded-2xl border border-neutral-100 shadow-[rgba(0,0,0,0.02)_0px_2px_12px_0px] overflow-hidden">
+              <div className="divide-y divide-neutral-100">
                 {scoredAccounts.slice(0, 3).map((account) => (
                   <div
                     key={account.id}
                     onClick={() => onNavigateToProfile(account.username)}
-                    className="flex items-center gap-3 p-3 hover:bg-neutral-50/80 active:bg-neutral-100 transition-colors cursor-pointer leading-snug"
+                    className="flex items-center gap-3 py-3 hover:bg-neutral-50/80 active:bg-neutral-100 transition-colors cursor-pointer leading-snug"
                   >
                     <div className="w-9 h-9 rounded-full overflow-hidden ring-1 ring-neutral-200 shrink-0">
                       <img src={account.avatar} alt={account.fullName} className="w-full h-full object-cover" />
@@ -447,7 +438,6 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                     <div className="flex-1 min-w-0 leading-snug">
                       <div className="flex items-center gap-1 leading-tight">
                         <span className="font-bold text-[14px] text-slate-900 truncate">{account.username}</span>
-                        {account.isVerified && <ClickableVerifiedBadge className="w-3 h-3 shrink-0" />}
                       </div>
                       <p className="text-[12px] text-neutral-500 truncate leading-tight mt-0.5">{account.fullName}</p>
                     </div>
@@ -459,124 +449,92 @@ export const SearchPage: React.FC<SearchPageProps> = ({
           </div>
         )}
 
-        {/* STAGE 2: Empty Query State -> Trending Tags + Saran Ikuti */}
+        {/* STAGE 2: Empty Query State -> Saran Ikuti (No Container, No Border, No Badge, No Tren Topik) */}
         {!hasSearchQuery && (
-          <>
-            {/* Trending Topics / Hastag Populer */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-1.5 text-[13px] font-bold text-slate-800 uppercase tracking-wide px-1">
-                <TrendingUp className="w-4 h-4 text-[#1d64ec]" />
-                <span>Tren Topik Hari Ini</span>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {TRENDING_TAGS.map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    onClick={() => {
-                      setSearchQuery(t.tag);
-                      setIsSubmitted(true);
-                    }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neutral-50 hover:bg-neutral-100 border border-neutral-200/70 text-slate-800 text-[13px] font-medium transition-all active:scale-95 cursor-pointer shadow-2xs"
-                  >
-                    <span className="text-[#1d64ec] font-bold">#</span>
-                    <span>{t.tag}</span>
-                    <span className="text-[11px] text-neutral-400 font-normal">· {t.posts}</span>
-                  </button>
-                ))}
-              </div>
+          <div className="space-y-1 pt-1">
+            <div className="flex items-center justify-between pb-1 px-0">
+              <h2 className="text-[15px] font-bold text-slate-900 tracking-tight leading-snug">
+                Saran ikuti
+              </h2>
+              <span className="text-[12.5px] text-neutral-400 font-medium leading-snug flex items-center gap-1">
+                <Users className="w-3.5 h-3.5" />
+                Rekomendasi
+              </span>
             </div>
 
-            {/* Section Heading: "Saran ikuti" */}
-            <div className="space-y-2 pt-2">
-              <div className="flex items-center justify-between px-1">
-                <h2 className="text-[15px] font-bold text-slate-900 tracking-tight leading-snug">
-                  Saran ikuti
-                </h2>
-                <span className="text-[12.5px] text-neutral-400 font-medium leading-snug flex items-center gap-1">
-                  <Users className="w-3.5 h-3.5" />
-                  Rekomendasi
-                </span>
-              </div>
+            {/* Suggested Accounts List (Flat, No Container Border/BG/Card Inset, No Badge) */}
+            <div className="divide-y divide-neutral-100">
+              {INITIAL_SUGGESTED_ACCOUNTS.slice(0, visibleSuggestedCount).map((account) => {
+                const isFollowing = !!followingMap[account.id];
 
-              {/* Suggested Accounts List (Limited to top 5 initially for performance) */}
-              <div className="divide-y divide-neutral-100 bg-white rounded-2xl border border-neutral-100 shadow-[rgba(0,0,0,0.02)_0px_2px_12px_0px] overflow-hidden">
-                {INITIAL_SUGGESTED_ACCOUNTS.slice(0, visibleSuggestedCount).map((account) => {
-                  const isFollowing = !!followingMap[account.id];
-
-                  return (
-                    <div
-                      key={account.id}
-                      onClick={() => onNavigateToProfile(account.username)}
-                      className="flex items-start justify-between gap-3 p-3.5 hover:bg-neutral-50/80 active:bg-neutral-100 transition-colors cursor-pointer leading-snug group"
-                    >
-                      <div className="w-10 h-10 rounded-full overflow-hidden ring-1 ring-neutral-200/80 shrink-0 mt-0.5 shadow-2xs">
-                        <img
-                          src={account.avatar}
-                          alt={account.fullName}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                          loading="lazy"
-                        />
-                      </div>
-
-                      <div className="flex-1 min-w-0 pr-1 leading-snug">
-                        <div className="flex items-center gap-1 leading-tight">
-                          <span className="font-bold text-[14.5px] text-slate-900 truncate">
-                            {account.username}
-                          </span>
-                          {account.isVerified && (
-                            <ClickableVerifiedBadge className="w-3.5 h-3.5 shrink-0" />
-                          )}
-                        </div>
-
-                        <p className="text-[13px] text-neutral-500 font-normal truncate leading-tight mt-0.5">
-                          {account.fullName}
-                        </p>
-
-                        <p className="text-[13px] text-slate-700 font-normal line-clamp-2 leading-relaxed mt-1">
-                          {account.bio}
-                        </p>
-
-                        <p className="text-[11.5px] text-neutral-400 font-medium leading-tight mt-1.5">
-                          {account.followersCount}
-                        </p>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={(e) => toggleFollow(account.id, e)}
-                        className={`shrink-0 px-4 py-1.5 rounded-xl text-[13.5px] font-semibold transition-all active:scale-95 cursor-pointer leading-tight mt-0.5 ${
-                          isFollowing
-                            ? 'border border-neutral-200 text-neutral-400 bg-neutral-50 hover:bg-neutral-100'
-                            : 'border border-neutral-300 text-slate-900 bg-white hover:bg-neutral-100 shadow-2xs'
-                        }`}
-                      >
-                        {isFollowing ? 'Mengikuti' : 'Ikuti'}
-                      </button>
+                return (
+                  <div
+                    key={account.id}
+                    onClick={() => onNavigateToProfile(account.username)}
+                    className="flex items-start justify-between gap-3 py-3.5 hover:bg-neutral-50/80 active:bg-neutral-100 transition-colors cursor-pointer leading-snug group"
+                  >
+                    <div className="w-10 h-10 rounded-full overflow-hidden ring-1 ring-neutral-200/80 shrink-0 mt-0.5 shadow-2xs">
+                      <img
+                        src={account.avatar}
+                        alt={account.fullName}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        loading="lazy"
+                      />
                     </div>
-                  );
-                })}
 
-                {/* Expand More Suggestions Button */}
-                {visibleSuggestedCount < INITIAL_SUGGESTED_ACCOUNTS.length && (
-                  <div className="p-3 text-center bg-neutral-50/50 hover:bg-neutral-100/80 transition-colors">
+                    <div className="flex-1 min-w-0 pr-1 leading-snug">
+                      <div className="flex items-center gap-1 leading-tight">
+                        <span className="font-bold text-[14.5px] text-slate-900 truncate">
+                          {account.username}
+                        </span>
+                      </div>
+
+                      <p className="text-[13px] text-neutral-500 font-normal truncate leading-tight mt-0.5">
+                        {account.fullName}
+                      </p>
+
+                      <p className="text-[13px] text-slate-700 font-normal line-clamp-2 leading-relaxed mt-1">
+                        {account.bio}
+                      </p>
+
+                      <p className="text-[11.5px] text-neutral-400 font-medium leading-tight mt-1.5">
+                        {account.followersCount}
+                      </p>
+                    </div>
+
                     <button
                       type="button"
-                      onClick={() =>
-                        setVisibleSuggestedCount((prev) =>
-                          Math.min(prev + 5, INITIAL_SUGGESTED_ACCOUNTS.length)
-                        )
-                      }
-                      className="w-full py-1 text-[13.5px] font-semibold text-[#1d64ec] hover:text-[#154ec1] active:scale-98 transition-all cursor-pointer"
+                      onClick={(e) => toggleFollow(account.id, e)}
+                      className={`shrink-0 px-4 py-1.5 rounded-xl text-[13.5px] font-semibold transition-all active:scale-95 cursor-pointer leading-tight mt-0.5 ${
+                        isFollowing
+                          ? 'border border-neutral-200 text-neutral-400 bg-neutral-50 hover:bg-neutral-100'
+                          : 'border border-neutral-300 text-slate-900 bg-white hover:bg-neutral-100 shadow-2xs'
+                      }`}
                     >
-                      Lihat saran lainnya ({INITIAL_SUGGESTED_ACCOUNTS.length - visibleSuggestedCount})
+                      {isFollowing ? 'Mengikuti' : 'Ikuti'}
                     </button>
                   </div>
-                )}
-              </div>
+                );
+              })}
+
+              {/* Expand More Suggestions Button */}
+              {visibleSuggestedCount < INITIAL_SUGGESTED_ACCOUNTS.length && (
+                <div className="py-3 text-center">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setVisibleSuggestedCount((prev) =>
+                        Math.min(prev + 5, INITIAL_SUGGESTED_ACCOUNTS.length)
+                      )
+                    }
+                    className="w-full py-2 text-[13.5px] font-semibold text-[#1d64ec] hover:text-[#154ec1] active:scale-98 transition-all cursor-pointer"
+                  >
+                    Lihat saran lainnya ({INITIAL_SUGGESTED_ACCOUNTS.length - visibleSuggestedCount})
+                  </button>
+                </div>
+              )}
             </div>
-          </>
+          </div>
         )}
 
         {/* STAGE 3: Submitted Search Results -> Render based on Active Tab */}
@@ -676,14 +634,14 @@ export const SearchPage: React.FC<SearchPageProps> = ({
             {activeTab === 'profiles' && (
               <div className="space-y-2">
                 {scoredAccounts.length > 0 ? (
-                  <div className="divide-y divide-neutral-100 bg-white rounded-2xl border border-neutral-100 shadow-[rgba(0,0,0,0.02)_0px_2px_12px_0px] overflow-hidden">
+                  <div className="divide-y divide-neutral-100">
                     {scoredAccounts.map((account) => {
                       const isFollowing = !!followingMap[account.id];
                       return (
                         <div
                           key={account.id}
                           onClick={() => onNavigateToProfile(account.username)}
-                          className="flex items-start justify-between gap-3 p-3.5 hover:bg-neutral-50/80 active:bg-neutral-100 transition-colors cursor-pointer leading-snug group"
+                          className="flex items-start justify-between gap-3 py-3.5 hover:bg-neutral-50/80 active:bg-neutral-100 transition-colors cursor-pointer leading-snug group"
                         >
                           <div className="w-10 h-10 rounded-full overflow-hidden ring-1 ring-neutral-200/80 shrink-0 mt-0.5 shadow-2xs">
                             <img
@@ -699,7 +657,6 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                               <span className="font-bold text-[14.5px] text-slate-900 truncate">
                                 {account.username}
                               </span>
-                              {account.isVerified && <ClickableVerifiedBadge className="w-3.5 h-3.5 shrink-0" />}
                             </div>
                             <p className="text-[13px] text-neutral-500 font-normal truncate leading-tight mt-0.5">
                               {account.fullName}

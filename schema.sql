@@ -739,3 +739,45 @@ create index if not exists idx_profiles_username_trgm
 create index if not exists idx_profiles_fullname_trgm
   on public.profiles using gin (full_name gin_trgm_ops);
 
+
+-- ========================================================
+-- 📦 SUPABASE STORAGE BUCKETS & RLS POLICIES
+-- ========================================================
+-- Otomatis membuat 3 bucket (Public): market-media, avatars, voice-notes
+insert into storage.buckets (id, name, public)
+values
+  ('market-media', 'market-media', true),
+  ('avatars', 'avatars', true),
+  ('voice-notes', 'voice-notes', true)
+on conflict (id) do update set public = true;
+
+-- Policy Select (Public Access)
+drop policy if exists "Public Access market-media" on storage.objects;
+create policy "Public Access market-media" on storage.objects for select using (bucket_id = 'market-media');
+
+drop policy if exists "Public Access avatars" on storage.objects;
+create policy "Public Access avatars" on storage.objects for select using (bucket_id = 'avatars');
+
+drop policy if exists "Public Access voice-notes" on storage.objects;
+create policy "Public Access voice-notes" on storage.objects for select using (bucket_id = 'voice-notes');
+
+-- Policy Insert/Upload (Authenticated Users)
+drop policy if exists "Authenticated Upload market-media" on storage.objects;
+create policy "Authenticated Upload market-media" on storage.objects for insert to authenticated with check (bucket_id = 'market-media');
+
+drop policy if exists "Authenticated Update market-media" on storage.objects;
+create policy "Authenticated Update market-media" on storage.objects for update to authenticated using (bucket_id = 'market-media');
+
+drop policy if exists "Authenticated Delete market-media" on storage.objects;
+create policy "Authenticated Delete market-media" on storage.objects for delete to authenticated using (bucket_id = 'market-media');
+
+drop policy if exists "Authenticated Upload avatars" on storage.objects;
+create policy "Authenticated Upload avatars" on storage.objects for insert to authenticated with check (bucket_id = 'avatars');
+
+drop policy if exists "Authenticated Update avatars" on storage.objects;
+create policy "Authenticated Update avatars" on storage.objects for update to authenticated using (bucket_id = 'avatars');
+
+drop policy if exists "Authenticated Upload voice-notes" on storage.objects;
+create policy "Authenticated Upload voice-notes" on storage.objects for insert to authenticated with check (bucket_id = 'voice-notes');
+
+

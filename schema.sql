@@ -15,6 +15,17 @@ create table if not exists public.profiles (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
+-- Safe Alter Column untuk tabel profiles versi lama yang belum memiliki kolom username
+alter table public.profiles add column if not exists full_name text default 'Pengguna Baru';
+alter table public.profiles add column if not exists username text;
+alter table public.profiles add column if not exists avatar_url text;
+alter table public.profiles add column if not exists class_group text default 'Siswa Snapan';
+alter table public.profiles add column if not exists is_verified boolean default false;
+alter table public.profiles add column if not exists role text default 'buyer';
+alter table public.profiles add column if not exists verified_sales_count integer default 0;
+alter table public.profiles add column if not exists total_revenue_idr numeric(14, 2) default 0.00;
+
+
 -- Trigger Otomatis saat User Sign Up (Google OAuth / Email)
 create or replace function public.handle_new_user()
 returns trigger as $$
@@ -727,18 +738,13 @@ do $$ begin alter publication supabase_realtime add table public.market_posts; e
 -- ========================================================
 -- 🔍 FULL-TEXT SEARCH: GIN INDEXES (Epic 8 — SearchPage)
 -- ========================================================
--- GIN indexes mempercepat pencarian ILIKE & to_tsvector pada teks panjang.
--- Jalankan setelah tabel market_posts & profiles sudah ada.
 create extension if not exists pg_trgm;
 
-create index if not exists idx_market_posts_caption_trgm
-  on public.market_posts using gin (caption gin_trgm_ops);
-create index if not exists idx_market_posts_title_trgm
-  on public.market_posts using gin (title gin_trgm_ops);
-create index if not exists idx_profiles_username_trgm
-  on public.profiles using gin (username gin_trgm_ops);
-create index if not exists idx_profiles_fullname_trgm
-  on public.profiles using gin (full_name gin_trgm_ops);
+do $$ begin create index if not exists idx_market_posts_caption_trgm on public.market_posts using gin (caption gin_trgm_ops); exception when others then null; end $$;
+do $$ begin create index if not exists idx_market_posts_title_trgm on public.market_posts using gin (title gin_trgm_ops); exception when others then null; end $$;
+do $$ begin create index if not exists idx_profiles_username_trgm on public.profiles using gin (username gin_trgm_ops); exception when others then null; end $$;
+do $$ begin create index if not exists idx_profiles_fullname_trgm on public.profiles using gin (full_name gin_trgm_ops); exception when others then null; end $$;
+
 
 
 -- ========================================================

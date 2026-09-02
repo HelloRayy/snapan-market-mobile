@@ -623,3 +623,119 @@ create index if not exists idx_user_follows_follower on public.user_follows(foll
 create index if not exists idx_user_follows_following on public.user_follows(following_id);
 create index if not exists idx_post_reposts_post on public.post_reposts(post_id);
 create index if not exists idx_post_reposts_user on public.post_reposts(user_id);
+
+
+-- ========================================================
+-- 💬 DIRECT MESSAGING SYSTEM (Obrolan & Pembeli)
+-- ========================================================
+
+-- 20. TABEL CONVERSATIONS (Thread Percakapan Antar User)
+-- product_id IS NULL  → Tab "Obrolan" (chat santai)
+-- product_id IS UUID  → Tab "Pembeli" (inquiry produk jualan)
+create table if not exists public.conversations (
+  id uuid default gen_random_uuid() primary key,
+  participant_one uuid not null references public.profiles(id) on delete cascade,
+  participant_two uuid not null references public.profiles(id) on delete cascade,
+  product_id uuid references public.market_posts(id) on delete set null,
+  last_message text default '',
+  last_message_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  constraint check_not_self_chat check (participant_one != participant_two)
+);
+
+
+-- 21. TABEL DIRECT MESSAGES (Pesan Individual dalam Percakapan)
+create table if not exists public.direct_messages (
+  id uuid default gen_random_uuid() primary key,
+  conversation_id uuid not null references public.conversations(id) on delete cascade,
+  sender_id uuid not null references public.profiles(id) on delete cascade,
+  message_text text not null,
+  is_read boolean not null default false,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+
+-- ========================================================
+-- 🛡️ RLS POLICIES: DIRECT MESSAGES
+-- ========================================================
+alter table public.conversations enable row level security;
+alter table public.direct_messages enable row level security;
+
+-- Conversations: Hanya peserta yang berhak melihat & membuat percakapan
+drop policy if exists "Users can view own conversations" on public.conversations;
+drop policy if exists "Users can create conversations" on public.conversations;
+drop policy if exists "Users can update own conversations" on public.conversations;
+create policy "Users can view own conversations"
+  on public.conversations for select to authenticated
+  using (auth.uid() in (participant_one, participant_two));
+create policy "Users can create conversations"
+  on public.conversations for insert to authenticated
+  with check (auth.uid() in (participant_one, participant_two));
+create policy "Users can update own conversations"
+  on public.conversations for update to authenticated
+  using (auth.uid() in (participant_one, participant_two));
+
+-- Direct Messages: Hanya peserta percakapan yang berhak membaca & mengirim
+drop policy if exists "Users can view conversation messages" on public.direct_messages;
+drop policy if exists "Users can send messages" on public.direct_messages;
+drop policy if exists "Users can update own messages" on public.direct_messages;
+drop policy if exists "Users can delete own messages" on public.direct_messages;
+create policy "Users can view conversation messages"
+  on public.direct_messages for select to authenticated
+  using (
+    exists (
+      select 1 from public.conversations
+      where id = direct_messages.conversation_id
+        and auth.uid() in (participant_one, participant_two)
+    )
+  );
+create policy "Users can send messages"
+  on public.direct_messages for insert to authenticated
+  with check (auth.uid() = sender_id);
+create policy "Users can update own messages"
+  on public.direct_messages for update to authenticated
+  using (auth.uid() = sender_id);
+create policy "Users can delete own messages"
+  on public.direct_messages for delete to authenticated
+  using (auth.uid() = sender_id);
+
+
+-- ========================================================
+-- ⚡ INDEXING: DIRECT MESSAGES
+-- ========================================================
+create index if not exists idx_conversations_participant_one on public.conversations(participant_one);
+create index if not exists idx_conversations_participant_two on public.conversations(participant_two);
+create index if not exists idx_conversations_last_message_at on public.conversations(last_message_at desc);
+create index if not exists idx_direct_messages_conversation on public.direct_messages(conversation_id);
+create index if not exists idx_direct_messages_sender on public.direct_messages(sender_id);
+create index if not exists idx_direct_messages_created_at on public.direct_messages(created_at asc);
+create index if not exists idx_direct_messages_unread on public.direct_messages(conversation_id, is_read) where is_read = false;
+
+
+-- ========================================================
+-- 📡 REALTIME PUBLICATION (DM & Orders Push)
+-- ========================================================
+-- Jalankan setelah semua tabel berhasil dibuat:
+alter publication supabase_realtime add table public.orders;
+alter publication supabase_realtime add table public.order_notifications;
+alter publication supabase_realtime add table public.conversations;
+alter publication supabase_realtime add table public.direct_messages;
+alter publication supabase_realtime add table public.market_posts;
+
+
+-- ========================================================
+-- 🔍 FULL-TEXT SEARCH: GIN INDEXES (Epic 8 — SearchPage)
+-- ========================================================
+-- GIN indexes mempercepat pencarian ILIKE & to_tsvector pada teks panjang.
+-- Jalankan setelah tabel market_posts & profiles sudah ada.
+create extension if not exists pg_trgm;
+
+create index if not exists idx_market_posts_caption_trgm
+  on public.market_posts using gin (caption gin_trgm_ops);
+create index if not exists idx_market_posts_title_trgm
+  on public.market_posts using gin (title gin_trgm_ops);
+create index if not exists idx_profiles_username_trgm
+  on public.profiles using gin (username gin_trgm_ops);
+create index if not exists idx_profiles_fullname_trgm
+  on public.profiles using gin (full_name gin_trgm_ops);
+

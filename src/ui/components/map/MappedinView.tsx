@@ -51,7 +51,7 @@ export const MappedinView: React.FC<MappedinViewProps> = ({
       }
 
       // 4. Interactivity: Listen to Click / Tap Events on Spaces
-      mapView.on('click', (event) => {
+      mapView.on('click', (event: any) => {
         if (event && event.spaces && event.spaces.length > 0) {
           triggerHaptic('light');
           const clickedSpace = event.spaces[0];

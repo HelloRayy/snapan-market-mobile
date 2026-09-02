@@ -187,6 +187,7 @@ export interface Database {
           topic_icon: string | null
           likes_count: number
           comments_count: number
+          reposts_count: number
           created_at: string
         }
         Insert: {
@@ -210,6 +211,7 @@ export interface Database {
           topic_icon?: string | null
           likes_count?: number
           comments_count?: number
+          reposts_count?: number
           created_at?: string
         }
         Update: {
@@ -233,6 +235,7 @@ export interface Database {
           topic_icon?: string | null
           likes_count?: number
           comments_count?: number
+          reposts_count?: number
           created_at?: string
         }
         Relationships: [
@@ -747,6 +750,100 @@ export interface Database {
           }
         ]
       }
+      conversations: {
+        Row: {
+          id: string
+          participant_one: string
+          participant_two: string
+          product_id: string | null
+          last_message: string
+          last_message_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          participant_one: string
+          participant_two: string
+          product_id?: string | null
+          last_message?: string
+          last_message_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          participant_one?: string
+          participant_two?: string
+          product_id?: string | null
+          last_message?: string
+          last_message_at?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_participant_one_fkey"
+            columns: ["participant_one"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_participant_two_fkey"
+            columns: ["participant_two"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "market_posts"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      direct_messages: {
+        Row: {
+          id: string
+          conversation_id: string
+          sender_id: string
+          message_text: string
+          is_read: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          conversation_id: string
+          sender_id: string
+          message_text: string
+          is_read?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          conversation_id?: string
+          sender_id?: string
+          message_text?: string
+          is_read?: boolean
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "direct_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "direct_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -789,6 +886,8 @@ export type PostComment = Database['public']['Tables']['post_comments']['Row']
 export type CommentLike = Database['public']['Tables']['comment_likes']['Row']
 export type CartItem = Database['public']['Tables']['cart_items']['Row']
 export type PostBookmark = Database['public']['Tables']['post_bookmarks']['Row']
+export type Conversation = Database['public']['Tables']['conversations']['Row']
+export type DirectMessage = Database['public']['Tables']['direct_messages']['Row']
 export type Notification = Database['public']['Tables']['notifications']['Row']
 export type UserFollow = Database['public']['Tables']['user_follows']['Row']
 export type PostRepost = Database['public']['Tables']['post_reposts']['Row']

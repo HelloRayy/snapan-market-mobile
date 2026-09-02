@@ -715,12 +715,13 @@ create index if not exists idx_direct_messages_unread on public.direct_messages(
 -- ========================================================
 -- 📡 REALTIME PUBLICATION (DM & Orders Push)
 -- ========================================================
--- Jalankan setelah semua tabel berhasil dibuat:
-alter publication supabase_realtime add table public.orders;
-alter publication supabase_realtime add table public.order_notifications;
-alter publication supabase_realtime add table public.conversations;
-alter publication supabase_realtime add table public.direct_messages;
-alter publication supabase_realtime add table public.market_posts;
+-- Safe Idempotent Execution: Abaikan jika tabel sudah terdaftar di publication
+do $$ begin alter publication supabase_realtime add table public.orders; exception when duplicate_object or others then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.order_notifications; exception when duplicate_object or others then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.conversations; exception when duplicate_object or others then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.direct_messages; exception when duplicate_object or others then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.market_posts; exception when duplicate_object or others then null; end $$;
+
 
 
 -- ========================================================

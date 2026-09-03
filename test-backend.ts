@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import * as dotenv from 'dotenv';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
@@ -17,6 +16,12 @@ const supabaseAnonKey = env['VITE_SUPABASE_ANON_KEY'] || '';
 
 console.log('🚀 MEMULAI INTEGRATION TEST BACKEND SUPABASE...\n');
 console.log(`🔗 Target URL: ${supabaseUrl}`);
+
+if (!supabaseUrl || supabaseUrl.includes('<') || supabaseUrl.includes('placeholder')) {
+  console.log('\n❌ EROR: File .env masih berisi URL placeholder.');
+  console.log('💡 Harap isi VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY di file .env dengan URL dan Anon Key asli dari Supabase Dashboard terlebih dahulu.\n');
+  process.exit(1);
+}
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 

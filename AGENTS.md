@@ -9,7 +9,11 @@
 1. **DO NOT Run Verification & Analysis Commands**:
    - **STRICTLY PROHIBITED**: Running `flutter test`, `flutter analyze`, or routine test/verification commands.
    - Do not waste tool calls, round-trips, or token budget on running repetitive analyzers, test runners, or test suites.
-2. **100% Focus on Direct Codebase Generation**:
+2. **DO NOT Run Playwright Without Explicit User Command**:
+   - **STRICTLY PROHIBITED**: Launching Playwright, headless browser, or screenshot capture tasks on your own.
+   - ONLY run Playwright IF AND ONLY IF the user explicitly asks for screenshots or testing (e.g. "buka playwright", "ambil screenshot", "take a capture").
+   - For all other tasks, execute code changes directly, cleanly, and fast without spinning up browser instances.
+3. **100% Focus on Direct Codebase Generation**:
    - Focus directly on generating, refactoring, and updating codebase files (`lib/`, `src/`, `docs/`, etc.) with high taste and strict syntactic/architectural correctness.
    - Directly write correct, clean, and production-ready code in one pass.
 3. **Mandatory Web-to-Mobile Frontend Slicing SOP (`docs/agent-frontend-slicing-sop.md`)**:

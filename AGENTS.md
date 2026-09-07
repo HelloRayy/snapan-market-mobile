@@ -224,3 +224,4 @@ npx ts-node test-backend.ts
 When working across workstations:
 1. **Pre-Task**: Always run `git pull origin main` before analyzing or modifying files.
 2. **Post-Task**: Run `git add .`, commit with conventional commit format (`git commit -m "<type>(<scope>): <description>"`), and push (`git push -u origin main`).
+

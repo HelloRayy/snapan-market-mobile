@@ -239,7 +239,7 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
             Expanded(
               child: filtered.isNotEmpty
                   ? ListView.separated(
-                      padding: const EdgeInsets.only(top: 4.0, bottom: 80.0),
+                      padding: const EdgeInsets.only(top: 4.0, bottom: 120.0),
                       itemCount: filtered.length,
                       separatorBuilder: (_, __) => const Divider(
                         height: 1.0,

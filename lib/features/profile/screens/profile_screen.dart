@@ -497,6 +497,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ],
 
+          // Bottom clearance for floating nav bar
+          const SliverToBoxAdapter(
+            child: SizedBox(height: 120.0),
+          ),
         ],
       );
 

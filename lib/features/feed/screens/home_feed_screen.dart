@@ -269,6 +269,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.white,
+      extendBody: true,
       drawerEnableOpenDragGesture: true,
       drawerEdgeDragWidth: 40.0,
       drawer: HomeNavigationDrawer(
@@ -387,7 +388,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                       ),
                     ),
                   ],
-                  const SizedBox(height: 80.0), // Bottom clearance for floating dock
+                  const SizedBox(height: 120.0), // Bottom clearance for floating dock & FAB
                 ],
               ),
             ),
@@ -396,8 +397,11 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: (_currentNavTab == HomeNavTab.home || _currentNavTab == HomeNavTab.messages)
-          ? FloatingPlusSquircleButton(
-              onTap: _handleCreatePost,
+          ? Padding(
+              padding: const EdgeInsets.only(bottom: 76.0),
+              child: FloatingPlusSquircleButton(
+                onTap: _handleCreatePost,
+              ),
             )
           : null,
       bottomNavigationBar: HomeBottomNavBar(

@@ -146,7 +146,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                       ),
                     )
                   : ListView.separated(
-                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                      padding: const EdgeInsets.only(top: 4.0, bottom: 120.0),
                       itemCount: _filteredNotifications.length,
                       separatorBuilder: (_, __) => const Divider(
                         color: Color(0xFFF1F5F9),

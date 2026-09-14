@@ -259,59 +259,42 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
                               highlightColor: const Color(0xFFF2F4F7),
                               splashColor: const Color(0xFFF2F4F7),
                               child: Container(
-                                height: 58.0,
-                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
-                                child: Row(
+                                height: 54.0,
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                child: const Row(
                                   children: [
-                                    // Circular Icon Block (42x42)
-                                    Container(
+                                    // Pen.dev Symbol Icon (Azure #008BFF in 42px width slot)
+                                    SizedBox(
                                       width: 42.0,
                                       height: 42.0,
-                                      decoration: const BoxDecoration(
-                                        color: Color(0xFF008BFF), // pen.dev Primary Accent
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Center(
+                                      child: Center(
                                         child: Icon(
-                                          Icons.person_add_rounded,
-                                          color: Colors.white,
-                                          size: 20.0,
+                                          Icons.person_add_outlined,
+                                          color: Color(0xFF008BFF), // pen.dev #008BFF
+                                          size: 26.0,
                                         ),
                                       ),
                                     ),
 
-                                    const SizedBox(width: 12.0),
+                                    SizedBox(width: 12.0),
 
-                                    // Title & Subtitle
-                                    const Expanded(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Undang Teman SMKN 8',
-                                            style: TextStyle(
-                                              fontSize: 16.0,
-                                              fontWeight: FontWeight.w500,
-                                              color: Color(0xFF000000),
-                                              letterSpacing: -0.43,
-                                            ),
-                                          ),
-                                          SizedBox(height: 2.0),
-                                          Text(
-                                            'Mulai percakapan dengan teman atau penjual',
-                                            style: TextStyle(
-                                              fontSize: 13.0,
-                                              color: Color(0x993C3C43),
-                                              letterSpacing: -0.08,
-                                            ),
-                                          ),
-                                        ],
+                                    // Title matching pen.dev "Invite Friends" (SF Pro 16.5px, 500, letter-spacing -0.43)
+                                    Expanded(
+                                      child: Text(
+                                        'Undang Teman SMKN 8',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: 16.5,
+                                          fontWeight: FontWeight.w500,
+                                          color: Color(0xFF000000),
+                                          letterSpacing: -0.43,
+                                        ),
                                       ),
                                     ),
 
-                                    // Chevron Right
-                                    const Icon(
+                                    // Chevron Right (pen.dev Drill-in #3C3C434D)
+                                    Icon(
                                       Icons.chevron_right_rounded,
                                       size: 20.0,
                                       color: Color(0x4D3C3C43),

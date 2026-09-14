@@ -183,14 +183,15 @@ class ConversationListItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  // Timestamp (pen.dev chaat-1 mkRZg: SF Pro 14px, #3C3C4399)
+                  // Timestamp: Sleek, compact timestamp (12px, w500/w400)
                   Text(
                     conversation.timestamp,
                     style: TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: hasUnread ? FontWeight.w600 : FontWeight.normal,
+                      fontFamily: 'SF Pro',
+                      fontSize: 12.0,
+                      fontWeight: hasUnread ? FontWeight.w500 : FontWeight.w400,
                       color: hasUnread ? azurePrimary : secondaryInk,
-                      letterSpacing: -0.23,
+                      letterSpacing: -0.1,
                     ),
                   ),
 

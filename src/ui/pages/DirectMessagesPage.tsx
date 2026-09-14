@@ -297,8 +297,8 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
 
                       {/* Timestamp Aligned to Top-Right */}
                       <span
-                        className={`text-[12px] shrink-0 ${
-                          hasUnread ? 'font-semibold text-[#1d64ec]' : 'font-normal text-neutral-400'
+                        className={`text-[11.5px] shrink-0 ${
+                          hasUnread ? 'font-medium text-[#008BFF]' : 'font-normal text-neutral-400'
                         }`}
                       >
                         {conv.timestamp}

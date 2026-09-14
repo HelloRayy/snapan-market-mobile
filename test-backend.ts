@@ -36,7 +36,12 @@ async function runTests() {
       console.log('✅ PASS');
       passed++;
     } catch (err: any) {
-      console.log(`❌ FAIL -> ${err.message || err}`);
+      const errMsg = err.message || String(err);
+      if (errMsg.includes('fetch failed') || err.cause?.code === 'ENOTFOUND') {
+        console.log(`❌ FAIL -> Koneksi HTTP/DNS ke Supabase Gagal! (${supabaseUrl} tidak ditemukan/tidak aktif)`);
+      } else {
+        console.log(`❌ FAIL -> ${errMsg}`);
+      }
       failed++;
     }
   }
@@ -117,7 +122,12 @@ async function runTests() {
   if (failed === 0) {
     console.log('🎉 SEMUA API & DATABASE BACKEND 100% BERFUNGSI SEMPURNA!\n');
   } else {
-    console.log('⚠️ Ada beberapa item yang perlu diperbaiki (lihat log FAIL di atas).\n');
+    console.log('⚠️ PENYEBAB UTAMA EROR:');
+    console.log(` 1. Domain '${supabaseUrl}' tidak terdaftar atau project Supabase tidak aktif/salah URL.`);
+    console.log(' 2. Buka Supabase Dashboard (https://supabase.com/dashboard) -> Project Settings -> API.');
+    console.log(' 3. Salin Project URL asli dan anon key asli ke file .env Anda:');
+    console.log('    VITE_SUPABASE_URL=https://<your-project-ref>.supabase.co');
+    console.log('    VITE_SUPABASE_ANON_KEY=eyJhbGciOi...\n');
   }
 }
 

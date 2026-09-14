@@ -1,6 +1,7 @@
 import "package:snapan_market/features/checkout/screens/checkout_screen.dart";
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/components/glass_toolbar_top.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/components/buy_bottom_sheet.dart';
 import 'package:snapan_market/features/feed/components/comment_input_bar.dart';
@@ -231,58 +232,44 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(50.0),
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            border: Border(
-              bottom: BorderSide(color: Color(0xFFF1F5F9), width: 0.5),
-            ),
+      appBar: GlassToolbarTop(
+        leadingIcon: Icons.arrow_back_rounded,
+        leadingTooltip: 'Kembali',
+        onLeadingTap: () => Navigator.pop(context),
+        title: 'Postingan',
+        showVerifiedBadge: true,
+        trailingActions: [
+          GlassToolbarAction(
+            icon: Icons.share_outlined,
+            tooltip: 'Bagikan postingan',
+            onTap: () {
+              HapticFeedback.lightImpact();
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Tautan postingan berhasil disalin 🔗'),
+                  behavior: SnackBarBehavior.floating,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
           ),
-
-          child: SafeArea(
-            bottom: false,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Back Arrow Button
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    behavior: HitTestBehavior.opaque,
-                    child: Container(
-                      width: 44.0,
-                      height: 44.0,
-                      alignment: Alignment.center,
-                      child: const Icon(
-                        Icons.arrow_back_rounded,
-                        size: 22.0,
-                        color: Color(0xFF0F172A),
-                      ),
-                    ),
-                  ),
-
-                  // Centered Title
-                  const Text(
-                    'Postingan',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF0F172A),
-                      letterSpacing: -0.2,
-                    ),
-                  ),
-
-                  // Spacer for Center Alignment
-                  const SizedBox(width: 44.0),
-                ],
-              ),
-            ),
+          GlassToolbarAction(
+            icon: Icons.more_horiz_rounded,
+            tooltip: 'Menu lainnya',
+            onTap: () {
+              HapticFeedback.lightImpact();
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Opsi menu postingan'),
+                  behavior: SnackBarBehavior.floating,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
           ),
-        ),
+        ],
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),

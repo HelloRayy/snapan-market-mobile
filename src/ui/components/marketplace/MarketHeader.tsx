@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Search, X, Menu } from 'lucide-react';
+import { Search, X, Menu, Star } from 'lucide-react';
 
 // Custom Snapan Logotype Text Header
 export const SnapanLogotype: React.FC<{ className?: string }> = ({
   className = "text-[17px] font-black tracking-[-0.03em] text-slate-900 select-none",
 }) => (
   <span className={className}>
-    Snapan <span className="text-[#1d64ec]">Market</span>
+    Snapan <span className="text-[#008bff]">Market</span>
   </span>
 );
 
@@ -41,58 +41,61 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
 
   return (
     <header
-      className="sticky top-0 w-full z-30 font-gt-standard bg-white select-none"
+      className="sticky top-0 w-full z-30 font-gt-standard bg-white/70 backdrop-blur-xl select-none"
       style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
     >
-      {/* Top Main Bar: [ Left: Menu Icon ] --- [ Center: Logotype Text ] --- [ Right: Search Toggle ] */}
-      <div className="max-w-xl mx-auto px-3.5 h-[50px] flex items-center justify-between gap-3 relative select-none">
-        {/* Left Side: Hamburger Menu Button (for Drawer) */}
+      {/* Top Main Bar: Toobar - Top - Chats (pen.dev JZdLQ) */}
+      <div className="max-w-xl mx-auto px-4 h-[56px] flex items-center justify-between relative select-none">
+        {/* Leading Capsule Button (pen.dev meX9e) */}
         <div className="flex items-center">
           <button
             type="button"
             onClick={onMenuClick || onProfileClick}
-            className="w-9 h-9 rounded-full hover:bg-neutral-100 active:bg-neutral-200 flex items-center justify-center text-slate-800 transition-colors active:scale-[0.96] cursor-pointer"
+            className="h-[42px] px-3.5 rounded-full bg-white/75 backdrop-blur-2xl border border-white/80 shadow-[0_8px_35px_rgba(0,0,0,0.12),0_2px_10px_rgba(0,0,0,0.04)] flex items-center justify-center text-[#1a1a1a] hover:bg-white/90 active:scale-95 transition-all cursor-pointer"
             aria-label="Buka Menu Drawer"
           >
-            <Menu className="w-4.5 h-4.5 stroke-[2.2]" />
+            <Menu className="w-5 h-5 text-[#1a1a1a] stroke-[2.2]" />
           </button>
         </div>
 
-        {/* Center: Brand Logotype Text with Micro Hover/Tap Effect */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
+        {/* Center Title + Azure Blue Star (pen.dev uRDD1) */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center gap-1">
           <button
             type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="flex items-center justify-center hover:opacity-85 active:scale-[0.98] transition-transform duration-100 cursor-pointer"
+            className="flex items-center justify-center gap-1.5 hover:opacity-85 active:scale-[0.98] transition-transform duration-100 cursor-pointer"
             aria-label="Snapan Market"
           >
             <SnapanLogotype />
+            <Star className="w-4 h-4 fill-[#008bff] text-[#008bff]" />
           </button>
         </div>
 
-        {/* Right Side: Search Button (Single Page Navigation) */}
+        {/* Trailing Capsule Button (pen.dev FuSew) */}
         <div className="flex items-center">
-          <button
-            type="button"
-            onClick={() => {
-              if (onSearchClick) {
-                onSearchClick();
-              } else {
-                setShowSearchInput(!showSearchInput);
-                if (showSearchInput) {
-                  handleSearchChange('');
+          <div className="h-[42px] px-1 rounded-full bg-white/75 backdrop-blur-2xl border border-white/80 shadow-[0_8px_35px_rgba(0,0,0,0.12),0_2px_10px_rgba(0,0,0,0.04)] flex items-center gap-0.5">
+            <button
+              type="button"
+              onClick={() => {
+                if (onSearchClick) {
+                  onSearchClick();
+                } else {
+                  setShowSearchInput(!showSearchInput);
+                  if (showSearchInput) {
+                    handleSearchChange('');
+                  }
                 }
-              }
-            }}
-            className="w-9 h-9 rounded-full flex items-center justify-center text-slate-800 hover:bg-neutral-100 active:bg-neutral-200 active:scale-[0.96] transition-colors cursor-pointer"
-            aria-label="Cari Akun & Produk"
-          >
-            {showSearchInput ? (
-              <X className="w-4.5 h-4.5 text-slate-900 stroke-[2.2]" />
-            ) : (
-              <Search className="w-4.5 h-4.5 text-slate-900 stroke-[2.2]" />
-            )}
-          </button>
+              }}
+              className="w-9 h-9 rounded-full flex items-center justify-center text-[#1a1a1a] hover:bg-black/5 active:scale-90 transition-all cursor-pointer"
+              aria-label="Cari Akun & Produk"
+            >
+              {showSearchInput ? (
+                <X className="w-4.5 h-4.5 text-[#1a1a1a] stroke-[2.2]" />
+              ) : (
+                <Search className="w-4.5 h-4.5 text-[#1a1a1a] stroke-[2.2]" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 

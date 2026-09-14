@@ -1,6 +1,7 @@
 import "package:snapan_market/features/map/screens/campus_map_screen.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:snapan_market/core/components/glass_toolbar_top.dart";
 import "package:snapan_market/core/navigation/app_slide_page_route.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/features/messages/components/chat_composer_bar.dart";
@@ -137,202 +138,193 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF6F7F9),
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(56.0),
-        child: SafeArea(
-          bottom: false,
-          child: Container(
-            height: 56.0,
-            padding: const EdgeInsets.symmetric(horizontal: 4.0),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              border: Border(
-                bottom: BorderSide(
-                  color: Color(0xFFF1F5F9),
-                  width: 0.8,
-                ),
-              ),
-            ),
-            child: Row(
+  void _showConversationMenu(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Tombol Kembali
-                IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back_rounded,
-                    size: 22.0,
-                    color: Color(0xFF0F172A),
-                  ),
-                  tooltip: "Kembali",
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-
-                // Info Profil Lawan Bicara (Clickable)
-                Expanded(
-                  child: GestureDetector(
-                    onTap: _handleViewProfile,
-                    behavior: HitTestBehavior.opaque,
-                    child: Row(
-                      children: [
-                        // Avatar dengan Indikator Online
-                        Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            Container(
-                              width: 38.0,
-                              height: 38.0,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: const Color(0xFFF1F5F9),
-                                border: Border.all(
-                                  color: const Color(0xFFE2E8F0),
-                                  width: 0.8,
-                                ),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(19.0),
-                                child: Image.network(
-                                  widget.conversation.user.avatar,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => const Icon(
-                                    Icons.person_rounded,
-                                    color: AppColors.muted,
-                                    size: 20.0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            if (widget.conversation.user.isOnline)
-                              Positioned(
-                                bottom: -0.5,
-                                right: -0.5,
-                                child: Container(
-                                  width: 12.0,
-                                  height: 12.0,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: const Color(0xFF31A24C),
-                                    border: Border.all(
-                                      color: Colors.white,
-                                      width: 2.0,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-
-                        const SizedBox(width: 10.0),
-
-                        // Nama dan Status Aktif
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Flexible(
-                                    child: Text(
-                                      widget.conversation.user.name,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        fontSize: 14.5,
-                                        fontWeight: FontWeight.w700,
-                                        color: Color(0xFF0F172A),
-                                        letterSpacing: -0.2,
-                                      ),
-                                    ),
-                                  ),
-                                  if (widget.conversation.user.isVerified) ...[
-                                    const SizedBox(width: 3.5),
-                                    const Icon(
-                                      Icons.verified_rounded,
-                                      size: 14.0,
-                                      color: Color(0xFF1D64EC),
-                                    ),
-                                  ],
-                                ],
-                              ),
-                              const SizedBox(height: 1.5),
-                              Text(
-                                widget.conversation.user.isOnline
-                                    ? "Aktif sekarang"
-                                    : (widget.conversation.user.classGroup ?? "Siswa SMKN 8"),
-                                style: TextStyle(
-                                  fontSize: 11.5,
-                                  color: widget.conversation.user.isOnline
-                                      ? const Color(0xFF31A24C)
-                                      : const Color(0xFF94A3B8),
-                                  fontWeight: widget.conversation.user.isOnline
-                                      ? FontWeight.w600
-                                      : FontWeight.normal,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // Submenu Dropdown 3 Dots
-                PopupMenuButton<String>(
-                  icon: const Icon(
-                    Icons.more_vert_rounded,
-                    size: 21.0,
-                    color: Color(0xFF64748B),
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                  onSelected: (value) {
-                    if (value == "profile") _handleViewProfile();
-                    if (value == "report") _handleReportUser();
-                    if (value == "clear") _handleClearChat();
+                ListTile(
+                  leading: const Icon(Icons.person_outline_rounded, color: Color(0xFF0F172A)),
+                  title: const Text('Lihat Profil', style: TextStyle(fontWeight: FontWeight.w600)),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _handleViewProfile();
                   },
-                  itemBuilder: (ctx) => [
-                    const PopupMenuItem(
-                      value: "profile",
-                      child: Row(
-                        children: [
-                          Icon(Icons.person_outline_rounded, size: 18.0, color: Color(0xFF0F172A)),
-                          SizedBox(width: 10.0),
-                          Text("Lihat Profil", style: TextStyle(fontSize: 13.5)),
-                        ],
-                      ),
-                    ),
-                    const PopupMenuItem(
-                      value: "report",
-                      child: Row(
-                        children: [
-                          Icon(Icons.shield_outlined, size: 18.0, color: Color(0xFF0F172A)),
-                          SizedBox(width: 10.0),
-                          Text("Laporkan Pengguna", style: TextStyle(fontSize: 13.5)),
-                        ],
-                      ),
-                    ),
-                    const PopupMenuItem(
-                      value: "clear",
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete_outline_rounded, size: 18.0, color: Colors.red),
-                          SizedBox(width: 10.0),
-                          Text("Bersihkan Obrolan", style: TextStyle(fontSize: 13.5, color: Colors.red)),
-                        ],
-                      ),
-                    ),
-                  ],
+                ),
+                ListTile(
+                  leading: const Icon(Icons.shield_outlined, color: Color(0xFF0F172A)),
+                  title: const Text('Laporkan Pengguna', style: TextStyle(fontWeight: FontWeight.w600)),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _handleReportUser();
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.delete_outline_rounded, color: Colors.red),
+                  title: const Text('Bersihkan Obrolan', style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600)),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _handleClearChat();
+                  },
                 ),
               ],
             ),
           ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF6F7F9),
+      appBar: GlassToolbarTop(
+        leadingIcon: Icons.arrow_back_rounded,
+        leadingTooltip: "Kembali",
+        onLeadingTap: () => Navigator.of(context).pop(),
+        showVerifiedBadge: false,
+        titleWidget: GestureDetector(
+          onTap: _handleViewProfile,
+          behavior: HitTestBehavior.opaque,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Avatar dengan Indikator Online
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    width: 34.0,
+                    height: 34.0,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFFF1F5F9),
+                      border: Border.all(
+                        color: const Color(0xFFE2E8F0),
+                        width: 0.8,
+                      ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(17.0),
+                      child: Image.network(
+                        widget.conversation.user.avatar,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const Icon(
+                          Icons.person_rounded,
+                          color: AppColors.muted,
+                          size: 18.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (widget.conversation.user.isOnline)
+                    Positioned(
+                      bottom: -0.5,
+                      right: -0.5,
+                      child: Container(
+                        width: 10.0,
+                        height: 10.0,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFF31A24C),
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(width: 8.0),
+              Flexible(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            widget.conversation.user.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontFamily: 'SF Pro',
+                              fontSize: 14.5,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF0F172A),
+                              letterSpacing: -0.2,
+                            ),
+                          ),
+                        ),
+                        if (widget.conversation.user.isVerified) ...[
+                          const SizedBox(width: 3.5),
+                          const Icon(
+                            Icons.verified_rounded,
+                            size: 14.0,
+                            color: Color(0xFF008BFF),
+                          ),
+                        ],
+                      ],
+                    ),
+                    Text(
+                      widget.conversation.user.isOnline
+                          ? "Aktif sekarang"
+                          : (widget.conversation.user.classGroup ?? "Siswa SMKN 8"),
+                      style: TextStyle(
+                        fontFamily: 'SF Pro',
+                        fontSize: 11.0,
+                        color: widget.conversation.user.isOnline
+                            ? const Color(0xFF31A24C)
+                            : const Color(0xFF94A3B8),
+                        fontWeight: widget.conversation.user.isOnline
+                            ? FontWeight.w600
+                            : FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
+        trailingActions: [
+          GlassToolbarAction(
+            icon: Icons.phone_outlined,
+            tooltip: 'Panggilan',
+            onTap: () {
+              HapticFeedback.lightImpact();
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Fitur panggilan suara akan segera hadir! 📞'),
+                  behavior: SnackBarBehavior.floating,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
+          ),
+          GlassToolbarAction(
+            icon: Icons.more_horiz_rounded,
+            tooltip: 'Menu lainnya',
+            onTap: () {
+              HapticFeedback.lightImpact();
+              _showConversationMenu(context);
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [

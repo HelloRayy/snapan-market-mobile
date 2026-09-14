@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/components/glass_toolbar_top.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/messages/components/conversation_list_item.dart';
@@ -27,6 +28,7 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _activeFilter = 'inbox'; // 'inbox' | 'requests'
+  bool _showSearchBar = false;
 
   @override
   void initState() {
@@ -112,73 +114,58 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
               ),
               child: Column(
                 children: [
-                  // Baris 1: Header Top (Back di kiri, Judul di tengah, Aksi di kanan)
-                  Container(
-                    height: 48.0,
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        // Judul Tengah
-                        const Center(
-                          child: Text(
-                            'Pesan',
-                            style: TextStyle(
-                              fontSize: 17.0,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.ink,
-                              letterSpacing: -0.3,
-                            ),
+                  // Baris 1: Toobar - Top - Chats (pen.dev JZdLQ)
+                  GlassToolbarTop(
+                    leadingText: (widget.showBackButton || widget.onBack != null) ? null : 'Edit',
+                    leadingIcon: (widget.showBackButton || widget.onBack != null) ? Icons.arrow_back_rounded : null,
+                    leadingTooltip: (widget.showBackButton || widget.onBack != null) ? 'Kembali' : 'Edit Obrolan',
+                    onLeadingTap: () {
+                      if (widget.onBack != null) {
+                        widget.onBack!();
+                      } else if (widget.showBackButton) {
+                        Navigator.of(context).pop();
+                      } else {
+                        HapticFeedback.lightImpact();
+                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Mode edit obrolan aktif ✨'),
+                            behavior: SnackBarBehavior.floating,
+                            duration: Duration(seconds: 2),
                           ),
-                        ),
-
-                        // Tombol Kembali (Jika ada)
-                        if (widget.showBackButton || widget.onBack != null)
-                          Positioned(
-                            left: 0,
-                            child: IconButton(
-                              icon: const Icon(
-                                Icons.arrow_back_rounded,
-                                size: 22.0,
-                                color: AppColors.ink,
-                              ),
-                              tooltip: 'Kembali',
-                              onPressed: () {
-                                if (widget.onBack != null) {
-                                  widget.onBack!();
-                                } else {
-                                  Navigator.of(context).pop();
-                                }
-                              },
-                            ),
-                          ),
-
-                        // Tombol Pesan Baru Kanan (SquarePen)
-                        Positioned(
-                          right: 0,
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.edit_note_rounded,
-                              size: 24.0,
-                              color: AppColors.ink,
-                            ),
-                            tooltip: 'Pesan baru',
-                            onPressed: _handleNewChat,
-                          ),
-                        ),
-                      ],
-                    ),
+                        );
+                      }
+                    },
+                    title: 'Chats',
+                    showVerifiedBadge: true,
+                    trailingActions: [
+                      GlassToolbarAction(
+                        icon: Icons.search_rounded,
+                        tooltip: 'Cari pesan',
+                        onTap: () {
+                          setState(() {
+                            _showSearchBar = !_showSearchBar;
+                          });
+                        },
+                      ),
+                      GlassToolbarAction(
+                        icon: Icons.edit_note_rounded,
+                        tooltip: 'Pesan baru',
+                        onTap: _handleNewChat,
+                      ),
+                    ],
                   ),
 
-                  // Baris 2: SearchBar Kapsul
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 10.0),
-                    child: Container(
-                      height: 38.0,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF4F5F7),
-                        borderRadius: BorderRadius.circular(19.0),
-                      ),
+                  // Baris 2: SearchBar Kapsul (Aktif via tombol search toolbar)
+                  if (_showSearchBar || _searchQuery.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 10.0),
+                      child: Container(
+                        height: 38.0,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF4F5F7),
+                          borderRadius: BorderRadius.circular(19.0),
+                        ),
                       padding: const EdgeInsets.symmetric(horizontal: 12.0),
                       child: Row(
                         children: [

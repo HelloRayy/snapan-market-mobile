@@ -429,12 +429,15 @@ class _CommentInputBarState extends State<CommentInputBar> {
                   ),
                 ),
               ),
-            ],
+            ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  ],
+),
+);
+}
 }
 
 

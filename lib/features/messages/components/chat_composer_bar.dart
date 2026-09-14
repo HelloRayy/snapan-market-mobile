@@ -266,8 +266,11 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
               ),
             ),
           ),
-        ],
+        ),
       ),
-    );
-  }
+    ),
+  ],
+),
+);
+}
 }

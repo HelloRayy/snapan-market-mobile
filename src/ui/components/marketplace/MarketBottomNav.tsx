@@ -40,7 +40,7 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
       }}
     >
       {/* Floating Liquid Frosted Glass Pill Dock (pen.dev HaFs1 / HomeBottomNavBar) */}
-      <nav className="pointer-events-auto w-full max-w-[360px] h-[62px] rounded-[31px] bg-white/70 backdrop-blur-2xl border border-white/90 shadow-[0_8px_35px_rgba(0,0,0,0.12)] p-1 flex items-center justify-around">
+      <nav className="pointer-events-auto w-full max-w-[360px] h-[62px] rounded-[31px] bg-white/70 backdrop-blur-2xl shadow-[0_8px_35px_rgba(0,0,0,0.12)] p-1 flex items-center justify-around">
         {navTabs.map((tab) => {
           const Icon = tab.icon;
           const isActive =

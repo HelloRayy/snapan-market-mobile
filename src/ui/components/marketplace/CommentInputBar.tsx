@@ -134,7 +134,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
     >
       {/* Floating Reply Banner if replying to a user */}
       {replyToUser && (
-        <div className="flex items-center justify-between px-3.5 py-1.5 mb-1.5 bg-white/95 backdrop-blur-md rounded-full border border-neutral-200/90 text-[12px] text-slate-700 shadow-xs animate-in fade-in select-none">
+        <div className="flex items-center justify-between px-3.5 py-1.5 mb-1.5 bg-white/75 backdrop-blur-2xl rounded-full border border-white/80 text-[12px] text-slate-700 shadow-xs animate-in fade-in select-none">
           <span className="flex items-center gap-1 truncate">
             <span className="text-neutral-500 font-normal">Membalas</span>
             <strong className="text-[#1d64ec] font-semibold">@{replyToUser.replace(/^@/, '')}</strong>
@@ -156,7 +156,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
       )}
 
       {/* Floating White Pill Dock Container */}
-      <div className="bg-white/95 backdrop-blur-xl border border-neutral-200/80 p-1.5 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.12)] flex items-center gap-2">
+      <div className="bg-white/75 backdrop-blur-2xl border border-white/80 p-1.5 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.12)] flex items-center gap-2">
         <form onSubmit={handleSubmit} className="flex items-center gap-2 w-full min-w-0">
           {/* Left Slot: ArrowLeft Button (if in Product Mode) OR User Avatar (in Thread Mode) */}
           {onClose ? (

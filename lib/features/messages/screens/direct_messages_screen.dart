@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
@@ -341,14 +342,8 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
 
     return Container(
       height: 41.0,
-      padding: const EdgeInsets.all(3.0),
       decoration: BoxDecoration(
-        color: Colors.white,
         borderRadius: BorderRadius.circular(21.0),
-        border: Border.all(
-          color: const Color(0xFFEDEDED),
-          width: 1.0,
-        ),
         boxShadow: const [
           // pen.dev Folders Fill + Shadow (color: #0000001f, y: 8, blur: 35)
           BoxShadow(
@@ -363,23 +358,48 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
           ),
         ],
       ),
-      child: Row(
-        children: [
-          _buildFolderTabItem(
-            key: 'inbox',
-            label: 'Obrolan',
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(21.0),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
+          child: Container(
+            height: 41.0,
+            padding: const EdgeInsets.all(3.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(21.0),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.white.withValues(alpha: 0.75),
+                  Colors.white.withValues(alpha: 0.48),
+                ],
+              ),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.90),
+                width: 1.2,
+              ),
+            ),
+            child: Row(
+              children: [
+                _buildFolderTabItem(
+                  key: 'inbox',
+                  label: 'Obrolan',
+                ),
+                _buildFolderTabItem(
+                  key: 'requests',
+                  label: 'Pembeli',
+                  count: buyerUnreadCount > 0 ? buyerUnreadCount : null,
+                ),
+                _buildFolderTabItem(
+                  key: 'unread',
+                  label: 'Belum Dibaca',
+                  count: totalUnreadCount > 0 ? totalUnreadCount : null,
+                ),
+              ],
+            ),
           ),
-          _buildFolderTabItem(
-            key: 'requests',
-            label: 'Pembeli',
-            count: buyerUnreadCount > 0 ? buyerUnreadCount : null,
-          ),
-          _buildFolderTabItem(
-            key: 'unread',
-            label: 'Belum Dibaca',
-            count: totalUnreadCount > 0 ? totalUnreadCount : null,
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -404,8 +424,16 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
           height: 35.0, // pen.dev Folders item height: 35
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           decoration: BoxDecoration(
-            color: isActive ? const Color(0xFFEDEDED) : Colors.transparent, // pen.dev #EDEDED
+            color: isActive
+                ? const Color(0xFFEDEDED).withValues(alpha: 0.72)
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(17.5),
+            border: isActive
+                ? Border.all(
+                    color: Colors.white.withValues(alpha: 0.75),
+                    width: 0.8,
+                  )
+                : null,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

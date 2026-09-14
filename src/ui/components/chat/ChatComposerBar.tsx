@@ -33,7 +33,7 @@ export const ChatComposerBar: React.FC<ChatComposerBarProps> = ({
       className={`sticky bottom-0 inset-x-0 z-40 bg-transparent px-4 pt-1.5 pb-[max(0.75rem,calc(env(safe-area-inset-bottom)+6px))] font-gt-standard select-none ${className}`}
     >
       <form onSubmit={handleSubmit} className="flex items-center gap-1.5 w-full max-w-full">
-        {/* Leading Button (pen.dev Frame 1 jxdH0: 42x42 circle, frosted white + shadow) */}
+        {/* Leading Button (pen.dev Frame 1 jxdH0: 42x42 circle, frosted liquid glass + shadow) */}
         <button
           type="button"
           onClick={() => {
@@ -41,13 +41,13 @@ export const ChatComposerBar: React.FC<ChatComposerBarProps> = ({
             onAttachmentClick?.();
           }}
           aria-label="Lampirkan berkas"
-          className="w-[42px] h-[42px] min-w-[42px] rounded-full bg-white border border-[#ededed] shadow-[0_8px_35px_rgba(0,0,0,0.12),0_2px_10px_rgba(0,0,0,0.04)] flex items-center justify-center text-[#1a1a1a] hover:bg-neutral-50 active:scale-95 transition-all cursor-pointer shrink-0"
+          className="w-[42px] h-[42px] min-w-[42px] rounded-full bg-white/75 backdrop-blur-2xl border border-white/80 shadow-[0_8px_35px_rgba(0,0,0,0.12),0_2px_10px_rgba(0,0,0,0.04)] flex items-center justify-center text-[#1a1a1a] hover:bg-white/90 active:scale-95 transition-all cursor-pointer shrink-0"
         >
           <Paperclip className="w-5 h-5 text-[#1a1a1a]" />
         </button>
 
-        {/* Write Bar (pen.dev Frame 1 cXg3A: cornerRadius 21, height 42, frosted white + shadow) */}
-        <div className="flex-1 min-w-0 h-[42px] bg-white border border-[#ededed] shadow-[0_8px_35px_rgba(0,0,0,0.12),0_2px_10px_rgba(0,0,0,0.04)] rounded-full pl-3.5 pr-1 flex items-center gap-1">
+        {/* Write Bar (pen.dev Frame 1 cXg3A: cornerRadius 21, height 42, frosted liquid glass + shadow) */}
+        <div className="flex-1 min-w-0 h-[42px] bg-white/75 backdrop-blur-2xl border border-white/80 shadow-[0_8px_35px_rgba(0,0,0,0.12),0_2px_10px_rgba(0,0,0,0.04)] rounded-full pl-3.5 pr-1 flex items-center gap-1">
           <input
             ref={inputRef}
             type="text"

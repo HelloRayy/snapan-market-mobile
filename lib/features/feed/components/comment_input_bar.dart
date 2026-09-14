@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -127,14 +128,8 @@ class _CommentInputBarState extends State<CommentInputBar> {
           if (widget.replyToUser != null) ...[
             Container(
               margin: const EdgeInsets.only(bottom: 6.0),
-              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
               decoration: BoxDecoration(
-                color: Colors.white,
                 borderRadius: BorderRadius.circular(16.0),
-                border: Border.all(
-                  color: const Color(0xFFEDEDED),
-                  width: 1.0,
-                ),
                 boxShadow: const [
                   BoxShadow(
                     color: Color(0x1F000000),
@@ -143,58 +138,82 @@ class _CommentInputBarState extends State<CommentInputBar> {
                   ),
                 ],
               ),
-              child: Row(
-                children: [
-                  // Vertical blue indicator line (pen.dev gFODz: width 2, height 38, fill #008BFF)
-                  Container(
-                    width: 2.5,
-                    height: 24.0,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16.0),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF008BFF),
-                      borderRadius: BorderRadius.circular(2.0),
-                    ),
-                  ),
-                  const SizedBox(width: 8.0),
-                  Expanded(
-                    child: RichText(
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      text: TextSpan(
-                        style: const TextStyle(
-                          fontSize: 13.0,
-                          color: Color(0xFF999999),
-                        ),
-                        children: [
-                          const TextSpan(
-                            text: 'Membalas ',
-                            style: TextStyle(fontWeight: FontWeight.w500),
-                          ),
-                          TextSpan(
-                            text: '@${widget.replyToUser!.replaceAll('@', '')}',
-                            style: const TextStyle(
-                              color: Color(0xFF008BFF), // pen.dev #008BFF
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                      borderRadius: BorderRadius.circular(16.0),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.white.withValues(alpha: 0.75),
+                          Colors.white.withValues(alpha: 0.48),
                         ],
                       ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      widget.onCancelReply?.call();
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.all(4.0),
-                      child: Icon(
-                        Icons.close_rounded,
-                        size: 18.0,
-                        color: Color(0xFF999999), // pen.dev Close Symbol #999999
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.90),
+                        width: 1.2,
                       ),
                     ),
+                    child: Row(
+                      children: [
+                        // Vertical blue indicator line (pen.dev gFODz: width 2, height 38, fill #008BFF)
+                        Container(
+                          width: 2.5,
+                          height: 24.0,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF008BFF),
+                            borderRadius: BorderRadius.circular(2.0),
+                          ),
+                        ),
+                        const SizedBox(width: 8.0),
+                        Expanded(
+                          child: RichText(
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            text: TextSpan(
+                              style: const TextStyle(
+                                fontSize: 13.0,
+                                color: Color(0xFF999999),
+                              ),
+                              children: [
+                                const TextSpan(
+                                  text: 'Membalas ',
+                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                ),
+                                TextSpan(
+                                  text: '@${widget.replyToUser!.replaceAll('@', '')}',
+                                  style: const TextStyle(
+                                    color: Color(0xFF008BFF), // pen.dev #008BFF
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            widget.onCancelReply?.call();
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(4.0),
+                            child: Icon(
+                              Icons.close_rounded,
+                              size: 18.0,
+                              color: Color(0xFF999999), // pen.dev Close Symbol #999999
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
+                ),
               ),
             ),
           ],
@@ -205,7 +224,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              // 1. LEADING BUTTON (pen.dev jxdH0: 42x42 circle, fill+shadow)
+              // 1. LEADING BUTTON (pen.dev jxdH0: 42x42 circle, frosted liquid glass + shadow)
               GestureDetector(
                 onTap: () {
                   HapticFeedback.selectionClick();
@@ -221,14 +240,9 @@ class _CommentInputBarState extends State<CommentInputBar> {
                 child: Container(
                   width: 42.0,
                   height: 42.0,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(
-                      color: const Color(0xFFEDEDED),
-                      width: 1.0,
-                    ),
-                    boxShadow: const [
+                    boxShadow: [
                       // Diffuse outer shadow from pen.dev Frame 1 (#0000001f, y=8, blur=35)
                       BoxShadow(
                         color: Color(0x1F000000),
@@ -242,45 +256,63 @@ class _CommentInputBarState extends State<CommentInputBar> {
                       ),
                     ],
                   ),
-                  child: Center(
-                    child: widget.userAvatar != null && widget.userAvatar!.isNotEmpty
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(15.0),
-                            child: Image.network(
-                              widget.userAvatar!,
-                              width: 30.0,
-                              height: 30.0,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => const Icon(
-                                Icons.attach_file_rounded,
-                                color: Color(0xFF1A1A1A),
-                                size: 20.0,
-                              ),
-                            ),
-                          )
-                        : const Icon(
-                            Icons.attach_file_rounded,
-                            color: Color(0xFF1A1A1A), // pen.dev #1A1A1A
-                            size: 20.0,
+                  child: ClipOval(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
+                      child: Container(
+                        width: 42.0,
+                        height: 42.0,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.white.withValues(alpha: 0.72),
+                              Colors.white.withValues(alpha: 0.45),
+                            ],
                           ),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.90),
+                            width: 1.2,
+                          ),
+                        ),
+                        child: Center(
+                          child: widget.userAvatar != null && widget.userAvatar!.isNotEmpty
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  child: Image.network(
+                                    widget.userAvatar!,
+                                    width: 30.0,
+                                    height: 30.0,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => const Icon(
+                                      Icons.attach_file_rounded,
+                                      color: Color(0xFF1A1A1A),
+                                      size: 20.0,
+                                    ),
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.attach_file_rounded,
+                                  color: Color(0xFF1A1A1A), // pen.dev #1A1A1A
+                                  size: 20.0,
+                                ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
 
               const SizedBox(width: 6.0), // pen.dev gap: 6
 
-              // 2. WRITE BAR (pen.dev cXg3A: cornerRadius 21, height 42)
+              // 2. WRITE BAR (pen.dev cXg3A: cornerRadius 21, height 42, frosted liquid glass + shadow)
               Expanded(
                 child: Container(
                   constraints: const BoxConstraints(minHeight: 42.0),
-                  padding: const EdgeInsets.fromLTRB(14.0, 3.0, 3.0, 3.0),
                   decoration: BoxDecoration(
-                    color: Colors.white,
                     borderRadius: BorderRadius.circular(21.0),
-                    border: Border.all(
-                      color: const Color(0xFFEDEDED),
-                      width: 1.0,
-                    ),
                     boxShadow: const [
                       // Diffuse outer shadow from pen.dev Frame 1 (#0000001f, y=8, blur=35)
                       BoxShadow(
@@ -295,9 +327,31 @@ class _CommentInputBarState extends State<CommentInputBar> {
                       ),
                     ],
                   ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(21.0),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
+                      child: Container(
+                        constraints: const BoxConstraints(minHeight: 42.0),
+                        padding: const EdgeInsets.fromLTRB(14.0, 3.0, 3.0, 3.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(21.0),
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.white.withValues(alpha: 0.72),
+                              Colors.white.withValues(alpha: 0.45),
+                            ],
+                          ),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.90),
+                            width: 1.2,
+                          ),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
                       // Text Input
                       Expanded(
                         child: TextField(

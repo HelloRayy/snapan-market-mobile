@@ -105,63 +105,92 @@ class HomeBottomNavBar extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(31.0),
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
+                filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
                 child: Container(
                   height: 62.0,
                   padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 3.0),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.85), // Frosted Liquid Glass
                     borderRadius: BorderRadius.circular(31.0),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.white.withValues(alpha: 0.70),
+                        Colors.white.withValues(alpha: 0.42),
+                      ],
+                    ),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.80),
+                      color: Colors.white.withValues(alpha: 0.90),
                       width: 1.2,
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  child: Stack(
                     children: [
-                      // Tab 1: Home
-                      _DockTabItem(
-                        isActive: currentTab == HomeNavTab.home,
-                        label: 'Home',
-                        glyph: HomeNavGlyph(
-                          isActive: currentTab == HomeNavTab.home,
+                      // Specular top highlight line for authentic liquid glass depth
+                      Positioned(
+                        top: 0.0,
+                        left: 24.0,
+                        right: 24.0,
+                        height: 1.0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.white.withValues(alpha: 0.0),
+                                Colors.white.withValues(alpha: 0.95),
+                                Colors.white.withValues(alpha: 0.0),
+                              ],
+                            ),
+                          ),
                         ),
-                        onTap: () => onTabSelected(HomeNavTab.home),
                       ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          // Tab 1: Home
+                          _DockTabItem(
+                            isActive: currentTab == HomeNavTab.home,
+                            label: 'Home',
+                            glyph: HomeNavGlyph(
+                              isActive: currentTab == HomeNavTab.home,
+                            ),
+                            onTap: () => onTabSelected(HomeNavTab.home),
+                          ),
 
-                      // Tab 2: Pesan (Chats)
-                      _DockTabItem(
-                        isActive: currentTab == HomeNavTab.messages,
-                        label: 'Pesan',
-                        glyph: PaperPlaneNavGlyph(
-                          isActive: currentTab == HomeNavTab.messages,
-                          hasBadge: hasUnreadMessages,
-                          badgeCount: unreadMessagesCount,
-                        ),
-                        onTap: () => onTabSelected(HomeNavTab.messages),
-                      ),
+                          // Tab 2: Pesan (Chats)
+                          _DockTabItem(
+                            isActive: currentTab == HomeNavTab.messages,
+                            label: 'Pesan',
+                            glyph: PaperPlaneNavGlyph(
+                              isActive: currentTab == HomeNavTab.messages,
+                              hasBadge: hasUnreadMessages,
+                              badgeCount: unreadMessagesCount,
+                            ),
+                            onTap: () => onTabSelected(HomeNavTab.messages),
+                          ),
 
-                      // Tab 3: Aktivitas
-                      _DockTabItem(
-                        isActive: currentTab == HomeNavTab.activity,
-                        label: 'Aktivitas',
-                        glyph: HeartNavGlyph(
-                          isActive: currentTab == HomeNavTab.activity,
-                          hasBadge: hasUnreadActivity,
-                        ),
-                        onTap: () => onTabSelected(HomeNavTab.activity),
-                      ),
+                          // Tab 3: Aktivitas
+                          _DockTabItem(
+                            isActive: currentTab == HomeNavTab.activity,
+                            label: 'Aktivitas',
+                            glyph: HeartNavGlyph(
+                              isActive: currentTab == HomeNavTab.activity,
+                              hasBadge: hasUnreadActivity,
+                            ),
+                            onTap: () => onTabSelected(HomeNavTab.activity),
+                          ),
 
-                      // Tab 4: Profil
-                      _DockTabItem(
-                        isActive: currentTab == HomeNavTab.profile,
-                        label: 'Profil',
-                        glyph: UserNavGlyph(
-                          isActive: currentTab == HomeNavTab.profile,
-                          userAvatar: userAvatar,
-                        ),
-                        onTap: () => onTabSelected(HomeNavTab.profile),
+                          // Tab 4: Profil
+                          _DockTabItem(
+                            isActive: currentTab == HomeNavTab.profile,
+                            label: 'Profil',
+                            glyph: UserNavGlyph(
+                              isActive: currentTab == HomeNavTab.profile,
+                              userAvatar: userAvatar,
+                            ),
+                            onTap: () => onTabSelected(HomeNavTab.profile),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -225,9 +254,17 @@ class _DockTabItemState extends State<_DockTabItem> {
             height: 56.0,
             padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
             decoration: BoxDecoration(
-              // pen.dev Selection capsule (cornerRadius 100, fill #EDEDED)
-              color: widget.isActive ? selectionFill : Colors.transparent,
+              // Translucent frosted glass capsule with subtle specular highlight rim
+              color: widget.isActive
+                  ? const Color(0xFFEDEDED).withValues(alpha: 0.72)
+                  : Colors.transparent,
               borderRadius: BorderRadius.circular(28.0),
+              border: widget.isActive
+                  ? Border.all(
+                      color: Colors.white.withValues(alpha: 0.75),
+                      width: 0.8,
+                    )
+                  : null,
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

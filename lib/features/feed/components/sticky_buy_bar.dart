@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -35,51 +36,79 @@ class StickyBuyBar extends StatelessWidget {
         bottom: bottomPadding > 0 ? bottomPadding + 8.0 : 16.0,
       ),
       child: Container(
-        padding: const EdgeInsets.all(6.0),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.96),
           borderRadius: BorderRadius.circular(32.0),
-          border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
           boxShadow: const [
             BoxShadow(
-              color: Color(0x14000000),
-              blurRadius: 20.0,
-              offset: Offset(0, 4),
+              color: Color(0x1F000000),
+              blurRadius: 35.0,
+              offset: Offset(0, 8),
             ),
             BoxShadow(
               color: Color(0x0A000000),
-              blurRadius: 6.0,
-              offset: Offset(0, 1),
+              blurRadius: 10.0,
+              offset: Offset(0, 2),
             ),
           ],
         ),
-        child: Row(
-          children: [
-            // Left Secondary Button: "Tanya Penjual" (Chat icon)
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  onChatClick?.call();
-                },
-                borderRadius: BorderRadius.circular(22.0),
-                child: Container(
-                  width: 44.0,
-                  height: 44.0,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
-                  ),
-                  child: const Icon(
-                    Icons.chat_bubble_outline_rounded,
-                    size: 20.0,
-                    color: Color(0xFF0F172A),
-                  ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(32.0),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
+            child: Container(
+              padding: const EdgeInsets.all(6.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(32.0),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.white.withValues(alpha: 0.75),
+                    Colors.white.withValues(alpha: 0.48),
+                  ],
+                ),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.90),
+                  width: 1.2,
                 ),
               ),
-            ),
+              child: Row(
+                children: [
+                  // Left Secondary Button: "Tanya Penjual" (Chat icon)
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        onChatClick?.call();
+                      },
+                      borderRadius: BorderRadius.circular(22.0),
+                      child: Container(
+                        width: 44.0,
+                        height: 44.0,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.white.withValues(alpha: 0.85),
+                              Colors.white.withValues(alpha: 0.60),
+                            ],
+                          ),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.90),
+                            width: 1.0,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.chat_bubble_outline_rounded,
+                          size: 20.0,
+                          color: Color(0xFF0F172A),
+                        ),
+                      ),
+                    ),
+                  ),
 
             const SizedBox(width: 8.0),
 
@@ -178,7 +207,10 @@ class StickyBuyBar extends StatelessWidget {
                 ),
               ),
             ),
-          ],
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

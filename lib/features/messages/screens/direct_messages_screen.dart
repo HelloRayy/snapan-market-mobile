@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/glass_toolbar_top.dart';
@@ -369,89 +368,60 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
         setState(() => _activeFilter = key);
       },
       behavior: HitTestBehavior.opaque,
-      child: Container(
-        height: 38.0,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOutCubic,
+        height: 36.0,
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(19.0),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0x1F000000),
-              blurRadius: isActive ? 20.0 : 10.0,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(19.0),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
-            child: Container(
-              height: 38.0,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(19.0),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: isActive
-                      ? [
-                          const Color(0xFFEDEDED).withValues(alpha: 0.95),
-                          const Color(0xFFE2E2E2).withValues(alpha: 0.85),
-                        ]
-                      : [
-                          Colors.white.withValues(alpha: 0.75),
-                          Colors.white.withValues(alpha: 0.50),
-                        ],
-                ),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: isActive ? 0.95 : 0.80),
-                  width: 1.1,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontFamily: 'SF Pro',
-                      fontSize: 14.0,
-                      fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-                      color: isActive ? const Color(0xFF000000) : const Color(0xFF787574),
-                      letterSpacing: -0.15,
-                    ),
-                  ),
-                  if (count != null && count > 0) ...[
-                    const SizedBox(width: 6.0),
-                    Container(
-                      constraints: const BoxConstraints(
-                        minWidth: 18.0,
-                        minHeight: 18.0,
-                      ),
-                      height: 18.0,
-                      padding: count > 9 ? const EdgeInsets.symmetric(horizontal: 4.0) : EdgeInsets.zero,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF008BFF), // Azure Blue #008BFF
-                        borderRadius: BorderRadius.circular(9.0),
-                      ),
-                      child: Text(
-                        count > 99 ? '99+' : count.toString(),
-                        style: const TextStyle(
-                          fontFamily: 'SF Pro',
-                          color: Colors.white,
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w700,
-                          height: 1.0,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
+          color: isActive ? const Color(0xFFF1F5F9) : Colors.transparent,
+          borderRadius: BorderRadius.circular(18.0),
+          border: Border.all(
+            color: isActive ? const Color(0xFFE2E8F0) : const Color(0xFFF1F5F9),
+            width: 1.0,
           ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontFamily: 'SF Pro',
+                fontSize: 14.0,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                color: isActive ? const Color(0xFF0F172A) : const Color(0xFF64748B),
+                letterSpacing: -0.2,
+              ),
+            ),
+            if (count != null && count > 0) ...[
+              const SizedBox(width: 6.0),
+              Container(
+                constraints: const BoxConstraints(
+                  minWidth: 18.0,
+                  minHeight: 18.0,
+                ),
+                height: 18.0,
+                padding: count > 9 ? const EdgeInsets.symmetric(horizontal: 4.0) : EdgeInsets.zero,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF008BFF), // Azure Blue #008BFF
+                  borderRadius: BorderRadius.circular(9.0),
+                ),
+                child: Text(
+                  count > 99 ? '99+' : count.toString(),
+                  style: const TextStyle(
+                    fontFamily: 'SF Pro',
+                    color: Colors.white,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w700,
+                    height: 1.0,
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );

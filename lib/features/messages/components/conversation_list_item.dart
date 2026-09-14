@@ -41,73 +41,79 @@ class ConversationListItem extends StatelessWidget {
         highlightColor: const Color(0xFFF2F4F7),
         splashColor: const Color(0xFFF2F4F7),
         child: Container(
-          height: 72.0, // Standard modern chat list row height
+          height: 74.0, // pen.dev chaat-1 row height
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // ===============================================================
-              // 1. AVATAR BLOCK (Standard 48x48) with Online Status Dot
+              // 1. AVATAR BLOCK with Story Outline Gradient from pen.dev chaat-1
               // ===============================================================
               Padding(
                 padding: const EdgeInsets.only(right: 12.0),
                 child: SizedBox(
-                  width: 48.0,
-                  height: 48.0,
+                  width: 52.0,
+                  height: 52.0,
                   child: Stack(
-                    clipBehavior: Clip.none,
+                    alignment: Alignment.center,
                     children: [
-                      // Full 48x48 Circular Avatar
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(24.0),
-                        child: Container(
-                          width: 48.0,
-                          height: 48.0,
-                          color: const Color(0xFFF1F5F9),
-                          child: Image.network(
-                            conversation.user.avatar,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => const Icon(
-                              Icons.person_rounded,
-                              color: AppColors.muted,
-                              size: 24.0,
+                      // Story Outline Gradient Ring (pen.dev chaat-1: #00C770 -> #00A6FA)
+                      if (conversation.user.isOnline)
+                        Container(
+                          width: 52.0,
+                          height: 52.0,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: LinearGradient(
+                              begin: Alignment.topRight,
+                              end: Alignment.bottomLeft,
+                              colors: [
+                                Color(0xFF00C770), // pen.dev #00c770
+                                Color(0xFF00A6FA), // pen.dev #00a6fa
+                              ],
                             ),
                           ),
                         ),
-                      ),
 
-                      // Status Dot (11x11 with 2px white border)
-                      if (conversation.user.isOnline)
-                        Positioned(
-                          right: 0,
-                          bottom: 0,
+                      // Inner Gap + Circular Avatar
+                      Container(
+                        width: conversation.user.isOnline ? 47.0 : 50.0,
+                        height: conversation.user.isOnline ? 47.0 : 50.0,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                        ),
+                        padding: EdgeInsets.all(conversation.user.isOnline ? 1.5 : 0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(25.0),
                           child: Container(
-                            width: 11.0,
-                            height: 11.0,
-                            decoration: BoxDecoration(
-                              color: onlineGreen,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 2.0,
+                            color: const Color(0xFFF1F5F9),
+                            child: Image.network(
+                              conversation.user.avatar,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => const Icon(
+                                Icons.person_rounded,
+                                color: AppColors.muted,
+                                size: 26.0,
                               ),
                             ),
                           ),
                         ),
+                      ),
                     ],
                   ),
                 ),
               ),
 
               // ===============================================================
-              // 2. CONTENTS: Title and Message
+              // 2. CONTENTS: Title and Message (pen.dev chaat-1 ihCZC)
               // ===============================================================
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Row 1: Title (Name) + Badges (Verified / Class)
+                    // Row 1: Title (Name) + Badges (Verified only, NO school badge)
                     Row(
                       children: [
                         Flexible(
@@ -116,10 +122,10 @@ class ConversationListItem extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: 16.0,
+                              fontSize: 17.0, // pen.dev chaat-1 UCIvl: SF Pro 17px
                               fontWeight: hasUnread ? FontWeight.w600 : FontWeight.w500,
                               color: titleBlack,
-                              letterSpacing: -0.3,
+                              letterSpacing: -0.43,
                               height: 1.25,
                             ),
                           ),
@@ -128,19 +134,8 @@ class ConversationListItem extends StatelessWidget {
                           const SizedBox(width: 4.0),
                           const Icon(
                             Icons.verified_rounded,
-                            size: 13.5,
-                            color: azurePrimary, // pen.dev #008BFF
-                          ),
-                        ],
-                        if (conversation.user.classGroup != null) ...[
-                          const SizedBox(width: 5.0),
-                          Text(
-                            conversation.user.classGroup!,
-                            style: const TextStyle(
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFF94A3B8),
-                            ),
+                            size: 14.0,
+                            color: azurePrimary, // pen.dev syXho #008BFF
                           ),
                         ],
                       ],
@@ -148,13 +143,13 @@ class ConversationListItem extends StatelessWidget {
 
                     const SizedBox(height: 3.0),
 
-                    // Row 2: Message preview
+                    // Row 2: Message preview (pen.dev chaat-1 azG1g: SF Pro 15px, #3C3C4399)
                     Row(
                       children: [
                         if (conversation.isSender) ...[
                           Icon(
                             Icons.done_all_rounded,
-                            size: 14.0,
+                            size: 15.0,
                             color: hasUnread ? const Color(0xFF94A3B8) : azurePrimary,
                           ),
                           const SizedBox(width: 4.0),
@@ -164,12 +159,12 @@ class ConversationListItem extends StatelessWidget {
                             conversation.lastMessage,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              fontWeight: hasUnread ? FontWeight.w500 : FontWeight.normal,
-                              color: hasUnread ? const Color(0xFF1E293B) : secondaryInk,
-                              letterSpacing: -0.15,
-                              height: 1.25,
+                            style: const TextStyle(
+                              fontSize: 15.0, // pen.dev chaat-1 azG1g: 15px
+                              fontWeight: FontWeight.normal,
+                              color: secondaryInk, // pen.dev #3C3C4399
+                              letterSpacing: -0.23,
+                              height: 1.33,
                             ),
                           ),
                         ),
@@ -182,50 +177,50 @@ class ConversationListItem extends StatelessWidget {
               const SizedBox(width: 8.0),
 
               // ===============================================================
-              // 3. TRAILING ACCESSORIES: Time & Unread Badge
+              // 3. TRAILING ACCESSORIES: Time & Unread Badge (pen.dev chaat-1 GOi2J)
               // ===============================================================
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  // Timestamp
+                  // Timestamp (pen.dev chaat-1 mkRZg: SF Pro 14px, #3C3C4399)
                   Text(
                     conversation.timestamp,
                     style: TextStyle(
-                      fontSize: 13.0,
+                      fontSize: 14.0,
                       fontWeight: hasUnread ? FontWeight.w600 : FontWeight.normal,
                       color: hasUnread ? azurePrimary : secondaryInk,
-                      letterSpacing: -0.2,
+                      letterSpacing: -0.23,
                     ),
                   ),
 
                   const SizedBox(height: 4.0),
 
-                  // Unread Pill Badge (pen.dev Azure #008BFF)
+                  // Unread Pill Badge (pen.dev chaat-1 c7IxLV: fill #008BFF)
                   if (hasUnread)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 5.5, vertical: 1.5),
+                      padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 1.5),
                       constraints: const BoxConstraints(
-                        minWidth: 18.0,
-                        minHeight: 18.0,
+                        minWidth: 20.0,
+                        minHeight: 20.0,
                       ),
                       decoration: BoxDecoration(
                         color: azurePrimary,
-                        borderRadius: BorderRadius.circular(9.0),
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
                       alignment: Alignment.center,
                       child: Text(
                         '${conversation.unreadCount}',
                         style: const TextStyle(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 13.0,
+                          fontWeight: FontWeight.w600,
                           color: Colors.white,
                           height: 1.0,
                         ),
                       ),
                     )
                   else
-                    const SizedBox(height: 18.0),
+                    const SizedBox(height: 20.0),
                 ],
               ),
             ],

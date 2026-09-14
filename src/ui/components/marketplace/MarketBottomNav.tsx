@@ -9,6 +9,7 @@ interface MarketBottomNavProps {
   onPostClick?: () => void;
   userAvatar?: string;
   unreadMessagesCount?: number;
+  isVisible?: boolean;
 }
 
 export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
@@ -16,6 +17,7 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   onTabChange,
   userAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
   unreadMessagesCount = 20,
+  isVisible = true,
 }) => {
   // Auto-detect virtual keyboard and active text inputs to prevent bottom nav from floating over the keyboard
   const { isKeyboardOpen } = useVirtualKeyboard();
@@ -34,7 +36,9 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   return (
     <aside
       aria-label="Navigasi Utama"
-      className="fixed bottom-0 left-0 right-0 z-50 select-none pointer-events-none flex justify-center px-5 pb-4 sm:pb-6"
+      className={`fixed bottom-0 left-0 right-0 z-50 select-none pointer-events-none flex justify-center px-5 pb-4 sm:pb-6 transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] ${
+        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-[120%] opacity-0 pointer-events-none'
+      }`}
       style={{
         paddingBottom: 'max(16px, env(safe-area-inset-bottom, 16px))',
       }}

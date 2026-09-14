@@ -219,23 +219,23 @@ class _DockTabItemState extends State<_DockTabItem> {
         },
         behavior: HitTestBehavior.opaque,
         child: AnimatedScale(
-          scale: _isPressed ? 0.93 : 1.0,
-          duration: const Duration(milliseconds: 80),
+          scale: _isPressed ? 0.92 : 1.0,
+          duration: const Duration(milliseconds: 100),
           curve: Curves.easeOutCubic,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
+            duration: const Duration(milliseconds: 220),
             curve: Curves.easeOutCubic,
             height: 56.0,
             padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
             decoration: BoxDecoration(
               // Translucent frosted glass capsule with subtle specular highlight rim
               color: widget.isActive
-                  ? const Color(0xFFEDEDED).withValues(alpha: 0.72)
+                  ? const Color(0xFFEDEDED).withValues(alpha: 0.75)
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(28.0),
               border: widget.isActive
                   ? Border.all(
-                      color: Colors.white.withValues(alpha: 0.75),
+                      color: Colors.white.withValues(alpha: 0.80),
                       width: 0.8,
                     )
                   : null,
@@ -244,11 +244,16 @@ class _DockTabItemState extends State<_DockTabItem> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Icon / Glyph
-                SizedBox(
-                  width: 24.0,
-                  height: 24.0,
-                  child: Center(child: widget.glyph),
+                // Icon / Glyph with spring pop micro-motion
+                AnimatedScale(
+                  scale: widget.isActive ? 1.08 : 1.0,
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOutBack,
+                  child: SizedBox(
+                    width: 24.0,
+                    height: 24.0,
+                    child: Center(child: widget.glyph),
+                  ),
                 ),
 
                 const SizedBox(height: 1.0),

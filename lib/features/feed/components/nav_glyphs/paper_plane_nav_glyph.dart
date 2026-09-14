@@ -78,13 +78,6 @@ class PaperPlaneNavGlyph extends StatelessWidget {
                 color: Colors.white,
                 width: 1.5,
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF008BFF).withValues(alpha: 0.35),
-                  blurRadius: 4.0,
-                  offset: const Offset(0, 1),
-                ),
-              ],
             ),
             child: Center(
               child: Text(

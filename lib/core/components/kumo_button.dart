@@ -173,12 +173,6 @@ class _KumoButtonState extends State<KumoButton> {
                   blurRadius: 35.0,
                   offset: Offset(0, 8),
                 ),
-                // Vivid Azure glow bloom
-                BoxShadow(
-                  color: primaryBase.withValues(alpha: 0.35),
-                  blurRadius: 14.0,
-                  offset: const Offset(0, 4),
-                ),
               ] else if (isEnabled && isBlack) ...[
                 const BoxShadow(
                   color: Color(0x1F000000),

@@ -61,18 +61,12 @@ class _FloatingPlusSquircleButtonState extends State<FloatingPlusSquircleButton>
                 color: Colors.white.withValues(alpha: 0.35),
                 width: 1.2,
               ),
-              boxShadow: [
-                // Diffuse Outer Shadow matching pen.dev (#0000001f, y: 8, blur: 30)
-                const BoxShadow(
+              boxShadow: const [
+                // Diffuse Outer Shadow matching pen.dev (#0000001f, y: 8, blur=30)
+                BoxShadow(
                   color: Color(0x1F000000),
                   blurRadius: 30.0,
                   offset: Offset(0, 8),
-                ),
-                // Vivid Azure Glow
-                BoxShadow(
-                  color: primaryBase.withValues(alpha: 0.40),
-                  blurRadius: 14.0,
-                  offset: const Offset(0, 4),
                 ),
               ],
             ),

@@ -108,7 +108,7 @@ class HomeBottomNavBar extends StatelessWidget {
                 filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
                 child: Container(
                   height: 62.0,
-                  padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 3.0),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.85), // Frosted Liquid Glass
                     borderRadius: BorderRadius.circular(31.0),
@@ -222,12 +222,12 @@ class _DockTabItemState extends State<_DockTabItem> {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 180),
             curve: Curves.easeOutCubic,
-            height: 54.0,
-            padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
+            height: 56.0,
+            padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
             decoration: BoxDecoration(
               // pen.dev Selection capsule (cornerRadius 100, fill #EDEDED)
               color: widget.isActive ? selectionFill : Colors.transparent,
-              borderRadius: BorderRadius.circular(24.0),
+              borderRadius: BorderRadius.circular(28.0),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -240,7 +240,7 @@ class _DockTabItemState extends State<_DockTabItem> {
                   child: Center(child: widget.glyph),
                 ),
 
-                const SizedBox(height: 2.0),
+                const SizedBox(height: 1.0),
 
                 // Label Text (active #008BFF 700, inactive #1A1A1A 500)
                 Text(
@@ -252,7 +252,7 @@ class _DockTabItemState extends State<_DockTabItem> {
                     fontWeight: widget.isActive ? FontWeight.w700 : FontWeight.w500,
                     color: widget.isActive ? activeColor : inactiveColor,
                     letterSpacing: -0.2,
-                    height: 1.1,
+                    height: 1.2,
                   ),
                 ),
               ],

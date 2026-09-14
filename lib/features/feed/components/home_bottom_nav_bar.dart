@@ -224,8 +224,8 @@ class _BottomNavItemState extends State<_BottomNavItem> {
 
   @override
   Widget build(BuildContext context) {
-    const activeColor = Color(0xFF00A3FF); // Electric Vivid Cyan
-    const inactiveColor = Color(0xFF64748B); // Slate Muted Gray
+    const activeColor = Color(0xFF008BFF); // pen.dev Primary Azure (#008BFF)
+    const inactiveColor = Color(0xFF1A1A1A); // pen.dev Ink Base (#1A1A1A)
 
     return Semantics(
       label: widget.label,
@@ -253,15 +253,9 @@ class _BottomNavItemState extends State<_BottomNavItem> {
               curve: Curves.easeOutCubic,
               padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.5),
               decoration: BoxDecoration(
-                // Active Capsule Highlight (Electric Cyan Tint)
-                color: widget.isActive ? const Color(0xFFF0F9FF) : Colors.transparent,
-                borderRadius: BorderRadius.circular(16.0),
-                border: widget.isActive
-                    ? Border.all(
-                        color: const Color(0xFF00A3FF).withValues(alpha: 0.25),
-                        width: 1.0,
-                      )
-                    : null,
+                // Active Capsule Highlight from pen.dev (#EDEDED fill, cornerRadius 100)
+                color: widget.isActive ? const Color(0xFFEDEDED) : Colors.transparent,
+                borderRadius: BorderRadius.circular(18.0),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -350,10 +344,15 @@ class _CenterActionFabItemState extends State<_CenterActionFabItem> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     boxShadow: [
-                      // Soft Electric Cyan glow shadow
+                      // Diffuse drop shadow from pen.dev (#0000001f, y: 8, blur: 35) + Azure glow
+                      const BoxShadow(
+                        color: Color(0x1F000000),
+                        blurRadius: 25.0,
+                        offset: Offset(0, 6),
+                      ),
                       BoxShadow(
-                        color: const Color(0xFF00A3FF).withValues(alpha: 0.40),
-                        blurRadius: 10.0,
+                        color: const Color(0xFF008BFF).withValues(alpha: 0.40),
+                        blurRadius: 12.0,
                         offset: const Offset(0, 3),
                       ),
                     ],
@@ -370,8 +369,8 @@ class _CenterActionFabItemState extends State<_CenterActionFabItem> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Color(0xFF38BDF8), // Light Sky Cyan
-                          Color(0xFF00A3FF), // Electric Vivid Cyan
+                          Color(0xFF269DFF), // Light Azure Specular
+                          Color(0xFF008BFF), // pen.dev Primary Accent
                         ],
                       ),
                     ),
@@ -413,7 +412,7 @@ class _CenterActionFabItemState extends State<_CenterActionFabItem> {
                   style: const TextStyle(
                     fontSize: 10.5,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF00A3FF),
+                    color: Color(0xFF008BFF),
                     letterSpacing: -0.2,
                     height: 1.1,
                   ),

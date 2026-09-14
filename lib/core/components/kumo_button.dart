@@ -3,6 +3,16 @@ import 'package:flutter/services.dart';
 
 enum KumoButtonVariant { primary, secondary, outline, black }
 
+/// "Bot Start Button" component sliced 1:1 from pen.dev (`snaps-design.pen`)
+///
+/// Design Specifications:
+/// - Full Pill Capsule geometry (`cornerRadius: 1000`)
+/// - Height: 52.0px default (matching 346x52 pen.dev button)
+/// - Primary: Vivid iOS Azure `#008BFF` with specular glass gradient `#269DFF -> #008BFF`
+/// - Diffuse Elevation: 35px blur shadow (`#0000001f`, offset y=8) + soft azure glow
+/// - Inset Top Shine Highlight: 1.5px white specular sheen
+/// - Secondary: Soft Gray Capsule `#EDEDED` with `#1A1A1A` ink typography
+/// - Black: Deep Obsidian Pill `#1A1A1A` with diffuse shadow
 class KumoButton extends StatefulWidget {
   final String text;
   final VoidCallback? onPressed;
@@ -24,7 +34,7 @@ class KumoButton extends StatefulWidget {
     this.iconLeft,
     this.height = 52,
     this.width,
-    this.borderRadius = 16,
+    this.borderRadius = 100, // Full Pill Capsule (cornerRadius 1000 in pen.dev)
     this.isLoading = false,
     this.padding,
   });
@@ -37,7 +47,7 @@ class KumoButton extends StatefulWidget {
     this.iconLeft,
     this.height = 52,
     this.width,
-    this.borderRadius = 16,
+    this.borderRadius = 100,
     this.isLoading = false,
     this.padding,
   }) : variant = KumoButtonVariant.primary;
@@ -50,7 +60,7 @@ class KumoButton extends StatefulWidget {
     this.iconLeft,
     this.height = 52,
     this.width,
-    this.borderRadius = 16,
+    this.borderRadius = 100,
     this.isLoading = false,
     this.padding,
   }) : variant = KumoButtonVariant.black;
@@ -63,10 +73,24 @@ class KumoButton extends StatefulWidget {
     this.iconLeft,
     this.height = 52,
     this.width,
-    this.borderRadius = 16,
+    this.borderRadius = 100,
     this.isLoading = false,
     this.padding,
   }) : variant = KumoButtonVariant.secondary;
+
+  const KumoButton.outline({
+    super.key,
+    required this.text,
+    this.onPressed,
+    this.iconRight,
+    this.iconLeft,
+    this.height = 52,
+    this.width,
+    this.borderRadius = 100,
+    this.isLoading = false,
+    this.padding,
+  }) : variant = KumoButtonVariant.outline;
+
   @override
   State<KumoButton> createState() => _KumoButtonState();
 }
@@ -78,8 +102,15 @@ class _KumoButtonState extends State<KumoButton> {
   Widget build(BuildContext context) {
     final isEnabled = widget.onPressed != null && !widget.isLoading;
     final isPrimary = widget.variant == KumoButtonVariant.primary;
+    final isSecondary = widget.variant == KumoButtonVariant.secondary;
+    final isOutline = widget.variant == KumoButtonVariant.outline;
     final isBlack = widget.variant == KumoButtonVariant.black;
-    final isDark = isPrimary || isBlack;
+
+    // Colors from pen.dev (snaps-design.pen)
+    const primaryTop = Color(0xFF269DFF); // Specular top azure
+    const primaryBase = Color(0xFF008BFF); // pen.dev accent fill
+    const secondaryFill = Color(0xFFEDEDED); // pen.dev selection fill
+    const inkDark = Color(0xFF1A1A1A); // pen.dev ink text
 
     return GestureDetector(
       onTapDown: isEnabled
@@ -94,69 +125,86 @@ class _KumoButtonState extends State<KumoButton> {
       behavior: HitTestBehavior.opaque,
       child: AnimatedScale(
         scale: _isPressed ? 0.96 : 1.0,
-        duration: const Duration(milliseconds: 100),
+        duration: const Duration(milliseconds: 90),
         curve: Curves.easeOutCubic,
         child: Container(
           height: widget.height,
           width: widget.width,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(widget.borderRadius),
-            gradient: isEnabled && isDark
-                ? LinearGradient(
+            gradient: isEnabled && isPrimary
+                ? const LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: isPrimary
-                        ? const [
-                            Color(0xFF38BDF8), // Light Sky Cyan (top specular highlight)
-                            Color(0xFF00A3FF), // Electric Vivid Cyan
-                          ]
-                        : const [
-                            Color(0xFF334155), // Slate 700 / Top Specular Light
-                            Color(0xFF0F172A), // Slate 900 / Deep Ink Base
-                          ],
+                    colors: [
+                      primaryTop,
+                      primaryBase,
+                    ],
                   )
                 : null,
             color: !isEnabled
                 ? const Color(0xFFF1F5F9)
-                : isDark
+                : isPrimary
                     ? null
-                    : Colors.white,
+                    : isSecondary
+                        ? secondaryFill
+                        : isBlack
+                            ? inkDark
+                            : isOutline
+                                ? Colors.transparent
+                                : Colors.white,
             border: Border.all(
               color: !isEnabled
                   ? const Color(0xFFE2E8F0)
                   : isPrimary
-                      ? const Color(0xFF0284C7)
-                      : isBlack
-                          ? const Color(0xFF0F172A)
-                          : const Color(0xFFE5E7EB),
-              width: 1.0,
+                      ? const Color(0xFF0077DB)
+                      : isOutline
+                          ? primaryBase
+                          : isBlack
+                              ? inkDark
+                              : const Color(0xFFE2E8F0),
+              width: isOutline ? 1.5 : 1.0,
             ),
             boxShadow: [
-              if (isEnabled && isPrimary)
+              if (isEnabled && isPrimary) ...[
+                // Diffuse outer shadow from pen.dev (#0000001f, y: 8, blur: 35)
+                const BoxShadow(
+                  color: Color(0x1F000000),
+                  blurRadius: 35.0,
+                  offset: Offset(0, 8),
+                ),
+                // Vivid Azure glow bloom
                 BoxShadow(
-                  color: const Color(0xFF00A3FF).withValues(alpha: 0.38),
+                  color: primaryBase.withValues(alpha: 0.35),
                   blurRadius: 14.0,
                   offset: const Offset(0, 4),
-                )
-              else if (isEnabled && isBlack)
-                BoxShadow(
-                  color: const Color(0xFF0F172A).withValues(alpha: 0.28),
+                ),
+              ] else if (isEnabled && isBlack) ...[
+                const BoxShadow(
+                  color: Color(0x1F000000),
+                  blurRadius: 35.0,
+                  offset: Offset(0, 8),
+                ),
+              ] else if (isEnabled && isSecondary) ...[
+                const BoxShadow(
+                  color: Color(0x0F000000),
                   blurRadius: 10.0,
-                  offset: const Offset(0, 3),
-                )
-              else if (isEnabled && !isDark)
+                  offset: Offset(0, 3),
+                ),
+              ] else if (isEnabled && !isOutline) ...[
                 const BoxShadow(
                   color: Color(0x0A000000),
-                  blurRadius: 3.0,
-                  offset: Offset(0, 1),
+                  blurRadius: 4.0,
+                  offset: Offset(0, 2),
                 ),
+              ],
             ],
           ),
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // Inset Top Shine Highlight for Primary/Black Kumo
-              if (isEnabled && isDark)
+              // Inset Top Shine Highlight (Specularity from pen.dev Bot Start Button)
+              if (isEnabled && isPrimary)
                 Positioned(
                   top: 0,
                   left: 0,
@@ -164,7 +212,7 @@ class _KumoButtonState extends State<KumoButton> {
                   height: 1.5,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.45),
+                      color: Colors.white.withValues(alpha: 0.40),
                       borderRadius: BorderRadius.vertical(
                         top: Radius.circular(widget.borderRadius),
                       ),
@@ -175,13 +223,13 @@ class _KumoButtonState extends State<KumoButton> {
               Center(
                 child: Padding(
                   padding: widget.padding ??
-                      const EdgeInsets.symmetric(horizontal: 18.0),
+                      const EdgeInsets.symmetric(horizontal: 20.0),
                   child: widget.isLoading
                       ? const SizedBox(
-                          width: 16.0,
-                          height: 16.0,
+                          width: 18.0,
+                          height: 18.0,
                           child: CircularProgressIndicator(
-                            strokeWidth: 2.0,
+                            strokeWidth: 2.2,
                             color: Colors.white,
                           ),
                         )
@@ -191,25 +239,27 @@ class _KumoButtonState extends State<KumoButton> {
                           children: [
                             if (widget.iconLeft != null) ...[
                               widget.iconLeft!,
-                              const SizedBox(width: 6.0),
+                              const SizedBox(width: 8.0),
                             ],
                             Text(
                               widget.text,
                               style: TextStyle(
-                                fontSize: widget.height < 40 ? 12.5 : 14.5,
-                                fontWeight: isDark
-                                    ? FontWeight.w700
+                                fontSize: widget.height < 40 ? 13.0 : 16.5,
+                                fontWeight: (isPrimary || isBlack)
+                                    ? FontWeight.w600
                                     : FontWeight.w600,
                                 color: !isEnabled
                                     ? const Color(0xFF94A3B8)
-                                    : isDark
+                                    : (isPrimary || isBlack)
                                         ? Colors.white
-                                        : const Color(0xFF111827),
-                                letterSpacing: -0.1,
+                                        : isOutline
+                                            ? primaryBase
+                                            : inkDark,
+                                letterSpacing: -0.2,
                               ),
                             ),
                             if (widget.iconRight != null) ...[
-                              const SizedBox(width: 6.0),
+                              const SizedBox(width: 8.0),
                               widget.iconRight!,
                             ],
                           ],

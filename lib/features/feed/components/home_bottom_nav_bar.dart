@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 import 'package:snapan_market/features/feed/components/nav_glyphs/home_nav_glyph.dart';
@@ -12,9 +11,11 @@ import 'package:snapan_market/features/feed/components/nav_glyphs/user_nav_glyph
 enum HomeNavTab {
   home,
   messages,
-  post,
+  create,
   activity,
   profile;
+
+  static const HomeNavTab post = HomeNavTab.create;
 
   String get label {
     switch (this) {
@@ -22,7 +23,7 @@ enum HomeNavTab {
         return 'Home';
       case HomeNavTab.messages:
         return 'Pesan';
-      case HomeNavTab.post:
+      case HomeNavTab.create:
         return 'Jual';
       case HomeNavTab.activity:
         return 'Aktivitas';
@@ -38,14 +39,14 @@ enum HomeNavTab {
 /// - 50px height edge-to-edge bar with safe-area bottom inset
 /// - Frosted glass white container (`bg-white/95 backdrop-blur-md border-t border-neutral-200/80`)
 /// - 5-column grid layout (Home, Pesan, Center FAB, Aktivitas, Profil)
-/// - Center elevated Kumo Floating Action Button (48x48, -top-5, gradient, 4px white ring, shadow)
+/// - Center elevated Kumo Floating Action Button (48x48, -top-5, gradient, 3.5px white ring, shadow)
 /// - Subtle active indicator pill (`bg-neutral-100/90 rounded-xl`)
 /// - Red dot unread badge for Messages and Activity
-/// - Hit-test extension so floating button is 100% interactive without clipping
 class HomeBottomNavBar extends StatelessWidget {
   final HomeNavTab currentTab;
   final ValueChanged<HomeNavTab> onTabSelected;
   final VoidCallback? onPostTap;
+  final VoidCallback? onCreateTap;
   final bool hasUnreadMessages;
   final int unreadMessagesCount;
   final bool hasUnreadActivity;
@@ -56,11 +57,14 @@ class HomeBottomNavBar extends StatelessWidget {
     required this.currentTab,
     required this.onTabSelected,
     this.onPostTap,
+    this.onCreateTap,
     this.hasUnreadMessages = false,
     this.unreadMessagesCount = 0,
     this.hasUnreadActivity = false,
     this.userAvatar,
   });
+
+  VoidCallback? get _actionCallback => onPostTap ?? onCreateTap;
 
   @override
   Widget build(BuildContext context) {
@@ -70,113 +74,34 @@ class HomeBottomNavBar extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return _OverflowHitTestWidget(
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.95),
-          border: Border(
-            top: BorderSide(
-              color: const Color(0xFFE2E8F0).withValues(alpha: 0.80),
-              width: 1.0,
-            ),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 12.0,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
-            child: SafeArea(
-              top: false,
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 448.0),
-                  child: SizedBox(
-                    height: 50.0,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      alignment: Alignment.center,
-                      children: [
-                        // 5-Column Navigation Row
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            // 1. Home
-                            Expanded(
-                              child: _BottomNavItem(
-                                isActive: currentTab == HomeNavTab.home,
-                                label: 'Home',
-                                onTap: () => onTabSelected(HomeNavTab.home),
-                                glyph: HomeNavGlyph(
-                                  isActive: currentTab == HomeNavTab.home,
-                                ),
-                              ),
-                            ),
+    final bottomPadding = MediaQuery.paddingOf(context).bottom;
+    final totalHeight = 50.0 + bottomPadding;
 
-                            // 2. Pesan
-                            Expanded(
-                              child: _BottomNavItem(
-                                isActive: currentTab == HomeNavTab.messages,
-                                label: 'Pesan',
-                                onTap: () => onTabSelected(HomeNavTab.messages),
-                                glyph: PaperPlaneNavGlyph(
-                                  isActive: currentTab == HomeNavTab.messages,
-                                  hasBadge: hasUnreadMessages,
-                                  badgeCount: unreadMessagesCount,
-                                ),
-                              ),
-                            ),
-
-                            // 3. Center FAB Column Placeholder (Spacing)
-                            const Expanded(
-                              child: SizedBox.shrink(),
-                            ),
-
-                            // 4. Aktivitas
-                            Expanded(
-                              child: _BottomNavItem(
-                                isActive: currentTab == HomeNavTab.activity,
-                                label: 'Aktivitas',
-                                onTap: () => onTabSelected(HomeNavTab.activity),
-                                glyph: HeartNavGlyph(
-                                  isActive: currentTab == HomeNavTab.activity,
-                                  hasBadge: hasUnreadActivity,
-                                ),
-                              ),
-                            ),
-
-                            // 5. Profil
-                            Expanded(
-                              child: _BottomNavItem(
-                                isActive: currentTab == HomeNavTab.profile,
-                                label: 'Profil',
-                                onTap: () => onTabSelected(HomeNavTab.profile),
-                                glyph: UserNavGlyph(
-                                  isActive: currentTab == HomeNavTab.profile,
-                                  userAvatar: userAvatar,
-                                ),
-                              ),
-                            ),
-                          ],
+    return RepaintBoundary(
+      child: SizedBox(
+        height: totalHeight,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // Frosted Glass White Background Bar (50px + safe area)
+            Positioned.fill(
+              child: ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.95),
+                      border: Border(
+                        top: BorderSide(
+                          color: const Color(0xFFE2E8F0).withValues(alpha: 0.80),
+                          width: 1.0,
                         ),
-
-                        // Center Elevated Floating Action Button (Jual / +)
-                        Positioned(
-                          top: -19.0,
-                          child: _CenterActionFab(
-                            onTap: () {
-                              if (onPostTap != null) {
-                                onPostTap!();
-                              } else {
-                                onTabSelected(HomeNavTab.post);
-                              }
-                            },
-                          ),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.03),
+                          blurRadius: 12.0,
+                          offset: const Offset(0, -2),
                         ),
                       ],
                     ),
@@ -184,7 +109,96 @@ class HomeBottomNavBar extends StatelessWidget {
                 ),
               ),
             ),
-          ),
+
+            // 5-Column Navigation Row Items
+            Positioned.fill(
+              child: SafeArea(
+                top: false,
+                bottom: true,
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 448.0),
+                    child: SizedBox(
+                      height: 50.0,
+                      child: Row(
+                        children: [
+                          // 1. Home
+                          Expanded(
+                            child: _BottomNavItem(
+                              isActive: currentTab == HomeNavTab.home,
+                              label: 'Home',
+                              onTap: () => onTabSelected(HomeNavTab.home),
+                              glyph: HomeNavGlyph(
+                                isActive: currentTab == HomeNavTab.home,
+                              ),
+                            ),
+                          ),
+
+                          // 2. Pesan
+                          Expanded(
+                            child: _BottomNavItem(
+                              isActive: currentTab == HomeNavTab.messages,
+                              label: 'Pesan',
+                              onTap: () => onTabSelected(HomeNavTab.messages),
+                              glyph: PaperPlaneNavGlyph(
+                                isActive: currentTab == HomeNavTab.messages,
+                                hasBadge: hasUnreadMessages,
+                                badgeCount: unreadMessagesCount,
+                              ),
+                            ),
+                          ),
+
+                          // 3. Center Elevated Floating Action Button (Jual / +)
+                          Expanded(
+                            child: Center(
+                              child: Transform.translate(
+                                offset: const Offset(0, -14.0),
+                                child: _CenterActionFab(
+                                  onTap: () {
+                                    if (_actionCallback != null) {
+                                      _actionCallback!();
+                                    } else {
+                                      onTabSelected(HomeNavTab.create);
+                                    }
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          // 4. Aktivitas
+                          Expanded(
+                            child: _BottomNavItem(
+                              isActive: currentTab == HomeNavTab.activity,
+                              label: 'Aktivitas',
+                              onTap: () => onTabSelected(HomeNavTab.activity),
+                              glyph: HeartNavGlyph(
+                                isActive: currentTab == HomeNavTab.activity,
+                                hasBadge: hasUnreadActivity,
+                              ),
+                            ),
+                          ),
+
+                          // 5. Profil
+                          Expanded(
+                            child: _BottomNavItem(
+                              isActive: currentTab == HomeNavTab.profile,
+                              label: 'Profil',
+                              onTap: () => onTabSelected(HomeNavTab.profile),
+                              glyph: UserNavGlyph(
+                                isActive: currentTab == HomeNavTab.profile,
+                                userAvatar: userAvatar,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -305,8 +319,8 @@ class _CenterActionFabState extends State<_CenterActionFab> {
           duration: const Duration(milliseconds: 75),
           curve: Curves.easeOutCubic,
           child: Container(
-            width: 50.0,
-            height: 50.0,
+            width: 48.0,
+            height: 48.0,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               boxShadow: [
@@ -356,7 +370,7 @@ class _CenterActionFabState extends State<_CenterActionFab> {
                   const Icon(
                     Icons.add_rounded,
                     color: Colors.white,
-                    size: 25.0,
+                    size: 24.0,
                   ),
                 ],
               ),
@@ -365,29 +379,5 @@ class _CenterActionFabState extends State<_CenterActionFab> {
         ),
       ),
     );
-  }
-}
-
-/// Custom RenderObject that expands hit-test boundaries upwards by 26px
-/// so the elevated floating action button remains 100% interactive without clipping.
-class _OverflowHitTestWidget extends SingleChildRenderObjectWidget {
-  const _OverflowHitTestWidget({required super.child});
-
-  @override
-  RenderObject createRenderObject(BuildContext context) => _RenderOverflowHitTest();
-}
-
-class _RenderOverflowHitTest extends RenderProxyBox {
-  @override
-  bool hitTest(BoxHitTestResult result, {required Offset position}) {
-    // Allow touch events 26px above the top boundary for the elevated center FAB
-    final Rect extendedBounds = Rect.fromLTRB(0, -26.0, size.width, size.height);
-    if (extendedBounds.contains(position)) {
-      if (hitTestChildren(result, position: position) || hitTestSelf(position)) {
-        result.add(BoxHitTestEntry(this, position));
-        return true;
-      }
-    }
-    return false;
   }
 }

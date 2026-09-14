@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, X, Menu, Star } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 
 // Custom Snapan Logotype Text Header
 export const SnapanLogotype: React.FC<{ className?: string }> = ({
@@ -46,56 +46,51 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
     >
       {/* Top Main Bar: Toobar - Top - Chats (pen.dev JZdLQ) */}
       <div className="max-w-xl mx-auto px-4 h-[56px] flex items-center justify-between relative select-none">
-        {/* Leading Capsule Button (pen.dev meX9e) */}
+        {/* Leading Capsule Button (pen.dev meX9e: label only) */}
         <div className="flex items-center">
           <button
             type="button"
             onClick={onMenuClick || onProfileClick}
-            className="h-[42px] px-3.5 rounded-full bg-white/75 backdrop-blur-2xl border border-white/80 shadow-[0_8px_35px_rgba(0,0,0,0.12),0_2px_10px_rgba(0,0,0,0.04)] flex items-center justify-center text-[#1a1a1a] hover:bg-white/90 active:scale-95 transition-all cursor-pointer"
-            aria-label="Buka Menu Drawer"
+            className="h-[42px] px-4 rounded-full bg-white/75 backdrop-blur-2xl border border-white/80 shadow-[0_8px_35px_rgba(0,0,0,0.12),0_2px_10px_rgba(0,0,0,0.04)] flex items-center justify-center text-[#1a1a1a] text-[15px] font-medium tracking-tight hover:bg-white/90 active:scale-95 transition-all cursor-pointer"
+            aria-label="Menu"
           >
-            <Menu className="w-5 h-5 text-[#1a1a1a] stroke-[2.2]" />
+            Menu
           </button>
         </div>
 
-        {/* Center Title + Azure Blue Star (pen.dev uRDD1) */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center gap-1">
+        {/* Center Title (pen.dev uRDD1: "Snaps." label only, without star icon) */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
           <button
             type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="flex items-center justify-center gap-1.5 hover:opacity-85 active:scale-[0.98] transition-transform duration-100 cursor-pointer"
-            aria-label="Snapan Market"
+            className="flex items-center justify-center hover:opacity-85 active:scale-[0.98] transition-transform duration-100 cursor-pointer"
+            aria-label="Snaps."
           >
-            <SnapanLogotype />
-            <Star className="w-4 h-4 fill-[#008bff] text-[#008bff]" />
+            <span className="text-[17.5px] font-bold tracking-tight text-[#1a1a1a] select-none">
+              Snaps.
+            </span>
           </button>
         </div>
 
-        {/* Trailing Capsule Button (pen.dev FuSew) */}
+        {/* Trailing Capsule Button (pen.dev FuSew: label only) */}
         <div className="flex items-center">
-          <div className="h-[42px] px-1 rounded-full bg-white/75 backdrop-blur-2xl border border-white/80 shadow-[0_8px_35px_rgba(0,0,0,0.12),0_2px_10px_rgba(0,0,0,0.04)] flex items-center gap-0.5">
-            <button
-              type="button"
-              onClick={() => {
-                if (onSearchClick) {
-                  onSearchClick();
-                } else {
-                  setShowSearchInput(!showSearchInput);
-                  if (showSearchInput) {
-                    handleSearchChange('');
-                  }
+          <button
+            type="button"
+            onClick={() => {
+              if (onSearchClick) {
+                onSearchClick();
+              } else {
+                setShowSearchInput(!showSearchInput);
+                if (showSearchInput) {
+                  handleSearchChange('');
                 }
-              }}
-              className="w-9 h-9 rounded-full flex items-center justify-center text-[#1a1a1a] hover:bg-black/5 active:scale-90 transition-all cursor-pointer"
-              aria-label="Cari Akun & Produk"
-            >
-              {showSearchInput ? (
-                <X className="w-4.5 h-4.5 text-[#1a1a1a] stroke-[2.2]" />
-              ) : (
-                <Search className="w-4.5 h-4.5 text-[#1a1a1a] stroke-[2.2]" />
-              )}
-            </button>
-          </div>
+              }
+            }}
+            className="h-[42px] px-4 rounded-full bg-white/75 backdrop-blur-2xl border border-white/80 shadow-[0_8px_35px_rgba(0,0,0,0.12),0_2px_10px_rgba(0,0,0,0.04)] flex items-center justify-center text-[#1a1a1a] text-[15px] font-medium tracking-tight hover:bg-white/90 active:scale-95 transition-all cursor-pointer"
+            aria-label="Cari"
+          >
+            {showSearchInput ? 'Tutup' : 'Cari'}
+          </button>
         </div>
       </div>
 

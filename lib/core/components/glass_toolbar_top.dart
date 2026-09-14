@@ -4,14 +4,16 @@ import 'package:flutter/services.dart';
 
 /// Action descriptor for trailing buttons in [GlassToolbarTop]
 class GlassToolbarAction {
-  final IconData icon;
+  final IconData? icon;
+  final String? label;
   final String tooltip;
   final VoidCallback onTap;
   final Color? color;
   final int? badgeCount;
 
   const GlassToolbarAction({
-    required this.icon,
+    this.icon,
+    this.label,
     required this.tooltip,
     required this.onTap,
     this.color,
@@ -23,11 +25,11 @@ class GlassToolbarAction {
 ///
 /// Features:
 /// - Leading Capsule (Pill `cornerRadius: 22`, frosted liquid glass, diffuse shadow):
-///   Supports "Edit" text button or icon (Menu / Back)
+///   Supports text button (Menu / Edit / Kembali) or icon
 /// - Center Title:
-///   Clean SF Pro / Inter typography with Azure `#008BFF` star / verified status badge
+///   Clean SF Pro / Inter typography with optional verified status badge
 /// - Trailing Capsule (Pill `cornerRadius: 22`, frosted liquid glass, diffuse shadow):
-///   Holds 1 or 2 tactile action icons (Search, Compose, More) with haptic feedback
+///   Holds text label button (Cari) or tactile action icons
 class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
   final Widget? leading;
   final String? leadingText;
@@ -39,6 +41,10 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
   final Widget? titleWidget;
   final bool showVerifiedBadge;
   final VoidCallback? onTitleTap;
+
+  final String? trailingText;
+  final String? trailingTooltip;
+  final VoidCallback? onTrailingTap;
 
   final List<GlassToolbarAction>? trailingActions;
   final Widget? trailing;
@@ -54,8 +60,11 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
     this.onLeadingTap,
     this.title = '',
     this.titleWidget,
-    this.showVerifiedBadge = true,
+    this.showVerifiedBadge = false,
     this.onTitleTap,
+    this.trailingText,
+    this.trailingTooltip,
+    this.onTrailingTap,
     this.trailingActions,
     this.trailing,
     this.backgroundColor = Colors.transparent,
@@ -186,6 +195,26 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
   }
 
   Widget _buildDefaultTrailing(BuildContext context) {
+    if (trailingText != null) {
+      return _GlassCapsuleButton(
+        tooltip: trailingTooltip ?? trailingText!,
+        onTap: onTrailingTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14.0),
+          child: Text(
+            trailingText!,
+            style: const TextStyle(
+              fontFamily: 'SF Pro',
+              fontSize: 15.5,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF1A1A1A),
+              letterSpacing: -0.2,
+            ),
+          ),
+        ),
+      );
+    }
+
     if (trailingActions == null || trailingActions!.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -387,11 +416,26 @@ class _GlassActionButtonItemState extends State<_GlassActionButtonItem> {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                Icon(
-                  widget.action.icon,
-                  size: 20.5,
-                  color: widget.action.color ?? const Color(0xFF1A1A1A),
-                ),
+                if (widget.action.label != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Text(
+                      widget.action.label!,
+                      style: TextStyle(
+                        fontFamily: 'SF Pro',
+                        fontSize: 15.0,
+                        fontWeight: FontWeight.w500,
+                        color: widget.action.color ?? const Color(0xFF1A1A1A),
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                  )
+                else if (widget.action.icon != null)
+                  Icon(
+                    widget.action.icon,
+                    size: 20.5,
+                    color: widget.action.color ?? const Color(0xFF1A1A1A),
+                  ),
                 if (widget.action.badgeCount != null && widget.action.badgeCount! > 0)
                   Positioned(
                     top: 6,

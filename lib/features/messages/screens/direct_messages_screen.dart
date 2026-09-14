@@ -61,6 +61,8 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
       // 2. Tab Filter
       if (_activeFilter == 'requests') {
         return conv.isRequest == true;
+      } else if (_activeFilter == 'unread') {
+        return conv.unreadCount > 0;
       }
       return !conv.isRequest;
     }).toList();
@@ -220,16 +222,10 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
                     ),
                   ),
 
-                  // Baris 3: Sub-Navigation Filter Tab Pills ("Obrolan" & "Pembeli")
+                  // Baris 3: Folders Segmented Tab Switch (pen.dev NOYP2)
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 10.0),
-                    child: Row(
-                      children: [
-                        _buildFilterPill('inbox', 'Obrolan'),
-                        const SizedBox(width: 8.0),
-                        _buildFilterPill('requests', 'Pembeli'),
-                      ],
-                    ),
+                    padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 12.0),
+                    child: _buildFoldersTabSwitch(),
                   ),
                 ],
               ),
@@ -325,27 +321,135 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
     );
   }
 
-  Widget _buildFilterPill(String key, String label) {
+  /// Segmented Tab Switch sliced 1:1 from pen.dev Folders (`snaps-design.pen` node `NOYP2`)
+  ///
+  /// Features:
+  /// - Exact 41px height (`height: 41.0`, padding: `3.0`)
+  /// - Frosted liquid glass background with cornerRadius 296 (`borderRadius: 21.0`)
+  /// - Outer diffuse shadow (#0000001f, y=8, blur=35)
+  /// - Selected Tab: 35px height, cornerRadius 20, fill #EDEDED (`Color(0xFFEDEDED)`)
+  /// - SF Pro 14px typography with letter-spacing -0.08
+  /// - Trailing unread count badge (fill #008BFF)
+  Widget _buildFoldersTabSwitch() {
+    final buyerUnreadCount = kMockConversations
+        .where((c) => c.isRequest == true && c.unreadCount > 0)
+        .fold<int>(0, (acc, c) => acc + c.unreadCount);
+
+    final totalUnreadCount = kMockConversations
+        .where((c) => c.unreadCount > 0)
+        .fold<int>(0, (acc, c) => acc + c.unreadCount);
+
+    return Container(
+      height: 41.0,
+      padding: const EdgeInsets.all(3.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(21.0),
+        border: Border.all(
+          color: const Color(0xFFEDEDED),
+          width: 1.0,
+        ),
+        boxShadow: const [
+          // pen.dev Folders Fill + Shadow (color: #0000001f, y: 8, blur: 35)
+          BoxShadow(
+            color: Color(0x1F000000),
+            blurRadius: 35.0,
+            offset: Offset(0, 8),
+          ),
+          BoxShadow(
+            color: Color(0x0A000000),
+            blurRadius: 10.0,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          _buildFolderTabItem(
+            key: 'inbox',
+            label: 'Obrolan',
+          ),
+          _buildFolderTabItem(
+            key: 'requests',
+            label: 'Pembeli',
+            count: buyerUnreadCount > 0 ? buyerUnreadCount : null,
+          ),
+          _buildFolderTabItem(
+            key: 'unread',
+            label: 'Belum Dibaca',
+            count: totalUnreadCount > 0 ? totalUnreadCount : null,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFolderTabItem({
+    required String key,
+    required String label,
+    int? count,
+  }) {
     final isActive = _activeFilter == key;
 
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.selectionClick();
-        setState(() => _activeFilter = key);
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 6.0),
-        decoration: BoxDecoration(
-          color: isActive ? const Color(0xFFEDEDED) : Colors.transparent, // pen.dev capsule #EDEDED
-          borderRadius: BorderRadius.circular(20.0),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13.0,
-            fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-            color: isActive ? const Color(0xFF008BFF) : const Color(0xFF64748B),
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          HapticFeedback.selectionClick();
+          setState(() => _activeFilter = key);
+        },
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
+          height: 35.0, // pen.dev Folders item height: 35
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          decoration: BoxDecoration(
+            color: isActive ? const Color(0xFFEDEDED) : Colors.transparent, // pen.dev #EDEDED
+            borderRadius: BorderRadius.circular(17.5),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13.5, // pen.dev SF Pro 14px
+                    fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                    color: isActive ? const Color(0xFF000000) : const Color(0xFF787574),
+                    letterSpacing: -0.1,
+                  ),
+                ),
+              ),
+              if (count != null && count > 0) ...[
+                const SizedBox(width: 4.0),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 1.0),
+                  constraints: const BoxConstraints(
+                    minWidth: 16.0,
+                    minHeight: 16.0,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF008BFF), // pen.dev Mark fill: #008BFF
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Center(
+                    child: Text(
+                      count > 99 ? '99+' : count.toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10.0,
+                        fontWeight: FontWeight.w700,
+                        height: 1.1,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
       ),

@@ -398,13 +398,10 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
         hasUnreadMessages: true,
         unreadMessagesCount: 20,
         userAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
+        onSearchTap: _handleSearchTap,
         onPostTap: _handleCreatePost,
         onTabSelected: (tab) {
-          if (tab == HomeNavTab.post) {
-            _handleCreatePost();
-          } else {
-            setState(() => _currentNavTab = tab);
-          }
+          setState(() => _currentNavTab = tab);
         },
       ),
     );

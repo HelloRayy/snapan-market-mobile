@@ -273,17 +273,17 @@ class _GlassCapsuleButtonState extends State<_GlassCapsuleButton> {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(21.0),
-                    gradient: LinearGradient(
+                    gradient: const LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.white.withValues(alpha: 0.75),
-                        Colors.white.withValues(alpha: 0.48),
+                        Color(0xFFFFFFFF),
+                        Color(0xFFF8FAFC),
                       ],
                     ),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.90),
-                      width: 1.2,
+                      color: const Color(0xFFE2E8F0),
+                      width: 1.0,
                     ),
                   ),
                   child: widget.child,
@@ -321,17 +321,17 @@ class _GlassActionsPill extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 3.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(21.0),
-              gradient: LinearGradient(
+              gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.white.withValues(alpha: 0.75),
-                  Colors.white.withValues(alpha: 0.48),
+                  Color(0xFFFFFFFF),
+                  Color(0xFFF8FAFC),
                 ],
               ),
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.90),
-                width: 1.2,
+                color: const Color(0xFFE2E8F0),
+                width: 1.0,
               ),
             ),
             child: Row(

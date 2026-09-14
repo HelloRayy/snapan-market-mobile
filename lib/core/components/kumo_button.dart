@@ -194,26 +194,6 @@ class _KumoButtonState extends State<KumoButton> {
               ],
             ],
           ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Inset Top Shine Highlight (Specularity from pen.dev Bot Start Button)
-              if (isEnabled && isPrimary)
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: 1.5,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.40),
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(widget.borderRadius),
-                      ),
-                    ),
-                  ),
-                ),
-
               Center(
                 child: Padding(
                   padding: widget.padding ??
@@ -260,7 +240,6 @@ class _KumoButtonState extends State<KumoButton> {
                         ),
                 ),
               ),
-            ],
           ),
         ),
       ),

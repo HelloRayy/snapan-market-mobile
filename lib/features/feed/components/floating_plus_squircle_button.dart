@@ -57,10 +57,6 @@ class _FloatingPlusSquircleButtonState extends State<FloatingPlusSquircleButton>
                   primaryBase,
                 ],
               ),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.35),
-                width: 1.2,
-              ),
               boxShadow: const [
                 // Diffuse Outer Shadow matching pen.dev (#0000001f, y: 8, blur=30)
                 BoxShadow(
@@ -70,32 +66,12 @@ class _FloatingPlusSquircleButtonState extends State<FloatingPlusSquircleButton>
                 ),
               ],
             ),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                // Inset Top Shine Highlight
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: 1.5,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.45),
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(18.0),
-                      ),
-                    ),
-                  ),
-                ),
-
-                // Plus Icon
-                const Icon(
-                  Icons.add_rounded,
-                  color: Colors.white,
-                  size: 28.0,
-                ),
-              ],
+            child: const Center(
+              child: Icon(
+                Icons.add_rounded,
+                color: Colors.white,
+                size: 28.0,
+              ),
             ),
           ),
         ),

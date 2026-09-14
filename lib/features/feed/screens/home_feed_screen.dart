@@ -398,7 +398,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: (_currentNavTab == HomeNavTab.home || _currentNavTab == HomeNavTab.messages)
           ? Padding(
-              padding: const EdgeInsets.only(bottom: 76.0),
+              padding: const EdgeInsets.only(bottom: 6.0),
               child: FloatingPlusSquircleButton(
                 onTap: _handleCreatePost,
               ),

@@ -1,16 +1,18 @@
 import React, { useState, useRef } from 'react';
-import { Send } from 'lucide-react';
+import { ArrowUp, Paperclip, Smile } from 'lucide-react';
 import { triggerHaptic } from '@/utils/haptics';
 
 interface ChatComposerBarProps {
   onSendMessage?: (message: string) => void;
+  onAttachmentClick?: () => void;
   placeholder?: string;
   className?: string;
 }
 
 export const ChatComposerBar: React.FC<ChatComposerBarProps> = ({
   onSendMessage,
-  placeholder = 'Ketik pesan...',
+  onAttachmentClick,
+  placeholder = 'Message',
   className = '',
 }) => {
   const [text, setText] = useState('');
@@ -28,37 +30,49 @@ export const ChatComposerBar: React.FC<ChatComposerBarProps> = ({
 
   return (
     <footer
-      className={`sticky bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-neutral-200/80 px-3.5 pt-2.5 pb-[max(0.75rem,calc(env(safe-area-inset-bottom)+6px))] font-gt-standard select-none ${className}`}
+      className={`sticky bottom-0 inset-x-0 z-40 bg-transparent px-4 pt-1.5 pb-[max(0.75rem,calc(env(safe-area-inset-bottom)+6px))] font-gt-standard select-none ${className}`}
     >
-      <form onSubmit={handleSubmit} className="flex items-center gap-2.5 w-full max-w-full">
-        {/* Text-Only Input Field (MVP: Clean sans-serif, no attachments/links) */}
-        <input
-          ref={inputRef}
-          type="text"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder={placeholder}
-          className="flex-1 min-w-0 bg-[#f4f5f7] hover:bg-[#ebedf1] focus:bg-white border border-transparent focus:border-[#1d64ec] rounded-full px-4.5 h-10 text-[16px] sm:text-[14.5px] text-slate-900 placeholder:text-neutral-400 focus:outline-none focus:shadow-xs transition-all"
-        />
-
-        {/* Circular Kumo Primary Blue Send Button */}
+      <form onSubmit={handleSubmit} className="flex items-center gap-1.5 w-full max-w-full">
+        {/* Leading Button (pen.dev Frame 1 jxdH0: 42x42 circle, frosted white + shadow) */}
         <button
-          type="submit"
-          disabled={!text.trim()}
-          aria-label="Kirim Pesan"
-          className={`relative w-10 h-10 min-w-10 rounded-full text-white bg-[#1d64ec] hover:bg-[#154ec1] border border-[#154ec1] shadow-xs flex items-center justify-center transition-all shrink-0 overflow-hidden group select-none ${
-            !text.trim()
-              ? 'opacity-40 cursor-not-allowed'
-              : 'active:scale-90 cursor-pointer shadow-blue-500/25 hover:shadow-md'
-          }`}
+          type="button"
+          onClick={() => {
+            triggerHaptic('light');
+            onAttachmentClick?.();
+          }}
+          aria-label="Lampirkan berkas"
+          className="w-[42px] h-[42px] min-w-[42px] rounded-full bg-white border border-[#ededed] shadow-[0_8px_35px_rgba(0,0,0,0.12),0_2px_10px_rgba(0,0,0,0.04)] flex items-center justify-center text-[#1a1a1a] hover:bg-neutral-50 active:scale-95 transition-all cursor-pointer shrink-0"
         >
-          {/* Kumo Inset Top Rim Highlight Gradient */}
-          <span className="absolute inset-0 rounded-full bg-gradient-to-b from-[#3b82f6] to-[#1d64ec] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] group-hover:from-[#2563eb] transition-colors pointer-events-none" />
-
-          {/* Paperplane / Send Icon */}
-          <Send className="relative z-10 w-4.5 h-4.5 text-white stroke-[2.2] translate-x-[-0.5px] translate-y-[-0.5px]" />
+          <Paperclip className="w-5 h-5 text-[#1a1a1a]" />
         </button>
+
+        {/* Write Bar (pen.dev Frame 1 cXg3A: cornerRadius 21, height 42, frosted white + shadow) */}
+        <div className="flex-1 min-w-0 h-[42px] bg-white border border-[#ededed] shadow-[0_8px_35px_rgba(0,0,0,0.12),0_2px_10px_rgba(0,0,0,0.04)] rounded-full pl-3.5 pr-1 flex items-center gap-1">
+          <input
+            ref={inputRef}
+            type="text"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder={placeholder}
+            className="flex-1 min-w-0 bg-transparent border-none text-[15.5px] text-black placeholder:text-[#999999] focus:outline-none"
+          />
+
+          {text.trim() ? (
+            <button
+              type="submit"
+              aria-label="Kirim Pesan"
+              className="w-9 h-9 min-w-9 rounded-full bg-[#008bff] hover:bg-[#007be5] text-white flex items-center justify-center shadow-xs active:scale-90 transition-all cursor-pointer shrink-0"
+            >
+              <ArrowUp className="w-5 h-5 text-white stroke-[2.5]" />
+            </button>
+          ) : (
+            <div className="w-9 h-9 min-w-9 flex items-center justify-center text-[#727272] shrink-0">
+              <Smile className="w-5 h-5 text-[#727272]" />
+            </div>
+          )}
+        </div>
       </form>
     </footer>
   );
 };
+

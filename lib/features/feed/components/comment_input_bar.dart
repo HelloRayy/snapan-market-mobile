@@ -104,55 +104,80 @@ class _CommentInputBarState extends State<CommentInputBar> {
             ? 'Balas @${widget.targetAuthor!.replaceAll('@', '')}...'
             : 'Tulis balasan...';
 
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final bottomPadding = MediaQuery.paddingOf(context).bottom;
+
     return Container(
       padding: EdgeInsets.only(
-        left: 14.0,
-        right: 14.0,
-        bottom: MediaQuery.of(context).viewInsets.bottom > 0
-            ? MediaQuery.of(context).viewInsets.bottom + 8.0
-            : 14.0,
+        left: 16.0,
+        right: 16.0,
+        bottom: bottomInset > 0
+            ? bottomInset + 8.0
+            : (bottomPadding > 0 ? bottomPadding + 6.0 : 12.0),
         top: 6.0,
       ),
+      color: Colors.transparent,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Replying to User Pill Banner
+          // ===============================================================
+          // 0. REPLY PREVIEW BANNER (pen.dev Frame 1 Reply node HvRsZ)
+          // ===============================================================
           if (widget.replyToUser != null) ...[
             Container(
               margin: const EdgeInsets.only(bottom: 6.0),
-              padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 6.0),
+              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(20.0),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
+                borderRadius: BorderRadius.circular(16.0),
+                border: Border.all(
+                  color: const Color(0xFFEDEDED),
+                  width: 1.0,
+                ),
                 boxShadow: const [
                   BoxShadow(
-                    color: Color(0x0A000000),
-                    blurRadius: 6.0,
-                    offset: Offset(0, 2),
+                    color: Color(0x1F000000),
+                    blurRadius: 20.0,
+                    offset: Offset(0, 4),
                   ),
                 ],
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  RichText(
-                    text: TextSpan(
-                      style: const TextStyle(
-                        fontSize: 12.0,
-                        color: Color(0xFF64748B),
-                      ),
-                      children: [
-                        const TextSpan(text: 'Membalas '),
-                        TextSpan(
-                          text: '@${widget.replyToUser!.replaceAll('@', '')}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.primary,
-                          ),
+                  // Vertical blue indicator line (pen.dev gFODz: width 2, height 38, fill #008BFF)
+                  Container(
+                    width: 2.5,
+                    height: 24.0,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF008BFF),
+                      borderRadius: BorderRadius.circular(2.0),
+                    ),
+                  ),
+                  const SizedBox(width: 8.0),
+                  Expanded(
+                    child: RichText(
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      text: TextSpan(
+                        style: const TextStyle(
+                          fontSize: 13.0,
+                          color: Color(0xFF999999),
                         ),
-                      ],
+                        children: [
+                          const TextSpan(
+                            text: 'Membalas ',
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                          TextSpan(
+                            text: '@${widget.replyToUser!.replaceAll('@', '')}',
+                            style: const TextStyle(
+                              color: Color(0xFF008BFF), // pen.dev #008BFF
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   GestureDetector(
@@ -161,14 +186,11 @@ class _CommentInputBarState extends State<CommentInputBar> {
                       widget.onCancelReply?.call();
                     },
                     child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4.0),
-                      child: Text(
-                        'Batal',
-                        style: TextStyle(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF94A3B8),
-                        ),
+                      padding: EdgeInsets.all(4.0),
+                      child: Icon(
+                        Icons.close_rounded,
+                        size: 18.0,
+                        color: Color(0xFF999999), // pen.dev Close Symbol #999999
                       ),
                     ),
                   ),
@@ -177,147 +199,179 @@ class _CommentInputBarState extends State<CommentInputBar> {
             ),
           ],
 
-          // Main Bottom Input Bar Row (Dedicated Scrollable Text Bubble + Cloudflare Kumo UI Action Button)
+          // ===============================================================
+          // FRAME 1: Leading Button + Write Bar (pen.dev jXVwo)
+          // ===============================================================
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              // 1. Dedicated Text Input Bubble Container with Connected Scrollbar
-              Expanded(
+              // 1. LEADING BUTTON (pen.dev jxdH0: 42x42 circle, fill+shadow)
+              GestureDetector(
+                onTap: () {
+                  HapticFeedback.selectionClick();
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Lampirkan foto atau dokumen 📎'),
+                      behavior: SnackBarBehavior.floating,
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
                 child: Container(
-                  constraints: const BoxConstraints(
-                    minHeight: 44.0,
-                    maxHeight: 116.0,
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 2.0),
+                  width: 42.0,
+                  height: 42.0,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(22.0),
-                    border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFFEDEDED),
+                      width: 1.0,
+                    ),
                     boxShadow: const [
+                      // Diffuse outer shadow from pen.dev Frame 1 (#0000001f, y=8, blur=35)
                       BoxShadow(
-                        color: Color(0x08000000),
-                        blurRadius: 8.0,
+                        color: Color(0x1F000000),
+                        blurRadius: 35.0,
+                        offset: Offset(0, 8),
+                      ),
+                      BoxShadow(
+                        color: Color(0x0A000000),
+                        blurRadius: 10.0,
                         offset: Offset(0, 2),
                       ),
                     ],
                   ),
-                  child: RawScrollbar(
-                    controller: _scrollController,
-                    thumbColor: const Color(0xFF94A3B8),
-                    radius: const Radius.circular(4.0),
-                    thickness: 3.0,
-                    thumbVisibility: true,
-                    child: TextField(
-                      controller: _textController,
-                      scrollController: _scrollController,
-                      focusNode: _focusNode,
-                      minLines: 1,
-                      maxLines: null,
-                      keyboardType: TextInputType.multiline,
-                      textInputAction: TextInputAction.newline,
-                      style: const TextStyle(
-                        fontSize: 14.5,
-                        fontWeight: FontWeight.normal,
-                        color: Color(0xFF0F172A),
-                        height: 1.35,
-                        letterSpacing: -0.1,
-                      ),
-
-                      decoration: InputDecoration(
-                        hintText: placeholder,
-                        hintStyle: const TextStyle(
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.normal,
-                          color: Color(0xFF94A3B8),
-                          height: 1.35,
-                        ),
-                        border: InputBorder.none,
-                        isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 8.0),
-                      ),
-                    ),
+                  child: Center(
+                    child: widget.userAvatar != null && widget.userAvatar!.isNotEmpty
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(15.0),
+                            child: Image.network(
+                              widget.userAvatar!,
+                              width: 30.0,
+                              height: 30.0,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => const Icon(
+                                Icons.attach_file_rounded,
+                                color: Color(0xFF1A1A1A),
+                                size: 20.0,
+                              ),
+                            ),
+                          )
+                        : const Icon(
+                            Icons.attach_file_rounded,
+                            color: Color(0xFF1A1A1A), // pen.dev #1A1A1A
+                            size: 20.0,
+                          ),
                   ),
                 ),
               ),
 
-              const SizedBox(width: 8.0),
+              const SizedBox(width: 6.0), // pen.dev gap: 6
 
-              // 2. Separate External Circular Button (Cloudflare Kumo UI Button System 44x44)
-              GestureDetector(
-                onTapDown: _hasText
-                    ? (_) {
-                        setState(() => _isSendPressed = true);
-                        HapticFeedback.selectionClick();
-                      }
-                    : null,
-                onTapUp: _hasText ? (_) => setState(() => _isSendPressed = false) : null,
-                onTapCancel: _hasText ? () => setState(() => _isSendPressed = false) : null,
-                onTap: _hasText ? _handleSubmit : null,
-                child: AnimatedScale(
-                  scale: _isSendPressed ? 0.92 : 1.0,
-                  duration: const Duration(milliseconds: 90),
-                  curve: Curves.easeOutCubic,
-                  child: Container(
-                    width: 44.0,
-                    height: 44.0,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _hasText ? const Color(0xFF1D64EC) : const Color(0xFFF3F4F6),
-                      gradient: _hasText
-                          ? const LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Color(0xFF3B82F6), // Kumo Blue 500
-                                Color(0xFF1D64EC), // Kumo Primary Blue
-                              ],
-                            )
-                          : null,
-                      border: Border.all(
-                        color: _hasText ? const Color(0xFF154EC1) : const Color(0xFFE5E7EB),
-                        width: 1.0,
-                      ),
-                      boxShadow: [
-                        if (_hasText)
-                          BoxShadow(
-                            color: const Color(0xFF1D64EC).withOpacity(0.35),
-                            blurRadius: 10.0,
-                            offset: const Offset(0, 3),
-                          )
-                        else
-                          const BoxShadow(
-                            color: Color(0x08000000),
-                            blurRadius: 3.0,
-                            offset: Offset(0, 1),
-                          ),
-                      ],
+              // 2. WRITE BAR (pen.dev cXg3A: cornerRadius 21, height 42)
+              Expanded(
+                child: Container(
+                  constraints: const BoxConstraints(minHeight: 42.0),
+                  padding: const EdgeInsets.fromLTRB(14.0, 3.0, 3.0, 3.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(21.0),
+                    border: Border.all(
+                      color: const Color(0xFFEDEDED),
+                      width: 1.0,
                     ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        // Exact Kumo Inset Top Shine Specular Highlight Shadow
-                        if (_hasText)
-                          Positioned(
-                            top: 0,
-                            left: 6.0,
-                            right: 6.0,
-                            height: 1.0,
+                    boxShadow: const [
+                      // Diffuse outer shadow from pen.dev Frame 1 (#0000001f, y=8, blur=35)
+                      BoxShadow(
+                        color: Color(0x1F000000),
+                        blurRadius: 35.0,
+                        offset: Offset(0, 8),
+                      ),
+                      BoxShadow(
+                        color: Color(0x0A000000),
+                        blurRadius: 10.0,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Text Input
+                      Expanded(
+                        child: TextField(
+                          controller: _textController,
+                          focusNode: _focusNode,
+                          minLines: 1,
+                          maxLines: 4,
+                          keyboardType: TextInputType.multiline,
+                          textInputAction: TextInputAction.send,
+                          onSubmitted: (_) => _handleSubmit(),
+                          style: const TextStyle(
+                            fontSize: 15.5,
+                            color: Color(0xFF000000),
+                            letterSpacing: -0.3,
+                            height: 1.25,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: placeholder,
+                            hintStyle: const TextStyle(
+                              fontSize: 15.5,
+                              color: Color(0xFF999999), // pen.dev #999999
+                              letterSpacing: -0.3,
+                              height: 1.25,
+                            ),
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(vertical: 7.0),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(width: 4.0),
+
+                      // Trailing Action: Send Button when text exists, or Sticker/Emoji Symbol when empty
+                      if (_hasText)
+                        GestureDetector(
+                          onTapDown: (_) => setState(() => _isSendPressed = true),
+                          onTapUp: (_) => setState(() => _isSendPressed = false),
+                          onTapCancel: () => setState(() => _isSendPressed = false),
+                          onTap: _handleSubmit,
+                          child: AnimatedScale(
+                            scale: _isSendPressed ? 0.90 : 1.0,
+                            duration: const Duration(milliseconds: 90),
+                            curve: Curves.easeOutCubic,
                             child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.35),
-                                borderRadius: BorderRadius.circular(1.0),
+                              width: 36.0,
+                              height: 36.0,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF008BFF), // pen.dev Azure Blue #008BFF
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Center(
+                                child: Icon(
+                                  Icons.arrow_upward_rounded,
+                                  size: 20.0,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
-
-                        // Center Icon (Upward Arrow icon matching screenshot)
-                        Icon(
-                          Icons.arrow_upward_rounded,
-                          size: 20.0,
-                          color: _hasText ? Colors.white : const Color(0xFF9CA3AF),
+                        )
+                      else
+                        const SizedBox(
+                          width: 36.0,
+                          height: 36.0,
+                          child: Center(
+                            child: Icon(
+                              Icons.sentiment_satisfied_rounded,
+                              color: Color(0xFF727272), // pen.dev #727272
+                              size: 22.0,
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
+                    ],
                   ),
                 ),
               ),

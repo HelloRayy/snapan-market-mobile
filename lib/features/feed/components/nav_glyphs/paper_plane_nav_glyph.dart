@@ -63,21 +63,28 @@ class PaperPlaneNavGlyph extends StatelessWidget {
         plane,
         Positioned(
           top: -4.0,
-          right: -6.0,
+          right: -7.0,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            padding: const EdgeInsets.symmetric(horizontal: 4.5, vertical: 1.0),
             constraints: const BoxConstraints(
               minWidth: 16.0,
               minHeight: 16.0,
             ),
             decoration: BoxDecoration(
-              color: const Color(0xFFFF3B30),
+              color: const Color(0xFF00A3FF), // Vibrant Cyan badge matching reference image
               shape: badgeCount > 9 ? BoxShape.rectangle : BoxShape.circle,
-              borderRadius: badgeCount > 9 ? BorderRadius.circular(8.0) : null,
+              borderRadius: badgeCount > 9 ? BorderRadius.circular(9.0) : null,
               border: Border.all(
                 color: Colors.white,
                 width: 1.5,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF00A3FF).withValues(alpha: 0.35),
+                  blurRadius: 4.0,
+                  offset: const Offset(0, 1),
+                ),
+              ],
             ),
             child: Center(
               child: Text(
@@ -85,7 +92,7 @@ class PaperPlaneNavGlyph extends StatelessWidget {
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 10.0,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w800,
                   height: 1.1,
                 ),
               ),

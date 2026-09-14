@@ -396,7 +396,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
       bottomNavigationBar: HomeBottomNavBar(
         currentTab: _currentNavTab,
         hasUnreadMessages: true,
-        unreadMessagesCount: 0,
+        unreadMessagesCount: 20,
         userAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
         onPostTap: _handleCreatePost,
         onTabSelected: (tab) {

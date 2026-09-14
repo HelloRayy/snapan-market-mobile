@@ -7,7 +7,7 @@ import 'package:snapan_market/features/feed/components/nav_glyphs/paper_plane_na
 import 'package:snapan_market/features/feed/components/nav_glyphs/heart_nav_glyph.dart';
 import 'package:snapan_market/features/feed/components/nav_glyphs/user_nav_glyph.dart';
 
-/// Enum representing the 5 primary navigation tabs (100% parity with Web MarketBottomNav)
+/// Enum representing the 5 primary navigation tabs
 enum HomeNavTab {
   home,
   messages,
@@ -33,15 +33,14 @@ enum HomeNavTab {
   }
 }
 
-/// Sliced 1:1 with Web React MarketBottomNav.tsx
+/// Home Feed Bottom Navigation Bar
 ///
-/// Features:
-/// - 50px height edge-to-edge bar with safe-area bottom inset
-/// - Frosted glass white container (`bg-white/95 backdrop-blur-md border-t border-neutral-200/80`)
-/// - 5-column grid layout (Home, Pesan, Center FAB, Aktivitas, Profil)
-/// - Center elevated Kumo Floating Action Button (48x48, -top-5, gradient, 3.5px white ring, shadow)
-/// - Subtle active indicator pill (`bg-neutral-100/90 rounded-xl`)
-/// - Red dot unread badge for Messages and Activity
+/// Styling Specification:
+/// - White Edge-to-Edge Bar (`bg-white/96 backdrop-blur-md border-t border-neutral-200/80`)
+/// - Active Capsule Highlight: soft rounded pill background on active tab
+/// - Cyan Badge Counter on Messages (matching reference image)
+/// - Bottom Text Labels under every icon (Home, Pesan, Jual, Aktivitas, Profil)
+/// - Center Elevated Kumo Floating Action Button (Jual / +)
 class HomeBottomNavBar extends StatelessWidget {
   final HomeNavTab currentTab;
   final ValueChanged<HomeNavTab> onTabSelected;
@@ -75,7 +74,8 @@ class HomeBottomNavBar extends StatelessWidget {
     }
 
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
-    final totalHeight = 50.0 + bottomPadding;
+    const barHeight = 58.0;
+    final totalHeight = barHeight + bottomPadding;
 
     return RepaintBoundary(
       child: SizedBox(
@@ -83,17 +83,17 @@ class HomeBottomNavBar extends StatelessWidget {
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            // Frosted Glass White Background Bar (50px + safe area)
+            // Frosted Glass White Background Bar
             Positioned.fill(
               child: ClipRect(
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.95),
+                      color: Colors.white.withValues(alpha: 0.96),
                       border: Border(
                         top: BorderSide(
-                          color: const Color(0xFFE2E8F0).withValues(alpha: 0.80),
+                          color: const Color(0xFFE2E8F0).withValues(alpha: 0.85),
                           width: 1.0,
                         ),
                       ),
@@ -110,7 +110,7 @@ class HomeBottomNavBar extends StatelessWidget {
               ),
             ),
 
-            // 5-Column Navigation Row Items
+            // 5-Column Navigation Items Row
             Positioned.fill(
               child: SafeArea(
                 top: false,
@@ -119,7 +119,7 @@ class HomeBottomNavBar extends StatelessWidget {
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 448.0),
                     child: SizedBox(
-                      height: 50.0,
+                      height: barHeight,
                       child: Row(
                         children: [
                           // 1. Home
@@ -148,21 +148,17 @@ class HomeBottomNavBar extends StatelessWidget {
                             ),
                           ),
 
-                          // 3. Center Elevated Floating Action Button (Jual / +)
+                          // 3. Center Elevated Action Button (Jual / +)
                           Expanded(
-                            child: Center(
-                              child: Transform.translate(
-                                offset: const Offset(0, -14.0),
-                                child: _CenterActionFab(
-                                  onTap: () {
-                                    if (_actionCallback != null) {
-                                      _actionCallback!();
-                                    } else {
-                                      onTabSelected(HomeNavTab.create);
-                                    }
-                                  },
-                                ),
-                              ),
+                            child: _CenterActionFabItem(
+                              label: 'Jual',
+                              onTap: () {
+                                if (_actionCallback != null) {
+                                  _actionCallback!();
+                                } else {
+                                  onTabSelected(HomeNavTab.create);
+                                }
+                              },
                             ),
                           ),
 
@@ -205,7 +201,7 @@ class HomeBottomNavBar extends StatelessWidget {
   }
 }
 
-/// Standard Nav Item matching Web MarketBottomNav tab
+/// Standard Nav Item with Active Capsule Highlight and Text Label
 class _BottomNavItem extends StatefulWidget {
   final bool isActive;
   final String label;
@@ -228,6 +224,9 @@ class _BottomNavItemState extends State<_BottomNavItem> {
 
   @override
   Widget build(BuildContext context) {
+    const activeColor = Color(0xFF1D64EC); // Kumo Primary Blue
+    const inactiveColor = Color(0xFF64748B); // Slate Muted Gray
+
     return Semantics(
       label: widget.label,
       button: true,
@@ -245,31 +244,53 @@ class _BottomNavItemState extends State<_BottomNavItem> {
         },
         behavior: HitTestBehavior.opaque,
         child: AnimatedScale(
-          scale: _isPressed ? 0.95 : 1.0,
+          scale: _isPressed ? 0.94 : 1.0,
           duration: const Duration(milliseconds: 75),
           curve: Curves.easeOutCubic,
-          child: SizedBox(
-            height: 50.0,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                // Subtle active indicator pill matching Threads h-[42px]
-                if (widget.isActive)
-                  Positioned.fill(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF1F5F9).withValues(alpha: 0.90),
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                      ),
-                    ),
+          child: Center(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOutCubic,
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.5),
+              decoration: BoxDecoration(
+                // Active Capsule Highlight (as in reference image)
+                color: widget.isActive ? const Color(0xFFEFF6FF) : Colors.transparent,
+                borderRadius: BorderRadius.circular(16.0),
+                border: widget.isActive
+                    ? Border.all(
+                        color: const Color(0xFF1D64EC).withValues(alpha: 0.15),
+                        width: 1.0,
+                      )
+                    : null,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Icon / Glyph
+                  SizedBox(
+                    width: 24.0,
+                    height: 24.0,
+                    child: Center(child: widget.glyph),
                   ),
 
-                // Icon / Glyph
-                Center(child: widget.glyph),
-              ],
+                  const SizedBox(height: 2.0),
+
+                  // Text Label
+                  Text(
+                    widget.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: widget.isActive ? FontWeight.w700 : FontWeight.w500,
+                      color: widget.isActive ? activeColor : inactiveColor,
+                      letterSpacing: -0.2,
+                      height: 1.1,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -278,23 +299,21 @@ class _BottomNavItemState extends State<_BottomNavItem> {
   }
 }
 
-/// Center Elevated Floating Action Button (Jual / +)
-/// Matches Web React:
-/// - 48x48 rounded-full
-/// - Kumo Indigo/Blue gradient [#3b82f6 -> #1d64ec]
-/// - 3.5px white ring
-/// - Soft blue elevation shadow
-/// - Plus icon with smooth tap physics
-class _CenterActionFab extends StatefulWidget {
+/// Center Action Button with Floating Elevated FAB and "Jual" Label
+class _CenterActionFabItem extends StatefulWidget {
+  final String label;
   final VoidCallback onTap;
 
-  const _CenterActionFab({required this.onTap});
+  const _CenterActionFabItem({
+    required this.label,
+    required this.onTap,
+  });
 
   @override
-  State<_CenterActionFab> createState() => _CenterActionFabState();
+  State<_CenterActionFabItem> createState() => _CenterActionFabItemState();
 }
 
-class _CenterActionFabState extends State<_CenterActionFab> {
+class _CenterActionFabItemState extends State<_CenterActionFabItem> {
   bool _isPressed = false;
 
   @override
@@ -318,63 +337,89 @@ class _CenterActionFabState extends State<_CenterActionFab> {
           scale: _isPressed ? 0.94 : 1.0,
           duration: const Duration(milliseconds: 75),
           curve: Curves.easeOutCubic,
-          child: Container(
-            width: 48.0,
-            height: 48.0,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                // Soft blue bloom shadow
-                BoxShadow(
-                  color: const Color(0xFF1D64EC).withValues(alpha: 0.35),
-                  blurRadius: 10.0,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                // 3.5px Crisp White Outer Ring
-                border: Border.all(
-                  color: Colors.white,
-                  width: 3.5,
-                ),
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFF3B82F6), // Sky/Royal Blue
-                    Color(0xFF1D64EC), // Electric Kumo Blue
-                  ],
-                ),
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Top Inset Rim Shine Highlight
-                  Positioned(
-                    top: 2.0,
-                    left: 8.0,
-                    right: 8.0,
-                    height: 1.5,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.40),
-                        borderRadius: BorderRadius.circular(2.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Floating Elevated Circular Button
+              Transform.translate(
+                offset: const Offset(0, -10.0),
+                child: Container(
+                  width: 44.0,
+                  height: 44.0,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      // Soft blue glow shadow
+                      BoxShadow(
+                        color: const Color(0xFF1D64EC).withValues(alpha: 0.35),
+                        blurRadius: 8.0,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      // Crisp White Outer Ring
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 3.0,
+                      ),
+                      gradient: const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color(0xFF3B82F6), // Royal Blue
+                          Color(0xFF1D64EC), // Electric Kumo Blue
+                        ],
                       ),
                     ),
-                  ),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Top Inset Rim Shine Highlight
+                        Positioned(
+                          top: 2.0,
+                          left: 6.0,
+                          right: 6.0,
+                          height: 1.2,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.45),
+                              borderRadius: BorderRadius.circular(2.0),
+                            ),
+                          ),
+                        ),
 
-                  // Plus Icon
-                  const Icon(
-                    Icons.add_rounded,
-                    color: Colors.white,
-                    size: 24.0,
+                        // Plus Icon
+                        const Icon(
+                          Icons.add_rounded,
+                          color: Colors.white,
+                          size: 24.0,
+                        ),
+                      ],
+                    ),
                   ),
-                ],
+                ),
               ),
-            ),
+
+              Transform.translate(
+                offset: const Offset(0, -6.0),
+                child: Text(
+                  widget.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1D64EC),
+                    letterSpacing: -0.2,
+                    height: 1.1,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

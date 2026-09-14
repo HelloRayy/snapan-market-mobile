@@ -41,28 +41,28 @@ class ConversationListItem extends StatelessWidget {
         highlightColor: const Color(0xFFF2F4F7),
         splashColor: const Color(0xFFF2F4F7),
         child: Container(
-          height: 78.0, // pen.dev bzgQS height: 78
-          padding: const EdgeInsets.only(left: 10.0, right: 16.0), // pen.dev padding [0, 16, 0, 10]
+          height: 72.0, // Standard modern chat list row height
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // ===============================================================
-              // 1. AVATAR BLOCK (62x62) with Status Indicator Dot from bzgQS
+              // 1. AVATAR BLOCK (Standard 48x48) with Online Status Dot
               // ===============================================================
               Padding(
-                padding: const EdgeInsets.only(right: 10.0), // pen.dev right: 10
+                padding: const EdgeInsets.only(right: 12.0),
                 child: SizedBox(
-                  width: 62.0,
-                  height: 62.0,
+                  width: 48.0,
+                  height: 48.0,
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      // Full 62x62 Circular Avatar
+                      // Full 48x48 Circular Avatar
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(31.0),
+                        borderRadius: BorderRadius.circular(24.0),
                         child: Container(
-                          width: 62.0,
-                          height: 62.0,
+                          width: 48.0,
+                          height: 48.0,
                           color: const Color(0xFFF1F5F9),
                           child: Image.network(
                             conversation.user.avatar,
@@ -70,20 +70,20 @@ class ConversationListItem extends StatelessWidget {
                             errorBuilder: (_, __, ___) => const Icon(
                               Icons.person_rounded,
                               color: AppColors.muted,
-                              size: 30.0,
+                              size: 24.0,
                             ),
                           ),
                         ),
                       ),
 
-                      // Status Dot (10x10 with 2px white border at x:48, y:48)
+                      // Status Dot (11x11 with 2px white border)
                       if (conversation.user.isOnline)
                         Positioned(
                           right: 0,
                           bottom: 0,
                           child: Container(
-                            width: 12.0,
-                            height: 12.0,
+                            width: 11.0,
+                            height: 11.0,
                             decoration: BoxDecoration(
                               color: onlineGreen,
                               shape: BoxShape.circle,
@@ -100,141 +100,133 @@ class ConversationListItem extends StatelessWidget {
               ),
 
               // ===============================================================
-              // 2. CONTENTS: Title and Message (pen.dev F4iD9 height: 63)
+              // 2. CONTENTS: Title and Message
               // ===============================================================
               Expanded(
-                child: SizedBox(
-                  height: 63.0,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Row 1: Title (Name) + Badges (Verified / Class)
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              conversation.user.name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 17.0, // pen.dev aCEHd fontSize: 17
-                                fontWeight: hasUnread ? FontWeight.w600 : FontWeight.w500,
-                                color: titleBlack,
-                                letterSpacing: -0.43,
-                                height: 1.25,
-                              ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Row 1: Title (Name) + Badges (Verified / Class)
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            conversation.user.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: hasUnread ? FontWeight.w600 : FontWeight.w500,
+                              color: titleBlack,
+                              letterSpacing: -0.3,
+                              height: 1.25,
                             ),
                           ),
-                          if (conversation.user.isVerified) ...[
-                            const SizedBox(width: 4.0),
-                            const Icon(
-                              Icons.verified_rounded,
-                              size: 14.0,
-                              color: azurePrimary, // pen.dev CETdZ #008BFF
-                            ),
-                          ],
-                          if (conversation.user.classGroup != null) ...[
-                            const SizedBox(width: 5.0),
-                            Text(
-                              conversation.user.classGroup!,
-                              style: const TextStyle(
-                                fontSize: 12.0,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF94A3B8),
-                              ),
-                            ),
-                          ],
+                        ),
+                        if (conversation.user.isVerified) ...[
+                          const SizedBox(width: 4.0),
+                          const Icon(
+                            Icons.verified_rounded,
+                            size: 13.5,
+                            color: azurePrimary, // pen.dev #008BFF
+                          ),
                         ],
-                      ),
-
-                      const SizedBox(height: 3.0),
-
-                      // Row 2: Message preview (pen.dev X5fgq fontSize: 15)
-                      Row(
-                        children: [
-                          if (conversation.isSender) ...[
-                            Icon(
-                              Icons.done_all_rounded,
-                              size: 15.0,
-                              color: hasUnread ? const Color(0xFF94A3B8) : azurePrimary,
-                            ),
-                            const SizedBox(width: 4.0),
-                          ],
-                          Expanded(
-                            child: Text(
-                              conversation.lastMessage,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 15.0, // pen.dev X5fgq fontSize: 15
-                                fontWeight: FontWeight.normal,
-                                color: hasUnread ? const Color(0xFF1E293B) : secondaryInk,
-                                letterSpacing: -0.23,
-                                height: 1.33,
-                              ),
+                        if (conversation.user.classGroup != null) ...[
+                          const SizedBox(width: 5.0),
+                          Text(
+                            conversation.user.classGroup!,
+                            style: const TextStyle(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF94A3B8),
                             ),
                           ),
                         ],
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 3.0),
+
+                    // Row 2: Message preview
+                    Row(
+                      children: [
+                        if (conversation.isSender) ...[
+                          Icon(
+                            Icons.done_all_rounded,
+                            size: 14.0,
+                            color: hasUnread ? const Color(0xFF94A3B8) : azurePrimary,
+                          ),
+                          const SizedBox(width: 4.0),
+                        ],
+                        Expanded(
+                          child: Text(
+                            conversation.lastMessage,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              fontWeight: hasUnread ? FontWeight.w500 : FontWeight.normal,
+                              color: hasUnread ? const Color(0xFF1E293B) : secondaryInk,
+                              letterSpacing: -0.15,
+                              height: 1.25,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
 
               const SizedBox(width: 8.0),
 
               // ===============================================================
-              // 3. TRAILING ACCESSORIES: Time & Unread Badge (pen.dev w7q4Fm)
+              // 3. TRAILING ACCESSORIES: Time & Unread Badge
               // ===============================================================
-              SizedBox(
-                height: 63.0,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    // Timestamp (pen.dev l9ChP7 fontSize: 14)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 2.0),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  // Timestamp
+                  Text(
+                    conversation.timestamp,
+                    style: TextStyle(
+                      fontSize: 13.0,
+                      fontWeight: hasUnread ? FontWeight.w600 : FontWeight.normal,
+                      color: hasUnread ? azurePrimary : secondaryInk,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+
+                  const SizedBox(height: 4.0),
+
+                  // Unread Pill Badge (pen.dev Azure #008BFF)
+                  if (hasUnread)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 5.5, vertical: 1.5),
+                      constraints: const BoxConstraints(
+                        minWidth: 18.0,
+                        minHeight: 18.0,
+                      ),
+                      decoration: BoxDecoration(
+                        color: azurePrimary,
+                        borderRadius: BorderRadius.circular(9.0),
+                      ),
+                      alignment: Alignment.center,
                       child: Text(
-                        conversation.timestamp,
-                        style: TextStyle(
-                          fontSize: 14.0, // pen.dev fontSize: 14
-                          fontWeight: hasUnread ? FontWeight.w600 : FontWeight.normal,
-                          color: hasUnread ? azurePrimary : secondaryInk,
-                          letterSpacing: -0.23,
+                        '${conversation.unreadCount}',
+                        style: const TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          height: 1.0,
                         ),
                       ),
-                    ),
-
-                    // Unread Pill Badge (pen.dev NHY1Z minWidth: 20, height: 20)
-                    if (hasUnread)
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 2.0),
-                        padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
-                        constraints: const BoxConstraints(
-                          minWidth: 20.0,
-                          minHeight: 20.0,
-                        ),
-                        decoration: BoxDecoration(
-                          color: azurePrimary,
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          '${conversation.unreadCount}',
-                          style: const TextStyle(
-                            fontSize: 13.0,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                            height: 1.0,
-                          ),
-                        ),
-                      )
-                    else
-                      const SizedBox(height: 20.0),
-                  ],
-                ),
+                    )
+                  else
+                    const SizedBox(height: 18.0),
+                ],
               ),
             ],
           ),

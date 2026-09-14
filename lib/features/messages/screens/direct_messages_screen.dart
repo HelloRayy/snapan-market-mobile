@@ -247,7 +247,7 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
                         height: 1.0,
                         thickness: 0.6,
                         color: Color(0xFFE6E6E6), // pen.dev _Separator #E6E6E6
-                        indent: 82.0,
+                        indent: 76.0,
                       ),
                       itemBuilder: (ctx, index) {
                         // Row 0: Pen.dev "Invite Friends" / "Undang Teman"
@@ -259,37 +259,37 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
                               highlightColor: const Color(0xFFF2F4F7),
                               splashColor: const Color(0xFFF2F4F7),
                               child: Container(
-                                height: 78.0,
-                                padding: const EdgeInsets.only(left: 10.0, right: 16.0),
+                                height: 72.0,
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                                 child: const Row(
                                   children: [
-                                    // Pen.dev Symbol Icon (Azure #008BFF in 62px slot)
+                                    // Symbol Icon in standard 48x48 circular badge
                                     Padding(
-                                      padding: EdgeInsets.only(right: 10.0),
+                                      padding: EdgeInsets.only(right: 12.0),
                                       child: SizedBox(
-                                        width: 62.0,
-                                        height: 62.0,
+                                        width: 48.0,
+                                        height: 48.0,
                                         child: Center(
                                           child: Icon(
                                             Icons.person_add_outlined,
                                             color: Color(0xFF008BFF), // pen.dev #008BFF
-                                            size: 28.0,
+                                            size: 24.0,
                                           ),
                                         ),
                                       ),
                                     ),
 
-                                    // Title matching pen.dev "Invite Friends" (SF Pro 17px, 500, letter-spacing -0.43)
+                                    // Title matching pen.dev "Invite Friends"
                                     Expanded(
                                       child: Text(
                                         'Undang Teman SMKN 8',
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
-                                          fontSize: 17.0,
+                                          fontSize: 16.0,
                                           fontWeight: FontWeight.w500,
                                           color: Color(0xFF000000),
-                                          letterSpacing: -0.43,
+                                          letterSpacing: -0.3,
                                         ),
                                       ),
                                     ),

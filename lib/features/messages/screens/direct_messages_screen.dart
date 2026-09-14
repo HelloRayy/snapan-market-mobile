@@ -240,15 +240,93 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
               child: filtered.isNotEmpty
                   ? ListView.separated(
                       padding: const EdgeInsets.only(top: 4.0, bottom: 120.0),
-                      itemCount: filtered.length,
+                      itemCount: (_searchQuery.isEmpty && _activeFilter == 'inbox')
+                          ? filtered.length + 1
+                          : filtered.length,
                       separatorBuilder: (_, __) => const Divider(
                         height: 1.0,
                         thickness: 0.6,
-                        color: Color(0xFFF1F5F9),
-                        indent: 80.0,
+                        color: Color(0xFFE6E6E6), // pen.dev _Separator #E6E6E6
+                        indent: 70.0,
                       ),
                       itemBuilder: (ctx, index) {
-                        final conv = filtered[index];
+                        // Row 0: Pen.dev "Invite Friends" / "Undang Teman"
+                        if (_searchQuery.isEmpty && _activeFilter == 'inbox' && index == 0) {
+                          return Material(
+                            color: Colors.white,
+                            child: InkWell(
+                              onTap: _handleNewChat,
+                              highlightColor: const Color(0xFFF2F4F7),
+                              splashColor: const Color(0xFFF2F4F7),
+                              child: Container(
+                                height: 58.0,
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+                                child: Row(
+                                  children: [
+                                    // Circular Icon Block (42x42)
+                                    Container(
+                                      width: 42.0,
+                                      height: 42.0,
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xFF008BFF), // pen.dev Primary Accent
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.person_add_rounded,
+                                          color: Colors.white,
+                                          size: 20.0,
+                                        ),
+                                      ),
+                                    ),
+
+                                    const SizedBox(width: 12.0),
+
+                                    // Title & Subtitle
+                                    const Expanded(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Undang Teman SMKN 8',
+                                            style: TextStyle(
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.w500,
+                                              color: Color(0xFF000000),
+                                              letterSpacing: -0.43,
+                                            ),
+                                          ),
+                                          SizedBox(height: 2.0),
+                                          Text(
+                                            'Mulai percakapan dengan teman atau penjual',
+                                            style: TextStyle(
+                                              fontSize: 13.0,
+                                              color: Color(0x993C3C43),
+                                              letterSpacing: -0.08,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    // Chevron Right
+                                    const Icon(
+                                      Icons.chevron_right_rounded,
+                                      size: 20.0,
+                                      color: Color(0x4D3C3C43),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+
+                        final dataIndex = (_searchQuery.isEmpty && _activeFilter == 'inbox')
+                            ? index - 1
+                            : index;
+                        final conv = filtered[dataIndex];
                         return ConversationListItem(
                           conversation: conv,
                           onTap: () => _handleOpenChat(conv),
@@ -275,15 +353,15 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 6.0),
         decoration: BoxDecoration(
-          color: isActive ? AppColors.primaryPastel : Colors.transparent,
+          color: isActive ? const Color(0xFFEDEDED) : Colors.transparent, // pen.dev capsule #EDEDED
           borderRadius: BorderRadius.circular(20.0),
         ),
         child: Text(
           label,
           style: TextStyle(
             fontSize: 13.0,
-            fontWeight: FontWeight.w600,
-            color: isActive ? AppColors.primary : const Color(0xFF64748B),
+            fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+            color: isActive ? const Color(0xFF008BFF) : const Color(0xFF64748B),
           ),
         ),
       ),

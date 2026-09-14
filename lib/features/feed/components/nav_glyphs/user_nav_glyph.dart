@@ -21,8 +21,8 @@ class UserNavGlyph extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            color: isActive ? AppColors.ink : const Color(0xFFCBD5E1),
-            width: 1.0,
+            color: isActive ? const Color(0xFF008BFF) : const Color(0xFFCBD5E1),
+            width: isActive ? 1.5 : 1.0,
           ),
         ),
         child: ClipRRect(
@@ -45,7 +45,7 @@ class UserNavGlyph extends StatelessWidget {
       height: 24.0,
       child: CustomPaint(
         painter: _UserPainter(
-          color: isActive ? AppColors.ink : const Color(0xFF787574),
+          color: isActive ? const Color(0xFF008BFF) : const Color(0xFF1A1A1A),
           isActive: isActive,
         ),
       ),

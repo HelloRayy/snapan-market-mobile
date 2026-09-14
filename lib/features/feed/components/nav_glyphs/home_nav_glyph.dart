@@ -14,7 +14,7 @@ class HomeNavGlyph extends StatelessWidget {
       height: 24.0,
       child: CustomPaint(
         painter: _HomePainter(
-          color: isActive ? AppColors.ink : const Color(0xFF787574),
+          color: isActive ? const Color(0xFF008BFF) : const Color(0xFF1A1A1A),
           isActive: isActive,
         ),
       ),

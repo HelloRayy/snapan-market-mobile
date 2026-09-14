@@ -194,8 +194,8 @@ class _KumoButtonState extends State<KumoButton> {
               ],
             ],
           ),
-              Center(
-                child: Padding(
+          child: Center(
+            child: Padding(
                   padding: widget.padding ??
                       const EdgeInsets.symmetric(horizontal: 20.0),
                   child: widget.isLoading

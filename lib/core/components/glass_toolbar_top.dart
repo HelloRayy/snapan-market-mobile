@@ -263,19 +263,6 @@ class _GlassCapsuleButtonState extends State<_GlassCapsuleButton> {
             height: 42.0,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(21.0),
-              boxShadow: const [
-                // Diffuse outer shadow from pen.dev Frame 1 (#0000001f, y=8, blur=35)
-                BoxShadow(
-                  color: Color(0x1F000000),
-                  blurRadius: 35.0,
-                  offset: Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Color(0x0A000000),
-                  blurRadius: 10.0,
-                  offset: Offset(0, 2),
-                ),
-              ],
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(21.0),
@@ -324,19 +311,6 @@ class _GlassActionsPill extends StatelessWidget {
       height: 42.0,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(21.0),
-        boxShadow: const [
-          // Diffuse outer shadow from pen.dev Frame 1 (#0000001f, y=8, blur=35)
-          BoxShadow(
-            color: Color(0x1F000000),
-            blurRadius: 35.0,
-            offset: Offset(0, 8),
-          ),
-          BoxShadow(
-            color: Color(0x0A000000),
-            blurRadius: 10.0,
-            offset: Offset(0, 2),
-          ),
-        ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(21.0),

@@ -6,6 +6,7 @@ import 'package:snapan_market/core/theme/app_colors.dart';
 /// Top App Bar Header for Home Feed
 /// Sliced from pen.dev `Toobar - Top - Chats` adapted for Home Screen
 class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
+  final String title;
   final VoidCallback? onMenuTap;
   final VoidCallback? onTitleTap;
   final VoidCallback? onSearchTap;
@@ -13,6 +14,7 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
 
   const HomeFeedHeader({
     super.key,
+    this.title = 'Snaps.',
     this.onMenuTap,
     this.onTitleTap,
     this.onSearchTap,
@@ -30,14 +32,18 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
       onLeadingTap: onBackTap ?? onMenuTap,
       titleWidget: GestureDetector(
         onTap: onTitleTap,
-        child: const Text(
-          'Snaps.',
-          style: TextStyle(
-            fontFamily: 'SF Pro',
-            fontSize: 17.5,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF1A1A1A),
-            letterSpacing: -0.4,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: Text(
+            title,
+            key: ValueKey(title),
+            style: const TextStyle(
+              fontFamily: 'SF Pro',
+              fontSize: 17.5,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF1A1A1A),
+              letterSpacing: -0.4,
+            ),
           ),
         ),
       ),

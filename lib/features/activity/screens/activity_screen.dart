@@ -4,7 +4,8 @@ import "package:snapan_market/features/activity/components/activity_item_tile.da
 import "package:snapan_market/features/activity/models/activity_notification_model.dart";
 
 class ActivityScreen extends StatefulWidget {
-  const ActivityScreen({super.key});
+  final bool showAppBar;
+  const ActivityScreen({super.key, this.showAppBar = true});
 
   @override
   State<ActivityScreen> createState() => _ActivityScreenState();
@@ -43,41 +44,39 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            // Header
-            Container(
-              color: Colors.white,
-              padding: const EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 12.0),
-              decoration: const BoxDecoration(
-                border: Border(bottom: BorderSide(color: Color(0xFFF1F5F9), width: 0.8)),
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Aktivitas & Notifikasi",
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w800,
-                          color: Color(0xFF0F172A),
-                          letterSpacing: -0.3,
-                        ),
+    final bodyContent = Column(
+      children: [
+        // Header
+        Container(
+          color: Colors.white,
+          padding: const EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 12.0),
+          decoration: const BoxDecoration(
+            border: Border(bottom: BorderSide(color: Color(0xFFF1F5F9), width: 0.8)),
+          ),
+          child: Column(
+            children: [
+              if (widget.showAppBar) ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Aktivitas & Notifikasi",
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF0F172A),
+                        letterSpacing: -0.3,
                       ),
-                      IconButton(
-                        onPressed: _markAllAsRead,
-                        icon: const Icon(Icons.done_all_rounded, size: 20.0, color: Color(0xFF64748B)),
-                        tooltip: "Tandai semua dibaca",
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10.0),
+                    ),
+                    IconButton(
+                      onPressed: _markAllAsRead,
+                      icon: const Icon(Icons.done_all_rounded, size: 20.0, color: Color(0xFF64748B)),
+                      tooltip: "Tandai semua dibaca",
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10.0),
+              ],
 
                   // Category Chips
                   Row(
@@ -170,8 +169,21 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     ),
             ),
           ],
+        );
+
+    if (widget.showAppBar) {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          bottom: false,
+          child: bodyContent,
         ),
-      ),
+      );
+    }
+
+    return Container(
+      color: Colors.white,
+      child: bodyContent,
     );
   }
 }

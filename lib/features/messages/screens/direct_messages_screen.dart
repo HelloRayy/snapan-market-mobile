@@ -13,11 +13,13 @@ import 'package:snapan_market/features/messages/screens/chat_conversation_screen
 class DirectMessagesScreen extends StatefulWidget {
   final VoidCallback? onBack;
   final bool showBackButton;
+  final bool showAppBar;
 
   const DirectMessagesScreen({
     super.key,
     this.onBack,
     this.showBackButton = false,
+    this.showAppBar = true,
   });
 
   @override
@@ -95,69 +97,57 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
   Widget build(BuildContext context) {
     final filtered = _filteredConversations;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            // Sticky Header: Baris 1 Title, Baris 2 Search, Baris 3 Filter Pills
-            Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                  bottom: BorderSide(
-                    color: Color(0xFFF1F5F9),
-                    width: 0.8,
-                  ),
-                ),
+    final content = Column(
+      children: [
+        // Sticky Header / Filter Section
+        Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            border: Border(
+              bottom: BorderSide(
+                color: Color(0xFFF1F5F9),
+                width: 0.8,
               ),
-              child: Column(
-                children: [
-                  // Baris 1: Toobar - Top - Chats (pen.dev JZdLQ)
-                  GlassToolbarTop(
-                    leadingText: (widget.showBackButton || widget.onBack != null) ? null : 'Edit',
-                    leadingIcon: (widget.showBackButton || widget.onBack != null) ? Icons.arrow_back_rounded : null,
-                    leadingTooltip: (widget.showBackButton || widget.onBack != null) ? 'Kembali' : 'Edit Obrolan',
-                    onLeadingTap: () {
-                      if (widget.onBack != null) {
-                        widget.onBack!();
-                      } else if (widget.showBackButton) {
-                        Navigator.of(context).pop();
-                      } else {
-                        HapticFeedback.lightImpact();
-                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Mode edit obrolan aktif ✨'),
-                            behavior: SnackBarBehavior.floating,
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                      }
-                    },
-                    title: 'Chats',
-                    showVerifiedBadge: true,
-                    trailingActions: [
-                      GlassToolbarAction(
-                        icon: Icons.search_rounded,
-                        tooltip: 'Cari pesan',
-                        onTap: () {
-                          setState(() {
-                            _showSearchBar = !_showSearchBar;
-                          });
-                        },
-                      ),
-                      GlassToolbarAction(
-                        icon: Icons.edit_note_rounded,
-                        tooltip: 'Pesan baru',
-                        onTap: _handleNewChat,
-                      ),
-                    ],
-                  ),
+            ),
+          ),
+          child: Column(
+            children: [
+              if (widget.showAppBar) ...[
+                // Baris 1: Toolbar - Top - Chats (Text-only buttons, 0 hard shadow)
+                GlassToolbarTop(
+                  leadingText: (widget.showBackButton || widget.onBack != null) ? 'Kembali' : 'Edit',
+                  leadingTooltip: (widget.showBackButton || widget.onBack != null) ? 'Kembali' : 'Edit Obrolan',
+                  onLeadingTap: () {
+                    if (widget.onBack != null) {
+                      widget.onBack!();
+                    } else if (widget.showBackButton) {
+                      Navigator.of(context).pop();
+                    } else {
+                      HapticFeedback.lightImpact();
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Mode edit obrolan aktif ✨'),
+                          behavior: SnackBarBehavior.floating,
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                  },
+                  title: 'Chat',
+                  showVerifiedBadge: false,
+                  trailingText: 'Cari',
+                  trailingTooltip: 'Cari pesan',
+                  onTrailingTap: () {
+                    setState(() {
+                      _showSearchBar = !_showSearchBar;
+                    });
+                  },
+                ),
+              ],
 
-                  // Baris 2: SearchBar Kapsul (Aktif via tombol search toolbar)
-                  if (_showSearchBar || _searchQuery.isNotEmpty)
+              // Baris 2: SearchBar Kapsul
+              if (_showSearchBar || _searchQuery.isNotEmpty || !widget.showAppBar)
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 10.0),
                       child: Container(
@@ -304,8 +294,21 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
                   : _buildEmptyState(),
             ),
           ],
+        );
+
+    if (widget.showAppBar) {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          bottom: false,
+          child: content,
         ),
-      ),
+      );
+    }
+
+    return Container(
+      color: Colors.white,
+      child: content,
     );
   }
 

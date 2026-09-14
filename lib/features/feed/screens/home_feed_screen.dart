@@ -1,5 +1,4 @@
 import "package:snapan_market/features/search/screens/search_screen.dart";
-import "package:snapan_market/features/checkout/screens/checkout_screen.dart";
 import "package:snapan_market/features/map/screens/campus_map_screen.dart";
 import "package:snapan_market/features/activity/screens/activity_screen.dart";
 import 'package:flutter/material.dart';
@@ -267,133 +266,118 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
     return _posts;
   }
 
-  Widget _buildCurrentNavScreen(List<MarketPostModel> posts) {
-    switch (_currentNavTab) {
-      case HomeNavTab.profile:
-        return ProfileScreen(
-          showAppBar: false,
-          onOpenMenu: _handleMenuTap,
-        );
-      case HomeNavTab.messages:
-        return const DirectMessagesScreen(showBackButton: false);
-      case HomeNavTab.activity:
-        return const ActivityScreen();
-      case HomeNavTab.home:
-        return NotificationListener<ScrollNotification>(
-          onNotification: (notification) {
-            if (notification is UserScrollNotification) {
-              if (notification.direction == ScrollDirection.reverse) {
-                // User is scrolling DOWN into content
-                if (_scrollController.hasClients && _scrollController.offset > 50.0) {
-                  if (_areBarsVisible) {
-                    setState(() => _areBarsVisible = false);
-                  }
-                }
-              } else if (notification.direction == ScrollDirection.forward) {
-                // User is scrolling UP
-                if (!_areBarsVisible) {
-                  setState(() => _areBarsVisible = true);
-                }
-              }
-            } else if (notification is ScrollUpdateNotification) {
-              // Automatically reveal bars at the top of the feed
-              if (_scrollController.hasClients && _scrollController.offset <= 20.0) {
-                if (!_areBarsVisible) {
-                  setState(() => _areBarsVisible = true);
-                }
+  Widget _buildHomeFeedTab(List<MarketPostModel> posts) {
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        if (notification is UserScrollNotification) {
+          if (notification.direction == ScrollDirection.reverse) {
+            // User is scrolling DOWN into content
+            if (_scrollController.hasClients && _scrollController.offset > 50.0) {
+              if (_areBarsVisible) {
+                setState(() => _areBarsVisible = false);
               }
             }
-            return false;
-          },
-          child: CustomScrollView(
-            controller: _scrollController,
-            physics: const BouncingScrollPhysics(
-              parent: AlwaysScrollableScrollPhysics(),
+          } else if (notification.direction == ScrollDirection.forward) {
+            // User is scrolling UP
+            if (!_areBarsVisible) {
+              setState(() => _areBarsVisible = true);
+            }
+          }
+        } else if (notification is ScrollUpdateNotification) {
+          // Automatically reveal bars at the top of the feed
+          if (_scrollController.hasClients && _scrollController.offset <= 20.0) {
+            if (!_areBarsVisible) {
+              setState(() => _areBarsVisible = true);
+            }
+          }
+        }
+        return false;
+      },
+      child: CustomScrollView(
+        controller: _scrollController,
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
+        slivers: [
+          // Tab Bar Switch ("Untuk Anda" & "Terbaru") - scrolls away naturally with the feed
+          SliverToBoxAdapter(
+            child: RepaintBoundary(
+              child: HomeFeedTabSwitch(
+                activeTab: _activeTab,
+                onTabChanged: _handleTabChanged,
+              ),
             ),
-            slivers: [
-              // Sticky Switch Tab Bar ("Untuk Anda" & "Terbaru") Isolated with RepaintBoundary
-              SliverPersistentHeader(
-                pinned: true,
-                delegate: _SliverTabSwitchDelegate(
-                  child: RepaintBoundary(
-                    child: HomeFeedTabSwitch(
-                      activeTab: _activeTab,
-                      onTabChanged: _handleTabChanged,
+          ),
+
+          // Dynamic Feed Posts Sliver List
+          SliverList.builder(
+            itemCount: posts.length,
+            itemBuilder: (context, index) {
+              final post = posts[index];
+              return MarketPostCard(
+                key: ValueKey(post.id),
+                item: post,
+                onLikeToggle: _handleLikeToggle,
+                onRepostToggle: _handleRepostToggle,
+                onPostClick: _handlePostClick,
+                onTopicClick: _handleTopicClick,
+                onUserClick: _handleUserClick,
+                onImageClick: _handleImageClick,
+              );
+            },
+          ),
+
+          // End of Feed Footer
+          SliverToBoxAdapter(
+            child: Container(
+              color: AppColors.canvas,
+              padding: const EdgeInsets.symmetric(vertical: 28.0, horizontal: 16.0),
+              child: Column(
+                children: [
+                  Container(
+                    width: 32.0,
+                    height: 3.0,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE2E8F0),
+                      borderRadius: BorderRadius.circular(2.0),
                     ),
                   ),
-                ),
-              ),
-
-              // Dynamic Feed Posts Sliver List
-              SliverList.builder(
-                itemCount: posts.length,
-                itemBuilder: (context, index) {
-                  final post = posts[index];
-                  return MarketPostCard(
-                    key: ValueKey(post.id),
-                    item: post,
-                    onLikeToggle: _handleLikeToggle,
-                    onRepostToggle: _handleRepostToggle,
-                    onPostClick: _handlePostClick,
-                    onTopicClick: _handleTopicClick,
-                    onUserClick: _handleUserClick,
-                    onImageClick: _handleImageClick,
-                  );
-                },
-              ),
-
-              // End of Feed Footer
-              SliverToBoxAdapter(
-                child: Container(
-                  color: AppColors.canvas,
-                  padding: const EdgeInsets.symmetric(vertical: 28.0, horizontal: 16.0),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 32.0,
-                        height: 3.0,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE2E8F0),
-                          borderRadius: BorderRadius.circular(2.0),
-                        ),
+                  const SizedBox(height: 14.0),
+                  const Text(
+                    'Scroll ke bawah untuk memuat postingan baru',
+                    style: TextStyle(
+                      fontSize: 13.0,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF94A3B8),
+                    ),
+                  ),
+                  if (widget.onLogout != null) ...[
+                    const SizedBox(height: 16.0),
+                    TextButton.icon(
+                      onPressed: widget.onLogout,
+                      icon: const Icon(
+                        Icons.logout_rounded,
+                        size: 16.0,
+                        color: AppColors.muted,
                       ),
-                      const SizedBox(height: 14.0),
-                      const Text(
-                        'Scroll ke bawah untuk memuat postingan baru',
+                      label: const Text(
+                        'Keluar (Reset Onboarding)',
                         style: TextStyle(
                           fontSize: 13.0,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF94A3B8),
+                          color: AppColors.muted,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      if (widget.onLogout != null) ...[
-                        const SizedBox(height: 16.0),
-                        TextButton.icon(
-                          onPressed: widget.onLogout,
-                          icon: const Icon(
-                            Icons.logout_rounded,
-                            size: 16.0,
-                            color: AppColors.muted,
-                          ),
-                          label: const Text(
-                            'Keluar (Reset Onboarding)',
-                            style: TextStyle(
-                              fontSize: 13.0,
-                              color: AppColors.muted,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 120.0), // Bottom clearance for floating dock & FAB
-                    ],
-                  ),
-                ),
+                    ),
+                  ],
+                  const SizedBox(height: 120.0), // Bottom clearance for floating dock & FAB
+                ],
               ),
-            ],
+            ),
           ),
-        );
-    }
+        ],
+      ),
+    );
   }
 
   @override
@@ -420,59 +404,61 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
         onOpenCreateModal: _handleCreatePost,
         onLogout: widget.onLogout,
       ),
-      appBar: (_currentNavTab == HomeNavTab.messages)
-          ? null
-          : _AnimatedAppBar(
-              isVisible: _areBarsVisible,
-              child: HomeFeedHeader(
-                onMenuTap: _handleMenuTap,
-                onTitleTap: () {
-                  if (_currentNavTab == HomeNavTab.home) {
-                    _scrollToTop();
-                  }
-                },
-                onSearchTap: _handleSearchTap,
-              ),
-            ),
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 260),
-        switchInCurve: Curves.easeOutCubic,
-        switchOutCurve: Curves.easeInCubic,
-        transitionBuilder: (child, animation) {
-          return FadeTransition(
-            opacity: animation,
-            child: child,
-          );
+      appBar: HomeFeedHeader(
+        title: switch (_currentNavTab) {
+          HomeNavTab.home => 'Snaps.',
+          HomeNavTab.messages => 'Chat',
+          HomeNavTab.activity => 'Aktivitas',
+          HomeNavTab.profile => 'Profil',
         },
-        child: KeyedSubtree(
-          key: ValueKey(_currentNavTab),
-          child: _buildCurrentNavScreen(posts),
-        ),
+        onMenuTap: _handleMenuTap,
+        onTitleTap: () {
+          if (_currentNavTab == HomeNavTab.home) {
+            _scrollToTop();
+          }
+        },
+        onSearchTap: _handleSearchTap,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: (_currentNavTab == HomeNavTab.home || _currentNavTab == HomeNavTab.messages)
-          ? AnimatedSlide(
-              duration: const Duration(milliseconds: 280),
-              curve: Curves.easeOutBack,
-              offset: !_areBarsVisible ? Offset.zero : const Offset(0, 1.4),
-              child: AnimatedScale(
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: IndexedStack(
+              index: _currentNavTab.index,
+              children: [
+                _buildHomeFeedTab(posts),
+                const DirectMessagesScreen(showBackButton: false, showAppBar: false),
+                const ActivityScreen(showAppBar: false),
+                ProfileScreen(showAppBar: false, onOpenMenu: _handleMenuTap),
+              ],
+            ),
+          ),
+          if (_currentNavTab == HomeNavTab.home)
+            Positioned(
+              right: 18.0,
+              bottom: MediaQuery.paddingOf(context).bottom > 0
+                  ? MediaQuery.paddingOf(context).bottom + 16.0
+                  : 20.0,
+              child: AnimatedSlide(
                 duration: const Duration(milliseconds: 280),
                 curve: Curves.easeOutBack,
-                scale: !_areBarsVisible ? 1.0 : 0.0,
-                child: AnimatedOpacity(
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeOut,
-                  opacity: !_areBarsVisible ? 1.0 : 0.0,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0, right: 4.0),
+                offset: !_areBarsVisible ? Offset.zero : const Offset(0, 1.8),
+                child: AnimatedScale(
+                  duration: const Duration(milliseconds: 280),
+                  curve: Curves.easeOutBack,
+                  scale: !_areBarsVisible ? 1.0 : 0.0,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOut,
+                    opacity: !_areBarsVisible ? 1.0 : 0.0,
                     child: FloatingPlusSquircleButton(
                       onTap: _handleCreatePost,
                     ),
                   ),
                 ),
               ),
-            )
-          : null,
+            ),
+        ],
+      ),
       bottomNavigationBar: AnimatedSlide(
         duration: const Duration(milliseconds: 280),
         curve: Curves.easeOutCubic,
@@ -498,71 +484,5 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
         ),
       ),
     );
-  }
-}
-
-/// Animated PreferredSize AppBar that smoothly collapses and expands on scroll
-class _AnimatedAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final bool isVisible;
-  final Widget child;
-  final double height;
-
-  const _AnimatedAppBar({
-    required this.isVisible,
-    required this.child,
-    this.height = 56.0,
-  });
-
-  @override
-  Size get preferredSize => Size.fromHeight(isVisible ? height : 0.0);
-
-  @override
-  Widget build(BuildContext context) {
-    final topPadding = MediaQuery.paddingOf(context).top;
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.easeOutCubic,
-      height: isVisible ? height + topPadding : 0.0,
-      clipBehavior: Clip.hardEdge,
-      decoration: const BoxDecoration(),
-      child: AnimatedSlide(
-        duration: const Duration(milliseconds: 280),
-        curve: Curves.easeOutCubic,
-        offset: isVisible ? Offset.zero : const Offset(0, -1.0),
-        child: AnimatedOpacity(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-          opacity: isVisible ? 1.0 : 0.0,
-          child: child,
-        ),
-      ),
-    );
-  }
-}
-
-/// SliverPersistentHeaderDelegate for Sticky Tab Switch Bar (47px height)
-class _SliverTabSwitchDelegate extends SliverPersistentHeaderDelegate {
-  final Widget child;
-
-  _SliverTabSwitchDelegate({required this.child});
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    return child;
-  }
-
-  @override
-  double get maxExtent => 47.0;
-
-  @override
-  double get minExtent => 47.0;
-
-  @override
-  bool shouldRebuild(covariant _SliverTabSwitchDelegate oldDelegate) {
-    return oldDelegate.child != child;
   }
 }

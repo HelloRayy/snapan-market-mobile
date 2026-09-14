@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Brand Primary (Kumo Pure Blue)
-  static const Color primary = Color(0xFF1D64EC);
-  static const Color primaryDark = Color(0xFF154EC1);
-  static const Color primaryPastel = Color(0xFFEFF6FF);
-  static const Color primaryRing = Color(0x261D64EC);
+  // Brand Primary (Electric Vivid Cyan)
+  static const Color primary = Color(0xFF00A3FF);
+  static const Color primaryDark = Color(0xFF0284C7);
+  static const Color primaryPastel = Color(0xFFF0F9FF);
+  static const Color primaryRing = Color(0x3300A3FF);
 
-  // Gradient Palette (Pure Kumo Blue Spectrum - 100% Pure Blue on AMOLED & sRGB)
-  static const Color gradientTop = Color(0xFF1D64EC); // Kumo Primary Blue
-  static const Color gradientMid = Color(0xFF3B82F6); // Blue 500
-  static const Color gradientBottom = Color(0xFF93C5FD); // Blue 300 / Sky
+  // Gradient Palette (Electric Cyan Spectrum - AMOLED & Vibrant Display)
+  static const Color gradientTop = Color(0xFF00A3FF); // Electric Cyan
+  static const Color gradientMid = Color(0xFF38BDF8); // Sky 400
+  static const Color gradientBottom = Color(0xFF7DD3FC); // Soft Cyan
 
   // Backward-compatible Aliases
   static const Color gradientIndigo = gradientTop;

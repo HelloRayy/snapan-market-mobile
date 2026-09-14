@@ -107,8 +107,8 @@ class _KumoButtonState extends State<KumoButton> {
                     end: Alignment.bottomCenter,
                     colors: isPrimary
                         ? const [
-                            Color(0xFF3B82F6), // Blue 500
-                            Color(0xFF1D64EC), // Kumo Primary Blue
+                            Color(0xFF38BDF8), // Light Sky Cyan (top specular highlight)
+                            Color(0xFF00A3FF), // Electric Vivid Cyan
                           ]
                         : const [
                             Color(0xFF334155), // Slate 700 / Top Specular Light
@@ -125,7 +125,7 @@ class _KumoButtonState extends State<KumoButton> {
               color: !isEnabled
                   ? const Color(0xFFE2E8F0)
                   : isPrimary
-                      ? const Color(0xFF154EC1)
+                      ? const Color(0xFF0284C7)
                       : isBlack
                           ? const Color(0xFF0F172A)
                           : const Color(0xFFE5E7EB),
@@ -134,9 +134,9 @@ class _KumoButtonState extends State<KumoButton> {
             boxShadow: [
               if (isEnabled && isPrimary)
                 BoxShadow(
-                  color: const Color(0xFF1D64EC).withValues(alpha: 0.28),
-                  blurRadius: 10.0,
-                  offset: const Offset(0, 3),
+                  color: const Color(0xFF00A3FF).withValues(alpha: 0.38),
+                  blurRadius: 14.0,
+                  offset: const Offset(0, 4),
                 )
               else if (isEnabled && isBlack)
                 BoxShadow(
@@ -161,10 +161,10 @@ class _KumoButtonState extends State<KumoButton> {
                   top: 0,
                   left: 0,
                   right: 0,
-                  height: 1.0,
+                  height: 1.5,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.35),
+                      color: Colors.white.withValues(alpha: 0.45),
                       borderRadius: BorderRadius.vertical(
                         top: Radius.circular(widget.borderRadius),
                       ),

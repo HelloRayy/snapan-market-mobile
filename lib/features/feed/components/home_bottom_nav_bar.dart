@@ -224,7 +224,7 @@ class _BottomNavItemState extends State<_BottomNavItem> {
 
   @override
   Widget build(BuildContext context) {
-    const activeColor = Color(0xFF1D64EC); // Kumo Primary Blue
+    const activeColor = Color(0xFF00A3FF); // Electric Vivid Cyan
     const inactiveColor = Color(0xFF64748B); // Slate Muted Gray
 
     return Semantics(
@@ -253,12 +253,12 @@ class _BottomNavItemState extends State<_BottomNavItem> {
               curve: Curves.easeOutCubic,
               padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.5),
               decoration: BoxDecoration(
-                // Active Capsule Highlight (as in reference image)
-                color: widget.isActive ? const Color(0xFFEFF6FF) : Colors.transparent,
+                // Active Capsule Highlight (Electric Cyan Tint)
+                color: widget.isActive ? const Color(0xFFF0F9FF) : Colors.transparent,
                 borderRadius: BorderRadius.circular(16.0),
                 border: widget.isActive
                     ? Border.all(
-                        color: const Color(0xFF1D64EC).withValues(alpha: 0.15),
+                        color: const Color(0xFF00A3FF).withValues(alpha: 0.25),
                         width: 1.0,
                       )
                     : null,
@@ -350,10 +350,10 @@ class _CenterActionFabItemState extends State<_CenterActionFabItem> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     boxShadow: [
-                      // Soft blue glow shadow
+                      // Soft Electric Cyan glow shadow
                       BoxShadow(
-                        color: const Color(0xFF1D64EC).withValues(alpha: 0.35),
-                        blurRadius: 8.0,
+                        color: const Color(0xFF00A3FF).withValues(alpha: 0.40),
+                        blurRadius: 10.0,
                         offset: const Offset(0, 3),
                       ),
                     ],
@@ -370,8 +370,8 @@ class _CenterActionFabItemState extends State<_CenterActionFabItem> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Color(0xFF3B82F6), // Royal Blue
-                          Color(0xFF1D64EC), // Electric Kumo Blue
+                          Color(0xFF38BDF8), // Light Sky Cyan
+                          Color(0xFF00A3FF), // Electric Vivid Cyan
                         ],
                       ),
                     ),
@@ -413,7 +413,7 @@ class _CenterActionFabItemState extends State<_CenterActionFabItem> {
                   style: const TextStyle(
                     fontSize: 10.5,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF1D64EC),
+                    color: Color(0xFF00A3FF),
                     letterSpacing: -0.2,
                     height: 1.1,
                   ),

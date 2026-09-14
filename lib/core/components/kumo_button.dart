@@ -242,7 +242,6 @@ class _KumoButtonState extends State<KumoButton> {
               ),
           ),
         ),
-      ),
-    );
+      );
   }
 }

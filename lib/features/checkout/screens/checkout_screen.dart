@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:snapan_market/core/components/kumo_button.dart";
+import "package:snapan_market/core/navigation/app_slide_page_route.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/core/utils/formatters.dart";
 import "package:snapan_market/features/checkout/components/checkout_hero_image.dart";
@@ -49,7 +50,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   void _openLocationPicker() {
     Navigator.of(context).push(
-      MaterialPageRoute(
+      AppSlidePageRoute(
         builder: (_) => CampusLocationsPickerScreen(
           selectedSpot: _selectedSpot,
           onSpotSelected: (spot) {
@@ -62,7 +63,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   void _openMapPicker() {
     Navigator.of(context).push(
-      MaterialPageRoute(
+      AppSlidePageRoute(
         builder: (_) => CampusMapScreen(
           onBack: () => Navigator.of(context).pop(),
           onSelectLocation: (roomName, floor, category) {
@@ -174,7 +175,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 onPressed: () {
                   Navigator.of(ctx).pop();
                   Navigator.of(context).push(
-                    MaterialPageRoute(
+                    AppSlidePageRoute(
                       builder: (_) => ChatConversationScreen(
                         conversation: ConversationModel(
                           id: "conv-${widget.post.id}",
@@ -309,7 +310,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         department: widget.post.department,
                         onProfileTap: () {
                           Navigator.of(context).push(
-                            MaterialPageRoute(
+                            AppSlidePageRoute(
                               builder: (_) => ProfileScreen(
                                 username: widget.post.sellerUsername,
                                 onBack: () => Navigator.of(context).pop(),
@@ -319,7 +320,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         },
                         onChatTap: () {
                           Navigator.of(context).push(
-                            MaterialPageRoute(
+                            AppSlidePageRoute(
                               builder: (_) => ChatConversationScreen(
                                 conversation: ConversationModel(
                                   id: "conv-${widget.post.id}",

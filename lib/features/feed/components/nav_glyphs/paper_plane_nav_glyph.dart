@@ -31,6 +31,32 @@ class PaperPlaneNavGlyph extends StatelessWidget {
       return plane;
     }
 
+    // Mini dot badge when badgeCount is 0 or unread indicator
+    if (badgeCount <= 0) {
+      return Stack(
+        clipBehavior: Clip.none,
+        children: [
+          plane,
+          Positioned(
+            top: -2.0,
+            right: -3.0,
+            child: Container(
+              width: 8.0,
+              height: 8.0,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFF3040),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white,
+                  width: 2.0,
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
     return Stack(
       clipBehavior: Clip.none,
       children: [

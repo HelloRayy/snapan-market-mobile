@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// Center Floating Action Button (+) with Signature Kumo Halo Ring & Glow
+/// Floating Action Button (FAB) with Electric Cyan Style & PLUS Icon
+/// Sliced & inspired by reference image FAB style positioned at bottom right
 class FloatingKumoFabButton extends StatefulWidget {
   final VoidCallback onTap;
 
@@ -33,64 +34,59 @@ class _FloatingKumoFabButtonState extends State<FloatingKumoFabButton> {
           duration: const Duration(milliseconds: 90),
           curve: Curves.easeOutCubic,
           child: Container(
-            width: 48.0,
-            height: 48.0,
-            padding: const EdgeInsets.all(3.0),
+            width: 54.0,
+            height: 54.0,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.white.withValues(alpha: 0.95),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF1D64EC).withValues(alpha: 0.35),
-                  blurRadius: 10.0,
-                  offset: const Offset(0, 4),
-                ),
-                const BoxShadow(
-                  color: Color(0x14000000),
-                  blurRadius: 4.0,
-                  offset: Offset(0, 1),
-                ),
-              ],
-            ),
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFF3B82F6), // Blue 500
-                    Color(0xFF1D64EC), // Kumo Primary Blue
-                  ],
-                ),
-                border: Border.all(
-                  color: const Color(0xFF154EC1),
-                  width: 1.0,
-                ),
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Inset top shine highlight
-                  Positioned(
-                    top: 0,
-                    left: 4.0,
-                    right: 4.0,
-                    height: 1.0,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.40),
-                        borderRadius: BorderRadius.circular(1.0),
-                      ),
-                    ),
-                  ),
-                  const Icon(
-                    Icons.add_rounded,
-                    color: Colors.white,
-                    size: 26.0,
-                  ),
+              color: const Color(0xFF00A3FF), // Electric Vivid Cyan
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFF38BDF8), // Light Sky Blue
+                  Color(0xFF00A3FF), // Electric Cyan
                 ],
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF00A3FF).withValues(alpha: 0.45),
+                  blurRadius: 14.0,
+                  offset: const Offset(0, 6),
+                ),
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.20),
+                  blurRadius: 6.0,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.25),
+                width: 1.2,
+              ),
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // Top Shine Highlight
+                Positioned(
+                  top: 2.0,
+                  left: 10.0,
+                  right: 10.0,
+                  height: 1.5,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.55),
+                      borderRadius: BorderRadius.circular(2.0),
+                    ),
+                  ),
+                ),
+                // Plus Icon
+                const Icon(
+                  Icons.add_rounded,
+                  color: Colors.white,
+                  size: 32.0,
+                ),
+              ],
             ),
           ),
         ),

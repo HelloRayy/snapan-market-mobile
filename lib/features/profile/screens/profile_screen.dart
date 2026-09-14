@@ -121,7 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         name: matched.seller.name,
         username: matched.seller.username ?? cleanUsername,
         avatar: matched.seller.avatar,
-        bio: 'Siswa SMKN 8 Jakarta · Jurusan ${matched.seller.classGroup?.split(' ').last ?? 'PPLG'}.',
+        bio: 'Siswa SMKN 8 Semarang · Jurusan ${matched.seller.classGroup?.split(' ').last ?? 'PPLG'}.',
         classGroup: matched.seller.classGroup ?? 'XII PPLG 2',
         tags: const ['Mobile Dev', 'UI/UX', 'Fotografi', 'Project PJBL'],
 

@@ -125,7 +125,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
             classGroup: 'XII PPLG 1',
             isVerified: true,
           ),
-          caption: caption.isNotEmpty ? caption : 'Postingan baru dari SMKN 8 Jakarta',
+          caption: caption.isNotEmpty ? caption : 'Postingan baru dari SMKN 8 Semarang',
           images: images,
           locationTag: locationTag,
           price: price,
@@ -386,7 +386,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                       ),
                     ),
                   ],
-                  const SizedBox(height: 24.0),
+                  const SizedBox(height: 80.0), // Bottom clearance for floating dock
                 ],
               ),
             ),
@@ -396,14 +396,16 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
       bottomNavigationBar: HomeBottomNavBar(
         currentTab: _currentNavTab,
         hasUnreadMessages: true,
+        unreadMessagesCount: 0,
+        userAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
+        onPostTap: _handleCreatePost,
         onTabSelected: (tab) {
-          if (tab == HomeNavTab.create) {
+          if (tab == HomeNavTab.post) {
             _handleCreatePost();
           } else {
             setState(() => _currentNavTab = tab);
           }
         },
-        onCreateTap: _handleCreatePost,
       ),
     );
   }

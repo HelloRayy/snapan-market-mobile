@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:snapan_market/core/navigation/app_slide_page_route.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/features/feed/components/market_post_card.dart";
 import "package:snapan_market/features/feed/models/market_post_model.dart";
@@ -78,7 +79,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void _navigateToProfile(String username) {
     Navigator.of(context).push(
-      MaterialPageRoute(
+      AppSlidePageRoute(
         builder: (_) => ProfileScreen(
           username: username,
           onBack: () => Navigator.of(context).pop(),
@@ -89,7 +90,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void _navigateToPostDetail(MarketPost post) {
     Navigator.of(context).push(
-      MaterialPageRoute(
+      AppSlidePageRoute(
         builder: (_) => PostDetailScreen(
           post: post,
         ),

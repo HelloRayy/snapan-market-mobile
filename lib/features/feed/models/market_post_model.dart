@@ -312,7 +312,7 @@ class MarketPostModel {
   }
 }
 
-/// Realistic Mock Dataset for SMKN 8 Jakarta feed (6 sequential parameter variations for visual audit)
+/// Realistic Mock Dataset for SMKN 8 Semarang feed (6 sequential parameter variations for visual audit)
 const List<MarketPostModel> kMockMarketPosts = [
   // ===========================================================================
   // VARIASI 1: Teks Murni (Minimalis, tanpa gambar, tanpa topik, tanpa lokasi)
@@ -413,7 +413,7 @@ const List<MarketPostModel> kMockMarketPosts = [
       isVerified: true,
       username: 'sarahamelia',
     ),
-    caption: 'Eksplorasi layout majalah dinding digital SMKN 8 Jakarta semester ini sudah jadi! Gimana menurut kalian komposisi warna dan visual hierarchy-nya? Feedbacks are welcome! 📐✨',
+    caption: 'Eksplorasi layout majalah dinding digital SMKN 8 Semarang semester ini sudah jadi! Gimana menurut kalian komposisi warna dan visual hierarchy-nya? Feedbacks are welcome! 📐✨',
     images: [
       'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800&q=80',
     ],

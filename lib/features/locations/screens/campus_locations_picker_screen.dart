@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:snapan_market/core/navigation/app_slide_page_route.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/features/locations/components/location_spot_card.dart";
 import "package:snapan_market/features/locations/components/location_spot_detail_sheet.dart";
@@ -82,7 +83,7 @@ class _CampusLocationsPickerScreenState extends State<CampusLocationsPickerScree
 
   void _open2DMap() {
     Navigator.of(context).push(
-      MaterialPageRoute(
+      AppSlidePageRoute(
         builder: (_) => CampusMapScreen(
           onBack: () => Navigator.of(context).pop(),
           onSelectLocation: (roomName, floor, category) {

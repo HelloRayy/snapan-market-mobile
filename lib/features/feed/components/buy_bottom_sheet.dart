@@ -261,7 +261,7 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Titik Temu COD SMKN 8 Jakarta',
+                            'Titik Temu COD SMKN 8 Semarang',
                             style: TextStyle(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w500,

@@ -118,7 +118,17 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
   onOpenNewChatModal,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState<'inbox' | 'requests'>('inbox');
+  const [activeFilter, setActiveFilter] = useState<'inbox' | 'requests' | 'unread'>('inbox');
+
+  const buyerUnreadCount = MOCK_CONVERSATIONS.filter(
+    (c) => c.isRequest && (c.unreadCount || 0) > 0
+  ).reduce((acc, c) => acc + (c.unreadCount || 0), 0);
+
+  const totalUnreadCount = MOCK_CONVERSATIONS.reduce(
+    (acc, c) => acc + (c.unreadCount || 0),
+    0
+  );
+
   const filteredConversations = MOCK_CONVERSATIONS.filter((conv) => {
     // 1. Search Query Filter
     const matchesSearch =
@@ -132,6 +142,9 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
     // 2. Tab Filter
     if (activeFilter === 'requests') {
       return conv.isRequest === true;
+    }
+    if (activeFilter === 'unread') {
+      return (conv.unreadCount || 0) > 0;
     }
     return !conv.isRequest;
   });
@@ -199,37 +212,37 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
           />
         </div>
 
-        {/* Row 3: Sub-Navigation Filter Tab Pills ("Obrolan" & "Pembeli") */}
-        <div className="w-full max-w-xl mx-auto flex items-center gap-x-2 px-4 pb-3">
-          <button
-            type="button"
-            onClick={() => {
-              triggerHaptic('selection');
-              setActiveFilter('inbox');
-            }}
-            className={`flex items-center justify-center px-3.5 py-1.5 text-[13px] font-semibold rounded-full select-none cursor-pointer transition-colors duration-100 ease-out active:opacity-75 ${
-              activeFilter === 'inbox'
-                ? 'bg-blue-50 text-[#1d64ec]'
-                : 'bg-transparent text-neutral-500 hover:bg-neutral-100/70 hover:text-slate-700'
-            }`}
-          >
-            Obrolan
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              triggerHaptic('selection');
-              setActiveFilter('requests');
-            }}
-            className={`flex items-center justify-center px-3.5 py-1.5 text-[13px] font-semibold rounded-full select-none cursor-pointer transition-colors duration-100 ease-out active:opacity-75 ${
-              activeFilter === 'requests'
-                ? 'bg-blue-50 text-[#1d64ec]'
-                : 'bg-transparent text-neutral-500 hover:bg-neutral-100/70 hover:text-slate-700'
-            }`}
-          >
-            Pembeli
-          </button>
+        {/* Row 3: Sub-Navigation Filter Tab Carousel ("Obrolan", "Pembeli", "Belum Dibaca") */}
+        <div className="w-full max-w-xl mx-auto flex items-center gap-2 px-4 pb-3 overflow-x-auto no-scrollbar">
+          {[
+            { key: 'inbox' as const, label: 'Obrolan', count: null },
+            { key: 'requests' as const, label: 'Pembeli', count: buyerUnreadCount > 0 ? buyerUnreadCount : null },
+            { key: 'unread' as const, label: 'Belum Dibaca', count: totalUnreadCount > 0 ? totalUnreadCount : null },
+          ].map((tab) => {
+            const isActive = activeFilter === tab.key;
+            return (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => {
+                  triggerHaptic('selection');
+                  setActiveFilter(tab.key);
+                }}
+                className={`flex-shrink-0 h-[38px] px-4 rounded-full flex items-center gap-1.5 text-[13.5px] transition-all duration-150 cursor-pointer select-none active:scale-95 ${
+                  isActive
+                    ? 'bg-[#EDEDED]/90 text-black font-semibold border border-white/90 shadow-[0_4px_16px_rgba(0,0,0,0.08)] backdrop-blur-md'
+                    : 'bg-white/60 text-[#787574] font-medium border border-white/70 hover:bg-white/80 shadow-[0_2px_8px_rgba(0,0,0,0.04)] backdrop-blur-sm'
+                }`}
+              >
+                <span>{tab.label}</span>
+                {tab.count !== null && tab.count > 0 && (
+                  <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[#008BFF] text-white text-[10.5px] font-bold inline-flex items-center justify-center leading-none">
+                    {tab.count > 99 ? '99+' : tab.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </header>
 

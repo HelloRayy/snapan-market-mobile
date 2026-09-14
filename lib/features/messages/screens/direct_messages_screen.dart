@@ -210,10 +210,10 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
                     ),
                   ),
 
-                  // Baris 3: Folders Segmented Tab Switch (pen.dev NOYP2)
+                  // Baris 3: Horizontal Carousel Filters (Obrolan, Pembeli, Belum Dibaca)
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 12.0),
-                    child: _buildFoldersTabSwitch(),
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: _buildFoldersTabCarousel(),
                   ),
                 ],
               ),
@@ -317,8 +317,8 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
   /// - Outer diffuse shadow (#0000001f, y=8, blur=35)
   /// - Selected Tab: 35px height, cornerRadius 20, fill #EDEDED (`Color(0xFFEDEDED)`)
   /// - SF Pro 14px typography with letter-spacing -0.08
-  /// - Trailing unread count badge (fill #008BFF)
-  Widget _buildFoldersTabSwitch() {
+  /// Horizontal scrollable carousel filter chips ("Obrolan", "Pembeli", "Belum Dibaca")
+  Widget _buildFoldersTabCarousel() {
     final buyerUnreadCount = kMockConversations
         .where((c) => c.isRequest == true && c.unreadCount > 0)
         .fold<int>(0, (acc, c) => acc + c.unreadCount);
@@ -327,144 +327,127 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
         .where((c) => c.unreadCount > 0)
         .fold<int>(0, (acc, c) => acc + c.unreadCount);
 
-    return Container(
-      height: 41.0,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(21.0),
-        boxShadow: const [
-          // pen.dev Folders Fill + Shadow (color: #0000001f, y: 8, blur: 35)
-          BoxShadow(
-            color: Color(0x1F000000),
-            blurRadius: 35.0,
-            offset: Offset(0, 8),
-          ),
-          BoxShadow(
-            color: Color(0x0A000000),
-            blurRadius: 10.0,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(21.0),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
-          child: Container(
-            height: 41.0,
-            padding: const EdgeInsets.all(3.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(21.0),
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.white.withValues(alpha: 0.75),
-                  Colors.white.withValues(alpha: 0.48),
-                ],
-              ),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.90),
-                width: 1.2,
-              ),
-            ),
-            child: Row(
-              children: [
-                _buildFolderTabItem(
-                  key: 'inbox',
-                  label: 'Obrolan',
-                ),
-                _buildFolderTabItem(
-                  key: 'requests',
-                  label: 'Pembeli',
-                  count: buyerUnreadCount > 0 ? buyerUnreadCount : null,
-                ),
-                _buildFolderTabItem(
-                  key: 'unread',
-                  label: 'Belum Dibaca',
-                  count: totalUnreadCount > 0 ? totalUnreadCount : null,
-                ),
-              ],
-            ),
-          ),
-        ),
+    final tabs = [
+      (key: 'inbox', label: 'Obrolan', count: null),
+      (key: 'requests', label: 'Pembeli', count: buyerUnreadCount > 0 ? buyerUnreadCount : null),
+      (key: 'unread', label: 'Belum Dibaca', count: totalUnreadCount > 0 ? totalUnreadCount : null),
+    ];
+
+    return SizedBox(
+      height: 40.0,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        itemCount: tabs.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8.0),
+        itemBuilder: (context, index) {
+          final tab = tabs[index];
+          return _buildCarouselChip(
+            key: tab.key,
+            label: tab.label,
+            count: tab.count,
+          );
+        },
       ),
     );
   }
 
-  Widget _buildFolderTabItem({
+  Widget _buildCarouselChip({
     required String key,
     required String label,
     int? count,
   }) {
     final isActive = _activeFilter == key;
 
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          HapticFeedback.selectionClick();
-          setState(() => _activeFilter = key);
-        },
-        behavior: HitTestBehavior.opaque,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          curve: Curves.easeOutCubic,
-          height: 35.0, // pen.dev Folders item height: 35
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          decoration: BoxDecoration(
-            color: isActive
-                ? const Color(0xFFEDEDED).withValues(alpha: 0.72)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(17.5),
-            border: isActive
-                ? Border.all(
-                    color: Colors.white.withValues(alpha: 0.75),
-                    width: 0.8,
-                  )
-                : null,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Flexible(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 13.5, // pen.dev SF Pro 14px
-                    fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-                    color: isActive ? const Color(0xFF000000) : const Color(0xFF787574),
-                    letterSpacing: -0.1,
-                  ),
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        setState(() => _activeFilter = key);
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        height: 38.0,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(19.0),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0x1F000000),
+              blurRadius: isActive ? 20.0 : 10.0,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(19.0),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
+            child: Container(
+              height: 38.0,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(19.0),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: isActive
+                      ? [
+                          const Color(0xFFEDEDED).withValues(alpha: 0.95),
+                          const Color(0xFFE2E2E2).withValues(alpha: 0.85),
+                        ]
+                      : [
+                          Colors.white.withValues(alpha: 0.75),
+                          Colors.white.withValues(alpha: 0.50),
+                        ],
+                ),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: isActive ? 0.95 : 0.80),
+                  width: 1.1,
                 ),
               ),
-              if (count != null && count > 0) ...[
-                const SizedBox(width: 4.0),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 1.0),
-                  constraints: const BoxConstraints(
-                    minWidth: 16.0,
-                    minHeight: 16.0,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF008BFF), // pen.dev Mark fill: #008BFF
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Center(
-                    child: Text(
-                      count > 99 ? '99+' : count.toString(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10.0,
-                        fontWeight: FontWeight.w700,
-                        height: 1.1,
-                      ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontFamily: 'SF Pro',
+                      fontSize: 14.0,
+                      fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                      color: isActive ? const Color(0xFF000000) : const Color(0xFF787574),
+                      letterSpacing: -0.15,
                     ),
                   ),
-                ),
-              ],
-            ],
+                  if (count != null && count > 0) ...[
+                    const SizedBox(width: 6.0),
+                    Container(
+                      constraints: const BoxConstraints(
+                        minWidth: 18.0,
+                        minHeight: 18.0,
+                      ),
+                      height: 18.0,
+                      padding: count > 9 ? const EdgeInsets.symmetric(horizontal: 4.0) : EdgeInsets.zero,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF008BFF), // Azure Blue #008BFF
+                        borderRadius: BorderRadius.circular(9.0),
+                      ),
+                      child: Text(
+                        count > 99 ? '99+' : count.toString(),
+                        style: const TextStyle(
+                          fontFamily: 'SF Pro',
+                          color: Colors.white,
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w700,
+                          height: 1.0,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
           ),
         ),
       ),

@@ -9,6 +9,7 @@ import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/components/home_feed_header.dart';
 import 'package:snapan_market/features/feed/components/home_feed_tab_switch.dart';
 import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart';
+import 'package:snapan_market/features/feed/components/floating_plus_squircle_button.dart';
 import 'package:snapan_market/features/feed/components/home_navigation_drawer.dart';
 import 'package:snapan_market/features/feed/components/market_post_card.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
@@ -393,6 +394,12 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
           ),
         ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: (_currentNavTab == HomeNavTab.home || _currentNavTab == HomeNavTab.messages)
+          ? FloatingPlusSquircleButton(
+              onTap: _handleCreatePost,
+            )
+          : null,
       bottomNavigationBar: HomeBottomNavBar(
         currentTab: _currentNavTab,
         hasUnreadMessages: true,

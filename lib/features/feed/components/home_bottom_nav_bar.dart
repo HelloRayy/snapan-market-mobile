@@ -1,13 +1,12 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/components/nav_glyphs/home_nav_glyph.dart';
 import 'package:snapan_market/features/feed/components/nav_glyphs/paper_plane_nav_glyph.dart';
 import 'package:snapan_market/features/feed/components/nav_glyphs/heart_nav_glyph.dart';
 import 'package:snapan_market/features/feed/components/nav_glyphs/user_nav_glyph.dart';
 
-/// Enum representing the 4 main navigation tabs in the pen.dev Tab Bar dock
+/// Enum representing the 4 main navigation tabs in the Center Bot Bar
 enum HomeNavTab {
   home,
   messages,
@@ -32,15 +31,15 @@ enum HomeNavTab {
   }
 }
 
-/// Floating Liquid Glass Dual-Dock Tab Bar sliced 1:1 from pen.dev (`snaps-design.pen` node `HaFs1`)
+/// Center Bot Bar sliced from user layout sketch & pen.dev spec (`snaps-design.pen` node `HaFs1`)
 ///
-/// Design Specifications:
-/// - Outer Layout: Floating dual-dock with 8px gap (`width: 402, padding: [16, 25, 25, 25]`)
-/// - Dock 1 (Main Tab Bar): 4 navigation tabs inside frosted glass pill container (`height: 62, cornerRadius: 296`)
-/// - Dock 2 (Search Button): Separated 62x62 circular glass pill button (`width: 62, height: 62, cornerRadius: 296`)
-/// - Glass Effect: `#ffffffa6` (semi-transparent white) + 20px blur + 35px diffusion shadow (`#0000001f`, y=8)
-/// - Active Selection: `#EDEDED` capsule pill (`cornerRadius: 100`) with `#008BFF` azure icon & label
-/// - Inactive State: `#1A1A1A` ink color with 500 font weight
+/// Features:
+/// - Single centered floating pill dock (`height: 62px, cornerRadius: 296`)
+/// - Liquid frosted glass container (`Colors.white.withValues(alpha: 0.85)` + 20px blur)
+/// - Diffuse 35px drop shadow from pen.dev (`#0000001f`, y=8)
+/// - 4 symmetrical tabs (Home, Pesan, Aktivitas, Profil)
+/// - Active selection capsule (`#EDEDED` fill, cornerRadius 100) with `#008BFF` azure icon & label
+/// - Inactive tabs in `#1A1A1A` ink typography
 class HomeBottomNavBar extends StatelessWidget {
   final HomeNavTab currentTab;
   final ValueChanged<HomeNavTab> onTabSelected;
@@ -77,126 +76,98 @@ class HomeBottomNavBar extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.only(
-        left: 18.0,
-        right: 18.0,
+        left: 20.0,
+        right: 20.0,
         bottom: bottomPadding > 0 ? bottomPadding + 8.0 : 18.0,
       ),
       child: Center(
         heightFactor: 1.0,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 402.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // ===============================================================
-              // DOCK 1: Main Tab Bar Buttons (Height 62px, cornerRadius 296)
-              // ===============================================================
-              Expanded(
+          constraints: const BoxConstraints(maxWidth: 360.0),
+          child: Container(
+            height: 62.0,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(31.0),
+              boxShadow: const [
+                // Diffuse Outer Shadow from pen.dev (#0000001f, y=8, blur=35)
+                BoxShadow(
+                  color: Color(0x1F000000),
+                  blurRadius: 35.0,
+                  offset: Offset(0, 8),
+                ),
+                BoxShadow(
+                  color: Color(0x0A000000),
+                  blurRadius: 10.0,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(31.0),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
                 child: Container(
                   height: 62.0,
+                  padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
                   decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.85), // Frosted Liquid Glass
                     borderRadius: BorderRadius.circular(31.0),
-                    boxShadow: const [
-                      // Diffuse Outer Shadow from pen.dev (#0000001f, y=8, blur=35)
-                      BoxShadow(
-                        color: Color(0x1F000000),
-                        blurRadius: 35.0,
-                        offset: Offset(0, 8),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.80),
+                      width: 1.2,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      // Tab 1: Home
+                      _DockTabItem(
+                        isActive: currentTab == HomeNavTab.home,
+                        label: 'Home',
+                        glyph: HomeNavGlyph(
+                          isActive: currentTab == HomeNavTab.home,
+                        ),
+                        onTap: () => onTabSelected(HomeNavTab.home),
                       ),
-                      BoxShadow(
-                        color: Color(0x0A000000),
-                        blurRadius: 10.0,
-                        offset: Offset(0, 2),
+
+                      // Tab 2: Pesan (Chats)
+                      _DockTabItem(
+                        isActive: currentTab == HomeNavTab.messages,
+                        label: 'Pesan',
+                        glyph: PaperPlaneNavGlyph(
+                          isActive: currentTab == HomeNavTab.messages,
+                          hasBadge: hasUnreadMessages,
+                          badgeCount: unreadMessagesCount,
+                        ),
+                        onTap: () => onTabSelected(HomeNavTab.messages),
+                      ),
+
+                      // Tab 3: Aktivitas
+                      _DockTabItem(
+                        isActive: currentTab == HomeNavTab.activity,
+                        label: 'Aktivitas',
+                        glyph: HeartNavGlyph(
+                          isActive: currentTab == HomeNavTab.activity,
+                          hasBadge: hasUnreadActivity,
+                        ),
+                        onTap: () => onTabSelected(HomeNavTab.activity),
+                      ),
+
+                      // Tab 4: Profil
+                      _DockTabItem(
+                        isActive: currentTab == HomeNavTab.profile,
+                        label: 'Profil',
+                        glyph: UserNavGlyph(
+                          isActive: currentTab == HomeNavTab.profile,
+                          userAvatar: userAvatar,
+                        ),
+                        onTap: () => onTabSelected(HomeNavTab.profile),
                       ),
                     ],
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(31.0),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
-                      child: Container(
-                        height: 62.0,
-                        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 3.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.82), // #ffffffa6
-                          borderRadius: BorderRadius.circular(31.0),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.75),
-                            width: 1.2,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            // Tab 1: Home
-                            _DockTabItem(
-                              isActive: currentTab == HomeNavTab.home,
-                              label: 'Home',
-                              glyph: HomeNavGlyph(
-                                isActive: currentTab == HomeNavTab.home,
-                              ),
-                              onTap: () => onTabSelected(HomeNavTab.home),
-                            ),
-
-                            // Tab 2: Pesan (Chats)
-                            _DockTabItem(
-                              isActive: currentTab == HomeNavTab.messages,
-                              label: 'Pesan',
-                              glyph: PaperPlaneNavGlyph(
-                                isActive: currentTab == HomeNavTab.messages,
-                                hasBadge: hasUnreadMessages,
-                                badgeCount: unreadMessagesCount,
-                              ),
-                              onTap: () => onTabSelected(HomeNavTab.messages),
-                            ),
-
-                            // Tab 3: Aktivitas
-                            _DockTabItem(
-                              isActive: currentTab == HomeNavTab.activity,
-                              label: 'Aktivitas',
-                              glyph: HeartNavGlyph(
-                                isActive: currentTab == HomeNavTab.activity,
-                                hasBadge: hasUnreadActivity,
-                              ),
-                              onTap: () => onTabSelected(HomeNavTab.activity),
-                            ),
-
-                            // Tab 4: Profil
-                            _DockTabItem(
-                              isActive: currentTab == HomeNavTab.profile,
-                              label: 'Profil',
-                              glyph: UserNavGlyph(
-                                isActive: currentTab == HomeNavTab.profile,
-                                userAvatar: userAvatar,
-                              ),
-                              onTap: () => onTabSelected(HomeNavTab.profile),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
                 ),
               ),
-
-              const SizedBox(width: 8.0), // Gap: 8px between docks in pen.dev
-
-              // ===============================================================
-              // DOCK 2: Search Button (Width 62px, Height 62px, cornerRadius 296)
-              // ===============================================================
-              _SearchDockButton(
-                onTap: () {
-                  if (onSearchTap != null) {
-                    onSearchTap!();
-                  } else if (onPostTap != null) {
-                    onPostTap!();
-                  } else if (onCreateTap != null) {
-                    onCreateTap!();
-                  }
-                },
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -204,7 +175,7 @@ class HomeBottomNavBar extends StatelessWidget {
   }
 }
 
-/// Dock Tab Item matching pen.dev spec (`lsZCh` Tab with `Z1UyPw` Selection Capsule)
+/// Dock Tab Item with Selection Capsule (#EDEDED fill, cornerRadius 100)
 class _DockTabItem extends StatefulWidget {
   final bool isActive;
   final String label;
@@ -262,7 +233,7 @@ class _DockTabItemState extends State<_DockTabItem> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Icon / Glyph (24x24 box)
+                // Icon / Glyph
                 SizedBox(
                   width: 24.0,
                   height: 24.0,
@@ -271,7 +242,7 @@ class _DockTabItemState extends State<_DockTabItem> {
 
                 const SizedBox(height: 2.0),
 
-                // Label Text (font-size: 10.0, active #008BFF 700, inactive #1A1A1A 500)
+                // Label Text (active #008BFF 700, inactive #1A1A1A 500)
                 Text(
                   widget.label,
                   maxLines: 1,
@@ -285,91 +256,6 @@ class _DockTabItemState extends State<_DockTabItem> {
                   ),
                 ),
               ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Search Dock Button matching pen.dev spec (`tQZZr` Search with 62x62 glass dock)
-class _SearchDockButton extends StatefulWidget {
-  final VoidCallback onTap;
-
-  const _SearchDockButton({required this.onTap});
-
-  @override
-  State<_SearchDockButton> createState() => _SearchDockButtonState();
-}
-
-class _SearchDockButtonState extends State<_SearchDockButton> {
-  bool _isPressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      label: 'Cari',
-      button: true,
-      child: GestureDetector(
-        onTapDown: (_) {
-          setState(() => _isPressed = true);
-          HapticFeedback.selectionClick();
-        },
-        onTapUp: (_) => setState(() => _isPressed = false),
-        onTapCancel: () => setState(() => _isPressed = false),
-        onTap: () {
-          HapticFeedback.selectionClick();
-          widget.onTap();
-        },
-        behavior: HitTestBehavior.opaque,
-        child: AnimatedScale(
-          scale: _isPressed ? 0.92 : 1.0,
-          duration: const Duration(milliseconds: 80),
-          curve: Curves.easeOutCubic,
-          child: Container(
-            width: 62.0,
-            height: 62.0,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(31.0),
-              boxShadow: const [
-                // Diffuse Outer Shadow from pen.dev (#0000001f, y=8, blur=35)
-                BoxShadow(
-                  color: Color(0x1F000000),
-                  blurRadius: 35.0,
-                  offset: Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Color(0x0A000000),
-                  blurRadius: 10.0,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(31.0),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
-                child: Container(
-                  width: 62.0,
-                  height: 62.0,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.82), // #ffffffa6
-                    borderRadius: BorderRadius.circular(31.0),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.75),
-                      width: 1.2,
-                    ),
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.search_rounded,
-                      size: 24.0,
-                      color: Color(0xFF1A1A1A), // pen.dev #1A1A1A
-                    ),
-                  ),
-                ),
-              ),
             ),
           ),
         ),

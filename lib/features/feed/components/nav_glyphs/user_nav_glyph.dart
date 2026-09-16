@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
-/// 5. User Glyph (Minimalist Person Icon / Avatar)
+/// 4. User Nav Glyph using circular avatar with fallback to LucideIcons.user
 class UserNavGlyph extends StatelessWidget {
   final bool isActive;
   final String? userAvatar;
@@ -16,17 +16,16 @@ class UserNavGlyph extends StatelessWidget {
   Widget build(BuildContext context) {
     if (userAvatar != null && userAvatar!.isNotEmpty) {
       return Container(
-        width: 26.0,
-        height: 26.0,
+        width: 22.0,
+        height: 22.0,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
             color: isActive ? const Color(0xFF008BFF) : const Color(0xFFCBD5E1),
-            width: isActive ? 1.5 : 1.0,
+            width: isActive ? 1.8 : 1.0,
           ),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(13.0),
+        child: ClipOval(
           child: Image.network(
             userAvatar!,
             fit: BoxFit.cover,
@@ -40,55 +39,10 @@ class UserNavGlyph extends StatelessWidget {
   }
 
   Widget _buildFallbackGlyph() {
-    return SizedBox(
-      width: 24.0,
-      height: 24.0,
-      child: CustomPaint(
-        painter: _UserPainter(
-          color: isActive ? const Color(0xFF008BFF) : const Color(0xFF1A1A1A),
-          isActive: isActive,
-        ),
-      ),
+    return Icon(
+      LucideIcons.user,
+      size: 20.0,
+      color: isActive ? const Color(0xFF008BFF) : const Color(0xFF1A1A1A),
     );
-  }
-}
-
-class _UserPainter extends CustomPainter {
-  final Color color;
-  final bool isActive;
-
-  _UserPainter({required this.color, required this.isActive});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..style = isActive ? PaintingStyle.fill : PaintingStyle.stroke
-      ..strokeWidth = 2.0
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    final w = size.width;
-    final h = size.height;
-
-    // Head circle
-    canvas.drawCircle(Offset(w * 0.5, h * 0.32), w * 0.22, paint);
-
-    // Body arc
-    final bodyPath = Path();
-    bodyPath.moveTo(w * 0.16, h * 0.88);
-    bodyPath.quadraticBezierTo(w * 0.16, h * 0.64, w * 0.5, h * 0.64);
-    bodyPath.quadraticBezierTo(w * 0.84, h * 0.64, w * 0.84, h * 0.88);
-
-    if (isActive) {
-      bodyPath.close();
-    }
-
-    canvas.drawPath(bodyPath, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _UserPainter oldDelegate) {
-    return oldDelegate.color != color || oldDelegate.isActive != isActive;
   }
 }

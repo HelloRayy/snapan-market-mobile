@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
-/// 1. Home Glyph (Solid Rounded House Polygon)
+/// 1. Home Nav Glyph using LucideIcons.home
 class HomeNavGlyph extends StatelessWidget {
   final bool isActive;
 
@@ -9,52 +9,10 @@ class HomeNavGlyph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 24.0,
-      height: 24.0,
-      child: CustomPaint(
-        painter: _HomePainter(
-          color: isActive ? const Color(0xFF008BFF) : const Color(0xFF1A1A1A),
-          isActive: isActive,
-        ),
-      ),
+    return Icon(
+      LucideIcons.home,
+      size: 21.0,
+      color: isActive ? const Color(0xFF008BFF) : const Color(0xFF1A1A1A),
     );
-  }
-}
-
-class _HomePainter extends CustomPainter {
-  final Color color;
-  final bool isActive;
-
-  _HomePainter({required this.color, required this.isActive});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..style = isActive ? PaintingStyle.fill : PaintingStyle.stroke
-      ..strokeWidth = 2.0
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    final w = size.width;
-    final h = size.height;
-
-    final path = Path();
-    path.moveTo(w * 0.5, h * 0.08);
-    path.lineTo(w * 0.92, h * 0.42);
-    path.lineTo(w * 0.88, h * 0.82);
-    path.quadraticBezierTo(w * 0.88, h * 0.94, w * 0.76, h * 0.94);
-    path.lineTo(w * 0.24, h * 0.94);
-    path.quadraticBezierTo(w * 0.12, h * 0.94, w * 0.12, h * 0.82);
-    path.lineTo(w * 0.08, h * 0.42);
-    path.close();
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _HomePainter oldDelegate) {
-    return oldDelegate.color != color || oldDelegate.isActive != isActive;
   }
 }

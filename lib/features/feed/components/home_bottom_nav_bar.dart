@@ -256,7 +256,7 @@ class _DockTabItemState extends State<_DockTabItem> {
                   ),
                 ),
 
-                const SizedBox(height: 1.0),
+                const SizedBox(height: 2.0),
 
                 // Label Text (active #008BFF 700, inactive #1A1A1A 500)
                 Text(

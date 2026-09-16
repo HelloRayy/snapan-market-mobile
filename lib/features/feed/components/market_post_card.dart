@@ -24,6 +24,7 @@ class MarketPostCard extends StatefulWidget {
   final ValueChanged<MarketPostModel>? onPostClick;
   final ValueChanged<MarketPostModel>? onLikeToggle;
   final ValueChanged<MarketPostModel>? onRepostToggle;
+  final ValueChanged<MarketPostModel>? onFollowToggle;
   final ValueChanged<MarketPostModel>? onShareClick;
   final ValueChanged<String>? onTopicClick;
   final ValueChanged<String>? onUserClick;
@@ -37,6 +38,7 @@ class MarketPostCard extends StatefulWidget {
     this.onPostClick,
     this.onLikeToggle,
     this.onRepostToggle,
+    this.onFollowToggle,
     this.onShareClick,
     this.onTopicClick,
     this.onUserClick,
@@ -55,6 +57,7 @@ class _MarketPostCardState extends State<MarketPostCard>
   late int _likesCount;
   late bool _isReposted;
   late int _repostsCount;
+  bool _isFollowed = false;
 
   late AnimationController _likeAnimController;
   late Animation<double> _likeScaleAnim;
@@ -156,6 +159,30 @@ class _MarketPostCardState extends State<MarketPostCard>
       repostsCount: _repostsCount,
     );
     widget.onRepostToggle?.call(updated);
+  }
+
+  void _handleFollowToggle() {
+    HapticFeedback.lightImpact();
+    setState(() {
+      _isFollowed = !_isFollowed;
+    });
+
+    if (widget.onFollowToggle != null) {
+      widget.onFollowToggle!(widget.item);
+    } else {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            _isFollowed
+                ? 'Mengikuti ${widget.item.seller.name}'
+                : 'Batal mengikuti ${widget.item.seller.name}',
+          ),
+          duration: const Duration(seconds: 1),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   void _showOptionsMenu(BuildContext context, [Offset? tapPosition]) {
@@ -296,7 +323,7 @@ class _MarketPostCardState extends State<MarketPostCard>
     );
   }
 
-  /// 42x42px circular avatar with subtle border, shadow, and '+' follow badge
+  /// 42x42px circular avatar with subtle border, shadow, and thumb-friendly '+' follow badge
   Widget _buildAuthorAvatar(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -346,36 +373,62 @@ class _MarketPostCardState extends State<MarketPostCard>
                 ),
               ),
             ),
+            // Thumb-friendly enlarged '+' Follow Badge
             Positioned(
-              right: 0,
-              bottom: 0,
-              child: Container(
-                width: 17.5,
-                height: 17.5,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFF3B82F6), // Kumo Blue 500
-                      Color(0xFF1D64EC), // Kumo Primary Blue
-                    ],
-                  ),
-                  border: Border.all(color: Colors.white, width: 1.8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF1D64EC).withValues(alpha: 0.25),
-                      blurRadius: 3.0,
-                      offset: const Offset(0, 1),
+              right: -6.0,
+              bottom: -6.0,
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: _handleFollowToggle,
+                  child: Container(
+                    padding: const EdgeInsets.all(5.0),
+                    color: Colors.transparent,
+                    child: Container(
+                      width: 22.5,
+                      height: 22.5,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: _isFollowed
+                              ? const [
+                                  Color(0xFF10B981), // Emerald 500
+                                  Color(0xFF059669), // Emerald 600
+                                ]
+                              : const [
+                                  Color(0xFF3B82F6), // Kumo Blue 500
+                                  Color(0xFF1D64EC), // Kumo Primary Blue
+                                ],
+                        ),
+                        border: Border.all(color: Colors.white, width: 2.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: (_isFollowed
+                                    ? const Color(0xFF10B981)
+                                    : const Color(0xFF1D64EC))
+                                .withValues(alpha: 0.35),
+                            blurRadius: 4.0,
+                            offset: const Offset(0, 1.5),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 200),
+                          transitionBuilder: (child, anim) =>
+                              ScaleTransition(scale: anim, child: child),
+                          child: Icon(
+                            _isFollowed ? Icons.check_rounded : Icons.add_rounded,
+                            key: ValueKey(_isFollowed),
+                            size: _isFollowed ? 14.0 : 15.5,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
-                  ],
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.add,
-                    size: 11.5,
-                    color: Colors.white,
                   ),
                 ),
               ),

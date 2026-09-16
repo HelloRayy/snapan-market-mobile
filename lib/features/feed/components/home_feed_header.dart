@@ -51,6 +51,7 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
       trailingIcon: LucideIcons.search,
       trailingTooltip: 'Cari Produk & Diskusi',
       onTrailingTap: onSearchTap,
+      showButtonBackground: false,
     );
   }
 }

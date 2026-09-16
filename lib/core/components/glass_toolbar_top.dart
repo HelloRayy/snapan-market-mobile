@@ -51,6 +51,7 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
   final Widget? trailing;
 
   final Color backgroundColor;
+  final bool showButtonBackground;
 
   const GlassToolbarTop({
     super.key,
@@ -70,6 +71,7 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
     this.trailingActions,
     this.trailing,
     this.backgroundColor = Colors.transparent,
+    this.showButtonBackground = true,
   });
 
   @override
@@ -125,9 +127,10 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
     return _GlassCapsuleButton(
       tooltip: leadingTooltip ?? (leadingText ?? 'Aksi'),
       onTap: onLeadingTap,
+      showBackground: showButtonBackground,
       child: Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: leadingText != null ? 14.0 : 10.0,
+          horizontal: leadingText != null ? 14.0 : (showButtonBackground ? 10.0 : 0.0),
         ),
         child: leadingText != null
             ? Text(
@@ -142,7 +145,7 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
               )
             : Icon(
                 leadingIcon ?? Icons.arrow_back_rounded,
-                size: 21.0,
+                size: 22.0,
                 color: const Color(0xFF1A1A1A),
               ),
       ),
@@ -202,9 +205,10 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
       return _GlassCapsuleButton(
         tooltip: trailingTooltip ?? (trailingText ?? 'Cari'),
         onTap: onTrailingTap,
+        showBackground: showButtonBackground,
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: trailingText != null ? 14.0 : 10.0,
+            horizontal: trailingText != null ? 14.0 : (showButtonBackground ? 10.0 : 0.0),
           ),
           child: trailingText != null
               ? Text(
@@ -219,7 +223,7 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
                 )
               : Icon(
                   trailingIcon!,
-                  size: 20.0,
+                  size: 21.0,
                   color: const Color(0xFF1A1A1A),
                 ),
         ),
@@ -234,16 +238,18 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-/// Single action glass capsule button (pen.dev Leading Button meX9e)
+/// Single action button (supports frosted glass capsule or minimal bare icon)
 class _GlassCapsuleButton extends StatefulWidget {
   final Widget child;
   final VoidCallback? onTap;
   final String tooltip;
+  final bool showBackground;
 
   const _GlassCapsuleButton({
     required this.child,
     this.onTap,
     required this.tooltip,
+    this.showBackground = true,
   });
 
   @override
@@ -267,41 +273,54 @@ class _GlassCapsuleButtonState extends State<_GlassCapsuleButton> {
           widget.onTap?.call();
         },
         child: AnimatedScale(
-          scale: _isPressed ? 0.93 : 1.0,
+          scale: _isPressed ? 0.91 : 1.0,
           duration: const Duration(milliseconds: 90),
           curve: Curves.easeOutCubic,
-          child: Container(
-            height: 38.0,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(19.0),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(19.0),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
-                child: Container(
+          child: widget.showBackground
+              ? Container(
                   height: 38.0,
-                  alignment: Alignment.center,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(19.0),
-                    gradient: const LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0xFFFFFFFF),
-                        Color(0xFFF8FAFC),
-                      ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(19.0),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
+                      child: Container(
+                        height: 38.0,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(19.0),
+                          gradient: const LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Color(0xFFFFFFFF),
+                              Color(0xFFF8FAFC),
+                            ],
+                          ),
+                          border: Border.all(
+                            color: const Color(0xFFE2E8F0),
+                            width: 1.0,
+                          ),
+                        ),
+                        child: widget.child,
+                      ),
                     ),
-                    border: Border.all(
-                      color: const Color(0xFFE2E8F0),
-                      width: 1.0,
-                    ),
+                  ),
+                )
+              : Container(
+                  width: 40.0,
+                  height: 40.0,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _isPressed
+                        ? const Color(0x0F000000)
+                        : Colors.transparent,
                   ),
                   child: widget.child,
                 ),
-              ),
-            ),
-          ),
         ),
       ),
     );

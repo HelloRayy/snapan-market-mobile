@@ -5,6 +5,7 @@ import "package:snapan_market/features/feed/components/market_post_card.dart";
 import "package:snapan_market/features/feed/models/market_post_model.dart";
 import "package:snapan_market/features/feed/screens/post_detail_screen.dart";
 import "package:snapan_market/features/profile/screens/profile_screen.dart";
+import "package:snapan_market/features/feed/components/home_menu_popover.dart";
 import "package:snapan_market/features/search/components/search_bar_header.dart";
 import "package:snapan_market/features/search/components/suggested_account_tile.dart";
 import "package:snapan_market/features/search/models/search_models.dart";
@@ -140,6 +141,16 @@ class _SearchScreenState extends State<SearchScreen> {
             onSubmitted: _handleExecuteSearch,
             onClear: _handleClearSearch,
             onBack: widget.onBack ?? () => Navigator.of(context).pop(),
+            onMenuTap: () => HomeMenuPopover.show(context: context),
+            onOpenAppTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Snapan Market v0.1.0'),
+                  duration: Duration(seconds: 1),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
             hasQuery: hasQuery,
             isSubmitted: _isSubmitted,
             activeTab: _activeTab,

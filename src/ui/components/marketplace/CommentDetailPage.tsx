@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Heart, Repeat2, Send, BadgeCheck, MoreHorizontal, Crown } from 'lucide-react';
 import { MarketPostItem, PostComment } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
-import { formatSmartTimestamp } from '@/utils/formatters';
+import { formatSmartTimestamp, formatCompactNumber } from '@/utils/formatters';
 import { SmoothCommentIcon } from '@/ui/components/icons/SmoothCommentIcon';
 import { PostCommentItem } from './PostCommentItem';
 import { PostSubmenuDropdown } from './PostSubmenuDropdown';
@@ -370,97 +370,89 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
               </div>
             )}
 
-            <div className="flex items-center gap-2 -ml-1 pt-2 text-slate-700">
-              {/* 1. Like Slot */}
-              <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer">
-                <div className="flex items-stretch font-normal cursor-pointer">
-                  <motion.button
-                    type="button"
-                    whileTap={{ scale: 0.96 }}
-                    onClick={handleHeroLikeToggle}
-                    className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer select-none group active:bg-neutral-100 rounded-full transition-colors"
-                    aria-label={`Sukai komentar. ${heroLikesCount} suka`}
+            <div className="flex items-center gap-1.5 -ml-1.5 pt-2 text-slate-700 select-none">
+              {/* 1. Suka (Like) Slot - Threads-style 36px capsule pill */}
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.94 }}
+                onClick={handleHeroLikeToggle}
+                className={`flex items-center justify-center rounded-full h-[36px] cursor-pointer select-none group active:bg-neutral-100/90 hover:bg-neutral-100/70 transition-all leading-snug ${
+                  heroLikesCount > 0 ? 'px-3 gap-x-1.5' : 'w-[36px]'
+                }`}
+                aria-label={`Sukai komentar. ${heroLikesCount} suka`}
+              >
+                <motion.div
+                  className="flex items-center justify-center shrink-0"
+                  animate={isHeroLiked ? { scale: [1, 1.45, 0.88, 1.15, 1], rotate: [0, -10, 10, -4, 0] } : { scale: 1, rotate: 0 }}
+                  transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
+                >
+                  <Heart
+                    className={`w-[19px] h-[19px] stroke-[1.85] transition-colors duration-200 ${
+                      isHeroLiked ? 'fill-rose-500 text-rose-500 stroke-rose-500' : 'text-slate-700 group-hover:text-rose-500'
+                    }`}
+                  />
+                </motion.div>
+                {heroLikesCount > 0 && (
+                  <motion.span
+                    key={heroLikesCount}
+                    initial={{ opacity: 0.6, y: -2 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.15 }}
+                    className={`text-sm leading-snug tabular-nums tracking-tight transition-all select-none ${
+                      isHeroLiked ? 'text-rose-600 font-semibold' : 'text-neutral-600 font-normal group-hover:text-neutral-900'
+                    }`}
                   >
-                    <motion.div
-                      animate={isHeroLiked ? { scale: [1, 1.45, 0.88, 1.15, 1], rotate: [0, -10, 10, -4, 0] } : { scale: 1, rotate: 0 }}
-                      transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
-                    >
-                      <Heart
-                        className={`w-[19px] h-[19px] stroke-[1.85] transition-colors duration-200 ${
-                          isHeroLiked ? 'fill-rose-500 text-rose-500 stroke-rose-500' : 'text-slate-700'
-                        }`}
-                      />
-                    </motion.div>
-                    {heroLikesCount > 0 && (
-                      <motion.span
-                        key={heroLikesCount}
-                        initial={{ opacity: 0.6, y: -2 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.15 }}
-                        className={`font-medium text-[13.5px] tabular-nums tracking-tight transition-colors duration-200 ${
-                          isHeroLiked ? 'text-rose-600 font-bold' : 'text-slate-700'
-                        }`}
-                      >
-                        {heroLikesCount}
-                      </motion.span>
-                    )}
-                  </motion.button>
-                </div>
-              </div>
+                    {formatCompactNumber(heroLikesCount)}
+                  </motion.span>
+                )}
+              </motion.button>
 
-              {/* 2. Comment Slot */}
-              <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer">
-                <div className="flex items-stretch font-normal cursor-pointer">
-                  <motion.button
-                    type="button"
-                    whileTap={{ scale: 0.96 }}
-                    onClick={() => {
-                      handleReplyToUser(activeComment.user.username || activeComment.user.name, activeComment.id);
-                    }}
-                    className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer transition-colors text-slate-700 group select-none active:bg-neutral-100 rounded-full"
-                    aria-label="Balas komentar"
-                  >
-                    <SmoothCommentIcon className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
-                    {repliesList.length > 0 && (
-                      <span className="font-medium text-[13.5px] text-slate-700 tabular-nums tracking-tight">{repliesList.length}</span>
-                    )}
-                  </motion.button>
-                </div>
-              </div>
+              {/* 2. Balas (Reply) Slot - Threads-style 36px capsule pill */}
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.94 }}
+                onClick={() => {
+                  handleReplyToUser(activeComment.user.username || activeComment.user.name, activeComment.id);
+                }}
+                className={`flex items-center justify-center rounded-full h-[36px] cursor-pointer transition-all text-slate-700 group select-none active:bg-neutral-100/90 hover:bg-neutral-100/70 leading-snug ${
+                  repliesList.length > 0 ? 'px-3 gap-x-1.5' : 'w-[36px]'
+                }`}
+                aria-label="Balas komentar"
+              >
+                <SmoothCommentIcon className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-sky-500 transition-colors duration-200 shrink-0" />
+                {repliesList.length > 0 && (
+                  <span className="text-sm leading-snug text-neutral-600 group-hover:text-neutral-900 tabular-nums tracking-tight font-normal select-none transition-all">
+                    {formatCompactNumber(repliesList.length)}
+                  </span>
+                )}
+              </motion.button>
 
-              {/* 3. Repost Slot */}
-              <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer">
-                <div className="flex items-stretch font-normal cursor-pointer">
-                  <motion.button
-                    type="button"
-                    whileTap={{ scale: 0.96 }}
-                    className="flex items-center justify-center gap-1.5 px-2 py-1.5 min-h-[36px] min-w-[36px] cursor-pointer transition-colors select-none group active:bg-neutral-100 rounded-full"
-                    aria-label="Post ulang komentar"
-                  >
-                    <motion.div
-                      whileTap={{ rotate: [0, 180], scale: [1, 1.3, 0.9, 1.05, 1] }}
-                      transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
-                    >
-                      <Repeat2 className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-emerald-500 transition-colors duration-200" />
-                    </motion.div>
-                  </motion.button>
-                </div>
-              </div>
+              {/* 3. Repost Slot - Threads-style 36px circular button */}
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.94 }}
+                className="flex items-center justify-center rounded-full h-[36px] w-[36px] cursor-pointer transition-all select-none group active:bg-neutral-100/90 hover:bg-neutral-100/70 leading-snug"
+                aria-label="Post ulang komentar"
+              >
+                <motion.div
+                  className="flex items-center justify-center shrink-0"
+                  whileTap={{ rotate: [0, 180], scale: [1, 1.3, 0.9, 1.05, 1] }}
+                  transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
+                >
+                  <Repeat2 className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-emerald-500 transition-colors duration-200" />
+                </motion.div>
+              </motion.button>
 
-              {/* 4. Share Slot */}
-              <div className="flex items-center justify-center text-slate-700 font-normal cursor-pointer">
-                <div className="flex items-stretch px-0.5 font-normal cursor-pointer">
-                  <motion.button
-                    type="button"
-                    whileTap={{ scale: 0.96 }}
-                    className="flex items-center justify-center p-2 min-h-[36px] min-w-[36px] cursor-pointer transition-colors text-slate-700 group select-none active:bg-neutral-100 rounded-full"
-                    aria-label="Bagikan komentar"
-                    title="Bagikan / Kirim"
-                  >
-                    <Send className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-sky-500 transition-colors duration-200" />
-                  </motion.button>
-                </div>
-              </div>
+              {/* 4. Share Slot - Threads-style 36px circular button */}
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.94 }}
+                className="flex items-center justify-center rounded-full h-[36px] w-[36px] cursor-pointer transition-all text-slate-700 group select-none active:bg-neutral-100/90 hover:bg-neutral-100/70"
+                aria-label="Bagikan komentar"
+                title="Bagikan / Kirim"
+              >
+                <Send className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-slate-900 transition-colors duration-200 shrink-0" />
+              </motion.button>
             </div>
           </div>
         </div>

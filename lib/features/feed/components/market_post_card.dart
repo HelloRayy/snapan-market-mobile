@@ -858,11 +858,16 @@ class _MarketPostCardState extends State<MarketPostCard>
   Widget _buildLikeButton() {
     return InkWell(
       onTap: _handleLikeToggle,
-      borderRadius: BorderRadius.circular(20.0),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 6.0),
+      borderRadius: BorderRadius.circular(18.0),
+      child: Container(
+        height: 36.0,
+        padding: EdgeInsets.symmetric(
+          horizontal: _likesCount > 0 ? 12.0 : 8.5,
+        ),
+        alignment: Alignment.center,
         child: Row(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             ScaleTransition(
               scale: _likeScaleAnim,
@@ -874,14 +879,15 @@ class _MarketPostCardState extends State<MarketPostCard>
               ),
             ),
             if (_likesCount > 0) ...[
-              const SizedBox(width: 4.5),
+              const SizedBox(width: 5.0),
               Text(
-                '$_likesCount',
+                formatCompactNumber(_likesCount),
                 style: TextStyle(
-                  fontSize: 13.0,
-                  fontWeight: _isLiked ? FontWeight.w700 : FontWeight.w500,
-                  color: _isLiked ? const Color(0xFFE11D48) : const Color(0xFF334155),
+                  fontSize: 13.5,
+                  fontWeight: _isLiked ? FontWeight.w600 : FontWeight.w400,
+                  color: _isLiked ? const Color(0xFFE11D48) : const Color(0xFF475569),
                   fontFeatures: const [FontFeature.tabularFigures()],
+                  letterSpacing: -0.2,
                 ),
               ),
             ],
@@ -895,25 +901,31 @@ class _MarketPostCardState extends State<MarketPostCard>
   Widget _buildCommentButton() {
     return InkWell(
       onTap: () => widget.onPostClick?.call(widget.item),
-      borderRadius: BorderRadius.circular(20.0),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 6.0),
+      borderRadius: BorderRadius.circular(18.0),
+      child: Container(
+        height: 36.0,
+        padding: EdgeInsets.symmetric(
+          horizontal: widget.item.commentsCount > 0 ? 12.0 : 8.5,
+        ),
+        alignment: Alignment.center,
         child: Row(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const FeedCommentIcon(
               size: 18.0,
               color: Color(0xFF334155),
             ),
             if (widget.item.commentsCount > 0) ...[
-              const SizedBox(width: 4.5),
+              const SizedBox(width: 5.0),
               Text(
-                '${widget.item.commentsCount}',
+                formatCompactNumber(widget.item.commentsCount),
                 style: const TextStyle(
-                  fontSize: 13.0,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF334155),
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF475569),
                   fontFeatures: [FontFeature.tabularFigures()],
+                  letterSpacing: -0.2,
                 ),
               ),
             ],
@@ -927,11 +939,16 @@ class _MarketPostCardState extends State<MarketPostCard>
   Widget _buildRepostButton() {
     return InkWell(
       onTap: _handleRepostToggle,
-      borderRadius: BorderRadius.circular(20.0),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 6.0),
+      borderRadius: BorderRadius.circular(18.0),
+      child: Container(
+        height: 36.0,
+        padding: EdgeInsets.symmetric(
+          horizontal: _repostsCount > 0 ? 12.0 : 8.5,
+        ),
+        alignment: Alignment.center,
         child: Row(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             RotationTransition(
               turns: _repostRotateAnim,
@@ -943,14 +960,15 @@ class _MarketPostCardState extends State<MarketPostCard>
               ),
             ),
             if (_repostsCount > 0) ...[
-              const SizedBox(width: 4.5),
+              const SizedBox(width: 5.0),
               Text(
-                '$_repostsCount',
+                formatCompactNumber(_repostsCount),
                 style: TextStyle(
-                  fontSize: 13.0,
-                  fontWeight: _isReposted ? FontWeight.w700 : FontWeight.w500,
-                  color: _isReposted ? const Color(0xFF10B981) : const Color(0xFF334155),
+                  fontSize: 13.5,
+                  fontWeight: _isReposted ? FontWeight.w600 : FontWeight.w400,
+                  color: _isReposted ? const Color(0xFF10B981) : const Color(0xFF475569),
                   fontFeatures: const [FontFeature.tabularFigures()],
+                  letterSpacing: -0.2,
                 ),
               ),
             ],
@@ -973,10 +991,12 @@ class _MarketPostCardState extends State<MarketPostCard>
           );
         }
       },
-      borderRadius: BorderRadius.circular(20.0),
-      child: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 6.0, vertical: 6.0),
-        child: FeedShareIcon(
+      borderRadius: BorderRadius.circular(18.0),
+      child: Container(
+        height: 36.0,
+        width: 36.0,
+        alignment: Alignment.center,
+        child: const FeedShareIcon(
           size: 18.0,
           color: Color(0xFF334155),
         ),

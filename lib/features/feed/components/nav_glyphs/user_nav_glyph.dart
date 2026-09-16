@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// 4. User Nav Glyph using circular avatar with fallback to LucideIcons.user
 class UserNavGlyph extends StatelessWidget {

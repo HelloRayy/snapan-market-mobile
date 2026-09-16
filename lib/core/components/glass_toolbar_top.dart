@@ -276,51 +276,13 @@ class _GlassCapsuleButtonState extends State<_GlassCapsuleButton> {
           scale: _isPressed ? 0.91 : 1.0,
           duration: const Duration(milliseconds: 90),
           curve: Curves.easeOutCubic,
-          child: widget.showBackground
-              ? Container(
-                  height: 38.0,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(19.0),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(19.0),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
-                      child: Container(
-                        height: 38.0,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(19.0),
-                          gradient: const LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Color(0xFFFFFFFF),
-                              Color(0xFFF8FAFC),
-                            ],
-                          ),
-                          border: Border.all(
-                            color: const Color(0xFFE2E8F0),
-                            width: 1.0,
-                          ),
-                        ),
-                        child: widget.child,
-                      ),
-                    ),
-                  ),
-                )
-              : Container(
-                  width: 40.0,
-                  height: 40.0,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _isPressed
-                        ? const Color(0x0F000000)
-                        : Colors.transparent,
-                  ),
-                  child: widget.child,
-                ),
+          child: Container(
+            width: 40.0,
+            height: 40.0,
+            alignment: Alignment.center,
+            color: Colors.transparent,
+            child: widget.child,
+          ),
         ),
       ),
     );

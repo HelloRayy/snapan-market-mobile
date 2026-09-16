@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { MapPin } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { ToastNotification } from '@/ui/components/ui/ToastNotification';
@@ -156,9 +155,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           />
 
           {item.locationTag && (
-            <div className="pt-1 flex items-center gap-1.5 text-[12px] sm:text-[12.5px] text-slate-600 font-medium leading-snug">
-              <MapPin className="w-3.5 h-3.5 text-slate-500 stroke-[2] shrink-0" />
-              <span className="truncate">{item.locationTag}</span>
+            <div className="pt-0.5 text-[11.5px] sm:text-[12px] text-slate-500 font-normal leading-snug truncate">
+              {item.locationTag}
             </div>
           )}
 
@@ -234,9 +232,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
             />
 
             {item.locationTag && (
-              <div className="pt-1 flex items-center gap-1.5 text-[12px] sm:text-[12.5px] text-slate-600 font-medium leading-snug">
-                <MapPin className="w-3.5 h-3.5 text-slate-500 stroke-[2] shrink-0" />
-                <span className="truncate">{item.locationTag}</span>
+              <div className="pt-0.5 text-[11.5px] sm:text-[12px] text-slate-500 font-normal leading-snug truncate">
+                {item.locationTag}
               </div>
             )}
 

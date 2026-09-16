@@ -784,33 +784,21 @@ class _MarketPostCardState extends State<MarketPostCard>
   ///   <MapPin className="w-3.5 h-3.5 text-slate-500 stroke-[2] shrink-0" />
   ///   <span className="truncate">{item.locationTag}</span>
   /// </div>
+  /// Location Tag (Label only with small caption font)
   Widget _buildLocationTag() {
     return Padding(
-      padding: const EdgeInsets.only(top: 4.0),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.location_on_outlined,
-            size: 14.0,
-            color: Color(0xFF64748B),
-          ),
-          const SizedBox(width: 5.0),
-          Flexible(
-            child: Text(
-              widget.item.locationTag!,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 12.5,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF475569),
-                height: 1.25,
-              ),
-            ),
-          ),
-        ],
+      padding: const EdgeInsets.only(top: 2.0),
+      child: Text(
+        widget.item.locationTag!,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          fontSize: 11.5,
+          fontWeight: FontWeight.w400,
+          color: Color(0xFF64748B),
+          letterSpacing: -0.1,
+          height: 1.25,
+        ),
       ),
     );
   }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, X } from 'lucide-react';
+import { Search, Menu, X } from 'lucide-react';
 
 // Custom Snapan Logotype Text Header
 export const SnapanLogotype: React.FC<{ className?: string }> = ({
@@ -40,25 +40,22 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
   };
 
   return (
-    <header
-      className="sticky top-0 w-full z-30 font-gt-standard bg-white/70 backdrop-blur-xl select-none"
-      style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
-    >
-      {/* Top Main Bar: Toobar - Top - Chats (pen.dev JZdLQ) */}
-      <div className="max-w-xl mx-auto px-4 h-[56px] flex items-center justify-between relative select-none">
-        {/* Leading Capsule Button (pen.dev meX9e: label only) */}
+    <header className="w-full z-30 font-gt-standard bg-white/70 backdrop-blur-xl select-none max-h-[60px]">
+      {/* Top Main Bar: Max Height 60px, Compact Sleek 52px */}
+      <div className="max-w-xl mx-auto px-3.5 h-[52px] max-h-[60px] flex items-center justify-between relative select-none">
+        {/* Leading Capsule Button (38px circle with Lucide Menu Icon) */}
         <div className="flex items-center">
           <button
             type="button"
             onClick={onMenuClick || onProfileClick}
-            className="h-[42px] px-4 rounded-full bg-white/75 backdrop-blur-2xl border border-white/80 shadow-[0_8px_35px_rgba(0,0,0,0.12),0_2px_10px_rgba(0,0,0,0.04)] flex items-center justify-center text-[#1a1a1a] text-[15px] font-medium tracking-tight hover:bg-white/90 active:scale-95 transition-all cursor-pointer"
+            className="w-[38px] h-[38px] rounded-full bg-white/75 backdrop-blur-2xl border border-white/80 shadow-[0_4px_16px_rgba(0,0,0,0.08)] flex items-center justify-center text-[#1a1a1a] hover:bg-white/90 active:scale-95 transition-all cursor-pointer"
             aria-label="Menu"
           >
-            Menu
+            <Menu className="w-[18px] h-[18px] stroke-[2.2]" />
           </button>
         </div>
 
-        {/* Center Title (pen.dev uRDD1: "Snaps." label only, without star icon) */}
+        {/* Center Title (Snaps.) */}
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
           <button
             type="button"
@@ -66,13 +63,13 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
             className="flex items-center justify-center hover:opacity-85 active:scale-[0.98] transition-transform duration-100 cursor-pointer"
             aria-label="Snaps."
           >
-            <span className="text-[17.5px] font-bold tracking-tight text-[#1a1a1a] select-none">
+            <span className="text-[16.5px] font-bold tracking-tight text-[#1a1a1a] select-none">
               Snaps.
             </span>
           </button>
         </div>
 
-        {/* Trailing Capsule Button (pen.dev FuSew: label only) */}
+        {/* Trailing Capsule Button (38px circle with Lucide Search Icon) */}
         <div className="flex items-center">
           <button
             type="button"
@@ -86,10 +83,14 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
                 }
               }
             }}
-            className="h-[42px] px-4 rounded-full bg-white/75 backdrop-blur-2xl border border-white/80 shadow-[0_8px_35px_rgba(0,0,0,0.12),0_2px_10px_rgba(0,0,0,0.04)] flex items-center justify-center text-[#1a1a1a] text-[15px] font-medium tracking-tight hover:bg-white/90 active:scale-95 transition-all cursor-pointer"
+            className="w-[38px] h-[38px] rounded-full bg-white/75 backdrop-blur-2xl border border-white/80 shadow-[0_4px_16px_rgba(0,0,0,0.08)] flex items-center justify-center text-[#1a1a1a] hover:bg-white/90 active:scale-95 transition-all cursor-pointer"
             aria-label="Cari"
           >
-            {showSearchInput ? 'Tutup' : 'Cari'}
+            {showSearchInput ? (
+              <X className="w-[18px] h-[18px] stroke-[2.2]" />
+            ) : (
+              <Search className="w-[18px] h-[18px] stroke-[2.2]" />
+            )}
           </button>
         </div>
       </div>

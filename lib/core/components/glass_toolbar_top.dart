@@ -73,7 +73,7 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(56.0);
+  Size get preferredSize => const Size.fromHeight(52.0);
 
   @override
   Widget build(BuildContext context) {
@@ -82,8 +82,9 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
       child: SafeArea(
         bottom: false,
         child: Container(
-          height: 56.0,
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+          constraints: const BoxConstraints(maxHeight: 60.0),
+          height: 52.0,
+          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 4.0),
           child: Stack(
             alignment: Alignment.center,
             children: [
@@ -270,19 +271,19 @@ class _GlassCapsuleButtonState extends State<_GlassCapsuleButton> {
           duration: const Duration(milliseconds: 90),
           curve: Curves.easeOutCubic,
           child: Container(
-            height: 42.0,
+            height: 38.0,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(21.0),
+              borderRadius: BorderRadius.circular(19.0),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(21.0),
+              borderRadius: BorderRadius.circular(19.0),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
                 child: Container(
-                  height: 42.0,
+                  height: 38.0,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(21.0),
+                    borderRadius: BorderRadius.circular(19.0),
                     gradient: const LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
@@ -318,19 +319,19 @@ class _GlassActionsPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 42.0,
+      height: 38.0,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(21.0),
+        borderRadius: BorderRadius.circular(19.0),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(21.0),
+        borderRadius: BorderRadius.circular(19.0),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
           child: Container(
-            height: 42.0,
+            height: 38.0,
             padding: const EdgeInsets.symmetric(horizontal: 3.0),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(21.0),
+              borderRadius: BorderRadius.circular(19.0),
               gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,

@@ -286,7 +286,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     <div
       className="min-h-screen bg-white text-slate-ink pb-28 font-gt-standard select-none"
       style={{
-        paddingTop: 'calc(50px + env(safe-area-inset-top, 0px))',
+        paddingTop: 'calc(52px + env(safe-area-inset-top, 0px))',
       }}
     >
       <OfflineBanner />
@@ -295,9 +295,9 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* Elastic Native Pull-to-Refresh Indicator */}
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} />
 
-      {/* Fixed Top Header (Rock-Solid Fixed, Always Visible, Zero-Jank) */}
+      {/* Fixed Top Header (Max height 60px, Rock-Solid Fixed, Always Visible) */}
       <div
-        className="fixed top-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-b border-neutral-200/40 select-none"
+        className="fixed top-0 left-0 right-0 z-30 max-h-[60px] bg-white/95 backdrop-blur-md border-b border-neutral-200/40 select-none"
         style={{
           paddingTop: 'env(safe-area-inset-top, 0px)',
         }}

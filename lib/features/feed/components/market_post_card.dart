@@ -844,11 +844,11 @@ class _MarketPostCardState extends State<MarketPostCard>
     );
   }
 
-  /// Like button with animated scale and reactive counter
+  /// Like button with animated scale and reactive counter (Zero background splash)
   Widget _buildLikeButton() {
-    return InkWell(
+    return GestureDetector(
       onTap: _handleLikeToggle,
-      borderRadius: BorderRadius.circular(18.0),
+      behavior: HitTestBehavior.opaque,
       child: Container(
         height: 36.0,
         padding: EdgeInsets.only(
@@ -888,11 +888,11 @@ class _MarketPostCardState extends State<MarketPostCard>
     );
   }
 
-  /// Comment button with counter
+  /// Comment button with counter (Zero background splash)
   Widget _buildCommentButton() {
-    return InkWell(
+    return GestureDetector(
       onTap: () => widget.onPostClick?.call(widget.item),
-      borderRadius: BorderRadius.circular(18.0),
+      behavior: HitTestBehavior.opaque,
       child: Container(
         height: 36.0,
         padding: EdgeInsets.symmetric(
@@ -926,11 +926,11 @@ class _MarketPostCardState extends State<MarketPostCard>
     );
   }
 
-  /// Repost button with animated rotation and counter
+  /// Repost button with animated rotation and counter (Zero background splash)
   Widget _buildRepostButton() {
-    return InkWell(
+    return GestureDetector(
       onTap: _handleRepostToggle,
-      borderRadius: BorderRadius.circular(18.0),
+      behavior: HitTestBehavior.opaque,
       child: Container(
         height: 36.0,
         padding: EdgeInsets.symmetric(
@@ -969,9 +969,9 @@ class _MarketPostCardState extends State<MarketPostCard>
     );
   }
 
-  /// Share button
+  /// Share button (Zero background splash)
   Widget _buildShareButton() {
-    return InkWell(
+    return GestureDetector(
       onTap: () {
         if (widget.onShareClick != null) {
           widget.onShareClick!(widget.item);
@@ -982,7 +982,7 @@ class _MarketPostCardState extends State<MarketPostCard>
           );
         }
       },
-      borderRadius: BorderRadius.circular(18.0),
+      behavior: HitTestBehavior.opaque,
       child: Container(
         height: 36.0,
         padding: const EdgeInsets.symmetric(horizontal: 6.0),

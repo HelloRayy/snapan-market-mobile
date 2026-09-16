@@ -38,12 +38,15 @@ class HomeFeedScreen extends StatefulWidget {
   State<HomeFeedScreen> createState() => _HomeFeedScreenState();
 }
 
-class _HomeFeedScreenState extends State<HomeFeedScreen> {
+class _HomeFeedScreenState extends State<HomeFeedScreen>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final ScrollController _scrollController = ScrollController();
+  late final AnimationController _barsAnimationController;
+  late final Animation<double> _barsAnimation;
   FeedTab _activeTab = FeedTab.forYou;
   HomeNavTab _currentNavTab = HomeNavTab.home;
-  bool _areBarsVisible = true;
+  bool _isBarsVisible = true;
 
   // Dynamic Feed Posts list initialized with rich Indonesian school dataset
   late List<MarketPostModel> _posts;
@@ -52,6 +55,16 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   void initState() {
     super.initState();
     _posts = List<MarketPostModel>.from(kMockMarketPosts);
+    _barsAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 260),
+      value: 1.0,
+    );
+    _barsAnimation = CurvedAnimation(
+      parent: _barsAnimationController,
+      curve: Curves.easeOutCubic,
+      reverseCurve: Curves.easeInCubic,
+    );
   }
 
   @override
@@ -61,17 +74,29 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
     _posts = List<MarketPostModel>.from(kMockMarketPosts);
   }
 
-
   @override
   void dispose() {
+    _barsAnimationController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
-  void _scrollToTop() {
-    if (!_areBarsVisible) {
-      setState(() => _areBarsVisible = true);
+  void _hideBars() {
+    if (_isBarsVisible) {
+      _isBarsVisible = false;
+      _barsAnimationController.reverse();
     }
+  }
+
+  void _showBars() {
+    if (!_isBarsVisible) {
+      _isBarsVisible = true;
+      _barsAnimationController.forward();
+    }
+  }
+
+  void _scrollToTop() {
+    _showBars();
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
         0,
@@ -269,26 +294,19 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   Widget _buildHomeFeedTab(List<MarketPostModel> posts) {
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
-        if (notification is UserScrollNotification) {
-          if (notification.direction == ScrollDirection.reverse) {
-            // User is scrolling DOWN into content
-            if (_scrollController.hasClients && _scrollController.offset > 50.0) {
-              if (_areBarsVisible) {
-                setState(() => _areBarsVisible = false);
-              }
-            }
-          } else if (notification.direction == ScrollDirection.forward) {
-            // User is scrolling UP
-            if (!_areBarsVisible) {
-              setState(() => _areBarsVisible = true);
-            }
-          }
-        } else if (notification is ScrollUpdateNotification) {
-          // Automatically reveal bars at the top of the feed
-          if (_scrollController.hasClients && _scrollController.offset <= 20.0) {
-            if (!_areBarsVisible) {
-              setState(() => _areBarsVisible = true);
-            }
+        if (notification is ScrollUpdateNotification) {
+          final double delta = notification.scrollDelta ?? 0.0;
+          final double currentOffset = notification.metrics.pixels;
+
+          if (currentOffset <= 20.0) {
+            // Reveal bars near top of the feed
+            _showBars();
+          } else if (delta > 8.0 && currentOffset > 60.0) {
+            // User scrolled down into content - hide bottom bar smoothly
+            _hideBars();
+          } else if (delta < -8.0) {
+            // User scrolled up - reveal bottom bar
+            _showBars();
           }
         }
         return false;
@@ -384,9 +402,8 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   Widget build(BuildContext context) {
     final posts = _displayedPosts;
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
-    final double fabBottom = _areBarsVisible
-        ? (bottomPadding > 0 ? bottomPadding + 8.0 : 18.0) + 62.0 + 12.0
-        : (bottomPadding > 0 ? bottomPadding + 16.0 : 20.0);
+    final double fabBottomVisible = (bottomPadding > 0 ? bottomPadding + 8.0 : 18.0) + 62.0 + 12.0;
+    final double fabBottomHidden = (bottomPadding > 0 ? bottomPadding + 16.0 : 20.0);
 
     return Scaffold(
       key: _scaffoldKey,
@@ -399,8 +416,8 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
           setState(() {
             _activeTab = FeedTab.forYou;
             _currentNavTab = HomeNavTab.home;
-            _areBarsVisible = true;
           });
+          _showBars();
           _scrollToTop();
         },
         onNavigateSearch: _handleSearchTap,
@@ -436,53 +453,77 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
               ],
             ),
           ),
-          AnimatedPositioned(
-            duration: const Duration(milliseconds: 280),
-            curve: Curves.easeOutCubic,
-            right: 20.0,
-            bottom: fabBottom,
-            child: AnimatedScale(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeOutCubic,
-              scale: _currentNavTab == HomeNavTab.home ? 1.0 : 0.0,
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 180),
-                curve: Curves.easeOut,
-                opacity: _currentNavTab == HomeNavTab.home ? 1.0 : 0.0,
-                child: IgnorePointer(
-                  ignoring: _currentNavTab != HomeNavTab.home,
-                  child: FloatingPlusSquircleButton(
-                    onTap: _handleCreatePost,
+          // Collapsible Bottom Nav & Floating Action Button Overlay
+          AnimatedBuilder(
+            animation: _barsAnimation,
+            builder: (context, _) {
+              final double progress = _barsAnimation.value;
+              final double currentFabBottom =
+                  fabBottomHidden + (fabBottomVisible - fabBottomHidden) * progress;
+              final double navOffsetY = (1.0 - progress) * 110.0;
+              final double navOpacity = progress.clamp(0.0, 1.0);
+
+              return Stack(
+                children: [
+                  // Floating Action Button
+                  Positioned(
+                    right: 20.0,
+                    bottom: currentFabBottom,
+                    child: AnimatedScale(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeOutCubic,
+                      scale: _currentNavTab == HomeNavTab.home ? 1.0 : 0.0,
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 180),
+                        curve: Curves.easeOut,
+                        opacity: _currentNavTab == HomeNavTab.home ? 1.0 : 0.0,
+                        child: IgnorePointer(
+                          ignoring: _currentNavTab != HomeNavTab.home,
+                          child: FloatingPlusSquircleButton(
+                            onTap: _handleCreatePost,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: AnimatedSlide(
-        duration: const Duration(milliseconds: 280),
-        curve: Curves.easeOutCubic,
-        offset: _areBarsVisible ? Offset.zero : const Offset(0, 1.5),
-        child: AnimatedOpacity(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-          opacity: _areBarsVisible ? 1.0 : 0.0,
-          child: HomeBottomNavBar(
-            currentTab: _currentNavTab,
-            hasUnreadMessages: true,
-            unreadMessagesCount: 20,
-            userAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
-            onSearchTap: _handleSearchTap,
-            onPostTap: _handleCreatePost,
-            onTabSelected: (tab) {
-              setState(() {
-                _currentNavTab = tab;
-                _areBarsVisible = true;
-              });
+
+                  // Floating Bottom Nav Bar
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Transform.translate(
+                      offset: Offset(0, navOffsetY),
+                      child: Opacity(
+                        opacity: navOpacity,
+                        child: IgnorePointer(
+                          ignoring: progress < 0.1,
+                          child: RepaintBoundary(
+                            child: HomeBottomNavBar(
+                              currentTab: _currentNavTab,
+                              hasUnreadMessages: true,
+                              unreadMessagesCount: 20,
+                              userAvatar:
+                                  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
+                              onSearchTap: _handleSearchTap,
+                              onPostTap: _handleCreatePost,
+                              onTabSelected: (tab) {
+                                setState(() {
+                                  _currentNavTab = tab;
+                                });
+                                _showBars();
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
             },
           ),
-        ),
+        ],
       ),
     );
   }

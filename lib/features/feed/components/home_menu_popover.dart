@@ -50,7 +50,7 @@ class HomeMenuPopover extends StatelessWidget {
       context: context,
       barrierDismissible: true,
       barrierLabel: 'HomeMenuPopover',
-      barrierColor: Colors.black.withValues(alpha: 0.15),
+      barrierColor: Colors.transparent,
       transitionDuration: const Duration(milliseconds: 180),
       pageBuilder: (ctx, anim1, anim2) {
         final topOffset = anchorPosition?.dy ??
@@ -100,22 +100,22 @@ class HomeMenuPopover extends StatelessWidget {
     return Container(
       width: 220.0,
       decoration: BoxDecoration(
-        color: const Color(0xFF18181B), // Dark Charcoal #18181B
-        borderRadius: BorderRadius.circular(18.0),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.0),
         border: Border.all(
-          color: const Color(0x1FFFFFFF), // 12% white subtle border
+          color: const Color(0xFFE2E8F0),
           width: 0.8,
         ),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x66000000),
-            blurRadius: 28.0,
-            spreadRadius: 2.0,
-            offset: Offset(0, 10),
+            color: Color(0x1F000000), // Clean light elevation shadow
+            blurRadius: 24.0,
+            spreadRadius: 0,
+            offset: Offset(0, 8),
           ),
           BoxShadow(
-            color: Color(0x1A000000),
-            blurRadius: 8.0,
+            color: Color(0x0A000000),
+            blurRadius: 6.0,
             offset: Offset(0, 2),
           ),
         ],
@@ -248,7 +248,7 @@ class HomeMenuPopover extends StatelessWidget {
     required BuildContext context,
     required String label,
     required VoidCallback onTap,
-    Color textColor = Colors.white,
+    Color textColor = const Color(0xFF0F172A),
     bool hasChevron = false,
     bool isDestructive = false,
   }) {
@@ -257,10 +257,10 @@ class HomeMenuPopover extends StatelessWidget {
         HapticFeedback.lightImpact();
         onTap();
       },
-      borderRadius: BorderRadius.circular(12.0),
-      hoverColor: const Color(0x1AFFFFFF),
-      splashColor: const Color(0x26FFFFFF),
-      highlightColor: const Color(0x14FFFFFF),
+      borderRadius: BorderRadius.circular(10.0),
+      hoverColor: const Color(0xFFF8FAFC),
+      splashColor: const Color(0xFFF1F5F9),
+      highlightColor: Colors.transparent,
       child: Container(
         height: 44.0,
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -296,7 +296,7 @@ class HomeMenuPopover extends StatelessWidget {
       child: Divider(
         height: 1.0,
         thickness: 0.8,
-        color: Color(0x14FFFFFF), // Subtle 8% opacity white divider
+        color: Color(0xFFF1F5F9), // Light slate divider
       ),
     );
   }

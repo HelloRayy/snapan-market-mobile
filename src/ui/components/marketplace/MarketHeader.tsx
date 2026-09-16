@@ -43,15 +43,15 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
     <header className="w-full z-30 font-gt-standard bg-white/70 backdrop-blur-xl select-none max-h-[60px]">
       {/* Top Main Bar: Max Height 60px, Compact Sleek 52px */}
       <div className="max-w-xl mx-auto px-3.5 h-[52px] max-h-[60px] flex items-center justify-between relative select-none">
-        {/* Leading Capsule Button (38px circle with Lucide Menu Icon) */}
+        {/* Leading Button (Clean Lucide Menu Icon) */}
         <div className="flex items-center">
           <button
             type="button"
             onClick={onMenuClick || onProfileClick}
-            className="w-[38px] h-[38px] rounded-full bg-white/75 backdrop-blur-2xl border border-white/80 shadow-[0_4px_16px_rgba(0,0,0,0.08)] flex items-center justify-center text-[#1a1a1a] hover:bg-white/90 active:scale-95 transition-all cursor-pointer"
+            className="w-10 h-10 flex items-center justify-center text-[#1a1a1a] hover:opacity-70 active:scale-90 transition-all cursor-pointer"
             aria-label="Menu"
           >
-            <Menu className="w-[18px] h-[18px] stroke-[2.2]" />
+            <Menu className="w-5 h-5 stroke-[2.2]" />
           </button>
         </div>
 
@@ -69,7 +69,7 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
           </button>
         </div>
 
-        {/* Trailing Capsule Button (38px circle with Lucide Search Icon) */}
+        {/* Trailing Button (Clean Lucide Search Icon) */}
         <div className="flex items-center">
           <button
             type="button"
@@ -83,13 +83,13 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
                 }
               }
             }}
-            className="w-[38px] h-[38px] rounded-full bg-white/75 backdrop-blur-2xl border border-white/80 shadow-[0_4px_16px_rgba(0,0,0,0.08)] flex items-center justify-center text-[#1a1a1a] hover:bg-white/90 active:scale-95 transition-all cursor-pointer"
+            className="w-10 h-10 flex items-center justify-center text-[#1a1a1a] hover:opacity-70 active:scale-90 transition-all cursor-pointer"
             aria-label="Cari"
           >
             {showSearchInput ? (
-              <X className="w-[18px] h-[18px] stroke-[2.2]" />
+              <X className="w-5 h-5 stroke-[2.2]" />
             ) : (
-              <Search className="w-[18px] h-[18px] stroke-[2.2]" />
+              <Search className="w-5 h-5 stroke-[2.2]" />
             )}
           </button>
         </div>

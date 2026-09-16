@@ -10,7 +10,7 @@ import 'package:snapan_market/features/feed/components/home_feed_header.dart';
 import 'package:snapan_market/features/feed/components/home_feed_tab_switch.dart';
 import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart';
 import 'package:snapan_market/features/feed/components/floating_plus_squircle_button.dart';
-import 'package:snapan_market/features/feed/components/home_navigation_drawer.dart';
+import 'package:snapan_market/features/feed/components/home_menu_popover.dart';
 import 'package:snapan_market/features/feed/components/market_post_card.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
@@ -108,7 +108,52 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   }
 
   void _handleMenuTap() {
-    _scaffoldKey.currentState?.openDrawer();
+    HomeMenuPopover.show(
+      context: context,
+      onAppearanceTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Tampilan: Mode Terang (Default)'),
+            duration: Duration(seconds: 1),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      },
+      onSettingsTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Pengaturan akun dibuka'),
+            duration: Duration(seconds: 1),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      },
+      onLikedTap: () {
+        setState(() {
+          _currentNavTab = HomeNavTab.activity;
+        });
+        _showBars();
+      },
+      onArchiveTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Arsip postingan & aktivitas dibuka'),
+            duration: Duration(seconds: 1),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      },
+      onReportTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Laporan masalah terkirim. Terima kasih atas masukan Anda!'),
+            duration: Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      },
+      onLogout: widget.onLogout,
+    );
   }
 
   void _handleMapTap() {
@@ -383,22 +428,6 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       extendBody: true,
-      drawerEnableOpenDragGesture: true,
-      drawerEdgeDragWidth: 40.0,
-      drawer: HomeNavigationDrawer(
-        onNavigateHome: () {
-          setState(() {
-            _activeTab = FeedTab.forYou;
-            _currentNavTab = HomeNavTab.home;
-          });
-          _showBars();
-          _scrollToTop();
-        },
-        onNavigateSearch: _handleSearchTap,
-        onNavigateMap: _handleMapTap,
-        onOpenCreateModal: _handleCreatePost,
-        onLogout: widget.onLogout,
-      ),
       appBar: HomeFeedHeader(
         title: switch (_currentNavTab) {
           HomeNavTab.home => 'Snaps.',

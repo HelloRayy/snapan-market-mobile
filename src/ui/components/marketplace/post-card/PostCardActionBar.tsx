@@ -50,16 +50,14 @@ export const PostCardActionBar: React.FC<PostCardActionBarProps> = ({
   };
 
   return (
-    <div className="pt-1 flex items-center justify-between text-slate-700 font-normal -ml-1.5 select-none max-w-full">
-      <div className="flex items-center gap-1.5 text-slate-700 text-sm font-normal cursor-pointer select-none">
-        {/* 1. Suka (Like) - Threads-style 36px capsule pill */}
+    <div className="pt-1 flex items-center justify-between text-slate-700 font-normal select-none max-w-full">
+      <div className="flex items-center gap-1.5 text-slate-700 text-[12px] font-normal cursor-pointer select-none">
+        {/* 1. Suka (Like) - Flush-left button */}
         <motion.button
           type="button"
           whileTap={{ scale: 0.94 }}
           onClick={handleLikeClick}
-          className={`flex items-center justify-center rounded-full h-[36px] cursor-pointer select-none group active:bg-neutral-100/90 hover:bg-neutral-100/70 transition-all leading-snug ${
-            likesCount > 0 ? 'px-3 gap-x-1.5' : 'w-[36px]'
-          }`}
+          className="flex items-center justify-start h-[34px] pl-0 pr-2 gap-x-1.5 cursor-pointer select-none group transition-all leading-snug"
           aria-label={`Sukai postingan. ${likesCount} suka`}
         >
           <motion.div
@@ -68,7 +66,7 @@ export const PostCardActionBar: React.FC<PostCardActionBarProps> = ({
             transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
           >
             <Heart
-              className={`w-[19px] h-[19px] stroke-[1.85] transition-colors duration-200 ${
+              className={`w-[18px] h-[18px] stroke-[1.85] transition-colors duration-200 ${
                 isLiked ? 'fill-rose-500 text-rose-500 stroke-rose-500' : 'text-slate-700 group-hover:text-rose-500'
               }`}
             />
@@ -79,7 +77,7 @@ export const PostCardActionBar: React.FC<PostCardActionBarProps> = ({
               initial={{ opacity: 0.6, y: -2 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.15 }}
-              className={`text-sm leading-snug tabular-nums tracking-tight transition-all select-none ${
+              className={`text-[12px] leading-snug tabular-nums tracking-tight transition-all select-none ${
                 isLiked ? 'text-rose-600 font-semibold' : 'text-neutral-600 font-normal group-hover:text-neutral-900'
               }`}
             >
@@ -88,32 +86,28 @@ export const PostCardActionBar: React.FC<PostCardActionBarProps> = ({
           )}
         </motion.button>
 
-        {/* 2. Balas (Comment) - Threads-style 36px capsule pill */}
+        {/* 2. Balas (Comment) */}
         <motion.button
           type="button"
           whileTap={{ scale: 0.94 }}
           onClick={handleCommentClick}
-          className={`flex items-center justify-center rounded-full h-[36px] cursor-pointer transition-all text-slate-700 group select-none active:bg-neutral-100/90 hover:bg-neutral-100/70 leading-snug ${
-            item.commentsCount > 0 ? 'px-3 gap-x-1.5' : 'w-[36px]'
-          }`}
+          className="flex items-center justify-center h-[34px] px-2 gap-x-1.5 cursor-pointer transition-all text-slate-700 group select-none leading-snug"
           aria-label={`Komentar postingan. ${item.commentsCount} komentar`}
         >
-          <SmoothCommentIcon className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-sky-500 transition-colors duration-200 shrink-0" />
+          <SmoothCommentIcon className="w-[18px] h-[18px] stroke-[1.85] text-slate-700 group-hover:text-sky-500 transition-colors duration-200 shrink-0" />
           {item.commentsCount > 0 && (
-            <span className="text-sm leading-snug text-neutral-600 group-hover:text-neutral-900 tabular-nums tracking-tight font-normal select-none transition-all">
+            <span className="text-[12px] leading-snug text-neutral-600 group-hover:text-neutral-900 tabular-nums tracking-tight font-normal select-none transition-all">
               {formatCompactNumber(item.commentsCount)}
             </span>
           )}
         </motion.button>
 
-        {/* 3. Posting Ulang (Repost) - Threads-style 36px capsule pill */}
+        {/* 3. Posting Ulang (Repost) */}
         <motion.button
           type="button"
           whileTap={{ scale: 0.94 }}
           onClick={handleRepostClick}
-          className={`flex items-center justify-center rounded-full h-[36px] cursor-pointer transition-all select-none group active:bg-neutral-100/90 hover:bg-neutral-100/70 leading-snug ${
-            repostsCount > 0 ? 'px-3 gap-x-1.5' : 'w-[36px]'
-          }`}
+          className="flex items-center justify-center h-[34px] px-2 gap-x-1.5 cursor-pointer transition-all select-none group leading-snug"
           aria-label={`Post ulang postingan. ${repostsCount} posting ulang`}
         >
           <motion.div
@@ -122,7 +116,7 @@ export const PostCardActionBar: React.FC<PostCardActionBarProps> = ({
             transition={{ duration: 0.35, ease: [0.175, 0.885, 0.32, 1.275] }}
           >
             <Repeat2
-              className={`w-[19px] h-[19px] stroke-[1.85] transition-colors duration-200 ${
+              className={`w-[18px] h-[18px] stroke-[1.85] transition-colors duration-200 ${
                 isReposted ? 'text-emerald-500 stroke-emerald-500' : 'text-slate-700 group-hover:text-emerald-500'
               }`}
             />
@@ -133,7 +127,7 @@ export const PostCardActionBar: React.FC<PostCardActionBarProps> = ({
               initial={{ opacity: 0.6, y: -2 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.15 }}
-              className={`text-sm leading-snug tabular-nums tracking-tight transition-all select-none ${
+              className={`text-[12px] leading-snug tabular-nums tracking-tight transition-all select-none ${
                 isReposted ? 'text-emerald-600 font-semibold' : 'text-neutral-600 font-normal group-hover:text-neutral-900'
               }`}
             >
@@ -142,16 +136,16 @@ export const PostCardActionBar: React.FC<PostCardActionBarProps> = ({
           )}
         </motion.button>
 
-        {/* 4. Bagikan (Share) - Threads-style 36px circular button */}
+        {/* 4. Bagikan (Share) */}
         <motion.button
           type="button"
           whileTap={{ scale: 0.94 }}
           onClick={handleShareClick}
-          className="flex items-center justify-center rounded-full h-[36px] w-[36px] cursor-pointer transition-all text-slate-700 group select-none active:bg-neutral-100/90 hover:bg-neutral-100/70"
+          className="flex items-center justify-center h-[34px] w-[30px] cursor-pointer transition-all text-slate-700 group select-none hover:opacity-75"
           aria-label="Bagikan postingan"
           title="Bagikan / Kirim"
         >
-          <Send className="w-[19px] h-[19px] stroke-[1.85] text-slate-700 group-hover:text-slate-900 transition-colors duration-200 shrink-0" />
+          <Send className="w-[18px] h-[18px] stroke-[1.85] text-slate-700 group-hover:text-slate-900 transition-colors duration-200 shrink-0" />
         </motion.button>
       </div>
 

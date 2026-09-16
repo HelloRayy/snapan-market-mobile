@@ -545,7 +545,7 @@ class _PostCommentItemState extends State<PostCommentItem>
                   Text(
                     '$_likesCount',
                     style: TextStyle(
-                      fontSize: 12.5,
+                      fontSize: 12.0,
                       fontWeight: _isLiked ? FontWeight.w700 : FontWeight.w500,
                       color: _isLiked ? const Color(0xFFF43F5E) : const Color(0xFF64748B),
                     ),

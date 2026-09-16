@@ -803,8 +803,6 @@ class _MarketPostCardState extends State<MarketPostCard>
     );
   }
 
-
-
   /// Action bar with Like, Comment, Repost, Share, and Stock pill
   Widget _buildActionBar(BuildContext context) {
     return Row(
@@ -818,17 +816,17 @@ class _MarketPostCardState extends State<MarketPostCard>
             // 1. Like Button
             _buildLikeButton(),
 
-            const SizedBox(width: 4.0),
+            const SizedBox(width: 8.0),
 
             // 2. Comment Button
             _buildCommentButton(),
 
-            const SizedBox(width: 4.0),
+            const SizedBox(width: 8.0),
 
             // 3. Repost Button
             _buildRepostButton(),
 
-            const SizedBox(width: 4.0),
+            const SizedBox(width: 8.0),
 
             // 4. Share Button
             _buildShareButton(),
@@ -849,10 +847,11 @@ class _MarketPostCardState extends State<MarketPostCard>
       borderRadius: BorderRadius.circular(18.0),
       child: Container(
         height: 36.0,
-        padding: EdgeInsets.symmetric(
-          horizontal: _likesCount > 0 ? 12.0 : 8.5,
+        padding: EdgeInsets.only(
+          left: 0.0,
+          right: _likesCount > 0 ? 8.0 : 4.0,
         ),
-        alignment: Alignment.center,
+        alignment: Alignment.centerLeft,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -867,11 +866,11 @@ class _MarketPostCardState extends State<MarketPostCard>
               ),
             ),
             if (_likesCount > 0) ...[
-              const SizedBox(width: 5.0),
+              const SizedBox(width: 4.5),
               Text(
                 formatCompactNumber(_likesCount),
                 style: TextStyle(
-                  fontSize: 13.5,
+                  fontSize: 12.0,
                   fontWeight: _isLiked ? FontWeight.w600 : FontWeight.w400,
                   color: _isLiked ? const Color(0xFFE11D48) : const Color(0xFF475569),
                   fontFeatures: const [FontFeature.tabularFigures()],
@@ -893,7 +892,7 @@ class _MarketPostCardState extends State<MarketPostCard>
       child: Container(
         height: 36.0,
         padding: EdgeInsets.symmetric(
-          horizontal: widget.item.commentsCount > 0 ? 12.0 : 8.5,
+          horizontal: widget.item.commentsCount > 0 ? 8.0 : 6.0,
         ),
         alignment: Alignment.center,
         child: Row(
@@ -905,11 +904,11 @@ class _MarketPostCardState extends State<MarketPostCard>
               color: Color(0xFF334155),
             ),
             if (widget.item.commentsCount > 0) ...[
-              const SizedBox(width: 5.0),
+              const SizedBox(width: 4.5),
               Text(
                 formatCompactNumber(widget.item.commentsCount),
                 style: const TextStyle(
-                  fontSize: 13.5,
+                  fontSize: 12.0,
                   fontWeight: FontWeight.w400,
                   color: Color(0xFF475569),
                   fontFeatures: [FontFeature.tabularFigures()],
@@ -931,7 +930,7 @@ class _MarketPostCardState extends State<MarketPostCard>
       child: Container(
         height: 36.0,
         padding: EdgeInsets.symmetric(
-          horizontal: _repostsCount > 0 ? 12.0 : 8.5,
+          horizontal: _repostsCount > 0 ? 8.0 : 6.0,
         ),
         alignment: Alignment.center,
         child: Row(
@@ -948,11 +947,11 @@ class _MarketPostCardState extends State<MarketPostCard>
               ),
             ),
             if (_repostsCount > 0) ...[
-              const SizedBox(width: 5.0),
+              const SizedBox(width: 4.5),
               Text(
                 formatCompactNumber(_repostsCount),
                 style: TextStyle(
-                  fontSize: 13.5,
+                  fontSize: 12.0,
                   fontWeight: _isReposted ? FontWeight.w600 : FontWeight.w400,
                   color: _isReposted ? const Color(0xFF10B981) : const Color(0xFF475569),
                   fontFeatures: const [FontFeature.tabularFigures()],
@@ -982,7 +981,7 @@ class _MarketPostCardState extends State<MarketPostCard>
       borderRadius: BorderRadius.circular(18.0),
       child: Container(
         height: 36.0,
-        width: 36.0,
+        padding: const EdgeInsets.symmetric(horizontal: 6.0),
         alignment: Alignment.center,
         child: const FeedShareIcon(
           size: 18.0,

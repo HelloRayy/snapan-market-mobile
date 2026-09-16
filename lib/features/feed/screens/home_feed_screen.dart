@@ -383,6 +383,10 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   @override
   Widget build(BuildContext context) {
     final posts = _displayedPosts;
+    final bottomPadding = MediaQuery.paddingOf(context).bottom;
+    final double fabBottom = _areBarsVisible
+        ? (bottomPadding > 0 ? bottomPadding + 8.0 : 18.0) + 62.0 + 12.0
+        : (bottomPadding > 0 ? bottomPadding + 16.0 : 20.0);
 
     return Scaffold(
       key: _scaffoldKey,
@@ -432,31 +436,28 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
               ],
             ),
           ),
-          if (_currentNavTab == HomeNavTab.home)
-            Positioned(
-              right: 18.0,
-              bottom: MediaQuery.paddingOf(context).bottom > 0
-                  ? MediaQuery.paddingOf(context).bottom + 16.0
-                  : 20.0,
-              child: AnimatedSlide(
-                duration: const Duration(milliseconds: 280),
-                curve: Curves.easeOutBack,
-                offset: !_areBarsVisible ? Offset.zero : const Offset(0, 1.8),
-                child: AnimatedScale(
-                  duration: const Duration(milliseconds: 280),
-                  curve: Curves.easeOutBack,
-                  scale: !_areBarsVisible ? 1.0 : 0.0,
-                  child: AnimatedOpacity(
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.easeOut,
-                    opacity: !_areBarsVisible ? 1.0 : 0.0,
-                    child: FloatingPlusSquircleButton(
-                      onTap: _handleCreatePost,
-                    ),
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 280),
+            curve: Curves.easeOutCubic,
+            right: 20.0,
+            bottom: fabBottom,
+            child: AnimatedScale(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOutCubic,
+              scale: _currentNavTab == HomeNavTab.home ? 1.0 : 0.0,
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 180),
+                curve: Curves.easeOut,
+                opacity: _currentNavTab == HomeNavTab.home ? 1.0 : 0.0,
+                child: IgnorePointer(
+                  ignoring: _currentNavTab != HomeNavTab.home,
+                  child: FloatingPlusSquircleButton(
+                    onTap: _handleCreatePost,
                   ),
                 ),
               ),
             ),
+          ),
         ],
       ),
       bottomNavigationBar: AnimatedSlide(

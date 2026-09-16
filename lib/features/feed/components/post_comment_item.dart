@@ -486,34 +486,38 @@ class _PostCommentItemState extends State<PostCommentItem>
 
     return SizedBox(
       height: 140.0,
-      child: ListView.separated(
+      child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
         physics: const BouncingScrollPhysics(),
-        itemCount: widget.comment.images.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 8.0),
-        itemBuilder: (context, idx) {
-          final imgUrl = widget.comment.images[idx];
-          return GestureDetector(
-            onTap: () => widget.onImageClick?.call(widget.comment.images, idx),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(14.0),
-              child: Container(
-                width: 180.0,
-                height: 140.0,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5F9),
+        child: Row(
+          children: List.generate(widget.comment.images.length, (idx) {
+            final imgUrl = widget.comment.images[idx];
+            final isLast = idx == widget.comment.images.length - 1;
+            return Padding(
+              padding: EdgeInsets.only(right: isLast ? 0.0 : 8.0),
+              child: GestureDetector(
+                onTap: () => widget.onImageClick?.call(widget.comment.images, idx),
+                child: ClipRRect(
                   borderRadius: BorderRadius.circular(14.0),
-                  border: Border.all(color: const Color(0x14000000), width: 1.0),
-                ),
-                child: Image.network(
-                  imgUrl,
-                  fit: BoxFit.cover,
+                  child: Container(
+                    width: 180.0,
+                    height: 140.0,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(14.0),
+                      border: Border.all(color: const Color(0x14000000), width: 1.0),
+                    ),
+                    child: Image.network(
+                      imgUrl,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          }),
+        ),
       ),
     );
   }

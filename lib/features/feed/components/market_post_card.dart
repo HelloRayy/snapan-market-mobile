@@ -737,43 +737,47 @@ class _MarketPostCardState extends State<MarketPostCard>
       );
     }
 
-    // Multi-Image Carousel (2+ photos)
+    // Multi-Image Carousel (2+ photos) - Persistent SingleChildScrollView to prevent element disposal & flickering
     return SizedBox(
       height: isDetail ? 260.0 : 240.0,
-      child: ListView.separated(
+      child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
         physics: const BouncingScrollPhysics(),
-        itemCount: widget.item.images.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 10.0),
-        itemBuilder: (context, idx) {
-          final imgUrl = widget.item.images[idx];
-          return GestureDetector(
-            onTap: () => widget.onImageClick?.call(widget.item, idx),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(18.0),
-              child: Container(
-                width: MediaQuery.of(context).size.width * (isDetail ? 0.78 : 0.72),
-                height: isDetail ? 260.0 : 240.0,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5F9),
+        child: Row(
+          children: List.generate(widget.item.images.length, (idx) {
+            final imgUrl = widget.item.images[idx];
+            final isLast = idx == widget.item.images.length - 1;
+            return Padding(
+              padding: EdgeInsets.only(right: isLast ? 0.0 : 10.0),
+              child: GestureDetector(
+                onTap: () => widget.onImageClick?.call(widget.item, idx),
+                child: ClipRRect(
                   borderRadius: BorderRadius.circular(18.0),
-                  border: Border.all(color: const Color(0x14000000), width: 1.0),
-                ),
-                child: Image.network(
-                  imgUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => Container(
-                    color: const Color(0xFFF1F5F9),
-                    child: const Center(
-                      child: Icon(Icons.image_outlined, color: Color(0xFF94A3B8), size: 36.0),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * (isDetail ? 0.78 : 0.72),
+                    height: isDetail ? 260.0 : 240.0,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(18.0),
+                      border: Border.all(color: const Color(0x14000000), width: 1.0),
+                    ),
+                    child: Image.network(
+                      imgUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => Container(
+                        color: const Color(0xFFF1F5F9),
+                        child: const Center(
+                          child: Icon(Icons.image_outlined, color: Color(0xFF94A3B8), size: 36.0),
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          }),
+        ),
       ),
     );
   }

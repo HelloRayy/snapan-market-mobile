@@ -239,60 +239,58 @@ class _MarketPostCardState extends State<MarketPostCard>
 
   /// FEED VARIANT: Two-column layout with left Avatar and right Content Column
   Widget _buildFeedCard(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      child: InkWell(
-        onTap: () => widget.onPostClick?.call(widget.item),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
-          decoration: const BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: Color(0xFFF1F5F9), width: 1.0),
-            ),
+    return GestureDetector(
+      onTap: () => widget.onPostClick?.call(widget.item),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            bottom: BorderSide(color: Color(0xFFF1F5F9), width: 1.0),
           ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Left Column: 36x36px Circular Avatar
+            _buildAuthorAvatar(context),
 
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Left Column: 36x36px Circular Avatar
-              _buildAuthorAvatar(context),
+            const SizedBox(width: 12.0),
 
-              const SizedBox(width: 12.0),
+            // Right Column: Content, Media, Location, and Action Bar
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header Line (Author Name, Verified, Topic/Class, Timestamp, Options)
+                  _buildHeaderRow(context),
 
-              // Right Column: Content, Media, Location, and Action Bar
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header Line (Author Name, Verified, Topic/Class, Timestamp, Options)
-                    _buildHeaderRow(context),
+                  const SizedBox(height: 2.0),
 
-                    const SizedBox(height: 2.0),
+                  // Caption Text with Multi-Thread indicator badge
+                  _buildCaptionText(),
 
-                    // Caption Text with Multi-Thread indicator badge
-                    _buildCaptionText(),
-
-                    // Media (Single Image or Multi-Image Horizontal Carousel)
-                    if (widget.item.images.isNotEmpty) ...[
-                      const SizedBox(height: 10.0),
-                      _buildMediaSection(context),
-                    ],
-
-                    // Location Tag (for COD school spot)
-                    if (widget.item.locationTag != null && widget.item.locationTag!.isNotEmpty) ...[
-                      const SizedBox(height: 8.0),
-                      _buildLocationTag(),
-                    ],
-
-                    const SizedBox(height: 8.0),
-
-                    // Bottom Action Bar (Like, Comment, Repost, Share + Stock pill)
-                    _buildActionBar(context),
+                  // Media (Single Image or Multi-Image Horizontal Carousel)
+                  if (widget.item.images.isNotEmpty) ...[
+                    const SizedBox(height: 10.0),
+                    _buildMediaSection(context),
                   ],
-                ),
+
+                  // Location Tag (for COD school spot)
+                  if (widget.item.locationTag != null && widget.item.locationTag!.isNotEmpty) ...[
+                    const SizedBox(height: 8.0),
+                    _buildLocationTag(),
+                  ],
+
+                  const SizedBox(height: 8.0),
+
+                  // Bottom Action Bar (Like, Comment, Repost, Share + Stock pill)
+                  _buildActionBar(context),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -846,43 +844,47 @@ class _MarketPostCardState extends State<MarketPostCard>
 
   /// Like button with animated scale and reactive counter (Zero background splash)
   Widget _buildLikeButton() {
-    return GestureDetector(
-      onTap: _handleLikeToggle,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        height: 36.0,
-        padding: EdgeInsets.only(
-          left: 0.0,
-          right: _likesCount > 0 ? 8.0 : 4.0,
-        ),
-        alignment: Alignment.centerLeft,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ScaleTransition(
-              scale: _likeScaleAnim,
-              child: FeedHeartIcon(
-                isLiked: _isLiked,
-                size: 19.0,
-                activeColor: const Color(0xFFE11D48),
-                inactiveColor: const Color(0xFF334155),
-              ),
-            ),
-            if (_likesCount > 0) ...[
-              const SizedBox(width: 4.5),
-              Text(
-                formatCompactNumber(_likesCount),
-                style: TextStyle(
-                  fontSize: 12.0,
-                  fontWeight: _isLiked ? FontWeight.w600 : FontWeight.w400,
-                  color: _isLiked ? const Color(0xFFE11D48) : const Color(0xFF475569),
-                  fontFeatures: const [FontFeature.tabularFigures()],
-                  letterSpacing: -0.2,
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: _handleLikeToggle,
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          height: 36.0,
+          color: Colors.transparent,
+          padding: EdgeInsets.only(
+            left: 0.0,
+            right: _likesCount > 0 ? 8.0 : 4.0,
+          ),
+          alignment: Alignment.centerLeft,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ScaleTransition(
+                scale: _likeScaleAnim,
+                child: FeedHeartIcon(
+                  isLiked: _isLiked,
+                  size: 19.0,
+                  activeColor: const Color(0xFFE11D48),
+                  inactiveColor: const Color(0xFF334155),
                 ),
               ),
+              if (_likesCount > 0) ...[
+                const SizedBox(width: 4.5),
+                Text(
+                  formatCompactNumber(_likesCount),
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    fontWeight: _isLiked ? FontWeight.w600 : FontWeight.w400,
+                    color: _isLiked ? const Color(0xFFE11D48) : const Color(0xFF475569),
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                    letterSpacing: -0.2,
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -890,37 +892,41 @@ class _MarketPostCardState extends State<MarketPostCard>
 
   /// Comment button with counter (Zero background splash)
   Widget _buildCommentButton() {
-    return GestureDetector(
-      onTap: () => widget.onPostClick?.call(widget.item),
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        height: 36.0,
-        padding: EdgeInsets.symmetric(
-          horizontal: widget.item.commentsCount > 0 ? 8.0 : 6.0,
-        ),
-        alignment: Alignment.center,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const FeedCommentIcon(
-              size: 18.0,
-              color: Color(0xFF334155),
-            ),
-            if (widget.item.commentsCount > 0) ...[
-              const SizedBox(width: 4.5),
-              Text(
-                formatCompactNumber(widget.item.commentsCount),
-                style: const TextStyle(
-                  fontSize: 12.0,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF475569),
-                  fontFeatures: [FontFeature.tabularFigures()],
-                  letterSpacing: -0.2,
-                ),
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () => widget.onPostClick?.call(widget.item),
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          height: 36.0,
+          color: Colors.transparent,
+          padding: EdgeInsets.symmetric(
+            horizontal: widget.item.commentsCount > 0 ? 8.0 : 6.0,
+          ),
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const FeedCommentIcon(
+                size: 18.0,
+                color: Color(0xFF334155),
               ),
+              if (widget.item.commentsCount > 0) ...[
+                const SizedBox(width: 4.5),
+                Text(
+                  formatCompactNumber(widget.item.commentsCount),
+                  style: const TextStyle(
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF475569),
+                    fontFeatures: [FontFeature.tabularFigures()],
+                    letterSpacing: -0.2,
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -928,42 +934,46 @@ class _MarketPostCardState extends State<MarketPostCard>
 
   /// Repost button with animated rotation and counter (Zero background splash)
   Widget _buildRepostButton() {
-    return GestureDetector(
-      onTap: _handleRepostToggle,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        height: 36.0,
-        padding: EdgeInsets.symmetric(
-          horizontal: _repostsCount > 0 ? 8.0 : 6.0,
-        ),
-        alignment: Alignment.center,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            RotationTransition(
-              turns: _repostRotateAnim,
-              child: FeedRepostIcon(
-                isReposted: _isReposted,
-                size: 19.0,
-                activeColor: const Color(0xFF10B981),
-                inactiveColor: const Color(0xFF334155),
-              ),
-            ),
-            if (_repostsCount > 0) ...[
-              const SizedBox(width: 4.5),
-              Text(
-                formatCompactNumber(_repostsCount),
-                style: TextStyle(
-                  fontSize: 12.0,
-                  fontWeight: _isReposted ? FontWeight.w600 : FontWeight.w400,
-                  color: _isReposted ? const Color(0xFF10B981) : const Color(0xFF475569),
-                  fontFeatures: const [FontFeature.tabularFigures()],
-                  letterSpacing: -0.2,
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: _handleRepostToggle,
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          height: 36.0,
+          color: Colors.transparent,
+          padding: EdgeInsets.symmetric(
+            horizontal: _repostsCount > 0 ? 8.0 : 6.0,
+          ),
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              RotationTransition(
+                turns: _repostRotateAnim,
+                child: FeedRepostIcon(
+                  isReposted: _isReposted,
+                  size: 19.0,
+                  activeColor: const Color(0xFF10B981),
+                  inactiveColor: const Color(0xFF334155),
                 ),
               ),
+              if (_repostsCount > 0) ...[
+                const SizedBox(width: 4.5),
+                Text(
+                  formatCompactNumber(_repostsCount),
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    fontWeight: _isReposted ? FontWeight.w600 : FontWeight.w400,
+                    color: _isReposted ? const Color(0xFF10B981) : const Color(0xFF475569),
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                    letterSpacing: -0.2,
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -971,25 +981,29 @@ class _MarketPostCardState extends State<MarketPostCard>
 
   /// Share button (Zero background splash)
   Widget _buildShareButton() {
-    return GestureDetector(
-      onTap: () {
-        if (widget.onShareClick != null) {
-          widget.onShareClick!(widget.item);
-        } else {
-          Clipboard.setData(ClipboardData(text: 'https://snapan.id/post/${widget.item.id}'));
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Tautan disalin ke papan klip')),
-          );
-        }
-      },
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        height: 36.0,
-        padding: const EdgeInsets.symmetric(horizontal: 6.0),
-        alignment: Alignment.center,
-        child: const FeedShareIcon(
-          size: 18.0,
-          color: Color(0xFF334155),
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () {
+          if (widget.onShareClick != null) {
+            widget.onShareClick!(widget.item);
+          } else {
+            Clipboard.setData(ClipboardData(text: 'https://snapan.id/post/${widget.item.id}'));
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Tautan disalin ke papan klip')),
+            );
+          }
+        },
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          height: 36.0,
+          color: Colors.transparent,
+          padding: const EdgeInsets.symmetric(horizontal: 6.0),
+          alignment: Alignment.center,
+          child: const FeedShareIcon(
+            size: 18.0,
+            color: Color(0xFF334155),
+          ),
         ),
       ),
     );

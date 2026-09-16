@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:snapan_market/core/components/glass_toolbar_top.dart';
-import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Top App Bar Header for Home Feed
 /// Sliced from pen.dev `Toobar - Top - Chats` adapted for Home Screen
@@ -27,7 +26,7 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return GlassToolbarTop(
-      leadingText: onBackTap != null ? 'Kembali' : 'Menu',
+      leadingIcon: onBackTap != null ? LucideIcons.arrowLeft : LucideIcons.menu,
       leadingTooltip: onBackTap != null ? 'Kembali' : 'Menu Navigasi',
       onLeadingTap: onBackTap ?? onMenuTap,
       titleWidget: GestureDetector(
@@ -49,7 +48,7 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
       ),
       showVerifiedBadge: false,
       onTitleTap: onTitleTap,
-      trailingText: 'Cari',
+      trailingIcon: LucideIcons.search,
       trailingTooltip: 'Cari Produk & Diskusi',
       onTrailingTap: onSearchTap,
     );

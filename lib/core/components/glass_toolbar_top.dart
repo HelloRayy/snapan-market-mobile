@@ -43,6 +43,7 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onTitleTap;
 
   final String? trailingText;
+  final IconData? trailingIcon;
   final String? trailingTooltip;
   final VoidCallback? onTrailingTap;
 
@@ -63,6 +64,7 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
     this.showVerifiedBadge = false,
     this.onTitleTap,
     this.trailingText,
+    this.trailingIcon,
     this.trailingTooltip,
     this.onTrailingTap,
     this.trailingActions,
@@ -195,22 +197,30 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
   }
 
   Widget _buildDefaultTrailing(BuildContext context) {
-    if (trailingText != null) {
+    if (trailingText != null || trailingIcon != null) {
       return _GlassCapsuleButton(
-        tooltip: trailingTooltip ?? trailingText!,
+        tooltip: trailingTooltip ?? (trailingText ?? 'Cari'),
         onTap: onTrailingTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14.0),
-          child: Text(
-            trailingText!,
-            style: const TextStyle(
-              fontFamily: 'SF Pro',
-              fontSize: 15.5,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF1A1A1A),
-              letterSpacing: -0.2,
-            ),
+          padding: EdgeInsets.symmetric(
+            horizontal: trailingText != null ? 14.0 : 10.0,
           ),
+          child: trailingText != null
+              ? Text(
+                  trailingText!,
+                  style: const TextStyle(
+                    fontFamily: 'SF Pro',
+                    fontSize: 15.5,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF1A1A1A),
+                    letterSpacing: -0.2,
+                  ),
+                )
+              : Icon(
+                  trailingIcon!,
+                  size: 20.0,
+                  color: const Color(0xFF1A1A1A),
+                ),
         ),
       );
     }

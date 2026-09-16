@@ -150,6 +150,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _handleLikeToggle(MarketPostModel item) {
+    HapticFeedback.lightImpact();
+    setState(() {
+      final isLiked = item.isLiked;
+      final updated = item.copyWith(
+        isLiked: !isLiked,
+        likesCount: isLiked ? (item.likesCount - 1) : (item.likesCount + 1),
+      );
+      _allUserPosts = _allUserPosts.map((p) => p.id == item.id ? updated : p).toList();
+    });
+  }
+
+  void _handleRepostToggle(MarketPostModel item) {
+    HapticFeedback.lightImpact();
+    setState(() {
+      final isReposted = item.isReposted;
+      final updated = item.copyWith(
+        isReposted: !isReposted,
+        repostsCount: isReposted ? (item.repostsCount - 1) : (item.repostsCount + 1),
+      );
+      _allUserPosts = _allUserPosts.map((p) => p.id == item.id ? updated : p).toList();
+    });
+  }
+
   void _handleImageClick(MarketPostModel item, int index) {
     if (item.images.isEmpty || index >= item.images.length) return;
     MediaLightboxDialog.show(
@@ -380,6 +404,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     key: ValueKey(post.id),
                     item: post,
                     onPostClick: _handlePostClick,
+                    onLikeToggle: _handleLikeToggle,
+                    onRepostToggle: _handleRepostToggle,
                     onImageClick: _handleImageClick,
                   );
                 },

@@ -14,6 +14,7 @@ import 'package:snapan_market/features/feed/components/home_navigation_drawer.da
 import 'package:snapan_market/features/feed/components/market_post_card.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
+import 'package:snapan_market/features/feed/components/media_lightbox_dialog.dart';
 import 'package:snapan_market/features/messages/screens/direct_messages_screen.dart';
 import 'package:snapan_market/features/profile/screens/profile_screen.dart';
 
@@ -245,41 +246,14 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
 
   void _handleImageClick(MarketPostModel item, int imageIndex) {
-    showDialog(
+    MediaLightboxDialog.show(
       context: context,
-      builder: (ctx) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            InteractiveViewer(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12.0),
-                child: Image.network(
-                  item.images[imageIndex],
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
-            Positioned(
-              top: 10.0,
-              right: 10.0,
-              child: GestureDetector(
-                onTap: () => Navigator.pop(ctx),
-                child: Container(
-                  padding: const EdgeInsets.all(8.0),
-                  decoration: const BoxDecoration(
-                    color: Color(0x80000000),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.close_rounded, color: Colors.white, size: 20.0),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      images: item.images,
+      initialIndex: imageIndex,
+      post: item,
+      onLikeToggle: _handleLikeToggle,
+      onRepostToggle: _handleRepostToggle,
+      onPostClick: _handlePostClick,
     );
   }
 

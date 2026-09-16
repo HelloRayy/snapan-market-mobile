@@ -8,6 +8,7 @@ import 'package:snapan_market/features/feed/components/comment_input_bar.dart';
 import 'package:snapan_market/features/feed/components/market_post_card.dart';
 import 'package:snapan_market/features/feed/components/post_comment_item.dart';
 import 'package:snapan_market/features/feed/components/sticky_buy_bar.dart';
+import 'package:snapan_market/features/feed/components/media_lightbox_dialog.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// PostDetailScreen
@@ -157,39 +158,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   void _handleImageClick(List<String> images, int index) {
-    showDialog(
+    MediaLightboxDialog.show(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.9),
-      builder: (ctx) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: EdgeInsets.zero,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            InteractiveViewer(
-              child: Image.network(
-                images[index],
-                fit: BoxFit.contain,
-              ),
-            ),
-            Positioned(
-              top: MediaQuery.of(context).padding.top + 10,
-              right: 16.0,
-              child: GestureDetector(
-                onTap: () => Navigator.pop(ctx),
-                child: Container(
-                  padding: const EdgeInsets.all(8.0),
-                  decoration: const BoxDecoration(
-                    color: Color(0x80000000),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.close_rounded, color: Colors.white, size: 20.0),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      images: images,
+      initialIndex: index,
+      post: widget.post,
+      onLikeToggle: widget.onLikeToggle,
+      onRepostToggle: widget.onRepostToggle,
     );
   }
 

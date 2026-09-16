@@ -7,6 +7,7 @@ import 'package:snapan_market/features/feed/components/market_post_card.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
 import 'package:snapan_market/features/feed/components/home_feed_header.dart';
+import 'package:snapan_market/features/feed/components/media_lightbox_dialog.dart';
 
 import 'package:snapan_market/features/profile/components/profile_info_header.dart';
 
@@ -151,43 +152,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _handleImageClick(MarketPostModel item, int index) {
     if (item.images.isEmpty || index >= item.images.length) return;
-    _openImageViewer(item.images[index]);
+    MediaLightboxDialog.show(
+      context: context,
+      images: item.images,
+      initialIndex: index,
+      post: item,
+      onLikeToggle: _handleLikeToggle,
+      onRepostToggle: _handleRepostToggle,
+    );
   }
 
-  void _openImageViewer(String imageUrl) {
-    showDialog(
+  void _openImageViewer(List<String> images, [int index = 0]) {
+    MediaLightboxDialog.show(
       context: context,
-      barrierColor: Colors.black.withValues(alpha: 0.9),
-      builder: (ctx) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: EdgeInsets.zero,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            InteractiveViewer(
-              child: Image.network(
-                imageUrl,
-                fit: BoxFit.contain,
-              ),
-            ),
-            Positioned(
-              top: MediaQuery.of(context).padding.top + 10,
-              right: 16.0,
-              child: GestureDetector(
-                onTap: () => Navigator.pop(ctx),
-                child: Container(
-                  padding: const EdgeInsets.all(8.0),
-                  decoration: const BoxDecoration(
-                    color: Color(0x80000000),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.close_rounded, color: Colors.white, size: 20.0),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      images: images,
+      initialIndex: index,
     );
   }
 
@@ -449,7 +428,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     key: ValueKey(replyThread.id),
                     thread: replyThread,
                     onPostClick: _handlePostClick,
-                    onImageClick: (imgs, idx) => _openImageViewer(imgs[idx]),
+                    onImageClick: (imgs, idx) => _openImageViewer(imgs, idx),
                   );
 
                 },

@@ -8,16 +8,17 @@ import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// PostCommentItem Widget
-/// 100% Sliced 1:1 from Web React PostCommentItem.tsx
+/// 100% Sliced 1:1 from Web React PostCommentItem.tsx and Threads conversation tree
 ///
 /// Features:
 /// - Author avatar (36x36px rounded circle with fallback)
 /// - Header: Username, Verified Check, Crown Author Badge (`👑 Pembuat Utas`), Timestamp, 3-dots options
 /// - Content text with thread continuation badge (e.g. `2/2`)
 /// - Attached images preview (single / multi carousel)
-/// - Action Bar (Like with tactile bounce & counter, Reply button, Share)
-/// - Threads curved elbow branch line (`╰─`) connecting parent comment to child replies
-/// - Nested replies list rendering with continuous thread branches
+/// - 4-Item Action Bar (Heart/Like, Comment/Reply, Repost, Share) matching Threads Web
+/// - Continuous parent-to-child vertical threadline (#D1D5DB, 1.8px)
+/// - Mathematical curved elbow branch line (`╰─`) touching child avatar with 0px gap
+/// - Multi-reply trunk connection (intermediate and terminal replies)
 class PostCommentItem extends StatefulWidget {
   final PostCommentModel comment;
   final ValueChanged<String>? onReplyClick;
@@ -50,7 +51,7 @@ class _PostCommentItemState extends State<PostCommentItem>
     with SingleTickerProviderStateMixin {
   late bool _isLiked;
   late int _likesCount;
-  bool _isRepliesExpanded = false;
+  bool _isRepliesExpanded = true;
   late AnimationController _likeAnimController;
   late Animation<double> _likeScaleAnim;
 
@@ -115,7 +116,21 @@ class _PostCommentItemState extends State<PostCommentItem>
     widget.onLikeToggle?.call(updated);
   }
 
-  void _showCommentOptionsMenu(BuildContext context) {
+  void _handleReplyLikeToggle(PostCommentModel reply) {
+    HapticFeedback.lightImpact();
+    final isLiked = !reply.isLiked;
+    final count = isLiked ? reply.likesCount + 1 : (reply.likesCount - 1).clamp(0, 999999);
+    final updatedReply = reply.copyWith(isLiked: isLiked, likesCount: count);
+
+    final updatedReplies = widget.comment.replies.map((r) {
+      return r.id == reply.id ? updatedReply : r;
+    }).toList();
+
+    widget.onLikeToggle?.call(widget.comment.copyWith(replies: updatedReplies));
+  }
+
+  void _showCommentOptionsMenu(BuildContext context, {PostCommentModel? comment}) {
+    final target = comment ?? widget.comment;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -142,7 +157,13 @@ class _PostCommentItemState extends State<PostCommentItem>
                 title: const Text('Balas Komentar', style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF0F172A))),
                 onTap: () {
                   Navigator.pop(ctx);
-                  widget.onReplyClick?.call(widget.comment.user.username ?? widget.comment.user.name);
+                  final targetUsername = target.user.username ?? target.user.name;
+                  final targetId = widget.comment.id;
+                  if (widget.onReplyToComment != null) {
+                    widget.onReplyToComment!(targetUsername, targetId);
+                  } else {
+                    widget.onReplyClick?.call(targetUsername);
+                  }
                 },
               ),
               ListTile(
@@ -150,7 +171,7 @@ class _PostCommentItemState extends State<PostCommentItem>
                 title: const Text('Salin Teks Komentar', style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF0F172A))),
                 onTap: () {
                   Navigator.pop(ctx);
-                  Clipboard.setData(ClipboardData(text: widget.comment.content));
+                  Clipboard.setData(ClipboardData(text: target.content));
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Teks komentar disalin ke papan klip')),
                   );
@@ -177,160 +198,248 @@ class _PostCommentItemState extends State<PostCommentItem>
   Widget build(BuildContext context) {
     final hasReplies = widget.comment.replies.isNotEmpty;
 
-    // 1. NESTED CHILD REPLY VARIANT
+    // 1. NESTED CHILD REPLY VARIANT (Standalone invocation)
     if (widget.isNested) {
-      return Container(
-        padding: const EdgeInsets.symmetric(vertical: 6.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Left Branch Elbow/T-Branch line connecting into this child reply
-            SizedBox(
-              width: 22.0,
-              height: 38.0,
-              child: CustomPaint(
-                painter: ThreadBranchPainter(
-                  color: const Color(0xFFD1D5DB),
-                  strokeWidth: 1.8,
-                  curveRadius: 14.0,
-                  avatarCenterX: 4.0,
-                  type: widget.isLastNested
-                      ? ThreadLineType.elbow
-                      : ThreadLineType.tBranch,
-                ),
-              ),
-            ),
-            const SizedBox(width: 4.0),
-
-            // Child avatar (28x28)
-            _buildAvatar(
-              avatarUrl: widget.comment.user.avatar,
-              name: widget.comment.user.name,
-              username: widget.comment.user.username,
-              size: 28.0,
-            ),
-            const SizedBox(width: 10.0),
-
-            // Child Content Column
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeaderRow(context),
-                  const SizedBox(height: 3.0),
-                  _buildContentText(),
-                  if (widget.comment.images.isNotEmpty) ...[
-                    const SizedBox(height: 8.0),
-                    _buildImagesSection(context),
-                  ],
-                  const SizedBox(height: 4.0),
-                  _buildActionBar(context),
-                ],
-              ),
-            ),
-          ],
-        ),
+      return _buildChildReplyItem(
+        context: context,
+        reply: widget.comment,
+        isFirst: true,
+        isLast: widget.isLastNested,
+        index: 0,
       );
     }
 
-    // 2. MAIN TOP-LEVEL COMMENT VARIANT
+    // 2. MAIN TOP-LEVEL COMMENT VARIANT WITH THREADLINE TRUNK
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
       decoration: const BoxDecoration(
+        color: Colors.white,
         border: Border(
-          bottom: BorderSide(color: Color(0xFFF1F5F9), width: 0.5),
+          bottom: BorderSide(color: Color(0xFFF1F5F9), width: 0.8),
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Left Column: Avatar + Continuous Vertical Line when replies expanded
-              Column(
-                children: [
-                  _buildAvatar(
-                    avatarUrl: widget.comment.user.avatar,
-                    name: widget.comment.user.name,
-                    username: widget.comment.user.username,
-                    size: 36.0,
+          // Parent Comment Row (Dynamic height continuous threadline)
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Left Column: Avatar (36x36) + Continuous Vertical Line
+                SizedBox(
+                  width: 36.0,
+                  child: Column(
+                    children: [
+                      _buildAvatar(
+                        avatarUrl: widget.comment.user.avatar,
+                        name: widget.comment.user.name,
+                        username: widget.comment.user.username,
+                        size: 36.0,
+                      ),
+                      if (hasReplies && _isRepliesExpanded) ...[
+                        const SizedBox(height: 4.0),
+                        Expanded(
+                          child: Center(
+                            child: Container(
+                              width: 1.8,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFD1D5DB),
+                                borderRadius: BorderRadius.circular(1.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
-                  if (hasReplies && _isRepliesExpanded)
-                    Container(
+                ),
+
+                const SizedBox(width: 12.0),
+
+                // Right Column: Header, Content, Images, Action Bar
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildHeaderRow(context),
+                      const SizedBox(height: 3.0),
+                      _buildContentText(),
+                      if (widget.comment.images.isNotEmpty) ...[
+                        const SizedBox(height: 8.0),
+                        _buildImagesSection(context),
+                      ],
+                      const SizedBox(height: 4.0),
+                      _buildActionBar(context),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Replies Tree connected with Threads Curved Line
+          if (hasReplies) ...[
+            if (!_isRepliesExpanded)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: CommentRepliesExpandRow(
+                  replies: widget.comment.replies,
+                  isExpanded: false,
+                  onToggle: () => setState(() => _isRepliesExpanded = true),
+                ),
+              )
+            else ...[
+              // Connector line bridging parent row to child reply
+              Container(
+                margin: const EdgeInsets.only(left: 17.1),
+                width: 1.8,
+                height: 10.0,
+                color: const Color(0xFFD1D5DB),
+              ),
+
+              // Child Replies
+              ListView.builder(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: widget.comment.replies.length,
+                itemBuilder: (context, idx) {
+                  final reply = widget.comment.replies[idx];
+                  final isFirst = idx == 0;
+                  final isLast = idx == widget.comment.replies.length - 1;
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (!isFirst)
+                        Container(
+                          margin: const EdgeInsets.only(left: 45.1),
+                          width: 1.8,
+                          height: 10.0,
+                          color: const Color(0xFFD1D5DB),
+                        ),
+                      _buildChildReplyItem(
+                        context: context,
+                        reply: reply,
+                        isFirst: isFirst,
+                        isLast: isLast,
+                        index: idx,
+                      ),
+                    ],
+                  );
+                },
+              ),
+
+              if (widget.comment.replies.length > 2)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6.0),
+                  child: CommentRepliesExpandRow(
+                    replies: widget.comment.replies,
+                    isExpanded: true,
+                    onToggle: () => setState(() => _isRepliesExpanded = false),
+                  ),
+                ),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+
+  /// Child Reply Item with exact Threads L-branch curve entering child avatar
+  Widget _buildChildReplyItem({
+    required BuildContext context,
+    required PostCommentModel reply,
+    required bool isFirst,
+    required bool isLast,
+    required int index,
+  }) {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Left Branch Column: L-curve or vertical connector + Child Avatar (36x36)
+          SizedBox(
+            width: 64.0, // 28.0 indent/curve + 36.0 avatar
+            child: Stack(
+              children: [
+                // 1. Initial L-Branch curve connecting from Parent's vertical line at x = 18.0
+                if (isFirst)
+                  const Positioned.fill(
+                    child: CustomPaint(
+                      painter: ReplyLBranchPainter(
+                        color: Color(0xFFD1D5DB),
+                        strokeWidth: 1.8,
+                        startX: 18.0,
+                        targetX: 28.0,
+                        targetY: 18.0,
+                        radius: 10.0,
+                      ),
+                    ),
+                  ),
+
+                // 2. Straight line entering top of avatar for subsequent replies (index > 0)
+                if (!isFirst)
+                  Positioned(
+                    left: 45.1,
+                    top: 0,
+                    child: Container(
                       width: 1.8,
-                      height: 36.0,
-                      margin: const EdgeInsets.only(top: 4.0),
+                      height: 18.0,
+                      color: const Color(0xFFD1D5DB),
+                    ),
+                  ),
+
+                // 3. Straight vertical line continuing below avatar to subsequent replies
+                if (!isLast)
+                  Positioned(
+                    left: 45.1,
+                    top: 36.0,
+                    bottom: 0,
+                    child: Container(
+                      width: 1.8,
                       decoration: BoxDecoration(
                         color: const Color(0xFFD1D5DB),
                         borderRadius: BorderRadius.circular(1.0),
                       ),
                     ),
-                ],
-              ),
+                  ),
 
-              const SizedBox(width: 12.0),
-
-              // Right Column: Header, Content, Images, Action Bar
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildHeaderRow(context),
-                    const SizedBox(height: 3.0),
-                    _buildContentText(),
-                    if (widget.comment.images.isNotEmpty) ...[
-                      const SizedBox(height: 8.0),
-                      _buildImagesSection(context),
-                    ],
-                    const SizedBox(height: 4.0),
-                    _buildActionBar(context),
-                  ],
+                // 4. Avatar (36x36) at left: 28.0, top: 0
+                Positioned(
+                  left: 28.0,
+                  top: 0,
+                  child: _buildAvatar(
+                    avatarUrl: reply.user.avatar,
+                    name: reply.user.name,
+                    username: reply.user.username,
+                    size: 36.0,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
 
-          // Replies Section with Threads-style Curved Elbow Line
-          if (hasReplies) ...[
-            if (!_isRepliesExpanded)
-              CommentRepliesExpandRow(
-                replies: widget.comment.replies,
-                isExpanded: false,
-                onToggle: () => setState(() => _isRepliesExpanded = true),
-              )
-            else ...[
-              Padding(
-                padding: const EdgeInsets.only(left: 14.0),
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: widget.comment.replies.length,
-                  itemBuilder: (context, idx) {
-                    final reply = widget.comment.replies[idx];
-                    final isLast = idx == widget.comment.replies.length - 1;
-                    return PostCommentItem(
-                      key: ValueKey(reply.id),
-                      comment: reply,
-                      isNested: true,
-                      isLastNested: isLast,
-                      parentCommentId: widget.comment.id,
-                      onReplyClick: widget.onReplyClick,
-                      onReplyToComment: widget.onReplyToComment,
-                      onUserClick: widget.onUserClick,
-                      onImageClick: widget.onImageClick,
-                      onLikeToggle: widget.onLikeToggle,
-                    );
-                  },
-                ),
-              ),
-              CommentRepliesExpandRow(
-                replies: widget.comment.replies,
-                isExpanded: true,
-                onToggle: () => setState(() => _isRepliesExpanded = false),
-              ),
-            ],
-          ],
+          const SizedBox(width: 12.0),
+
+          // Right Column: Header, Content, Images, Action Bar
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeaderRow(context, reply: reply),
+                const SizedBox(height: 3.0),
+                _buildContentText(reply: reply),
+                if (reply.images.isNotEmpty) ...[
+                  const SizedBox(height: 8.0),
+                  _buildImagesSection(context, reply: reply),
+                ],
+                const SizedBox(height: 4.0),
+                _buildActionBar(context, reply: reply),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -385,7 +494,13 @@ class _PostCommentItemState extends State<PostCommentItem>
     );
   }
 
-  Widget _buildHeaderRow(BuildContext context) {
+  Widget _buildHeaderRow(
+    BuildContext context, {
+    PostCommentModel? reply,
+  }) {
+    final targetComment = reply ?? widget.comment;
+    final username = targetComment.user.username ?? targetComment.user.name;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -399,12 +514,10 @@ class _PostCommentItemState extends State<PostCommentItem>
               Flexible(
                 child: GestureDetector(
                   onTap: () {
-                    widget.onUserClick?.call(
-                      widget.comment.user.username ?? widget.comment.user.name,
-                    );
+                    widget.onUserClick?.call(username);
                   },
                   child: Text(
-                    widget.comment.user.username ?? widget.comment.user.name,
+                    username,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -415,21 +528,21 @@ class _PostCommentItemState extends State<PostCommentItem>
                   ),
                 ),
               ),
-              if (widget.comment.user.isVerified) ...[
+              if (targetComment.user.isVerified) ...[
                 const SizedBox(width: 4.0),
                 const Icon(
                   Icons.verified_rounded,
-                  size: 14.0,
+                  size: 14.5,
                   color: AppColors.primary,
                 ),
               ],
-              if (widget.comment.user.isAuthor) ...[
+              if (targetComment.user.isAuthor) ...[
                 const SizedBox(width: 6.0),
                 _buildAuthorBadge(),
               ],
               const SizedBox(width: 6.0),
               Text(
-                formatSmartTimestamp(widget.comment.timestamp),
+                formatSmartTimestamp(targetComment.timestamp),
                 style: const TextStyle(
                   fontSize: 12.0,
                   fontWeight: FontWeight.normal,
@@ -442,7 +555,7 @@ class _PostCommentItemState extends State<PostCommentItem>
 
         // Right: 3-dots Menu Button
         GestureDetector(
-          onTap: () => _showCommentOptionsMenu(context),
+          onTap: () => _showCommentOptionsMenu(context, comment: targetComment),
           behavior: HitTestBehavior.opaque,
           child: Container(
             width: 28.0,
@@ -493,8 +606,9 @@ class _PostCommentItemState extends State<PostCommentItem>
     );
   }
 
+  Widget _buildContentText({PostCommentModel? reply}) {
+    final targetComment = reply ?? widget.comment;
 
-  Widget _buildContentText() {
     return Text.rich(
       TextSpan(
         style: const TextStyle(
@@ -505,9 +619,9 @@ class _PostCommentItemState extends State<PostCommentItem>
           letterSpacing: -0.1,
         ),
         children: [
-          TextSpan(text: widget.comment.content),
-          if (widget.comment.threadPart != null &&
-              widget.comment.totalParts != null)
+          TextSpan(text: targetComment.content),
+          if (targetComment.threadPart != null &&
+              targetComment.totalParts != null)
             WidgetSpan(
               alignment: PlaceholderAlignment.middle,
               child: Container(
@@ -518,7 +632,7 @@ class _PostCommentItemState extends State<PostCommentItem>
                   borderRadius: BorderRadius.circular(4.0),
                 ),
                 child: Text(
-                  '${widget.comment.threadPart}/${widget.comment.totalParts}',
+                  '${targetComment.threadPart}/${targetComment.totalParts}',
                   style: const TextStyle(
                     fontSize: 11.0,
                     fontWeight: FontWeight.w600,
@@ -532,11 +646,15 @@ class _PostCommentItemState extends State<PostCommentItem>
     );
   }
 
+  Widget _buildImagesSection(
+    BuildContext context, {
+    PostCommentModel? reply,
+  }) {
+    final targetComment = reply ?? widget.comment;
 
-  Widget _buildImagesSection(BuildContext context) {
-    if (widget.comment.images.length == 1) {
+    if (targetComment.images.length == 1) {
       return GestureDetector(
-        onTap: () => widget.onImageClick?.call(widget.comment.images, 0),
+        onTap: () => widget.onImageClick?.call(targetComment.images, 0),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(14.0),
           child: Container(
@@ -549,7 +667,7 @@ class _PostCommentItemState extends State<PostCommentItem>
             child: AspectRatio(
               aspectRatio: 16 / 10,
               child: Image.network(
-                widget.comment.images.first,
+                targetComment.images.first,
                 fit: BoxFit.cover,
                 errorBuilder: (_, _, _) => Container(
                   color: const Color(0xFFF1F5F9),
@@ -571,13 +689,13 @@ class _PostCommentItemState extends State<PostCommentItem>
         clipBehavior: Clip.none,
         physics: const BouncingScrollPhysics(),
         child: Row(
-          children: List.generate(widget.comment.images.length, (idx) {
-            final imgUrl = widget.comment.images[idx];
-            final isLast = idx == widget.comment.images.length - 1;
+          children: List.generate(targetComment.images.length, (idx) {
+            final imgUrl = targetComment.images[idx];
+            final isLast = idx == targetComment.images.length - 1;
             return Padding(
               padding: EdgeInsets.only(right: isLast ? 0.0 : 8.0),
               child: GestureDetector(
-                onTap: () => widget.onImageClick?.call(widget.comment.images, idx),
+                onTap: () => widget.onImageClick?.call(targetComment.images, idx),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(14.0),
                   child: Container(
@@ -602,36 +720,51 @@ class _PostCommentItemState extends State<PostCommentItem>
     );
   }
 
-  Widget _buildActionBar(BuildContext context) {
+  /// 4-Icon Action Bar: Heart, Comment, Repost, Share (1:1 with Threads Web)
+  Widget _buildActionBar(
+    BuildContext context, {
+    PostCommentModel? reply,
+  }) {
+    final targetComment = reply ?? widget.comment;
+    final isReplyItem = reply != null;
+    final isLiked = isReplyItem ? targetComment.isLiked : _isLiked;
+    final likesCount = isReplyItem ? targetComment.likesCount : _likesCount;
+
     return Row(
       children: [
-        // Like Button with custom FeedHeartIcon
+        // 1. Heart (Like) Slot
         GestureDetector(
-          onTap: _handleLikeToggle,
+          onTap: () {
+            if (isReplyItem) {
+              _handleReplyLikeToggle(targetComment);
+            } else {
+              _handleLikeToggle();
+            }
+          },
           behavior: HitTestBehavior.opaque,
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 ScaleTransition(
-                  scale: _likeScaleAnim,
+                  scale: isReplyItem ? const AlwaysStoppedAnimation(1.0) : _likeScaleAnim,
                   child: FeedHeartIcon(
-                    isLiked: _isLiked,
-                    size: 16.5,
+                    isLiked: isLiked,
+                    size: 17.5,
                     activeColor: const Color(0xFFF43F5E),
-                    inactiveColor: const Color(0xFF64748B),
+                    inactiveColor: const Color(0xFF334155),
                     strokeWidth: 1.8,
                   ),
                 ),
-                if (_likesCount > 0) ...[
-                  const SizedBox(width: 4.5),
+                if (likesCount > 0) ...[
+                  const SizedBox(width: 5.0),
                   Text(
-                    '$_likesCount',
+                    '$likesCount',
                     style: TextStyle(
                       fontSize: 12.0,
-                      fontWeight: _isLiked ? FontWeight.w700 : FontWeight.w500,
-                      color: _isLiked ? const Color(0xFFF43F5E) : const Color(0xFF64748B),
+                      fontWeight: isLiked ? FontWeight.w700 : FontWeight.w500,
+                      color: isLiked ? const Color(0xFFF43F5E) : const Color(0xFF64748B),
                     ),
                   ),
                 ],
@@ -640,13 +773,14 @@ class _PostCommentItemState extends State<PostCommentItem>
           ),
         ),
 
-        const SizedBox(width: 16.0),
+        const SizedBox(width: 14.0),
 
+        // 2. Balas (Comment/Reply) Slot
         GestureDetector(
           onTap: () {
             HapticFeedback.lightImpact();
-            final targetUsername = widget.comment.user.username ?? widget.comment.user.name;
-            final targetId = widget.parentCommentId ?? widget.comment.id;
+            final targetUsername = targetComment.user.username ?? targetComment.user.name;
+            final targetId = widget.comment.id;
             if (widget.onReplyToComment != null) {
               widget.onReplyToComment!(targetUsername, targetId);
             } else {
@@ -655,39 +789,25 @@ class _PostCommentItemState extends State<PostCommentItem>
           },
           behavior: HitTestBehavior.opaque,
           child: const Padding(
-            padding: EdgeInsets.symmetric(vertical: 4.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FeedCommentIcon(
-                  size: 15.5,
-                  color: Color(0xFF64748B),
-                  strokeWidth: 1.8,
-                ),
-                SizedBox(width: 4.5),
-                Text(
-                  'Balas',
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF64748B),
-                  ),
-                ),
-              ],
+            padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
+            child: FeedCommentIcon(
+              size: 17.5,
+              color: Color(0xFF334155),
+              strokeWidth: 1.8,
             ),
           ),
         ),
 
-        const SizedBox(width: 16.0),
+        const SizedBox(width: 14.0),
 
-        // Share Button with custom FeedShareIcon
+        // 3. Posting Ulang (Repost) Slot
         GestureDetector(
           onTap: () {
             HapticFeedback.lightImpact();
-            Clipboard.setData(ClipboardData(text: widget.comment.content));
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Teks komentar disalin'),
+                content: Text('Komentar dipost ulang'),
                 duration: Duration(seconds: 1),
                 behavior: SnackBarBehavior.floating,
               ),
@@ -695,10 +815,38 @@ class _PostCommentItemState extends State<PostCommentItem>
           },
           behavior: HitTestBehavior.opaque,
           child: const Padding(
-            padding: EdgeInsets.symmetric(vertical: 4.0),
+            padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
+            child: FeedRepostIcon(
+              isReposted: false,
+              size: 17.5,
+              inactiveColor: Color(0xFF334155),
+              strokeWidth: 1.8,
+            ),
+          ),
+        ),
+
+        const SizedBox(width: 14.0),
+
+        // 4. Bagikan (Share) Slot
+        GestureDetector(
+          onTap: () {
+            HapticFeedback.lightImpact();
+            Clipboard.setData(ClipboardData(text: targetComment.content));
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Teks komentar disalin ke papan klip'),
+                duration: Duration(seconds: 1),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          },
+          behavior: HitTestBehavior.opaque,
+          child: const Padding(
+            padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
             child: FeedShareIcon(
-              size: 15.5,
-              color: Color(0xFF64748B),
+              size: 17.5,
+              color: Color(0xFF334155),
               strokeWidth: 1.8,
             ),
           ),

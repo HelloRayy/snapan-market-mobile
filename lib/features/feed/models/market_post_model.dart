@@ -389,6 +389,68 @@ const List<MarketPostModel> kMockMarketPosts = [
   ),
 
   // ===========================================================================
+  // POST THREAD 2: 1:1 Web Sliced from @faizintifada/post/post-thread-2
+  // ===========================================================================
+  MarketPostModel(
+    id: 'post-thread-2',
+    postType: 'thread',
+    seller: SellerModel(
+      id: 'user-thread-2',
+      name: 'Faiz Intifada',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
+      classGroup: 'XII DKV 2',
+      isVerified: true,
+      username: 'faizintifada',
+    ),
+    caption: 'Moodboard project PJBL semester ini akhirnya selesai! Menurut kalian color palette yang kiri atau kanan yang lebih aesthetic buat tema marketplace sekolah? 🎨🔥',
+    images: [
+      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80',
+    ],
+    topicTag: 'PJBL',
+    isOfficialTopic: true,
+    topicIcon: 'presentation',
+    likesCount: 184,
+    commentsCount: 36,
+    repostsCount: 12,
+    timestamp: '2j',
+    isLiked: false,
+    comments: [
+      PostCommentModel(
+        id: 'comment-thread-2-1',
+        postId: 'post-thread-2',
+        user: CommentUserModel(
+          id: 'user-raditya',
+          name: 'radityarayhannnn',
+          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+          username: 'radityarayhannnn',
+          isVerified: true,
+        ),
+        content: 'hai bro',
+        timestamp: 'Baru saja',
+        likesCount: 0,
+        isLiked: false,
+        replies: [
+          PostCommentModel(
+            id: 'reply-thread-2-1',
+            postId: 'post-thread-2',
+            user: CommentUserModel(
+              id: 'user-raditya',
+              name: 'radityarayhannnn',
+              avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+              username: 'radityarayhannnn',
+              isVerified: true,
+            ),
+            content: 'whatsapp bro',
+            timestamp: 'Baru saja',
+            likesCount: 0,
+            isLiked: false,
+          ),
+        ],
+      ),
+    ],
+  ),
+
+  // ===========================================================================
   // VARIASI 2: Teks + Topik Tag (#frontend dengan Threads Glyph)
   // ===========================================================================
   MarketPostModel(

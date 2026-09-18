@@ -89,3 +89,49 @@ class ThreadBranchPainter extends CustomPainter {
         oldDelegate.type != type;
   }
 }
+
+/// Painter for Threads L-curve (╰─) connecting parent thread vertical line to child reply avatar
+class ReplyLBranchPainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+  final double startX;
+  final double targetX;
+  final double targetY;
+  final double radius;
+
+  const ReplyLBranchPainter({
+    this.color = const Color(0xFFD1D5DB),
+    this.strokeWidth = 1.8,
+    this.startX = 18.0,
+    this.targetX = 28.0,
+    this.targetY = 18.0,
+    this.radius = 10.0,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final path = Path();
+    path.moveTo(startX, 0);
+    path.lineTo(startX, targetY - radius);
+    path.quadraticBezierTo(startX, targetY, targetX, targetY);
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant ReplyLBranchPainter oldDelegate) {
+    return oldDelegate.color != color ||
+        oldDelegate.strokeWidth != strokeWidth ||
+        oldDelegate.startX != startX ||
+        oldDelegate.targetX != targetX ||
+        oldDelegate.targetY != targetY ||
+        oldDelegate.radius != radius;
+  }
+}

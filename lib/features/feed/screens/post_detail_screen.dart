@@ -7,6 +7,7 @@ import 'package:snapan_market/features/feed/components/buy_bottom_sheet.dart';
 import 'package:snapan_market/features/feed/components/comment_input_bar.dart';
 import 'package:snapan_market/features/feed/components/market_post_card.dart';
 import 'package:snapan_market/features/feed/components/post_comment_item.dart';
+import 'package:snapan_market/features/feed/components/post_submenu_popover.dart';
 import 'package:snapan_market/features/feed/components/sticky_buy_bar.dart';
 import 'package:snapan_market/features/feed/components/media_lightbox_dialog.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
@@ -254,13 +255,16 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
             tooltip: 'Menu lainnya',
             onTap: () {
               HapticFeedback.lightImpact();
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Opsi menu postingan'),
-                  behavior: SnackBarBehavior.floating,
-                  duration: Duration(seconds: 2),
-                ),
+              PostSubmenuPopover.show(
+                context: context,
+                post: _post,
+                isSaved: _post.isSaved,
+                onToggleSave: () {
+                  setState(() {
+                    _post = _post.copyWith(isSaved: !_post.isSaved);
+                  });
+                  widget.onBookmarkToggle?.call(_post);
+                },
               );
             },
           ),

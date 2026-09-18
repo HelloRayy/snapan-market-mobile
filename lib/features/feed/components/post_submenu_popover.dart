@@ -115,23 +115,23 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
         : widget.post.seller.name;
 
     return Container(
-      width: 188.0,
-      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
+      width: 216.0,
+      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14.0),
+        borderRadius: BorderRadius.circular(16.0),
         border: Border.all(
-          color: const Color(0xFFE2E8F0),
+          color: const Color(0xFFF1F5F9),
           width: 0.8,
         ),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x1F000000),
+            color: Color(0x18000000),
             blurRadius: 24.0,
             offset: Offset(0, 8),
           ),
           BoxShadow(
-            color: Color(0x0A000000),
+            color: Color(0x08000000),
             blurRadius: 6.0,
             offset: Offset(0, 2),
           ),
@@ -144,7 +144,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
           // 1. Simpan ke Markah / Hapus
           _PopoverItem(
             icon: _isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-            iconColor: _isSaved ? AppColors.primary : AppColors.slateInk,
+            iconColor: _isSaved ? AppColors.primary : const Color(0xFF334155),
             label: _isSaved ? 'Hapus Markah' : 'Simpan Markah',
             onTap: () {
               setState(() => _isSaved = !_isSaved);
@@ -165,7 +165,10 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
             },
           ),
 
-          const Divider(height: 6.0, thickness: 0.6, color: Color(0xFFF1F5F9)),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
+            child: Divider(height: 1.0, thickness: 0.6, color: Color(0xFFF1F5F9)),
+          ),
 
           // 3. Senyapkan User
           _PopoverItem(
@@ -189,13 +192,16 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
             },
           ),
 
-          const Divider(height: 6.0, thickness: 0.6, color: Color(0xFFF1F5F9)),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
+            child: Divider(height: 1.0, thickness: 0.6, color: Color(0xFFF1F5F9)),
+          ),
 
           // 5. Laporkan Postingan (Destructive Red)
           _PopoverItem(
             icon: Icons.flag_outlined,
-            iconColor: const Color(0xFFDC2626),
-            textColor: const Color(0xFFDC2626),
+            iconColor: const Color(0xFFEF4444),
+            textColor: const Color(0xFFEF4444),
             label: 'Laporkan Post',
             onTap: () {
               widget.onReport?.call();
@@ -244,7 +250,7 @@ class _PopoverItemState extends State<_PopoverItem> {
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 9.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0),
           color: _isPressed ? const Color(0xFFF8FAFC) : Colors.transparent,
@@ -253,18 +259,18 @@ class _PopoverItemState extends State<_PopoverItem> {
           children: [
             Icon(
               widget.icon,
-              size: 15.0,
-              color: widget.iconColor ?? AppColors.slateInk,
+              size: 18.0,
+              color: widget.iconColor ?? const Color(0xFF334155),
             ),
-            const SizedBox(width: 8.0),
+            const SizedBox(width: 10.0),
             Expanded(
               child: Text(
                 widget.label,
                 style: TextStyle(
-                  fontSize: 12.5,
+                  fontSize: 14.0,
                   fontWeight: FontWeight.w500,
-                  color: widget.textColor ?? AppColors.ink,
-                  letterSpacing: -0.1,
+                  color: widget.textColor ?? const Color(0xFF0F172A),
+                  letterSpacing: -0.15,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

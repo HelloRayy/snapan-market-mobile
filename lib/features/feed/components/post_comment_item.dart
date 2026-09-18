@@ -337,7 +337,7 @@ class _PostCommentItemState extends State<PostCommentItem> {
         ),
 
         // Right: 3-dots Menu Button
-        GestureDetector(
+        InkWell(
           onTap: () => CommentOptionsSheet.show(
             context: context,
             comment: widget.comment,
@@ -345,15 +345,17 @@ class _PostCommentItemState extends State<PostCommentItem> {
             onReplyClick: widget.onReplyClick,
             onReplyToComment: widget.onReplyToComment,
           ),
-          behavior: HitTestBehavior.opaque,
+          borderRadius: BorderRadius.circular(19.0),
+          splashColor: const Color(0xFFF1F5F9),
+          highlightColor: Colors.transparent,
           child: Container(
-            width: 28.0,
-            height: 28.0,
+            width: 38.0,
+            height: 38.0,
             alignment: Alignment.center,
             child: const Icon(
               Icons.more_horiz_rounded,
-              size: 16.0,
-              color: Color(0xFF94A3B8),
+              size: 19.0,
+              color: Color(0xFF64748B),
             ),
           ),
         ),

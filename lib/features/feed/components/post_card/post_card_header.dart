@@ -55,7 +55,7 @@ class PostCardHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: isDetail ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // Left Side: Author metadata
         Expanded(
@@ -84,7 +84,6 @@ class PostCardHeader extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF0F172A),
                     letterSpacing: -0.2,
-                    height: 1.15,
                   ),
                 ),
               ),
@@ -94,7 +93,7 @@ class PostCardHeader extends StatelessWidget {
                 const SizedBox(width: 4.0),
                 const Icon(
                   Icons.verified_rounded,
-                  size: 15.0,
+                  size: 14.5,
                   color: AppColors.primary,
                 ),
               ],
@@ -110,9 +109,9 @@ class PostCardHeader extends StatelessWidget {
                 const SizedBox(width: 4.0),
                 if (item.isOfficialTopic) ...[
                   if (item.topicIcon == 'presentation')
-                    const PresentationTopicGlyph()
+                    const PresentationTopicGlyph(size: 14.0)
                   else
-                    const ThreadsTopicGlyph(),
+                    const ThreadsTopicGlyph(size: 14.0),
                   const SizedBox(width: 4.0),
                 ],
                 Flexible(
@@ -128,7 +127,6 @@ class PostCardHeader extends StatelessWidget {
                         color: item.isOfficialTopic
                             ? AppColors.primary
                             : const Color(0xFF0F172A),
-                        height: 1.15,
                       ),
                     ),
                   ),
@@ -144,7 +142,6 @@ class PostCardHeader extends StatelessWidget {
                       fontSize: 13.0,
                       fontWeight: FontWeight.normal,
                       color: Color(0xFF94A3B8),
-                      height: 1.15,
                     ),
                   ),
                 ),
@@ -153,9 +150,9 @@ class PostCardHeader extends StatelessWidget {
           ),
         ),
 
-        const SizedBox(width: 8.0),
+        const SizedBox(width: 6.0),
 
-        // Right Side: Timestamp + 3-dots menu button
+        // Right Side: Timestamp + 3-dots menu button (Perfect vertical center alignment)
         Row(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -166,23 +163,24 @@ class PostCardHeader extends StatelessWidget {
                 fontSize: 13.0,
                 fontWeight: FontWeight.normal,
                 color: Color(0xFF94A3B8),
-                height: 1.15,
                 fontFeatures: [FontFeature.tabularFigures()],
               ),
             ),
+            const SizedBox(width: 2.0),
             InkWell(
               onTapDown: (details) => _showOptionsMenu(context, details.globalPosition),
-              borderRadius: BorderRadius.circular(19.0),
+              borderRadius: BorderRadius.circular(16.0),
               splashColor: const Color(0xFFF1F5F9),
               highlightColor: Colors.transparent,
-              child: Container(
-                width: 38.0,
-                height: 38.0,
-                alignment: Alignment.center,
-                child: const Icon(
-                  Icons.more_horiz_rounded,
-                  size: 19.0,
-                  color: Color(0xFF64748B),
+              child: const SizedBox(
+                width: 32.0,
+                height: 28.0,
+                child: Center(
+                  child: Icon(
+                    Icons.more_horiz_rounded,
+                    size: 19.0,
+                    color: Color(0xFF64748B),
+                  ),
                 ),
               ),
             ),

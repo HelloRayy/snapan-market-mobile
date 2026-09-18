@@ -45,8 +45,8 @@ class _FloatingPlusSquircleButtonState extends State<FloatingPlusSquircleButton>
           duration: const Duration(milliseconds: 80),
           curve: Curves.easeOutCubic,
           child: Container(
-            width: 82.0,
-            height: 68.0,
+            width: 48.0,
+            height: 40.0,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16.0),
               gradient: const LinearGradient(
@@ -58,11 +58,11 @@ class _FloatingPlusSquircleButtonState extends State<FloatingPlusSquircleButton>
                 ],
               ),
               boxShadow: const [
-                // Diffuse Outer Shadow matching user spec (#00000014, y: 6, blur: 8)
+                // Diffuse Outer Shadow matching user spec (#0000001f, y: 4, blur: 8)
                 BoxShadow(
                   color: Color(0x1F000000),
                   blurRadius: 8.0,
-                  offset: Offset(0, 6),
+                  offset: Offset(0, 4),
                 ),
               ],
             ),
@@ -70,7 +70,7 @@ class _FloatingPlusSquircleButtonState extends State<FloatingPlusSquircleButton>
               child: Icon(
                 Icons.add_rounded,
                 color: Colors.white,
-                size: 32.0,
+                size: 24.0,
               ),
             ),
           ),

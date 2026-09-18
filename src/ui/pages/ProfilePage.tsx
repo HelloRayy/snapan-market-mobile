@@ -459,8 +459,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               Edit profil
             </button>
           ) : (
-            <div className="flex gap-x-2.5 w-full items-center select-none">
-              {/* Tombol 1: Ikuti / Mengikuti (Full-Width Expanded CTA) */}
+            <div className="flex gap-x-2.5 w-full items-center select-none pt-1">
+              {/* Tombol 1: Ikuti / Mengikuti (Expanded CTA matching Threads UI) */}
               <button
                 type="button"
                 onClick={() => {
@@ -471,34 +471,34 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                     followersCount: isFollowing ? prev.followersCount - 1 : prev.followersCount + 1,
                   }));
                 }}
-                className={`relative flex items-center justify-center flex-1 h-10 px-5 rounded-xl font-bold text-[14px] transition-colors overflow-hidden cursor-pointer select-none active:scale-[0.96] ${
+                className={`relative flex items-center justify-center flex-1 h-[36px] px-4 rounded-[10px] font-semibold text-[14px] leading-snug transition-all duration-150 active:scale-[0.98] cursor-pointer ${
                   isFollowing
-                    ? 'bg-white text-slate-800 border border-neutral-300 shadow-2xs hover:bg-neutral-50'
-                    : 'bg-[#101010] text-white border border-black shadow-md shadow-black/20 hover:bg-black'
+                    ? 'bg-white text-slate-900 border border-neutral-300 hover:bg-neutral-50 shadow-2xs'
+                    : 'bg-[#000000] text-white border border-[#000000] hover:bg-[#1a1a1a] shadow-xs'
                 }`}
               >
-                <span className="absolute inset-0 rounded-xl bg-gradient-to-b from-white/20 to-transparent shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] pointer-events-none" />
-                <span className="relative z-10 flex items-center justify-center gap-1.5">
-                  {isFollowing ? <UserCheck className="w-4.5 h-4.5 stroke-[2.2]" /> : <UserPlus className="w-4.5 h-4.5 stroke-[2.2]" />}
+                <div className="flex items-center justify-center gap-1.5 leading-snug">
+                  {isFollowing ? (
+                    <UserCheck className="w-4 h-4 stroke-[2.2]" />
+                  ) : (
+                    <UserPlus className="w-4 h-4 stroke-[2.2]" />
+                  )}
                   <span>{isFollowing ? 'Mengikuti' : 'Ikuti'}</span>
-                </span>
+                </div>
               </button>
 
-              {/* Tombol 2: Kirim Pesan (Icon Only CTA) */}
+              {/* Tombol 2: Kirim Pesan (Icon Square CTA matching Threads) */}
               <button
                 type="button"
                 onClick={() => {
                   triggerHaptic('light');
                   alert(`Fitur chat langsung dengan @${profileData.username} akan segera hadir!`);
                 }}
-                className="relative flex items-center justify-center w-10 h-10 shrink-0 rounded-xl bg-white text-slate-800 border border-neutral-300 shadow-2xs hover:bg-neutral-50 transition-colors overflow-hidden cursor-pointer select-none active:scale-[0.96]"
+                className="flex items-center justify-center w-[36px] h-[36px] shrink-0 rounded-[10px] bg-white text-slate-900 border border-neutral-300 hover:bg-black/5 active:scale-[0.98] transition-all duration-150 cursor-pointer shadow-2xs"
                 title="Kirim pesan"
                 aria-label="Kirim pesan"
               >
-                <span className="absolute inset-0 rounded-xl bg-gradient-to-b from-white/90 to-neutral-50/50 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9)] pointer-events-none" />
-                <span className="relative z-10 flex items-center justify-center">
-                  <MessageCircle className="w-4.5 h-4.5 text-slate-700 stroke-[1.8]" />
-                </span>
+                <MessageCircle className="w-4 h-4 text-slate-900 stroke-[1.8]" />
               </button>
             </div>
           )}

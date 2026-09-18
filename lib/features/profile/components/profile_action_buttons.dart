@@ -69,40 +69,76 @@ class ProfileActionButtons extends StatelessWidget {
   Widget _buildOtherUserButtons() {
     return Row(
       children: [
-        // Follow / Following Button (Kumo UI Black Button)
+        // Follow / Following Button (Threads Style 100% 1:1)
         Expanded(
-          child: KumoButton(
-            text: isFollowing ? 'Mengikuti' : 'Ikuti',
-            variant: isFollowing ? KumoButtonVariant.secondary : KumoButtonVariant.black,
-            height: 40.0,
-            borderRadius: 12.0,
-            iconLeft: Icon(
-              isFollowing ? Icons.how_to_reg_rounded : Icons.person_add_alt_1_rounded,
-              size: 17.0,
-              color: isFollowing ? const Color(0xFF0F172A) : Colors.white,
+          child: GestureDetector(
+            onTap: () {
+              HapticFeedback.lightImpact();
+              onToggleFollow?.call();
+            },
+            behavior: HitTestBehavior.opaque,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              height: 36.0,
+              decoration: BoxDecoration(
+                color: isFollowing ? Colors.white : const Color(0xFF000000),
+                borderRadius: BorderRadius.circular(10.0),
+                border: Border.all(
+                  color: isFollowing ? const Color(0xFFE2E8F0) : const Color(0xFF000000),
+                  width: 1.0,
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x0A000000),
+                    blurRadius: 2.0,
+                    offset: Offset(0, 1),
+                  ),
+                ],
+              ),
+              alignment: Alignment.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    isFollowing ? Icons.how_to_reg_rounded : Icons.person_add_alt_1_rounded,
+                    size: 16.0,
+                    color: isFollowing ? const Color(0xFF0F172A) : Colors.white,
+                  ),
+                  const SizedBox(width: 6.0),
+                  Text(
+                    isFollowing ? 'Mengikuti' : 'Ikuti',
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w600,
+                      color: isFollowing ? const Color(0xFF0F172A) : Colors.white,
+                      letterSpacing: -0.1,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            onPressed: onToggleFollow,
           ),
         ),
-        const SizedBox(width: 8.0),
+        const SizedBox(width: 10.0),
 
-        // Message Button
+        // Message Button (Square 36x36 with rounded-10 border)
         GestureDetector(
           onTap: () {
             HapticFeedback.lightImpact();
             onDirectMessage?.call();
           },
+          behavior: HitTestBehavior.opaque,
           child: Container(
-            width: 40.0,
-            height: 40.0,
+            width: 36.0,
+            height: 36.0,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12.0),
+              borderRadius: BorderRadius.circular(10.0),
               border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
               boxShadow: const [
                 BoxShadow(
                   color: Color(0x08000000),
-                  blurRadius: 4.0,
+                  blurRadius: 2.0,
                   offset: Offset(0, 1),
                 ),
               ],
@@ -110,7 +146,7 @@ class ProfileActionButtons extends StatelessWidget {
             alignment: Alignment.center,
             child: const Icon(
               Icons.chat_bubble_outline_rounded,
-              size: 18.0,
+              size: 17.0,
               color: Color(0xFF0F172A),
             ),
           ),

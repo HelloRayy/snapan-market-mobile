@@ -125,14 +125,14 @@ export const ProfileHeaderCard: React.FC<ProfileHeaderCardProps> = ({
             </button>
           </>
         ) : (
-          <>
+          <div className="flex gap-x-2.5 w-full items-center select-none pt-0.5">
             <button
               type="button"
               onClick={onToggleFollow}
-              className={`flex-1 h-9 px-4 rounded-xl text-[13.5px] font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              className={`flex-1 h-[36px] px-4 rounded-[10px] font-semibold text-[14px] leading-snug flex items-center justify-center gap-1.5 transition-all duration-150 active:scale-[0.98] cursor-pointer ${
                 isFollowing
-                  ? 'bg-neutral-100 text-slate-700 border border-neutral-200'
-                  : 'bg-black text-white hover:bg-neutral-900 shadow-2xs'
+                  ? 'bg-white text-slate-900 border border-neutral-300 hover:bg-neutral-50 shadow-2xs'
+                  : 'bg-[#000000] text-white border border-[#000000] hover:bg-[#1a1a1a] shadow-xs'
               }`}
             >
               {isFollowing ? (
@@ -150,12 +150,13 @@ export const ProfileHeaderCard: React.FC<ProfileHeaderCardProps> = ({
             <button
               type="button"
               onClick={onDirectMessage}
-              className="h-9 px-3.5 rounded-xl text-[13.5px] font-bold text-slate-900 bg-white border border-neutral-200/90 shadow-2xs hover:bg-neutral-50 active:scale-[0.98] transition-transform flex items-center justify-center gap-1.5 cursor-pointer"
+              className="w-[36px] h-[36px] shrink-0 rounded-[10px] bg-white text-slate-900 border border-neutral-300 hover:bg-black/5 active:scale-[0.98] transition-all duration-150 flex items-center justify-center cursor-pointer shadow-2xs"
+              title="Kirim pesan"
+              aria-label="Kirim pesan"
             >
-              <MessageCircle className="w-4 h-4 stroke-[2]" />
-              <span>Pesan</span>
+              <MessageCircle className="w-4 h-4 text-slate-900 stroke-[1.8]" />
             </button>
-          </>
+          </div>
         )}
       </div>
     </div>

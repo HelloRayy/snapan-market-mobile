@@ -15,6 +15,7 @@ interface MarketBottomNavProps {
 export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   activeTab,
   onTabChange,
+  onPostClick,
   userAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
   unreadMessagesCount = 20,
   isVisible = true,
@@ -118,6 +119,23 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
           );
         })}
       </nav>
+
+      {/* Floating Action Button (FAB) matching user spec: w-[82px] h-[68px], rounded-2xl, shadow */}
+      {onPostClick && (
+        <div className="absolute right-5 bottom-[max(16px,env(safe-area-inset-bottom,16px))] pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => {
+              triggerHaptic('medium');
+              onPostClick();
+            }}
+            className="flex items-center justify-center bg-[#181818] text-[#f3f5f7] text-base font-semibold rounded-2xl border border-white/15 shadow-[0px_6px_8px_0px_rgba(0,0,0,0.12)] h-[68px] w-[82px] leading-snug transition-all duration-150 hover:bg-[#313134] active:scale-[0.98] cursor-pointer"
+            aria-label="Buat"
+          >
+            Buat
+          </button>
+        </div>
+      )}
     </aside>
   );
 };

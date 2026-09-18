@@ -77,6 +77,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
   @override
   void dispose() {
+    HomeMenuPopover.dismiss();
     _barsAnimationController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -108,7 +109,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   }
 
   void _handleMenuTap() {
-    HomeMenuPopover.show(
+    HomeMenuPopover.toggle(
       context: context,
       onAppearanceTap: () {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -36,6 +36,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void dispose() {
+    HomeMenuPopover.dismiss();
     _searchController.dispose();
     super.dispose();
   }
@@ -141,7 +142,7 @@ class _SearchScreenState extends State<SearchScreen> {
             onSubmitted: _handleExecuteSearch,
             onClear: _handleClearSearch,
             onBack: widget.onBack ?? () => Navigator.of(context).pop(),
-            onMenuTap: () => HomeMenuPopover.show(context: context),
+            onMenuTap: () => HomeMenuPopover.toggle(context: context),
             onOpenAppTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(

@@ -4,18 +4,16 @@ import 'package:flutter/services.dart';
 /// 1:1 Threads-style Header Navigation Menu Popover Overlay
 ///
 /// Anchored floating popup overlay matching the user's reference image:
-/// - Dark squircle container (`#1A1A1E`)
+/// - Pure white squircle container (224px width, 16px radius)
 /// - Positioned directly below top-left hamburger menu icon
-/// - Clean grouped items:
-///   1. Tampilan (with chevron >)
+/// - Clean grouped items without divider clutter:
+///   1. Tampilan (with subtle grey chevron >)
 ///   2. Pengaturan
-///   [Divider]
 ///   3. Disukai
 ///   4. Arsip
-///   [Divider]
 ///   5. Laporkan masalah
-///   [Divider]
-///   6. Logout (Red text)
+///   6. Logout (Red text #EF4444)
+/// - Non-blocking overlay architecture: allows the feed behind it to scroll freely!
 class HomeMenuPopover extends StatelessWidget {
   final VoidCallback? onAppearanceTap;
   final VoidCallback? onSettingsTap;
@@ -34,7 +32,17 @@ class HomeMenuPopover extends StatelessWidget {
     this.onLogout,
   });
 
-  static Future<void> show({
+  static OverlayEntry? _currentOverlay;
+  static final GlobalKey _menuKey = GlobalKey();
+
+  static bool get isShowing => _currentOverlay != null;
+
+  static void dismiss() {
+    _currentOverlay?.remove();
+    _currentOverlay = null;
+  }
+
+  static void toggle({
     required BuildContext context,
     VoidCallback? onAppearanceTap,
     VoidCallback? onSettingsTap,
@@ -44,200 +52,188 @@ class HomeMenuPopover extends StatelessWidget {
     VoidCallback? onLogout,
     Offset? anchorPosition,
   }) {
+    if (isShowing) {
+      dismiss();
+    } else {
+      show(
+        context: context,
+        onAppearanceTap: onAppearanceTap,
+        onSettingsTap: onSettingsTap,
+        onLikedTap: onLikedTap,
+        onArchiveTap: onArchiveTap,
+        onReportTap: onReportTap,
+        onLogout: onLogout,
+        anchorPosition: anchorPosition,
+      );
+    }
+  }
+
+  static void show({
+    required BuildContext context,
+    VoidCallback? onAppearanceTap,
+    VoidCallback? onSettingsTap,
+    VoidCallback? onLikedTap,
+    VoidCallback? onArchiveTap,
+    VoidCallback? onReportTap,
+    VoidCallback? onLogout,
+    Offset? anchorPosition,
+  }) {
+    dismiss();
     HapticFeedback.lightImpact();
 
-    return showGeneralDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: 'HomeMenuPopover',
-      barrierColor: Colors.transparent,
-      transitionDuration: const Duration(milliseconds: 180),
-      pageBuilder: (ctx, anim1, anim2) {
-        final topOffset = anchorPosition?.dy ??
-            (MediaQuery.of(ctx).padding.top + 50.0);
-        final leftOffset = anchorPosition?.dx ?? 12.0;
+    final overlayState = Overlay.of(context, rootOverlay: true);
+    final mediaQuery = MediaQuery.of(context);
+    final topOffset = anchorPosition?.dy ?? (mediaQuery.padding.top + 46.0);
+    final leftOffset = anchorPosition?.dx ?? 12.0;
 
-        return Stack(
-          children: [
-            Positioned(
-              top: topOffset,
-              left: leftOffset,
-              child: Material(
-                color: Colors.transparent,
-                child: HomeMenuPopover(
-                  onAppearanceTap: onAppearanceTap,
-                  onSettingsTap: onSettingsTap,
-                  onLikedTap: onLikedTap,
-                  onArchiveTap: onArchiveTap,
-                  onReportTap: onReportTap,
-                  onLogout: onLogout,
+    _currentOverlay = OverlayEntry(
+      builder: (ctx) {
+        return Listener(
+          behavior: HitTestBehavior.translucent,
+          onPointerDown: (event) {
+            final renderBox = _menuKey.currentContext?.findRenderObject() as RenderBox?;
+            if (renderBox != null) {
+              final local = renderBox.globalToLocal(event.position);
+              if (!renderBox.paintBounds.contains(local)) {
+                dismiss();
+              }
+            }
+          },
+          child: Stack(
+            children: [
+              Positioned(
+                top: topOffset,
+                left: leftOffset,
+                child: KeyedSubtree(
+                  key: _menuKey,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 0.0, end: 1.0),
+                      duration: const Duration(milliseconds: 160),
+                      curve: Curves.easeOutCubic,
+                      builder: (context, value, child) {
+                        return Opacity(
+                          opacity: value,
+                          child: Transform.scale(
+                            scale: 0.94 + (0.06 * value),
+                            alignment: Alignment.topLeft,
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: HomeMenuPopover(
+                        onAppearanceTap: () {
+                          dismiss();
+                          onAppearanceTap?.call();
+                        },
+                        onSettingsTap: () {
+                          dismiss();
+                          onSettingsTap?.call();
+                        },
+                        onLikedTap: () {
+                          dismiss();
+                          onLikedTap?.call();
+                        },
+                        onArchiveTap: () {
+                          dismiss();
+                          onArchiveTap?.call();
+                        },
+                        onReportTap: () {
+                          dismiss();
+                          onReportTap?.call();
+                        },
+                        onLogout: () {
+                          dismiss();
+                          _confirmLogout(context, onLogout);
+                        },
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ],
-        );
-      },
-      transitionBuilder: (ctx, anim, secondaryAnim, child) {
-        final curved = CurvedAnimation(
-          parent: anim,
-          curve: Curves.easeOutCubic,
-        );
-
-        return FadeTransition(
-          opacity: curved,
-          child: ScaleTransition(
-            scale: Tween<double>(begin: 0.90, end: 1.0).animate(curved),
-            alignment: Alignment.topLeft,
-            child: child,
+            ],
           ),
         );
       },
     );
+
+    overlayState.insert(_currentOverlay!);
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 220.0,
+      width: 224.0,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.0),
         border: Border.all(
-          color: const Color(0xFFE2E8F0),
+          color: const Color(0xFFF1F5F9),
           width: 0.8,
         ),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x1F000000), // Clean light elevation shadow
+            color: Color(0x18000000),
             blurRadius: 24.0,
             spreadRadius: 0,
             offset: Offset(0, 8),
           ),
           BoxShadow(
-            color: Color(0x0A000000),
+            color: Color(0x08000000),
             blurRadius: 6.0,
             offset: Offset(0, 2),
           ),
         ],
       ),
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      padding: const EdgeInsets.all(6.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Group 1: Tampilan & Pengaturan
+          // 1. Tampilan (with chevron >)
           _buildMenuItem(
             context: context,
             label: 'Tampilan',
             hasChevron: true,
-            onTap: () {
-              Navigator.of(context).pop();
-              if (onAppearanceTap != null) {
-                onAppearanceTap!();
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Tampilan: Mode Terang (Default)'),
-                    duration: Duration(seconds: 1),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-              }
-            },
+            onTap: onAppearanceTap,
           ),
+
+          // 2. Pengaturan
           _buildMenuItem(
             context: context,
             label: 'Pengaturan',
-            onTap: () {
-              Navigator.of(context).pop();
-              if (onSettingsTap != null) {
-                onSettingsTap!();
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Pengaturan akun dibuka'),
-                    duration: Duration(seconds: 1),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-              }
-            },
+            onTap: onSettingsTap,
           ),
 
-          _buildDivider(),
-
-          // Group 2: Disukai & Arsip
+          // 3. Disukai
           _buildMenuItem(
             context: context,
             label: 'Disukai',
-            onTap: () {
-              Navigator.of(context).pop();
-              if (onLikedTap != null) {
-                onLikedTap!();
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Menampilkan postingan yang Anda sukai'),
-                    duration: Duration(seconds: 1),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-              }
-            },
+            onTap: onLikedTap,
           ),
+
+          // 4. Arsip
           _buildMenuItem(
             context: context,
             label: 'Arsip',
-            onTap: () {
-              Navigator.of(context).pop();
-              if (onArchiveTap != null) {
-                onArchiveTap!();
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Arsip postingan & aktivitas dibuka'),
-                    duration: Duration(seconds: 1),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-              }
-            },
+            onTap: onArchiveTap,
           ),
 
-          _buildDivider(),
-
-          // Group 3: Laporkan masalah
+          // 5. Laporkan masalah
           _buildMenuItem(
             context: context,
             label: 'Laporkan masalah',
-            onTap: () {
-              Navigator.of(context).pop();
-              if (onReportTap != null) {
-                onReportTap!();
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Laporan masalah terkirim. Terima kasih atas masukan Anda!'),
-                    duration: Duration(seconds: 2),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-              }
-            },
+            onTap: onReportTap,
           ),
 
-          _buildDivider(),
-
-          // Group 4: Logout (Red font)
+          // 6. Logout (Red font #EF4444)
           _buildMenuItem(
             context: context,
             label: 'Logout',
             textColor: const Color(0xFFEF4444),
             isDestructive: true,
-            onTap: () {
-              Navigator.of(context).pop();
-              _confirmLogout(context);
-            },
+            onTap: onLogout,
           ),
         ],
       ),
@@ -247,7 +243,7 @@ class HomeMenuPopover extends StatelessWidget {
   Widget _buildMenuItem({
     required BuildContext context,
     required String label,
-    required VoidCallback onTap,
+    VoidCallback? onTap,
     Color textColor = const Color(0xFF0F172A),
     bool hasChevron = false,
     bool isDestructive = false,
@@ -255,15 +251,15 @@ class HomeMenuPopover extends StatelessWidget {
     return InkWell(
       onTap: () {
         HapticFeedback.lightImpact();
-        onTap();
+        onTap?.call();
       },
       borderRadius: BorderRadius.circular(10.0),
       hoverColor: const Color(0xFFF8FAFC),
       splashColor: const Color(0xFFF1F5F9),
       highlightColor: Colors.transparent,
       child: Container(
-        height: 44.0,
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        height: 39.0,
+        padding: const EdgeInsets.symmetric(horizontal: 12.0),
         alignment: Alignment.centerLeft,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -281,7 +277,7 @@ class HomeMenuPopover extends StatelessWidget {
             if (hasChevron)
               const Icon(
                 Icons.chevron_right_rounded,
-                size: 18.0,
+                size: 17.5,
                 color: Color(0xFF94A3B8),
               ),
           ],
@@ -290,18 +286,7 @@ class HomeMenuPopover extends StatelessWidget {
     );
   }
 
-  Widget _buildDivider() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 14.0, vertical: 3.0),
-      child: Divider(
-        height: 1.0,
-        thickness: 0.8,
-        color: Color(0xFFF1F5F9), // Light slate divider
-      ),
-    );
-  }
-
-  void _confirmLogout(BuildContext context) {
+  static void _confirmLogout(BuildContext context, VoidCallback? onLogout) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(

@@ -83,6 +83,10 @@ class _PostCommentItemState extends State<PostCommentItem>
       _isLiked = widget.comment.isLiked;
       _likesCount = widget.comment.likesCount;
     }
+    // Automatically expand replies threadline when a new reply is added!
+    if (widget.comment.replies.length > oldWidget.comment.replies.length) {
+      _isRepliesExpanded = true;
+    }
   }
 
   @override

@@ -161,12 +161,12 @@ class _CommentInputBarState extends State<CommentInputBar> {
                     ),
                     child: Row(
                       children: [
-                        // Vertical blue indicator line (pen.dev gFODz: width 2, height 38, fill #008BFF)
+                        // Vertical brand indicator line (Snapan Primary #3D38F5)
                         Container(
                           width: 2.5,
                           height: 24.0,
                           decoration: BoxDecoration(
-                            color: const Color(0xFF008BFF),
+                            color: AppColors.primary,
                             borderRadius: BorderRadius.circular(2.0),
                           ),
                         ),
@@ -178,7 +178,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                             text: TextSpan(
                               style: const TextStyle(
                                 fontSize: 13.0,
-                                color: Color(0xFF999999),
+                                color: Color(0xFF64748B),
                               ),
                               children: [
                                 const TextSpan(
@@ -188,7 +188,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                                 TextSpan(
                                   text: '@${widget.replyToUser!.replaceAll('@', '')}',
                                   style: const TextStyle(
-                                    color: Color(0xFF008BFF), // pen.dev #008BFF
+                                    color: AppColors.primary,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -206,7 +206,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                             child: Icon(
                               Icons.close_rounded,
                               size: 18.0,
-                              color: Color(0xFF999999), // pen.dev Close Symbol #999999
+                              color: Color(0xFF94A3B8),
                             ),
                           ),
                         ),

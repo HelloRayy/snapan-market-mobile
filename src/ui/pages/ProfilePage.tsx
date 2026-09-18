@@ -460,7 +460,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </button>
           ) : (
             <div className="flex gap-x-2.5 w-full items-center select-none pt-1">
-              {/* Tombol 1: Ikuti / Mengikuti (Expanded CTA matching Threads UI) */}
+              {/* Tombol 1: Ikuti / Mengikuti (50% Width) */}
               <button
                 type="button"
                 onClick={() => {
@@ -471,34 +471,35 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                     followersCount: isFollowing ? prev.followersCount - 1 : prev.followersCount + 1,
                   }));
                 }}
-                className={`relative flex items-center justify-center flex-1 h-[36px] px-4 rounded-[10px] font-semibold text-[14px] leading-snug transition-all duration-150 active:scale-[0.98] cursor-pointer ${
+                className={`relative flex items-center justify-center flex-1 h-[36px] px-3 rounded-[10px] font-semibold text-[14px] leading-snug transition-all duration-150 active:scale-[0.98] cursor-pointer ${
                   isFollowing
                     ? 'bg-white text-slate-900 border border-neutral-300 hover:bg-neutral-50 shadow-2xs'
                     : 'bg-[#000000] text-white border border-[#000000] hover:bg-[#1a1a1a] shadow-xs'
                 }`}
               >
-                <div className="flex items-center justify-center gap-1.5 leading-snug">
+                <div className="flex items-center justify-center gap-1.5 leading-snug truncate">
                   {isFollowing ? (
-                    <UserCheck className="w-4 h-4 stroke-[2.2]" />
+                    <UserCheck className="w-4 h-4 stroke-[2.2] shrink-0" />
                   ) : (
-                    <UserPlus className="w-4 h-4 stroke-[2.2]" />
+                    <UserPlus className="w-4 h-4 stroke-[2.2] shrink-0" />
                   )}
-                  <span>{isFollowing ? 'Mengikuti' : 'Ikuti'}</span>
+                  <span className="truncate">{isFollowing ? 'Mengikuti' : 'Ikuti'}</span>
                 </div>
               </button>
 
-              {/* Tombol 2: Kirim Pesan (Icon Square CTA matching Threads) */}
+              {/* Tombol 2: Kirim Pesan (50% Width) */}
               <button
                 type="button"
                 onClick={() => {
                   triggerHaptic('light');
                   alert(`Fitur chat langsung dengan @${profileData.username} akan segera hadir!`);
                 }}
-                className="flex items-center justify-center w-[36px] h-[36px] shrink-0 rounded-[10px] bg-white text-slate-900 border border-neutral-300 hover:bg-black/5 active:scale-[0.98] transition-all duration-150 cursor-pointer shadow-2xs"
+                className="flex items-center justify-center flex-1 h-[36px] px-3 rounded-[10px] font-semibold text-[14px] leading-snug bg-white text-slate-900 border border-neutral-300 hover:bg-black/5 active:scale-[0.98] transition-all duration-150 cursor-pointer shadow-2xs gap-1.5"
                 title="Kirim pesan"
                 aria-label="Kirim pesan"
               >
-                <MessageCircle className="w-4 h-4 text-slate-900 stroke-[1.8]" />
+                <MessageCircle className="w-4 h-4 text-slate-900 stroke-[1.8] shrink-0" />
+                <span className="truncate">Kirim pesan</span>
               </button>
             </div>
           )}

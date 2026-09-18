@@ -126,10 +126,11 @@ export const ProfileHeaderCard: React.FC<ProfileHeaderCardProps> = ({
           </>
         ) : (
           <div className="flex gap-x-2.5 w-full items-center select-none pt-0.5">
+            {/* Tombol 1: Ikuti (50% Width) */}
             <button
               type="button"
               onClick={onToggleFollow}
-              className={`flex-1 h-[36px] px-4 rounded-[10px] font-semibold text-[14px] leading-snug flex items-center justify-center gap-1.5 transition-all duration-150 active:scale-[0.98] cursor-pointer ${
+              className={`flex-1 h-[36px] px-3 rounded-[10px] font-semibold text-[14px] leading-snug flex items-center justify-center gap-1.5 transition-all duration-150 active:scale-[0.98] cursor-pointer ${
                 isFollowing
                   ? 'bg-white text-slate-900 border border-neutral-300 hover:bg-neutral-50 shadow-2xs'
                   : 'bg-[#000000] text-white border border-[#000000] hover:bg-[#1a1a1a] shadow-xs'
@@ -137,24 +138,27 @@ export const ProfileHeaderCard: React.FC<ProfileHeaderCardProps> = ({
             >
               {isFollowing ? (
                 <>
-                  <UserCheck className="w-4 h-4 stroke-[2.2]" />
-                  <span>Mengikuti</span>
+                  <UserCheck className="w-4 h-4 stroke-[2.2] shrink-0" />
+                  <span className="truncate">Mengikuti</span>
                 </>
               ) : (
                 <>
-                  <UserPlus className="w-4 h-4 stroke-[2.2]" />
-                  <span>Ikuti</span>
+                  <UserPlus className="w-4 h-4 stroke-[2.2] shrink-0" />
+                  <span className="truncate">Ikuti</span>
                 </>
               )}
             </button>
+
+            {/* Tombol 2: Kirim Pesan (50% Width) */}
             <button
               type="button"
               onClick={onDirectMessage}
-              className="w-[36px] h-[36px] shrink-0 rounded-[10px] bg-white text-slate-900 border border-neutral-300 hover:bg-black/5 active:scale-[0.98] transition-all duration-150 flex items-center justify-center cursor-pointer shadow-2xs"
+              className="flex-1 h-[36px] px-3 rounded-[10px] bg-white text-slate-900 border border-neutral-300 hover:bg-black/5 active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs font-semibold text-[14px]"
               title="Kirim pesan"
               aria-label="Kirim pesan"
             >
-              <MessageCircle className="w-4 h-4 text-slate-900 stroke-[1.8]" />
+              <MessageCircle className="w-4 h-4 text-slate-900 stroke-[1.8] shrink-0" />
+              <span className="truncate">Kirim pesan</span>
             </button>
           </div>
         )}

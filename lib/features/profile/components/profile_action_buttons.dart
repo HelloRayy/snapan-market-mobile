@@ -121,33 +121,49 @@ class ProfileActionButtons extends StatelessWidget {
         ),
         const SizedBox(width: 10.0),
 
-        // Message Button (Square 36x36 with rounded-10 border)
-        GestureDetector(
-          onTap: () {
-            HapticFeedback.lightImpact();
-            onDirectMessage?.call();
-          },
-          behavior: HitTestBehavior.opaque,
-          child: Container(
-            width: 36.0,
-            height: 36.0,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10.0),
-              border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x08000000),
-                  blurRadius: 2.0,
-                  offset: Offset(0, 1),
-                ),
-              ],
-            ),
-            alignment: Alignment.center,
-            child: const Icon(
-              Icons.chat_bubble_outline_rounded,
-              size: 17.0,
-              color: Color(0xFF0F172A),
+        // Message Button (50% width with 10px rounded border)
+        Expanded(
+          child: GestureDetector(
+            onTap: () {
+              HapticFeedback.lightImpact();
+              onDirectMessage?.call();
+            },
+            behavior: HitTestBehavior.opaque,
+            child: Container(
+              height: 36.0,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10.0),
+                border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x08000000),
+                    blurRadius: 2.0,
+                    offset: Offset(0, 1),
+                  ),
+                ],
+              ),
+              alignment: Alignment.center,
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.chat_bubble_outline_rounded,
+                    size: 16.0,
+                    color: Color(0xFF0F172A),
+                  ),
+                  SizedBox(width: 6.0),
+                  Text(
+                    'Kirim pesan',
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF0F172A),
+                      letterSpacing: -0.1,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

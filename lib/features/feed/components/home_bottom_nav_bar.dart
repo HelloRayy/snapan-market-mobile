@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/components/nav_glyphs/home_nav_glyph.dart';
 import 'package:snapan_market/features/feed/components/nav_glyphs/paper_plane_nav_glyph.dart';
 import 'package:snapan_market/features/feed/components/nav_glyphs/heart_nav_glyph.dart';
@@ -88,17 +89,21 @@ class HomeBottomNavBar extends StatelessWidget {
             height: 62.0,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(31.0),
+              border: Border.all(
+                color: const Color(0x14000000), // Subtle 0.8px rim border against white canvas
+                width: 0.8,
+              ),
               boxShadow: const [
-                // Diffuse Outer Shadow from pen.dev (#0000001f, y=8, blur=35)
+                // Layered shadow for crisp depth on white background
                 BoxShadow(
-                  color: Color(0x1F000000),
-                  blurRadius: 35.0,
+                  color: Color(0x14000000),
+                  blurRadius: 28.0,
                   offset: Offset(0, 8),
                 ),
                 BoxShadow(
                   color: Color(0x0A000000),
-                  blurRadius: 10.0,
-                  offset: Offset(0, 2),
+                  blurRadius: 4.0,
+                  offset: Offset(0, 1),
                 ),
               ],
             ),
@@ -115,8 +120,8 @@ class HomeBottomNavBar extends StatelessWidget {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.white.withValues(alpha: 0.70),
-                        Colors.white.withValues(alpha: 0.42),
+                        Colors.white.withValues(alpha: 0.90),
+                        Colors.white.withValues(alpha: 0.80),
                       ],
                     ),
                   ),
@@ -201,9 +206,10 @@ class _DockTabItemState extends State<_DockTabItem> {
 
   @override
   Widget build(BuildContext context) {
-    const activeColor = Color(0xFF008BFF); // pen.dev #008BFF
-    const inactiveColor = Color(0xFF1A1A1A); // pen.dev #1A1A1A
-    const selectionFill = Color(0xFFEDEDED); // pen.dev Selection fill: #edededff
+    const activeColor = AppColors.primary; // Electric Indigo #3D38F5 (WCAG AA 6.86:1)
+    const inactiveColor = Color(0xFF64748B); // Slate 500
+    const selectionFill = AppColors.primaryPastel; // #EEF0FF
+    const selectionBorder = AppColors.primaryBorder; // #D8DBFE
 
     return Expanded(
       child: GestureDetector(
@@ -228,15 +234,14 @@ class _DockTabItemState extends State<_DockTabItem> {
             height: 56.0,
             padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
             decoration: BoxDecoration(
-              // Translucent frosted glass capsule with subtle specular highlight rim
               color: widget.isActive
-                  ? const Color(0xFFEDEDED).withValues(alpha: 0.75)
+                  ? selectionFill
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(28.0),
               border: widget.isActive
                   ? Border.all(
-                      color: Colors.white.withValues(alpha: 0.80),
-                      width: 0.8,
+                      color: selectionBorder,
+                      width: 1.0,
                     )
                   : null,
             ),

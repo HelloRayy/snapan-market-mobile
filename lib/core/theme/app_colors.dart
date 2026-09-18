@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Brand Primary (pen.dev Accent #008BFF from snaps-design.pen)
-  static const Color primary = Color(0xFF008BFF);
-  static const Color primaryDark = Color(0xFF0077DB);
-  static const Color primaryPastel = Color(0xFFEBF5FF);
-  static const Color primaryRing = Color(0x33008BFF);
+  // Brand Signature: Electric Indigo (#3D38F5) matching src/index.css (WCAG AA 6.86:1 contrast)
+  static const Color primary = Color(0xFF3D38F5);
+  static const Color primaryDark = Color(0xFF312BD9);
+  static const Color primaryPastel = Color(0xFFEEF0FF);
+  static const Color primaryBorder = Color(0xFFD8DBFE);
+  static const Color primaryRing = Color(0x263D38F5);
 
-  // Gradient Palette (pen.dev Spectrum)
-  static const Color gradientTop = Color(0xFF269DFF); // Light Azure Top Specular
-  static const Color gradientMid = Color(0xFF008BFF); // pen.dev Primary Accent
-  static const Color gradientBottom = Color(0xFF0077DB); // Deep Azure Base
+  // Gradient Palette (Electric Indigo Spectrum)
+  static const Color gradientTop = Color(0xFF534EF7); // Light Indigo Specular
+  static const Color gradientMid = Color(0xFF3D38F5); // Brand Primary
+  static const Color gradientBottom = Color(0xFF312BD9); // Deep Indigo Base
 
   // Backward-compatible Aliases
   static const Color gradientIndigo = gradientTop;

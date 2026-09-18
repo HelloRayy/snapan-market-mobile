@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import 'package:snapan_market/core/theme/app_colors.dart';
+
 /// 1. Home Nav Glyph using LucideIcons.home
 class HomeNavGlyph extends StatelessWidget {
   final bool isActive;
@@ -12,7 +14,7 @@ class HomeNavGlyph extends StatelessWidget {
     return Icon(
       LucideIcons.home,
       size: 21.0,
-      color: isActive ? const Color(0xFF008BFF) : const Color(0xFF1A1A1A),
+      color: isActive ? AppColors.primary : const Color(0xFF64748B),
     );
   }
 }

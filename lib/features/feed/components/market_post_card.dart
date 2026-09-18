@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:snapan_market/features/feed/components/post_card/post_action_bar.dart';
-import 'package:snapan_market/features/feed/components/post_card/post_author_avatar.dart';
-import 'package:snapan_market/features/feed/components/post_card/post_caption_text.dart';
-import 'package:snapan_market/features/feed/components/post_card/post_card_header.dart';
-import 'package:snapan_market/features/feed/components/post_card/post_media_section.dart';
+import 'package:snapan_market/features/feed/components/post_card/post_card.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// Interactive Feed & Detail Card Component for Threads and Product Posts

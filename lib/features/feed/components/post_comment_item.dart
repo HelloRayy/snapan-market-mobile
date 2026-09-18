@@ -2,13 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
-import 'package:snapan_market/features/feed/components/comment/comment_action_bar.dart';
-import 'package:snapan_market/features/feed/components/comment/comment_author_badge.dart';
-import 'package:snapan_market/features/feed/components/comment/comment_avatar.dart';
-import 'package:snapan_market/features/feed/components/comment/comment_images_section.dart';
-import 'package:snapan_market/features/feed/components/comment/comment_options_sheet.dart';
-import 'package:snapan_market/features/feed/components/comment/comment_replies_expand_row.dart';
-import 'package:snapan_market/features/feed/components/comment/comment_reply_tile.dart';
+import 'package:snapan_market/features/feed/components/comment/comment.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// PostCommentItem Widget

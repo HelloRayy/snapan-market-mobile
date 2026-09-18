@@ -112,14 +112,14 @@ export const ProfileHeaderCard: React.FC<ProfileHeaderCardProps> = ({
             <button
               type="button"
               onClick={onOpenEdit}
-              className="flex-1 h-9 px-4 rounded-xl text-[13.5px] font-bold text-slate-900 bg-white border border-neutral-200/90 shadow-2xs hover:bg-neutral-50 active:scale-[0.98] transition-transform flex items-center justify-center cursor-pointer"
+              className="flex-1 h-[36px] px-3 rounded-[10px] text-[14px] font-semibold leading-snug text-slate-900 bg-white border border-neutral-300 shadow-2xs hover:bg-neutral-50 active:scale-[0.98] transition-all flex items-center justify-center cursor-pointer"
             >
               Edit Profil
             </button>
             <button
               type="button"
               onClick={handleShareProfile}
-              className="flex-1 h-9 px-4 rounded-xl text-[13.5px] font-bold text-slate-900 bg-white border border-neutral-200/90 shadow-2xs hover:bg-neutral-50 active:scale-[0.98] transition-transform flex items-center justify-center cursor-pointer"
+              className="flex-1 h-[36px] px-3 rounded-[10px] text-[14px] font-semibold leading-snug text-slate-900 bg-white border border-neutral-300 shadow-2xs hover:bg-neutral-50 active:scale-[0.98] transition-all flex items-center justify-center cursor-pointer"
             >
               Bagikan Profil
             </button>

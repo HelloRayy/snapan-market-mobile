@@ -454,7 +454,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 window.history.pushState({ layer: 'edit-profile' }, '', window.location.pathname + '#edit-profile');
                 setIsEditScreenOpen(true);
               }}
-              className="w-full h-10 rounded-xl border border-neutral-300 font-bold text-[13.5px] text-slate-900 hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center shadow-2xs"
+              className="w-full h-[36px] rounded-[10px] border border-neutral-300 font-semibold text-[14px] leading-snug text-slate-900 bg-white hover:bg-neutral-50 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center shadow-2xs"
             >
               Edit profil
             </button>

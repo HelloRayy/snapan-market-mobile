@@ -39,15 +39,15 @@ class ProfileActionButtons extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: Container(
         width: double.infinity,
-        height: 40.0,
+        height: 36.0,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12.0),
+          borderRadius: BorderRadius.circular(10.0),
           border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
           boxShadow: const [
             BoxShadow(
               color: Color(0x08000000),
-              blurRadius: 4.0,
+              blurRadius: 2.0,
               offset: Offset(0, 1),
             ),
           ],
@@ -56,8 +56,8 @@ class ProfileActionButtons extends StatelessWidget {
         child: const Text(
           'Edit profil',
           style: TextStyle(
-            fontSize: 13.5,
-            fontWeight: FontWeight.w700,
+            fontSize: 14.0,
+            fontWeight: FontWeight.w600,
             color: Color(0xFF0F172A),
             letterSpacing: -0.1,
           ),

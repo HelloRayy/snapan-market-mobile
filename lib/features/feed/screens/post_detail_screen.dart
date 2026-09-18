@@ -46,6 +46,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   late List<PostCommentModel> _comments;
   CommentSortOrder _selectedSort = CommentSortOrder.newest;
   String? _replyToUser;
+  String? _replyToCommentId;
   bool _isCommentingActive = false;
   final ScrollController _scrollController = ScrollController();
 
@@ -106,8 +107,25 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
 
     setState(() {
-      _comments.insert(0, newComment);
+      if (_replyToCommentId != null) {
+        _comments = _comments.map((c) {
+          if (c.id == _replyToCommentId) {
+            return c.copyWith(
+              replies: [...c.replies, newComment],
+            );
+          }
+          if (c.replies.any((r) => r.id == _replyToCommentId)) {
+            return c.copyWith(
+              replies: [...c.replies, newComment],
+            );
+          }
+          return c;
+        }).toList();
+      } else {
+        _comments.insert(0, newComment);
+      }
       _replyToUser = null;
+      _replyToCommentId = null;
       if (_isProductMode) {
         _isCommentingActive = false;
       }
@@ -123,10 +141,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
   }
 
-  void _handleReplyClick(String username) {
+  void _handleReplyClick(String username, [String? commentId]) {
     HapticFeedback.lightImpact();
     setState(() {
       _replyToUser = username;
+      _replyToCommentId = commentId;
       _isCommentingActive = true;
     });
   }
@@ -134,6 +153,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   void _handleCancelReply() {
     setState(() {
       _replyToUser = null;
+      _replyToCommentId = null;
       if (_isProductMode) {
         _isCommentingActive = false;
       }
@@ -387,7 +407,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     return PostCommentItem(
                       key: ValueKey(chain.id),
                       comment: chainComment,
-                      onReplyClick: _handleReplyClick,
+                      onReplyClick: (u) => _handleReplyClick(u, chain.id),
+                      onReplyToComment: (u, cId) => _handleReplyClick(u, cId),
                       onImageClick: (imgs, idx) => _handleImageClick(imgs, idx),
                     );
                   }),
@@ -399,7 +420,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     return PostCommentItem(
                       key: ValueKey(comment.id),
                       comment: comment,
-                      onReplyClick: _handleReplyClick,
+                      onReplyClick: (u) => _handleReplyClick(u, comment.id),
+                      onReplyToComment: (u, cId) => _handleReplyClick(u, cId),
                       onImageClick: (imgs, idx) => _handleImageClick(imgs, idx),
                     );
                   }),

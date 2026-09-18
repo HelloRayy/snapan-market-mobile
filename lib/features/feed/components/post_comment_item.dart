@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
+import 'package:snapan_market/features/feed/components/comment/comment_replies_expand_row.dart';
+import 'package:snapan_market/features/feed/components/comment/thread_branch_painter.dart';
 import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
@@ -14,24 +16,30 @@ import 'package:snapan_market/features/feed/models/market_post_model.dart';
 /// - Content text with thread continuation badge (e.g. `2/2`)
 /// - Attached images preview (single / multi carousel)
 /// - Action Bar (Like with tactile bounce & counter, Reply button, Share)
-/// - Vertical Thread Branch Line connecting parent comment to child replies
-/// - Nested replies list rendering
+/// - Threads curved elbow branch line (`╰─`) connecting parent comment to child replies
+/// - Nested replies list rendering with continuous thread branches
 class PostCommentItem extends StatefulWidget {
   final PostCommentModel comment;
   final ValueChanged<String>? onReplyClick;
+  final void Function(String username, String commentId)? onReplyToComment;
   final ValueChanged<PostCommentModel>? onLikeToggle;
   final ValueChanged<String>? onUserClick;
   final void Function(List<String> images, int index)? onImageClick;
   final bool isNested;
+  final bool isLastNested;
+  final String? parentCommentId;
 
   const PostCommentItem({
     super.key,
     required this.comment,
     this.onReplyClick,
+    this.onReplyToComment,
     this.onLikeToggle,
     this.onUserClick,
     this.onImageClick,
     this.isNested = false,
+    this.isLastNested = false,
+    this.parentCommentId,
   });
 
   @override
@@ -42,6 +50,7 @@ class _PostCommentItemState extends State<PostCommentItem>
     with SingleTickerProviderStateMixin {
   late bool _isLiked;
   late int _likesCount;
+  bool _isRepliesExpanded = false;
   late AnimationController _likeAnimController;
   late Animation<double> _likeScaleAnim;
 
@@ -164,93 +173,160 @@ class _PostCommentItemState extends State<PostCommentItem>
   Widget build(BuildContext context) {
     final hasReplies = widget.comment.replies.isNotEmpty;
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: widget.isNested ? 0.0 : 14.0,
-        vertical: widget.isNested ? 6.0 : 12.0,
-      ),
-      decoration: BoxDecoration(
-        border: widget.isNested
-            ? null
-            : const Border(
-                bottom: BorderSide(color: Color(0xFFF1F5F9), width: 0.5),
+    // 1. NESTED CHILD REPLY VARIANT
+    if (widget.isNested) {
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 6.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Left Branch Elbow/T-Branch line connecting into this child reply
+            SizedBox(
+              width: 22.0,
+              height: 38.0,
+              child: CustomPaint(
+                painter: ThreadBranchPainter(
+                  color: const Color(0xFFD1D5DB),
+                  strokeWidth: 1.8,
+                  curveRadius: 14.0,
+                  avatarCenterX: 4.0,
+                  type: widget.isLastNested
+                      ? ThreadLineType.elbow
+                      : ThreadLineType.tBranch,
+                ),
               ),
+            ),
+            const SizedBox(width: 4.0),
+
+            // Child avatar (28x28)
+            _buildAvatar(
+              avatarUrl: widget.comment.user.avatar,
+              name: widget.comment.user.name,
+              username: widget.comment.user.username,
+              size: 28.0,
+            ),
+            const SizedBox(width: 10.0),
+
+            // Child Content Column
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeaderRow(context),
+                  const SizedBox(height: 3.0),
+                  _buildContentText(),
+                  if (widget.comment.images.isNotEmpty) ...[
+                    const SizedBox(height: 8.0),
+                    _buildImagesSection(context),
+                  ],
+                  const SizedBox(height: 4.0),
+                  _buildActionBar(context),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // 2. MAIN TOP-LEVEL COMMENT VARIANT
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Color(0xFFF1F5F9), width: 0.5),
+        ),
       ),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Left Column: Avatar + Continuous Branch Line if replies exist
-          Column(
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildAvatar(
-                avatarUrl: widget.comment.user.avatar,
-                name: widget.comment.user.name,
-                username: widget.comment.user.username,
-                size: widget.isNested ? 30.0 : 36.0,
-              ),
-              if (hasReplies && !widget.isNested)
-                Container(
-                  width: 1.5,
-                  height: 40.0,
-                  margin: const EdgeInsets.symmetric(vertical: 4.0),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE2E8F0),
-                    borderRadius: BorderRadius.circular(1.0),
+              // Left Column: Avatar + Continuous Vertical Line when replies expanded
+              Column(
+                children: [
+                  _buildAvatar(
+                    avatarUrl: widget.comment.user.avatar,
+                    name: widget.comment.user.name,
+                    username: widget.comment.user.username,
+                    size: 36.0,
                   ),
+                  if (hasReplies && _isRepliesExpanded)
+                    Container(
+                      width: 1.8,
+                      height: 36.0,
+                      margin: const EdgeInsets.only(top: 4.0),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD1D5DB),
+                        borderRadius: BorderRadius.circular(1.0),
+                      ),
+                    ),
+                ],
+              ),
+
+              const SizedBox(width: 12.0),
+
+              // Right Column: Header, Content, Images, Action Bar
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeaderRow(context),
+                    const SizedBox(height: 3.0),
+                    _buildContentText(),
+                    if (widget.comment.images.isNotEmpty) ...[
+                      const SizedBox(height: 8.0),
+                      _buildImagesSection(context),
+                    ],
+                    const SizedBox(height: 4.0),
+                    _buildActionBar(context),
+                  ],
                 ),
+              ),
             ],
           ),
 
-
-          SizedBox(width: widget.isNested ? 10.0 : 12.0),
-
-          // Right Column: Header, Content, Images, Action Bar, and Nested Replies
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header Line
-                _buildHeaderRow(context),
-
-                const SizedBox(height: 3.0),
-
-                // Comment Content Text
-                _buildContentText(),
-
-                // Attached Images (if any)
-                if (widget.comment.images.isNotEmpty) ...[
-                  const SizedBox(height: 8.0),
-                  _buildImagesSection(context),
-                ],
-
-                const SizedBox(height: 4.0),
-
-                // Action Bar (Like + Reply + Share)
-                _buildActionBar(context),
-
-                // Nested Replies (if any)
-                if (hasReplies) ...[
-                  const SizedBox(height: 4.0),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: widget.comment.replies.length,
-                    itemBuilder: (context, idx) {
-                      final reply = widget.comment.replies[idx];
-                      return PostCommentItem(
-                        key: ValueKey(reply.id),
-                        comment: reply,
-                        isNested: true,
-                        onReplyClick: widget.onReplyClick,
-                        onUserClick: widget.onUserClick,
-                        onImageClick: widget.onImageClick,
-                      );
-                    },
-                  ),
-                ],
-              ],
-            ),
-          ),
+          // Replies Section with Threads-style Curved Elbow Line
+          if (hasReplies) ...[
+            if (!_isRepliesExpanded)
+              CommentRepliesExpandRow(
+                replies: widget.comment.replies,
+                isExpanded: false,
+                onToggle: () => setState(() => _isRepliesExpanded = true),
+              )
+            else ...[
+              Padding(
+                padding: const EdgeInsets.only(left: 14.0),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: widget.comment.replies.length,
+                  itemBuilder: (context, idx) {
+                    final reply = widget.comment.replies[idx];
+                    final isLast = idx == widget.comment.replies.length - 1;
+                    return PostCommentItem(
+                      key: ValueKey(reply.id),
+                      comment: reply,
+                      isNested: true,
+                      isLastNested: isLast,
+                      parentCommentId: widget.comment.id,
+                      onReplyClick: widget.onReplyClick,
+                      onReplyToComment: widget.onReplyToComment,
+                      onUserClick: widget.onUserClick,
+                      onImageClick: widget.onImageClick,
+                      onLikeToggle: widget.onLikeToggle,
+                    );
+                  },
+                ),
+              ),
+              CommentRepliesExpandRow(
+                replies: widget.comment.replies,
+                isExpanded: true,
+                onToggle: () => setState(() => _isRepliesExpanded = false),
+              ),
+            ],
+          ],
         ],
       ),
     );
@@ -562,12 +638,16 @@ class _PostCommentItemState extends State<PostCommentItem>
 
         const SizedBox(width: 16.0),
 
-        // Reply Button with custom FeedCommentIcon
         GestureDetector(
           onTap: () {
-            widget.onReplyClick?.call(
-              widget.comment.user.username ?? widget.comment.user.name,
-            );
+            HapticFeedback.lightImpact();
+            final targetUsername = widget.comment.user.username ?? widget.comment.user.name;
+            final targetId = widget.parentCommentId ?? widget.comment.id;
+            if (widget.onReplyToComment != null) {
+              widget.onReplyToComment!(targetUsername, targetId);
+            } else {
+              widget.onReplyClick?.call(targetUsername);
+            }
           },
           behavior: HitTestBehavior.opaque,
           child: const Padding(

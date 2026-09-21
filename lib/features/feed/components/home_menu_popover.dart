@@ -293,7 +293,7 @@ class HomeMenuPopover extends StatelessWidget {
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
         title: const Text(
-          'Keluar dari Snapan Market?',
+          'Keluar dari Snaps?',
           style: TextStyle(
             fontSize: 17.0,
             fontWeight: FontWeight.w700,

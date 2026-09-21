@@ -13,9 +13,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'Snapan Market Mobile',
-        short_name: 'Snapan Market',
-        description: 'Platform E-Commerce & Marketplace PWA Terpercaya',
+        name: 'Snaps',
+        short_name: 'Snaps',
+        description: 'Snaps - Social Marketplace SMKN 8 Jakarta',
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',

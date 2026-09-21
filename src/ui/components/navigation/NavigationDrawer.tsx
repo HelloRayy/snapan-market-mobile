@@ -81,7 +81,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             <div className="w-7.5 h-7.5 rounded-xl bg-neutral-100 border border-neutral-200/80 flex items-center justify-center text-slate-900 shadow-2xs">
               <Store className="w-4 h-4 text-slate-900 stroke-[2.2]" />
             </div>
-            <span className="font-bold text-[15px] text-slate-900 tracking-tight leading-snug">Snapan Market</span>
+            <span className="font-bold text-[15px] text-slate-900 tracking-tight leading-snug">Snaps</span>
           </div>
 
           <button

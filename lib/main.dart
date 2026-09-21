@@ -14,7 +14,7 @@ class SnapanMarketApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Snapan Market',
+      title: 'Snaps',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,

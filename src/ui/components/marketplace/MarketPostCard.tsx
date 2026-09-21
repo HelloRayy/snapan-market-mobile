@@ -96,7 +96,7 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share({
-          title: item.title || 'Snapan Market',
+          title: item.title || 'Snaps',
           text: shareText,
           url: shareUrl,
         });
@@ -312,8 +312,8 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
           const shareUrl = window.location.href;
           if (navigator.share) {
             navigator.share({
-              title: item.title || 'Snapan Market',
-              text: `Cek postingan ${item.seller.name} di Snapan Market!`,
+              title: item.title || 'Snaps',
+              text: `Cek postingan ${item.seller.name} di Snaps!`,
               url: shareUrl,
             }).catch(() => {});
           } else {

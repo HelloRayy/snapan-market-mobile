@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Search, Menu, X } from 'lucide-react';
 
-// Custom Snapan Logotype Text Header
+// Custom Snaps Logotype Text Header
 export const SnapanLogotype: React.FC<{ className?: string }> = ({
   className = "text-[17px] font-black tracking-[-0.03em] text-slate-900 select-none",
 }) => (
   <span className={className}>
-    Snapan <span className="text-[#008bff]">Market</span>
+    Snaps<span className="text-[#0052FF]">.</span>
   </span>
 );
 

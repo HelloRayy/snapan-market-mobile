@@ -46,7 +46,8 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final ScrollController _scrollController = ScrollController();
   late final AnimationController _barsAnimationController;
-  late final Animation<double> _barsAnimation;
+  late final Animation<double> _navAnimation;
+  late final Animation<double> _fabAnimation;
   FeedTab _activeTab = FeedTab.forYou;
   HomeNavTab _currentNavTab = HomeNavTab.home;
   bool _isBarsVisible = true;
@@ -60,13 +61,26 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     _posts = List<MarketPostModel>.from(kMockMarketPosts);
     _barsAnimationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 260),
+      duration: const Duration(milliseconds: 320),
       value: 1.0,
     );
-    _barsAnimation = CurvedAnimation(
+
+    // Transitions.dev Motion Tokens:
+    // --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1)
+    // Stagger Sequence: Nav bar rises first (0% -> 65%), then FAB follows (35% -> 100%)
+    const easeSmoothOut = Cubic(0.22, 1.0, 0.36, 1.0);
+    const easeIn = Cubic(0.32, 0.0, 0.67, 0.0);
+
+    _navAnimation = CurvedAnimation(
       parent: _barsAnimationController,
-      curve: Curves.easeOutCubic,
-      reverseCurve: Curves.easeInCubic,
+      curve: const Interval(0.0, 0.65, curve: easeSmoothOut),
+      reverseCurve: const Interval(0.0, 0.65, curve: easeIn),
+    );
+
+    _fabAnimation = CurvedAnimation(
+      parent: _barsAnimationController,
+      curve: const Interval(0.35, 1.0, curve: easeSmoothOut),
+      reverseCurve: const Interval(0.35, 1.0, curve: easeIn),
     );
   }
 
@@ -470,18 +484,21 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
               ],
             ),
           ),
-          // Collapsible Bottom Nav & Floating Action Button Overlay
+          // Collapsible Bottom Nav & Floating Action Button Overlay (Staggered: Nav first, then FAB)
           AnimatedBuilder(
-            animation: _barsAnimation,
+            animation: _barsAnimationController,
             builder: (context, _) {
-              final double progress = _barsAnimation.value;
-              final double navOffsetY = (1.0 - progress) * 110.0;
-              final double navOpacity = progress.clamp(0.0, 1.0);
-              final double fabOffsetY = (1.0 - progress) * 80.0;
+              final double navProgress = _navAnimation.value;
+              final double fabProgress = _fabAnimation.value;
+
+              final double navOffsetY = (1.0 - navProgress) * 110.0;
+              final double navOpacity = navProgress.clamp(0.0, 1.0);
+
+              final double fabOffsetY = (1.0 - fabProgress) * 80.0;
               final double fabScale =
-                  (_currentNavTab == HomeNavTab.home ? 1.0 : 0.0) * (0.6 + 0.4 * progress);
+                  (_currentNavTab == HomeNavTab.home ? 1.0 : 0.0) * (0.6 + 0.4 * fabProgress);
               final double fabOpacity =
-                  (_currentNavTab == HomeNavTab.home ? 1.0 : 0.0) * navOpacity;
+                  (_currentNavTab == HomeNavTab.home ? 1.0 : 0.0) * fabProgress.clamp(0.0, 1.0);
 
               return Stack(
                 children: [
@@ -497,7 +514,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                           scale: fabScale,
                           alignment: Alignment.bottomRight,
                           child: IgnorePointer(
-                            ignoring: _currentNavTab != HomeNavTab.home || progress < 0.2,
+                            ignoring: _currentNavTab != HomeNavTab.home || fabProgress < 0.2,
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.end,
@@ -529,7 +546,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                       child: Opacity(
                         opacity: navOpacity,
                         child: IgnorePointer(
-                          ignoring: progress < 0.1,
+                          ignoring: navProgress < 0.1,
                           child: RepaintBoundary(
                             child: HomeBottomNavBar(
                               currentTab: _currentNavTab,

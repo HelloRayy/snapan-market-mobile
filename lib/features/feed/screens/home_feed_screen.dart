@@ -45,39 +45,32 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final ScrollController _scrollController = ScrollController();
-  AnimationController? _barsAnimationController;
-  Animation<double>? _navAnimation;
+  AnimationController? _fabAnimationController;
   Animation<double>? _fabAnimation;
   FeedTab _activeTab = FeedTab.forYou;
   HomeNavTab _currentNavTab = HomeNavTab.home;
-  bool _isBarsVisible = true;
+  bool _isFabVisible = true;
 
   // Dynamic Feed Posts list initialized with rich Indonesian school dataset
   late List<MarketPostModel> _posts;
 
   void _initAnimations() {
-    _barsAnimationController ??= AnimationController(
+    _fabAnimationController ??= AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 320),
+      duration: const Duration(milliseconds: 240),
       value: 1.0,
     );
 
     // Transitions.dev Motion Tokens:
-    // --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1)
-    // Stagger Sequence: Nav bar rises first (0% -> 65%), then FAB follows (35% -> 100%)
+    // --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1) - entry pop-in
+    // --ease-smooth-in: cubic-bezier(0.32, 0, 0.67, 0) - exit dismissal
     const easeSmoothOut = Cubic(0.22, 1.0, 0.36, 1.0);
     const easeIn = Cubic(0.32, 0.0, 0.67, 0.0);
 
-    _navAnimation = CurvedAnimation(
-      parent: _barsAnimationController!,
-      curve: const Interval(0.0, 0.65, curve: easeSmoothOut),
-      reverseCurve: const Interval(0.0, 0.65, curve: easeIn),
-    );
-
     _fabAnimation = CurvedAnimation(
-      parent: _barsAnimationController!,
-      curve: const Interval(0.35, 1.0, curve: easeSmoothOut),
-      reverseCurve: const Interval(0.35, 1.0, curve: easeIn),
+      parent: _fabAnimationController!,
+      curve: easeSmoothOut,
+      reverseCurve: easeIn,
     );
   }
 
@@ -99,27 +92,31 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   @override
   void dispose() {
     HomeMenuPopover.dismiss();
-    _barsAnimationController?.dispose();
+    _fabAnimationController?.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
-  void _hideBars() {
-    if (_isBarsVisible) {
-      _isBarsVisible = false;
-      _barsAnimationController?.reverse();
+  void _hideFab() {
+    if (_isFabVisible) {
+      _isFabVisible = false;
+      _fabAnimationController?.reverse();
     }
   }
 
-  void _showBars() {
-    if (!_isBarsVisible) {
-      _isBarsVisible = true;
-      _barsAnimationController?.forward();
+  void _showFab() {
+    if (!_isFabVisible) {
+      _isFabVisible = true;
+      _fabAnimationController?.forward();
     }
   }
+
+  // Backward compatibility alias methods
+  void _hideBars() => _hideFab();
+  void _showBars() => _showFab();
 
   void _scrollToTop() {
-    _showBars();
+    _showFab();
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
         0,
@@ -340,18 +337,18 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           final double currentOffset = notification.metrics.pixels;
 
           if (currentOffset <= 20.0) {
-            // Reveal bars near top of the feed
-            _showBars();
+            // Reveal FAB near top of the feed
+            _showFab();
           } else if (delta > 4.0 && currentOffset > 40.0) {
-            // User scrolled down into content - hide bottom bar and FAB smoothly
-            _hideBars();
+            // User scrolled down into content - hide FAB smoothly
+            _hideFab();
           } else if (delta < -4.0) {
-            // User scrolled up - reveal bottom bar and FAB
-            _showBars();
+            // User scrolled up - reveal FAB
+            _showFab();
           }
         } else if (notification is ScrollEndNotification) {
-          // When scrolling stops completely, reveal bottom bar and FAB again
-          _showBars();
+          // When scrolling stops completely, reveal FAB again
+          _showFab();
         }
         return false;
       },
@@ -444,7 +441,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
   @override
   Widget build(BuildContext context) {
-    if (_barsAnimationController == null || _navAnimation == null || _fabAnimation == null) {
+    if (_fabAnimationController == null || _fabAnimation == null) {
       _initAnimations();
     }
     final posts = _displayedPosts;
@@ -469,7 +466,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                 setState(() {
                   _currentNavTab = HomeNavTab.home;
                 });
-                _showBars();
+                _showFab();
               }
             : null,
         onTitleTap: () {
@@ -492,93 +489,73 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
               ],
             ),
           ),
-          // Collapsible Bottom Nav & Floating Action Button Overlay (Staggered: Nav first, then FAB)
-          AnimatedBuilder(
-            animation: _barsAnimationController!,
-            builder: (context, _) {
-              final double navProgress = _navAnimation?.value ?? 1.0;
-              final double fabProgress = _fabAnimation?.value ?? 1.0;
+          // Animated Floating Action Button Stack (Focused motion on FAB: hide on scroll down, reveal on scroll up/stop)
+          Positioned(
+            right: 20.0,
+            bottom: fabBottomVisible,
+            child: AnimatedBuilder(
+              animation: _fabAnimationController!,
+              builder: (context, _) {
+                final double fabProgress = _fabAnimation?.value ?? 1.0;
+                final double fabOffsetY = (1.0 - fabProgress) * 48.0;
+                final double fabScale =
+                    (_currentNavTab == HomeNavTab.home ? 1.0 : 0.0) * (0.6 + 0.4 * fabProgress);
+                final double fabOpacity =
+                    (_currentNavTab == HomeNavTab.home ? 1.0 : 0.0) * fabProgress.clamp(0.0, 1.0);
 
-              final double navOffsetY = (1.0 - navProgress) * 110.0;
-              final double navOpacity = navProgress.clamp(0.0, 1.0);
-
-              final double fabOffsetY = (1.0 - fabProgress) * 80.0;
-              final double fabScale =
-                  (_currentNavTab == HomeNavTab.home ? 1.0 : 0.0) * (0.6 + 0.4 * fabProgress);
-              final double fabOpacity =
-                  (_currentNavTab == HomeNavTab.home ? 1.0 : 0.0) * fabProgress.clamp(0.0, 1.0);
-
-              return Stack(
-                children: [
-                  // Floating Action Button Stack (Mode Jualan + Utas)
-                  Positioned(
-                    right: 20.0,
-                    bottom: fabBottomVisible,
-                    child: Transform.translate(
-                      offset: Offset(0, fabOffsetY),
-                      child: Opacity(
-                        opacity: fabOpacity,
-                        child: Transform.scale(
-                          scale: fabScale,
-                          alignment: Alignment.bottomRight,
-                          child: IgnorePointer(
-                            ignoring: _currentNavTab != HomeNavTab.home || fabProgress < 0.2,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                // White Marketplace Squircle Button (Langsung buka Mode Jualan)
-                                FloatingMarketplaceSquircleButton(
-                                  onTap: () => _handleCreatePost(PostMode.product),
-                                ),
-                                const SizedBox(height: 8.0),
-                                // Azure Blue Squircle Button (Buka Buat Utas)
-                                FloatingPlusSquircleButton(
-                                  onTap: () => _handleCreatePost(PostMode.thread),
-                                ),
-                              ],
+                return Transform.translate(
+                  offset: Offset(0, fabOffsetY),
+                  child: Opacity(
+                    opacity: fabOpacity,
+                    child: Transform.scale(
+                      scale: fabScale,
+                      alignment: Alignment.bottomRight,
+                      child: IgnorePointer(
+                        ignoring: _currentNavTab != HomeNavTab.home || fabProgress < 0.2,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            // White Marketplace Squircle Button (Langsung buka Mode Jualan)
+                            FloatingMarketplaceSquircleButton(
+                              onTap: () => _handleCreatePost(PostMode.product),
                             ),
-                          ),
+                            const SizedBox(height: 8.0),
+                            // Azure Blue Squircle Button (Buka Buat Utas)
+                            FloatingPlusSquircleButton(
+                              onTap: () => _handleCreatePost(PostMode.thread),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
-
-                  // Floating Bottom Nav Bar
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    child: Transform.translate(
-                      offset: Offset(0, navOffsetY),
-                      child: Opacity(
-                        opacity: navOpacity,
-                        child: IgnorePointer(
-                          ignoring: navProgress < 0.1,
-                          child: RepaintBoundary(
-                            child: HomeBottomNavBar(
-                              currentTab: _currentNavTab,
-                              hasUnreadMessages: true,
-                              unreadMessagesCount: 20,
-                              userAvatar:
-                                  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
-                              onSearchTap: _handleSearchTap,
-                              onPostTap: _handleCreatePost,
-                              onTabSelected: (tab) {
-                                setState(() {
-                                  _currentNavTab = tab;
-                                });
-                                _showBars();
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
+                );
+              },
+            ),
+          ),
+          // Fixed Bottom Nav Bar (No scroll motion, persistent dock)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: RepaintBoundary(
+              child: HomeBottomNavBar(
+                currentTab: _currentNavTab,
+                hasUnreadMessages: true,
+                unreadMessagesCount: 20,
+                userAvatar:
+                    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
+                onSearchTap: _handleSearchTap,
+                onPostTap: _handleCreatePost,
+                onTabSelected: (tab) {
+                  setState(() {
+                    _currentNavTab = tab;
+                  });
+                  _showFab();
+                },
+              ),
+            ),
           ),
         ],
       ),

@@ -445,19 +445,51 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   }
 
   Widget _buildNavTabScreen({required int index, required Widget child}) {
-    final bool isCurrent = _currentNavTab.index == index;
+    final int currentIndex = _currentNavTab.index;
+    final bool isCurrent = currentIndex == index;
 
-    return IgnorePointer(
-      ignoring: !isCurrent,
-      child: AnimatedOpacity(
-        opacity: isCurrent ? 1.0 : 0.0,
-        duration: const Duration(milliseconds: 220),
-        curve: const Cubic(0.22, 1.0, 0.36, 1.0),
+    // Transitions-polish: 08-page-side-by-side
+    // Directional page horizontal slide:
+    // - Active page (index == currentIndex): centered at Offset.zero with full opacity
+    // - Future pages (index > currentIndex): staged offscreen right at Offset(1.0, 0.0)
+    // - Past pages (index < currentIndex): retired slightly left in parallax at Offset(-0.25, 0.0) with fade-out
+    final Offset targetOffset = isCurrent
+        ? Offset.zero
+        : (index > currentIndex
+            ? const Offset(1.0, 0.0)
+            : const Offset(-0.25, 0.0));
+
+    final double targetOpacity = isCurrent
+        ? 1.0
+        : (index > currentIndex ? 1.0 : 0.0);
+
+    return Positioned.fill(
+      child: IgnorePointer(
+        ignoring: !isCurrent,
         child: AnimatedSlide(
-          offset: isCurrent ? Offset.zero : const Offset(0, 0.02),
-          duration: const Duration(milliseconds: 220),
+          offset: targetOffset,
+          duration: const Duration(milliseconds: 280),
           curve: const Cubic(0.22, 1.0, 0.36, 1.0),
-          child: child,
+          child: AnimatedOpacity(
+            opacity: targetOpacity,
+            duration: const Duration(milliseconds: 240),
+            curve: const Cubic(0.22, 1.0, 0.36, 1.0),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: index > 0
+                    ? const [
+                        BoxShadow(
+                          color: Color(0x14000000),
+                          blurRadius: 18.0,
+                          offset: Offset(-4, 0),
+                        ),
+                      ]
+                    : null,
+              ),
+              child: child,
+            ),
+          ),
         ),
       ),
     );
@@ -502,10 +534,11 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       ),
       body: Stack(
         children: [
-          // Smooth Tab Screens Cross-fade & Subtle Rise (Preserves State)
+          // Smooth Tab Screens Directional Slide-in (Preserves State)
           Positioned.fill(
             child: Stack(
               fit: StackFit.expand,
+              clipBehavior: Clip.none,
               children: [
                 _buildNavTabScreen(
                   index: 0,

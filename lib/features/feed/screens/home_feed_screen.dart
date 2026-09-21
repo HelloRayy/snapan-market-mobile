@@ -335,20 +335,20 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
         if (notification is ScrollUpdateNotification) {
           final double delta = notification.scrollDelta ?? 0.0;
           final double currentOffset = notification.metrics.pixels;
+          final double maxScroll = notification.metrics.maxScrollExtent;
 
-          if (currentOffset <= 20.0) {
-            // Reveal FAB near top of the feed
+          if (currentOffset <= 10.0) {
+            // At or near top of the feed: always show FAB
             _showFab();
-          } else if (delta > 4.0 && currentOffset > 40.0) {
-            // User scrolled down into content - hide FAB smoothly
-            _hideFab();
-          } else if (delta < -4.0) {
-            // User scrolled up - reveal FAB
-            _showFab();
+          } else if (currentOffset < maxScroll) {
+            if (delta > 2.0) {
+              // User scrolled down: hide FAB and keep it hidden
+              _hideFab();
+            } else if (delta < -2.0) {
+              // User scrolled up: reveal FAB
+              _showFab();
+            }
           }
-        } else if (notification is ScrollEndNotification) {
-          // When scrolling stops completely, reveal FAB again
-          _showFab();
         }
         return false;
       },

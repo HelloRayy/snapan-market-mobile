@@ -48,11 +48,11 @@ class _FloatingMarketplaceSquircleButtonState
           duration: const Duration(milliseconds: 80),
           curve: Curves.easeOutCubic,
           child: Container(
-            width: 48.0,
-            height: 40.0,
+            width: 38.0,
+            height: 32.0,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(16.0),
+              borderRadius: BorderRadius.circular(12.0),
               border: Border.all(
                 color: const Color(0xFFE2E8F0),
                 width: 1.0,
@@ -60,8 +60,8 @@ class _FloatingMarketplaceSquircleButtonState
               boxShadow: const [
                 BoxShadow(
                   color: Color(0x14000000),
-                  blurRadius: 8.0,
-                  offset: Offset(0, 4),
+                  blurRadius: 6.0,
+                  offset: Offset(0, 3),
                 ),
               ],
             ),
@@ -69,7 +69,7 @@ class _FloatingMarketplaceSquircleButtonState
               child: Icon(
                 Icons.storefront_rounded,
                 color: Color(0xFF0F172A),
-                size: 22.0,
+                size: 18.0,
               ),
             ),
           ),

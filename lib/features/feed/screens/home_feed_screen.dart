@@ -514,13 +514,13 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                         ignoring: _currentNavTab != HomeNavTab.home || fabProgress < 0.2,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             // White Marketplace Squircle Button (Langsung buka Mode Jualan)
                             FloatingMarketplaceSquircleButton(
                               onTap: () => _handleCreatePost(PostMode.product),
                             ),
-                            const SizedBox(height: 8.0),
+                            const SizedBox(height: 6.0),
                             // Azure Blue Squircle Button (Buka Buat Utas)
                             FloatingPlusSquircleButton(
                               onTap: () => _handleCreatePost(PostMode.thread),

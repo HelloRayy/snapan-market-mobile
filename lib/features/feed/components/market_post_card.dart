@@ -211,6 +211,21 @@ class _MarketPostCardState extends State<MarketPostCard>
               const SizedBox(height: 10.0),
               PostMediaSection(item: widget.item, isDetail: true, onImageClick: widget.onImageClick),
             ],
+            if (widget.item.locationTag != null && widget.item.locationTag!.isNotEmpty) ...[
+              const SizedBox(height: 6.0),
+              Text(
+                widget.item.locationTag!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF64748B),
+                  letterSpacing: -0.1,
+                  height: 1.25,
+                ),
+              ),
+            ],
             const SizedBox(height: 10.0),
             PostActionBar(
               item: widget.item,
@@ -271,6 +286,21 @@ class _MarketPostCardState extends State<MarketPostCard>
                   if (widget.item.images.isNotEmpty) ...[
                     const SizedBox(height: 10.0),
                     PostMediaSection(item: widget.item, isDetail: false, onImageClick: widget.onImageClick),
+                  ],
+                  if (widget.item.locationTag != null && widget.item.locationTag!.isNotEmpty) ...[
+                    const SizedBox(height: 6.0),
+                    Text(
+                      widget.item.locationTag!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF64748B),
+                        letterSpacing: -0.1,
+                        height: 1.25,
+                      ),
+                    ),
                   ],
                   const SizedBox(height: 8.0),
                   PostActionBar(

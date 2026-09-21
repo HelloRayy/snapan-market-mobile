@@ -42,59 +42,68 @@ class SearchBarHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(color: Color(0xFFF1F5F9), width: 0.5),
+        ),
+      ),
       child: SafeArea(
         bottom: false,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // 1. TOP HEADER ROW: Back Button (<) + "Cari" Title (Image 3 layout)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8.0, 4.0, 16.0, 4.0),
-              child: SizedBox(
-                height: 44.0,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    IconButton(
+            // 1. TOP HEADER ROW: Identical layout to HomeFeedHeader (52px, back arrow, centered 'Cari' title)
+            Container(
+              height: 52.0,
+              padding: const EdgeInsets.symmetric(horizontal: 14.0),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Leading Back Arrow (matching Chat, Aktivitas, Profil)
+                  Positioned(
+                    left: 0,
+                    child: IconButton(
                       icon: const Icon(
-                        LucideIcons.chevronLeft,
-                        size: 26.0,
-                        color: Color(0xFF0F172A),
+                        LucideIcons.arrowLeft,
+                        size: 22.0,
+                        color: Color(0xFF1A1A1A),
                       ),
                       onPressed: onBack,
                       tooltip: 'Kembali',
-                      splashRadius: 22.0,
+                      splashRadius: 20.0,
                       highlightColor: Colors.transparent,
                       hoverColor: Colors.transparent,
                     ),
-                    const SizedBox(width: 2.0),
-                    const Text(
+                  ),
+
+                  // Center Title: 'Cari' (matching standard 17.5px SF Pro bold)
+                  const Center(
+                    child: Text(
                       'Cari',
                       style: TextStyle(
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF0F172A),
-                        letterSpacing: -0.5,
+                        fontFamily: 'SF Pro',
+                        fontSize: 17.5,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF1A1A1A),
+                        letterSpacing: -0.4,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
 
-            const SizedBox(height: 4.0),
-
-            // 2. SEARCHBAR INPUT ROW (Height: 44px, clean minimalist Image 3)
+            // 2. SEARCHBAR INPUT ROW (Height: 42px)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 10.0),
               child: Container(
-                height: 44.0,
+                height: 42.0,
                 padding: const EdgeInsets.symmetric(horizontal: 14.0),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5F9), // Soft gray canvas matching reference
-                  borderRadius: BorderRadius.circular(14.0),
+                  color: const Color(0xFFF1F5F9),
+                  borderRadius: BorderRadius.circular(12.0),
                   border: Border.all(color: const Color(0xFFE2E8F0), width: 0.8),
                 ),
                 child: Row(

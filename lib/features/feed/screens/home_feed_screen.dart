@@ -45,9 +45,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final ScrollController _scrollController = ScrollController();
-  late final AnimationController _barsAnimationController;
-  late final Animation<double> _navAnimation;
-  late final Animation<double> _fabAnimation;
+  AnimationController? _barsAnimationController;
+  Animation<double>? _navAnimation;
+  Animation<double>? _fabAnimation;
   FeedTab _activeTab = FeedTab.forYou;
   HomeNavTab _currentNavTab = HomeNavTab.home;
   bool _isBarsVisible = true;
@@ -55,11 +55,8 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   // Dynamic Feed Posts list initialized with rich Indonesian school dataset
   late List<MarketPostModel> _posts;
 
-  @override
-  void initState() {
-    super.initState();
-    _posts = List<MarketPostModel>.from(kMockMarketPosts);
-    _barsAnimationController = AnimationController(
+  void _initAnimations() {
+    _barsAnimationController ??= AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 320),
       value: 1.0,
@@ -72,16 +69,23 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     const easeIn = Cubic(0.32, 0.0, 0.67, 0.0);
 
     _navAnimation = CurvedAnimation(
-      parent: _barsAnimationController,
+      parent: _barsAnimationController!,
       curve: const Interval(0.0, 0.65, curve: easeSmoothOut),
       reverseCurve: const Interval(0.0, 0.65, curve: easeIn),
     );
 
     _fabAnimation = CurvedAnimation(
-      parent: _barsAnimationController,
+      parent: _barsAnimationController!,
       curve: const Interval(0.35, 1.0, curve: easeSmoothOut),
       reverseCurve: const Interval(0.35, 1.0, curve: easeIn),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _posts = List<MarketPostModel>.from(kMockMarketPosts);
+    _initAnimations();
   }
 
   @override
@@ -89,12 +93,13 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     super.reassemble();
     // Auto syncs mock dataset on every Hot Reload (r)
     _posts = List<MarketPostModel>.from(kMockMarketPosts);
+    _initAnimations();
   }
 
   @override
   void dispose() {
     HomeMenuPopover.dismiss();
-    _barsAnimationController.dispose();
+    _barsAnimationController?.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -102,14 +107,14 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   void _hideBars() {
     if (_isBarsVisible) {
       _isBarsVisible = false;
-      _barsAnimationController.reverse();
+      _barsAnimationController?.reverse();
     }
   }
 
   void _showBars() {
     if (!_isBarsVisible) {
       _isBarsVisible = true;
-      _barsAnimationController.forward();
+      _barsAnimationController?.forward();
     }
   }
 
@@ -439,6 +444,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
   @override
   Widget build(BuildContext context) {
+    if (_barsAnimationController == null || _navAnimation == null || _fabAnimation == null) {
+      _initAnimations();
+    }
     final posts = _displayedPosts;
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
     final double fabBottomVisible = (bottomPadding > 0 ? bottomPadding + 8.0 : 18.0) + 62.0 + 12.0;
@@ -486,10 +494,10 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           ),
           // Collapsible Bottom Nav & Floating Action Button Overlay (Staggered: Nav first, then FAB)
           AnimatedBuilder(
-            animation: _barsAnimationController,
+            animation: _barsAnimationController!,
             builder: (context, _) {
-              final double navProgress = _navAnimation.value;
-              final double fabProgress = _fabAnimation.value;
+              final double navProgress = _navAnimation?.value ?? 1.0;
+              final double fabProgress = _fabAnimation?.value ?? 1.0;
 
               final double navOffsetY = (1.0 - navProgress) * 110.0;
               final double navOpacity = navProgress.clamp(0.0, 1.0);

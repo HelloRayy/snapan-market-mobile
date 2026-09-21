@@ -332,6 +332,11 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   Widget _buildHomeFeedTab(List<MarketPostModel> posts) {
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
+        // Strictly ignore horizontal scrolls (e.g. image carousels) and nested scrollables
+        if (notification.depth != 0 || notification.metrics.axis != Axis.vertical) {
+          return false;
+        }
+
         if (notification is ScrollUpdateNotification) {
           final double delta = notification.scrollDelta ?? 0.0;
           final double currentOffset = notification.metrics.pixels;

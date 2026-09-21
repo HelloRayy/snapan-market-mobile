@@ -444,6 +444,25 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     );
   }
 
+  Widget _buildNavTabScreen({required int index, required Widget child}) {
+    final bool isCurrent = _currentNavTab.index == index;
+
+    return IgnorePointer(
+      ignoring: !isCurrent,
+      child: AnimatedOpacity(
+        opacity: isCurrent ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 220),
+        curve: const Cubic(0.22, 1.0, 0.36, 1.0),
+        child: AnimatedSlide(
+          offset: isCurrent ? Offset.zero : const Offset(0, 0.02),
+          duration: const Duration(milliseconds: 220),
+          curve: const Cubic(0.22, 1.0, 0.36, 1.0),
+          child: child,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_fabAnimationController == null || _fabAnimation == null) {
@@ -483,14 +502,27 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       ),
       body: Stack(
         children: [
+          // Smooth Tab Screens Cross-fade & Subtle Rise (Preserves State)
           Positioned.fill(
-            child: IndexedStack(
-              index: _currentNavTab.index,
+            child: Stack(
+              fit: StackFit.expand,
               children: [
-                _buildHomeFeedTab(posts),
-                const DirectMessagesScreen(showBackButton: false, showAppBar: false),
-                const ActivityScreen(showAppBar: false),
-                ProfileScreen(showAppBar: false, onOpenMenu: _handleMenuTap),
+                _buildNavTabScreen(
+                  index: 0,
+                  child: _buildHomeFeedTab(posts),
+                ),
+                _buildNavTabScreen(
+                  index: 1,
+                  child: const DirectMessagesScreen(showBackButton: false, showAppBar: false),
+                ),
+                _buildNavTabScreen(
+                  index: 2,
+                  child: const ActivityScreen(showAppBar: false),
+                ),
+                _buildNavTabScreen(
+                  index: 3,
+                  child: ProfileScreen(showAppBar: false, onOpenMenu: _handleMenuTap),
+                ),
               ],
             ),
           ),
@@ -503,20 +535,23 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
               builder: (context, _) {
                 final double fabProgress = _fabAnimation?.value ?? 1.0;
                 final double fabOffsetY = (1.0 - fabProgress) * 48.0;
-                final double fabScale =
-                    (_currentNavTab == HomeNavTab.home ? 1.0 : 0.0) * (0.6 + 0.4 * fabProgress);
-                final double fabOpacity =
-                    (_currentNavTab == HomeNavTab.home ? 1.0 : 0.0) * fabProgress.clamp(0.0, 1.0);
+                final double fabScale = 0.6 + 0.4 * fabProgress;
+                final double fabOpacity = fabProgress.clamp(0.0, 1.0);
+                final bool isHomeTab = _currentNavTab == HomeNavTab.home;
 
-                return Transform.translate(
-                  offset: Offset(0, fabOffsetY),
-                  child: Opacity(
-                    opacity: fabOpacity,
-                    child: Transform.scale(
-                      scale: fabScale,
-                      alignment: Alignment.bottomRight,
+                return AnimatedOpacity(
+                  opacity: isHomeTab ? fabOpacity : 0.0,
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOutCubic,
+                  child: AnimatedScale(
+                    scale: isHomeTab ? fabScale : 0.6,
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOutCubic,
+                    alignment: Alignment.bottomRight,
+                    child: Transform.translate(
+                      offset: Offset(0, fabOffsetY),
                       child: IgnorePointer(
-                        ignoring: _currentNavTab != HomeNavTab.home || fabProgress < 0.2,
+                        ignoring: !isHomeTab || fabProgress < 0.2,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.center,

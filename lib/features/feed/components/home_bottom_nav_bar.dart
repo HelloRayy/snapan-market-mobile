@@ -125,53 +125,88 @@ class HomeBottomNavBar extends StatelessWidget {
                       ],
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      // Tab 1: Home
-                      _DockTabItem(
-                        isActive: currentTab == HomeNavTab.home,
-                        label: 'Home',
-                        glyph: HomeNavGlyph(
-                          isActive: currentTab == HomeNavTab.home,
-                        ),
-                        onTap: () => onTabSelected(HomeNavTab.home),
-                      ),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final double tabWidth = constraints.maxWidth / 4.0;
+                      return Stack(
+                        children: [
+                          // Sliding Selection Capsule (transitions-dev: 16-tabs-sliding)
+                          AnimatedPositioned(
+                            duration: const Duration(milliseconds: 250),
+                            curve: const Cubic(0.22, 1.0, 0.36, 1.0),
+                            left: currentTab.index * tabWidth + 2.0,
+                            top: 0.0,
+                            width: tabWidth - 4.0,
+                            height: 56.0,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryPastel, // #EEF0FF
+                                borderRadius: BorderRadius.circular(28.0),
+                                border: Border.all(
+                                  color: AppColors.primaryBorder, // #D8DBFE
+                                  width: 1.0,
+                                ),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Color(0x0C3D38F5),
+                                    blurRadius: 8.0,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              // Tab 1: Home
+                              _DockTabItem(
+                                isActive: currentTab == HomeNavTab.home,
+                                label: 'Home',
+                                glyph: HomeNavGlyph(
+                                  isActive: currentTab == HomeNavTab.home,
+                                ),
+                                onTap: () => onTabSelected(HomeNavTab.home),
+                              ),
 
-                      // Tab 2: Pesan (Chats)
-                      _DockTabItem(
-                        isActive: currentTab == HomeNavTab.messages,
-                        label: 'Pesan',
-                        glyph: PaperPlaneNavGlyph(
-                          isActive: currentTab == HomeNavTab.messages,
-                          hasBadge: hasUnreadMessages,
-                          badgeCount: unreadMessagesCount,
-                        ),
-                        onTap: () => onTabSelected(HomeNavTab.messages),
-                      ),
+                              // Tab 2: Pesan (Chats)
+                              _DockTabItem(
+                                isActive: currentTab == HomeNavTab.messages,
+                                label: 'Pesan',
+                                glyph: PaperPlaneNavGlyph(
+                                  isActive: currentTab == HomeNavTab.messages,
+                                  hasBadge: hasUnreadMessages,
+                                  badgeCount: unreadMessagesCount,
+                                ),
+                                onTap: () => onTabSelected(HomeNavTab.messages),
+                              ),
 
-                      // Tab 3: Aktivitas
-                      _DockTabItem(
-                        isActive: currentTab == HomeNavTab.activity,
-                        label: 'Aktivitas',
-                        glyph: HeartNavGlyph(
-                          isActive: currentTab == HomeNavTab.activity,
-                          hasBadge: hasUnreadActivity,
-                        ),
-                        onTap: () => onTabSelected(HomeNavTab.activity),
-                      ),
+                              // Tab 3: Aktivitas
+                              _DockTabItem(
+                                isActive: currentTab == HomeNavTab.activity,
+                                label: 'Aktivitas',
+                                glyph: HeartNavGlyph(
+                                  isActive: currentTab == HomeNavTab.activity,
+                                  hasBadge: hasUnreadActivity,
+                                ),
+                                onTap: () => onTabSelected(HomeNavTab.activity),
+                              ),
 
-                      // Tab 4: Profil
-                      _DockTabItem(
-                        isActive: currentTab == HomeNavTab.profile,
-                        label: 'Profil',
-                        glyph: UserNavGlyph(
-                          isActive: currentTab == HomeNavTab.profile,
-                          userAvatar: userAvatar,
-                        ),
-                        onTap: () => onTabSelected(HomeNavTab.profile),
-                      ),
-                    ],
+                              // Tab 4: Profil
+                              _DockTabItem(
+                                isActive: currentTab == HomeNavTab.profile,
+                                label: 'Profil',
+                                glyph: UserNavGlyph(
+                                  isActive: currentTab == HomeNavTab.profile,
+                                  userAvatar: userAvatar,
+                                ),
+                                onTap: () => onTabSelected(HomeNavTab.profile),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),
@@ -228,23 +263,10 @@ class _DockTabItemState extends State<_DockTabItem> {
           scale: _isPressed ? 0.92 : 1.0,
           duration: const Duration(milliseconds: 100),
           curve: Curves.easeOutCubic,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 220),
-            curve: Curves.easeOutCubic,
+          child: Container(
             height: 56.0,
             padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
-            decoration: BoxDecoration(
-              color: widget.isActive
-                  ? selectionFill
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(28.0),
-              border: widget.isActive
-                  ? Border.all(
-                      color: selectionBorder,
-                      width: 1.0,
-                    )
-                  : null,
-            ),
+            color: Colors.transparent,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -263,17 +285,21 @@ class _DockTabItemState extends State<_DockTabItem> {
 
                 const SizedBox(height: 2.0),
 
-                // Label Text (active #008BFF 700, inactive #1A1A1A 500)
-                Text(
-                  widget.label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                // Label Text with smooth color transition
+                AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOutCubic,
                   style: TextStyle(
                     fontSize: 10.0,
                     fontWeight: widget.isActive ? FontWeight.w700 : FontWeight.w500,
                     color: widget.isActive ? activeColor : inactiveColor,
                     letterSpacing: -0.2,
                     height: 1.2,
+                  ),
+                  child: Text(
+                    widget.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

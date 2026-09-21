@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { ArrowLeft, Users, ChevronRight, Search } from 'lucide-react';
 import { MobileSearchBar, MobileSearchBarRef } from '@/ui/components/ui/MobileSearchBar';
 import { MarketPostCard } from '@/ui/components/marketplace/MarketPostCard';
@@ -157,16 +157,18 @@ const INITIAL_SUGGESTED_ACCOUNTS: SuggestedAccount[] = [
 
 type SearchTab = 'top' | 'latest' | 'profiles';
 
-// Semantic Tokenized Relevance Scorer
-function calculateTokenScore(query: string, fields: (string | undefined)[], engagementBoost = 0): number {
-  if (!query.trim()) return 0;
-  const tokens = query
+// Semantic Tokenized Relevance Scorer - Extract tokens once per query
+function extractTokens(query: string): string[] {
+  if (!query.trim()) return [];
+  return query
     .toLowerCase()
     .trim()
     .replace(/[^\w\s]/gi, ' ')
     .split(/\s+/)
     .filter((t) => t.length > 1);
+}
 
+function calculateTokenScore(tokens: string[], fields: (string | undefined)[], engagementBoost = 0): number {
   if (tokens.length === 0) return 0;
 
   let matchedTokens = 0;
@@ -217,28 +219,28 @@ export const SearchPage: React.FC<SearchPageProps> = ({
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, []);
 
-  const toggleFollow = (id: string, e: React.MouseEvent) => {
+  const toggleFollow = useCallback((id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setFollowingMap((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
-  };
+  }, []);
 
-  const handleQueryChange = (val: string) => {
+  const handleQueryChange = useCallback((val: string) => {
     setSearchQuery(val);
     if (!val.trim()) {
       setIsSubmitted(false);
     }
-  };
+  }, []);
 
-  const handleCancelSearch = () => {
+  const handleCancelSearch = useCallback(() => {
     setSearchQuery('');
     setIsSubmitted(false);
     searchBarRef.current?.blur();
-  };
+  }, []);
 
-  const handleExecuteSearch = () => {
+  const handleExecuteSearch = useCallback(() => {
     if (searchQuery.trim()) {
       setIsSubmitted(true);
       searchBarRef.current?.blur();
@@ -246,11 +248,14 @@ export const SearchPage: React.FC<SearchPageProps> = ({
         document.activeElement.blur();
       }
     }
-  };
+  }, [searchQuery]);
+
+  // Extract query tokens once per searchQuery change
+  const queryTokens = useMemo(() => extractTokens(searchQuery), [searchQuery]);
 
   // 1. Scored Matching Posts (Tokenized Relevance)
   const scoredPosts = useMemo(() => {
-    if (!searchQuery.trim()) return [];
+    if (queryTokens.length === 0) return [];
 
     return MOCK_MARKET_POSTS.map((post) => {
       const fields = [
@@ -262,10 +267,10 @@ export const SearchPage: React.FC<SearchPageProps> = ({
         ...(post.threadChain?.map((t) => t.caption) || []),
       ];
       const engagement = ((post.likesCount || 0) * 0.05) + ((post.commentsCount || 0) * 0.1);
-      const score = calculateTokenScore(searchQuery, fields, engagement);
+      const score = calculateTokenScore(queryTokens, fields, engagement);
       return { post, score };
     }).filter((item) => item.score > 0);
-  }, [searchQuery]);
+  }, [queryTokens]);
 
   // Tab 1: Terpopuler
   const popularPosts = useMemo(() => {
@@ -279,16 +284,16 @@ export const SearchPage: React.FC<SearchPageProps> = ({
 
   // Tab 3: Profil
   const scoredAccounts = useMemo(() => {
-    if (!searchQuery.trim()) return INITIAL_SUGGESTED_ACCOUNTS;
+    if (queryTokens.length === 0) return INITIAL_SUGGESTED_ACCOUNTS;
     return INITIAL_SUGGESTED_ACCOUNTS.map((account) => {
       const fields = [account.username, account.fullName, account.bio];
-      const score = calculateTokenScore(searchQuery, fields);
+      const score = calculateTokenScore(queryTokens, fields);
       return { account, score };
     })
       .filter((item) => item.score > 0)
       .sort((a, b) => b.score - a.score)
       .map((item) => item.account);
-  }, [searchQuery]);
+  }, [queryTokens]);
 
   const hasSearchQuery = searchQuery.trim().length > 0;
 

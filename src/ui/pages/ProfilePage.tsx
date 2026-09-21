@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import {
   ArrowLeft,
   Menu,
@@ -17,12 +17,15 @@ import { SettingsBottomSheet } from '@/ui/components/profile/SettingsBottomSheet
 import { MediaLightboxModal } from '@/ui/components/marketplace/MediaLightboxModal';
 import { ClickableVerifiedBadge } from '@/ui/components/marketplace/VerifiedBadgeModal';
 import { SnapanLogotype } from '@/ui/components/marketplace/MarketHeader';
-import { CreatePostModal } from '@/ui/components/marketplace/CreatePostModal';
 import { MOCK_MARKET_POSTS, MOCK_USER_REPLIES } from '@/data/mockMarketData';
 import { MarketPostItem } from '@/types/marketFeed';
 import { useAuth } from '@/ui/hooks/useAuth';
 import { createMarketPost } from '@/services/api/marketPostsService';
 import { triggerHaptic } from '@/utils/haptics';
+
+const CreatePostModal = lazy(() =>
+  import('@/ui/components/marketplace/CreatePostModal').then((m) => ({ default: m.CreatePostModal }))
+);
 
 interface ProfilePageProps {
   username?: string;
@@ -147,46 +150,58 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     }
   }, [cleanTargetUsername, isOwnProfile, profile]);
 
-  // Filter posts strictly matching this profile
-  const userPosts = MOCK_MARKET_POSTS.filter(
-    (p) =>
-      p.seller.username?.toLowerCase() === cleanTargetUsername ||
-      p.seller.name.toLowerCase().replace(/\s+/g, '') === cleanTargetUsername ||
-      (isOwnProfile && (p.seller.username === 'radityarayhannnn' || p.seller.id === 'user-1' || p.seller.id === 'user-thread-1'))
-  );
-
-  const allUserPosts = isOwnProfile ? [...createdPosts, ...userPosts] : userPosts;
-  const displayPosts = allUserPosts.filter((p) => {
-    if (!searchQuery) return true;
-    return p.caption.toLowerCase().includes(searchQuery.toLowerCase());
-  });
-
-  // Filtered Replies strictly involving this user
-  const displayReplies = MOCK_USER_REPLIES.filter((t) => {
-    const isUserReply =
-      t.reply.user.username?.toLowerCase() === cleanTargetUsername ||
-      t.reply.user.name.toLowerCase().replace(/\s+/g, '') === cleanTargetUsername ||
-      (isOwnProfile && (t.reply.user.username === 'radityarayhannnn' || t.reply.user.name === 'Raditya Rayhan'));
-
-    if (!isUserReply && !isOwnProfile) return false;
-
-    if (!searchQuery) return true;
-    return (
-      t.reply.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.parentPost.caption.toLowerCase().includes(searchQuery.toLowerCase())
+  // Filter posts strictly matching this profile (memoized)
+  const userPosts = useMemo(() => {
+    return MOCK_MARKET_POSTS.filter(
+      (p) =>
+        p.seller.username?.toLowerCase() === cleanTargetUsername ||
+        p.seller.name.toLowerCase().replace(/\s+/g, '') === cleanTargetUsername ||
+        (isOwnProfile && (p.seller.username === 'radityarayhannnn' || p.seller.id === 'user-1' || p.seller.id === 'user-thread-1'))
     );
-  });
+  }, [cleanTargetUsername, isOwnProfile]);
 
-  // Extract all media items linked to their parent post for Media Tab
-  const mediaItems = allUserPosts.flatMap((post) =>
-    (post.images || []).map((imgUrl) => ({
-      imgUrl,
-      post,
-    }))
-  ).filter(m => {
-    if (!searchQuery) return true;
-    return m.post.caption.toLowerCase().includes(searchQuery.toLowerCase());
-  });
+  const allUserPosts = useMemo(() => {
+    return isOwnProfile ? [...createdPosts, ...userPosts] : userPosts;
+  }, [isOwnProfile, createdPosts, userPosts]);
+
+  const displayPosts = useMemo(() => {
+    if (!searchQuery.trim()) return allUserPosts;
+    const q = searchQuery.toLowerCase().trim();
+    return allUserPosts.filter((p) => p.caption.toLowerCase().includes(q));
+  }, [allUserPosts, searchQuery]);
+
+  // Filtered Replies strictly involving this user (memoized)
+  const displayReplies = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return MOCK_USER_REPLIES.filter((t) => {
+      const isUserReply =
+        t.reply.user.username?.toLowerCase() === cleanTargetUsername ||
+        t.reply.user.name.toLowerCase().replace(/\s+/g, '') === cleanTargetUsername ||
+        (isOwnProfile && (t.reply.user.username === 'radityarayhannnn' || t.reply.user.name === 'Raditya Rayhan'));
+
+      if (!isUserReply && !isOwnProfile) return false;
+
+      if (!q) return true;
+      return (
+        t.reply.content.toLowerCase().includes(q) ||
+        t.parentPost.caption.toLowerCase().includes(q)
+      );
+    });
+  }, [cleanTargetUsername, isOwnProfile, searchQuery]);
+
+  // Extract all media items linked to their parent post for Media Tab (memoized)
+  const mediaItems = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return allUserPosts.flatMap((post) =>
+      (post.images || []).map((imgUrl) => ({
+        imgUrl,
+        post,
+      }))
+    ).filter((m) => {
+      if (!q) return true;
+      return m.post.caption.toLowerCase().includes(q);
+    });
+  }, [allUserPosts, searchQuery]);
 
   const handleCreatePost = async (newPostData: Partial<MarketPostItem>) => {
     const activeSellerId = profile?.id || user?.id || 'current-user-id';
@@ -700,12 +715,16 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
 
       {/* Create New Post Full-Screen Modal */}
-      <CreatePostModal
-        isOpen={isCreateModalOpen}
-        initialMode={selectedPostMode}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmitPost={handleCreatePost}
-      />
+      {isCreateModalOpen && (
+        <Suspense fallback={null}>
+          <CreatePostModal
+            isOpen={isCreateModalOpen}
+            initialMode={selectedPostMode}
+            onClose={() => setIsCreateModalOpen(false)}
+            onSubmitPost={handleCreatePost}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

@@ -1,21 +1,37 @@
-import { useEffect } from 'react';
-import { OnboardingScreen } from '@/ui/components/onboarding/OnboardingScreen';
-import { PwaLandingPage } from '@/ui/components/pwa/PwaLandingPage';
+import { useEffect, Suspense, lazy } from 'react';
 import { HomePage } from '@/ui/pages/HomePage';
-import { PostDetailPage } from '@/ui/pages/PostDetailPage';
 import { ProfilePage } from '@/ui/pages/ProfilePage';
 import { SearchPage } from '@/ui/pages/SearchPage';
 import { DirectMessagesPage } from '@/ui/pages/DirectMessagesPage';
-import { ActiveChatOverlay } from '@/ui/components/chat/ActiveChatOverlay';
 import { NavigationDrawer } from '@/ui/components/navigation/NavigationDrawer';
-import { CreatePostModal } from '@/ui/components/marketplace/CreatePostModal';
 import { MarketBottomNav } from '@/ui/components/marketplace/MarketBottomNav';
-import { ColorShowcasePage } from '@/ui/pages/ColorShowcasePage';
-import { CampusMapPage } from '@/ui/pages/CampusMapPage';
 import { useAuth } from '@/ui/hooks/useAuth';
 import { useSmoothScroll } from '@/ui/hooks/useSmoothScroll';
 import { useAppNavigation, getPostFromLocation } from '@/ui/navigation/useAppNavigation';
 import { triggerHaptic } from '@/utils/haptics';
+
+// Dynamic lazy imports for heavy secondary routes & overlays to reduce initial bundle
+const OnboardingScreen = lazy(() =>
+  import('@/ui/components/onboarding/OnboardingScreen').then((m) => ({ default: m.OnboardingScreen }))
+);
+const PwaLandingPage = lazy(() =>
+  import('@/ui/components/pwa/PwaLandingPage').then((m) => ({ default: m.PwaLandingPage }))
+);
+const PostDetailPage = lazy(() =>
+  import('@/ui/pages/PostDetailPage').then((m) => ({ default: m.PostDetailPage }))
+);
+const ActiveChatOverlay = lazy(() =>
+  import('@/ui/components/chat/ActiveChatOverlay').then((m) => ({ default: m.ActiveChatOverlay }))
+);
+const CreatePostModal = lazy(() =>
+  import('@/ui/components/marketplace/CreatePostModal').then((m) => ({ default: m.CreatePostModal }))
+);
+const ColorShowcasePage = lazy(() =>
+  import('@/ui/pages/ColorShowcasePage').then((m) => ({ default: m.ColorShowcasePage }))
+);
+const CampusMapPage = lazy(() =>
+  import('@/ui/pages/CampusMapPage').then((m) => ({ default: m.CampusMapPage }))
+);
 
 export function App() {
   useSmoothScroll();
@@ -86,7 +102,7 @@ export function App() {
   }, [handleOpenPostDetail, navigateToProfile]);
 
   return (
-    <>
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
       {/* 1. First-time User Onboarding Screen */}
       {!hasCompletedOnboarding ? (
         <OnboardingScreen
@@ -260,7 +276,7 @@ export function App() {
           )}
         </div>
       )}
-    </>
+    </Suspense>
   );
 }
 

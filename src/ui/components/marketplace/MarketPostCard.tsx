@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { ToastNotification } from '@/ui/components/ui/ToastNotification';
@@ -19,14 +19,14 @@ interface MarketPostCardProps {
   variant?: 'feed' | 'detail';
 }
 
-export const MarketPostCard: React.FC<MarketPostCardProps> = ({
+export const MarketPostCard = memo<MarketPostCardProps>(function MarketPostCard({
   item,
   onAddToCart: _onAddToCart,
   onPostClick,
   onTopicClick,
   onUserClick,
   variant = 'feed',
-}) => {
+}) {
   const [isLiked, setIsLiked] = useState(item.isLiked || false);
   const [likesCount, setLikesCount] = useState(item.likesCount);
 
@@ -331,4 +331,4 @@ export const MarketPostCard: React.FC<MarketPostCardProps> = ({
       />
     </article>
   );
-};
+});

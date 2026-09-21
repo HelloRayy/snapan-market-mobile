@@ -1,12 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
 import { Loader2, Sparkles } from 'lucide-react';
 import { MarketHeader } from '@/ui/components/marketplace/MarketHeader';
 import { MarketPostCard } from '@/ui/components/marketplace/MarketPostCard';
-import { CreatePostModal } from '@/ui/components/marketplace/CreatePostModal';
 import { InstallBanner } from '@/ui/components/pwa/InstallBanner';
 import { OfflineBanner } from '@/ui/components/pwa/OfflineBanner';
 import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
 import { MarketPostItem } from '@/types/marketFeed';
+
+const CreatePostModal = lazy(() =>
+  import('@/ui/components/marketplace/CreatePostModal').then((m) => ({ default: m.CreatePostModal }))
+);
 import { useCartStore } from '@/ui/store/cartStore';
 import { useAuth } from '@/ui/hooks/useAuth';
 import { getMarketPosts, createMarketPost, mapSupabasePostToFeedItem } from '@/services/api/marketPostsService';
@@ -137,10 +140,11 @@ export const HomePage: React.FC<HomePageProps> = ({
   // Auth Hook Integration
   const { user, profile } = useAuth();
 
-  // Cart Store Integration
+  // Cart Store Integration (Optimized selectors)
   const addItemToCart = useCartStore((state) => state.addItem);
-  const totalCartItems = useCartStore((state) => state.getTotalItems());
-  const totalCartPrice = useCartStore((state) => state.getTotalPrice());
+  const cartItems = useCartStore((state) => state.items);
+  const totalCartItems = useMemo(() => cartItems.reduce((acc, item) => acc + item.quantity, 0), [cartItems]);
+  const totalCartPrice = useMemo(() => cartItems.reduce((acc, item) => acc + (item.product.price * item.quantity), 0), [cartItems]);
 
   // Handle Create New Post
   const handleCreatePost = async (newPostData: Partial<MarketPostItem>) => {
@@ -237,14 +241,18 @@ export const HomePage: React.FC<HomePageProps> = ({
     );
   };
 
-  // Filtered Items
-  const filteredItems = items.filter((item) => {
-    return (
-      item.caption.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.seller.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.seller.classGroup.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
+  // Filtered Items (memoized)
+  const filteredItems = useMemo(() => {
+    if (!searchQuery.trim()) return items;
+    const q = searchQuery.toLowerCase().trim();
+    return items.filter((item) => {
+      return (
+        item.caption.toLowerCase().includes(q) ||
+        item.seller.name.toLowerCase().includes(q) ||
+        item.seller.classGroup.toLowerCase().includes(q)
+      );
+    });
+  }, [items, searchQuery]);
 
   // Simulated Infinite Scroll Loader
   const loadMoreItems = () => {
@@ -397,12 +405,16 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </main>
       {/* Create New Post Full-Screen Modal (with Bottom Segmented Slider) */}
-      <CreatePostModal
-        isOpen={isCreateModalOpen}
-        initialMode={selectedPostMode}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmitPost={handleCreatePost}
-      />
+      {isCreateModalOpen && (
+        <Suspense fallback={null}>
+          <CreatePostModal
+            isOpen={isCreateModalOpen}
+            initialMode={selectedPostMode}
+            onClose={() => setIsCreateModalOpen(false)}
+            onSubmitPost={handleCreatePost}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

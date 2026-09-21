@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback, memo } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, MoreHorizontal, Repeat2, Send, ChevronRight, PartyPopper, Box } from 'lucide-react';
 import { UserReplyThread, MarketPostItem } from '@/types/marketFeed';
@@ -17,12 +17,12 @@ interface ReplyThreadCardProps {
   onUserClick?: (username: string) => void;
 }
 
-export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
+export const ReplyThreadCard = memo<ReplyThreadCardProps>(function ReplyThreadCard({
   thread,
   onPostClick,
   onTopicClick,
   onUserClick,
-}) => {
+}) {
   const { parentPost, reply } = thread;
 
   // Parent Post State
@@ -52,7 +52,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
   const scrollLeftRef = useRef(0);
   const hasDraggedRef = useRef(false);
 
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (e.button !== 0 && e.pointerType === 'mouse') return;
     if (!scrollContainerRef.current) return;
     isMouseDownRef.current = true;
@@ -65,78 +65,86 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
         e.currentTarget.setPointerCapture(e.pointerId);
       } catch {}
     }
-  };
+  }, []);
 
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+  const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (!isMouseDownRef.current || !scrollContainerRef.current) return;
     const dx = e.clientX - startXRef.current;
     if (Math.abs(dx) > 3) {
       hasDraggedRef.current = true;
       scrollContainerRef.current.scrollLeft = scrollLeftRef.current - dx * 1.3;
     }
-  };
+  }, []);
 
-  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+  const handlePointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     isMouseDownRef.current = false;
     if (e.pointerType === 'mouse') {
       try {
         e.currentTarget.releasePointerCapture(e.pointerId);
       } catch {}
     }
-  };
+  }, []);
 
-  const handleParentLike = (e: React.MouseEvent) => {
+  const handleParentLike = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    if (parentLiked) {
-      triggerHaptic('light');
-      setParentLiked(false);
-      setParentLikesCount((prev) => Math.max(0, prev - 1));
-    } else {
-      triggerHaptic('medium');
-      setParentLiked(true);
-      setParentLikesCount((prev) => prev + 1);
-    }
-  };
+    setParentLiked((prev) => {
+      if (prev) {
+        triggerHaptic('light');
+        setParentLikesCount((c) => Math.max(0, c - 1));
+        return false;
+      } else {
+        triggerHaptic('medium');
+        setParentLikesCount((c) => c + 1);
+        return true;
+      }
+    });
+  }, []);
 
-  const handleParentRepost = (e: React.MouseEvent) => {
+  const handleParentRepost = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    if (parentReposted) {
-      triggerHaptic('light');
-      setParentReposted(false);
-      setParentRepostsCount((prev) => Math.max(0, prev - 1));
-    } else {
-      triggerHaptic('medium');
-      setParentReposted(true);
-      setParentRepostsCount((prev) => prev + 1);
-    }
-  };
+    setParentReposted((prev) => {
+      if (prev) {
+        triggerHaptic('light');
+        setParentRepostsCount((c) => Math.max(0, c - 1));
+        return false;
+      } else {
+        triggerHaptic('medium');
+        setParentRepostsCount((c) => c + 1);
+        return true;
+      }
+    });
+  }, []);
 
-  const handleReplyLike = (e: React.MouseEvent) => {
+  const handleReplyLike = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    if (replyLiked) {
-      triggerHaptic('light');
-      setReplyLiked(false);
-      setReplyLikesCount((prev) => Math.max(0, prev - 1));
-    } else {
-      triggerHaptic('medium');
-      setReplyLiked(true);
-      setReplyLikesCount((prev) => prev + 1);
-    }
-  };
+    setReplyLiked((prev) => {
+      if (prev) {
+        triggerHaptic('light');
+        setReplyLikesCount((c) => Math.max(0, c - 1));
+        return false;
+      } else {
+        triggerHaptic('medium');
+        setReplyLikesCount((c) => c + 1);
+        return true;
+      }
+    });
+  }, []);
 
-  const handleReplyRepost = (e: React.MouseEvent) => {
+  const handleReplyRepost = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     triggerHaptic('medium');
-    if (replyReposted) {
-      setReplyReposted(false);
-      setReplyRepostsCount((prev) => Math.max(0, prev - 1));
-    } else {
-      setReplyReposted(true);
-      setReplyRepostsCount((prev) => prev + 1);
-    }
-  };
+    setReplyReposted((prev) => {
+      if (prev) {
+        setReplyRepostsCount((c) => Math.max(0, c - 1));
+        return false;
+      } else {
+        setReplyRepostsCount((c) => c + 1);
+        return true;
+      }
+    });
+  }, []);
 
-  const handleShare = (e: React.MouseEvent, title: string, text: string) => {
+  const handleShare = useCallback((e: React.MouseEvent, title: string, text: string) => {
     e.stopPropagation();
     triggerHaptic('light');
     if (navigator.share) {
@@ -149,7 +157,7 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
       navigator.clipboard.writeText(window.location.href);
       alert('Tautan postingan berhasil disalin!');
     }
-  };
+  }, []);
 
   const renderParentImages = () => {
     if (!parentPost.images || parentPost.images.length === 0) return null;
@@ -654,4 +662,4 @@ export const ReplyThreadCard: React.FC<ReplyThreadCardProps> = ({
 
     </article>
   );
-};
+});

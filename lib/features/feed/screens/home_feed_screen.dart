@@ -10,6 +10,7 @@ import 'package:snapan_market/features/feed/components/home_feed_header.dart';
 import 'package:snapan_market/features/feed/components/home_feed_tab_switch.dart';
 import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart';
 import 'package:snapan_market/features/feed/components/floating_plus_squircle_button.dart';
+import 'package:snapan_market/features/feed/components/floating_marketplace_squircle_button.dart';
 import 'package:snapan_market/features/feed/components/home_menu_popover.dart';
 import 'package:snapan_market/features/feed/components/market_post_card.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
@@ -408,7 +409,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                       ),
                     ),
                   ],
-                  const SizedBox(height: 120.0), // Bottom clearance for floating dock & FAB
+                  const SizedBox(height: 160.0), // Bottom clearance for floating dock & vertical duo FAB
                 ],
               ),
             ),
@@ -469,7 +470,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
               return Stack(
                 children: [
-                  // Floating Action Button
+                  // Floating Action Button Stack (Mode Jualan + Utas)
                   Positioned(
                     right: 20.0,
                     bottom: currentFabBottom,
@@ -483,8 +484,20 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                         opacity: _currentNavTab == HomeNavTab.home ? 1.0 : 0.0,
                         child: IgnorePointer(
                           ignoring: _currentNavTab != HomeNavTab.home,
-                          child: FloatingPlusSquircleButton(
-                            onTap: _handleCreatePost,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              // White Marketplace Squircle Button (Langsung buka Mode Jualan)
+                              FloatingMarketplaceSquircleButton(
+                                onTap: () => _handleCreatePost(PostMode.product),
+                              ),
+                              const SizedBox(height: 8.0),
+                              // Azure Blue Squircle Button (Buka Buat Utas)
+                              FloatingPlusSquircleButton(
+                                onTap: () => _handleCreatePost(PostMode.thread),
+                              ),
+                            ],
                           ),
                         ),
                       ),

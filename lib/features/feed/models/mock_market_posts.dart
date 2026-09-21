@@ -1,5 +1,4 @@
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
-import 'package:snapan_market/features/feed/models/post_comment_model.dart';
 
 /// Backward-compatibility alias
 const mockMarketPosts = kMockMarketPosts;

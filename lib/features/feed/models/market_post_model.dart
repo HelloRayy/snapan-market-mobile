@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:snapan_market/features/feed/models/post_comment_model.dart';
 export 'package:snapan_market/features/feed/models/mock_market_posts.dart';
 
 typedef MarketPost = MarketPostModel;

@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:snapan_market/core/components/kumo_button.dart";
+import "package:flutter/services.dart";
 import "package:snapan_market/features/search/models/search_models.dart";
 
 class SuggestedAccountTile extends StatelessWidget {
@@ -133,15 +133,46 @@ class SuggestedAccountTile extends StatelessWidget {
             ),
             const SizedBox(width: 10.0),
 
-            // Follow Button (Kumo UI Black Button System - 78x30px)
-            KumoButton(
-              text: account.isFollowing ? "Mengikuti" : "Ikuti",
-              variant: account.isFollowing ? KumoButtonVariant.secondary : KumoButtonVariant.black,
-              width: 78.0,
-              height: 30.0,
-              borderRadius: 8.0,
-              padding: const EdgeInsets.symmetric(horizontal: 0.0),
-              onPressed: onFollowTap,
+            // Follow Button (White Container - 78x32px, radius 10px matching Profile Action Buttons)
+            GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                onFollowTap?.call();
+              },
+              behavior: HitTestBehavior.opaque,
+              child: Container(
+                width: 78.0,
+                height: 32.0,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: account.isFollowing
+                      ? const Color(0xFFF1F5F9)
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(10.0),
+                  border: Border.all(
+                    color: const Color(0xFFE2E8F0),
+                    width: 1.0,
+                  ),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x08000000),
+                      blurRadius: 2.0,
+                      offset: Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  account.isFollowing ? "Mengikuti" : "Ikuti",
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w600,
+                    color: account.isFollowing
+                        ? const Color(0xFF64748B)
+                        : const Color(0xFF0F172A),
+                    letterSpacing: -0.1,
+                  ),
+                ),
+              ),
             ),
           ],
         ),

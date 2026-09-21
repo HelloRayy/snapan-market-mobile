@@ -49,85 +49,34 @@ class SearchBarHeader extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // 1. TOP HEADER ROW (Height: 48px, Menu + Logo @ + "Buka aplikasi")
+            // 1. TOP HEADER ROW: Back Button (<) + "Cari" Title (Image 3 layout)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14.0),
+              padding: const EdgeInsets.fromLTRB(8.0, 4.0, 16.0, 4.0),
               child: SizedBox(
-                height: 48.0,
-                child: Stack(
-                  alignment: Alignment.center,
+                height: 44.0,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Left: Menu Hamburger Button (or Back arrow if query active)
-                    Positioned(
-                      left: 0,
-                      child: IconButton(
-                        icon: Icon(
-                          hasQuery && onBack != null
-                              ? LucideIcons.arrowLeft
-                              : LucideIcons.menu,
-                          size: 22.0,
-                          color: const Color(0xFF1A1A1A),
-                        ),
-                        onPressed: hasQuery && onBack != null
-                            ? onBack
-                            : (onMenuTap ?? onBack),
-                        tooltip: 'Menu Navigasi',
-                        splashRadius: 20.0,
-                        highlightColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
+                    IconButton(
+                      icon: const Icon(
+                        LucideIcons.chevronLeft,
+                        size: 26.0,
+                        color: Color(0xFF0F172A),
                       ),
+                      onPressed: onBack,
+                      tooltip: 'Kembali',
+                      splashRadius: 22.0,
+                      highlightColor: Colors.transparent,
+                      hoverColor: Colors.transparent,
                     ),
-
-                    // Center: Threads Logo Glyph '@'
-                    Center(
-                      child: GestureDetector(
-                        onTap: onBack,
-                        behavior: HitTestBehavior.opaque,
-                        child: const Text(
-                          '@',
-                          style: TextStyle(
-                            fontFamily: 'SF Pro',
-                            fontSize: 27.0,
-                            fontWeight: FontWeight.w900,
-                            color: Color(0xFF0F172A),
-                            height: 1.0,
-                            letterSpacing: -1.5,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // Right: "Buka aplikasi" action pill button
-                    Positioned(
-                      right: 0,
-                      child: GestureDetector(
-                        onTap: onOpenAppTap ?? onBack,
-                        behavior: HitTestBehavior.opaque,
-                        child: Container(
-                          height: 34.0,
-                          padding: const EdgeInsets.symmetric(horizontal: 14.0),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF0F172A), // Pure Slate Ink pill
-                            borderRadius: BorderRadius.circular(10.0),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Color(0x14000000),
-                                blurRadius: 4.0,
-                                offset: Offset(0, 1),
-                              ),
-                            ],
-                          ),
-                          child: const Text(
-                            'Buka aplikasi',
-                            style: TextStyle(
-                              fontSize: 13.0,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                              letterSpacing: -0.2,
-                            ),
-                          ),
-                        ),
+                    const SizedBox(width: 2.0),
+                    const Text(
+                      'Cari',
+                      style: TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF0F172A),
+                        letterSpacing: -0.5,
                       ),
                     ),
                   ],
@@ -135,9 +84,9 @@ class SearchBarHeader extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 6.0),
+            const SizedBox(height: 4.0),
 
-            // 2. SEARCHBAR INPUT ROW (Height: 44px)
+            // 2. SEARCHBAR INPUT ROW (Height: 44px, clean minimalist Image 3)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Container(
@@ -187,7 +136,7 @@ class SearchBarHeader extends StatelessWidget {
                       ),
                     ),
 
-                    // Clear Query Button (x) or Filter Icon (sliders)
+                    // Clear Query Button (x) when query is present
                     if (hasQuery)
                       GestureDetector(
                         onTap: onClear,
@@ -206,19 +155,6 @@ class SearchBarHeader extends StatelessWidget {
                               size: 13.0,
                               color: Colors.white,
                             ),
-                          ),
-                        ),
-                      )
-                    else
-                      GestureDetector(
-                        onTap: onFilterTap,
-                        behavior: HitTestBehavior.opaque,
-                        child: const Padding(
-                          padding: EdgeInsets.only(left: 6.0),
-                          child: Icon(
-                            LucideIcons.slidersHorizontal,
-                            size: 17.0,
-                            color: Color(0xFF64748B),
                           ),
                         ),
                       ),

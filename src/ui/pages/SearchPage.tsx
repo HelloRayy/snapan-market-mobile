@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { SlidersHorizontal, ArrowLeft, Users, ChevronRight, Search } from 'lucide-react';
+import { ArrowLeft, Users, ChevronRight, Search } from 'lucide-react';
 import { MobileSearchBar, MobileSearchBarRef } from '@/ui/components/ui/MobileSearchBar';
 import { MarketPostCard } from '@/ui/components/marketplace/MarketPostCard';
 import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
@@ -300,6 +300,21 @@ export const SearchPage: React.FC<SearchPageProps> = ({
         style={{ paddingTop: 'max(0.625rem, env(safe-area-inset-top, 0px))' }}
       >
         <div className="max-w-xl mx-auto w-full">
+          {/* Header Row: Back button (<) + Cari Title (Image 3 layout) */}
+          <div className="flex items-center gap-2 px-1 pb-2 pt-0.5">
+            {onBack && (
+              <button
+                type="button"
+                onClick={onBack}
+                className="w-8 h-8 -ml-1 rounded-full flex items-center justify-center text-slate-900 hover:bg-neutral-100 active:scale-95 transition-all cursor-pointer"
+                aria-label="Kembali"
+              >
+                <ArrowLeft className="w-5 h-5 stroke-[2.5]" />
+              </button>
+            )}
+            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Cari</h1>
+          </div>
+
           {/* Top Search Bar Row */}
           <MobileSearchBar
             ref={searchBarRef}
@@ -312,36 +327,9 @@ export const SearchPage: React.FC<SearchPageProps> = ({
               }
             }}
             leftIcon={
-              onBack ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (isSubmitted || hasSearchQuery) {
-                      setSearchQuery('');
-                      setIsSubmitted(false);
-                    } else {
-                      onBack();
-                    }
-                  }}
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-slate-700 hover:text-slate-950 hover:bg-neutral-200/70 active:scale-90 transition-all cursor-pointer shrink-0 mr-1"
-                  aria-label="Kembali"
-                >
-                  <ArrowLeft className="w-4.5 h-4.5 stroke-[2.2]" />
-                </button>
-              ) : (
-                <div className="w-8 h-8 flex items-center justify-center text-neutral-400 shrink-0 mr-1">
-                  <Search className="w-4.5 h-4.5 stroke-[2.2]" />
-                </div>
-              )
-            }
-            rightAction={
-              <button
-                type="button"
-                className="inline-flex rounded-full h-8 w-8 items-center justify-center text-neutral-400 hover:text-slate-800 hover:bg-neutral-200/60 active:scale-90 transition-all cursor-pointer shrink-0 ml-1"
-                aria-label="Filter Pencarian"
-              >
-                <SlidersHorizontal className="w-4 h-4 stroke-[2]" />
-              </button>
+              <div className="w-8 h-8 flex items-center justify-center text-neutral-400 shrink-0 mr-1">
+                <Search className="w-4.5 h-4.5 stroke-[2.2]" />
+              </div>
             }
             variant="rounded"
             onCancel={handleCancelSearch}
@@ -505,16 +493,13 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                     <button
                       type="button"
                       onClick={(e) => toggleFollow(account.id, e)}
-                      className={`relative shrink-0 w-[88px] h-[34px] rounded-[11px] text-[13px] font-semibold transition-all active:scale-[0.94] flex items-center justify-center cursor-pointer select-none overflow-hidden ${
+                      className={`relative shrink-0 w-[80px] h-[32px] rounded-[10px] text-[13.5px] font-semibold transition-all active:scale-[0.96] flex items-center justify-center cursor-pointer select-none border ${
                         isFollowing
-                          ? 'border border-neutral-300 text-slate-700 bg-white hover:bg-neutral-50 shadow-2xs font-semibold'
-                          : 'border border-zinc-900 text-white bg-gradient-to-b from-zinc-800 to-zinc-950 hover:from-zinc-700 shadow-md shadow-black/25 font-bold'
+                          ? 'border-neutral-200 text-slate-500 bg-neutral-100 hover:bg-neutral-200/60'
+                          : 'border-neutral-200 text-slate-900 bg-white hover:bg-neutral-50 shadow-2xs'
                       }`}
                     >
-                      {!isFollowing && (
-                        <span className="absolute inset-x-0 top-0 h-[1.2px] bg-white/35 pointer-events-none" />
-                      )}
-                      <span className="relative z-10 tracking-tight">
+                      <span className="tracking-tight">
                         {isFollowing ? 'Mengikuti' : 'Ikuti'}
                       </span>
                     </button>
@@ -677,16 +662,13 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                           <button
                             type="button"
                             onClick={(e) => toggleFollow(account.id, e)}
-                            className={`relative shrink-0 w-[88px] h-[34px] rounded-[11px] text-[13px] font-semibold transition-all active:scale-[0.94] flex items-center justify-center cursor-pointer select-none overflow-hidden ${
+                            className={`relative shrink-0 w-[80px] h-[32px] rounded-[10px] text-[13.5px] font-semibold transition-all active:scale-[0.96] flex items-center justify-center cursor-pointer select-none border ${
                               isFollowing
-                                ? 'border border-neutral-300 text-slate-700 bg-white hover:bg-neutral-50 shadow-2xs font-semibold'
-                                : 'border border-zinc-900 text-white bg-gradient-to-b from-zinc-800 to-zinc-950 hover:from-zinc-700 shadow-md shadow-black/25 font-bold'
+                                ? 'border-neutral-200 text-slate-500 bg-neutral-100 hover:bg-neutral-200/60'
+                                : 'border-neutral-200 text-slate-900 bg-white hover:bg-neutral-50 shadow-2xs'
                             }`}
                           >
-                            {!isFollowing && (
-                              <span className="absolute inset-x-0 top-0 h-[1.2px] bg-white/35 pointer-events-none" />
-                            )}
-                            <span className="relative z-10 tracking-tight">
+                            <span className="tracking-tight">
                               {isFollowing ? 'Mengikuti' : 'Ikuti'}
                             </span>
                           </button>

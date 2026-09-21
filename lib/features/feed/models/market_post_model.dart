@@ -3,6 +3,25 @@ export 'package:snapan_market/features/feed/models/mock_market_posts.dart';
 
 typedef MarketPost = MarketPostModel;
 
+String _formatRelativeTimestamp(dynamic raw) {
+  if (raw == null) return 'Baru saja';
+  final str = raw.toString();
+  if (str.endsWith('m') || str.endsWith('j') || str.endsWith('h') || str.endsWith('d')) {
+    return str;
+  }
+  try {
+    final dateTime = DateTime.parse(str);
+    final diff = DateTime.now().difference(dateTime);
+    if (diff.inSeconds < 60) return 'Baru saja';
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m';
+    if (diff.inHours < 24) return '${diff.inHours}j';
+    if (diff.inDays < 7) return '${diff.inDays}h';
+    return '${diff.inDays ~/ 7}mg';
+  } catch (_) {
+    return str;
+  }
+}
+
 /// Model representing a seller or author of a post
 @immutable
 class SellerModel {
@@ -21,6 +40,26 @@ class SellerModel {
     required this.classGroup,
     this.isVerified = false,
   });
+
+  factory SellerModel.fromJson(Map<String, dynamic> json) {
+    return SellerModel(
+      id: json['id']?.toString() ?? '',
+      name: json['full_name']?.toString() ?? json['name']?.toString() ?? 'Pengguna Snapan',
+      username: json['username']?.toString(),
+      avatar: json['avatar_url']?.toString() ?? json['avatar']?.toString() ?? '',
+      classGroup: json['class_group']?.toString() ?? json['classGroup']?.toString() ?? 'Siswa Snapan',
+      isVerified: json['is_verified'] == true || json['isVerified'] == true,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'full_name': name,
+    'username': username,
+    'avatar_url': avatar,
+    'class_group': classGroup,
+    'is_verified': isVerified,
+  };
 
   SellerModel copyWith({
     String? id,
@@ -87,6 +126,25 @@ class ThreadChainItemModel {
     this.isLiked = false,
   });
 
+  factory ThreadChainItemModel.fromJson(Map<String, dynamic> json) {
+    final rawImages = json['images'];
+    List<String> parsedImages = [];
+    if (rawImages is List) {
+      parsedImages = rawImages.map((e) => e.toString()).toList();
+    }
+    return ThreadChainItemModel(
+      id: json['id']?.toString() ?? '',
+      partNumber: (json['part_number'] ?? json['partNumber'] ?? 1) as int,
+      totalParts: (json['total_parts'] ?? json['totalParts'] ?? 1) as int,
+      caption: json['caption']?.toString() ?? '',
+      images: parsedImages,
+      timestamp: _formatRelativeTimestamp(json['created_at'] ?? json['timestamp']),
+      likesCount: (json['likes_count'] ?? json['likesCount'] ?? 0) as int,
+      commentsCount: (json['comments_count'] ?? json['commentsCount'] ?? 0) as int,
+      isLiked: json['is_liked'] == true || json['isLiked'] == true,
+    );
+  }
+
   ThreadChainItemModel copyWith({
     String? id,
     int? partNumber,
@@ -132,6 +190,18 @@ class CommentUserModel {
     this.isVerified = false,
     this.isAuthor = false,
   });
+
+  factory CommentUserModel.fromJson(Map<String, dynamic> json) {
+    return CommentUserModel(
+      id: json['id']?.toString() ?? '',
+      name: json['full_name']?.toString() ?? json['name']?.toString() ?? 'Pengguna Snapan',
+      avatar: json['avatar_url']?.toString() ?? json['avatar']?.toString() ?? '',
+      username: json['username']?.toString(),
+      classGroup: json['class_group']?.toString() ?? json['classGroup']?.toString(),
+      isVerified: json['is_verified'] == true || json['isVerified'] == true,
+      isAuthor: json['is_author'] == true || json['isAuthor'] == true,
+    );
+  }
 }
 
 /// Model representing a comment and its nested replies on a post
@@ -162,6 +232,50 @@ class PostCommentModel {
     this.isLiked = false,
     this.replies = const [],
   });
+
+  factory PostCommentModel.fromJson(Map<String, dynamic> json) {
+    final rawImages = json['images'];
+    List<String> parsedImages = [];
+    if (rawImages is List) {
+      parsedImages = rawImages.map((e) => e.toString()).toList();
+    }
+
+    final rawReplies = json['replies'];
+    List<PostCommentModel> parsedReplies = [];
+    if (rawReplies is List) {
+      parsedReplies = rawReplies
+          .whereType<Map<String, dynamic>>()
+          .map((r) => PostCommentModel.fromJson(r))
+          .toList();
+    }
+
+    CommentUserModel commentUser;
+    if (json['user'] is Map<String, dynamic>) {
+      commentUser = CommentUserModel.fromJson(json['user']);
+    } else if (json['profiles'] is Map<String, dynamic>) {
+      commentUser = CommentUserModel.fromJson(json['profiles']);
+    } else {
+      commentUser = CommentUserModel(
+        id: json['user_id']?.toString() ?? '',
+        name: 'Pengguna',
+        avatar: '',
+      );
+    }
+
+    return PostCommentModel(
+      id: json['id']?.toString() ?? '',
+      postId: json['post_id']?.toString() ?? json['postId']?.toString() ?? '',
+      user: commentUser,
+      content: json['content']?.toString() ?? '',
+      images: parsedImages,
+      threadPart: json['thread_part'] as int? ?? json['threadPart'] as int?,
+      totalParts: json['total_parts'] as int? ?? json['totalParts'] as int?,
+      timestamp: _formatRelativeTimestamp(json['created_at'] ?? json['timestamp']),
+      likesCount: (json['likes_count'] ?? json['likesCount'] ?? 0) as int,
+      isLiked: json['is_liked'] == true || json['isLiked'] == true,
+      replies: parsedReplies,
+    );
+  }
 
   PostCommentModel copyWith({
     String? id,
@@ -247,6 +361,75 @@ class MarketPostModel {
     this.comments = const [],
   });
 
+  factory MarketPostModel.fromJson(Map<String, dynamic> json) {
+    final rawImages = json['images'];
+    List<String> parsedImages = [];
+    if (rawImages is List) {
+      parsedImages = rawImages.map((e) => e.toString()).toList();
+    }
+
+    SellerModel postSeller;
+    if (json['seller'] is Map<String, dynamic>) {
+      postSeller = SellerModel.fromJson(json['seller']);
+    } else if (json['profiles'] is Map<String, dynamic>) {
+      postSeller = SellerModel.fromJson(json['profiles']);
+    } else {
+      postSeller = SellerModel(
+        id: json['seller_id']?.toString() ?? '',
+        name: 'Penjual Snapan',
+        avatar: '',
+        classGroup: 'Siswa',
+      );
+    }
+
+    final rawChain = json['thread_chain'] ?? json['threadChain'];
+    List<ThreadChainItemModel> parsedChain = [];
+    if (rawChain is List) {
+      parsedChain = rawChain
+          .whereType<Map<String, dynamic>>()
+          .map((c) => ThreadChainItemModel.fromJson(c))
+          .toList();
+    }
+
+    final rawComments = json['comments'] ?? json['post_comments'];
+    List<PostCommentModel> parsedComments = [];
+    if (rawComments is List) {
+      parsedComments = rawComments
+          .whereType<Map<String, dynamic>>()
+          .map((c) => PostCommentModel.fromJson(c))
+          .toList();
+    }
+
+    return MarketPostModel(
+      id: json['id']?.toString() ?? '',
+      postType: json['post_type']?.toString() ?? json['postType']?.toString() ?? 'thread',
+      seller: postSeller,
+      caption: json['caption']?.toString() ?? '',
+      images: parsedImages,
+      title: json['title']?.toString(),
+      topicTag: json['topic_tag']?.toString() ?? json['topicTag']?.toString(),
+      isOfficialTopic: json['is_official_topic'] == true || json['isOfficialTopic'] == true,
+      topicIcon: json['topic_icon']?.toString() ?? json['topicIcon']?.toString(),
+      totalThreadParts: json['total_thread_parts'] as int? ?? json['totalThreadParts'] as int?,
+      locationTag: json['location_tag']?.toString() ?? json['locationTag']?.toString(),
+      price: json['price'] != null ? (num.tryParse(json['price'].toString())?.toInt()) : null,
+      originalPrice: json['original_price'] != null
+          ? (num.tryParse(json['original_price'].toString())?.toInt())
+          : null,
+      stock: json['stock'] != null ? (num.tryParse(json['stock'].toString())?.toInt()) : null,
+      category: json['category']?.toString(),
+      likesCount: (json['likes_count'] ?? json['likesCount'] ?? 0) as int,
+      commentsCount: (json['comments_count'] ?? json['commentsCount'] ?? 0) as int,
+      repostsCount: (json['reposts_count'] ?? json['repostsCount'] ?? 0) as int,
+      isLiked: json['is_liked'] == true || json['isLiked'] == true,
+      isReposted: json['is_reposted'] == true || json['isReposted'] == true,
+      isSaved: json['is_saved'] == true || json['isSaved'] == true,
+      timestamp: _formatRelativeTimestamp(json['created_at'] ?? json['timestamp']),
+      threadChain: parsedChain,
+      comments: parsedComments,
+    );
+  }
+
   bool get isProduct => postType == 'product';
   bool get isThread => postType == 'thread';
   String get sellerName => seller.name;
@@ -255,7 +438,6 @@ class MarketPostModel {
   String get department => seller.classGroup;
   String get description => caption;
   List<String> get imageUrls => images;
-
 
   MarketPostModel copyWith({
     String? id,

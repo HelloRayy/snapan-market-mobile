@@ -1,6 +1,7 @@
 import "package:snapan_market/features/search/screens/search_screen.dart";
 import "package:snapan_market/features/map/screens/campus_map_screen.dart";
 import "package:snapan_market/features/activity/screens/activity_screen.dart";
+import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
@@ -51,8 +52,11 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   HomeNavTab _currentNavTab = HomeNavTab.home;
   bool _isFabVisible = true;
 
-  // Dynamic Feed Posts list initialized with rich Indonesian school dataset
-  late List<MarketPostModel> _posts;
+  // Dynamic Feed Posts list
+  List<MarketPostModel> _posts = [];
+  bool _isLoading = false;
+  bool _hasError = false;
+  String _errorMessage = '';
 
   void _initAnimations() {
     _fabAnimationController ??= AnimationController(
@@ -74,18 +78,48 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     );
   }
 
+  Future<void> _fetchPosts({bool isRefresh = false}) async {
+    if (!isRefresh) {
+      setState(() {
+        _isLoading = true;
+        _hasError = false;
+        _errorMessage = '';
+      });
+    }
+
+    try {
+      final livePosts = await SupabaseService.instance.fetchFeedPosts();
+      if (!mounted) return;
+      setState(() {
+        if (livePosts.isNotEmpty) {
+          _posts = livePosts;
+        } else {
+          // Fallback to rich mock data if table has no posts yet
+          _posts = List<MarketPostModel>.from(kMockMarketPosts);
+        }
+        _isLoading = false;
+        _hasError = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _hasError = true;
+        _errorMessage = 'Koneksi terputus. Gagal memuat postingan dari server.';
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    _posts = List<MarketPostModel>.from(kMockMarketPosts);
     _initAnimations();
+    _fetchPosts();
   }
 
   @override
   void reassemble() {
     super.reassemble();
-    // Auto syncs mock dataset on every Hot Reload (r)
-    _posts = List<MarketPostModel>.from(kMockMarketPosts);
     _initAnimations();
   }
 
@@ -264,6 +298,8 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       setState(() {
         _posts[index] = updatedItem;
       });
+      // Fire Supabase toggle asynchronously
+      SupabaseService.instance.togglePostLike(updatedItem.id, !updatedItem.isLiked);
     }
   }
 
@@ -357,42 +393,98 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
         }
         return false;
       },
-      child: CustomScrollView(
-        controller: _scrollController,
-        physics: const BouncingScrollPhysics(
-          parent: AlwaysScrollableScrollPhysics(),
-        ),
-        slivers: [
-          // Tab Bar Switch ("Untuk Anda" & "Terbaru") - scrolls away naturally with the feed
-          SliverToBoxAdapter(
-            child: RepaintBoundary(
-              child: HomeFeedTabSwitch(
-                activeTab: _activeTab,
-                onTabChanged: _handleTabChanged,
+      child: RefreshIndicator(
+        onRefresh: () => _fetchPosts(isRefresh: true),
+        color: AppColors.primary,
+        backgroundColor: Colors.white,
+        child: CustomScrollView(
+          controller: _scrollController,
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
+          slivers: [
+            // Tab Bar Switch ("Untuk Anda" & "Terbaru") - scrolls away naturally with the feed
+            SliverToBoxAdapter(
+              child: RepaintBoundary(
+                child: HomeFeedTabSwitch(
+                  activeTab: _activeTab,
+                  onTabChanged: _handleTabChanged,
+                ),
               ),
             ),
-          ),
 
-          // Dynamic Feed Posts Sliver List
-          SliverList.builder(
-            itemCount: posts.length,
-            itemBuilder: (context, index) {
-              final post = posts[index];
-              return MarketPostCard(
-                key: ValueKey(post.id),
-                item: post,
-                onLikeToggle: _handleLikeToggle,
-                onRepostToggle: _handleRepostToggle,
-                onPostClick: _handlePostClick,
-                onTopicClick: _handleTopicClick,
-                onUserClick: _handleUserClick,
-                onImageClick: _handleImageClick,
-              );
-            },
-          ),
+            if (_isLoading && _posts.isEmpty)
+              const SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(40.0),
+                    child: CircularProgressIndicator(
+                      color: AppColors.primary,
+                      strokeWidth: 2.5,
+                    ),
+                  ),
+                ),
+              )
+            else if (_hasError && _posts.isEmpty)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.wifi_off_rounded, size: 52, color: Color(0xFF94A3B8)),
+                        const SizedBox(height: 14),
+                        const Text(
+                          'Koneksi Terputus',
+                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: Color(0xFF1E293B)),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          _errorMessage,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+                        ),
+                        const SizedBox(height: 18),
+                        ElevatedButton(
+                          onPressed: () => _fetchPosts(),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          ),
+                          child: const Text('Coba Lagi', style: TextStyle(fontWeight: FontWeight.w600)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            else ...[
+              // Dynamic Feed Posts Sliver List
+              SliverList.builder(
+                itemCount: posts.length,
+                itemBuilder: (context, index) {
+                  final post = posts[index];
+                  return MarketPostCard(
+                    key: ValueKey(post.id),
+                    item: post,
+                    onLikeToggle: _handleLikeToggle,
+                    onRepostToggle: _handleRepostToggle,
+                    onPostClick: _handlePostClick,
+                    onTopicClick: _handleTopicClick,
+                    onUserClick: _handleUserClick,
+                    onImageClick: _handleImageClick,
+                  );
+                },
+              ),
 
-          // End of Feed Footer
-          SliverToBoxAdapter(
+              // End of Feed Footer
+              SliverToBoxAdapter(
             child: Container(
               color: AppColors.canvas,
               padding: const EdgeInsets.symmetric(vertical: 28.0, horizontal: 16.0),
@@ -441,8 +533,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildNavTabScreen({required int index, required Widget child}) {
     final int currentIndex = _currentNavTab.index;

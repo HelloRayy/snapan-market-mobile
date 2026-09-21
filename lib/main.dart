@@ -1,10 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:snapan_market/core/constants/supabase_constants.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/screens/home_feed_screen.dart';
 import 'package:snapan_market/features/onboarding/screens/onboarding_screen.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(
+    url: SupabaseConstants.supabaseUrl,
+    anonKey: SupabaseConstants.supabaseAnonKey,
+    authOptions: const FlutterAuthClientOptions(
+      authFlowType: AuthFlowType.pkce,
+    ),
+  );
+
   runApp(const SnapanMarketApp());
 }
 
@@ -57,10 +69,13 @@ class _AppRootState extends State<AppRoot> {
     }
 
     return HomeFeedScreen(
-      onLogout: () {
-        setState(() {
-          _isOnboarded = false;
-        });
+      onLogout: () async {
+        await SupabaseService.instance.signOut();
+        if (mounted) {
+          setState(() {
+            _isOnboarded = false;
+          });
+        }
       },
     );
   }

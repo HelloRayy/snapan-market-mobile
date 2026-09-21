@@ -8,6 +8,7 @@ import 'package:snapan_market/features/auth/components/dropdown_column_box.dart'
 import 'package:snapan_market/features/auth/components/kumo_floating_field.dart';
 import 'package:snapan_market/features/auth/components/social_auth_row.dart';
 import 'package:snapan_market/features/auth/models/auth_constants.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
 
 enum AuthMode { login, register }
 
@@ -55,6 +56,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   bool _showRegPassword = false;
   bool _showRegRepeatPassword = false;
+  bool _isSubmitting = false;
 
   @override
   void initState() {
@@ -106,14 +108,37 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  // --- SUBMIT LOGIN VALIDATION ---
-  void _submitLogin() {
+  // --- GOOGLE OAUTH SIGN IN ---
+  Future<void> _handleGoogleAuth() async {
+    setState(() => _isSubmitting = true);
+    try {
+      final success = await SupabaseService.instance.signInWithGoogle();
+      if (success && mounted) {
+        widget.onSuccess();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Login Google gagal: $e'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
+  }
+
+  // --- SUBMIT LOGIN VALIDATION & SUPABASE CALL ---
+  Future<void> _submitLogin() async {
     FocusManager.instance.primaryFocus?.unfocus();
     setState(_clearAllErrors);
 
     bool isValid = true;
+    final emailOrPhone = _loginEmailController.text.trim();
 
-    if (_loginEmailController.text.trim().isEmpty) {
+    if (emailOrPhone.isEmpty) {
       _loginEmailError = 'Masukkan nomor WhatsApp atau email';
       isValid = false;
     }
@@ -128,11 +153,37 @@ class _AuthScreenState extends State<AuthScreen> {
       return;
     }
 
-    widget.onSuccess();
+    setState(() => _isSubmitting = true);
+
+    try {
+      final email = emailOrPhone.contains('@')
+          ? emailOrPhone
+          : '${emailOrPhone.replaceAll(RegExp(r'\D'), '')}@snapan.id';
+
+      final response = await SupabaseService.instance.client.auth.signInWithPassword(
+        email: email,
+        password: _loginPasswordController.text,
+      );
+
+      if (response.user != null && mounted) {
+        widget.onSuccess();
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _loginPasswordError = 'Email/nomor WA atau kata sandi tidak sesuai';
+        });
+        HapticFeedback.vibrate();
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
   }
 
-  // --- SUBMIT REGISTER VALIDATION ---
-  void _submitRegister() {
+  // --- SUBMIT REGISTER VALIDATION & SUPABASE CALL ---
+  Future<void> _submitRegister() async {
     FocusManager.instance.primaryFocus?.unfocus();
     setState(_clearAllErrors);
 
@@ -181,7 +232,53 @@ class _AuthScreenState extends State<AuthScreen> {
       return;
     }
 
-    widget.onSuccess();
+    setState(() => _isSubmitting = true);
+
+    try {
+      final email = '$rawPhone@snapan.id';
+      final classGroup = '$_selectedGrade $_selectedMajor $_selectedClassNum';
+      final username = _fullNameController.text
+          .trim()
+          .toLowerCase()
+          .replaceAll(RegExp(r'[^a-z0-9]'), '') +
+          (rawPhone.length >= 4 ? rawPhone.substring(rawPhone.length - 4) : '');
+
+      final response = await SupabaseService.instance.client.auth.signUp(
+        email: email,
+        password: pass,
+        data: {
+          'full_name': _fullNameController.text.trim(),
+          'phone_number': rawPhone,
+          'class_group': classGroup,
+          'username': username,
+        },
+      );
+
+      if (response.user != null) {
+        // Save/update profile table
+        await SupabaseService.instance.updateProfile(
+          userId: response.user!.id,
+          fullName: _fullNameController.text.trim(),
+          username: username,
+          classGroup: classGroup,
+        );
+
+        if (mounted) {
+          widget.onSuccess();
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _regPasswordError = 'Pendaftaran gagal: $e';
+        });
+        HapticFeedback.vibrate();
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
   }
 
   @override
@@ -363,19 +460,19 @@ class _AuthScreenState extends State<AuthScreen> {
 
         // 4. Kumo Primary Button
         KumoButton.primary(
-          text: 'Masuk',
+          text: _isSubmitting ? 'Memproses...' : 'Masuk',
           width: double.infinity,
           height: 52,
           borderRadius: 16,
-          onPressed: _submitLogin,
+          onPressed: _isSubmitting ? null : _submitLogin,
         ),
 
         const SizedBox(height: 22),
 
         // 5. Social Buttons
         SocialAuthRow(
-          onAppleTap: widget.onSuccess,
-          onGoogleTap: widget.onSuccess,
+          onAppleTap: () {},
+          onGoogleTap: _handleGoogleAuth,
         ),
 
         const SizedBox(height: 28),
@@ -555,11 +652,11 @@ class _AuthScreenState extends State<AuthScreen> {
 
         // 6. Kumo Primary Button
         KumoButton.primary(
-          text: 'Daftar',
+          text: _isSubmitting ? 'Mendaftar...' : 'Daftar',
           width: double.infinity,
           height: 52,
           borderRadius: 16,
-          onPressed: _submitRegister,
+          onPressed: _isSubmitting ? null : _submitRegister,
         ),
 
         const SizedBox(height: 24),

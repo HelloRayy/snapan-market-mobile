@@ -322,13 +322,16 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           if (currentOffset <= 20.0) {
             // Reveal bars near top of the feed
             _showBars();
-          } else if (delta > 8.0 && currentOffset > 60.0) {
-            // User scrolled down into content - hide bottom bar smoothly
+          } else if (delta > 4.0 && currentOffset > 40.0) {
+            // User scrolled down into content - hide bottom bar and FAB smoothly
             _hideBars();
-          } else if (delta < -8.0) {
-            // User scrolled up - reveal bottom bar
+          } else if (delta < -4.0) {
+            // User scrolled up - reveal bottom bar and FAB
             _showBars();
           }
+        } else if (notification is ScrollEndNotification) {
+          // When scrolling stops completely, reveal bottom bar and FAB again
+          _showBars();
         }
         return false;
       },
@@ -424,7 +427,6 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     final posts = _displayedPosts;
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
     final double fabBottomVisible = (bottomPadding > 0 ? bottomPadding + 8.0 : 18.0) + 62.0 + 12.0;
-    final double fabBottomHidden = (bottomPadding > 0 ? bottomPadding + 16.0 : 20.0);
 
     return Scaffold(
       key: _scaffoldKey,
@@ -463,41 +465,44 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
             animation: _barsAnimation,
             builder: (context, _) {
               final double progress = _barsAnimation.value;
-              final double currentFabBottom =
-                  fabBottomHidden + (fabBottomVisible - fabBottomHidden) * progress;
               final double navOffsetY = (1.0 - progress) * 110.0;
               final double navOpacity = progress.clamp(0.0, 1.0);
+              final double fabOffsetY = (1.0 - progress) * 80.0;
+              final double fabScale =
+                  (_currentNavTab == HomeNavTab.home ? 1.0 : 0.0) * (0.6 + 0.4 * progress);
+              final double fabOpacity =
+                  (_currentNavTab == HomeNavTab.home ? 1.0 : 0.0) * navOpacity;
 
               return Stack(
                 children: [
                   // Floating Action Button Stack (Mode Jualan + Utas)
                   Positioned(
                     right: 20.0,
-                    bottom: currentFabBottom,
-                    child: AnimatedScale(
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.easeOutCubic,
-                      scale: _currentNavTab == HomeNavTab.home ? 1.0 : 0.0,
-                      child: AnimatedOpacity(
-                        duration: const Duration(milliseconds: 180),
-                        curve: Curves.easeOut,
-                        opacity: _currentNavTab == HomeNavTab.home ? 1.0 : 0.0,
-                        child: IgnorePointer(
-                          ignoring: _currentNavTab != HomeNavTab.home,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              // White Marketplace Squircle Button (Langsung buka Mode Jualan)
-                              FloatingMarketplaceSquircleButton(
-                                onTap: () => _handleCreatePost(PostMode.product),
-                              ),
-                              const SizedBox(height: 8.0),
-                              // Azure Blue Squircle Button (Buka Buat Utas)
-                              FloatingPlusSquircleButton(
-                                onTap: () => _handleCreatePost(PostMode.thread),
-                              ),
-                            ],
+                    bottom: fabBottomVisible,
+                    child: Transform.translate(
+                      offset: Offset(0, fabOffsetY),
+                      child: Opacity(
+                        opacity: fabOpacity,
+                        child: Transform.scale(
+                          scale: fabScale,
+                          alignment: Alignment.bottomRight,
+                          child: IgnorePointer(
+                            ignoring: _currentNavTab != HomeNavTab.home || progress < 0.2,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                // White Marketplace Squircle Button (Langsung buka Mode Jualan)
+                                FloatingMarketplaceSquircleButton(
+                                  onTap: () => _handleCreatePost(PostMode.product),
+                                ),
+                                const SizedBox(height: 8.0),
+                                // Azure Blue Squircle Button (Buka Buat Utas)
+                                FloatingPlusSquircleButton(
+                                  onTap: () => _handleCreatePost(PostMode.thread),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

@@ -440,6 +440,15 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           HomeNavTab.profile => 'Profil',
         },
         onMenuTap: _handleMenuTap,
+        onBackTap: _currentNavTab != HomeNavTab.home
+            ? () {
+                HapticFeedback.lightImpact();
+                setState(() {
+                  _currentNavTab = HomeNavTab.home;
+                });
+                _showBars();
+              }
+            : null,
         onTitleTap: () {
           if (_currentNavTab == HomeNavTab.home) {
             _scrollToTop();

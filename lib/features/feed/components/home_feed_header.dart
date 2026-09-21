@@ -39,10 +39,14 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
               Positioned(
                 left: 0,
                 child: IconButton(
-                  icon: Icon(
-                    onBackTap != null ? LucideIcons.arrowLeft : LucideIcons.menu,
-                    size: 22.0,
-                    color: const Color(0xFF1A1A1A),
+                  icon: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: Icon(
+                      onBackTap != null ? LucideIcons.arrowLeft : LucideIcons.menu,
+                      key: ValueKey(onBackTap != null),
+                      size: 22.0,
+                      color: const Color(0xFF1A1A1A),
+                    ),
                   ),
                   onPressed: onBackTap ?? onMenuTap,
                   tooltip: onBackTap != null ? 'Kembali' : 'Menu Navigasi',

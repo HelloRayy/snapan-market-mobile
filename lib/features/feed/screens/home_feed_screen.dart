@@ -2,6 +2,7 @@ import "package:snapan_market/features/search/screens/search_screen.dart";
 import "package:snapan_market/features/map/screens/campus_map_screen.dart";
 import "package:snapan_market/features/activity/screens/activity_screen.dart";
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';

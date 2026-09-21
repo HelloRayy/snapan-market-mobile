@@ -382,10 +382,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
 
-          // 2. Sticky 3-Tab Bar Switcher (Utas, Balasan, Media)
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: _SliverProfileTabDelegate(
+          // 2. Tab Bar Switcher (Utas, Balasan, Media) - scrolls away naturally with the profile content
+          SliverToBoxAdapter(
+            child: RepaintBoundary(
               child: ProfileTabBar(
                 activeTab: _activeTab,
                 onTabChanged: (tab) => setState(() => _activeTab = tab),
@@ -538,28 +537,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return bodyScrollView;
   }
 
-}
-
-class _SliverProfileTabDelegate extends SliverPersistentHeaderDelegate {
-  final Widget child;
-
-  _SliverProfileTabDelegate({required this.child});
-
-  @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return child;
-  }
-
-  @override
-  double get maxExtent => 47.0;
-
-  @override
-  double get minExtent => 47.0;
-
-
-
-  @override
-  bool shouldRebuild(covariant _SliverProfileTabDelegate oldDelegate) {
-    return oldDelegate.child != child;
-  }
 }

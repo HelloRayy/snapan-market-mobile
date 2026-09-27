@@ -268,7 +268,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     color: AppColors.ink,
                                   ),
                                   decoration: const InputDecoration(
-                                    hintText: 'radityarayhannnn',
+                                    hintText: 'username_kamu',
                                     hintStyle: TextStyle(
                                       fontSize: 15.5,
                                       color: AppColors.lightMuted,

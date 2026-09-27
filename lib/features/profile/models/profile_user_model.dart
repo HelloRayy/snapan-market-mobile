@@ -24,7 +24,7 @@ class ProfileUserModel {
     required this.avatar,
     required this.bio,
     required this.classGroup,
-    required this.tags,
+    this.tags = const [],
     this.link,
     this.showSalesStats = true,
     this.followersCount = 142,

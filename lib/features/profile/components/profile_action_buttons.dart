@@ -11,13 +11,18 @@ class ProfileActionButtons extends StatelessWidget {
   final VoidCallback? onToggleFollow;
   final VoidCallback? onDirectMessage;
 
+  final bool isLoggedIn;
+  final VoidCallback? onAuthTap;
+
   const ProfileActionButtons({
     super.key,
     this.isOwnProfile = true,
     this.isFollowing = false,
+    this.isLoggedIn = true,
     this.onEditProfile,
     this.onToggleFollow,
     this.onDirectMessage,
+    this.onAuthTap,
   });
 
   @override
@@ -31,6 +36,41 @@ class ProfileActionButtons extends StatelessWidget {
   }
 
   Widget _buildOwnProfileButton() {
+    if (!isLoggedIn) {
+      return GestureDetector(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          onAuthTap?.call();
+        },
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          width: double.infinity,
+          height: 38.0,
+          decoration: BoxDecoration(
+            color: const Color(0xFF3D38F5),
+            borderRadius: BorderRadius.circular(10.0),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x333D38F5),
+                blurRadius: 6.0,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          alignment: Alignment.center,
+          child: const Text(
+            'Masuk atau Daftar Akun',
+            style: TextStyle(
+              fontSize: 14.0,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+              letterSpacing: -0.1,
+            ),
+          ),
+        ),
+      );
+    }
+
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();

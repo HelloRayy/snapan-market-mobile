@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/features/auth/screens/auth_screen.dart';
 
 import 'package:snapan_market/features/feed/components/market_post_card.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
@@ -66,11 +67,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late List<ProfileReplyThreadModel> _allUserReplies;
 
   bool get _isOwnProfile {
-    final target = widget.username?.toLowerCase().replaceAll('@', '');
-    return target == null ||
-        target == 'radityarayhannnn' ||
-        target == 'me' ||
-        target.isEmpty;
+    final target = widget.username?.toLowerCase().replaceAll('@', '').trim();
+    if (target == null || target.isEmpty || target == 'me') {
+      return true;
+    }
+    final currentUser = SupabaseService.instance.currentUser;
+    if (currentUser != null) {
+      final currentUsername = currentUser.userMetadata?['username']?.toString().toLowerCase().trim();
+      if (currentUsername != null && currentUsername == target) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @override
@@ -107,12 +115,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               avatar: (profile['avatar_url'] as String?)?.isNotEmpty == true
                   ? profile['avatar_url'] as String
                   : _user.avatar,
+              bio: profile['bio'] as String? ?? _user.bio,
               isVerified: profile['is_verified'] as bool? ?? false,
             );
           }
-          if (livePosts.isNotEmpty) {
-            _allUserPosts = livePosts;
-          }
+          _allUserPosts = livePosts;
         });
       } catch (e) {
         debugPrint('Error _loadLiveProfile: $e');
@@ -138,6 +145,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               avatar: (p['avatar_url'] as String?)?.isNotEmpty == true
                   ? p['avatar_url'] as String
                   : _user.avatar,
+              bio: p['bio'] as String? ?? _user.bio,
               isVerified: p['is_verified'] as bool? ?? false,
             );
             if (targetPosts.isNotEmpty) {
@@ -153,28 +161,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _initProfileData() {
     if (_isOwnProfile) {
-      _user = kDefaultProfileUser;
-      // Filter user's own posts from mock feed
-      _allUserPosts = kMockMarketPosts.where((p) {
-        return p.seller.username == 'radityarayhannnn' ||
-            p.seller.id == 'user-var-1' ||
-            p.seller.id == 'user-var-4' ||
-            p.seller.id == 'user-var-5';
-      }).map((p) {
-        return p.copyWith(
-          seller: p.seller.copyWith(
-            name: _user.name,
-            username: _user.username,
-            avatar: _user.avatar,
-            classGroup: _user.classGroup,
-            isVerified: _user.isVerified,
-          ),
-        );
-      }).toList();
+      final currentUser = SupabaseService.instance.currentUser;
+      if (currentUser != null) {
+        final meta = currentUser.userMetadata ?? {};
+        final fullName = (meta['full_name'] as String?)?.trim();
+        final username = (meta['username'] as String?)?.trim();
+        final classGroup = (meta['class_group'] as String?)?.trim();
+        final avatar = (meta['avatar_url'] as String?)?.trim() ?? '';
 
-      _allUserReplies = List.from(kMockUserReplies);
+        _user = ProfileUserModel(
+          id: currentUser.id,
+          name: (fullName != null && fullName.isNotEmpty) ? fullName : 'Siswa Snapan',
+          username: (username != null && username.isNotEmpty) ? username : 'siswa',
+          classGroup: (classGroup != null && classGroup.isNotEmpty) ? classGroup : 'SMKN 8 Jakarta',
+          avatar: avatar,
+          bio: 'Siswa ${classGroup ?? 'SMKN 8 Jakarta'}',
+          link: '',
+          followersCount: 0,
+          soldCount: 0,
+          rating: 5.0,
+          isVerified: false,
+        );
+      } else {
+        _user = const ProfileUserModel(
+          id: 'guest',
+          name: 'Tamu Snapan',
+          username: 'tamu',
+          classGroup: 'Belum Masuk',
+          avatar: '',
+          bio: 'Masuk atau daftar akun untuk melihat profil, mengunggah utas dan produk.',
+          link: '',
+          followersCount: 0,
+          soldCount: 0,
+          rating: 5.0,
+          isVerified: false,
+        );
+      }
+      _allUserPosts = [];
+      _allUserReplies = [];
     } else {
-      final cleanUsername = widget.username!.replaceAll('@', '');
+      final cleanUsername = widget.username!.replaceAll('@', '').trim();
       // Find matching post to populate seller info
       final matched = kMockMarketPosts.firstWhere(
         (p) =>
@@ -188,10 +214,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         name: matched.seller.name,
         username: matched.seller.username ?? cleanUsername,
         avatar: matched.seller.avatar,
-        bio: 'Siswa SMKN 8 Semarang · Jurusan ${matched.seller.classGroup?.split(' ').last ?? 'PPLG'}.',
+        bio: 'Siswa SMKN 8 Jakarta · ${matched.seller.classGroup ?? 'PPLG'}',
         classGroup: matched.seller.classGroup ?? 'XII PPLG 2',
         tags: const ['Mobile Dev', 'UI/UX', 'Fotografi', 'Project PJBL'],
-
         followersCount: 289,
         soldCount: 42,
         rating: 4.9,
@@ -260,7 +285,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _handleOpenAuth() {
+    Navigator.push(
+      context,
+      AppSlidePageRoute(
+        builder: (context) => AuthScreen(
+          onBack: () => Navigator.pop(context),
+          onSuccess: () {
+            Navigator.pop(context);
+            _initProfileData();
+            _loadLiveProfile();
+          },
+        ),
+      ),
+    );
+  }
+
   void _handleEditProfile() async {
+    if (!SupabaseService.instance.isAuthenticated) {
+      _handleOpenAuth();
+      return;
+    }
     HapticFeedback.lightImpact();
     final updated = await Navigator.of(context).push<ProfileUserModel>(
       AppSlidePageRoute(
@@ -440,7 +485,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ProfileActionButtons(
                   isOwnProfile: _isOwnProfile,
                   isFollowing: _isFollowing,
+                  isLoggedIn: SupabaseService.instance.isAuthenticated,
                   onEditProfile: _handleEditProfile,
+                  onAuthTap: _handleOpenAuth,
                   onToggleFollow: () {
                     setState(() {
                       _isFollowing = !_isFollowing;

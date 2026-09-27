@@ -29,7 +29,7 @@ class CreatePostModal extends StatefulWidget {
   const CreatePostModal({
     super.key,
     this.initialMode = PostMode.thread,
-    this.currentUserName = 'radityarayhannnn',
+    this.currentUserName = 'Siswa Snapan',
     this.currentUserAvatar =
         'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
     this.onSubmitPost,

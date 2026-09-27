@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import "package:snapan_market/features/search/screens/search_screen.dart";
 import "package:snapan_market/features/map/screens/campus_map_screen.dart";
 import "package:snapan_market/features/activity/screens/activity_screen.dart";
@@ -59,6 +61,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   bool _hasError = false;
   String _errorMessage = '';
   Map<String, dynamic>? _userProfile;
+  StreamSubscription<AuthState>? _authSubscription;
 
   void _initAnimations() {
     _fabAnimationController ??= AnimationController(
@@ -137,6 +140,11 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     super.initState();
     _initAnimations();
     _fetchPosts();
+    _authSubscription = SupabaseService.instance.client.auth.onAuthStateChange.listen((data) {
+      if (mounted) {
+        _fetchPosts(isRefresh: true);
+      }
+    });
   }
 
   @override
@@ -148,6 +156,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   @override
   void dispose() {
     HomeMenuPopover.dismiss();
+    _authSubscription?.cancel();
     _fabAnimationController?.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -197,6 +206,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                 behavior: SnackBarBehavior.floating,
               ),
             );
+            _fetchPosts(isRefresh: true);
             setState(() {});
           },
         ),
@@ -812,8 +822,8 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                 currentTab: _currentNavTab,
                 hasUnreadMessages: true,
                 unreadMessagesCount: 20,
-                userAvatar:
-                    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
+                userAvatar: _userProfile?['avatar_url'] as String? ??
+                    (SupabaseService.instance.currentUser?.userMetadata?['avatar_url'] as String?),
                 onSearchTap: _handleSearchTap,
                 onPostTap: _handleCreatePost,
                 onTabSelected: (tab) {

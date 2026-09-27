@@ -86,7 +86,7 @@ class SupabaseService {
     try {
       final response = await client
           .from('market_posts')
-          .select('*, profiles(*)')
+          .select('*, seller:profiles!market_posts_seller_id_fkey(*)')
           .order('created_at', ascending: false)
           .range(offset, offset + limit - 1);
 

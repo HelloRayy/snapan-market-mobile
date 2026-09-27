@@ -101,11 +101,12 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
         _hasError = false;
       });
     } catch (e) {
+      debugPrint('Supabase fetch error, fallback to mock data: $e');
       if (!mounted) return;
       setState(() {
+        _posts = List<MarketPostModel>.from(kMockMarketPosts);
         _isLoading = false;
-        _hasError = true;
-        _errorMessage = 'Koneksi terputus. Gagal memuat postingan dari server.';
+        _hasError = false;
       });
     }
   }

@@ -62,10 +62,10 @@
   --color-slate-ink: #332f2d;
   --color-ash-veil: #665a54;
 
-  /* Typography: Inter, Satoshi & Instrument Serif */
-  --font-gt-standard: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-shopify-sans: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-satoshi: 'Satoshi', sans-serif;
+  /* Typography: Native System UI (Threads Reference Specification) */
+  --font-gt-standard: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-shopify-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-satoshi: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-serif-editorial: 'Instrument Serif', Georgia, serif;
 
 

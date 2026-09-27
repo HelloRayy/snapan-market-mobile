@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:snapan_market/core/components/snaps_logo.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-/// Pure white fullscreen app entrance splash that presents only the official
-/// sNaps brand text vector logo, springing smoothly in center then morph-gliding
-/// up directly into the top AppBar header.
+/// Fullscreen app entrance animation that reveals each letter of the official
+/// sNaps brand logo sequentially from left to right (s -> N -> a -> ps) with a spring pop,
+/// holds briefly as a complete word, then smoothly glides up into the top AppBar header.
 class AppEntranceSplash extends StatefulWidget {
   final VoidCallback onFinish;
 
@@ -21,11 +21,20 @@ class _AppEntranceSplashState extends State<AppEntranceSplash>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
-  // Stage 1: Spring pop in center (0.0 -> 0.40)
-  late final Animation<double> _entranceScale;
-  late final Animation<double> _entranceOpacity;
+  // Staggered letter animations (s -> N -> a -> ps)
+  late final Animation<double> _s1Scale;
+  late final Animation<double> _s1Opacity;
 
-  // Stage 2: Morph glide to top header (0.60 -> 1.0)
+  late final Animation<double> _nScale;
+  late final Animation<double> _nOpacity;
+
+  late final Animation<double> _aScale;
+  late final Animation<double> _aOpacity;
+
+  late final Animation<double> _psScale;
+  late final Animation<double> _psOpacity;
+
+  // Stage 2: Glide to top header
   late final Animation<Offset> _glideOffset;
   late final Animation<double> _glideScale;
   late final Animation<double> _bgOpacity;
@@ -34,7 +43,6 @@ class _AppEntranceSplashState extends State<AppEntranceSplash>
   void initState() {
     super.initState();
 
-    // Ensure status bar & nav bar are clean edge-to-edge white
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -46,49 +54,87 @@ class _AppEntranceSplashState extends State<AppEntranceSplash>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1550),
+      duration: const Duration(milliseconds: 1850),
     );
 
-    // 1. Entrance Spring Scale
-    _entranceScale = Tween<double>(begin: 0.70, end: 1.0).animate(
+    // Letter 1: 's' (0.00 -> 0.28)
+    _s1Scale = Tween<double>(begin: 0.50, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.42, curve: Curves.easeOutBack),
+        curve: const Interval(0.00, 0.26, curve: Curves.easeOutBack),
+      ),
+    );
+    _s1Opacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.00, 0.16, curve: Curves.easeOut),
       ),
     );
 
-    // 2. Entrance Fade In
-    _entranceOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+    // Letter 2: 'N' (0.12 -> 0.38)
+    _nScale = Tween<double>(begin: 0.50, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.28, curve: Curves.easeOut),
+        curve: const Interval(0.12, 0.38, curve: Curves.easeOutBack),
+      ),
+    );
+    _nOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.12, 0.26, curve: Curves.easeOut),
       ),
     );
 
-    // 3. Morph Glide Up to AppBar Header Position
+    // Letter 3: 'a' (0.24 -> 0.50)
+    _aScale = Tween<double>(begin: 0.50, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.24, 0.50, curve: Curves.easeOutBack),
+      ),
+    );
+    _aOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.24, 0.38, curve: Curves.easeOut),
+      ),
+    );
+
+    // Letter 4: 'ps' (0.36 -> 0.62)
+    _psScale = Tween<double>(begin: 0.50, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.36, 0.62, curve: Curves.easeOutBack),
+      ),
+    );
+    _psOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.36, 0.48, curve: Curves.easeOut),
+      ),
+    );
+
+    // Glide to header (0.72 -> 1.00)
     _glideOffset = Tween<Offset>(
       begin: Offset.zero,
       end: const Offset(0.0, -0.86),
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.60, 1.0, curve: Curves.easeInOutCubicEmphasized),
+        curve: const Interval(0.72, 1.00, curve: Curves.easeInOutCubicEmphasized),
       ),
     );
 
-    // Scale from 72.0px down to ~34.0px to match AppBar logo size
     _glideScale = Tween<double>(begin: 1.0, end: 0.472).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.60, 1.0, curve: Curves.easeInOutCubic),
+        curve: const Interval(0.72, 1.00, curve: Curves.easeInOutCubic),
       ),
     );
 
-    // 4. Pure White Curtain Fade Out
     _bgOpacity = Tween<double>(begin: 1.0, end: 0.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.70, 1.0, curve: Curves.easeOut),
+        curve: const Interval(0.80, 1.00, curve: Curves.easeOut),
       ),
     );
 
@@ -99,10 +145,21 @@ class _AppEntranceSplashState extends State<AppEntranceSplash>
     });
 
     _controller.forward();
-    Future.delayed(const Duration(milliseconds: 250), () {
-      if (mounted) {
-        HapticFeedback.lightImpact();
-      }
+
+    // Haptic feedback sequence matching letter appearances
+    _triggerHapticsSequence();
+  }
+
+  void _triggerHapticsSequence() {
+    HapticFeedback.lightImpact();
+    Future.delayed(const Duration(milliseconds: 220), () {
+      if (mounted) HapticFeedback.lightImpact();
+    });
+    Future.delayed(const Duration(milliseconds: 440), () {
+      if (mounted) HapticFeedback.lightImpact();
+    });
+    Future.delayed(const Duration(milliseconds: 660), () {
+      if (mounted) HapticFeedback.mediumImpact();
     });
   }
 
@@ -114,6 +171,8 @@ class _AppEntranceSplashState extends State<AppEntranceSplash>
 
   @override
   Widget build(BuildContext context) {
+    const double logoHeight = 72.0;
+
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
@@ -122,7 +181,7 @@ class _AppEntranceSplashState extends State<AppEntranceSplash>
         }
 
         return IgnorePointer(
-          ignoring: _controller.value > 0.60,
+          ignoring: _controller.value > 0.72,
           child: Opacity(
             opacity: _bgOpacity.value,
             child: Material(
@@ -132,12 +191,61 @@ class _AppEntranceSplashState extends State<AppEntranceSplash>
                   child: SlideTransition(
                     position: _glideOffset,
                     child: Transform.scale(
-                      scale: _entranceScale.value * _glideScale.value,
-                      child: Opacity(
-                        opacity: _entranceOpacity.value,
-                        // Pure vector logo text without any container box, frame, or subtitle
-                        child: const SnapsLogo(
-                          height: 72.0,
+                      scale: _glideScale.value,
+                      child: SizedBox(
+                        height: logoHeight,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            // 1. Letter 's'
+                            Transform.scale(
+                              scale: _s1Scale.value,
+                              child: Opacity(
+                                opacity: _s1Opacity.value,
+                                child: SvgPicture.asset(
+                                  'assets/logo/letter_s1.svg',
+                                  height: logoHeight,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                            // 2. Letter 'N'
+                            Transform.scale(
+                              scale: _nScale.value,
+                              child: Opacity(
+                                opacity: _nOpacity.value,
+                                child: SvgPicture.asset(
+                                  'assets/logo/letter_n.svg',
+                                  height: logoHeight,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                            // 3. Letter 'a'
+                            Transform.scale(
+                              scale: _aScale.value,
+                              child: Opacity(
+                                opacity: _aOpacity.value,
+                                child: SvgPicture.asset(
+                                  'assets/logo/letter_a.svg',
+                                  height: logoHeight,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                            // 4. Letter 'ps'
+                            Transform.scale(
+                              scale: _psScale.value,
+                              child: Opacity(
+                                opacity: _psOpacity.value,
+                                child: SvgPicture.asset(
+                                  'assets/logo/letter_ps.svg',
+                                  height: logoHeight,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),

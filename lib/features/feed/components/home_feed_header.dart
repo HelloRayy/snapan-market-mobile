@@ -12,6 +12,7 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onTitleTap;
   final VoidCallback? onSearchTap;
   final VoidCallback? onBackTap;
+  final bool isDark;
 
   const HomeFeedHeader({
     super.key,
@@ -20,6 +21,7 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
     this.onTitleTap,
     this.onSearchTap,
     this.onBackTap,
+    this.isDark = false,
   });
 
   @override
@@ -27,8 +29,12 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Color bgColor = isDark ? const Color(0xFF101010) : Colors.white;
+    final Color iconColor = isDark ? const Color(0xFFF3F5F7) : const Color(0xFF1A1A1A);
+    final Color textColor = isDark ? const Color(0xFFF3F5F7) : const Color(0xFF111827);
+
     return Container(
-      color: Colors.white,
+      color: bgColor,
       child: SafeArea(
         bottom: false,
         child: Container(
@@ -47,7 +53,7 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
                       onBackTap != null ? LucideIcons.arrowLeft : LucideIcons.menu,
                       key: ValueKey(onBackTap != null),
                       size: 22.0,
-                      color: const Color(0xFF1A1A1A),
+                      color: iconColor,
                     ),
                   ),
                   onPressed: onBackTap ?? onMenuTap,
@@ -71,7 +77,7 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
                             fontSize: 16.0,
                             fontWeight: FontWeight.w700,
                             letterSpacing: -0.3,
-                            color: const Color(0xFF111827),
+                            color: textColor,
                           ),
                         ),
                 ),
@@ -81,10 +87,10 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
               Positioned(
                 right: 0,
                 child: IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     LucideIcons.search,
                     size: 21.0,
-                    color: Color(0xFF1A1A1A),
+                    color: iconColor,
                   ),
                   onPressed: onSearchTap,
                   tooltip: 'Cari Produk & Diskusi',

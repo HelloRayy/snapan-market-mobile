@@ -122,10 +122,10 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 16 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="relative w-full max-w-[420px] bg-white rounded-3xl p-6 md:p-8 shadow-2xl border border-black/[0.08] overflow-hidden z-10 flex flex-col items-center"
+            className="relative w-full max-w-[440px] bg-[#101010] text-[#f3f5f7] rounded-3xl p-6 sm:p-9 shadow-2xl border border-white/[0.12] overflow-hidden z-10 flex flex-col items-center"
           >
             {/* Top Accent Gradient Bar */}
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-brand-primary via-[#534eff] to-[#38bdf8]" />
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-primary via-[#6366f1] to-[#38bdf8]" />
 
             {/* Close Button */}
             <button
@@ -134,7 +134,7 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
                 triggerHaptic('light');
                 onClose();
               }}
-              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
+              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-[#1c1c1e] hover:bg-[#2c2c2e] active:scale-95 text-[#9e9e9e] hover:text-[#f3f5f7] flex items-center justify-center transition-all cursor-pointer focus:outline-none"
               aria-label="Tutup dialog"
             >
               <X className="w-5 h-5 stroke-[2.2]" />
@@ -142,11 +142,11 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
 
             {/* Brand Logo & Decorative Badge */}
             <div className="mb-4 flex flex-col items-center">
-              <div className="w-14 h-14 rounded-2xl bg-[#eef0ff] border border-brand-primary/20 flex items-center justify-center shadow-sm mb-3">
+              <div className="w-14 h-14 rounded-2xl bg-[#1c1c1e] border border-white/[0.12] flex items-center justify-center shadow-sm mb-3">
                 <SnapsLogoSvg height={24} />
               </div>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200/80 text-[11.5px] font-semibold text-slate-700 tracking-wide">
-                <Sparkles className="w-3.5 h-3.5 text-brand-primary" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1c1c1e] border border-white/[0.10] text-[11.5px] font-semibold text-[#d1d5db] tracking-wide">
+                <Sparkles className="w-3.5 h-3.5 text-[#818cf8]" />
                 SMKN 8 Jakarta Community
               </span>
             </div>
@@ -154,11 +154,11 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
             {/* Title & Subtitle */}
             <h2
               id="auth-modal-title"
-              className="text-2xl font-black text-slate-900 text-center tracking-tight leading-snug"
+              className="text-2xl font-black text-[#f3f5f7] text-center tracking-tight leading-snug"
             >
               {title}
             </h2>
-            <p className="mt-2 text-[13.5px] text-slate-600 text-center leading-relaxed">
+            <p className="mt-2.5 text-[14px] text-[#9e9e9e] text-center leading-relaxed">
               {subtitle}
             </p>
 
@@ -183,36 +183,43 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
                   type="button"
                   onClick={handleGoogleSignIn}
                   disabled={isLoading}
-                  className="w-full h-12 px-4 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50/80 active:scale-[0.98] shadow-sm flex items-center justify-between transition-all cursor-pointer group disabled:opacity-60"
+                  className="w-full h-13 px-4 py-3 rounded-2xl bg-[#141416] border border-white/[0.15] hover:border-white/[0.25] hover:bg-[#1a1a1d] active:scale-[0.98] shadow-sm flex items-center justify-between transition-all cursor-pointer group disabled:opacity-60"
                 >
                   <div className="flex items-center gap-3">
                     {/* Official Google Icon */}
-                    <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
-                      <path
-                        fill="#4285F4"
-                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                      />
-                      <path
-                        fill="#34A853"
-                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                      />
-                      <path
-                        fill="#FBBC05"
-                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                      />
-                      <path
-                        fill="#EA4335"
-                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                      />
-                    </svg>
-                    <span className="text-[14.5px] font-bold text-slate-800 tracking-tight">
-                      Lanjutkan dengan Google
-                    </span>
+                    <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center shrink-0">
+                      <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                        <path
+                          fill="#4285F4"
+                          d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                        />
+                        <path
+                          fill="#34A853"
+                          d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                        />
+                        <path
+                          fill="#FBBC05"
+                          d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                        />
+                        <path
+                          fill="#EA4335"
+                          d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex flex-col text-left">
+                      <span className="text-[14.5px] font-bold text-[#f3f5f7] tracking-tight">
+                        Lanjutkan dengan Google
+                      </span>
+                      <span className="text-[11.5px] text-[#9e9e9e]">
+                        Gunakan akun Google siswa
+                      </span>
+                    </div>
                   </div>
                   {isLoading ? (
-                    <Loader2 className="w-4 h-4 text-slate-400 animate-spin" />
+                    <Loader2 className="w-4 h-4 text-[#9e9e9e] animate-spin" />
                   ) : (
-                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-slate-700 group-hover:translate-x-0.5 transition-all" />
+                    <ArrowRight className="w-4 h-4 text-[#9e9e9e] group-hover:text-[#f3f5f7] group-hover:translate-x-0.5 transition-all" />
                   )}
                 </button>
 
@@ -223,10 +230,10 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
                     triggerHaptic('light');
                     setAuthMode('email-signin');
                   }}
-                  className="w-full h-12 px-4 rounded-2xl bg-brand-primary hover:bg-[#312bd9] active:scale-[0.98] text-white shadow-md shadow-brand-primary/20 flex items-center justify-center gap-2 font-bold text-[14px] transition-all cursor-pointer"
+                  className="w-full h-12 px-4 rounded-2xl bg-[#1c1c1e] hover:bg-[#252528] border border-white/[0.10] active:scale-[0.98] text-[#f3f5f7] flex items-center justify-center gap-2 font-semibold text-[14px] transition-all cursor-pointer"
                 >
-                  <Mail className="w-4 h-4" />
-                  Masuk dengan Email
+                  <Mail className="w-4 h-4 text-[#9e9e9e]" />
+                  Masuk dengan Email Siswa
                 </button>
               </div>
             )}
@@ -237,11 +244,11 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
                 {authMode === 'email-signup' && (
                   <>
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1 ml-1">
+                      <label className="block text-xs font-semibold text-[#9e9e9e] mb-1 ml-1">
                         Nama Lengkap
                       </label>
                       <div className="relative">
-                        <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                        <User className="w-4 h-4 text-[#9e9e9e] absolute left-3.5 top-1/2 -translate-y-1/2" />
                         <input
                           type="text"
                           required
@@ -249,12 +256,12 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
                           onChange={(e) => setFullName(e.target.value)}
                           placeholder="Nama Panggilan / Lengkap"
                           style={{ fontSize: '16px' }}
-                          className="w-full h-11 pl-10 pr-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/15 outline-none text-sm text-slate-900 transition-all"
+                          className="w-full h-11 pl-10 pr-3 rounded-xl bg-[#141416] border border-white/[0.14] focus:bg-[#1a1a1d] focus:border-brand-primary outline-none text-sm text-[#f3f5f7] placeholder-[#6b7280] transition-all"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1 ml-1">
+                      <label className="block text-xs font-semibold text-[#9e9e9e] mb-1 ml-1">
                         Kelas / Jurusan
                       </label>
                       <input
@@ -263,18 +270,18 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
                         onChange={(e) => setClassGroup(e.target.value)}
                         placeholder="Contoh: XII PPLG 1"
                         style={{ fontSize: '16px' }}
-                        className="w-full h-11 px-3.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/15 outline-none text-sm text-slate-900 transition-all"
+                        className="w-full h-11 px-3.5 rounded-xl bg-[#141416] border border-white/[0.14] focus:bg-[#1a1a1d] focus:border-brand-primary outline-none text-sm text-[#f3f5f7] placeholder-[#6b7280] transition-all"
                       />
                     </div>
                   </>
                 )}
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1 ml-1">
+                  <label className="block text-xs font-semibold text-[#9e9e9e] mb-1 ml-1">
                     Email
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <Mail className="w-4 h-4 text-[#9e9e9e] absolute left-3.5 top-1/2 -translate-y-1/2" />
                     <input
                       type="email"
                       required
@@ -282,17 +289,17 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="email@smkn8jakarta.sch.id"
                       style={{ fontSize: '16px' }}
-                      className="w-full h-11 pl-10 pr-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/15 outline-none text-sm text-slate-900 transition-all"
+                      className="w-full h-11 pl-10 pr-3 rounded-xl bg-[#141416] border border-white/[0.14] focus:bg-[#1a1a1d] focus:border-brand-primary outline-none text-sm text-[#f3f5f7] placeholder-[#6b7280] transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1 ml-1">
+                  <label className="block text-xs font-semibold text-[#9e9e9e] mb-1 ml-1">
                     Kata Sandi
                   </label>
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <Lock className="w-4 h-4 text-[#9e9e9e] absolute left-3.5 top-1/2 -translate-y-1/2" />
                     <input
                       type="password"
                       required
@@ -300,7 +307,7 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Minimal 6 karakter"
                       style={{ fontSize: '16px' }}
-                      className="w-full h-11 pl-10 pr-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/15 outline-none text-sm text-slate-900 transition-all"
+                      className="w-full h-11 pl-10 pr-3 rounded-xl bg-[#141416] border border-white/[0.14] focus:bg-[#1a1a1d] focus:border-brand-primary outline-none text-sm text-[#f3f5f7] placeholder-[#6b7280] transition-all"
                     />
                   </div>
                 </div>
@@ -323,7 +330,7 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
                       setErrorMessage(null);
                       setAuthMode(authMode === 'email-signin' ? 'email-signup' : 'email-signin');
                     }}
-                    className="font-medium text-brand-primary hover:underline"
+                    className="font-medium text-[#818cf8] hover:underline"
                   >
                     {authMode === 'email-signin' ? 'Belum punya akun? Daftar' : 'Sudah punya akun? Masuk'}
                   </button>
@@ -335,7 +342,7 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
                       setErrorMessage(null);
                       setAuthMode('options');
                     }}
-                    className="text-slate-500 hover:text-slate-800"
+                    className="text-[#9e9e9e] hover:text-[#f3f5f7]"
                   >
                     Kembali
                   </button>
@@ -344,7 +351,7 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
             )}
 
             {/* Bottom Disclaimer */}
-            <p className="mt-5 text-[11px] text-slate-600 text-center leading-relaxed">
+            <p className="mt-5 text-[11px] text-[#6b7280] text-center leading-relaxed">
               Dengan melanjutkan, Anda menyetujui Ketentuan Komunitas dan Kebijakan Privasi SMKN 8 Jakarta.
             </p>
           </motion.div>

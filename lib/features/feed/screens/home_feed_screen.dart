@@ -709,12 +709,14 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     final posts = _displayedPosts;
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
     final double fabBottomVisible = (bottomPadding > 0 ? bottomPadding + 8.0 : 18.0) + 62.0 + 12.0;
+    final bool isUnauthenticated = SupabaseService.instance.currentUser == null;
 
-    return Scaffold(
+    final Widget scaffold = Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       extendBody: true,
       appBar: HomeFeedHeader(
+        isDark: isUnauthenticated,
         title: switch (_currentNavTab) {
           HomeNavTab.home => 'Snaps.',
           HomeNavTab.messages => 'Chat',
@@ -836,16 +838,24 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
               ),
             ),
           ),
-
-          // Threads-Style Blocking Auth Popover Overlay (Active when unauthenticated)
-          if (SupabaseService.instance.currentUser == null)
-            Positioned.fill(
-              child: AuthPromptOverlay(
-                onNavigateToAuth: _handleOpenAuth,
-              ),
-            ),
         ],
       ),
     );
+
+    if (isUnauthenticated) {
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          scaffold,
+          Positioned.fill(
+            child: AuthPromptOverlay(
+              onNavigateToAuth: _handleOpenAuth,
+            ),
+          ),
+        ],
+      );
+    }
+
+    return scaffold;
   }
 }

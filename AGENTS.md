@@ -1,231 +1,124 @@
 # Repository Guidelines
 
 ## Project Overview
-**Snapan Market Mobile** is a mobile-first Progressive Web App (PWA) that integrates an e-commerce marketplace with a Threads-style social networking forum designed exclusively for the **SMKN 8 Jakarta** school ecosystem. The platform enables students and staff to circulate preloved school supplies, commercialize creative vocational works (PPLG, DKV, Kuliner), place COD orders with designated campus meeting points, and interact in academic community discussion threads.
+**Snapan Market Mobile (sNaps)** is a mobile-first app designed exclusively for the **SMKN 8 Jakarta** student ecosystem, integrating an e-commerce vocational marketplace with a Threads-style social networking feed. The platform allows students and staff to circulate preloved school supplies, commercialize vocational works (PPLG, DKV, Kuliner), place COD orders with designated campus meeting points, and interact in academic community discussion threads.
 
+---
+
+## 🎯 Primary Agent Mandate: Exclusive Flutter Mobile Focus
+
+1. **Flutter Mobile App First & Only (`lib/`)**:
+   - All feature implementations, UI slicing, bug fixes, refactorings, and optimizations must target the **Flutter codebase (`lib/`)**.
+   - **Skip Website / PWA (`src/`)**: Do NOT modify or work on web/PWA files in `src/` unless explicitly instructed by the user.
+
+2. **Source of Truth for Visual Design & Flow**:
+   - The React components in `src/ui/` may only be used as a **visual & functional reference** for porting UI/UX flows into Flutter widgets in `lib/`.
+   - Target high fidelity (>= 90% visual & spatial parity) with clean idiomatic Flutter code.
+
+---
 
 ## ⚠️ Strict Agent Execution Directives (Prohibited Commands)
 
-1. **DO NOT Run Verification & Analysis Commands**:
-   - **STRICTLY PROHIBITED**: Running `flutter test`, `flutter analyze`, or routine test/verification commands.
-   - Do not waste tool calls, round-trips, or token budget on running repetitive analyzers, test runners, or test suites.
-2. **DO NOT Run Playwright Without Explicit User Command**:
-   - **STRICTLY PROHIBITED**: Launching Playwright, headless browser, or screenshot capture tasks on your own.
-   - ONLY run Playwright IF AND ONLY IF the user explicitly asks for screenshots or testing (e.g. "buka playwright", "ambil screenshot", "take a capture").
-   - For all other tasks, execute code changes directly, cleanly, and fast without spinning up browser instances.
-3. **100% Focus on Direct Codebase Generation**:
-   - Focus directly on generating, refactoring, and updating codebase files (`lib/`, `src/`, `docs/`, etc.) with high taste and strict syntactic/architectural correctness.
-   - Directly write correct, clean, and production-ready code in one pass.
-3. **Mandatory Web-to-Mobile Frontend Slicing SOP (`docs/agent-frontend-slicing-sop.md`)**:
-   - For all frontend slicing tasks and `/goal` autonomous executions:
-     - **Source of Truth**: 100% React/Tailwind codebase in `src/ui/pages/` and `src/ui/components/`.
-     - **Target Fidelity**: Guaranteed >= 90% (93%-96%) visual and spatial parity.
-     - **Scope Isolation**: Strictly bounded to the single page requested by user without unprompted sub-pages.
-     - **Mock-Only Policy**: 100% typed local mock datasets in `lib/features/<feature>/models/` during frontend phase (zero live backend queries).
-     - **Dual Validation Audit**: Execute Codebase Token Inspection + Visual Parity Audit before completion.
+1. **STRICTLY PROHIBITED: `flutter test` and `flutter analyze`**:
+   - Never run `flutter test`, `flutter analyze`, or routine analysis commands.
+   - Do not waste tool calls, round-trips, or token budget on running repetitive analyzers or test runners.
+   - Guarantee syntactic and architectural correctness directly through clean, production-ready code.
 
+2. **STRICTLY PROHIBITED: Playwright / Headless Browser Without Explicit Order**:
+   - Never launch Playwright, headless browser, or screenshot capture tasks on your own initiative.
+   - Only run Playwright IF AND ONLY IF the user explicitly orders it (e.g. "buka playwright", "ambil screenshot").
+
+3. **100% Focus on Direct Flutter Codebase Generation**:
+   - Generate, refactor, and update Flutter widgets, models, controllers, and services in `lib/` in one clean pass.
+   - Apply clean widget decomposition, idiomatic Dart naming, proper null safety, and const constructor optimization.
+
+4. **Mandatory Automatic Git Commit & Push Directive**:
+   - After completing any task or code change:
+     1. `git add .`
+     2. `git commit -m "<type>(<scope>): <descriptive message>"`
+     3. `git push`
 
 ---
 
-## Architecture & Data Flow
+## Flutter Architecture & Modular Structure (`lib/`)
 
-### High-Level Architecture
-The application is built on **React 18 + TypeScript + Vite 5 + Tailwind CSS v4 + Zustand + Supabase**.
+The mobile application follows a **feature-first modular architecture**:
 
 ```
-┌────────────────────────────────────────────────────────┐
-│                   React 18 Frontend                    │
-│   App.tsx (Stateful Router & DOM Restoration)          │
-│   ├── ui/pages/ (Home, PostDetail, Search, Profile)    │
-│   ├── ui/components/ (Marketplace, Chat, Atomic UI)    │
-│   └── ui/store/ & ui/hooks/ (Zustand & Supabase Auth)  │
-└───────────────────────────┬────────────────────────────┘
-                            │ (Typed API Calls & Realtime)
-┌───────────────────────────▼────────────────────────────┐
-│               Service Layer (src/services/)             │
-│   ├── api/ (Auth, Posts, Orders, Comments, Storage)    │
-│   └── cache/ (feedCache.ts In-Memory Fast Cache)       │
-└───────────────────────────┬────────────────────────────┘
-                            │
-┌───────────────────────────▼────────────────────────────┐
-│                 Supabase Cloud Backend                 │
-│   PostgreSQL DB + GoTrue Auth + Realtime + Storage     │
-└────────────────────────────────────────────────────────┘
+lib/
+├── main.dart                          # App bootstrap, MaterialApp, theme, route table
+├── core/
+│   ├── theme/                         # Global design tokens (app_colors.dart, typography)
+│   ├── components/                    # Atomic reusable widgets (snaps_logo.dart, kumo_button.dart)
+│   ├── constants/                     # App-wide constants and asset paths
+│   ├── navigation/                    # Custom page route transitions (app_slide_page_route.dart)
+│   ├── services/                      # Shared global services (Supabase client, local storage)
+│   └── utils/                         # Formatters (rupiah, dates), haptics, helpers
+└── features/                          # Feature-first modules
+    ├── feed/                          # Home feed timeline, thread cards, post detail screens
+    ├── locations/                     # Campus COD meeting points picker & spot cards
+    ├── checkout/                      # COD checkout flow, price breakdowns, seller cards
+    ├── map/                           # 2D campus blueprint interactive map painter
+    ├── messages/                      # Direct messages, chat rooms, product cards
+    ├── search/                        # Explore screen, tag filters, user discovery
+    ├── create_post/                   # Multi-type thread & product creator modal
+    ├── profile/                       # Student profile, stats, edit profile screens
+    ├── activity/                      # Notifications and interaction history
+    ├── auth/                          # Supabase auth screens & login sheets
+    └── onboarding/                    # Onboarding walkthrough carousels
 ```
 
-### Data Flow Patterns
-1. **Client Service Invocations**: UI components call modular repository services in `src/services/api/` rather than querying Supabase directly.
-2. **Database to Domain Transformation**: PostgreSQL database rows (`snake_case` defined in `src/types/supabase.ts`) are mapped to clean frontend domain models (`camelCase` defined in `src/types/marketFeed.ts`, `src/types/product.ts`, `src/types/order.ts`).
-3. **Optimistic UI & Debounced Mutations**: Likes, reposts, and bookmarks update client state instantly with haptic feedback, while persisting changes to Supabase asynchronously.
-4. **Cache-First Feed Hydration**: `src/services/cache/feedCache.ts` loads in-memory cached posts for 0ms initial render, merging fresh asynchronous Supabase posts with mock fallback data.
-5. **Real-time Synchronization**: Supabase Channels (`realtimeService.ts`) listen for order updates, comment notifications, and live feed updates.
+---
+
+## Design System & Flutter Conventions
+
+### 1. Color Tokens (`lib/core/theme/app_colors.dart`)
+- **Brand Signature**: Electric Indigo (`AppColors.primary` / `#3D38F5`, hover `#312BD9`, pastel `#EEF0FF`).
+- **Neutral Canvas**: Canvas background `#FFFFFF` / `#F8F9FA`, Slate Ink `#111827`, Muted Gray `#6B7280`, Border `#E5E7EB`.
+- **Accents**: Success Emerald `#10B981`, Warning Amber `#F59E0B`, Danger Rose `#EF4444`.
+
+### 2. Typography & Icons
+- **Font Family**: GoogleFonts Inter (`google_fonts` package) with tabular figures for numbers/prices.
+- **Icons**: `lucide_icons_flutter` (`LucideIcons.*`) for clean, modern line icons matching the app aesthetic.
+- **Official Brandmark**: Use `SnapsLogo(height: 24.0)` from `lib/core/components/snaps_logo.dart` for the official vector logo.
+
+### 3. Haptics & Micro-Interactions
+- Add subtle tactile feedback on interactive triggers:
+  - Button taps: `HapticFeedback.lightImpact()`
+  - Navigation tab switches: `HapticFeedback.selectionClick()`
+  - Confirm / destructive actions: `HapticFeedback.mediumImpact()`
+
+### 4. Widget Best Practices
+- Prefer `const` constructors wherever possible to maximize 60/120 FPS frame rates.
+- Isolate state into feature-level `StatefulWidget` or controllers rather than rebuilding large root trees.
+- Handle safe area insets cleanly using `SafeArea` with explicit edge control (`bottom: false` when bottom bar handles padding).
 
 ---
 
-## Key Directories
+## Daily Flutter Development Commands
 
-### 1. Flutter Mobile App (`lib/`)
-- **`lib/main.dart`**: Global app bootstrap, unified GoogleFonts Inter typography theme, and root widget tree.
-- **`lib/core/`**:
-  - `theme/`: Global color tokens (`app_colors.dart`).
-  - `components/`: Atomic cross-screen widgets (`kumo_button.dart`).
-  - `utils/`: Formatters, string helpers, and rupiah formatters.
-  - `navigation/`: Custom page route transitions (`app_slide_page_route.dart`).
-- **`lib/features/`**: Feature-first modular architecture:
-  - `feed/`: Home feed timeline, post cards, post detail screens, and models.
-  - `locations/`: Campus COD meeting points (`models/campus_location_spot.dart`, `components/`, `screens/campus_locations_picker_screen.dart`).
-  - `checkout/`: In-app checkout flow, price breakdowns, and seller cards.
-  - `map/`: 2D blueprint interactive campus map (`campus_map_screen.dart`, `campus_2d_blueprint_painter.dart`).
-  - `messages/`: Direct messages & room chat (`chat_conversation_screen.dart`, `chat_product_card.dart`).
-  - `search/`: Semantic search & account discovery (`search_screen.dart`).
-  - `create_post/`: Multi-type thread & product creator modal with media toolbar.
-  - `profile/`: Student profiles, stats, and edit profile screens.
-  - `activity/`: Notifications and activity feeds.
-  - `auth/` & `onboarding/`: Authentication & onboarding walkthrough carousels.
-
-### 2. React 18 PWA (`src/`)
-- **`src/ui/pages/`**: Full screen page views (`HomePage.tsx`, `PostDetailPage.tsx`, `ProfilePage.tsx`, `SearchPage.tsx`, `DirectMessagesPage.tsx`, `CampusMapPage.tsx`, `CheckoutPage.tsx`).
-- **`src/ui/components/`**:
-  - `ui/`: Atomic reusable primitives (`Button.tsx`, `Card.tsx`, `Input.tsx`, `Badge.tsx`, `ToastNotification.tsx`, `ConfirmActionModal.tsx`, `chat-bubble.tsx`).
-  - `marketplace/`: E-commerce & social thread cards (`MarketPostCard.tsx`, `CreatePostModal.tsx`, `BuyBottomSheet.tsx`, `MarketBottomNav.tsx`, `MarketHeader.tsx`).
-  - `chat/`: Direct messaging components (`ChatComposerBar.tsx`, `ChatTopBar.tsx`, `ChatProductCard.tsx`).
-  - `onboarding/`: Interactive onboarding carousel slides and splash screens.
-  - `navigation/`: Side drawer menu (`NavigationDrawer.tsx`).
-  - `pwa/`: PWA installation banner, landing page, and offline status bars.
-- **`src/ui/store/`**: Global state management via Zustand (`cartStore.ts`).
-- **`src/ui/hooks/`**: Custom hooks for auth (`useAuth.ts`), PWA install triggers (`usePWA.ts`), virtual keyboard detection (`useVirtualKeyboard.ts`), and smooth scroll physics (`useSmoothScroll.ts`).
-- **`src/services/api/`**: Supabase client (`supabase.ts`) and modular API services (Auth, Posts, Orders, Comments, Profiles, Storage, Notifications, Meeting Points, Realtime).
-- **`src/services/cache/`**: In-memory caching layer with TTL (`feedCache.ts`).
-- **`src/types/`**: Strict TypeScript interfaces (`supabase.ts`, `marketFeed.ts`, `product.ts`, `order.ts`, `user.ts`).
-- **`src/utils/`**: Pure utilities (`cn.ts` class merger, `formatters.ts` currency/timestamp helpers, `haptics.ts` tactile vibrations).
-- **`docs/`**: Comprehensive specifications, data contracts (`fe-to-be-data-contract.md`), and database SQL setup guides (`supabase-guide.md`, `complete-migration-seed.sql`).
-- **`public/`**: Static public assets, PWA manifest, and app icons.
-
----
-
-## Development Commands
-
-### Daily Workflow
 ```bash
-# 1. Install dependencies
-npm install
+# 1. Fetch package dependencies
+flutter pub get
 
-# 2. Copy environment template
-cp .env.example .env
+# 2. Run app in development mode
+flutter run
 
-# 3. Start local development server
-npm run dev
+# 3. Build bundle for quick compilation verification (without running test/analyze)
+flutter build bundle
 
-# 4. Start local development server accessible on local network (mobile debugging)
-npm run dev:host
+# 4. Build release APK for Android
+flutter build apk --release
 ```
 
-### Build & Quality Gates
-```bash
-# Validate HTML templates tag balance (popSiteHtml & popSiteMobileHtml)
-npm run validate:html
-
-# Type check without emitting JavaScript
-npx tsc --noEmit
-
-# Production build (Runs HTML validation + typecheck + Vite build)
-npm run build
-
-# Preview production build locally
-npm run preview
-
-# Run backend integration test against Supabase
-npx ts-node test-backend.ts
-```
-
-### ⚠️ Landing Page Modification Directive
-1. **CSS-First Styling**: When hiding or tweaking landing page elements, always prefer modifying `src/ui/components/pwa/pwaLanding.css` (e.g. `display: none !important;`) rather than cutting raw HTML strings.
-2. **Mandatory Tag Validation**: If raw HTML templates in `popSiteHtml.ts` or `popSiteMobileHtml.ts` are edited, run `npm run validate:html` to guarantee 100% tag balance.
-
 ---
 
-## Code Conventions & Common Patterns
+## Multi-Workstation Git Workflow
 
-### 1. Naming & File Conventions
-- **React Components**: PascalCase (e.g., `MarketPostCard.tsx`, `CreatePostModal.tsx`, `ButtonPrimary.tsx`).
-- **Hooks**: camelCase prefixed with `use` (e.g., `useAuth.ts`, `usePWA.ts`, `useVirtualKeyboard.ts`).
-- **Services & Helpers**: camelCase (e.g., `marketPostsService.ts`, `formatters.ts`, `cn.ts`).
-- **Types & Interfaces**: PascalCase (e.g., `MarketPostItem`, `SellerProfile`, `Database`).
-
-### 2. Path Aliases
-- **Mandatory `@/*` Alias**: Always use the path alias `@/` mapped to `src/`. Relative directory traversal (e.g., `../../../../`) is strictly prohibited.
-  ```typescript
-  // Correct
-  import { Button } from '@/ui/components/ui/Button';
-  import { formatRupiah } from '@/utils/formatters';
-
-  // Prohibited
-  import { Button } from '../../../ui/components/ui/Button';
-  ```
-
-### 3. Styling & Tailwind CSS v4
-- Styled using Tailwind CSS v4 with design tokens defined under `@theme` in `src/index.css`:
-  - **Brand Signature**: Electric Indigo (`--color-brand-primary: #3d38f5`, hover `#312bd9`, pastel `#eef0ff`, ring `rgba(61, 56, 245, 0.15)`).
-  - **Neutral Canvas**: Canvas mist `#f2f4f5`, pure white `#ffffff`, ink black `#000000`, slate ink `#332f2d`, muted gray `#787574`.
-  - **Typography**: Inter font with tabular numbers (`cv02, cv03, cv04, cv11, tnum`).
-- Use the `cn(...)` utility (`clsx` + `tailwind-merge`) for dynamic class combination:
-  ```typescript
-  import { cn } from '@/utils/cn';
-
-  export function CustomBadge({ className, isVerified }: Props) {
-    return (
-      <span className={cn('px-2 py-0.5 rounded-full text-xs font-semibold', isVerified ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700', className)}>
-        {isVerified ? 'Terverifikasi' : 'Reguler'}
-      </span>
-    );
-  }
-  ```
-
-### 4. GPU Performance & 120 FPS Mobile Optimization
-- Feeds and animated cards utilize `@utility feed-card-perf` (`contain: layout paint; transform: translateZ(0)`) to isolate GPU composite layers.
-- Form inputs enforce `font-size: 16px` on mobile screens to prevent disruptive iOS Safari viewport zoom.
-- Tactile feedback is triggered on interactive actions via `triggerHaptic('light' | 'medium' | 'selection' | 'error')` from `@/utils/haptics`.
-
-### 5. Routing & State Preservation (`App.tsx`)
-- Navigation relies on lightweight URL path + hash routing (`/@:username/post/:postId`, `/search`, `/messages`, `/profile`).
-- `HomePage` and `SearchPage` instances stay preserved in the DOM using conditional `block`/`hidden` classes, preserving scroll positions, active tab states, and search queries across page visits.
-- Double-back press within 2 seconds at the root route is guarded to prevent accidental PWA window exits.
-
----
-
-## Important Files
-
-| File Path | Role & Importance |
-| :--- | :--- |
-| **`src/App.tsx`** | Application root managing stateful routing, deep linking, history back guards, scroll restoration, and navigation drawers. |
-| **`src/index.css`** | Primary stylesheet containing Tailwind v4 `@theme` design tokens, font features, keyframes, and GPU compositor utilities. |
-| **`vite.config.ts`** | Bundler configuration defining React, Tailwind v4, PWA service worker caching rules, manual chunk splitting, and `@/` path alias. |
-| **`src/services/api/supabase.ts`** | Supabase client instance configuration and social OAuth handlers. |
-| **`src/types/supabase.ts`** | Complete TypeScript database table contract matching the Supabase PostgreSQL schema. |
-| **`src/ui/store/cartStore.ts`** | Zustand persistent shopping cart store with LocalStorage hydration. |
-| **`docs/fe-to-be-data-contract.md`** | Official field transformation guide between database rows and frontend interface models. |
-
----
-
-## Runtime & Tooling Preferences
-
-- **JavaScript Runtime**: Node.js (version `>= 18.0.0`) or Bun.
-- **Package Manager**: `npm` (strictly maintained with `package-lock.json`).
-- **Module System**: Pure ECMAScript Modules (`"type": "module"` in `package.json`).
-- **Bundler**: Vite 5 targeting `ES2020` with `cssCodeSplit: true` and vendor chunk splitting (`vendor-react`, `vendor-motion`, `vendor-icons`, `vendor-supabase`, `vendor-state`, `vendor-mappedin`, `vendor-three`).
-- **Compiler Mode**: TypeScript 5.5 in strict mode with `isolatedModules: true` and `noEmit: true`.
-
----
-
-## Testing & QA
-
-### Quality Assurance & Verification Policy
-1. **Zero Test/Analyzer Command Execution**: Do not invoke `flutter test`, `flutter analyze`, or ad-hoc verification scripts. Focus entirely on direct code generation and editing.
-2. **Strict Type Safety in Code**: Maintain strict type safety and code correctness directly in the source files without depending on continuous test command executions.
-3. **No Fake Local Mocks When Backend Exists**: Use typed API queries in `src/services/api/` with graceful fallback handling.
-
-### Mandatory Multi-Workstation Git Workflow
-When working across workstations:
-1. **Pre-Task**: Always run `git pull origin main` before analyzing or modifying files.
-2. **Post-Task**: Run `git add .`, commit with conventional commit format (`git commit -m "<type>(<scope>): <description>"`), and push (`git push -u origin main`).
-
+1. **Pre-Task**: Run `git pull origin main` before analyzing or modifying files.
+2. **Post-Task**: Execute automatic commit and push:
+   ```bash
+   git add .
+   git commit -m "<type>(<scope>): <description>"
+   git push
+   ```

@@ -9,7 +9,7 @@ class SnapsLogo extends StatelessWidget {
 
   const SnapsLogo({
     super.key,
-    this.height = 24.0,
+    this.height = 34.0,
     this.width,
     this.fit = BoxFit.contain,
   });

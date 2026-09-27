@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
 
 /// 1:1 Threads-style Header Navigation Menu Popover Overlay
 ///
@@ -12,7 +13,7 @@ import 'package:flutter/services.dart';
 ///   3. Disukai
 ///   4. Arsip
 ///   5. Laporkan masalah
-///   6. Logout (Red text #EF4444)
+///   6. Masuk/Daftar (jika guest) ATAU Logout (jika login)
 /// - Non-blocking overlay architecture: allows the feed behind it to scroll freely!
 class HomeMenuPopover extends StatelessWidget {
   final VoidCallback? onAppearanceTap;
@@ -21,6 +22,7 @@ class HomeMenuPopover extends StatelessWidget {
   final VoidCallback? onArchiveTap;
   final VoidCallback? onReportTap;
   final VoidCallback? onLogout;
+  final VoidCallback? onAuthTap;
 
   const HomeMenuPopover({
     super.key,
@@ -30,6 +32,7 @@ class HomeMenuPopover extends StatelessWidget {
     this.onArchiveTap,
     this.onReportTap,
     this.onLogout,
+    this.onAuthTap,
   });
 
   static OverlayEntry? _currentOverlay;
@@ -50,6 +53,7 @@ class HomeMenuPopover extends StatelessWidget {
     VoidCallback? onArchiveTap,
     VoidCallback? onReportTap,
     VoidCallback? onLogout,
+    VoidCallback? onAuthTap,
     Offset? anchorPosition,
   }) {
     if (isShowing) {
@@ -63,6 +67,7 @@ class HomeMenuPopover extends StatelessWidget {
         onArchiveTap: onArchiveTap,
         onReportTap: onReportTap,
         onLogout: onLogout,
+        onAuthTap: onAuthTap,
         anchorPosition: anchorPosition,
       );
     }
@@ -76,6 +81,7 @@ class HomeMenuPopover extends StatelessWidget {
     VoidCallback? onArchiveTap,
     VoidCallback? onReportTap,
     VoidCallback? onLogout,
+    VoidCallback? onAuthTap,
     Offset? anchorPosition,
   }) {
     dismiss();
@@ -146,6 +152,10 @@ class HomeMenuPopover extends StatelessWidget {
                         onLogout: () {
                           dismiss();
                           _confirmLogout(context, onLogout);
+                        },
+                        onAuthTap: () {
+                          dismiss();
+                          onAuthTap?.call();
                         },
                       ),
                     ),

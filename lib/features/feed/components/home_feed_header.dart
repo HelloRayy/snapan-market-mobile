@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:snapan_market/core/components/glass_toolbar_top.dart';
 import 'package:snapan_market/core/components/snaps_logo.dart';

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
 
 import 'package:snapan_market/features/feed/components/market_post_card.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
@@ -76,14 +77,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _initProfileData();
+    _loadLiveProfile();
   }
 
   @override
   void didUpdateWidget(covariant ProfileScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     _initProfileData();
+    _loadLiveProfile();
   }
 
+  Future<void> _loadLiveProfile() async {
+    if (!_isOwnProfile) return;
+    final currentUser = SupabaseService.instance.currentUser;
+    if (currentUser == null) return;
+
+    try {
+      final profile = await SupabaseService.instance.getProfile(currentUser.id);
+      if (profile != null && mounted) {
+        setState(() {
+          _user = _user.copyWith(
+            id: profile['id'] as String? ?? currentUser.id,
+            name: profile['full_name'] as String? ?? _user.name,
+            username: profile['username'] as String? ?? _user.username,
+            classGroup: profile['class_group'] as String? ?? _user.classGroup,
+            avatar: (profile['avatar_url'] as String?)?.isNotEmpty == true
+                ? profile['avatar_url'] as String
+                : _user.avatar,
+            isVerified: profile['is_verified'] as bool? ?? false,
+          );
+        });
+      }
+    } catch (e) {
+      debugPrint('Error _loadLiveProfile: $e');
+    }
+  }
 
   void _initProfileData() {
     if (_isOwnProfile) {

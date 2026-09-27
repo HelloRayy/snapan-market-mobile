@@ -185,7 +185,7 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
                       <img src="/src/assets/brand/smk8.png" alt="SMKN 8" className="w-full h-full object-contain" />
                     </div>
                     <span className="text-[15.5px] font-bold text-slate-900 tracking-tight">
-                      Lanjutkan sebagai siswa
+                      Lanjutkan sebagai Snapanians
                     </span>
                   </div>
                   <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all" />

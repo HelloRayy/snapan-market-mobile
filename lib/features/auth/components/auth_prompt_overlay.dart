@@ -218,7 +218,7 @@ class _ThreadsActionCapsuleState extends State<_ThreadsActionCapsule> {
               // Title
               const Expanded(
                 child: Text(
-                  'Lanjutkan sebagai siswa',
+                  'Lanjutkan sebagai Snapanians',
                   style: TextStyle(
                     fontSize: 15.5,
                     fontWeight: FontWeight.w700,

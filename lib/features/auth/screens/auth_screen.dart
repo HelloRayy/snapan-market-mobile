@@ -170,9 +170,17 @@ class _AuthScreenState extends State<AuthScreen> {
       }
     } catch (e) {
       if (mounted) {
-        setState(() {
+        final errStr = e.toString().toLowerCase();
+        if (errStr.contains('retryable') ||
+            errStr.contains('xmlhttprequest') ||
+            errStr.contains('failed host lookup') ||
+            errStr.contains('socketexception') ||
+            errStr.contains('connection')) {
+          _loginPasswordError = 'Gagal terhubung ke server. Periksa koneksi internet Anda.';
+        } else {
           _loginPasswordError = 'Email/nomor WA atau kata sandi tidak sesuai';
-        });
+        }
+        setState(() {});
         HapticFeedback.vibrate();
       }
     } finally {
@@ -269,8 +277,25 @@ class _AuthScreenState extends State<AuthScreen> {
       }
     } catch (e) {
       if (mounted) {
+        String message = 'Pendaftaran gagal. Silakan coba lagi.';
+        final errStr = e.toString().toLowerCase();
+
+        if (errStr.contains('already registered') || errStr.contains('user_already_exists')) {
+          message = 'Nomor WhatsApp sudah terdaftar. Silakan beralih ke tab Masuk.';
+        } else if (errStr.contains('retryable') ||
+            errStr.contains('xmlhttprequest') ||
+            errStr.contains('failed host lookup') ||
+            errStr.contains('socketexception') ||
+            errStr.contains('connection')) {
+          message = 'Gagal terhubung ke server. Periksa koneksi internet Anda atau matikan AdBlock di browser.';
+        } else if (errStr.contains('rate limit')) {
+          message = 'Terlalu banyak percobaan. Silakan tunggu beberapa saat.';
+        } else {
+          message = 'Pendaftaran gagal: ${e.toString().replaceAll('Exception: ', '').replaceAll('AuthApiException: ', '')}';
+        }
+
         setState(() {
-          _regPasswordError = 'Pendaftaran gagal: $e';
+          _regPasswordError = message;
         });
         HapticFeedback.vibrate();
       }

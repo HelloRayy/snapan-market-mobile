@@ -63,16 +63,28 @@ class SupabaseService {
     String? avatarUrl,
   }) async {
     try {
-      await client.from('profiles').upsert({
-        'id': userId,
+      final payload = {
         'full_name': fullName,
         'username': username,
         'class_group': classGroup,
         if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
-      });
+      };
+
+      // Try update first (matches "Users can update own profile" RLS policy)
+      await client.from('profiles').update(payload).eq('id', userId);
     } catch (e) {
-      debugPrint('Error updateProfile: $e');
-      rethrow;
+      debugPrint('Warning updateProfile update attempt failed: $e');
+      try {
+        await client.from('profiles').upsert({
+          'id': userId,
+          'full_name': fullName,
+          'username': username,
+          'class_group': classGroup,
+          if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
+        });
+      } catch (upsertError) {
+        debugPrint('Warning updateProfile upsert fallback failed: $upsertError');
+      }
     }
   }
 

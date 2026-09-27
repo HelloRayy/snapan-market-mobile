@@ -83,7 +83,7 @@ class AuthPromptOverlay extends StatelessWidget {
                             width: 58.0,
                             height: 58.0,
                             decoration: BoxDecoration(
-                              color: AppColors.pastelPrimary,
+                              color: AppColors.primaryPastel,
                               borderRadius: BorderRadius.circular(20.0),
                               border: Border.all(
                                 color: AppColors.primary.withOpacity(0.2),
@@ -153,7 +153,7 @@ class AuthPromptOverlay extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 13.5,
                               fontWeight: FontWeight.w400,
-                              color: AppColors.mutedGray,
+                              color: AppColors.muted,
                               letterSpacing: -0.2,
                               height: 1.45,
                             ),

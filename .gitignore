@@ -82,7 +82,9 @@ test-results/
 playwright-report/
 *.json.dump
 
-# Graphify intermediate cache
+# Graphify intermediate cache & backups
 graphify-out/cache/
 graphify-out/.graphify_*
+graphify-out/20*/
+
 

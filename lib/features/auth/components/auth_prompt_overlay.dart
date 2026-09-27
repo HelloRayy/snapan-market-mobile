@@ -181,33 +181,35 @@ class _ThreadsActionCapsuleState extends State<_ThreadsActionCapsule> {
           ),
           child: Row(
             children: [
-              // Student Icon Squircle (ready for SMKN 8 logo later)
+              // SMKN 8 School Logo Squircle (matches Instagram icon squircle in Threads reference)
               Container(
                 width: 44.0,
                 height: 44.0,
+                padding: const EdgeInsets.all(5.0),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0xFF3D38F5),
-                      Color(0xFF6366F1),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(14.0),
+                  border: Border.all(
+                    color: const Color(0xFFE5E7EB),
+                    width: 1.0,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF3D38F5).withOpacity(0.25),
-                      blurRadius: 8.0,
+                      color: Colors.black.withOpacity(0.06),
+                      blurRadius: 6.0,
                       offset: const Offset(0, 2),
                     ),
                   ],
                 ),
                 alignment: Alignment.center,
-                child: const Icon(
-                  LucideIcons.graduationCap,
-                  size: 22.0,
-                  color: Colors.white,
+                child: Image.asset(
+                  'assets/logo/smk8.png',
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) => const Icon(
+                    LucideIcons.graduationCap,
+                    size: 22.0,
+                    color: Color(0xFF3D38F5),
+                  ),
                 ),
               ),
 

@@ -499,6 +499,8 @@ class _AuthScreenState extends State<AuthScreen> {
         textInputAction: TextInputAction.next,
       ),
       const SizedBox(height: 14.0),
+      _buildClassSelector(),
+      const SizedBox(height: 14.0),
       _AuthInputField(
         label: 'Username',
         hint: '@username_kamu',
@@ -523,8 +525,6 @@ class _AuthScreenState extends State<AuthScreen> {
         textInputAction: TextInputAction.done,
         onSubmitted: (_) => _submitRegister(),
       ),
-      const SizedBox(height: 14.0),
-      _buildClassSelector(),
       const SizedBox(height: 16.0),
       _buildRegisterTermsRow(),
       const SizedBox(height: 22.0),

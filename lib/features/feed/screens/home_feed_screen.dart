@@ -532,9 +532,10 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
             ),
           ),
         ],
-      ),
+      ],
     ),
-  );
+  ),
+);
 }
 
   Widget _buildNavTabScreen({required int index, required Widget child}) {

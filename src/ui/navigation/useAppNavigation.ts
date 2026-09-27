@@ -49,29 +49,13 @@ export function getChatThreadFromLocation(): string | null {
 }
 
 export function useAppNavigation() {
-  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    const isExplicitOnboardingRoute =
-      window.location.pathname === '/onboarding' || window.location.hash === '#onboarding';
-    if (isExplicitOnboardingRoute) return false;
-
-    const savedOnboarded = localStorage.getItem('snapan_has_onboarded');
-    if (savedOnboarded === 'true') return true;
-
-    try {
-      const hasSupabaseAuth = Object.keys(localStorage).some(
-        (key) => key.startsWith('sb-') && key.endsWith('-auth-token')
-      );
-      if (hasSupabaseAuth) return true;
-    } catch {}
-
-    return false;
-  });
+  // Onboarding disabled per user directive - user lands directly on HomeFeed
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean>(true);
 
   const [currentRoute, setCurrentRoute] = useState<string>(() => {
-    if (typeof window === 'undefined') return '/download';
+    if (typeof window === 'undefined') return '/home';
     const path = window.location.pathname;
-    if (path === '/' || path === '') return '/download';
+    if (path === '/' || path === '') return '/home';
     return path;
   });
   const [selectedPost, setSelectedPost] = useState<MarketPostItem | null>(null);
@@ -84,11 +68,11 @@ export function useAppNavigation() {
   const postDetailOriginScrollYRef = useRef<number>(0);
   const lastBackPressTimeRef = useRef<number>(0);
 
-  // Auto-redirect base / to /download
+  // Auto-redirect base / to /home
   useEffect(() => {
     if (typeof window !== 'undefined' && (window.location.pathname === '/' || window.location.pathname === '')) {
-      window.history.replaceState({}, '', '/download');
-      setCurrentRoute('/download');
+      window.history.replaceState({}, '', '/home');
+      setCurrentRoute('/home');
     }
   }, []);
 

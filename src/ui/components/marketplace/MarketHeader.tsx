@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Search, Menu, X } from 'lucide-react';
+import { SnapsLogoSvg } from '@/ui/components/brand/SnapsLogoSvg';
 
 // Custom Snaps Logotype Text Header
 export const SnapanLogotype: React.FC<{ className?: string }> = ({
-  className = "text-[17px] font-black tracking-[-0.03em] text-slate-900 select-none",
+  className = "inline-flex items-center",
 }) => (
   <span className={className}>
-    Snaps<span className="text-[#0052FF]">.</span>
+    <SnapsLogoSvg height={20} />
   </span>
 );
 
@@ -55,17 +56,15 @@ export const MarketHeader: React.FC<MarketHeaderProps> = ({
           </button>
         </div>
 
-        {/* Center Title (Snaps.) */}
+        {/* Center Title (Snaps Official SVG Brandmark) */}
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
           <button
             type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="flex items-center justify-center hover:opacity-85 active:scale-[0.98] transition-transform duration-100 cursor-pointer"
-            aria-label="Snaps."
+            className="flex items-center justify-center hover:opacity-85 active:scale-[0.98] transition-transform duration-100 cursor-pointer py-1"
+            aria-label="Snaps"
           >
-            <span className="text-[16.5px] font-bold tracking-tight text-[#1a1a1a] select-none">
-              Snaps.
-            </span>
+            <SnapsLogoSvg height={24} />
           </button>
         </div>
 

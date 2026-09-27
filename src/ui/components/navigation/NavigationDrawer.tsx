@@ -17,6 +17,7 @@ import {
   MapPin,
 } from 'lucide-react';
 import { useAuth } from '@/ui/hooks/useAuth';
+import { SnapsLogoSvg } from '@/ui/components/brand/SnapsLogoSvg';
 
 interface NavigationDrawerProps {
   isOpen: boolean;
@@ -29,6 +30,7 @@ interface NavigationDrawerProps {
   onNavigateColors?: () => void;
   onOpenCreateModal?: () => void;
   onNavigateMap?: () => void;
+  onOpenAuthModal?: () => void;
 }
 
 export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
@@ -42,8 +44,9 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   onNavigateColors,
   onNavigateMap,
   onOpenCreateModal,
+  onOpenAuthModal,
 }) => {
-  const { profile, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const myUsername = profile?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn';
 
   const handleLogout = async () => {
@@ -81,7 +84,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             <div className="w-7.5 h-7.5 rounded-xl bg-neutral-100 border border-neutral-200/80 flex items-center justify-center text-slate-900 shadow-2xs">
               <Store className="w-4 h-4 text-slate-900 stroke-[2.2]" />
             </div>
-            <span className="font-bold text-[15px] text-slate-900 tracking-tight leading-snug">Snaps</span>
+            <SnapsLogoSvg height={19} />
           </div>
 
           <button
@@ -297,15 +300,30 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             <span className="truncate">Pengaturan Akun</span>
           </button>
 
-          {/* Keluar Akun */}
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="flex items-center gap-3 h-[36px] w-full px-3 rounded-xl text-[14px] font-semibold text-rose-600 hover:bg-rose-50 active:bg-rose-100/80 transition-colors cursor-pointer leading-snug text-left"
-          >
-            <LogOut className="w-4 h-4 text-rose-600 stroke-[2] shrink-0" />
-            <span className="truncate">Keluar Akun</span>
-          </button>
+          {/* Masuk / Daftar Akun jika belum login */}
+          {!user ? (
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                onOpenAuthModal?.();
+              }}
+              className="flex items-center gap-3 h-[38px] w-full px-3 rounded-xl text-[14px] font-bold text-white bg-brand-primary hover:bg-[#312bd9] active:scale-[0.98] transition-all cursor-pointer leading-snug text-left shadow-sm"
+            >
+              <User className="w-4 h-4 text-white stroke-[2.2] shrink-0" />
+              <span className="truncate">Masuk / Daftar Akun</span>
+            </button>
+          ) : (
+            /* Keluar Akun */
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="flex items-center gap-3 h-[36px] w-full px-3 rounded-xl text-[14px] font-semibold text-rose-600 hover:bg-rose-50 active:bg-rose-100/80 transition-colors cursor-pointer leading-snug text-left"
+            >
+              <LogOut className="w-4 h-4 text-rose-600 stroke-[2] shrink-0" />
+              <span className="truncate">Keluar Akun</span>
+            </button>
+          )}
 
           <div className="text-center pt-1">
             <p className="text-[11px] text-neutral-400 font-medium leading-tight">

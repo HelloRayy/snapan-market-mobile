@@ -1,10 +1,11 @@
-import { useEffect, Suspense, lazy } from 'react';
+import { useEffect, useState, Suspense, lazy } from 'react';
 import { HomePage } from '@/ui/pages/HomePage';
 import { ProfilePage } from '@/ui/pages/ProfilePage';
 import { SearchPage } from '@/ui/pages/SearchPage';
 import { DirectMessagesPage } from '@/ui/pages/DirectMessagesPage';
 import { NavigationDrawer } from '@/ui/components/navigation/NavigationDrawer';
 import { MarketBottomNav } from '@/ui/components/marketplace/MarketBottomNav';
+import { AppEntranceSplash } from '@/ui/components/splash/AppEntranceSplash';
 import { useAuth } from '@/ui/hooks/useAuth';
 import { useSmoothScroll } from '@/ui/hooks/useSmoothScroll';
 import { useAppNavigation, getPostFromLocation } from '@/ui/navigation/useAppNavigation';
@@ -33,9 +34,12 @@ const CampusMapPage = lazy(() =>
   import('@/ui/pages/CampusMapPage').then((m) => ({ default: m.CampusMapPage }))
 );
 
+import { AuthPromptPopover } from '@/ui/components/auth/AuthPromptPopover';
+
 export function App() {
   useSmoothScroll();
-  const { profile } = useAuth();
+  const { user, profile } = useAuth();
+  const [isAuthPromptOpen, setIsAuthPromptOpen] = useState(false);
 
   const {
     hasCompletedOnboarding,
@@ -65,7 +69,7 @@ export function App() {
   const isProfileRoute = currentRoute.startsWith('/@') || currentRoute.startsWith('/profile');
   const isColorsRoute = currentRoute === '/colors' || window.location.hash === '#colors';
   const isMapRoute = currentRoute === '/map' || window.location.hash === '#map';
-  const isDownloadLandingRoute = currentRoute === '/download' || currentRoute === '/' || window.location.hash === '#download';
+  const isDownloadLandingRoute = currentRoute === '/download' || window.location.hash === '#download';
   const isHomeRoute = currentRoute === '/home' || (!isSearchRoute && !isMessagesRoute && !isProfileRoute && !isColorsRoute && !isMapRoute && !isDownloadLandingRoute);
 
   const targetProfileUsername = isProfileRoute
@@ -73,6 +77,33 @@ export function App() {
     : 'radityarayhannnn';
 
   const isViewingOtherUserProfile = isProfileRoute && targetProfileUsername !== 'radityarayhannnn';
+
+  const [showSplash, setShowSplash] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('snaps_splash_seen');
+    }
+    return false;
+  });
+
+  // Prompt Threads-style login popover on arrival for unauthenticated users
+  useEffect(() => {
+    if (!user && isHomeRoute) {
+      const dismissed = sessionStorage.getItem('snapan_auth_prompt_dismissed');
+      if (!dismissed) {
+        const timer = setTimeout(() => {
+          setIsAuthPromptOpen(true);
+        }, 600);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [user, isHomeRoute]);
+
+  const handleCloseAuthPrompt = () => {
+    setIsAuthPromptOpen(false);
+    try {
+      sessionStorage.setItem('snapan_auth_prompt_dismissed', 'true');
+    } catch {}
+  };
 
   // Global click interception for #post- and /@ links
   useEffect(() => {
@@ -103,6 +134,18 @@ export function App() {
 
   return (
     <Suspense fallback={<div className="min-h-screen bg-white" />}>
+      {/* 0. Staggered Entrance Splash Animation */}
+      {showSplash && hasCompletedOnboarding && !isDownloadLandingRoute && (
+        <AppEntranceSplash
+          onComplete={() => {
+            try {
+              sessionStorage.setItem('snaps_splash_seen', 'true');
+            } catch {}
+            setShowSplash(false);
+          }}
+        />
+      )}
+
       {/* 1. First-time User Onboarding Screen */}
       {!hasCompletedOnboarding ? (
         <OnboardingScreen
@@ -203,6 +246,7 @@ export function App() {
               setCurrentRoute('/map');
               window.history.pushState({}, '', '/map');
             }}
+            onOpenAuthModal={() => setIsAuthPromptOpen(true)}
           />
 
           {/* Create Post Modal */}
@@ -212,6 +256,12 @@ export function App() {
             onSubmitPost={async () => {
               setIsCreateModalOpen(false);
             }}
+          />
+
+          {/* Auth Prompt Modal */}
+          <AuthPromptPopover
+            isOpen={isAuthPromptOpen}
+            onClose={handleCloseAuthPrompt}
           />
 
           {/* Bottom Navigation */}
@@ -274,6 +324,13 @@ export function App() {
               onNavigateToProfile={navigateToProfile}
             />
           )}
+
+          {/* Threads-Style Auth Prompt Popover */}
+          <AuthPromptPopover
+            isOpen={isAuthPromptOpen}
+            onClose={handleCloseAuthPrompt}
+            onSuccess={() => setIsAuthPromptOpen(false)}
+          />
         </div>
       )}
     </Suspense>

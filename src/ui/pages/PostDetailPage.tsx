@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { SnapsLogoSvg } from '@/ui/components/brand/SnapsLogoSvg';
 import { MarketPostItem, PostComment } from '@/types/marketFeed';
 import { MarketPostCard } from '@/ui/components/marketplace/MarketPostCard';
 import { PostCommentItem } from '@/ui/components/marketplace/PostCommentItem';
@@ -195,7 +196,11 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
           <ArrowLeft className="w-5 h-5 stroke-[2.25]" />
         </button>
 
-        <h1 className="font-semibold text-base text-slate-900">Postingan</h1>
+        <div className="flex items-center gap-2">
+          <SnapsLogoSvg height={20} />
+          <span className="text-neutral-300 font-light select-none">/</span>
+          <h1 className="font-semibold text-[14.5px] text-slate-900">Postingan</h1>
+        </div>
 
         {/* Spacer for center title balance */}
         <div className="w-10 h-10 pointer-events-none" />

@@ -237,14 +237,22 @@ class HomeMenuPopover extends StatelessWidget {
             onTap: onReportTap,
           ),
 
-          // 6. Logout (Red font #EF4444)
-          _buildMenuItem(
-            context: context,
-            label: 'Logout',
-            textColor: const Color(0xFFEF4444),
-            isDestructive: true,
-            onTap: onLogout,
-          ),
+          // 6. Masuk / Daftar jika belum login, atau Logout jika sudah login
+          if (!SupabaseService.instance.isAuthenticated)
+            _buildMenuItem(
+              context: context,
+              label: 'Masuk / Daftar Akun',
+              textColor: const Color(0xFF3D38F5),
+              onTap: onAuthTap,
+            )
+          else
+            _buildMenuItem(
+              context: context,
+              label: 'Logout',
+              textColor: const Color(0xFFEF4444),
+              isDestructive: true,
+              onTap: onLogout,
+            ),
         ],
       ),
     );

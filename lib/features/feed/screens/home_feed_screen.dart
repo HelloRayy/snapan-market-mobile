@@ -1,6 +1,7 @@
 import "package:snapan_market/features/search/screens/search_screen.dart";
 import "package:snapan_market/features/map/screens/campus_map_screen.dart";
 import "package:snapan_market/features/activity/screens/activity_screen.dart";
+import 'package:snapan_market/features/auth/screens/auth_screen.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -161,6 +162,28 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     }
   }
 
+  void _handleOpenAuth() {
+    HomeMenuPopover.dismiss();
+    Navigator.push(
+      context,
+      AppSlidePageRoute(
+        builder: (context) => AuthScreen(
+          onBack: () => Navigator.pop(context),
+          onSuccess: () {
+            Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Pendaftaran/Login berhasil! Selamat datang di Snaps SMKN 8.'),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+            setState(() {});
+          },
+        ),
+      ),
+    );
+  }
+
   void _handleMenuTap() {
     HomeMenuPopover.toggle(
       context: context,
@@ -206,6 +229,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           ),
         );
       },
+      onAuthTap: _handleOpenAuth,
       onLogout: widget.onLogout,
     );
   }

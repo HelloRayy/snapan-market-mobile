@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/kumo_button.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
-import 'package:snapan_market/core/utils/phone_number_formatter.dart';
 import 'package:snapan_market/features/auth/components/auth_header.dart';
 import 'package:snapan_market/features/auth/components/dropdown_column_box.dart';
 import 'package:snapan_market/features/auth/components/kumo_floating_field.dart';
@@ -30,22 +29,22 @@ class _AuthScreenState extends State<AuthScreen> {
   AuthMode _authMode = AuthMode.login;
 
   // --- LOGIN CONTROLLERS ---
-  final TextEditingController _loginEmailController = TextEditingController();
+  final TextEditingController _loginUsernameController = TextEditingController();
   final TextEditingController _loginPasswordController = TextEditingController();
   bool _showLoginPassword = false;
   bool _rememberMe = true;
 
   // --- REGISTER CONTROLLERS ---
   final TextEditingController _fullNameController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _regUsernameController = TextEditingController();
   final TextEditingController _regPasswordController = TextEditingController();
   final TextEditingController _regRepeatPasswordController = TextEditingController();
 
   // --- ERROR STATES ---
-  String? _loginEmailError;
+  String? _loginUsernameError;
   String? _loginPasswordError;
   String? _fullNameError;
-  String? _phoneError;
+  String? _regUsernameError;
   String? _regPasswordError;
   String? _regRepeatPasswordError;
 
@@ -61,10 +60,10 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   void initState() {
     super.initState();
-    _loginEmailController.addListener(() => _clearError(() => _loginEmailError = null));
+    _loginUsernameController.addListener(() => _clearError(() => _loginUsernameError = null));
     _loginPasswordController.addListener(() => _clearError(() => _loginPasswordError = null));
     _fullNameController.addListener(() => _clearError(() => _fullNameError = null));
-    _phoneController.addListener(() => _clearError(() => _phoneError = null));
+    _regUsernameController.addListener(() => _clearError(() => _regUsernameError = null));
     _regPasswordController.addListener(() => _clearError(() {
       _regPasswordError = null;
       _regRepeatPasswordError = null;
@@ -77,20 +76,20 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   void _clearAllErrors() {
-    _loginEmailError = null;
+    _loginUsernameError = null;
     _loginPasswordError = null;
     _fullNameError = null;
-    _phoneError = null;
+    _regUsernameError = null;
     _regPasswordError = null;
     _regRepeatPasswordError = null;
   }
 
   @override
   void dispose() {
-    _loginEmailController.dispose();
+    _loginUsernameController.dispose();
     _loginPasswordController.dispose();
     _fullNameController.dispose();
-    _phoneController.dispose();
+    _regUsernameController.dispose();
     _regPasswordController.dispose();
     _regRepeatPasswordController.dispose();
     super.dispose();
@@ -136,10 +135,10 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(_clearAllErrors);
 
     bool isValid = true;
-    final emailOrPhone = _loginEmailController.text.trim();
+    final usernameInput = _loginUsernameController.text.trim().toLowerCase().replaceAll('@', '');
 
-    if (emailOrPhone.isEmpty) {
-      _loginEmailError = 'Masukkan nomor WhatsApp atau email';
+    if (usernameInput.isEmpty) {
+      _loginUsernameError = 'Masukkan username Anda';
       isValid = false;
     }
     if (_loginPasswordController.text.isEmpty) {
@@ -156,9 +155,9 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(() => _isSubmitting = true);
 
     try {
-      final email = emailOrPhone.contains('@')
-          ? emailOrPhone
-          : '${emailOrPhone.replaceAll(RegExp(r'\D'), '')}@snapan.id';
+      final email = usernameInput.contains('@')
+          ? usernameInput
+          : '$usernameInput@snapan.id';
 
       final response = await SupabaseService.instance.client.auth.signInWithPassword(
         email: email,
@@ -178,7 +177,7 @@ class _AuthScreenState extends State<AuthScreen> {
             errStr.contains('connection')) {
           _loginPasswordError = 'Gagal terhubung ke server. Periksa koneksi internet Anda.';
         } else {
-          _loginPasswordError = 'Email/nomor WA atau kata sandi tidak sesuai';
+          _loginPasswordError = 'Username atau kata sandi tidak sesuai';
         }
         setState(() {});
         HapticFeedback.vibrate();
@@ -198,18 +197,26 @@ class _AuthScreenState extends State<AuthScreen> {
     bool isValid = true;
 
     // 1. Nama Lengkap
-    if (_fullNameController.text.trim().isEmpty) {
+    final fullName = _fullNameController.text.trim();
+    if (fullName.isEmpty) {
       _fullNameError = 'Nama lengkap wajib diisi';
       isValid = false;
     }
 
-    // 2. Nomor WhatsApp
-    final rawPhone = _phoneController.text.replaceAll(RegExp(r'\D'), '');
-    if (rawPhone.isEmpty) {
-      _phoneError = 'Nomor WhatsApp wajib diisi';
+    // 2. Username
+    final rawUsername = _regUsernameController.text.trim().toLowerCase().replaceAll('@', '');
+    final validUsernameRegex = RegExp(r'^[a-z0-9_]{3,20}$');
+    if (rawUsername.isEmpty) {
+      _regUsernameError = 'Username wajib diisi';
       isValid = false;
-    } else if (rawPhone.length < 8) {
-      _phoneError = 'Nomor WhatsApp minimal 8 angka';
+    } else if (rawUsername.length < 3) {
+      _regUsernameError = 'Username minimal 3 karakter';
+      isValid = false;
+    } else if (rawUsername.length > 20) {
+      _regUsernameError = 'Username maksimal 20 karakter';
+      isValid = false;
+    } else if (!validUsernameRegex.hasMatch(rawUsername)) {
+      _regUsernameError = 'Hanya huruf kecil (a-z), angka (0-9), dan underscore (_)';
       isValid = false;
     }
 
@@ -243,31 +250,38 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(() => _isSubmitting = true);
 
     try {
-      final email = '$rawPhone@snapan.id';
+      // Cek ketersediaan username di database
+      final isTaken = await SupabaseService.instance.isUsernameTaken(rawUsername);
+      if (isTaken) {
+        if (mounted) {
+          setState(() {
+            _regUsernameError = 'Username @$rawUsername sudah digunakan. Pilih username lain.';
+            _isSubmitting = false;
+          });
+          HapticFeedback.vibrate();
+        }
+        return;
+      }
+
+      final email = '$rawUsername@snapan.id';
       final classGroup = '$_selectedGrade $_selectedMajor $_selectedClassNum';
-      final username = _fullNameController.text
-          .trim()
-          .toLowerCase()
-          .replaceAll(RegExp(r'[^a-z0-9]'), '') +
-          (rawPhone.length >= 4 ? rawPhone.substring(rawPhone.length - 4) : '');
 
       final response = await SupabaseService.instance.client.auth.signUp(
         email: email,
         password: pass,
         data: {
-          'full_name': _fullNameController.text.trim(),
-          'phone_number': rawPhone,
+          'full_name': fullName,
+          'username': rawUsername,
           'class_group': classGroup,
-          'username': username,
         },
       );
 
       if (response.user != null) {
-        // Save/update profile table
+        // Simpan / update profil
         await SupabaseService.instance.updateProfile(
           userId: response.user!.id,
-          fullName: _fullNameController.text.trim(),
-          username: username,
+          fullName: fullName,
+          username: rawUsername,
           classGroup: classGroup,
         );
 
@@ -281,13 +295,13 @@ class _AuthScreenState extends State<AuthScreen> {
         final errStr = e.toString().toLowerCase();
 
         if (errStr.contains('already registered') || errStr.contains('user_already_exists')) {
-          message = 'Nomor WhatsApp sudah terdaftar. Silakan beralih ke tab Masuk.';
+          message = 'Username sudah terdaftar. Silakan beralih ke tab Masuk.';
         } else if (errStr.contains('retryable') ||
             errStr.contains('xmlhttprequest') ||
             errStr.contains('failed host lookup') ||
             errStr.contains('socketexception') ||
             errStr.contains('connection')) {
-          message = 'Gagal terhubung ke server. Periksa koneksi internet Anda atau matikan AdBlock di browser.';
+          message = 'Gagal terhubung ke server. Periksa koneksi internet Anda.';
         } else if (errStr.contains('rate limit')) {
           message = 'Terlalu banyak percobaan. Silakan tunggu beberapa saat.';
         } else {
@@ -394,12 +408,26 @@ class _AuthScreenState extends State<AuthScreen> {
       children: [
         const SizedBox(height: 6),
 
-        // 1. WhatsApp / Email Field
+        // 1. Username Field
         KumoFloatingField(
-          label: 'Nomor WhatsApp / Email',
-          controller: _loginEmailController,
-          keyboardType: TextInputType.emailAddress,
-          errorText: _loginEmailError,
+          label: 'Username',
+          controller: _loginUsernameController,
+          keyboardType: TextInputType.text,
+          errorText: _loginUsernameError,
+          prefixWidget: const Padding(
+            padding: EdgeInsets.only(left: 4, right: 6),
+            child: Text(
+              '@',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF64748B),
+              ),
+            ),
+          ),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_]')),
+          ],
         ),
 
         const SizedBox(height: 20),
@@ -558,7 +586,31 @@ class _AuthScreenState extends State<AuthScreen> {
 
         const SizedBox(height: 18),
 
-        // 2. Dropdown Grid 3 Kolom
+        // 2. Username Field
+        KumoFloatingField(
+          label: 'Username',
+          controller: _regUsernameController,
+          errorText: _regUsernameError,
+          prefixWidget: const Padding(
+            padding: EdgeInsets.only(left: 4, right: 6),
+            child: Text(
+              '@',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF64748B),
+              ),
+            ),
+          ),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_]')),
+            LengthLimitingTextInputFormatter(20),
+          ],
+        ),
+
+        const SizedBox(height: 18),
+
+        // 3. Dropdown Grid 3 Kolom (Kelas, Jurusan, No. Kelas)
         Row(
           children: [
             Expanded(
@@ -591,44 +643,6 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
           ],
-        ),
-
-        const SizedBox(height: 18),
-
-        // 3. WhatsApp / Phone Number Field
-        KumoFloatingField(
-          label: 'Nomor WhatsApp / HP',
-          controller: _phoneController,
-          keyboardType: TextInputType.phone,
-          errorText: _phoneError,
-          inputFormatters: [
-            PhoneNumberFormatter(),
-          ],
-          prefixWidget: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 8,
-              vertical: 4,
-            ),
-            decoration: BoxDecoration(
-              color: const Color(0xFFEEF2F6),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('🇮🇩', style: TextStyle(fontSize: 13)),
-                SizedBox(width: 4),
-                Text(
-                  '+62',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.ink,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ),
 
         const SizedBox(height: 18),

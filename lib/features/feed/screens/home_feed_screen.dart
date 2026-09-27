@@ -4,6 +4,7 @@ import "package:snapan_market/features/search/screens/search_screen.dart";
 import "package:snapan_market/features/map/screens/campus_map_screen.dart";
 import "package:snapan_market/features/activity/screens/activity_screen.dart";
 import 'package:snapan_market/features/auth/screens/auth_screen.dart';
+import 'package:snapan_market/features/auth/components/auth_prompt_overlay.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -628,7 +629,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                         color: AppColors.muted,
                       ),
                       label: const Text(
-                        'Keluar (Reset Onboarding)',
+                        'Keluar Akun',
                         style: TextStyle(
                           fontSize: 13.0,
                           color: AppColors.muted,
@@ -835,6 +836,14 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
               ),
             ),
           ),
+
+          // Threads-Style Blocking Auth Popover Overlay (Active when unauthenticated)
+          if (SupabaseService.instance.currentUser == null)
+            Positioned.fill(
+              child: AuthPromptOverlay(
+                onNavigateToAuth: _handleOpenAuth,
+              ),
+            ),
         ],
       ),
     );

@@ -5,6 +5,7 @@ class AppColors {
   static const Color primary = Color(0xFF3D38F5);
   static const Color primaryDark = Color(0xFF312BD9);
   static const Color primaryPastel = Color(0xFFEEF0FF);
+  static const Color pastelPrimary = primaryPastel;
   static const Color primaryBorder = Color(0xFFD8DBFE);
   static const Color primaryRing = Color(0x263D38F5);
 
@@ -24,6 +25,7 @@ class AppColors {
   static const Color ink = Color(0xFF1A1A1A);
   static const Color slateInk = Color(0xFF334155);
   static const Color muted = Color(0xFF727272);
+  static const Color mutedGray = muted;
   static const Color lightMuted = Color(0xFF999999);
   static const Color border = Color(0xFFE2E8F0);
   static const Color selectionBg = Color(0xFFEDEDED);

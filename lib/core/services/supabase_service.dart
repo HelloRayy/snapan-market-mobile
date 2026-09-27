@@ -74,17 +74,32 @@ class SupabaseService {
       await client.from('profiles').update(payload).eq('id', userId);
     } catch (e) {
       debugPrint('Warning updateProfile update attempt failed: $e');
-      try {
-        await client.from('profiles').upsert({
-          'id': userId,
-          'full_name': fullName,
-          'username': username,
-          'class_group': classGroup,
-          if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
-        });
-      } catch (upsertError) {
-        debugPrint('Warning updateProfile upsert fallback failed: $upsertError');
-      }
+      final fallbackPayload = {
+        'id': userId,
+        'full_name': fullName,
+        'username': username,
+        'class_group': classGroup,
+        if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
+      };
+      await client.from('profiles').upsert(fallbackPayload).catchError((err) {
+        debugPrint('Warning updateProfile upsert fallback failed: $err');
+      });
+    }
+  }
+
+  /// Check if a username is already taken by another account
+  Future<bool> isUsernameTaken(String username) async {
+    try {
+      final clean = username.toLowerCase().replaceAll('@', '').trim();
+      final res = await client
+          .from('profiles')
+          .select('id')
+          .eq('username', clean)
+          .maybeSingle();
+      return res != null;
+    } catch (e) {
+      debugPrint('Error isUsernameTaken: $e');
+      return false;
     }
   }
 

@@ -94,7 +94,7 @@ class AuthPromptOverlay extends StatelessWidget {
                                 height: 1.2,
                               ),
                             ),
-                            SnapsLogo(height: 26.0),
+                            SnapsLogo(height: 38.0),
                           ],
                         ),
 

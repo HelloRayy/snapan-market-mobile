@@ -148,7 +148,7 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
                 <span className="text-2xl sm:text-[25px] font-black text-slate-900 tracking-tight">
                   dengan
                 </span>
-                <SnapsLogoSvg height={26} />
+                <SnapsLogoSvg height={38} />
               </div>
             </div>
 

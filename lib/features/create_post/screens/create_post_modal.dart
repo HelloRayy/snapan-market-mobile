@@ -38,6 +38,8 @@ class CreatePostModal extends StatefulWidget {
   static Future<void> show(
     BuildContext context, {
     PostMode initialMode = PostMode.thread,
+    String? currentUserName,
+    String? currentUserAvatar,
     ValueChanged<Map<String, dynamic>>? onSubmitPost,
   }) {
     return Navigator.of(context).push(
@@ -48,6 +50,9 @@ class CreatePostModal extends StatefulWidget {
         pageBuilder: (context, animation, secondaryAnimation) =>
             CreatePostModal(
           initialMode: initialMode,
+          currentUserName: currentUserName ?? 'Siswa Snapan',
+          currentUserAvatar: currentUserAvatar ??
+              'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
           onSubmitPost: onSubmitPost,
         ),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {

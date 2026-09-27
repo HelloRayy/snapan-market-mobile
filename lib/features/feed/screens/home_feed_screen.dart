@@ -58,6 +58,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   bool _isLoading = false;
   bool _hasError = false;
   String _errorMessage = '';
+  Map<String, dynamic>? _userProfile;
 
   void _initAnimations() {
     _fabAnimationController ??= AnimationController(
@@ -90,10 +91,29 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
     try {
       final livePosts = await SupabaseService.instance.fetchFeedPosts();
+      final likedIds = await SupabaseService.instance.fetchLikedPostIds();
+      final savedIds = await SupabaseService.instance.fetchBookmarkedPostIds();
+
+      final currentUser = SupabaseService.instance.currentUser;
+      if (currentUser != null) {
+        SupabaseService.instance.getProfile(currentUser.id).then((p) {
+          if (mounted && p != null) {
+            setState(() {
+              _userProfile = p;
+            });
+          }
+        });
+      }
+
       if (!mounted) return;
       setState(() {
         if (livePosts.isNotEmpty) {
-          _posts = livePosts;
+          _posts = livePosts.map((p) {
+            return p.copyWith(
+              isLiked: likedIds.contains(p.id),
+              isSaved: savedIds.contains(p.id),
+            );
+          }).toList();
         } else {
           // Fallback to rich mock data if table has no posts yet
           _posts = List<MarketPostModel>.from(kMockMarketPosts);
@@ -257,56 +277,100 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   }
 
   void _handleCreatePost([PostMode mode = PostMode.thread]) {
+    if (!SupabaseService.instance.isAuthenticated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Silakan masuk atau daftar akun untuk membuat postingan.'),
+          behavior: SnackBarBehavior.floating,
+          action: SnackBarAction(
+            label: 'Masuk',
+            textColor: Colors.amber,
+            onPressed: _handleOpenAuth,
+          ),
+        ),
+      );
+      return;
+    }
+
     CreatePostModal.show(
       context,
       initialMode: mode,
-      onSubmitPost: (data) {
-        final postMode = data['mode'] as String? ?? 'thread';
+      currentUserName: _userProfile?['full_name'] as String? ?? 'Siswa Snapan',
+      currentUserAvatar: _userProfile?['avatar_url'] as String?,
+      onSubmitPost: (data) async {
+        final postMode = data['postType'] as String? ?? 'thread';
         final caption = data['caption'] as String? ?? '';
-        final locationTag = data['location'] as String?;
+        final title = data['title'] as String?;
+        final description = data['description'] as String?;
+        final locationTag = data['locationTag'] as String?;
+        final topicTag = data['topicTag'] as String?;
         final price = data['price'] as int?;
         final stock = data['stock'] as int?;
         final images = (data['images'] as List<dynamic>?)?.cast<String>() ?? [];
 
-        final newPost = MarketPostModel(
-          id: 'post-user-${DateTime.now().millisecondsSinceEpoch}',
-          postType: postMode,
-          seller: const SellerModel(
-            id: 'current-user-1',
-            name: 'Akun Anda',
-            username: 'saya',
-            avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
-            classGroup: 'XII PPLG 1',
-            isVerified: true,
-          ),
-          caption: caption.isNotEmpty ? caption : 'Postingan baru dari SMKN 8 Semarang',
-          images: images,
-          locationTag: locationTag,
-          price: price,
-          stock: stock,
-          timestamp: 'Baru saja',
-          likesCount: 0,
-          commentsCount: 0,
-          repostsCount: 0,
-          isLiked: false,
-          isReposted: false,
-        );
+        try {
+          final liveCreated = await SupabaseService.instance.createPost(
+            postType: postMode,
+            caption: caption,
+            title: title,
+            description: description,
+            price: price,
+            stock: stock,
+            locationTag: locationTag,
+            topicTag: topicTag,
+            images: images,
+          );
 
-        setState(() {
-          _posts.insert(0, newPost);
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              postMode == 'product'
-                  ? 'Produk berhasil dipasang ke katalog COD SMKN 8!'
-                  : 'Utas berhasil diposting ke feed!',
+          if (mounted) {
+            setState(() {
+              _posts.insert(0, liveCreated);
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  postMode == 'product'
+                      ? 'Produk berhasil dipasang ke katalog COD SMKN 8!'
+                      : 'Utas berhasil diposting ke feed!',
+                ),
+                duration: const Duration(seconds: 2),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+        } catch (e) {
+          debugPrint('Error creating post in Supabase: $e');
+          final user = SupabaseService.instance.currentUser;
+          final fallbackPost = MarketPostModel(
+            id: 'post-local-${DateTime.now().millisecondsSinceEpoch}',
+            postType: postMode,
+            seller: SellerModel(
+              id: user?.id ?? 'current-user-1',
+              name: 'Akun Anda',
+              avatar: '',
+              classGroup: 'Siswa Snapan',
             ),
-            duration: const Duration(seconds: 2),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+            caption: caption,
+            title: title,
+            price: price,
+            stock: stock,
+            locationTag: locationTag,
+            topicTag: topicTag,
+            images: images,
+            timestamp: 'Baru saja',
+          );
+
+          if (mounted) {
+            setState(() {
+              _posts.insert(0, fallbackPost);
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Tersimpan di offline: $e'),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+        }
       },
     );
   }
@@ -341,7 +405,19 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     Navigator.push(
       context,
       AppSlidePageRoute(
-        builder: (context) => PostDetailScreen(post: item),
+        builder: (context) => PostDetailScreen(
+          post: item,
+          onLikeToggle: _handleLikeToggle,
+          onBookmarkToggle: (updated) {
+            final index = _posts.indexWhere((p) => p.id == updated.id);
+            if (index != -1) {
+              setState(() {
+                _posts[index] = updated;
+              });
+            }
+          },
+          onRepostToggle: _handleRepostToggle,
+        ),
       ),
     );
   }

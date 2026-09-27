@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:snapan_market/core/navigation/app_slide_page_route.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
+import "package:snapan_market/core/services/supabase_service.dart";
 import "package:snapan_market/features/feed/components/market_post_card.dart";
 import "package:snapan_market/features/feed/models/market_post_model.dart";
 import "package:snapan_market/features/feed/screens/post_detail_screen.dart";
@@ -27,6 +28,8 @@ class _SearchScreenState extends State<SearchScreen> {
   SearchResultsTab _activeTab = SearchResultsTab.top;
 
   late List<SuggestedAccount> _accounts;
+  List<MarketPost> _liveMatchingPosts = [];
+  List<SuggestedAccount> _liveMatchingAccounts = [];
 
   @override
   void initState() {
@@ -41,13 +44,59 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
+  Future<void> _performSearch(String query) async {
+    final clean = query.trim();
+    if (clean.isEmpty) {
+      if (mounted) {
+        setState(() {
+          _liveMatchingPosts = [];
+          _liveMatchingAccounts = [];
+        });
+      }
+      return;
+    }
+
+    try {
+      final posts = await SupabaseService.instance.searchPosts(clean);
+      final profiles = await SupabaseService.instance.searchProfiles(clean);
+
+      final accounts = profiles.map<SuggestedAccount>((p) {
+        return SuggestedAccount(
+          id: p['id'] as String? ?? '',
+          fullName: p['full_name'] as String? ?? 'Siswa Snapan',
+          username: p['username'] as String? ?? 'siswa',
+          avatar: (p['avatar_url'] as String?)?.isNotEmpty == true
+              ? p['avatar_url'] as String
+              : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&q=80',
+          bio: p['class_group'] as String? ?? 'Siswa SMKN 8 Semarang',
+          followersCount: 'Siswa SMKN 8',
+          isVerified: p['is_verified'] == true,
+        );
+      }).toList();
+
+      if (mounted) {
+        setState(() {
+          _liveMatchingPosts = posts;
+          _liveMatchingAccounts = accounts;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error _performSearch: $e');
+    }
+  }
+
   void _handleQueryChange(String val) {
     setState(() {
       _searchQuery = val;
       if (val.trim().isEmpty) {
         _isSubmitted = false;
+        _liveMatchingPosts = [];
+        _liveMatchingAccounts = [];
       }
     });
+    if (val.trim().isNotEmpty) {
+      _performSearch(val);
+    }
   }
 
   void _handleExecuteSearch() {
@@ -56,6 +105,7 @@ class _SearchScreenState extends State<SearchScreen> {
         _isSubmitted = true;
       });
       FocusScope.of(context).unfocus();
+      _performSearch(_searchQuery);
     }
   }
 
@@ -64,6 +114,8 @@ class _SearchScreenState extends State<SearchScreen> {
       _searchController.clear();
       _searchQuery = "";
       _isSubmitted = false;
+      _liveMatchingPosts = [];
+      _liveMatchingAccounts = [];
     });
     FocusScope.of(context).unfocus();
   }
@@ -103,6 +155,7 @@ class _SearchScreenState extends State<SearchScreen> {
   // Filtered matching posts
   List<MarketPost> _getMatchingPosts() {
     if (_searchQuery.trim().isEmpty) return [];
+    if (_liveMatchingPosts.isNotEmpty) return _liveMatchingPosts;
     final q = _searchQuery.toLowerCase().trim();
     return mockMarketPosts.where((post) {
       final inTitle = post.title?.toLowerCase().contains(q) ?? false;
@@ -117,6 +170,7 @@ class _SearchScreenState extends State<SearchScreen> {
   // Filtered matching accounts
   List<SuggestedAccount> _getMatchingAccounts() {
     if (_searchQuery.trim().isEmpty) return _accounts;
+    if (_liveMatchingAccounts.isNotEmpty) return _liveMatchingAccounts;
     final q = _searchQuery.toLowerCase().trim();
     return _accounts.where((acc) {
       return acc.username.toLowerCase().contains(q) ||

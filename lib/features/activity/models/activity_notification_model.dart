@@ -25,6 +25,38 @@ class ActivityNotification {
     this.isRead = false,
   });
 
+  factory ActivityNotification.fromJson(Map<String, dynamic> json) {
+    final typeStr = json['type']?.toString().toLowerCase() ?? 'system';
+    ActivityType notifType;
+    if (typeStr == 'like') {
+      notifType = ActivityType.like;
+    } else if (typeStr == 'comment' || typeStr == 'reply') {
+      notifType = ActivityType.comment;
+    } else if (typeStr == 'order') {
+      notifType = ActivityType.order;
+    } else {
+      notifType = ActivityType.system;
+    }
+
+    final actor = json['actor'] as Map<String, dynamic>?;
+    final actorName = actor?['full_name']?.toString() ?? 'Siswa Snapan';
+    final actorUsername = actor?['username']?.toString() ?? 'siswa';
+    final actorAvatar = actor?['avatar_url']?.toString() ??
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&q=80';
+
+    return ActivityNotification(
+      id: json['id']?.toString() ?? '',
+      type: notifType,
+      actorName: actorName,
+      actorUsername: actorUsername,
+      actorAvatar: actorAvatar,
+      title: json['title']?.toString() ?? 'Notifikasi baru',
+      message: json['message']?.toString() ?? '',
+      timeAgo: 'Baru saja',
+      isRead: json['is_read'] == true,
+    );
+  }
+
   ActivityNotification copyWith({
     String? id,
     ActivityType? type,

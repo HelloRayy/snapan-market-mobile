@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/glass_toolbar_top.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/feed/components/buy_bottom_sheet.dart';
 import 'package:snapan_market/features/feed/components/comment_input_bar.dart';
 import 'package:snapan_market/features/feed/components/market_post_card.dart';
@@ -71,6 +72,20 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     super.initState();
     _post = widget.post;
     _comments = List<PostCommentModel>.from(widget.post.comments);
+    _loadLiveComments();
+  }
+
+  Future<void> _loadLiveComments() async {
+    try {
+      final live = await SupabaseService.instance.fetchPostComments(_post.id);
+      if (live.isNotEmpty && mounted) {
+        setState(() {
+          _comments = live;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error _loadLiveComments: $e');
+    }
   }
 
   @override
@@ -88,58 +103,79 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     return chainCount + directCount;
   }
 
-  void _handleAddComment(String content) {
+  Future<void> _handleAddComment(String content) async {
+    if (content.trim().isEmpty) return;
     HapticFeedback.mediumImpact();
-    final newComment = PostCommentModel(
-      id: 'comment-local-${DateTime.now().millisecondsSinceEpoch}',
-      postId: _post.id,
-      user: const CommentUserModel(
-        id: 'user-current',
-        name: 'Raditya Rayhan',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
-        username: 'radityarayhannnn',
-        classGroup: 'XII PPLG 1',
-        isVerified: true,
-      ),
-      content: content,
-      timestamp: 'Baru saja',
-      likesCount: 0,
-      isLiked: false,
-    );
 
-    setState(() {
-      if (_replyToCommentId != null) {
-        _comments = _comments.map((c) {
-          if (c.id == _replyToCommentId) {
-            return c.copyWith(
-              replies: [...c.replies, newComment],
-            );
-          }
-          if (c.replies.any((r) => r.id == _replyToCommentId)) {
-            return c.copyWith(
-              replies: [...c.replies, newComment],
-            );
-          }
-          return c;
-        }).toList();
-      } else {
-        _comments.insert(0, newComment);
-      }
-      _replyToUser = null;
-      _replyToCommentId = null;
-      if (_isProductMode) {
-        _isCommentingActive = false;
-      }
-    });
+    if (!SupabaseService.instance.isAuthenticated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Silakan masuk akun terlebih dahulu untuk berkomentar.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
 
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Tanggapan berhasil dikirim!'),
-        duration: Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    try {
+      final liveComment = await SupabaseService.instance.addComment(
+        postId: _post.id,
+        content: content.trim(),
+        parentCommentId: _replyToCommentId,
+      );
+
+      if (mounted) {
+        setState(() {
+          if (_replyToCommentId != null) {
+            _comments = _comments.map((c) {
+              if (c.id == _replyToCommentId || c.replies.any((r) => r.id == _replyToCommentId)) {
+                return c.copyWith(replies: [...c.replies, liveComment]);
+              }
+              return c;
+            }).toList();
+          } else {
+            _comments.insert(0, liveComment);
+          }
+          _post = _post.copyWith(commentsCount: _post.commentsCount + 1);
+          _replyToUser = null;
+          _replyToCommentId = null;
+          if (_isProductMode) {
+            _isCommentingActive = false;
+          }
+        });
+
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Tanggapan berhasil dikirim!'),
+            duration: Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error adding comment: $e');
+      final user = SupabaseService.instance.currentUser;
+      final fallbackComment = PostCommentModel(
+        id: 'comment-local-${DateTime.now().millisecondsSinceEpoch}',
+        postId: _post.id,
+        user: CommentUserModel(
+          id: user?.id ?? 'user-current',
+          name: 'Akun Anda',
+          avatar: '',
+        ),
+        content: content.trim(),
+        timestamp: 'Baru saja',
+      );
+
+      if (mounted) {
+        setState(() {
+          _comments.insert(0, fallbackComment);
+          _replyToUser = null;
+          _replyToCommentId = null;
+        });
+      }
+    }
   }
 
   void _handleReplyClick(String username, [String? commentId]) {
@@ -260,9 +296,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 post: _post,
                 isSaved: _post.isSaved,
                 onToggleSave: () {
+                  final nextSaved = !_post.isSaved;
                   setState(() {
-                    _post = _post.copyWith(isSaved: !_post.isSaved);
+                    _post = _post.copyWith(isSaved: nextSaved);
                   });
+                  SupabaseService.instance.togglePostBookmark(_post.id, !nextSaved);
                   widget.onBookmarkToggle?.call(_post);
                 },
               );
@@ -295,6 +333,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     setState(() {
                       _post = updated;
                     });
+                    SupabaseService.instance.togglePostLike(updated.id, !updated.isLiked);
                     widget.onLikeToggle?.call(updated);
                   },
                   onRepostToggle: (updated) {

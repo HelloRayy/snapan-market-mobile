@@ -88,28 +88,66 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadLiveProfile() async {
-    if (!_isOwnProfile) return;
-    final currentUser = SupabaseService.instance.currentUser;
-    if (currentUser == null) return;
+    if (_isOwnProfile) {
+      final currentUser = SupabaseService.instance.currentUser;
+      if (currentUser == null) return;
 
-    try {
-      final profile = await SupabaseService.instance.getProfile(currentUser.id);
-      if (profile != null && mounted) {
+      try {
+        final profile = await SupabaseService.instance.getProfile(currentUser.id);
+        final livePosts = await SupabaseService.instance.fetchUserPosts(currentUser.id);
+
+        if (!mounted) return;
         setState(() {
-          _user = _user.copyWith(
-            id: profile['id'] as String? ?? currentUser.id,
-            name: profile['full_name'] as String? ?? _user.name,
-            username: profile['username'] as String? ?? _user.username,
-            classGroup: profile['class_group'] as String? ?? _user.classGroup,
-            avatar: (profile['avatar_url'] as String?)?.isNotEmpty == true
-                ? profile['avatar_url'] as String
-                : _user.avatar,
-            isVerified: profile['is_verified'] as bool? ?? false,
-          );
+          if (profile != null) {
+            _user = _user.copyWith(
+              id: profile['id'] as String? ?? currentUser.id,
+              name: profile['full_name'] as String? ?? _user.name,
+              username: profile['username'] as String? ?? _user.username,
+              classGroup: profile['class_group'] as String? ?? _user.classGroup,
+              avatar: (profile['avatar_url'] as String?)?.isNotEmpty == true
+                  ? profile['avatar_url'] as String
+                  : _user.avatar,
+              isVerified: profile['is_verified'] as bool? ?? false,
+            );
+          }
+          if (livePosts.isNotEmpty) {
+            _allUserPosts = livePosts;
+          }
         });
+      } catch (e) {
+        debugPrint('Error _loadLiveProfile: $e');
       }
-    } catch (e) {
-      debugPrint('Error _loadLiveProfile: $e');
+    } else {
+      final cleanUsername = widget.username?.replaceAll('@', '').toLowerCase().trim();
+      if (cleanUsername == null || cleanUsername.isEmpty) return;
+
+      try {
+        final matchedProfiles = await SupabaseService.instance.searchProfiles(cleanUsername);
+        if (matchedProfiles.isNotEmpty && mounted) {
+          final p = matchedProfiles.first;
+          final targetId = p['id'] as String? ?? '';
+          final targetPosts = await SupabaseService.instance.fetchUserPosts(targetId);
+
+          if (!mounted) return;
+          setState(() {
+            _user = _user.copyWith(
+              id: targetId,
+              name: p['full_name'] as String? ?? _user.name,
+              username: p['username'] as String? ?? cleanUsername,
+              classGroup: p['class_group'] as String? ?? _user.classGroup,
+              avatar: (p['avatar_url'] as String?)?.isNotEmpty == true
+                  ? p['avatar_url'] as String
+                  : _user.avatar,
+              isVerified: p['is_verified'] as bool? ?? false,
+            );
+            if (targetPosts.isNotEmpty) {
+              _allUserPosts = targetPosts;
+            }
+          });
+        }
+      } catch (e) {
+        debugPrint('Error fetching other user profile from Supabase: $e');
+      }
     }
   }
 
@@ -249,6 +287,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
 
     if (updated != null && mounted) {
+      final currentUser = SupabaseService.instance.currentUser;
+      if (currentUser != null) {
+        SupabaseService.instance.updateProfile(
+          userId: currentUser.id,
+          fullName: updated.name,
+          username: updated.username,
+          classGroup: updated.classGroup,
+          avatarUrl: updated.avatar,
+        );
+      }
       setState(() {
         _user = updated;
       });

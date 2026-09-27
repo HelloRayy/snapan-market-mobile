@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
+import "package:snapan_market/core/services/supabase_service.dart";
 import "package:snapan_market/features/activity/components/activity_item_tile.dart";
 import "package:snapan_market/features/activity/models/activity_notification_model.dart";
 
@@ -19,6 +20,20 @@ class _ActivityScreenState extends State<ActivityScreen> {
   void initState() {
     super.initState();
     _notifications = List.from(kMockNotifications);
+    _loadLiveNotifications();
+  }
+
+  Future<void> _loadLiveNotifications() async {
+    try {
+      final data = await SupabaseService.instance.fetchNotifications();
+      if (data.isNotEmpty && mounted) {
+        setState(() {
+          _notifications = data.map((n) => ActivityNotification.fromJson(n)).toList();
+        });
+      }
+    } catch (e) {
+      debugPrint('Error _loadLiveNotifications: $e');
+    }
   }
 
   List<ActivityNotification> get _filteredNotifications {
@@ -34,6 +49,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
     setState(() {
       _notifications = _notifications.map((n) => n.copyWith(isRead: true)).toList();
     });
+    SupabaseService.instance.markNotificationsAsRead();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text("Semua notifikasi ditandai sudah dibaca"),

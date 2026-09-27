@@ -102,7 +102,7 @@ class AuthPromptOverlay extends StatelessWidget {
 
                         // Subtitle
                         const Text(
-                          'Gabung ke Snapan Market untuk membagikan pemikiran, mencari tahu apa yang sedang terjadi, mengikuti orang-orang Anda, dan banyak lagi.',
+                          'Gabung ke komunitas SMKN 8. Temukan obrolan seru, info tongkrongan kampus, dan karya terbaik warga delapan.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 14.5,

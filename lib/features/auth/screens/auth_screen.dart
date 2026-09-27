@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
-import 'package:snapan_market/features/auth/components/dropdown_column_box.dart';
 import 'package:snapan_market/features/auth/components/google_logo.dart';
 import 'package:snapan_market/features/auth/models/auth_constants.dart';
 
@@ -508,9 +507,9 @@ class _AuthScreenState extends State<AuthScreen> {
         errorText: _fullNameError,
         textInputAction: TextInputAction.next,
       ),
-      const SizedBox(height: 14.0),
+      const SizedBox(height: 16.0),
       _buildClassSelector(),
-      const SizedBox(height: 14.0),
+      const SizedBox(height: 16.0),
       _AuthInputField(
         label: 'Username',
         hint: '@username_kamu',
@@ -522,7 +521,7 @@ class _AuthScreenState extends State<AuthScreen> {
           FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_]')),
         ],
       ),
-      const SizedBox(height: 14.0),
+      const SizedBox(height: 16.0),
       _AuthInputField(
         label: 'Kata Sandi',
         hint: 'Minimal 6 karakter',
@@ -682,27 +681,17 @@ class _AuthScreenState extends State<AuthScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Kelas & Jurusan SMKN 8',
-          style: TextStyle(
-            fontSize: 14.0,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF1E293B),
-            letterSpacing: -0.1,
-          ),
-        ),
-        const SizedBox(height: 7.0),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               flex: 3,
-              child: DropdownColumnBox(
+              child: _AuthDropdownField(
                 label: 'Kelas',
-                selectedValue: _selectedGrade,
-                placeholder: 'Pilih',
-                hasError: _classError != null && _selectedGrade == null,
+                value: _selectedGrade,
                 options: AuthConstants.gradeOptions,
-                onSelected: (val) => setState(() {
+                hasError: _classError != null && _selectedGrade == null,
+                onChanged: (val) => setState(() {
                   _selectedGrade = val;
                   if (_selectedGrade != null && _selectedMajor != null && _selectedClassNum != null) {
                     _classError = null;
@@ -713,13 +702,12 @@ class _AuthScreenState extends State<AuthScreen> {
             const SizedBox(width: 8.0),
             Expanded(
               flex: 4,
-              child: DropdownColumnBox(
+              child: _AuthDropdownField(
                 label: 'Jurusan',
-                selectedValue: _selectedMajor,
-                placeholder: 'Pilih',
-                hasError: _classError != null && _selectedMajor == null,
+                value: _selectedMajor,
                 options: AuthConstants.majorOptions,
-                onSelected: (val) => setState(() {
+                hasError: _classError != null && _selectedMajor == null,
+                onChanged: (val) => setState(() {
                   _selectedMajor = val;
                   if (_selectedGrade != null && _selectedMajor != null && _selectedClassNum != null) {
                     _classError = null;
@@ -730,13 +718,12 @@ class _AuthScreenState extends State<AuthScreen> {
             const SizedBox(width: 8.0),
             Expanded(
               flex: 3,
-              child: DropdownColumnBox(
+              child: _AuthDropdownField(
                 label: 'Ruang',
-                selectedValue: _selectedClassNum,
-                placeholder: 'Pilih',
-                hasError: _classError != null && _selectedClassNum == null,
+                value: _selectedClassNum,
                 options: AuthConstants.classNumOptions,
-                onSelected: (val) => setState(() {
+                hasError: _classError != null && _selectedClassNum == null,
+                onChanged: (val) => setState(() {
                   _selectedClassNum = val;
                   if (_selectedGrade != null && _selectedMajor != null && _selectedClassNum != null) {
                     _classError = null;
@@ -748,7 +735,7 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
         if (_classError != null)
           Padding(
-            padding: const EdgeInsets.only(top: 5.0, left: 4.0),
+            padding: const EdgeInsets.only(top: 6.0, left: 4.0),
             child: Text(
               _classError!,
               style: const TextStyle(
@@ -925,7 +912,97 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 }
 
-/// Custom Card Input Field matching reference mockup
+/// Material 3 Floating Dropdown Field for Classes & Majors
+class _AuthDropdownField extends StatelessWidget {
+  final String label;
+  final String? value;
+  final List<String> options;
+  final bool hasError;
+  final ValueChanged<String?> onChanged;
+
+  const _AuthDropdownField({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.options,
+    this.hasError = false,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      key: ValueKey('$label-$value'),
+      value: value,
+      isExpanded: true,
+      dropdownColor: Colors.white,
+      borderRadius: BorderRadius.circular(16.0),
+      elevation: 4,
+      menuMaxHeight: 260.0,
+      icon: const Icon(
+        Icons.keyboard_arrow_down_rounded,
+        color: Color(0xFF64748B),
+        size: 18.0,
+      ),
+      style: const TextStyle(
+        fontSize: 14.5,
+        fontWeight: FontWeight.w600,
+        color: Color(0xFF0F172A),
+      ),
+      decoration: InputDecoration(
+        labelText: label,
+        floatingLabelBehavior: FloatingLabelBehavior.auto,
+        labelStyle: const TextStyle(
+          fontSize: 13.5,
+          color: Color(0xFF64748B),
+          fontWeight: FontWeight.w400,
+        ),
+        floatingLabelStyle: TextStyle(
+          fontSize: 12.5,
+          fontWeight: FontWeight.w600,
+          color: hasError ? AppColors.error : AppColors.primary,
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.5),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.0),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.0),
+          borderSide: BorderSide(
+            color: hasError ? AppColors.error : const Color(0xFFE2E8F0),
+            width: hasError ? 1.4 : 1.2,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.0),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.8),
+        ),
+      ),
+      items: options.map((opt) {
+        return DropdownMenuItem<String>(
+          value: opt,
+          child: Text(
+            opt,
+            style: const TextStyle(
+              fontSize: 14.0,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF0F172A),
+            ),
+          ),
+        );
+      }).toList(),
+      onChanged: (val) {
+        HapticFeedback.selectionClick();
+        onChanged(val);
+      },
+    );
+  }
+}
+
+/// Material 3 Floating Label Input Field with animated outline borders
 class _AuthInputField extends StatefulWidget {
   final String label;
   final String hint;
@@ -967,7 +1044,7 @@ class _AuthInputFieldState extends State<_AuthInputField> {
   void initState() {
     super.initState();
     _focusNode.addListener(() {
-      setState(() => _isFocused = _focusNode.hasFocus);
+      if (mounted) setState(() => _isFocused = _focusNode.hasFocus);
     });
   }
 
@@ -981,119 +1058,103 @@ class _AuthInputFieldState extends State<_AuthInputField> {
   Widget build(BuildContext context) {
     final bool hasError = widget.errorText != null && widget.errorText!.isNotEmpty;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          widget.label,
-          style: const TextStyle(
-            fontSize: 14.0,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF1E293B),
-            letterSpacing: -0.1,
-          ),
+    return TextField(
+      focusNode: _focusNode,
+      controller: widget.controller,
+      obscureText: widget.isPassword && !widget.showPassword,
+      keyboardType: widget.keyboardType,
+      textInputAction: widget.textInputAction,
+      onSubmitted: widget.onSubmitted,
+      inputFormatters: widget.inputFormatters,
+      cursorColor: AppColors.primary,
+      style: const TextStyle(
+        fontSize: 14.5,
+        fontWeight: FontWeight.w500,
+        color: Color(0xFF0F172A),
+      ),
+      decoration: InputDecoration(
+        labelText: widget.label,
+        floatingLabelBehavior: FloatingLabelBehavior.auto,
+        labelStyle: const TextStyle(
+          fontSize: 14.0,
+          color: Color(0xFF64748B),
+          fontWeight: FontWeight.w400,
         ),
-        const SizedBox(height: 7.0),
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 160),
-          height: 52.0,
-          padding: const EdgeInsets.symmetric(horizontal: 14.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.0),
-            border: Border.all(
-              color: hasError
-                  ? AppColors.error
-                  : _isFocused
-                      ? AppColors.primary
-                      : const Color(0xFFE2E8F0),
-              width: _isFocused ? 1.5 : 1.2,
-            ),
-            boxShadow: _isFocused
-                ? [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.08),
-                      blurRadius: 8.0,
-                      offset: const Offset(0, 2),
-                    ),
-                  ]
-                : const [
-                    BoxShadow(
-                      color: Color(0x06000000),
-                      blurRadius: 2.0,
-                      offset: Offset(0, 1),
-                    ),
-                  ],
-          ),
-          child: Row(
-            children: [
-              Icon(
-                widget.prefixIcon,
-                size: 19.5,
-                color: hasError
-                    ? AppColors.error
-                    : _isFocused
-                        ? AppColors.primary
-                        : const Color(0xFF64748B),
-              ),
-              const SizedBox(width: 10.0),
-              Expanded(
-                child: TextField(
-                  focusNode: _focusNode,
-                  controller: widget.controller,
-                  obscureText: widget.isPassword && !widget.showPassword,
-                  keyboardType: widget.keyboardType,
-                  textInputAction: widget.textInputAction,
-                  onSubmitted: widget.onSubmitted,
-                  inputFormatters: widget.inputFormatters,
-                  cursorColor: AppColors.primary,
-                  style: const TextStyle(
-                    fontSize: 14.5,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF0F172A),
-                  ),
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    isDense: true,
-                    hintText: widget.hint,
-                    hintStyle: const TextStyle(
-                      fontSize: 14.5,
-                      color: Color(0xFF94A3B8),
-                      fontWeight: FontWeight.normal,
-                    ),
-                    contentPadding: EdgeInsets.zero,
+        floatingLabelStyle: TextStyle(
+          fontSize: 13.0,
+          fontWeight: FontWeight.w600,
+          color: hasError
+              ? AppColors.error
+              : _isFocused
+                  ? AppColors.primary
+                  : const Color(0xFF64748B),
+        ),
+        hintText: widget.hint,
+        hintStyle: const TextStyle(
+          fontSize: 13.5,
+          color: Color(0xFF94A3B8),
+          fontWeight: FontWeight.w400,
+        ),
+        prefixIcon: Icon(
+          widget.prefixIcon,
+          size: 19.5,
+          color: hasError
+              ? AppColors.error
+              : _isFocused
+                  ? AppColors.primary
+                  : const Color(0xFF64748B),
+        ),
+        suffixIcon: widget.isPassword
+            ? GestureDetector(
+                onTap: widget.onTogglePassword,
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 14.0),
+                  child: Icon(
+                    widget.showPassword ? LucideIcons.eyeOff : LucideIcons.eye,
+                    size: 19.5,
+                    color: const Color(0xFF64748B),
                   ),
                 ),
-              ),
-              if (widget.isPassword)
-                GestureDetector(
-                  onTap: widget.onTogglePassword,
-                  behavior: HitTestBehavior.opaque,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 6.0),
-                    child: Icon(
-                      widget.showPassword ? LucideIcons.eyeOff : LucideIcons.eye,
-                      size: 19.5,
-                      color: const Color(0xFF64748B),
-                    ),
-                  ),
-                ),
-            ],
+              )
+            : null,
+        suffixIconConstraints: const BoxConstraints(
+          minWidth: 40.0,
+          minHeight: 20.0,
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15.5),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.0),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.0),
+          borderSide: BorderSide(
+            color: hasError ? AppColors.error : const Color(0xFFE2E8F0),
+            width: hasError ? 1.4 : 1.2,
           ),
         ),
-        if (hasError)
-          Padding(
-            padding: const EdgeInsets.only(top: 5.0, left: 4.0),
-            child: Text(
-              widget.errorText!,
-              style: const TextStyle(
-                fontSize: 12.0,
-                fontWeight: FontWeight.w500,
-                color: AppColors.error,
-              ),
-            ),
-          ),
-      ],
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.0),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.8),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.0),
+          borderSide: const BorderSide(color: AppColors.error, width: 1.4),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.0),
+          borderSide: const BorderSide(color: AppColors.error, width: 1.8),
+        ),
+        errorText: widget.errorText,
+        errorStyle: const TextStyle(
+          fontSize: 12.0,
+          fontWeight: FontWeight.w500,
+          color: AppColors.error,
+        ),
+      ),
     );
   }
 }

@@ -144,7 +144,7 @@ class _AuthScreenState extends State<AuthScreen> {
       isValid = false;
     }
     if (_loginPasswordController.text.isEmpty) {
-      _loginPasswordError = 'Masukkan kata sandi';
+      _loginPasswordError = 'Masukkan kata sandi Anda';
       isValid = false;
     }
 
@@ -179,7 +179,7 @@ class _AuthScreenState extends State<AuthScreen> {
             errStr.contains('connection')) {
           _loginPasswordError = 'Gagal terhubung ke server. Periksa koneksi internet Anda.';
         } else {
-          _loginPasswordError = 'Username atau kata sandi tidak sesuai';
+          _loginPasswordError = 'Username atau kata sandi tidak cocok';
         }
         setState(() {});
         HapticFeedback.vibrate();
@@ -205,7 +205,13 @@ class _AuthScreenState extends State<AuthScreen> {
       isValid = false;
     }
 
-    // 2. Username
+    // 2. Kelas & Jurusan SMKN 8
+    if (_selectedGrade == null || _selectedMajor == null || _selectedClassNum == null) {
+      _classError = 'Pilih kelas, jurusan, dan nomor ruang Anda';
+      isValid = false;
+    }
+
+    // 3. Username
     final rawUsername = _regUsernameController.text.trim().toLowerCase().replaceAll('@', '');
     final validUsernameRegex = RegExp(r'^[a-z0-9_]{3,20}$');
     if (rawUsername.isEmpty) {
@@ -222,7 +228,7 @@ class _AuthScreenState extends State<AuthScreen> {
       isValid = false;
     }
 
-    // 3. Kata Sandi
+    // 4. Kata Sandi
     final pass = _regPasswordController.text;
     if (pass.isEmpty) {
       _regPasswordError = 'Kata sandi wajib diisi';
@@ -232,18 +238,12 @@ class _AuthScreenState extends State<AuthScreen> {
       isValid = false;
     }
 
-    // 4. Kelas & Jurusan SMKN 8
-    if (_selectedGrade == null || _selectedMajor == null || _selectedClassNum == null) {
-      _classError = 'Pilih kelas, jurusan, dan nomor ruang Anda';
-      isValid = false;
-    }
-
     // 5. Persetujuan Syarat
     if (!_agreedTerms) {
       HapticFeedback.vibrate();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Anda harus menyetujui Ketentuan dan Syarat Komunitas'),
+          content: Text('Anda harus menyetujui Ketentuan Komunitas dan Kebijakan Privasi SMKN 8'),
           behavior: SnackBarBehavior.floating,
           duration: Duration(seconds: 2),
         ),
@@ -265,7 +265,7 @@ class _AuthScreenState extends State<AuthScreen> {
       if (isTaken) {
         if (mounted) {
           setState(() {
-            _regUsernameError = 'Username @$rawUsername sudah digunakan. Pilih username lain.';
+            _regUsernameError = 'Username @$rawUsername sudah terdaftar. Gunakan username lain.';
             _isSubmitting = false;
           });
           HapticFeedback.vibrate();
@@ -361,8 +361,10 @@ class _AuthScreenState extends State<AuthScreen> {
 
                         // 2. Title & Subtitle Hierarchy
                         _buildHeader(
-                          _authMode == AuthMode.login ? 'Login account' : 'Create account',
-                          _authMode == AuthMode.login ? 'Welcome back!' : 'Sign up to continue',
+                          _authMode == AuthMode.login ? 'Masuk Akun' : 'Daftar Akun Baru',
+                          _authMode == AuthMode.login
+                              ? 'Selamat datang kembali, Snapanians!'
+                              : 'Daftarkan akunmu untuk berjejaring dan belanja bareng Snapanians!',
                         ),
 
                         const SizedBox(height: 26.0),
@@ -469,8 +471,8 @@ class _AuthScreenState extends State<AuthScreen> {
       ),
       const SizedBox(height: 16.0),
       _AuthInputField(
-        label: 'Password',
-        hint: 'Enter password',
+        label: 'Kata Sandi',
+        hint: 'Masukkan kata sandi Anda',
         prefixIcon: LucideIcons.lock,
         controller: _loginPasswordController,
         isPassword: true,
@@ -484,12 +486,12 @@ class _AuthScreenState extends State<AuthScreen> {
       _buildLoginOptionsRow(),
       const SizedBox(height: 22.0),
       _PrimaryAuthButton(
-        text: 'Login',
+        text: 'Masuk ke Akun',
         isLoading: _isSubmitting,
         onPressed: _submitLogin,
       ),
       const SizedBox(height: 22.0),
-      _buildDivider('Or sign in with'),
+      _buildDivider('atau masuk dengan'),
       const SizedBox(height: 18.0),
       _buildSocialButtons(),
     ];
@@ -500,7 +502,7 @@ class _AuthScreenState extends State<AuthScreen> {
     return [
       _AuthInputField(
         label: 'Nama Lengkap',
-        hint: 'Nama lengkap Anda',
+        hint: 'Contoh: Raditya Rayhan',
         prefixIcon: LucideIcons.user,
         controller: _fullNameController,
         errorText: _fullNameError,
@@ -522,8 +524,8 @@ class _AuthScreenState extends State<AuthScreen> {
       ),
       const SizedBox(height: 14.0),
       _AuthInputField(
-        label: 'Password',
-        hint: 'Create password',
+        label: 'Kata Sandi',
+        hint: 'Minimal 6 karakter',
         prefixIcon: LucideIcons.lock,
         controller: _regPasswordController,
         isPassword: true,
@@ -537,12 +539,12 @@ class _AuthScreenState extends State<AuthScreen> {
       _buildRegisterTermsRow(),
       const SizedBox(height: 22.0),
       _PrimaryAuthButton(
-        text: 'Create account',
+        text: 'Buat Akun Sekarang',
         isLoading: _isSubmitting,
         onPressed: _submitRegister,
       ),
       const SizedBox(height: 22.0),
-      _buildDivider('or sign up with'),
+      _buildDivider('atau daftar dengan'),
       const SizedBox(height: 18.0),
       _buildSocialButtons(),
     ];
@@ -580,7 +582,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               const SizedBox(width: 8.0),
               const Text(
-                'Keep me logged in',
+                'Ingat saya di perangkat ini',
                 style: TextStyle(
                   fontSize: 13.5,
                   fontWeight: FontWeight.w500,
@@ -595,13 +597,13 @@ class _AuthScreenState extends State<AuthScreen> {
             HapticFeedback.lightImpact();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Silakan hubungi administrator sekolah untuk reset password'),
+                content: Text('Silakan hubungi administrator sekolah untuk reset kata sandi'),
                 behavior: SnackBarBehavior.floating,
               ),
             );
           },
           child: const Text(
-            'Forgot password?',
+            'Lupa kata sandi?',
             style: TextStyle(
               fontSize: 13.5,
               fontWeight: FontWeight.w600,
@@ -644,7 +646,7 @@ class _AuthScreenState extends State<AuthScreen> {
           const Expanded(
             child: Text.rich(
               TextSpan(
-                text: 'I agree to the ',
+                text: 'Saya menyetujui ',
                 style: TextStyle(
                   fontSize: 13.0,
                   color: Color(0xFF475569),
@@ -652,15 +654,15 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
                 children: [
                   TextSpan(
-                    text: 'Terms',
+                    text: 'Ketentuan Komunitas',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF0F172A),
                     ),
                   ),
-                  TextSpan(text: ' and '),
+                  TextSpan(text: ' dan '),
                   TextSpan(
-                    text: 'Conditions',
+                    text: 'Kebijakan Privasi SMKN 8',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF0F172A),
@@ -866,14 +868,14 @@ class _AuthScreenState extends State<AuthScreen> {
             padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
             child: Text.rich(
               TextSpan(
-                text: "Don't have an account? ",
+                text: 'Belum punya akun? ',
                 style: TextStyle(
                   fontSize: 14.0,
                   color: Color(0xFF64748B),
                 ),
                 children: [
                   TextSpan(
-                    text: 'Sign up',
+                    text: 'Daftar sekarang',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF0F172A),
@@ -900,14 +902,14 @@ class _AuthScreenState extends State<AuthScreen> {
             padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
             child: Text.rich(
               TextSpan(
-                text: 'Already have an account? ',
+                text: 'Sudah punya akun? ',
                 style: TextStyle(
                   fontSize: 14.0,
                   color: Color(0xFF64748B),
                 ),
                 children: [
                   TextSpan(
-                    text: 'Login',
+                    text: 'Masuk di sini',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF0F172A),

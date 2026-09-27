@@ -4,7 +4,9 @@ import 'package:snapan_market/core/theme/app_colors.dart';
 
 class DropdownColumnBox extends StatelessWidget {
   final String label;
-  final String selectedValue;
+  final String? selectedValue;
+  final String placeholder;
+  final bool hasError;
   final List<String> options;
   final ValueChanged<String> onSelected;
 
@@ -12,6 +14,8 @@ class DropdownColumnBox extends StatelessWidget {
     super.key,
     required this.label,
     required this.selectedValue,
+    this.placeholder = 'Pilih',
+    this.hasError = false,
     required this.options,
     required this.onSelected,
   });
@@ -19,6 +23,7 @@ class DropdownColumnBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final GlobalKey boxKey = GlobalKey();
+    final bool isSelected = selectedValue != null && selectedValue!.isNotEmpty;
 
     return GestureDetector(
       key: boxKey,
@@ -51,7 +56,7 @@ class DropdownColumnBox extends StatelessWidget {
           menuPadding: const EdgeInsets.symmetric(vertical: 4),
           constraints: const BoxConstraints(minWidth: 150, maxWidth: 200),
           items: options.map((opt) {
-            final isSelected = opt == selectedValue;
+            final isItemActive = opt == selectedValue;
             return PopupMenuItem<String>(
               value: opt,
               height: 42,
@@ -64,11 +69,11 @@ class DropdownColumnBox extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight:
-                          isSelected ? FontWeight.w700 : FontWeight.w500,
-                      color: isSelected ? AppColors.primary : AppColors.ink,
+                          isItemActive ? FontWeight.w700 : FontWeight.w500,
+                      color: isItemActive ? AppColors.primary : AppColors.ink,
                     ),
                   ),
-                  if (isSelected)
+                  if (isItemActive)
                     const Icon(
                       Icons.check_rounded,
                       color: Color(0xFF1D64EC),
@@ -91,8 +96,11 @@ class DropdownColumnBox extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: hasError ? AppColors.error : const Color(0xFFE2E8F0),
+            width: hasError ? 1.4 : 1.2,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,10 +108,10 @@ class DropdownColumnBox extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF64748B),
+                color: hasError ? AppColors.error : const Color(0xFF64748B),
                 height: 1.1,
               ),
             ),
@@ -113,13 +121,13 @@ class DropdownColumnBox extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    selectedValue,
+                    isSelected ? selectedValue! : placeholder,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF0F172A),
+                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                      color: isSelected ? const Color(0xFF0F172A) : const Color(0xFF94A3B8),
                       height: 1.2,
                     ),
                   ),

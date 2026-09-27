@@ -49,9 +49,9 @@ class _AuthScreenState extends State<AuthScreen> {
   bool _agreedTerms = false;
 
   // --- SMKN 8 SELECTION STATE ---
-  String _selectedGrade = AuthConstants.gradeOptions.first;
-  String _selectedMajor = AuthConstants.majorOptions.first;
-  String _selectedClassNum = AuthConstants.classNumOptions.first;
+  String? _selectedGrade;
+  String? _selectedMajor;
+  String? _selectedClassNum;
 
   // --- ERROR STATES ---
   String? _loginUsernameError;
@@ -59,6 +59,7 @@ class _AuthScreenState extends State<AuthScreen> {
   String? _fullNameError;
   String? _regUsernameError;
   String? _regPasswordError;
+  String? _classError;
 
   bool _isSubmitting = false;
 
@@ -82,6 +83,7 @@ class _AuthScreenState extends State<AuthScreen> {
     _fullNameError = null;
     _regUsernameError = null;
     _regPasswordError = null;
+    _classError = null;
   }
 
   @override
@@ -230,7 +232,13 @@ class _AuthScreenState extends State<AuthScreen> {
       isValid = false;
     }
 
-    // 4. Persetujuan Syarat
+    // 4. Kelas & Jurusan SMKN 8
+    if (_selectedGrade == null || _selectedMajor == null || _selectedClassNum == null) {
+      _classError = 'Pilih kelas, jurusan, dan nomor ruang Anda';
+      isValid = false;
+    }
+
+    // 5. Persetujuan Syarat
     if (!_agreedTerms) {
       HapticFeedback.vibrate();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -689,8 +697,15 @@ class _AuthScreenState extends State<AuthScreen> {
               child: DropdownColumnBox(
                 label: 'Kelas',
                 selectedValue: _selectedGrade,
+                placeholder: 'Pilih',
+                hasError: _classError != null && _selectedGrade == null,
                 options: AuthConstants.gradeOptions,
-                onSelected: (val) => setState(() => _selectedGrade = val),
+                onSelected: (val) => setState(() {
+                  _selectedGrade = val;
+                  if (_selectedGrade != null && _selectedMajor != null && _selectedClassNum != null) {
+                    _classError = null;
+                  }
+                }),
               ),
             ),
             const SizedBox(width: 8.0),
@@ -699,8 +714,15 @@ class _AuthScreenState extends State<AuthScreen> {
               child: DropdownColumnBox(
                 label: 'Jurusan',
                 selectedValue: _selectedMajor,
+                placeholder: 'Pilih',
+                hasError: _classError != null && _selectedMajor == null,
                 options: AuthConstants.majorOptions,
-                onSelected: (val) => setState(() => _selectedMajor = val),
+                onSelected: (val) => setState(() {
+                  _selectedMajor = val;
+                  if (_selectedGrade != null && _selectedMajor != null && _selectedClassNum != null) {
+                    _classError = null;
+                  }
+                }),
               ),
             ),
             const SizedBox(width: 8.0),
@@ -709,12 +731,31 @@ class _AuthScreenState extends State<AuthScreen> {
               child: DropdownColumnBox(
                 label: 'Ruang',
                 selectedValue: _selectedClassNum,
+                placeholder: 'Pilih',
+                hasError: _classError != null && _selectedClassNum == null,
                 options: AuthConstants.classNumOptions,
-                onSelected: (val) => setState(() => _selectedClassNum = val),
+                onSelected: (val) => setState(() {
+                  _selectedClassNum = val;
+                  if (_selectedGrade != null && _selectedMajor != null && _selectedClassNum != null) {
+                    _classError = null;
+                  }
+                }),
               ),
             ),
           ],
         ),
+        if (_classError != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 5.0, left: 4.0),
+            child: Text(
+              _classError!,
+              style: const TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.w500,
+                color: AppColors.error,
+              ),
+            ),
+          ),
       ],
     );
   }

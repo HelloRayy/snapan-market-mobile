@@ -42,12 +42,10 @@ class _AuthScreenState extends State<AuthScreen> {
   bool _rememberMe = true;
 
   // --- REGISTER CONTROLLERS ---
+  final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _regUsernameController = TextEditingController();
   final TextEditingController _regPasswordController = TextEditingController();
-  final TextEditingController _regRepeatPasswordController = TextEditingController();
-  final TextEditingController _fullNameController = TextEditingController();
   bool _showRegPassword = false;
-  bool _showRegRepeatPassword = false;
   bool _agreedTerms = false;
 
   // --- SMKN 8 SELECTION STATE ---
@@ -61,7 +59,6 @@ class _AuthScreenState extends State<AuthScreen> {
   String? _fullNameError;
   String? _regUsernameError;
   String? _regPasswordError;
-  String? _regRepeatPasswordError;
 
   bool _isSubmitting = false;
 
@@ -70,13 +67,9 @@ class _AuthScreenState extends State<AuthScreen> {
     super.initState();
     _loginUsernameController.addListener(() => _clearError(() => _loginUsernameError = null));
     _loginPasswordController.addListener(() => _clearError(() => _loginPasswordError = null));
-    _regUsernameController.addListener(() => _clearError(() => _regUsernameError = null));
-    _regPasswordController.addListener(() => _clearError(() {
-      _regPasswordError = null;
-      _regRepeatPasswordError = null;
-    }));
-    _regRepeatPasswordController.addListener(() => _clearError(() => _regRepeatPasswordError = null));
     _fullNameController.addListener(() => _clearError(() => _fullNameError = null));
+    _regUsernameController.addListener(() => _clearError(() => _regUsernameError = null));
+    _regPasswordController.addListener(() => _clearError(() => _regPasswordError = null));
   }
 
   void _clearError(VoidCallback update) {
@@ -89,17 +82,15 @@ class _AuthScreenState extends State<AuthScreen> {
     _fullNameError = null;
     _regUsernameError = null;
     _regPasswordError = null;
-    _regRepeatPasswordError = null;
   }
 
   @override
   void dispose() {
     _loginUsernameController.dispose();
     _loginPasswordController.dispose();
+    _fullNameController.dispose();
     _regUsernameController.dispose();
     _regPasswordController.dispose();
-    _regRepeatPasswordController.dispose();
-    _fullNameController.dispose();
     super.dispose();
   }
 
@@ -205,7 +196,14 @@ class _AuthScreenState extends State<AuthScreen> {
 
     bool isValid = true;
 
-    // 1. Username
+    // 1. Nama Lengkap
+    final fullName = _fullNameController.text.trim();
+    if (fullName.isEmpty) {
+      _fullNameError = 'Nama lengkap wajib diisi';
+      isValid = false;
+    }
+
+    // 2. Username
     final rawUsername = _regUsernameController.text.trim().toLowerCase().replaceAll('@', '');
     final validUsernameRegex = RegExp(r'^[a-z0-9_]{3,20}$');
     if (rawUsername.isEmpty) {
@@ -222,10 +220,8 @@ class _AuthScreenState extends State<AuthScreen> {
       isValid = false;
     }
 
-    // 2. Kata Sandi
+    // 3. Kata Sandi
     final pass = _regPasswordController.text;
-    final repeatPass = _regRepeatPasswordController.text;
-
     if (pass.isEmpty) {
       _regPasswordError = 'Kata sandi wajib diisi';
       isValid = false;
@@ -234,23 +230,7 @@ class _AuthScreenState extends State<AuthScreen> {
       isValid = false;
     }
 
-    // 3. Konfirmasi Kata Sandi
-    if (repeatPass.isEmpty) {
-      _regRepeatPasswordError = 'Ulangi kata sandi wajib diisi';
-      isValid = false;
-    } else if (pass != repeatPass) {
-      _regRepeatPasswordError = 'Kata sandi tidak sama. Pastikan kedua kata sandi cocok.';
-      isValid = false;
-    }
-
-    // 4. Nama Lengkap
-    final fullName = _fullNameController.text.trim();
-    if (fullName.isEmpty) {
-      _fullNameError = 'Nama lengkap wajib diisi';
-      isValid = false;
-    }
-
-    // 5. Persetujuan Syarat
+    // 4. Persetujuan Syarat
     if (!_agreedTerms) {
       HapticFeedback.vibrate();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -511,11 +491,21 @@ class _AuthScreenState extends State<AuthScreen> {
   List<Widget> _buildRegisterFields() {
     return [
       _AuthInputField(
+        label: 'Nama Lengkap',
+        hint: 'Nama lengkap Anda',
+        prefixIcon: LucideIcons.user,
+        controller: _fullNameController,
+        errorText: _fullNameError,
+        textInputAction: TextInputAction.next,
+      ),
+      const SizedBox(height: 14.0),
+      _AuthInputField(
         label: 'Username',
         hint: '@username_kamu',
         prefixIcon: LucideIcons.atSign,
         controller: _regUsernameController,
         errorText: _regUsernameError,
+        textInputAction: TextInputAction.next,
         inputFormatters: [
           FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_]')),
         ],
@@ -530,25 +520,8 @@ class _AuthScreenState extends State<AuthScreen> {
         showPassword: _showRegPassword,
         onTogglePassword: () => setState(() => _showRegPassword = !_showRegPassword),
         errorText: _regPasswordError,
-      ),
-      const SizedBox(height: 14.0),
-      _AuthInputField(
-        label: 'Confirm password',
-        hint: 'Re-enter password',
-        prefixIcon: LucideIcons.lock,
-        controller: _regRepeatPasswordController,
-        isPassword: true,
-        showPassword: _showRegRepeatPassword,
-        onTogglePassword: () => setState(() => _showRegRepeatPassword = !_showRegRepeatPassword),
-        errorText: _regRepeatPasswordError,
-      ),
-      const SizedBox(height: 14.0),
-      _AuthInputField(
-        label: 'Nama Lengkap',
-        hint: 'Nama lengkap Anda',
-        prefixIcon: LucideIcons.user,
-        controller: _fullNameController,
-        errorText: _fullNameError,
+        textInputAction: TextInputAction.done,
+        onSubmitted: (_) => _submitRegister(),
       ),
       const SizedBox(height: 14.0),
       _buildClassSelector(),

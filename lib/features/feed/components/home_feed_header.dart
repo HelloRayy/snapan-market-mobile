@@ -64,7 +64,7 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
                   onTap: onTitleTap,
                   behavior: HitTestBehavior.opaque,
                   child: title == 'Snaps.'
-                      ? const SnapsLogo(height: 24.0)
+                      ? const SnapsLogo(height: 34.0)
                       : Text(
                           title,
                           style: GoogleFonts.inter(

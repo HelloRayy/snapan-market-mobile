@@ -5,6 +5,7 @@ import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/screens/home_feed_screen.dart';
 import 'package:snapan_market/features/onboarding/screens/onboarding_screen.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/core/components/app_entrance_splash.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,6 +56,7 @@ class AppRoot extends StatefulWidget {
 
 class _AppRootState extends State<AppRoot> {
   bool _isOnboarded = true;
+  bool _showSplash = true;
 
   @override
   Widget build(BuildContext context) {
@@ -68,15 +70,29 @@ class _AppRootState extends State<AppRoot> {
       );
     }
 
-    return HomeFeedScreen(
-      onLogout: () async {
-        await SupabaseService.instance.signOut();
-        if (mounted) {
-          setState(() {
-            _isOnboarded = false;
-          });
-        }
-      },
+    return Stack(
+      children: [
+        HomeFeedScreen(
+          onLogout: () async {
+            await SupabaseService.instance.signOut();
+            if (mounted) {
+              setState(() {
+                _isOnboarded = false;
+              });
+            }
+          },
+        ),
+        if (_showSplash)
+          AppEntranceSplash(
+            onFinish: () {
+              if (mounted) {
+                setState(() {
+                  _showSplash = false;
+                });
+              }
+            },
+          ),
+      ],
     );
   }
 }

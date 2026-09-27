@@ -32,7 +32,26 @@
    - Generate, refactor, and update Flutter widgets, models, controllers, and services in `lib/` in one clean pass.
    - Apply clean widget decomposition, idiomatic Dart naming, proper null safety, and const constructor optimization.
 
-4. **Mandatory Automatic Git Commit & Push Directive**:
+4. **Default Codebase Search & Navigation with Graphify (`graphify-out/`)**:
+   - The repository maintains a pre-built knowledge graph (`graphify-out/graph.json`, `graphify-out/GRAPH_REPORT.md`, `graphify-out/graph.html`) containing 2,500+ nodes and 4,200+ edges across both Flutter and React codebases.
+   - **MANDATORY**: All AI agents should query Graphify first to locate files, symbols, modules, or trace component relationships faster:
+     ```bash
+     uv tool run --from graphifyy graphify query "<symbol or concept>"
+     ```
+   - For tracing connection paths between two modules:
+     ```bash
+     uv tool run --from graphifyy graphify path "<SourceModule>" "<TargetModule>"
+     ```
+   - For explaining a specific node or class:
+     ```bash
+     uv tool run --from graphifyy graphify explain "<NodeName>"
+     ```
+   - To update the graph after introducing new modules:
+     ```bash
+     uv tool run --from graphifyy graphify --update
+     ```
+
+5. **Mandatory Automatic Git Commit & Push Directive**:
    - After completing any task or code change:
      1. `git add .`
      2. `git commit -m "<type>(<scope>): <descriptive message>"`

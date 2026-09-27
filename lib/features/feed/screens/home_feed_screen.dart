@@ -716,7 +716,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       backgroundColor: Colors.white,
       extendBody: true,
       appBar: HomeFeedHeader(
-        isDark: isUnauthenticated,
+        isDark: false,
         title: switch (_currentNavTab) {
           HomeNavTab.home => 'Snaps.',
           HomeNavTab.messages => 'Chat',

@@ -1,5 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:snapan_market/core/services/media_upload_service.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/profile/models/mock_profile_data.dart';
 
 /// Top section of Edit Profile with Name input, Circular Avatar with '+' badge,
@@ -22,6 +27,92 @@ class EditProfileAvatarSection extends StatefulWidget {
 
 class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
   bool _showAvatarPicker = false;
+  bool _isUploadingAvatar = false;
+
+  Future<void> _handlePickAvatar() async {
+    HapticFeedback.lightImpact();
+    final ImageSource? source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFCBD5E1),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Ganti Foto Profil',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.ink,
+                ),
+              ),
+              const SizedBox(height: 14),
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined, color: AppColors.primary),
+                title: const Text('Buka Galeri HP', style: TextStyle(fontWeight: FontWeight.w600)),
+                subtitle: const Text('Pilih foto profil dari galeri (Kompres 1080p)'),
+                onTap: () => Navigator.pop(ctx, ImageSource.gallery),
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt_outlined, color: AppColors.primary),
+                title: const Text('Ambil Foto Kamera', style: TextStyle(fontWeight: FontWeight.w600)),
+                subtitle: const Text('Ambil selfie atau foto baru langsung'),
+                onTap: () => Navigator.pop(ctx, ImageSource.camera),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (source == null) return;
+
+    final picked = await MediaUploadService.instance.pickSingleImage(source: source);
+    if (picked == null || !mounted) return;
+
+    setState(() => _isUploadingAvatar = true);
+
+    try {
+      final bytes = await picked.readAsBytes();
+      final uploadedUrl = await SupabaseService.instance.uploadImage(
+        bytes: bytes,
+        fileName: picked.name,
+        bucket: 'avatars',
+      );
+
+      if (mounted) {
+        if (uploadedUrl != null && uploadedUrl.isNotEmpty) {
+          widget.onAvatarChanged(uploadedUrl);
+        } else {
+          // Fallback to local path if storage upload is not available
+          widget.onAvatarChanged(picked.path);
+        }
+      }
+    } catch (e) {
+      debugPrint('Error uploading avatar: $e');
+      if (mounted) {
+        widget.onAvatarChanged(picked.path);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isUploadingAvatar = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,12 +167,9 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
 
               const SizedBox(width: 14.0),
 
-              // Right: Avatar with '+' badge (Clickable to toggle picker)
+              // Right: Avatar with '+' badge (Clickable to change photo)
               GestureDetector(
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  setState(() => _showAvatarPicker = !_showAvatarPicker);
-                },
+                onTap: _handlePickAvatar,
                 behavior: HitTestBehavior.opaque,
                 child: Stack(
                   clipBehavior: Clip.none,
@@ -105,17 +193,41 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                         ],
                       ),
                       child: ClipOval(
-                        child: Image.network(
-                          widget.currentAvatar,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const Center(
-                            child: Icon(
-                              Icons.person_rounded,
-                              size: 26.0,
-                              color: Color(0xFF94A3B8),
-                            ),
-                          ),
-                        ),
+                        child: _isUploadingAvatar
+                            ? const Center(
+                                child: SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.2,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              )
+                            : widget.currentAvatar.startsWith('http://') ||
+                                    widget.currentAvatar.startsWith('https://')
+                                ? Image.network(
+                                    widget.currentAvatar,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => const Center(
+                                      child: Icon(
+                                        Icons.person_rounded,
+                                        size: 26.0,
+                                        color: Color(0xFF94A3B8),
+                                      ),
+                                    ),
+                                  )
+                                : Image.file(
+                                    File(widget.currentAvatar),
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => const Center(
+                                      child: Icon(
+                                        Icons.person_rounded,
+                                        size: 26.0,
+                                        color: Color(0xFF94A3B8),
+                                      ),
+                                    ),
+                                  ),
                       ),
                     ),
 
@@ -219,7 +331,34 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                     scrollDirection: Axis.horizontal,
                     physics: const BouncingScrollPhysics(),
                     child: Row(
-                      children: kPresetAvatars.asMap().entries.map((entry) {
+                      children: [
+                        // Upload custom photo from Camera/Gallery
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10.0),
+                          child: GestureDetector(
+                            onTap: _handlePickAvatar,
+                            child: Container(
+                              width: 44.0,
+                              height: 44.0,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: const Color(0xFFF1F5F9),
+                                border: Border.all(
+                                  color: const Color(0xFFCBD5E1),
+                                  width: 1.2,
+                                ),
+                              ),
+                              child: const Center(
+                                child: Icon(
+                                  Icons.add_a_photo_outlined,
+                                  size: 19.0,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        ...kPresetAvatars.asMap().entries.map((entry) {
                         final avatarUrl = entry.value;
                         final isSelected = widget.currentAvatar == avatarUrl;
 
@@ -269,10 +408,11 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                           ),
                         );
                       }).toList(),
-                    ),
+                    ],
                   ),
                 ),
-                crossFadeState: _showAvatarPicker
+              ),
+              crossFadeState: _showAvatarPicker
                     ? CrossFadeState.showSecond
                     : CrossFadeState.showFirst,
                 duration: const Duration(milliseconds: 220),

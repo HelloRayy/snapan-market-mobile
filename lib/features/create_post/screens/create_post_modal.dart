@@ -1,6 +1,10 @@
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:snapan_market/core/services/media_upload_service.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/create_post/components/create_post_author_line.dart';
 import 'package:snapan_market/features/create_post/components/create_post_bottom_sheets.dart';
@@ -196,13 +200,89 @@ class _CreatePostModalState extends State<CreatePostModal> {
     }
   }
 
-  void _handlePickImage() {
+  Future<void> _handlePickImage() async {
     HapticFeedback.selectionClick();
-    if (_dummyImagesPool.isNotEmpty) {
-      final nextImg = _dummyImagesPool[_images.length % _dummyImagesPool.length];
-      setState(() {
-        _images.add(nextImg);
-      });
+    if (_images.length >= 5) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Maksimal 5 foto per postingan'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    final ImageSource? source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFCBD5E1),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Pilih Sumber Foto',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.ink,
+                ),
+              ),
+              const SizedBox(height: 14),
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined, color: AppColors.primary),
+                title: const Text('Buka Galeri Foto', style: TextStyle(fontWeight: FontWeight.w600)),
+                subtitle: const Text('Pilih foto dari perangkat (Kompres 1080p otomatis)'),
+                onTap: () => Navigator.pop(ctx, ImageSource.gallery),
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt_outlined, color: AppColors.primary),
+                title: const Text('Ambil Foto Kamera', style: TextStyle(fontWeight: FontWeight.w600)),
+                subtitle: const Text('Foto langsung barang jualan atau karya'),
+                onTap: () => Navigator.pop(ctx, ImageSource.camera),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (source == null) return;
+
+    if (source == ImageSource.gallery) {
+      final remaining = 5 - _images.length;
+      final pickedFiles = await MediaUploadService.instance.pickMultiImages(
+        limit: remaining,
+      );
+      if (pickedFiles.isNotEmpty && mounted) {
+        setState(() {
+          for (final f in pickedFiles) {
+            _images.add(f.path);
+          }
+        });
+      }
+    } else {
+      final picked = await MediaUploadService.instance.pickSingleImage(
+        source: ImageSource.camera,
+      );
+      if (picked != null && mounted) {
+        setState(() {
+          _images.add(picked.path);
+        });
+      }
     }
   }
 
@@ -230,7 +310,34 @@ class _CreatePostModalState extends State<CreatePostModal> {
     HapticFeedback.mediumImpact();
     setState(() => _isSubmitting = true);
 
-    await Future.delayed(const Duration(milliseconds: 300));
+    // 1. Upload any local images to Supabase Storage
+    final List<String> uploadedImages = [];
+    for (final img in _images) {
+      if (img.startsWith('http://') || img.startsWith('https://')) {
+        uploadedImages.add(img);
+      } else {
+        try {
+          final file = File(img);
+          if (await file.exists()) {
+            final bytes = await file.readAsBytes();
+            final fileName = img.split(Platform.pathSeparator).last;
+            final uploadedUrl = await SupabaseService.instance.uploadImage(
+              bytes: bytes,
+              fileName: fileName,
+              bucket: 'market-media',
+            );
+            if (uploadedUrl != null && uploadedUrl.isNotEmpty) {
+              uploadedImages.add(uploadedUrl);
+            } else {
+              uploadedImages.add(img);
+            }
+          }
+        } catch (e) {
+          debugPrint('Error uploading image $img: $e');
+          uploadedImages.add(img);
+        }
+      }
+    }
 
     final isProduct = _postMode == PostMode.product;
     final payload = {
@@ -246,7 +353,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
           ? int.tryParse(_stockController.text.trim()) ?? 1
           : null,
       'description': isProduct ? _descController.text.trim() : null,
-      'images': List<String>.from(_images),
+      'images': uploadedImages,
       'locationTag': _selectedLocation?.name,
       'topicTag': _selectedTopic?.name,
       'subThreads': _subThreads
@@ -748,23 +855,42 @@ class _CreatePostModalState extends State<CreatePostModal> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(15.0),
-                        child: Image.network(
-                          _images[index],
-                          width: 155.0,
-                          height: 185.0,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Container(
-                            width: 155.0,
-                            height: 185.0,
-                            color: const Color(0xFFF1F5F9),
-                            child: const Icon(
-                              Icons.image_outlined,
-                              size: 32.0,
-                              color: AppColors.muted,
-                            ),
-                          ),
-                        ),
+                        child: _images[index].startsWith('http://') ||
+                                _images[index].startsWith('https://')
+                            ? Image.network(
+                                _images[index],
+                                width: 155.0,
+                                height: 185.0,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
+                                  width: 155.0,
+                                  height: 185.0,
+                                  color: const Color(0xFFF1F5F9),
+                                  child: const Icon(
+                                    Icons.broken_image_outlined,
+                                    size: 32.0,
+                                    color: AppColors.muted,
+                                  ),
+                                ),
+                              )
+                            : Image.file(
+                                File(_images[index]),
+                                width: 155.0,
+                                height: 185.0,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
+                                  width: 155.0,
+                                  height: 185.0,
+                                  color: const Color(0xFFF1F5F9),
+                                  child: const Icon(
+                                    Icons.broken_image_outlined,
+                                    size: 32.0,
+                                    color: AppColors.muted,
+                                  ),
+                                ),
+                              ),
                       ),
                     ),
                     Positioned(

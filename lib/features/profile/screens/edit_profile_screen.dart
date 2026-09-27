@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/profile/components/discard_changes_dialog.dart';
 import 'package:snapan_market/features/profile/components/edit_profile_avatar_section.dart';
@@ -94,8 +96,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  void _handleSave() {
+  Future<void> _handleSave() async {
     HapticFeedback.mediumImpact();
+
+    String finalAvatar = _avatar;
+    if (!finalAvatar.startsWith('http://') && !finalAvatar.startsWith('https://')) {
+      try {
+        final file = File(finalAvatar);
+        if (await file.exists()) {
+          final bytes = await file.readAsBytes();
+          final uploaded = await SupabaseService.instance.uploadImage(
+            bytes: bytes,
+            fileName: finalAvatar.split(Platform.pathSeparator).last,
+            bucket: 'avatars',
+          );
+          if (uploaded != null && uploaded.isNotEmpty) {
+            finalAvatar = uploaded;
+          }
+        }
+      } catch (e) {
+        debugPrint('Error uploading avatar during save: $e');
+      }
+    }
 
     final cleanName = _nameController.text.trim().isEmpty
         ? widget.initialUser.name
@@ -112,14 +134,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       username: cleanUsername,
       bio: _bioController.text.trim(),
       classGroup: cleanClass,
-      avatar: _avatar,
+      avatar: finalAvatar,
       tags: _tags,
       link: _linkController.text.trim(),
       showSalesStats: _showSalesStats,
     );
 
     widget.onSave(updated);
-    Navigator.of(context).pop(updated);
+    if (mounted) {
+      Navigator.of(context).pop(updated);
+    }
   }
 
   @override

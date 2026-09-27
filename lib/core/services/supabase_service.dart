@@ -103,6 +103,43 @@ class SupabaseService {
     }
   }
 
+  /// Upload an image to Supabase Storage and return its public URL.
+  /// [bytes] binary data of the image.
+  /// [fileName] original filename (used to extract extension or generate unique name).
+  /// [bucket] default is 'market-media', or 'avatars'.
+  Future<String?> uploadImage({
+    required Uint8List bytes,
+    required String fileName,
+    String bucket = 'market-media',
+  }) async {
+    try {
+      final ext = fileName.contains('.') ? fileName.split('.').last.toLowerCase() : 'jpg';
+      final mimeType = ext == 'png'
+          ? 'image/png'
+          : ext == 'webp'
+              ? 'image/webp'
+              : 'image/jpeg';
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final random = (1000 + (DateTime.now().microsecond % 9000)).toString();
+      final path = '$timestamp-$random.$ext';
+
+      await client.storage.from(bucket).uploadBinary(
+            path,
+            bytes,
+            fileOptions: FileOptions(
+              contentType: mimeType,
+              upsert: true,
+            ),
+          );
+
+      final publicUrl = client.storage.from(bucket).getPublicUrl(path);
+      return publicUrl;
+    } catch (e) {
+      debugPrint('Error uploadImage to Supabase Storage: $e');
+      return null;
+    }
+  }
+
   // --- FEED & POSTS ---
 
   /// Fetch live feed posts joined with profiles

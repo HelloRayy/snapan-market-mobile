@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:snapan_market/core/components/kumo_button.dart';
-import 'package:snapan_market/core/theme/app_colors.dart';
-import 'package:snapan_market/features/auth/components/auth_header.dart';
-import 'package:snapan_market/features/auth/components/dropdown_column_box.dart';
-import 'package:snapan_market/features/auth/components/kumo_floating_field.dart';
-import 'package:snapan_market/features/auth/components/social_auth_row.dart';
-import 'package:snapan_market/features/auth/models/auth_constants.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/features/auth/components/dropdown_column_box.dart';
+import 'package:snapan_market/features/auth/components/google_logo.dart';
+import 'package:snapan_market/features/auth/models/auth_constants.dart';
 
 enum AuthMode { login, register }
 
+/// Modern Login & Create Account Screen
+/// Redesigned to 1:1 parity with the clean iOS card layout mockup:
+/// - Rounded circular back button at top left
+/// - Bold header hierarchy ("Login account / Welcome back!", "Create account / Sign up to continue")
+/// - Clean card-style rounded input fields with icons
+/// - Smooth keyboard handling with zero overflow on any device screen
+/// - Electric Indigo brand primary CTA button
+/// - Dotted divider & Google + Apple social buttons
+/// - Bottom navigation switcher between Login and Register
 class AuthScreen extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback onSuccess;
@@ -35,10 +42,18 @@ class _AuthScreenState extends State<AuthScreen> {
   bool _rememberMe = true;
 
   // --- REGISTER CONTROLLERS ---
-  final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _regUsernameController = TextEditingController();
   final TextEditingController _regPasswordController = TextEditingController();
   final TextEditingController _regRepeatPasswordController = TextEditingController();
+  final TextEditingController _fullNameController = TextEditingController();
+  bool _showRegPassword = false;
+  bool _showRegRepeatPassword = false;
+  bool _agreedTerms = false;
+
+  // --- SMKN 8 SELECTION STATE ---
+  String _selectedGrade = AuthConstants.gradeOptions.first;
+  String _selectedMajor = AuthConstants.majorOptions.first;
+  String _selectedClassNum = AuthConstants.classNumOptions.first;
 
   // --- ERROR STATES ---
   String? _loginUsernameError;
@@ -48,13 +63,6 @@ class _AuthScreenState extends State<AuthScreen> {
   String? _regPasswordError;
   String? _regRepeatPasswordError;
 
-  // --- SMKN 8 SELECTION STATE ---
-  String _selectedGrade = AuthConstants.gradeOptions.first;
-  String _selectedMajor = AuthConstants.majorOptions.first;
-  String _selectedClassNum = AuthConstants.classNumOptions.first;
-
-  bool _showRegPassword = false;
-  bool _showRegRepeatPassword = false;
   bool _isSubmitting = false;
 
   @override
@@ -62,17 +70,17 @@ class _AuthScreenState extends State<AuthScreen> {
     super.initState();
     _loginUsernameController.addListener(() => _clearError(() => _loginUsernameError = null));
     _loginPasswordController.addListener(() => _clearError(() => _loginPasswordError = null));
-    _fullNameController.addListener(() => _clearError(() => _fullNameError = null));
     _regUsernameController.addListener(() => _clearError(() => _regUsernameError = null));
     _regPasswordController.addListener(() => _clearError(() {
       _regPasswordError = null;
       _regRepeatPasswordError = null;
     }));
     _regRepeatPasswordController.addListener(() => _clearError(() => _regRepeatPasswordError = null));
+    _fullNameController.addListener(() => _clearError(() => _fullNameError = null));
   }
 
   void _clearError(VoidCallback update) {
-    setState(update);
+    if (mounted) setState(update);
   }
 
   void _clearAllErrors() {
@@ -88,10 +96,10 @@ class _AuthScreenState extends State<AuthScreen> {
   void dispose() {
     _loginUsernameController.dispose();
     _loginPasswordController.dispose();
-    _fullNameController.dispose();
     _regUsernameController.dispose();
     _regPasswordController.dispose();
     _regRepeatPasswordController.dispose();
+    _fullNameController.dispose();
     super.dispose();
   }
 
@@ -109,6 +117,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   // --- GOOGLE OAUTH SIGN IN ---
   Future<void> _handleGoogleAuth() async {
+    HapticFeedback.selectionClick();
     setState(() => _isSubmitting = true);
     try {
       final success = await SupabaseService.instance.signInWithGoogle();
@@ -129,7 +138,7 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  // --- SUBMIT LOGIN VALIDATION & SUPABASE CALL ---
+  // --- SUBMIT LOGIN ---
   Future<void> _submitLogin() async {
     FocusManager.instance.primaryFocus?.unfocus();
     setState(_clearAllErrors);
@@ -189,21 +198,14 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  // --- SUBMIT REGISTER VALIDATION & SUPABASE CALL ---
+  // --- SUBMIT REGISTER ---
   Future<void> _submitRegister() async {
     FocusManager.instance.primaryFocus?.unfocus();
     setState(_clearAllErrors);
 
     bool isValid = true;
 
-    // 1. Nama Lengkap
-    final fullName = _fullNameController.text.trim();
-    if (fullName.isEmpty) {
-      _fullNameError = 'Nama lengkap wajib diisi';
-      isValid = false;
-    }
-
-    // 2. Username
+    // 1. Username
     final rawUsername = _regUsernameController.text.trim().toLowerCase().replaceAll('@', '');
     final validUsernameRegex = RegExp(r'^[a-z0-9_]{3,20}$');
     if (rawUsername.isEmpty) {
@@ -220,7 +222,7 @@ class _AuthScreenState extends State<AuthScreen> {
       isValid = false;
     }
 
-    // 3. Kata Sandi
+    // 2. Kata Sandi
     final pass = _regPasswordController.text;
     final repeatPass = _regRepeatPasswordController.text;
 
@@ -232,13 +234,33 @@ class _AuthScreenState extends State<AuthScreen> {
       isValid = false;
     }
 
-    // 4. Kesamaan Kata Sandi
+    // 3. Konfirmasi Kata Sandi
     if (repeatPass.isEmpty) {
       _regRepeatPasswordError = 'Ulangi kata sandi wajib diisi';
       isValid = false;
     } else if (pass != repeatPass) {
       _regRepeatPasswordError = 'Kata sandi tidak sama. Pastikan kedua kata sandi cocok.';
       isValid = false;
+    }
+
+    // 4. Nama Lengkap
+    final fullName = _fullNameController.text.trim();
+    if (fullName.isEmpty) {
+      _fullNameError = 'Nama lengkap wajib diisi';
+      isValid = false;
+    }
+
+    // 5. Persetujuan Syarat
+    if (!_agreedTerms) {
+      HapticFeedback.vibrate();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Anda harus menyetujui Ketentuan dan Syarat Komunitas'),
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
     }
 
     if (!isValid) {
@@ -277,7 +299,6 @@ class _AuthScreenState extends State<AuthScreen> {
       );
 
       if (response.user != null) {
-        // Simpan / update profil
         await SupabaseService.instance.updateProfile(
           userId: response.user!.id,
           fullName: fullName,
@@ -322,295 +343,372 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: AppColors.authGradient,
-          ),
-          child: SafeArea(
-            bottom: false,
-            child: Column(
-              children: [
-                // Top Header with Title & Back Button
-                AuthHeader(
-                  title: _authMode == AuthMode.login
-                      ? 'Masuk\nke Akun Kamu'
-                      : 'Daftar\nAkun Baru',
-                  onBack: _handleBack,
-                ),
-
-                // Bottom Form Card (Styled like a modern Bottom Sheet)
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(32),
-                      ),
-                    ),
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      behavior: HitTestBehavior.opaque,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: true,
+        body: SafeArea(
+          top: true,
+          bottom: true,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight - 24.0,
+                  ),
+                  child: IntrinsicHeight(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Drag Handle / Pill Indicator
-                        const SizedBox(height: 12),
-                        Center(
-                          child: Container(
-                            width: 38,
-                            height: 4.5,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFCBD5E1),
-                              borderRadius: BorderRadius.circular(3),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
+                        // 1. Top Circular Back Button
+                        _buildBackButton(),
 
-                        // Scrollable Form Content
-                        Expanded(
-                          child: RepaintBoundary(
-                            child: SingleChildScrollView(
-                              keyboardDismissBehavior:
-                                  ScrollViewKeyboardDismissBehavior.onDrag,
-                              physics: const ClampingScrollPhysics(),
-                              padding: const EdgeInsets.fromLTRB(
-                                24,
-                                12,
-                                24,
-                                28,
-                              ),
-                              child: _authMode == AuthMode.login
-                                  ? _buildLoginForm()
-                                  : _buildRegisterForm(),
-                            ),
-                          ),
+                        const SizedBox(height: 22.0),
+
+                        // 2. Title & Subtitle Hierarchy
+                        _buildHeader(
+                          _authMode == AuthMode.login ? 'Login account' : 'Create account',
+                          _authMode == AuthMode.login ? 'Welcome back!' : 'Sign up to continue',
                         ),
+
+                        const SizedBox(height: 26.0),
+
+                        // 3. Dynamic Form Fields
+                        if (_authMode == AuthMode.login)
+                          ..._buildLoginFields()
+                        else
+                          ..._buildRegisterFields(),
+
+                        // 4. Flexible Spacer to anchor footer switcher at bottom
+                        const Spacer(),
+                        const SizedBox(height: 18.0),
+
+                        // 5. Bottom Switcher Link
+                        _buildFooterSwitcher(),
+                        const SizedBox(height: 8.0),
                       ],
                     ),
                   ),
                 ),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),
     );
   }
 
-  // ==========================================
-  // --- LOGIN FORM ---
-  // ==========================================
-  Widget _buildLoginForm() {
+  // --- TOP CIRCULAR BACK BUTTON ---
+  Widget _buildBackButton() {
+    return GestureDetector(
+      onTap: _handleBack,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        width: 40.0,
+        height: 40.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: const Color(0xFFE2E8F0),
+            width: 1.0,
+          ),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x0A000000),
+              blurRadius: 4.0,
+              offset: Offset(0, 1),
+            ),
+          ],
+        ),
+        child: const Center(
+          child: Icon(
+            Icons.chevron_left_rounded,
+            size: 24.0,
+            color: Color(0xFF0F172A),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // --- HEADER SECTION ---
+  Widget _buildHeader(String title, String subtitle) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 6),
-
-        // 1. Username Field
-        KumoFloatingField(
-          label: 'Username',
-          controller: _loginUsernameController,
-          keyboardType: TextInputType.text,
-          errorText: _loginUsernameError,
-          prefixWidget: const Padding(
-            padding: EdgeInsets.only(left: 4, right: 6),
-            child: Text(
-              '@',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF64748B),
-              ),
-            ),
-          ),
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_]')),
-          ],
-        ),
-
-        const SizedBox(height: 20),
-
-        // 2. Password Field
-        KumoFloatingField(
-          label: 'Kata Sandi',
-          controller: _loginPasswordController,
-          obscureText: !_showLoginPassword,
-          textInputAction: TextInputAction.done,
-          onSubmitted: (_) => _submitLogin(),
-          errorText: _loginPasswordError,
-          suffixIcon: GestureDetector(
-            onTap: () => setState(() => _showLoginPassword = !_showLoginPassword),
-            child: Icon(
-              _showLoginPassword
-                  ? Icons.visibility_outlined
-                  : Icons.visibility_off_outlined,
-              color: AppColors.muted,
-              size: 20,
-            ),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 27.0,
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF0F172A),
+            letterSpacing: -0.6,
           ),
         ),
-
-        const SizedBox(height: 16),
-
-        // 3. Remember Me & Forgot Password Row
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            GestureDetector(
-              onTap: () => setState(() => _rememberMe = !_rememberMe),
-              child: Row(
-                children: [
-                  Container(
-                    width: 18,
-                    height: 18,
-                    decoration: BoxDecoration(
-                      color: _rememberMe ? const Color(0xFF1D64EC) : Colors.transparent,
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(
-                        color: _rememberMe
-                            ? const Color(0xFF1D64EC)
-                            : const Color(0xFFCBD5E1),
-                        width: 1.5,
-                      ),
-                    ),
-                    child: _rememberMe
-                        ? const Icon(
-                            Icons.check_rounded,
-                            color: Colors.white,
-                            size: 13,
-                          )
-                        : null,
-                  ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'Ingat Saya',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.muted,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            GestureDetector(
-              onTap: () {},
-              child: const Text(
-                'Lupa Kata Sandi?',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.linkBlue,
-                ),
-              ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 24),
-
-        // 4. Kumo Primary Button
-        KumoButton.primary(
-          text: _isSubmitting ? 'Memproses...' : 'Masuk',
-          width: double.infinity,
-          height: 52,
-          borderRadius: 16,
-          onPressed: _isSubmitting ? null : _submitLogin,
-        ),
-
-        const SizedBox(height: 22),
-
-        // 5. Social Buttons
-        SocialAuthRow(
-          onAppleTap: () {},
-          onGoogleTap: _handleGoogleAuth,
-        ),
-
-        const SizedBox(height: 28),
-
-        // 6. Footer Register Link
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Belum punya akun? ',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.muted,
-              ),
-            ),
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                FocusManager.instance.primaryFocus?.unfocus();
-                setState(() {
-                  _authMode = AuthMode.register;
-                  _clearAllErrors();
-                });
-              },
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-                child: Text(
-                  'Daftar',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.linkBlue,
-                  ),
-                ),
-              ),
-            ),
-          ],
+        const SizedBox(height: 4.0),
+        Text(
+          subtitle,
+          style: const TextStyle(
+            fontSize: 14.5,
+            fontWeight: FontWeight.w400,
+            color: Color(0xFF64748B),
+            letterSpacing: -0.1,
+          ),
         ),
       ],
     );
   }
 
-  // ==========================================
-  // --- REGISTER FORM ---
-  // ==========================================
-  Widget _buildRegisterForm() {
-    return Column(
+  // --- LOGIN FORM FIELDS ---
+  List<Widget> _buildLoginFields() {
+    return [
+      _AuthInputField(
+        label: 'Username',
+        hint: '@username_kamu',
+        prefixIcon: LucideIcons.atSign,
+        controller: _loginUsernameController,
+        errorText: _loginUsernameError,
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_]')),
+        ],
+      ),
+      const SizedBox(height: 16.0),
+      _AuthInputField(
+        label: 'Password',
+        hint: 'Enter password',
+        prefixIcon: LucideIcons.lock,
+        controller: _loginPasswordController,
+        isPassword: true,
+        showPassword: _showLoginPassword,
+        onTogglePassword: () => setState(() => _showLoginPassword = !_showLoginPassword),
+        errorText: _loginPasswordError,
+        textInputAction: TextInputAction.done,
+        onSubmitted: (_) => _submitLogin(),
+      ),
+      const SizedBox(height: 14.0),
+      _buildLoginOptionsRow(),
+      const SizedBox(height: 22.0),
+      _PrimaryAuthButton(
+        text: 'Login',
+        isLoading: _isSubmitting,
+        onPressed: _submitLogin,
+      ),
+      const SizedBox(height: 22.0),
+      _buildDivider('Or sign in with'),
+      const SizedBox(height: 18.0),
+      _buildSocialButtons(),
+    ];
+  }
+
+  // --- REGISTER FORM FIELDS ---
+  List<Widget> _buildRegisterFields() {
+    return [
+      _AuthInputField(
+        label: 'Username',
+        hint: '@username_kamu',
+        prefixIcon: LucideIcons.atSign,
+        controller: _regUsernameController,
+        errorText: _regUsernameError,
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_]')),
+        ],
+      ),
+      const SizedBox(height: 14.0),
+      _AuthInputField(
+        label: 'Password',
+        hint: 'Create password',
+        prefixIcon: LucideIcons.lock,
+        controller: _regPasswordController,
+        isPassword: true,
+        showPassword: _showRegPassword,
+        onTogglePassword: () => setState(() => _showRegPassword = !_showRegPassword),
+        errorText: _regPasswordError,
+      ),
+      const SizedBox(height: 14.0),
+      _AuthInputField(
+        label: 'Confirm password',
+        hint: 'Re-enter password',
+        prefixIcon: LucideIcons.lock,
+        controller: _regRepeatPasswordController,
+        isPassword: true,
+        showPassword: _showRegRepeatPassword,
+        onTogglePassword: () => setState(() => _showRegRepeatPassword = !_showRegRepeatPassword),
+        errorText: _regRepeatPasswordError,
+      ),
+      const SizedBox(height: 14.0),
+      _AuthInputField(
+        label: 'Nama Lengkap',
+        hint: 'Nama lengkap Anda',
+        prefixIcon: LucideIcons.user,
+        controller: _fullNameController,
+        errorText: _fullNameError,
+      ),
+      const SizedBox(height: 14.0),
+      _buildClassSelector(),
+      const SizedBox(height: 16.0),
+      _buildRegisterTermsRow(),
+      const SizedBox(height: 22.0),
+      _PrimaryAuthButton(
+        text: 'Create account',
+        isLoading: _isSubmitting,
+        onPressed: _submitRegister,
+      ),
+      const SizedBox(height: 22.0),
+      _buildDivider('or sign up with'),
+      const SizedBox(height: 18.0),
+      _buildSocialButtons(),
+    ];
+  }
+
+  // --- LOGIN OPTIONS: REMEMBER ME & FORGOT PASSWORD ---
+  Widget _buildLoginOptionsRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const SizedBox(height: 6),
-
-        // 1. Full Name Field
-        KumoFloatingField(
-          label: 'Nama Lengkap',
-          controller: _fullNameController,
-          errorText: _fullNameError,
+        GestureDetector(
+          onTap: () {
+            HapticFeedback.selectionClick();
+            setState(() => _rememberMe = !_rememberMe);
+          },
+          behavior: HitTestBehavior.opaque,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 140),
+                width: 20.0,
+                height: 20.0,
+                decoration: BoxDecoration(
+                  color: _rememberMe ? AppColors.primary : Colors.white,
+                  borderRadius: BorderRadius.circular(5.0),
+                  border: Border.all(
+                    color: _rememberMe ? AppColors.primary : const Color(0xFFCBD5E1),
+                    width: 1.5,
+                  ),
+                ),
+                child: _rememberMe
+                    ? const Icon(Icons.check_rounded, size: 14.0, color: Colors.white)
+                    : null,
+              ),
+              const SizedBox(width: 8.0),
+              const Text(
+                'Keep me logged in',
+                style: TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF475569),
+                ),
+              ),
+            ],
+          ),
         ),
+        GestureDetector(
+          onTap: () {
+            HapticFeedback.lightImpact();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Silakan hubungi administrator sekolah untuk reset password'),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          },
+          child: const Text(
+            'Forgot password?',
+            style: TextStyle(
+              fontSize: 13.5,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1E293B),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
-        const SizedBox(height: 18),
-
-        // 2. Username Field
-        KumoFloatingField(
-          label: 'Username',
-          controller: _regUsernameController,
-          errorText: _regUsernameError,
-          prefixWidget: const Padding(
-            padding: EdgeInsets.only(left: 4, right: 6),
-            child: Text(
-              '@',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF64748B),
+  // --- REGISTER TERMS CHECKBOX ---
+  Widget _buildRegisterTermsRow() {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        setState(() => _agreedTerms = !_agreedTerms);
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 140),
+            width: 20.0,
+            height: 20.0,
+            decoration: BoxDecoration(
+              color: _agreedTerms ? AppColors.primary : Colors.white,
+              borderRadius: BorderRadius.circular(5.0),
+              border: Border.all(
+                color: _agreedTerms ? AppColors.primary : const Color(0xFFCBD5E1),
+                width: 1.5,
+              ),
+            ),
+            child: _agreedTerms
+                ? const Icon(Icons.check_rounded, size: 14.0, color: Colors.white)
+                : null,
+          ),
+          const SizedBox(width: 10.0),
+          const Expanded(
+            child: Text.rich(
+              TextSpan(
+                text: 'I agree to the ',
+                style: TextStyle(
+                  fontSize: 13.0,
+                  color: Color(0xFF475569),
+                  fontWeight: FontWeight.w400,
+                ),
+                children: [
+                  TextSpan(
+                    text: 'Terms',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF0F172A),
+                    ),
+                  ),
+                  TextSpan(text: ' and '),
+                  TextSpan(
+                    text: 'Conditions',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF0F172A),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_]')),
-            LengthLimitingTextInputFormatter(20),
-          ],
+        ],
+      ),
+    );
+  }
+
+  // --- CLASS & MAJOR SELECTOR ---
+  Widget _buildClassSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Kelas & Jurusan SMKN 8',
+          style: TextStyle(
+            fontSize: 14.0,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1E293B),
+            letterSpacing: -0.1,
+          ),
         ),
-
-        const SizedBox(height: 18),
-
-        // 3. Dropdown Grid 3 Kolom (Kelas, Jurusan, No. Kelas)
+        const SizedBox(height: 7.0),
         Row(
           children: [
             Expanded(
@@ -622,7 +720,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 onSelected: (val) => setState(() => _selectedGrade = val),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 8.0),
             Expanded(
               flex: 4,
               child: DropdownColumnBox(
@@ -632,11 +730,11 @@ class _AuthScreenState extends State<AuthScreen> {
                 onSelected: (val) => setState(() => _selectedMajor = val),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 8.0),
             Expanded(
               flex: 3,
               child: DropdownColumnBox(
-                label: 'No. Kelas',
+                label: 'Ruang',
                 selectedValue: _selectedClassNum,
                 options: AuthConstants.classNumOptions,
                 onSelected: (val) => setState(() => _selectedClassNum = val),
@@ -644,98 +742,485 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
           ],
         ),
+      ],
+    );
+  }
 
-        const SizedBox(height: 18),
-
-        // 4. Password Field
-        KumoFloatingField(
-          label: 'Kata Sandi',
-          controller: _regPasswordController,
-          obscureText: !_showRegPassword,
-          errorText: _regPasswordError,
-          suffixIcon: GestureDetector(
-            onTap: () => setState(() => _showRegPassword = !_showRegPassword),
-            child: Icon(
-              _showRegPassword
-                  ? Icons.visibility_outlined
-                  : Icons.visibility_off_outlined,
-              color: AppColors.muted,
-              size: 20,
-            ),
+  // --- DOTTED LINE DIVIDER ---
+  Widget _buildDivider(String text) {
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            height: 1.0,
+            color: const Color(0xFFE2E8F0),
           ),
         ),
-
-        const SizedBox(height: 18),
-
-        // 5. Repeat Password Field
-        KumoFloatingField(
-          label: 'Ulangi Kata Sandi',
-          controller: _regRepeatPasswordController,
-          obscureText: !_showRegRepeatPassword,
-          textInputAction: TextInputAction.done,
-          onSubmitted: (_) => _submitRegister(),
-          errorText: _regRepeatPasswordError,
-          suffixIcon: GestureDetector(
-            onTap: () => setState(() => _showRegRepeatPassword = !_showRegRepeatPassword),
-            child: Icon(
-              _showRegRepeatPassword
-                  ? Icons.visibility_outlined
-                  : Icons.visibility_off_outlined,
-              color: AppColors.muted,
-              size: 20,
-            ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 4.0,
+                height: 4.0,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFCBD5E1),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 8.0),
+              Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 13.0,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF94A3B8),
+                ),
+              ),
+              const SizedBox(width: 8.0),
+              Container(
+                width: 4.0,
+                height: 4.0,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFCBD5E1),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ],
           ),
         ),
-
-        const SizedBox(height: 24),
-
-        // 6. Kumo Primary Button
-        KumoButton.primary(
-          text: _isSubmitting ? 'Mendaftar...' : 'Daftar',
-          width: double.infinity,
-          height: 52,
-          borderRadius: 16,
-          onPressed: _isSubmitting ? null : _submitRegister,
+        Expanded(
+          child: Container(
+            height: 1.0,
+            color: const Color(0xFFE2E8F0),
+          ),
         ),
+      ],
+    );
+  }
 
-        const SizedBox(height: 24),
+  // --- SOCIAL BUTTONS ROW ---
+  Widget _buildSocialButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: _SocialButton(
+            icon: const GoogleLogo(size: 20.0),
+            label: 'Google',
+            onTap: _handleGoogleAuth,
+          ),
+        ),
+        const SizedBox(width: 14.0),
+        Expanded(
+          child: _SocialButton(
+            icon: const Icon(
+              Icons.apple,
+              size: 22.0,
+              color: Color(0xFF0F172A),
+            ),
+            label: 'Apple',
+            onTap: () {
+              HapticFeedback.lightImpact();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Apple Sign-In hanya tersedia pada perangkat iOS'),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
 
-        // 7. Footer Login Link
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Sudah punya akun? ',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.muted,
+  // --- BOTTOM SWITCHER FOOTER ---
+  Widget _buildFooterSwitcher() {
+    if (_authMode == AuthMode.login) {
+      return Center(
+        child: GestureDetector(
+          onTap: () {
+            HapticFeedback.selectionClick();
+            setState(() {
+              _authMode = AuthMode.register;
+              _clearAllErrors();
+            });
+          },
+          behavior: HitTestBehavior.opaque,
+          child: const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+            child: Text.rich(
+              TextSpan(
+                text: "Don't have an account? ",
+                style: TextStyle(
+                  fontSize: 14.0,
+                  color: Color(0xFF64748B),
+                ),
+                children: [
+                  TextSpan(
+                    text: 'Sign up',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF0F172A),
+                    ),
+                  ),
+                ],
               ),
             ),
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                FocusManager.instance.primaryFocus?.unfocus();
-                setState(() {
-                  _authMode = AuthMode.login;
-                  _clearAllErrors();
-                });
-              },
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-                child: Text(
-                  'Masuk',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.linkBlue,
+          ),
+        ),
+      );
+    } else {
+      return Center(
+        child: GestureDetector(
+          onTap: () {
+            HapticFeedback.selectionClick();
+            setState(() {
+              _authMode = AuthMode.login;
+              _clearAllErrors();
+            });
+          },
+          behavior: HitTestBehavior.opaque,
+          child: const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+            child: Text.rich(
+              TextSpan(
+                text: 'Already have an account? ',
+                style: TextStyle(
+                  fontSize: 14.0,
+                  color: Color(0xFF64748B),
+                ),
+                children: [
+                  TextSpan(
+                    text: 'Login',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF0F172A),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+  }
+}
+
+/// Custom Card Input Field matching reference mockup
+class _AuthInputField extends StatefulWidget {
+  final String label;
+  final String hint;
+  final IconData prefixIcon;
+  final TextEditingController controller;
+  final String? errorText;
+  final bool isPassword;
+  final bool showPassword;
+  final VoidCallback? onTogglePassword;
+  final TextInputType keyboardType;
+  final TextInputAction textInputAction;
+  final ValueChanged<String>? onSubmitted;
+  final List<TextInputFormatter>? inputFormatters;
+
+  const _AuthInputField({
+    required this.label,
+    required this.hint,
+    required this.prefixIcon,
+    required this.controller,
+    this.errorText,
+    this.isPassword = false,
+    this.showPassword = false,
+    this.onTogglePassword,
+    this.keyboardType = TextInputType.text,
+    this.textInputAction = TextInputAction.next,
+    this.onSubmitted,
+    this.inputFormatters,
+  });
+
+  @override
+  State<_AuthInputField> createState() => _AuthInputFieldState();
+}
+
+class _AuthInputFieldState extends State<_AuthInputField> {
+  final FocusNode _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      setState(() => _isFocused = _focusNode.hasFocus);
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool hasError = widget.errorText != null && widget.errorText!.isNotEmpty;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.label,
+          style: const TextStyle(
+            fontSize: 14.0,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1E293B),
+            letterSpacing: -0.1,
+          ),
+        ),
+        const SizedBox(height: 7.0),
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          height: 52.0,
+          padding: const EdgeInsets.symmetric(horizontal: 14.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16.0),
+            border: Border.all(
+              color: hasError
+                  ? AppColors.error
+                  : _isFocused
+                      ? AppColors.primary
+                      : const Color(0xFFE2E8F0),
+              width: _isFocused ? 1.5 : 1.2,
+            ),
+            boxShadow: _isFocused
+                ? [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.08),
+                      blurRadius: 8.0,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : const [
+                    BoxShadow(
+                      color: Color(0x06000000),
+                      blurRadius: 2.0,
+                      offset: Offset(0, 1),
+                    ),
+                  ],
+          ),
+          child: Row(
+            children: [
+              Icon(
+                widget.prefixIcon,
+                size: 19.5,
+                color: hasError
+                    ? AppColors.error
+                    : _isFocused
+                        ? AppColors.primary
+                        : const Color(0xFF64748B),
+              ),
+              const SizedBox(width: 10.0),
+              Expanded(
+                child: TextField(
+                  focusNode: _focusNode,
+                  controller: widget.controller,
+                  obscureText: widget.isPassword && !widget.showPassword,
+                  keyboardType: widget.keyboardType,
+                  textInputAction: widget.textInputAction,
+                  onSubmitted: widget.onSubmitted,
+                  inputFormatters: widget.inputFormatters,
+                  cursorColor: AppColors.primary,
+                  style: const TextStyle(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF0F172A),
+                  ),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    isDense: true,
+                    hintText: widget.hint,
+                    hintStyle: const TextStyle(
+                      fontSize: 14.5,
+                      color: Color(0xFF94A3B8),
+                      fontWeight: FontWeight.normal,
+                    ),
+                    contentPadding: EdgeInsets.zero,
                   ),
                 ),
               ),
-            ),
-          ],
+              if (widget.isPassword)
+                GestureDetector(
+                  onTap: widget.onTogglePassword,
+                  behavior: HitTestBehavior.opaque,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 6.0),
+                    child: Icon(
+                      widget.showPassword ? LucideIcons.eyeOff : LucideIcons.eye,
+                      size: 19.5,
+                      color: const Color(0xFF64748B),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
+        if (hasError)
+          Padding(
+            padding: const EdgeInsets.only(top: 5.0, left: 4.0),
+            child: Text(
+              widget.errorText!,
+              style: const TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.w500,
+                color: AppColors.error,
+              ),
+            ),
+          ),
       ],
+    );
+  }
+}
+
+/// Primary CTA Button with micro-tap physics & loading state
+class _PrimaryAuthButton extends StatefulWidget {
+  final String text;
+  final bool isLoading;
+  final VoidCallback onPressed;
+
+  const _PrimaryAuthButton({
+    required this.text,
+    required this.isLoading,
+    required this.onPressed,
+  });
+
+  @override
+  State<_PrimaryAuthButton> createState() => _PrimaryAuthButtonState();
+}
+
+class _PrimaryAuthButtonState extends State<_PrimaryAuthButton> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: widget.isLoading ? null : (_) => setState(() => _isPressed = true),
+      onTapUp: widget.isLoading ? null : (_) => setState(() => _isPressed = false),
+      onTapCancel: widget.isLoading ? null : () => setState(() => _isPressed = false),
+      onTap: widget.isLoading ? null : widget.onPressed,
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedScale(
+        scale: _isPressed ? 0.98 : 1.0,
+        duration: const Duration(milliseconds: 90),
+        curve: Curves.easeOutCubic,
+        child: Container(
+          width: double.infinity,
+          height: 52.0,
+          decoration: BoxDecoration(
+            color: widget.isLoading
+                ? AppColors.primary.withValues(alpha: 0.7)
+                : AppColors.primary,
+            borderRadius: BorderRadius.circular(16.0),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.28),
+                blurRadius: 10.0,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Center(
+            child: widget.isLoading
+                ? const SizedBox(
+                    width: 22.0,
+                    height: 22.0,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.2,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text(
+                    widget.text,
+                    style: const TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Social Button (Google / Apple) matching reference mockup
+class _SocialButton extends StatefulWidget {
+  final Widget icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _SocialButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  State<_SocialButton> createState() => _SocialButtonState();
+}
+
+class _SocialButtonState extends State<_SocialButton> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) => setState(() => _isPressed = false),
+      onTapCancel: () => setState(() => _isPressed = false),
+      onTap: widget.onTap,
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedScale(
+        scale: _isPressed ? 0.97 : 1.0,
+        duration: const Duration(milliseconds: 90),
+        curve: Curves.easeOutCubic,
+        child: Container(
+          height: 50.0,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16.0),
+            border: Border.all(
+              color: const Color(0xFFE2E8F0),
+              width: 1.2,
+            ),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x06000000),
+                blurRadius: 4.0,
+                offset: Offset(0, 1),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              widget.icon,
+              const SizedBox(width: 9.0),
+              Text(
+                widget.label,
+                style: const TextStyle(
+                  fontSize: 14.5,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF0F172A),
+                  letterSpacing: -0.2,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

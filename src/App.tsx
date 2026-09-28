@@ -33,6 +33,12 @@ const ColorShowcasePage = lazy(() =>
 const CampusMapPage = lazy(() =>
   import('@/ui/pages/CampusMapPage').then((m) => ({ default: m.CampusMapPage }))
 );
+const AdminDashboard = lazy(() =>
+  import('@/admin/pages/AdminDashboard').then((m) => ({ default: m.AdminDashboard }))
+);
+const AdminLoginPage = lazy(() =>
+  import('@/admin/pages/AdminLoginPage').then((m) => ({ default: m.AdminLoginPage }))
+);
 
 import { AuthPromptPopover } from '@/ui/components/auth/AuthPromptPopover';
 
@@ -63,14 +69,23 @@ export function App() {
     handleCloseChatThread,
   } = useAppNavigation();
 
+  // Admin Route Flags
+  const isAdminLoginRoute = currentRoute === '/admin/login' || (typeof window !== 'undefined' && window.location.pathname === '/admin/login');
+  const isAdminDashboardRoute =
+    (currentRoute === '/admin' ||
+      currentRoute.startsWith('/admin/') ||
+      (typeof window !== 'undefined' && (window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/')))) &&
+    !isAdminLoginRoute;
+  const isAdminRoute = isAdminLoginRoute || isAdminDashboardRoute;
+
   // Route Flags
-  const isSearchRoute = currentRoute === '/search' || window.location.hash === '#search';
-  const isMessagesRoute = currentRoute === '/messages' || currentRoute.startsWith('/direct') || window.location.hash === '#messages';
+  const isSearchRoute = currentRoute === '/search' || (typeof window !== 'undefined' && window.location.hash === '#search');
+  const isMessagesRoute = currentRoute === '/messages' || currentRoute.startsWith('/direct') || (typeof window !== 'undefined' && window.location.hash === '#messages');
   const isProfileRoute = currentRoute.startsWith('/@') || currentRoute.startsWith('/profile');
-  const isColorsRoute = currentRoute === '/colors' || window.location.hash === '#colors';
-  const isMapRoute = currentRoute === '/map' || window.location.hash === '#map';
-  const isDownloadLandingRoute = currentRoute === '/download' || window.location.hash === '#download';
-  const isHomeRoute = currentRoute === '/home' || (!isSearchRoute && !isMessagesRoute && !isProfileRoute && !isColorsRoute && !isMapRoute && !isDownloadLandingRoute);
+  const isColorsRoute = currentRoute === '/colors' || (typeof window !== 'undefined' && window.location.hash === '#colors');
+  const isMapRoute = currentRoute === '/map' || (typeof window !== 'undefined' && window.location.hash === '#map');
+  const isDownloadLandingRoute = currentRoute === '/download' || (typeof window !== 'undefined' && window.location.hash === '#download');
+  const isHomeRoute = currentRoute === '/home' || (!isSearchRoute && !isMessagesRoute && !isProfileRoute && !isColorsRoute && !isMapRoute && !isDownloadLandingRoute && !isAdminRoute);
 
   const targetProfileUsername = isProfileRoute
     ? currentRoute.replace('/@', '').replace('/profile/', '').split('/')[0]
@@ -134,40 +149,64 @@ export function App() {
 
   return (
     <Suspense fallback={<div className="min-h-screen bg-white" />}>
-      {/* 0. Staggered Entrance Splash Animation */}
-      {showSplash && hasCompletedOnboarding && !isDownloadLandingRoute && (
-        <AppEntranceSplash
-          onComplete={() => {
-            try {
-              sessionStorage.setItem('snaps_splash_seen', 'true');
-            } catch {}
-            setShowSplash(false);
+      {/* Admin Portal Dedicated Routes (Kumo UI) */}
+      {isAdminLoginRoute ? (
+        <AdminLoginPage
+          onSuccess={() => {
+            setCurrentRoute('/admin');
+            window.history.pushState({}, '', '/admin');
           }}
-        />
-      )}
-
-      {/* 1. First-time User Onboarding Screen */}
-      {!hasCompletedOnboarding ? (
-        <OnboardingScreen
-          onComplete={() => {
-            try {
-              localStorage.setItem('snapan_has_onboarded', 'true');
-            } catch {}
-            setHasCompletedOnboarding(true);
+          onBackToApp={() => {
             navigateToHome();
           }}
         />
-      ) : isDownloadLandingRoute ? (
-        /* 2. PWA Dedicated Download & Landing Showcase */
-        <PwaLandingPage onProceedToWeb={navigateToHome} />
+      ) : isAdminDashboardRoute ? (
+        <AdminDashboard
+          onLogout={() => {
+            setCurrentRoute('/admin/login');
+            window.history.pushState({}, '', '/admin/login');
+          }}
+          onNavigateLogin={() => {
+            setCurrentRoute('/admin/login');
+            window.history.pushState({}, '', '/admin/login');
+          }}
+        />
       ) : (
-        /* 3. Main Multi-Page App Shell */
-        <div className="relative min-h-screen bg-pure-white text-slate-ink flex flex-col font-sans selection:bg-brand-primary selection:text-white">
-          {/* Preserved Home Feed */}
-          <div className={isHomeRoute && !selectedPost && !activeChatThreadId ? 'block' : 'hidden'}>
-            <HomePage
-              onNavigateToProfile={navigateToProfile}
-              onNavigateSearch={navigateToSearch}
+        <>
+          {/* 0. Staggered Entrance Splash Animation */}
+          {showSplash && hasCompletedOnboarding && !isDownloadLandingRoute && (
+            <AppEntranceSplash
+              onComplete={() => {
+                try {
+                  sessionStorage.setItem('snaps_splash_seen', 'true');
+                } catch {}
+                setShowSplash(false);
+              }}
+            />
+          )}
+
+          {/* 1. First-time User Onboarding Screen */}
+          {!hasCompletedOnboarding ? (
+            <OnboardingScreen
+              onComplete={() => {
+                try {
+                  localStorage.setItem('snapan_has_onboarded', 'true');
+                } catch {}
+                setHasCompletedOnboarding(true);
+                navigateToHome();
+              }}
+            />
+          ) : isDownloadLandingRoute ? (
+            /* 2. PWA Dedicated Download & Landing Showcase */
+            <PwaLandingPage onProceedToWeb={navigateToHome} />
+          ) : (
+            /* 3. Main Multi-Page App Shell */
+            <div className="relative min-h-screen bg-pure-white text-slate-ink flex flex-col font-sans selection:bg-brand-primary selection:text-white">
+              {/* Preserved Home Feed */}
+              <div className={isHomeRoute && !selectedPost && !activeChatThreadId ? 'block' : 'hidden'}>
+                <HomePage
+                  onNavigateToProfile={navigateToProfile}
+                  onNavigateSearch={navigateToSearch}
               onNavigateMessages={navigateToMessages}
               onSelectPost={handleOpenPostDetail}
               onOpenMenu={() => setIsDrawerOpen(true)}
@@ -245,6 +284,10 @@ export function App() {
             onNavigateMap={() => {
               setCurrentRoute('/map');
               window.history.pushState({}, '', '/map');
+            }}
+            onNavigateAdmin={() => {
+              setCurrentRoute('/admin');
+              window.history.pushState({}, '', '/admin');
             }}
             onOpenAuthModal={() => setIsAuthPromptOpen(true)}
           />
@@ -333,7 +376,9 @@ export function App() {
           />
         </div>
       )}
-    </Suspense>
+      </>
+    )}
+  </Suspense>
   );
 }
 

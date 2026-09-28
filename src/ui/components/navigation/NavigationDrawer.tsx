@@ -15,6 +15,7 @@ import {
   Search,
   Palette,
   MapPin,
+  Shield,
 } from 'lucide-react';
 import { useAuth } from '@/ui/hooks/useAuth';
 import { SnapsLogoSvg } from '@/ui/components/brand/SnapsLogoSvg';
@@ -30,6 +31,7 @@ interface NavigationDrawerProps {
   onNavigateColors?: () => void;
   onOpenCreateModal?: () => void;
   onNavigateMap?: () => void;
+  onNavigateAdmin?: () => void;
   onOpenAuthModal?: () => void;
 }
 
@@ -43,6 +45,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   onNavigateMessages,
   onNavigateColors,
   onNavigateMap,
+  onNavigateAdmin,
   onOpenCreateModal,
   onOpenAuthModal,
 }) => {
@@ -298,6 +301,23 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
           >
             <Settings className="w-4.5 h-4.5 text-slate-800 stroke-[2] shrink-0" />
             <span className="truncate">Pengaturan Akun</span>
+          </button>
+
+          {/* Portal Admin (Kumo UI) */}
+          <button
+            type="button"
+            onClick={() => {
+              if (onNavigateAdmin) {
+                onNavigateAdmin();
+              } else {
+                window.location.href = '/admin';
+              }
+              onClose();
+            }}
+            className="flex items-center gap-3 h-[36px] w-full px-3 rounded-xl text-[14.5px] font-semibold text-indigo-600 hover:bg-indigo-50 active:bg-indigo-100/70 transition-colors cursor-pointer leading-snug text-left"
+          >
+            <Shield className="w-4.5 h-4.5 text-indigo-600 stroke-[2.2] shrink-0" />
+            <span className="truncate">Portal Admin (Kumo)</span>
           </button>
 
           {/* Masuk / Daftar Akun jika belum login */}

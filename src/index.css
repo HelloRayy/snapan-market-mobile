@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "@cloudflare/kumo/dist/styles/kumo.css";
+@import "@cloudflare/kumo/styles";
 
 @font-face {
   font-family: 'Instrument Serif';

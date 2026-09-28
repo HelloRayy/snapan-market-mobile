@@ -166,6 +166,13 @@ export function useAppNavigation() {
   // PWA Double-Back Exit Guard
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+        return;
+      }
+      if (currentRoute.startsWith('/admin')) {
+        return;
+      }
       if (e.key === 'Escape' || e.key === 'Backspace') {
         if (selectedPost) {
           handleClosePostDetail();

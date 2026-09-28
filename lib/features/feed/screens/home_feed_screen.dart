@@ -8,8 +8,9 @@ import 'package:snapan_market/features/auth/components/auth_prompt_overlay.dart'
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/rendering.dart';
+import 'package:snapan_market/core/components/update_info_bottom_sheet.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
+import 'package:snapan_market/core/services/app_update_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
 import 'package:snapan_market/features/feed/components/home_feed_header.dart';
@@ -147,6 +148,27 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
         _fetchPosts(isRefresh: true);
       }
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkForAppUpdate();
+    });
+  }
+
+  Future<void> _checkForAppUpdate() async {
+    try {
+      final update = await AppUpdateService.instance.checkForUpdate();
+      if (update != null && mounted) {
+        final info = await AppUpdateService.instance.getPackageInfo();
+        if (!mounted) return;
+        UpdateInfoBottomSheet.show(
+          context,
+          update: update,
+          currentVersionName: info.version,
+        );
+      }
+    } catch (e) {
+      debugPrint('Update check error: $e');
+    }
   }
 
   @override

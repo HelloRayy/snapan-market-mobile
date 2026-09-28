@@ -35,4 +35,21 @@ class ChatMessageModel {
       status: status ?? this.status,
     );
   }
+
+  factory ChatMessageModel.fromJson(Map<String, dynamic> json, String currentUserId) {
+    final senderId = json['sender_id'] as String? ?? '';
+    final createdAt = json['created_at'] != null ? DateTime.tryParse(json['created_at'].toString()) : null;
+    final timeStr = createdAt != null
+        ? "${createdAt.toLocal().hour.toString().padLeft(2, '0')}:${createdAt.toLocal().minute.toString().padLeft(2, '0')}"
+        : "Baru saja";
+
+    return ChatMessageModel(
+      id: json['id'] as String? ?? '',
+      senderId: senderId,
+      text: json['message_text'] as String? ?? '',
+      timestamp: timeStr,
+      isMe: senderId == currentUserId,
+      status: json['is_read'] == true ? MessageStatus.read : MessageStatus.sent,
+    );
+  }
 }

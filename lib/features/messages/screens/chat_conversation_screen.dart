@@ -4,6 +4,8 @@ import "package:flutter/services.dart";
 import "package:snapan_market/core/components/glass_toolbar_top.dart";
 import "package:snapan_market/core/navigation/app_slide_page_route.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
+import "package:supabase_flutter/supabase_flutter.dart";
+import "package:snapan_market/core/services/supabase_service.dart";
 import "package:snapan_market/features/feed/components/media_lightbox_dialog.dart";
 import "package:snapan_market/features/messages/components/chat_composer_bar.dart";
 import "package:snapan_market/features/messages/components/chat_product_card.dart";
@@ -28,10 +30,12 @@ class ChatConversationScreen extends StatefulWidget {
 class _ChatConversationScreenState extends State<ChatConversationScreen> {
   late List<ChatMessageModel> _messages;
   final ScrollController _scrollController = ScrollController();
+  RealtimeChannel? _messagesSubscription;
 
   @override
   void initState() {
     super.initState();
+    DirectMessagesService.instance.addListener(_onServiceChanged);
     final savedMessages = DirectMessagesService.instance.getMessages(widget.conversation.id);
     if (savedMessages.isNotEmpty) {
       _messages = List.from(savedMessages);
@@ -52,10 +56,54 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
     } else {
       _messages = [];
     }
+    _initRealtimeChat();
+  }
+
+  void _onServiceChanged() {
+    if (!mounted) return;
+    final updated = DirectMessagesService.instance.getMessages(widget.conversation.id);
+    if (updated.isNotEmpty) {
+      setState(() {
+        _messages = List.from(updated);
+      });
+      _scrollToBottom();
+    }
+  }
+
+  Future<void> _initRealtimeChat() async {
+    final currentUserId = SupabaseService.instance.currentUser?.id ?? '';
+    final live = await DirectMessagesService.instance.loadMessages(widget.conversation.id);
+    if (live.isNotEmpty && mounted) {
+      setState(() {
+        _messages = List.from(live);
+      });
+      _scrollToBottom();
+    }
+
+    _messagesSubscription = SupabaseService.instance.subscribeToMessages(
+      widget.conversation.id,
+      (newRecord) {
+        if (!mounted) return;
+        final msg = ChatMessageModel.fromJson(newRecord, currentUserId);
+        if (!_messages.any((m) => m.id == msg.id)) {
+          setState(() {
+            _messages.add(msg);
+          });
+          DirectMessagesService.instance.addMessage(
+            widget.conversation.id,
+            msg,
+            conversation: widget.conversation,
+          );
+          _scrollToBottom();
+        }
+      },
+    );
   }
 
   @override
   void dispose() {
+    DirectMessagesService.instance.removeListener(_onServiceChanged);
+    _messagesSubscription?.unsubscribe();
     _scrollController.dispose();
     super.dispose();
   }
@@ -73,24 +121,9 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
   }
 
   void _handleSendMessage(String text) {
-    final now = DateTime.now();
-    final timeStr = "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
-
-    final newMsg = ChatMessageModel(
-      id: "msg-${now.millisecondsSinceEpoch}",
-      senderId: "saya",
+    DirectMessagesService.instance.sendMessage(
+      conversationId: widget.conversation.id,
       text: text,
-      timestamp: timeStr,
-      isMe: true,
-      status: MessageStatus.sent,
-    );
-
-    setState(() {
-      _messages.add(newMsg);
-    });
-    DirectMessagesService.instance.addMessage(
-      widget.conversation.id,
-      newMsg,
       conversation: widget.conversation,
     );
     _scrollToBottom();

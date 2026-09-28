@@ -43,7 +43,7 @@ export const adminService = {
       supabase.from('school_meeting_points').select('id', { count: 'exact', head: true }),
       supabase.from('orders').select('id', { count: 'exact', head: true }),
       supabase.from('profiles').select('*').order('created_at', { ascending: false }).limit(5),
-      supabase.from('market_posts').select('*, seller:profiles(*)').order('created_at', { ascending: false }).limit(5),
+      supabase.from('market_posts').select('*, seller:seller_id(*)').order('created_at', { ascending: false }).limit(5),
     ]);
 
     return {
@@ -123,7 +123,7 @@ export const adminService = {
   }): Promise<{ data: (MarketPostRow & { seller?: ProfileRow | null })[]; count: number }> {
     const { search = '', postType = 'all', limit = 15, offset = 0 } = params || {};
 
-    let query = supabase.from('market_posts').select('*, seller:profiles(*)', { count: 'exact' });
+    let query = supabase.from('market_posts').select('*, seller:seller_id(*)', { count: 'exact' });
 
     if (search.trim()) {
       query = query.or(`title.ilike.%${search}%,caption.ilike.%${search}%,category.ilike.%${search}%`);

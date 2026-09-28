@@ -25,8 +25,9 @@ export function ContentModerationTab() {
       });
       setPosts(res.data);
       setTotalCount(res.count);
-    } catch (e) {
-      setFeedbackMsg({ type: 'error', text: `Gagal memuat feed: ${e}` });
+      setFeedbackMsg(null);
+    } catch (e: any) {
+      setFeedbackMsg({ type: 'error', text: `Gagal memuat feed: ${e?.message || e}` });
     } finally {
       setIsLoading(false);
     }

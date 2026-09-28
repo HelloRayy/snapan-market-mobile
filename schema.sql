@@ -171,18 +171,83 @@ alter table public.notifications enable row level security;
 -- Profiles Policies
 drop policy if exists "Profiles viewable by everyone" on public.profiles;
 drop policy if exists "Users can update own profile" on public.profiles;
+drop policy if exists "Admins can update any profile" on public.profiles;
 create policy "Profiles viewable by everyone" on public.profiles for select using (true);
 create policy "Users can update own profile" on public.profiles for update using (auth.uid() = id);
+
+-- Helper function to check if current authenticated user has admin role (avoids RLS recursion)
+create or replace function public.is_admin()
+returns boolean
+language sql
+security definer
+stable
+as $$
+  select exists (
+    select 1 from public.profiles
+    where id = auth.uid() and role = 'admin'
+  );
+$$;
+
+create policy "Admins can update any profile"
+on public.profiles
+for update
+to authenticated
+using (public.is_admin())
+with check (public.is_admin());
 
 -- Market Posts Policies
 drop policy if exists "Market posts viewable by everyone" on public.market_posts;
 drop policy if exists "Sellers can insert own posts" on public.market_posts;
 drop policy if exists "Sellers can update own posts" on public.market_posts;
 drop policy if exists "Sellers can delete own posts" on public.market_posts;
+drop policy if exists "Admins can delete any post" on public.market_posts;
 create policy "Market posts viewable by everyone" on public.market_posts for select using (true);
 create policy "Sellers can insert own posts" on public.market_posts for insert with check (auth.uid() = seller_id);
 create policy "Sellers can update own posts" on public.market_posts for update using (auth.uid() = seller_id);
 create policy "Sellers can delete own posts" on public.market_posts for delete using (auth.uid() = seller_id);
+create policy "Admins can delete any post" on public.market_posts for delete to authenticated using (public.is_admin());
+
+-- RPC Helper for Admin Toggle Verification (Security Definer)
+create or replace function public.admin_toggle_verification(target_user_id uuid, new_status boolean)
+returns void
+language plpgsql
+security definer
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'Unauthorized: Hanya admin yang dapat memverifikasi profil siswa.';
+  end if;
+  update public.profiles set is_verified = new_status where id = target_user_id;
+end;
+$$;
+
+-- RPC Helper for Admin Update Role (Security Definer)
+create or replace function public.admin_update_profile_role(target_user_id uuid, new_role text)
+returns void
+language plpgsql
+security definer
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'Unauthorized: Hanya admin yang dapat mengubah role akun.';
+  end if;
+  update public.profiles set role = new_role where id = target_user_id;
+end;
+$$;
+
+-- RPC Helper for Admin Delete Post (Security Definer)
+create or replace function public.admin_delete_post(target_post_id uuid)
+returns void
+language plpgsql
+security definer
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'Unauthorized: Hanya admin yang dapat menghapus postingan feed.';
+  end if;
+  delete from public.market_posts where id = target_post_id;
+end;
+$$;
 
 -- Post Likes Policies
 drop policy if exists "Likes viewable by everyone" on public.post_likes;

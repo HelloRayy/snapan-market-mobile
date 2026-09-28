@@ -49,6 +49,7 @@ class HomeFeedScreen extends StatefulWidget {
 class _HomeFeedScreenState extends State<HomeFeedScreen>
     with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ProfileScreenState> _profileKey = GlobalKey<ProfileScreenState>();
   final ScrollController _scrollController = ScrollController();
   AnimationController? _fabAnimationController;
   Animation<double>? _fabAnimation;
@@ -762,7 +763,11 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                 ),
                 _buildNavTabScreen(
                   index: 3,
-                  child: ProfileScreen(showAppBar: false, onOpenMenu: _handleMenuTap),
+                  child: ProfileScreen(
+                    key: _profileKey,
+                    showAppBar: false,
+                    onOpenMenu: _handleMenuTap,
+                  ),
                 ),
               ],
             ),
@@ -834,6 +839,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                     _currentNavTab = tab;
                   });
                   _showFab();
+                  if (tab == HomeNavTab.profile) {
+                    _profileKey.currentState?.reloadProfile();
+                  }
                 },
               ),
             ),

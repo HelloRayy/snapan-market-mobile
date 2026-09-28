@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:snapan-market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/auth/screens/auth_screen.dart';
@@ -47,13 +48,14 @@ class ProfileScreen extends StatefulWidget {
   });
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<ProfileScreen> createState() => ProfileScreenState();
 }
 
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class ProfileScreenState extends State<ProfileScreen> {
   final ScrollController _scrollController = ScrollController();
   ProfileTab _activeTab = ProfileTab.threads;
+  RealtimeChannel? _profileSubscription;
 
   // Search in Profile state
   bool _showSearch = false;
@@ -86,6 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     _initProfileData();
     _loadLiveProfile();
+    _setupRealtimeSubscription();
   }
 
   @override
@@ -93,6 +96,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.didUpdateWidget(oldWidget);
     _initProfileData();
     _loadLiveProfile();
+    _setupRealtimeSubscription();
+  }
+
+  void reloadProfile() {
+    _initProfileData();
+    _loadLiveProfile();
+    _setupRealtimeSubscription();
+  }
+
+  void _setupRealtimeSubscription() {
+    _profileSubscription?.unsubscribe();
+    final currentUser = SupabaseService.instance.currentUser;
+    if (_isOwnProfile && currentUser != null) {
+      _profileSubscription = SupabaseService.instance.subscribeToProfile(
+        currentUser.id,
+        (newRecord) {
+          if (!mounted) return;
+          debugPrint('ProfileScreen Realtime update received: $newRecord');
+          setState(() {
+            _user = _user.copyWith(
+              name: newRecord['full_name'] as String? ?? _user.name,
+              username: newRecord['username'] as String? ?? _user.username,
+              classGroup: newRecord['class_group'] as String? ?? _user.classGroup,
+              avatar: (newRecord['avatar_url'] as String?)?.isNotEmpty == true
+                  ? newRecord['avatar_url'] as String
+                  : _user.avatar,
+              bio: newRecord['bio'] as String? ?? _user.bio,
+              isVerified: newRecord['is_verified'] as bool? ?? false,
+            );
+          });
+        },
+      );
+    }
   }
 
   Future<void> _loadLiveProfile() async {
@@ -370,6 +406,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void dispose() {
+    _profileSubscription?.unsubscribe();
     _scrollController.dispose();
     super.dispose();
   }
@@ -631,6 +668,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       );
 
+    final Widget refreshableBody = RefreshIndicator(
+      onRefresh: _loadLiveProfile,
+      color: AppColors.primary,
+      backgroundColor: Colors.white,
+      child: bodyScrollView,
+    );
+
     if (widget.showAppBar) {
       return Scaffold(
         backgroundColor: Colors.white,
@@ -653,11 +697,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             });
           },
         ),
-        body: bodyScrollView,
+        body: refreshableBody,
       );
     }
 
-    return bodyScrollView;
+    return refreshableBody;
   }
 
 }

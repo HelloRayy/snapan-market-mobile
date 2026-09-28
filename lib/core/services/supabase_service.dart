@@ -54,6 +54,31 @@ class SupabaseService {
     }
   }
 
+  /// Subscribe to live realtime changes for a specific user profile
+  RealtimeChannel subscribeToProfile(
+    String userId,
+    void Function(Map<String, dynamic> newRecord) onUpdate,
+  ) {
+    return client
+        .channel('public:profiles:$userId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'profiles',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'id',
+            value: userId,
+          ),
+          callback: (PostgresChangePayload payload) {
+            if (payload.newRecord.isNotEmpty) {
+              onUpdate(payload.newRecord);
+            }
+          },
+        )
+        .subscribe();
+  }
+
   /// Save or update profile completion
   Future<void> updateProfile({
     required String userId,

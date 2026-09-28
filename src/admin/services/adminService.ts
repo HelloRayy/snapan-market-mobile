@@ -92,24 +92,48 @@ export const adminService = {
    * Mengubah role profile (buyer, seller, admin)
    */
   async updateProfileRole(userId: string, newRole: 'buyer' | 'seller' | 'admin'): Promise<void> {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('profiles')
       .update({ role: newRole })
-      .eq('id', userId);
+      .eq('id', userId)
+      .select();
 
     if (error) throw error;
+    if (!data || data.length === 0) {
+      const { error: rpcErr } = await (supabase.rpc as any)('admin_update_profile_role', {
+        target_user_id: userId,
+        new_role: newRole,
+      });
+      if (rpcErr) {
+        throw new Error(
+          'Gagal mengubah role: Terhalang Supabase RLS. Jalankan SQL Migration Admin di Supabase SQL Editor.'
+        );
+      }
+    }
   },
 
   /**
    * Toggle status verifikasi siswa (official badge)
    */
   async toggleVerification(userId: string, isVerified: boolean): Promise<void> {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('profiles')
       .update({ is_verified: isVerified })
-      .eq('id', userId);
+      .eq('id', userId)
+      .select();
 
     if (error) throw error;
+    if (!data || data.length === 0) {
+      const { error: rpcErr } = await (supabase.rpc as any)('admin_toggle_verification', {
+        target_user_id: userId,
+        new_status: isVerified,
+      });
+      if (rpcErr) {
+        throw new Error(
+          'Gagal verifikasi: Terhalang Supabase RLS. Jalankan SQL Migration Admin di Supabase SQL Editor.'
+        );
+      }
+    }
   },
 
   /**
@@ -148,12 +172,23 @@ export const adminService = {
    * Takedown / Delete postingan feed
    */
   async deleteMarketPost(postId: string): Promise<void> {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('market_posts')
       .delete()
-      .eq('id', postId);
+      .eq('id', postId)
+      .select();
 
     if (error) throw error;
+    if (!data || data.length === 0) {
+      const { error: rpcErr } = await (supabase.rpc as any)('admin_delete_post', {
+        target_post_id: postId,
+      });
+      if (rpcErr) {
+        throw new Error(
+          'Gagal menghapus postingan: Terhalang Supabase RLS. Jalankan SQL Migration Admin di Supabase SQL Editor.'
+        );
+      }
+    }
   },
 
   /**

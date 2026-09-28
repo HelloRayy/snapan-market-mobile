@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Sun, Moon, ShieldCheck, RefreshCw } from 'lucide-react';
+import { Sun, Moon, ShieldCheck, RefreshCw, Menu } from 'lucide-react';
 import { Badge, Button } from '@cloudflare/kumo';
 import type { AdminTab } from './AdminSidebar';
 
@@ -9,6 +9,7 @@ interface AdminHeaderProps {
   adminRole: string;
   onRefresh?: () => void;
   isRefreshing?: boolean;
+  onToggleMobileSidebar?: () => void;
 }
 
 const tabTitles: Record<AdminTab, { title: string; subtitle: string }> = {
@@ -36,6 +37,7 @@ export function AdminHeader({
   adminRole,
   onRefresh,
   isRefreshing,
+  onToggleMobileSidebar,
 }: AdminHeaderProps) {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     if (typeof document !== 'undefined') {
@@ -66,14 +68,26 @@ export function AdminHeader({
   const info = tabTitles[activeTab];
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-kumo-hairline bg-kumo-canvas px-6 backdrop-blur-md">
-      <div>
-        <h1 className="text-base font-semibold tracking-tight text-kumo-default">
-          {info.title}
-        </h1>
-        <p className="text-xs text-kumo-subtle hidden sm:block">
-          {info.subtitle}
-        </p>
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-kumo-hairline bg-kumo-canvas px-4 md:px-6 backdrop-blur-md">
+      <div className="flex items-center gap-3">
+        {onToggleMobileSidebar && (
+          <Button
+            variant="secondary"
+            className="h-8 w-8 p-0 flex md:hidden items-center justify-center text-kumo-default"
+            onClick={onToggleMobileSidebar}
+            aria-label="Buka menu"
+          >
+            <Menu className="h-4 w-4" />
+          </Button>
+        )}
+        <div>
+          <h1 className="text-base font-semibold tracking-tight text-kumo-default">
+            {info.title}
+          </h1>
+          <p className="text-xs text-kumo-subtle hidden sm:block">
+            {info.subtitle}
+          </p>
+        </div>
       </div>
 
       <div className="flex items-center gap-3">

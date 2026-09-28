@@ -62,10 +62,11 @@ export const adminService = {
   async getProfiles(params?: {
     search?: string;
     role?: string;
+    verification?: 'all' | 'verified' | 'unverified';
     limit?: number;
     offset?: number;
   }): Promise<{ data: ProfileRow[]; count: number }> {
-    const { search = '', role = 'all', limit = 20, offset = 0 } = params || {};
+    const { search = '', role = 'all', verification = 'all', limit = 20, offset = 0 } = params || {};
 
     let query = supabase.from('profiles').select('*', { count: 'exact' });
 
@@ -75,6 +76,12 @@ export const adminService = {
 
     if (role && role !== 'all') {
       query = query.eq('role', role as 'buyer' | 'seller' | 'admin');
+    }
+
+    if (verification === 'verified') {
+      query = query.eq('is_verified', true);
+    } else if (verification === 'unverified') {
+      query = query.eq('is_verified', false);
     }
 
     query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1);
@@ -246,15 +253,20 @@ export const adminService = {
       name: string;
       area_category: string;
       description: string | null;
+      coordinates_x: number;
+      coordinates_y: number;
       is_active: boolean;
     }>
-  ): Promise<void> {
-    const { error } = await supabase
+  ): Promise<SchoolMeetingPointRow> {
+    const { data, error } = await supabase
       .from('school_meeting_points')
       .update(updates)
-      .eq('id', id);
+      .eq('id', id)
+      .select()
+      .single();
 
     if (error) throw error;
+    return data as SchoolMeetingPointRow;
   },
 
   /**

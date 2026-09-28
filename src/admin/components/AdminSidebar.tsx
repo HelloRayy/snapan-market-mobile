@@ -15,9 +15,17 @@ interface AdminSidebarProps {
   activeTab: AdminTab;
   onTabChange: (tab: AdminTab) => void;
   onLogout: () => void;
+  isOpenMobile?: boolean;
+  onCloseMobile?: () => void;
 }
 
-export function AdminSidebar({ activeTab, onTabChange, onLogout }: AdminSidebarProps) {
+export function AdminSidebar({
+  activeTab,
+  onTabChange,
+  onLogout,
+  isOpenMobile = false,
+  onCloseMobile,
+}: AdminSidebarProps) {
   const navItems: { id: AdminTab; label: string; icon: React.ReactNode }[] = [
     {
       id: 'overview',
@@ -42,7 +50,20 @@ export function AdminSidebar({ activeTab, onTabChange, onLogout }: AdminSidebarP
   ];
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-kumo-hairline bg-kumo-canvas select-none">
+    <>
+      {/* Mobile Backdrop */}
+      {isOpenMobile && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs md:hidden"
+          onClick={onCloseMobile}
+        />
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-kumo-hairline bg-kumo-canvas select-none transition-transform duration-200 ease-in-out md:translate-x-0 ${
+          isOpenMobile ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        }`}
+      >
       {/* Brand Header */}
       <div className="flex h-14 items-center justify-between border-b border-kumo-hairline px-4">
         <div className="flex items-center gap-2.5">
@@ -109,5 +130,6 @@ export function AdminSidebar({ activeTab, onTabChange, onLogout }: AdminSidebarP
         </Button>
       </div>
     </aside>
+  </>
   );
 }

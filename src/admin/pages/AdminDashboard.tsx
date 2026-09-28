@@ -102,17 +102,24 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
     );
   }
 
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-kumo-canvas text-kumo-default flex selection:bg-indigo-600 selection:text-white">
-      {/* Fixed Sidebar */}
+      {/* Sidebar (Responsive drawer on mobile, fixed on desktop) */}
       <AdminSidebar
         activeTab={activeTab}
-        onTabChange={(tab) => setActiveTab(tab)}
+        onTabChange={(tab) => {
+          setActiveTab(tab);
+          setIsMobileSidebarOpen(false);
+        }}
         onLogout={handleLogout}
+        isOpenMobile={isMobileSidebarOpen}
+        onCloseMobile={() => setIsMobileSidebarOpen(false)}
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col pl-64 min-w-0">
+      <div className="flex-1 flex flex-col md:pl-64 pl-0 min-w-0 transition-[padding] duration-200">
         {/* Top Header */}
         <AdminHeader
           activeTab={activeTab}
@@ -120,23 +127,30 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
           adminRole={adminRole}
           onRefresh={loadStats}
           isRefreshing={isRefreshing}
+          onToggleMobileSidebar={() => setIsMobileSidebarOpen((prev) => !prev)}
         />
 
-        {/* Tab Views */}
+        {/* Tab Views with Zero-Lag State Caching (Never re-fetches unnecessarily when switching tabs) */}
         <main className="flex-1 overflow-y-auto">
-          {activeTab === 'overview' && (
+          <div className={activeTab === 'overview' ? 'block' : 'hidden'}>
             <OverviewTab
               stats={stats}
               isLoading={isLoadingStats}
               onNavigateTab={(tab) => setActiveTab(tab)}
             />
-          )}
+          </div>
 
-          {activeTab === 'users' && <UsersManagementTab />}
+          <div className={activeTab === 'users' ? 'block' : 'hidden'}>
+            <UsersManagementTab />
+          </div>
 
-          {activeTab === 'moderation' && <ContentModerationTab />}
+          <div className={activeTab === 'moderation' ? 'block' : 'hidden'}>
+            <ContentModerationTab />
+          </div>
 
-          {activeTab === 'meeting-points' && <MeetingPointsTab />}
+          <div className={activeTab === 'meeting-points' ? 'block' : 'hidden'}>
+            <MeetingPointsTab />
+          </div>
         </main>
       </div>
     </div>

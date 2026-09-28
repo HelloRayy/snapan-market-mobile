@@ -42,6 +42,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late String _avatar;
   late List<String> _tags;
   late bool _showSalesStats;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -85,6 +86,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _handleAttemptExit() async {
+    if (_isSaving) return;
     if (!_hasChanges) {
       Navigator.of(context).pop();
       return;
@@ -97,27 +99,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _handleSave() async {
+    if (_isSaving) return;
     HapticFeedback.mediumImpact();
-
-    String finalAvatar = _avatar;
-    if (!finalAvatar.startsWith('http://') && !finalAvatar.startsWith('https://')) {
-      try {
-        final file = File(finalAvatar);
-        if (await file.exists()) {
-          final bytes = await file.readAsBytes();
-          final uploaded = await SupabaseService.instance.uploadImage(
-            bytes: bytes,
-            fileName: finalAvatar.split(Platform.pathSeparator).last,
-            bucket: 'avatars',
-          );
-          if (uploaded != null && uploaded.isNotEmpty) {
-            finalAvatar = uploaded;
-          }
-        }
-      } catch (e) {
-        debugPrint('Error uploading avatar during save: $e');
-      }
-    }
 
     final cleanName = _nameController.text.trim().isEmpty
         ? widget.initialUser.name
@@ -129,20 +112,92 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ? widget.initialUser.classGroup
         : _classController.text.trim();
 
-    final updated = widget.initialUser.copyWith(
-      name: cleanName,
-      username: cleanUsername,
-      bio: _bioController.text.trim(),
-      classGroup: cleanClass,
-      avatar: finalAvatar,
-      tags: _tags,
-      link: _linkController.text.trim(),
-      showSalesStats: _showSalesStats,
-    );
+    final cleanInitialUsername = widget.initialUser.username.replaceAll('@', '').toLowerCase();
 
-    widget.onSave(updated);
-    if (mounted) {
-      Navigator.of(context).pop(updated);
+    setState(() => _isSaving = true);
+
+    try {
+      // 1. Check username collision if username was changed
+      if (cleanUsername != cleanInitialUsername) {
+        final isTaken = await SupabaseService.instance.isUsernameTaken(cleanUsername);
+        if (isTaken) {
+          if (mounted) {
+            setState(() => _isSaving = false);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Username @$cleanUsername sudah digunakan oleh akun lain.'),
+                backgroundColor: const Color(0xFFEF4444),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+          return;
+        }
+      }
+
+      // 2. Upload avatar if selected from local file storage
+      String finalAvatar = _avatar;
+      if (!finalAvatar.startsWith('http://') && !finalAvatar.startsWith('https://')) {
+        try {
+          final file = File(finalAvatar);
+          if (await file.exists()) {
+            final bytes = await file.readAsBytes();
+            final uploaded = await SupabaseService.instance.uploadImage(
+              bytes: bytes,
+              fileName: finalAvatar.split(Platform.pathSeparator).last,
+              bucket: 'avatars',
+            );
+            if (uploaded != null && uploaded.isNotEmpty) {
+              finalAvatar = uploaded;
+            }
+          }
+        } catch (e) {
+          debugPrint('Error uploading avatar during save: $e');
+        }
+      }
+
+      final updated = widget.initialUser.copyWith(
+        name: cleanName,
+        username: cleanUsername,
+        bio: _bioController.text.trim(),
+        classGroup: cleanClass,
+        avatar: finalAvatar,
+        tags: _tags,
+        link: _linkController.text.trim(),
+        showSalesStats: _showSalesStats,
+      );
+
+      // 3. Persist directly to Supabase DB and synchronize auth user metadata
+      final currentUser = SupabaseService.instance.currentUser;
+      if (currentUser != null) {
+        await SupabaseService.instance.updateProfile(
+          userId: currentUser.id,
+          fullName: cleanName,
+          username: cleanUsername,
+          classGroup: cleanClass,
+          avatarUrl: finalAvatar,
+          bio: _bioController.text.trim(),
+          tags: _tags,
+          link: _linkController.text.trim(),
+        );
+      }
+
+      widget.onSave(updated);
+      if (mounted) {
+        Navigator.of(context).pop(updated);
+      }
+    } catch (err) {
+      debugPrint('Error saving profile: $err');
+      if (mounted) {
+        setState(() => _isSaving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Gagal menyimpan profil. Silakan periksa koneksi dan coba lagi.'),
+            backgroundColor: Color(0xFFEF4444),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     }
   }
 
@@ -212,19 +267,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       Positioned(
                         right: 0,
                         child: TextButton(
-                          onPressed: _handleSave,
+                          onPressed: _isSaving ? null : _handleSave,
                           style: TextButton.styleFrom(
                             foregroundColor: AppColors.primary,
                             padding: const EdgeInsets.symmetric(horizontal: 10.0),
                           ),
-                          child: const Text(
-                            'Simpan',
-                            style: TextStyle(
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.primary,
-                            ),
-                          ),
+                          child: _isSaving
+                              ? const SizedBox(
+                                  width: 16.0,
+                                  height: 16.0,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.0,
+                                    color: AppColors.primary,
+                                  ),
+                                )
+                              : const Text(
+                                  'Simpan',
+                                  style: TextStyle(
+                                    fontSize: 15.0,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
                         ),
                       ),
                   ],
@@ -628,7 +692,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         child: SizedBox(
                           height: 46.0,
                           child: ElevatedButton(
-                            onPressed: _handleSave,
+                            onPressed: _isSaving ? null : _handleSave,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF101010),
                               foregroundColor: AppColors.white,
@@ -637,14 +701,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 borderRadius: BorderRadius.circular(24.0),
                               ),
                             ),
-                            child: const Text(
-                              'Save',
-                              style: TextStyle(
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.white,
-                              ),
-                            ),
+                            child: _isSaving
+                                ? const SizedBox(
+                                    width: 20.0,
+                                    height: 20.0,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.0,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Save',
+                                    style: TextStyle(
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.white,
+                                    ),
+                                  ),
                           ),
                         ),
                       ),

@@ -139,6 +139,14 @@ class ProfileScreenState extends State<ProfileScreen> {
       try {
         final profile = await SupabaseService.instance.getProfile(currentUser.id);
         final livePosts = await SupabaseService.instance.fetchUserPosts(currentUser.id);
+        final meta = currentUser.userMetadata ?? {};
+        final metaTags = meta['tags'];
+        List<String> userTags = _user.tags;
+        if (profile?['interests'] is String && (profile!['interests'] as String).isNotEmpty) {
+          userTags = (profile['interests'] as String).split(',');
+        } else if (metaTags is List) {
+          userTags = metaTags.map((e) => e.toString()).toList();
+        }
 
         if (!mounted) return;
         setState(() {
@@ -151,8 +159,27 @@ class ProfileScreenState extends State<ProfileScreen> {
               avatar: (profile['avatar_url'] as String?)?.isNotEmpty == true
                   ? profile['avatar_url'] as String
                   : _user.avatar,
-              bio: profile['bio'] as String? ?? _user.bio,
+              bio: profile['bio'] as String? ?? (meta['bio'] as String?) ?? _user.bio,
+              link: profile['link'] as String? ?? (meta['link'] as String?) ?? _user.link,
+              tags: userTags,
               isVerified: profile['is_verified'] as bool? ?? false,
+            );
+          } else {
+            final fullName = (meta['full_name'] as String?)?.trim();
+            final username = (meta['username'] as String?)?.trim();
+            final classGroup = (meta['class_group'] as String?)?.trim();
+            final avatar = (meta['avatar_url'] as String?)?.trim() ?? '';
+            final bio = (meta['bio'] as String?)?.trim();
+            final link = (meta['link'] as String?)?.trim();
+
+            _user = _user.copyWith(
+              name: (fullName != null && fullName.isNotEmpty) ? fullName : _user.name,
+              username: (username != null && username.isNotEmpty) ? username : _user.username,
+              classGroup: (classGroup != null && classGroup.isNotEmpty) ? classGroup : _user.classGroup,
+              avatar: avatar.isNotEmpty ? avatar : _user.avatar,
+              bio: (bio != null && bio.isNotEmpty) ? bio : _user.bio,
+              link: link ?? _user.link,
+              tags: userTags,
             );
           }
           _allUserPosts = livePosts;
@@ -182,6 +209,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                   ? p['avatar_url'] as String
                   : _user.avatar,
               bio: p['bio'] as String? ?? _user.bio,
+              link: p['link'] as String? ?? _user.link,
               isVerified: p['is_verified'] as bool? ?? false,
             );
             if (targetPosts.isNotEmpty) {
@@ -204,6 +232,15 @@ class ProfileScreenState extends State<ProfileScreen> {
         final username = (meta['username'] as String?)?.trim();
         final classGroup = (meta['class_group'] as String?)?.trim();
         final avatar = (meta['avatar_url'] as String?)?.trim() ?? '';
+        final bio = (meta['bio'] as String?)?.trim();
+        final link = (meta['link'] as String?)?.trim();
+        final tagsRaw = meta['tags'];
+        List<String> tags = [];
+        if (tagsRaw is List) {
+          tags = tagsRaw.map((e) => e.toString()).toList();
+        } else if (tagsRaw is String && tagsRaw.isNotEmpty) {
+          tags = tagsRaw.split(',');
+        }
 
         _user = ProfileUserModel(
           id: currentUser.id,
@@ -211,8 +248,9 @@ class ProfileScreenState extends State<ProfileScreen> {
           username: (username != null && username.isNotEmpty) ? username : 'siswa',
           classGroup: (classGroup != null && classGroup.isNotEmpty) ? classGroup : 'SMKN 8 Jakarta',
           avatar: avatar,
-          bio: 'Siswa ${classGroup ?? 'SMKN 8 Jakarta'}',
-          link: '',
+          bio: (bio != null && bio.isNotEmpty) ? bio : 'Siswa ${classGroup ?? 'SMKN 8 Jakarta'}',
+          tags: tags,
+          link: link ?? '',
           followersCount: 0,
           soldCount: 0,
           rating: 5.0,

@@ -22,6 +22,7 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [adminEmail, setAdminEmail] = useState<string>('admin@snapan.id');
   const [adminRole, setAdminRole] = useState<string>('admin');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Verify auth on mount
   useEffect(() => {
@@ -102,7 +103,6 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
     );
   }
 
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-kumo-canvas text-kumo-default flex selection:bg-indigo-600 selection:text-white">

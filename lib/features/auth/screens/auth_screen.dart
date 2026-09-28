@@ -212,7 +212,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
     // 3. Username
     final rawUsername = _regUsernameController.text.trim().toLowerCase().replaceAll('@', '');
-    final validUsernameRegex = RegExp(r'^[a-z0-9_]{3,20}$');
+    final validUsernameRegex = RegExp(r'^[a-z0-9._]{3,20}$');
     if (rawUsername.isEmpty) {
       _regUsernameError = 'Username wajib diisi';
       isValid = false;
@@ -223,7 +223,7 @@ class _AuthScreenState extends State<AuthScreen> {
       _regUsernameError = 'Username maksimal 20 karakter';
       isValid = false;
     } else if (!validUsernameRegex.hasMatch(rawUsername)) {
-      _regUsernameError = 'Hanya huruf kecil (a-z), angka (0-9), dan underscore (_)';
+      _regUsernameError = 'Hanya huruf kecil (a-z), angka (0-9), titik (.), dan underscore (_) tanpa spasi';
       isValid = false;
     }
 
@@ -465,7 +465,11 @@ class _AuthScreenState extends State<AuthScreen> {
         controller: _loginUsernameController,
         errorText: _loginUsernameError,
         inputFormatters: [
-          FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_]')),
+          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+          FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9._@]')),
+          TextInputFormatter.withFunction((oldValue, newValue) {
+            return newValue.copyWith(text: newValue.text.toLowerCase());
+          }),
         ],
       ),
       const SizedBox(height: 16.0),
@@ -518,7 +522,11 @@ class _AuthScreenState extends State<AuthScreen> {
         errorText: _regUsernameError,
         textInputAction: TextInputAction.next,
         inputFormatters: [
-          FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_]')),
+          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+          FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9._]')),
+          TextInputFormatter.withFunction((oldValue, newValue) {
+            return newValue.copyWith(text: newValue.text.toLowerCase());
+          }),
         ],
       ),
       const SizedBox(height: 16.0),

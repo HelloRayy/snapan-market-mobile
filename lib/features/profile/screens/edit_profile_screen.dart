@@ -286,6 +286,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 child: TextField(
                                   controller: _usernameController,
                                   maxLength: 30,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9._]')),
+                                    TextInputFormatter.withFunction((oldValue, newValue) {
+                                      return newValue.copyWith(
+                                        text: newValue.text.toLowerCase(),
+                                      );
+                                    }),
+                                  ],
                                   style: const TextStyle(
                                     fontSize: 15.5,
                                     fontWeight: FontWeight.w700,

@@ -92,7 +92,7 @@ export const AuthLoginForm: React.FC<AuthLoginFormProps> = ({
             onFocus={() => setFocusedField('loginIdentifier')}
             onBlur={() => setFocusedField(null)}
             onChange={(e) => {
-              setLoginIdentifier(e.target.value);
+              setLoginIdentifier(e.target.value.toLowerCase().replace(/\s+/g, ''));
               setErrors((prev: any) => ({ ...prev, loginIdentifier: undefined }));
             }}
             className="w-full bg-transparent text-base font-bold text-slate-900 focus:outline-none pt-1 truncate"

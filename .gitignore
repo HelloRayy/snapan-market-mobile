@@ -76,6 +76,8 @@ android/.gradle/
 android/app/build/
 android/local.properties
 *.iml
+*.apk
+*.aab
 
 # Test and visual regression outputs
 test-results/

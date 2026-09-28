@@ -37,6 +37,15 @@ class AppColors {
   static const Color error = Color(0xFFEF4444);
   static const Color linkBlue = Color(0xFF008BFF);
 
+  // Threads Design Tokens (THREAD-INSPO.md)
+  static const Color inkBlack = Color(0xFF000000);
+  static const Color paperWhite = Color(0xFFFAFAFA);
+  static const Color mistGray = Color(0xFFEFEFEF);
+  static const Color cloudGray = Color(0xFFD5D5D5);
+  static const Color ashGray = Color(0xFF969696);
+  static const Color graphite = Color(0xFF424242);
+  static const Color metaBlue = Color(0xFF385898);
+
   // Gradients
   static const LinearGradient authGradient = LinearGradient(
     begin: Alignment.topCenter,

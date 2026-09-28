@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
 import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
@@ -67,8 +68,8 @@ class PostActionBar extends StatelessWidget {
                         child: FeedHeartIcon(
                           isLiked: isLiked,
                           size: 19.0,
-                          activeColor: const Color(0xFFE11D48),
-                          inactiveColor: const Color(0xFF334155),
+                          activeColor: const Color(0xFFF43F5E),
+                          inactiveColor: AppColors.ashGray,
                         ),
                       ),
                       if (likesCount > 0) ...[
@@ -76,9 +77,9 @@ class PostActionBar extends StatelessWidget {
                         Text(
                           formatCompactNumber(likesCount),
                           style: TextStyle(
-                            fontSize: 12.0,
+                            fontSize: 13.0,
                             fontWeight: isLiked ? FontWeight.w600 : FontWeight.w400,
-                            color: isLiked ? const Color(0xFFE11D48) : const Color(0xFF475569),
+                            color: isLiked ? const Color(0xFFF43F5E) : AppColors.graphite,
                             fontFeatures: const [FontFeature.tabularFigures()],
                             letterSpacing: -0.2,
                           ),
@@ -111,16 +112,16 @@ class PostActionBar extends StatelessWidget {
                     children: [
                       const FeedCommentIcon(
                         size: 18.0,
-                        color: Color(0xFF334155),
+                        color: AppColors.ashGray,
                       ),
                       if (item.commentsCount > 0) ...[
                         const SizedBox(width: 4.5),
                         Text(
                           formatCompactNumber(item.commentsCount),
                           style: const TextStyle(
-                            fontSize: 12.0,
+                            fontSize: 13.0,
                             fontWeight: FontWeight.w400,
-                            color: Color(0xFF475569),
+                            color: AppColors.graphite,
                             fontFeatures: [FontFeature.tabularFigures()],
                             letterSpacing: -0.2,
                           ),
@@ -157,7 +158,7 @@ class PostActionBar extends StatelessWidget {
                           isReposted: isReposted,
                           size: 19.0,
                           activeColor: const Color(0xFF10B981),
-                          inactiveColor: const Color(0xFF334155),
+                          inactiveColor: AppColors.ashGray,
                         ),
                       ),
                       if (repostsCount > 0) ...[
@@ -165,9 +166,9 @@ class PostActionBar extends StatelessWidget {
                         Text(
                           formatCompactNumber(repostsCount),
                           style: TextStyle(
-                            fontSize: 12.0,
+                            fontSize: 13.0,
                             fontWeight: isReposted ? FontWeight.w600 : FontWeight.w400,
-                            color: isReposted ? const Color(0xFF10B981) : const Color(0xFF475569),
+                            color: isReposted ? const Color(0xFF10B981) : AppColors.graphite,
                             fontFeatures: const [FontFeature.tabularFigures()],
                             letterSpacing: -0.2,
                           ),
@@ -203,7 +204,7 @@ class PostActionBar extends StatelessWidget {
                   alignment: Alignment.center,
                   child: const FeedShareIcon(
                     size: 18.0,
-                    color: Color(0xFF334155),
+                    color: AppColors.ashGray,
                   ),
                 ),
               ),

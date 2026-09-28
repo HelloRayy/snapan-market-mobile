@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
-/// Caption text with multi-thread indicator badge
+/// Caption text with multi-thread indicator badge and Meta Blue mentions/hashtags
 class PostCaptionText extends StatelessWidget {
   final MarketPostModel item;
 
@@ -10,6 +11,47 @@ class PostCaptionText extends StatelessWidget {
     required this.item,
   });
 
+  List<InlineSpan> _buildFormattedSpans(String text) {
+    final regex = RegExp(r'((?:@|#)[a-zA-Z0-9_.]+|https?:\/\/[^\s]+)');
+    final matches = regex.allMatches(text);
+    if (matches.isEmpty) {
+      return [TextSpan(text: text)];
+    }
+
+    final List<InlineSpan> spans = [];
+    int lastEnd = 0;
+
+    for (final match in matches) {
+      if (match.start > lastEnd) {
+        spans.add(TextSpan(text: text.substring(lastEnd, match.start)));
+      }
+
+      final matchedText = match.group(0)!;
+      final isUrl = matchedText.startsWith('http');
+      final isMention = matchedText.startsWith('@');
+
+      spans.add(
+        TextSpan(
+          text: matchedText,
+          style: TextStyle(
+            color: AppColors.metaBlue,
+            fontWeight: isMention ? FontWeight.w600 : FontWeight.w500,
+            decoration: isUrl ? TextDecoration.underline : TextDecoration.none,
+            decorationColor: AppColors.metaBlue,
+          ),
+        ),
+      );
+
+      lastEnd = match.end;
+    }
+
+    if (lastEnd < text.length) {
+      spans.add(TextSpan(text: text.substring(lastEnd)));
+    }
+
+    return spans;
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasMultiThread =
@@ -17,8 +59,8 @@ class PostCaptionText extends StatelessWidget {
 
     return Text.rich(
       TextSpan(
-        text: item.caption,
         children: [
+          ..._buildFormattedSpans(item.caption),
           if (hasMultiThread) ...[
             WidgetSpan(
               alignment: PlaceholderAlignment.middle,
@@ -46,7 +88,7 @@ class PostCaptionText extends StatelessWidget {
       ),
       style: const TextStyle(
         fontSize: 14.5,
-        height: 1.25,
+        height: 1.35,
         fontWeight: FontWeight.normal,
         color: Color(0xFF0F172A),
       ),

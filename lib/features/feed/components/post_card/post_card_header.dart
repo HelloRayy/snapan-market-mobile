@@ -116,7 +116,7 @@ class PostCardHeader extends StatelessWidget {
                 const Icon(
                   Icons.verified_rounded,
                   size: 14.5,
-                  color: AppColors.primary,
+                  color: AppColors.metaBlue,
                 ),
               ],
 
@@ -184,7 +184,7 @@ class PostCardHeader extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 13.0,
                 fontWeight: FontWeight.normal,
-                color: Color(0xFF94A3B8),
+                color: AppColors.graphite,
                 fontFeatures: [FontFeature.tabularFigures()],
               ),
             ),
@@ -192,7 +192,7 @@ class PostCardHeader extends StatelessWidget {
             InkWell(
               onTapDown: (details) => _showOptionsMenu(context, details.globalPosition),
               borderRadius: BorderRadius.circular(16.0),
-              splashColor: const Color(0xFFF1F5F9),
+              splashColor: AppColors.mistGray,
               highlightColor: Colors.transparent,
               child: const SizedBox(
                 width: 32.0,
@@ -201,7 +201,7 @@ class PostCardHeader extends StatelessWidget {
                   child: Icon(
                     Icons.more_horiz_rounded,
                     size: 19.0,
-                    color: Color(0xFF64748B),
+                    color: AppColors.ashGray,
                   ),
                 ),
               ),

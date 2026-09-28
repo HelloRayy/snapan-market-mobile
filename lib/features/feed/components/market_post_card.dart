@@ -1,5 +1,8 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
 import 'package:snapan_market/features/feed/components/post_card/post_card.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
@@ -192,7 +195,7 @@ class _MarketPostCardState extends State<MarketPostCard>
       child: Container(
         padding: const EdgeInsets.only(left: 14.0, right: 14.0, top: 12.0, bottom: 14.0),
         decoration: const BoxDecoration(
-          border: Border(bottom: BorderSide(color: Color(0xFFF1F5F9), width: 1.0)),
+          border: Border(bottom: BorderSide(color: AppColors.cloudGray, width: 1.0)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -229,7 +232,7 @@ class _MarketPostCardState extends State<MarketPostCard>
                 ),
               ),
             ],
-            const SizedBox(height: 10.0),
+            const SizedBox(height: 8.0),
             PostActionBar(
               item: widget.item,
               isLiked: _isLiked,
@@ -249,8 +252,10 @@ class _MarketPostCardState extends State<MarketPostCard>
     );
   }
 
-  /// FEED VARIANT: Two-column layout (Left Avatar, Right Content)
+  /// FEED VARIANT: Two-column layout with Multi-part Thread Vertical Connector Line
   Widget _buildFeedCard(BuildContext context) {
+    final hasChain = widget.item.threadChain.isNotEmpty;
+
     return GestureDetector(
       onTap: () => widget.onPostClick?.call(widget.item),
       behavior: HitTestBehavior.opaque,
@@ -258,73 +263,410 @@ class _MarketPostCardState extends State<MarketPostCard>
         padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
         decoration: const BoxDecoration(
           color: Colors.white,
-          border: Border(bottom: BorderSide(color: Color(0xFFF1F5F9), width: 1.0)),
+          border: Border(bottom: BorderSide(color: AppColors.cloudGray, width: 1.0)),
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            PostAuthorAvatar(
-              seller: widget.item.seller,
-              isFollowed: _isFollowed,
-              onFollowToggle: _handleFollowToggle,
-              onUserClick: () => widget.onUserClick?.call(widget.item.seller.username ?? widget.item.seller.name),
-            ),
-            const SizedBox(width: 12.0),
-            Expanded(
-              child: Column(
+        child: hasChain
+            ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PostCardHeader(
-                    item: widget.item,
-                    isDetail: false,
-                    isFollowed: _isFollowed,
-                    onFollowToggle: _handleFollowToggle,
-                    onUserClick: widget.onUserClick,
-                    onTopicClick: widget.onTopicClick,
-                    onMoreOptionsClick: widget.onMoreOptionsClick,
-                    onPostClick: widget.onPostClick,
-                    onDeletePost: widget.onDeletePost,
+                  _buildPartOneWithConnector(context),
+                  ...widget.item.threadChain.asMap().entries.map((entry) {
+                    final int idx = entry.key;
+                    final ThreadChainItemModel chain = entry.value;
+                    final bool isLast = idx == widget.item.threadChain.length - 1;
+                    return _buildChainItemWithConnector(context, chain, isLast: isLast);
+                  }),
+                ],
+              )
+            : _buildSinglePostRow(context),
+      ),
+    );
+  }
+
+  /// Standard Single Post Row (Left Avatar, Right Content)
+  Widget _buildSinglePostRow(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        PostAuthorAvatar(
+          seller: widget.item.seller,
+          isFollowed: _isFollowed,
+          onFollowToggle: _handleFollowToggle,
+          onUserClick: () => widget.onUserClick?.call(widget.item.seller.username ?? widget.item.seller.name),
+        ),
+        const SizedBox(width: 12.0),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              PostCardHeader(
+                item: widget.item,
+                isDetail: false,
+                isFollowed: _isFollowed,
+                onFollowToggle: _handleFollowToggle,
+                onUserClick: widget.onUserClick,
+                onTopicClick: widget.onTopicClick,
+                onMoreOptionsClick: widget.onMoreOptionsClick,
+                onPostClick: widget.onPostClick,
+                onDeletePost: widget.onDeletePost,
+              ),
+              const SizedBox(height: 2.0),
+              PostCaptionText(item: widget.item),
+              if (widget.item.images.isNotEmpty) ...[
+                const SizedBox(height: 10.0),
+                PostMediaSection(item: widget.item, isDetail: false, onImageClick: widget.onImageClick),
+              ],
+              if (widget.item.locationTag != null && widget.item.locationTag!.isNotEmpty) ...[
+                const SizedBox(height: 6.0),
+                Text(
+                  widget.item.locationTag!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF64748B),
+                    letterSpacing: -0.1,
+                    height: 1.25,
                   ),
-                  const SizedBox(height: 2.0),
-                  PostCaptionText(item: widget.item),
-                  if (widget.item.images.isNotEmpty) ...[
-                    const SizedBox(height: 10.0),
-                    PostMediaSection(item: widget.item, isDetail: false, onImageClick: widget.onImageClick),
-                  ],
-                  if (widget.item.locationTag != null && widget.item.locationTag!.isNotEmpty) ...[
-                    const SizedBox(height: 6.0),
+                ),
+              ],
+              const SizedBox(height: 8.0),
+              PostActionBar(
+                item: widget.item,
+                isLiked: _isLiked,
+                likesCount: _likesCount,
+                isReposted: _isReposted,
+                repostsCount: _repostsCount,
+                likeScaleAnim: _likeScaleAnim,
+                repostRotateAnim: _repostRotateAnim,
+                onLikeToggle: _handleLikeToggle,
+                onRepostToggle: _handleRepostToggle,
+                onPostClick: widget.onPostClick,
+                onShareClick: widget.onShareClick,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Part 1 of Multi-part Thread with Vertical Line Connector extending downward
+  Widget _buildPartOneWithConnector(BuildContext context) {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 44.0,
+            child: Column(
+              children: [
+                PostAuthorAvatar(
+                  seller: widget.item.seller,
+                  isFollowed: _isFollowed,
+                  onFollowToggle: _handleFollowToggle,
+                  onUserClick: () => widget.onUserClick?.call(widget.item.seller.username ?? widget.item.seller.name),
+                ),
+                const SizedBox(height: 6.0),
+                Expanded(
+                  child: Center(
+                    child: Container(
+                      width: 2.0,
+                      decoration: BoxDecoration(
+                        color: AppColors.cloudGray,
+                        borderRadius: BorderRadius.circular(1.0),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12.0),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                PostCardHeader(
+                  item: widget.item,
+                  isDetail: false,
+                  isFollowed: _isFollowed,
+                  onFollowToggle: _handleFollowToggle,
+                  onUserClick: widget.onUserClick,
+                  onTopicClick: widget.onTopicClick,
+                  onMoreOptionsClick: widget.onMoreOptionsClick,
+                  onPostClick: widget.onPostClick,
+                  onDeletePost: widget.onDeletePost,
+                ),
+                const SizedBox(height: 2.0),
+                PostCaptionText(item: widget.item),
+                if (widget.item.images.isNotEmpty) ...[
+                  const SizedBox(height: 10.0),
+                  PostMediaSection(item: widget.item, isDetail: false, onImageClick: widget.onImageClick),
+                ],
+                if (widget.item.locationTag != null && widget.item.locationTag!.isNotEmpty) ...[
+                  const SizedBox(height: 6.0),
+                  Text(
+                    widget.item.locationTag!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF64748B),
+                      letterSpacing: -0.1,
+                      height: 1.25,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 8.0),
+                PostActionBar(
+                  item: widget.item,
+                  isLiked: _isLiked,
+                  likesCount: _likesCount,
+                  isReposted: _isReposted,
+                  repostsCount: _repostsCount,
+                  likeScaleAnim: _likeScaleAnim,
+                  repostRotateAnim: _repostRotateAnim,
+                  onLikeToggle: _handleLikeToggle,
+                  onRepostToggle: _handleRepostToggle,
+                  onPostClick: widget.onPostClick,
+                  onShareClick: widget.onShareClick,
+                ),
+                const SizedBox(height: 8.0),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Chained Continuation Item connected via Continuous Vertical Thread Line
+  Widget _buildChainItemWithConnector(
+    BuildContext context,
+    ThreadChainItemModel chain, {
+    required bool isLast,
+  }) {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 44.0,
+            child: Column(
+              children: [
+                // Top connecting line from previous part into this avatar
+                Container(
+                  width: 2.0,
+                  height: 10.0,
+                  decoration: BoxDecoration(
+                    color: AppColors.cloudGray,
+                    borderRadius: BorderRadius.circular(1.0),
+                  ),
+                ),
+                // Chained Part Avatar (36x36 circular, matching continuation in Threads)
+                Container(
+                  width: 36.0,
+                  height: 36.0,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.border, width: 1.0),
+                  ),
+                  child: ClipOval(
+                    child: widget.item.seller.avatar.startsWith('assets/')
+                        ? Image.asset(
+                            widget.item.seller.avatar,
+                            width: 36.0,
+                            height: 36.0,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.network(
+                            widget.item.seller.avatar,
+                            width: 36.0,
+                            height: 36.0,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              color: AppColors.primaryPastel,
+                              child: Center(
+                                child: Text(
+                                  widget.item.seller.name.isNotEmpty
+                                      ? widget.item.seller.name[0].toUpperCase()
+                                      : 'U',
+                                  style: const TextStyle(
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                  ),
+                ),
+                if (!isLast) ...[
+                  const SizedBox(height: 6.0),
+                  Expanded(
+                    child: Center(
+                      child: Container(
+                        width: 2.0,
+                        decoration: BoxDecoration(
+                          color: AppColors.cloudGray,
+                          borderRadius: BorderRadius.circular(1.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(width: 12.0),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 4.0),
+                // Header for chained part
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          widget.item.seller.name,
+                          style: const TextStyle(
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF0F172A),
+                            letterSpacing: -0.2,
+                          ),
+                        ),
+                        if (widget.item.seller.isVerified) ...[
+                          const SizedBox(width: 4.0),
+                          const Icon(
+                            Icons.verified_rounded,
+                            size: 14.5,
+                            color: AppColors.metaBlue,
+                          ),
+                        ],
+                        const SizedBox(width: 6.0),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 1.5),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF1F5F9),
+                            borderRadius: BorderRadius.circular(4.0),
+                          ),
+                          child: Text(
+                            '${chain.partNumber}/${chain.totalParts}',
+                            style: const TextStyle(
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.graphite,
+                              letterSpacing: -0.1,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     Text(
-                      widget.item.locationTag!,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      chain.timestamp,
                       style: const TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF64748B),
-                        letterSpacing: -0.1,
-                        height: 1.25,
+                        fontSize: 13.0,
+                        color: AppColors.graphite,
+                        fontFeatures: [FontFeature.tabularFigures()],
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: 4.0),
+                Text(
+                  chain.caption,
+                  style: const TextStyle(
+                    fontSize: 14.5,
+                    height: 1.35,
+                    color: Color(0xFF0F172A),
+                  ),
+                ),
+                if (chain.images.isNotEmpty) ...[
                   const SizedBox(height: 8.0),
-                  PostActionBar(
-                    item: widget.item,
-                    isLiked: _isLiked,
-                    likesCount: _likesCount,
-                    isReposted: _isReposted,
-                    repostsCount: _repostsCount,
-                    likeScaleAnim: _likeScaleAnim,
-                    repostRotateAnim: _repostRotateAnim,
-                    onLikeToggle: _handleLikeToggle,
-                    onRepostToggle: _handleRepostToggle,
-                    onPostClick: widget.onPostClick,
-                    onShareClick: widget.onShareClick,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: chain.images.first.startsWith('assets/')
+                        ? Image.asset(
+                            chain.images.first,
+                            height: 180.0,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.network(
+                            chain.images.first,
+                            height: 180.0,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ],
-              ),
+                const SizedBox(height: 6.0),
+                // Minimalist engagement bar for chained continuation
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Row(
+                    children: [
+                      FeedHeartIcon(
+                        isLiked: chain.isLiked,
+                        size: 17.0,
+                        activeColor: const Color(0xFFF43F5E),
+                        inactiveColor: AppColors.ashGray,
+                      ),
+                      if (chain.likesCount > 0) ...[
+                        const SizedBox(width: 4.0),
+                        Text(
+                          '${chain.likesCount}',
+                          style: const TextStyle(
+                            fontSize: 12.0,
+                            color: AppColors.graphite,
+                            fontFeatures: [FontFeature.tabularFigures()],
+                          ),
+                        ),
+                      ],
+                      const SizedBox(width: 14.0),
+                      const FeedCommentIcon(
+                        size: 16.0,
+                        color: AppColors.ashGray,
+                      ),
+                      if (chain.commentsCount > 0) ...[
+                        const SizedBox(width: 4.0),
+                        Text(
+                          '${chain.commentsCount}',
+                          style: const TextStyle(
+                            fontSize: 12.0,
+                            color: AppColors.graphite,
+                            fontFeatures: [FontFeature.tabularFigures()],
+                          ),
+                        ),
+                      ],
+                      const SizedBox(width: 14.0),
+                      const FeedRepostIcon(
+                        isReposted: false,
+                        size: 17.0,
+                        inactiveColor: AppColors.ashGray,
+                      ),
+                      const SizedBox(width: 14.0),
+                      const FeedShareIcon(
+                        size: 16.0,
+                        color: AppColors.ashGray,
+                      ),
+                    ],
+                  ),
+                ),
+                if (!isLast) const SizedBox(height: 8.0),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -137,6 +137,16 @@ class _PostCommentItemState extends State<PostCommentItem> {
                   width: 36.0,
                   child: Column(
                     children: [
+                      if (widget.comment.threadPart != null) ...[
+                        Container(
+                          width: 2.0,
+                          height: 10.0,
+                          decoration: BoxDecoration(
+                            color: AppColors.cloudGray,
+                            borderRadius: BorderRadius.circular(1.0),
+                          ),
+                        ),
+                      ],
                       CommentAvatar(
                         avatarUrl: widget.comment.user.avatar,
                         name: widget.comment.user.name,
@@ -151,7 +161,7 @@ class _PostCommentItemState extends State<PostCommentItem> {
                             child: Container(
                               width: 1.8,
                               decoration: BoxDecoration(
-                                color: const Color(0xFFD1D5DB),
+                                color: AppColors.cloudGray,
                                 borderRadius: BorderRadius.circular(1.0),
                               ),
                             ),

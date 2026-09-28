@@ -4,11 +4,12 @@ import "package:flutter/services.dart";
 import "package:snapan_market/core/components/glass_toolbar_top.dart";
 import "package:snapan_market/core/navigation/app_slide_page_route.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
+import "package:snapan_market/features/feed/components/media_lightbox_dialog.dart";
 import "package:snapan_market/features/messages/components/chat_composer_bar.dart";
 import "package:snapan_market/features/messages/components/chat_product_card.dart";
 import "package:snapan_market/features/messages/models/chat_message_model.dart";
 import "package:snapan_market/features/messages/models/conversation_model.dart";
-import "package:snapan_market/features/messages/models/mock_messages_data.dart";
+import "package:snapan_market/features/messages/services/direct_messages_service.dart";
 import "package:snapan_market/features/profile/screens/profile_screen.dart";
 
 /// Layar ruang obrolan 1-on-1 Direct Messaging (1:1 ActiveChatOverlay.tsx)
@@ -31,20 +32,25 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.conversation.id == "17892348123791823") {
-      _messages = List.from(kInitialDimasMessages);
-    } else if (widget.conversation.id == "17845432127501402") {
-      _messages = List.from(kInitialSarahMessages);
+    final savedMessages = DirectMessagesService.instance.getMessages(widget.conversation.id);
+    if (savedMessages.isNotEmpty) {
+      _messages = List.from(savedMessages);
+    } else if (widget.conversation.lastMessage.trim().isNotEmpty) {
+      final initialMsg = ChatMessageModel(
+        id: "msg-${DateTime.now().millisecondsSinceEpoch}",
+        senderId: widget.conversation.isSender ? "saya" : widget.conversation.user.username,
+        text: widget.conversation.lastMessage.trim(),
+        timestamp: widget.conversation.timestamp,
+        isMe: widget.conversation.isSender,
+      );
+      _messages = [initialMsg];
+      DirectMessagesService.instance.addMessage(
+        widget.conversation.id,
+        initialMsg,
+        conversation: widget.conversation,
+      );
     } else {
-      _messages = [
-        ChatMessageModel(
-          id: "msg-init",
-          senderId: widget.conversation.user.username,
-          text: widget.conversation.lastMessage,
-          timestamp: widget.conversation.timestamp,
-          isMe: widget.conversation.isSender,
-        ),
-      ];
+      _messages = [];
     }
   }
 
@@ -82,6 +88,11 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
     setState(() {
       _messages.add(newMsg);
     });
+    DirectMessagesService.instance.addMessage(
+      widget.conversation.id,
+      newMsg,
+      conversation: widget.conversation,
+    );
     _scrollToBottom();
 
     // Auto-Reply simulation matching ActiveChatOverlay.tsx
@@ -97,6 +108,11 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
       setState(() {
         _messages.add(replyMsg);
       });
+      DirectMessagesService.instance.addMessage(
+        widget.conversation.id,
+        replyMsg,
+        conversation: widget.conversation,
+      );
       _scrollToBottom();
     });
   }
@@ -203,26 +219,37 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Container(
-                    width: 34.0,
-                    height: 34.0,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: const Color(0xFFF1F5F9),
-                      border: Border.all(
-                        color: const Color(0xFFE2E8F0),
-                        width: 0.8,
+                  GestureDetector(
+                    onTap: () {
+                      if (widget.conversation.user.avatar.isNotEmpty) {
+                        MediaLightboxDialog.show(
+                          context: context,
+                          images: [widget.conversation.user.avatar],
+                          initialIndex: 0,
+                        );
+                      }
+                    },
+                    child: Container(
+                      width: 34.0,
+                      height: 34.0,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xFFF1F5F9),
+                        border: Border.all(
+                          color: const Color(0xFFE2E8F0),
+                          width: 0.8,
+                        ),
                       ),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(17.0),
-                      child: Image.network(
-                        widget.conversation.user.avatar,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const Icon(
-                          Icons.person_rounded,
-                          color: AppColors.muted,
-                          size: 18.0,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(17.0),
+                        child: Image.network(
+                          widget.conversation.user.avatar,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => const Icon(
+                            Icons.person_rounded,
+                            color: AppColors.muted,
+                            size: 18.0,
+                          ),
                         ),
                       ),
                     ),

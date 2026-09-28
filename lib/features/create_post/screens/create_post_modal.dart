@@ -115,13 +115,6 @@ class _CreatePostModalState extends State<CreatePostModal> {
   bool _isSubmitting = false;
   bool _showSellingIntentBanner = false;
 
-  final List<String> _dummyImagesPool = [
-    'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80',
-    'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800&q=80',
-    'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80',
-    'https://images.unsplash.com/photo-1556742049-0a67e55722c6?w=800&q=80',
-  ];
-
   @override
   void initState() {
     super.initState();

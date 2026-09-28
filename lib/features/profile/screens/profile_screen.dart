@@ -19,8 +19,10 @@ import 'package:snapan_market/features/profile/components/profile_tab_bar.dart';
 import 'package:snapan_market/features/profile/components/profile_reply_thread_card.dart';
 import 'package:snapan_market/features/profile/components/profile_media_grid.dart';
 import 'package:snapan_market/features/profile/models/profile_user_model.dart';
-import 'package:snapan_market/features/profile/models/mock_profile_data.dart';
 import 'package:snapan_market/features/profile/screens/edit_profile_screen.dart';
+import 'package:snapan_market/features/messages/models/conversation_model.dart';
+import 'package:snapan_market/features/messages/screens/chat_conversation_screen.dart';
+import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
 
 
 /// Full Profile Screen matching ProfilePage.tsx 1:1
@@ -212,9 +214,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               link: p['link'] as String? ?? _user.link,
               isVerified: p['is_verified'] as bool? ?? false,
             );
-            if (targetPosts.isNotEmpty) {
-              _allUserPosts = targetPosts;
-            }
+            _allUserPosts = targetPosts;
           });
         }
       } catch (e) {
@@ -275,33 +275,21 @@ class ProfileScreenState extends State<ProfileScreen> {
       _allUserReplies = [];
     } else {
       final cleanUsername = widget.username!.replaceAll('@', '').trim();
-      // Find matching post to populate seller info
-      final matched = kMockMarketPosts.firstWhere(
-        (p) =>
-            p.seller.username?.toLowerCase() == cleanUsername.toLowerCase() ||
-            p.seller.name.toLowerCase().replaceAll(' ', '') == cleanUsername.toLowerCase(),
-        orElse: () => kMockMarketPosts.first,
-      );
-
       _user = ProfileUserModel(
-        id: matched.seller.id,
-        name: matched.seller.name,
-        username: matched.seller.username ?? cleanUsername,
-        avatar: matched.seller.avatar,
-        bio: 'Siswa SMKN 8 Jakarta · ${matched.seller.classGroup ?? 'PPLG'}',
-        classGroup: matched.seller.classGroup ?? 'XII PPLG 2',
-        tags: const ['Mobile Dev', 'UI/UX', 'Fotografi', 'Project PJBL'],
-        followersCount: 289,
-        soldCount: 42,
-        rating: 4.9,
-        isVerified: matched.seller.isVerified,
+        id: '',
+        name: cleanUsername,
+        username: cleanUsername,
+        avatar: '',
+        bio: '',
+        classGroup: '',
+        tags: const [],
+        followersCount: 0,
+        soldCount: 0,
+        rating: 5.0,
+        isVerified: false,
       );
 
-      _allUserPosts = kMockMarketPosts.where((p) {
-        return p.seller.username?.toLowerCase() == cleanUsername.toLowerCase() ||
-            p.seller.name.toLowerCase().replaceAll(' ', '') == cleanUsername.toLowerCase();
-      }).toList();
-
+      _allUserPosts = [];
       _allUserReplies = [];
     }
   }
@@ -485,13 +473,34 @@ class ProfileScreenState extends State<ProfileScreen> {
   }
 
 
+  void _handleAvatarTap() {
+    if (_user.avatar.trim().isEmpty) return;
+    MediaLightboxDialog.show(
+      context: context,
+      images: [_user.avatar],
+      initialIndex: 0,
+    );
+  }
+
   void _handleDirectMessage() {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Fitur pesan langsung dengan @${_user.username} akan segera hadir!'),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
+    final conv = ConversationModel(
+      id: 'conv_${_user.id.isNotEmpty ? _user.id : _user.username}',
+      user: ConversationUser(
+        name: _user.name,
+        username: _user.username,
+        avatar: _user.avatar,
+        classGroup: _user.classGroup,
+        isVerified: _user.isVerified,
+      ),
+      lastMessage: '',
+      timestamp: 'Baru saja',
+      unreadCount: 0,
+      isSender: true,
+    );
+    DirectMessagesService.instance.addOrUpdateConversation(conv);
+    Navigator.of(context).push(
+      AppSlidePageRoute(
+        builder: (_) => ChatConversationScreen(conversation: conv),
       ),
     );
   }
@@ -606,10 +615,10 @@ class ProfileScreenState extends State<ProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ProfileInfoHeader(
-
                   user: _user,
                   isOwnProfile: _isOwnProfile,
                   onEditInterests: _handleEditProfile,
+                  onAvatarTap: _handleAvatarTap,
                 ),
                 ProfileActionButtons(
                   isOwnProfile: _isOwnProfile,

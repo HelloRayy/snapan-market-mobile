@@ -19,14 +19,14 @@ class _ActivityScreenState extends State<ActivityScreen> {
   @override
   void initState() {
     super.initState();
-    _notifications = List.from(kMockNotifications);
+    _notifications = [];
     _loadLiveNotifications();
   }
 
   Future<void> _loadLiveNotifications() async {
     try {
       final data = await SupabaseService.instance.fetchNotifications();
-      if (data.isNotEmpty && mounted) {
+      if (mounted) {
         setState(() {
           _notifications = data.map((n) => ActivityNotification.fromJson(n)).toList();
         });

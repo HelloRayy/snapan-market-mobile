@@ -121,17 +121,16 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
             );
           }).toList();
         } else {
-          // Fallback to rich mock data if table has no posts yet
-          _posts = List<MarketPostModel>.from(kMockMarketPosts);
+          _posts = [];
         }
         _isLoading = false;
         _hasError = false;
       });
     } catch (e) {
-      debugPrint('Supabase fetch error, fallback to mock data: $e');
+      debugPrint('Supabase fetch error: $e');
       if (!mounted) return;
       setState(() {
-        _posts = List<MarketPostModel>.from(kMockMarketPosts);
+        _posts = [];
         _isLoading = false;
         _hasError = false;
       });
@@ -648,6 +647,52 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                           ),
                           child: const Text('Coba Lagi', style: TextStyle(fontWeight: FontWeight.w600)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            else if (posts.isEmpty)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 54.0,
+                          height: 54.0,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF1F5F9),
+                            borderRadius: BorderRadius.circular(18.0),
+                          ),
+                          child: const Icon(
+                            Icons.dynamic_feed_rounded,
+                            size: 28.0,
+                            color: Color(0xFF94A3B8),
+                          ),
+                        ),
+                        const SizedBox(height: 14.0),
+                        const Text(
+                          'Belum Ada Utas',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF0F172A),
+                          ),
+                        ),
+                        const SizedBox(height: 6.0),
+                        const Text(
+                          'Jadilah yang pertama membuat utas atau menjual karya di SMKN 8!',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 13.0,
+                            color: Color(0xFF64748B),
+                            height: 1.4,
+                          ),
                         ),
                       ],
                     ),

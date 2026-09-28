@@ -14,12 +14,14 @@ class ProfileInfoHeader extends StatelessWidget {
   final ProfileUserModel user;
   final bool isOwnProfile;
   final VoidCallback? onEditInterests;
+  final VoidCallback? onAvatarTap;
 
   const ProfileInfoHeader({
     super.key,
     required this.user,
     this.isOwnProfile = true,
     this.onEditInterests,
+    this.onAvatarTap,
   });
 
   @override
@@ -82,108 +84,105 @@ class ProfileInfoHeader extends StatelessWidget {
 
               const SizedBox(width: 14.0),
 
-              // Right Avatar (60x60px Apple HIG Standard)
-              Container(
-                width: 60.0,
-                height: 60.0,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x0A000000),
-                      blurRadius: 4.0,
-                      offset: Offset(0, 1),
-                    ),
-                  ],
-                ),
-                child: ClipOval(
-                  child: Image.network(
-                    user.avatar,
-                    width: 60.0,
-                    height: 60.0,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => Container(
-                      color: const Color(0xFFEEF0FF),
-                      child: Center(
-                        child: Text(
-                          user.name.isNotEmpty ? user.name[0].toUpperCase() : 'U',
-                          style: const TextStyle(
-                            fontSize: 22.0,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF3D38F5),
-                          ),
-                        ),
+              // Right Avatar (60x60px Apple HIG Standard with Zoom Viewer)
+              GestureDetector(
+                onTap: onAvatarTap,
+                child: Container(
+                  width: 60.0,
+                  height: 60.0,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x0A000000),
+                        blurRadius: 4.0,
+                        offset: Offset(0, 1),
                       ),
-                    ),
+                    ],
+                  ),
+                  child: ClipOval(
+                    child: user.avatar.isNotEmpty
+                        ? (user.avatar.startsWith('assets/')
+                            ? Image.asset(
+                                user.avatar,
+                                width: 60.0,
+                                height: 60.0,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.network(
+                                user.avatar,
+                                width: 60.0,
+                                height: 60.0,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, _, _) => _buildInitials(),
+                              ))
+                        : _buildInitials(),
                   ),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 10.0),
-
-          // Row 2: Bio Text
-          Text(
-            user.bio,
-            style: const TextStyle(
-              fontSize: 14.5,
-              fontWeight: FontWeight.normal,
-              color: Color(0xFF0F172A),
-              height: 1.35,
-              letterSpacing: -0.1,
+          if (user.bio.isNotEmpty) ...[
+            const SizedBox(height: 10.0),
+            Text(
+              user.bio,
+              style: const TextStyle(
+                fontSize: 14.5,
+                fontWeight: FontWeight.normal,
+                color: Color(0xFF0F172A),
+                height: 1.35,
+                letterSpacing: -0.1,
+              ),
             ),
-          ),
+          ] else if (isOwnProfile) ...[
+            const SizedBox(height: 8.0),
+            const Text(
+              'Ketuk Edit Profil untuk menambahkan bio Anda...',
+              style: TextStyle(
+                fontSize: 13.5,
+                fontStyle: FontStyle.italic,
+                color: Color(0xFF94A3B8),
+                height: 1.35,
+              ),
+            ),
+          ],
 
           const SizedBox(height: 10.0),
 
           // Row 3: Follower & Market Stats
           Row(
             children: [
-              // 3-Avatar Overlapping Stack (20x20px with white ring border)
-              SizedBox(
-                width: 44.0,
-                height: 20.0,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: 0,
-                      child: _buildMiniAvatar('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&q=80'),
+              if (user.followersCount > 0) ...[
+                // Followers Count
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                      fontSize: 14.0,
+                      color: Color(0xFF64748B),
                     ),
-                    Positioned(
-                      left: 12.0,
-                      child: _buildMiniAvatar('https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=60&q=80'),
-                    ),
-                    Positioned(
-                      left: 24.0,
-                      child: _buildMiniAvatar('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&q=80'),
-                    ),
-                  ],
+                    children: [
+                      TextSpan(
+                        text: '${user.followersCount} ',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF0F172A),
+                        ),
+                      ),
+                      const TextSpan(text: 'pengikut'),
+                    ],
+                  ),
                 ),
-              ),
-
-              const SizedBox(width: 4.0),
-
-              // Followers Count
-              RichText(
-                text: TextSpan(
-                  style: const TextStyle(
+              ] else ...[
+                const Text(
+                  '0 pengikut',
+                  style: TextStyle(
                     fontSize: 14.0,
                     color: Color(0xFF64748B),
                   ),
-                  children: [
-                    TextSpan(
-                      text: '${user.followersCount} ',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF0F172A),
-                      ),
-                    ),
-                    const TextSpan(text: 'pengikut'),
-                  ],
                 ),
-              ),
+              ],
 
               // Sold & Rating stats if applicable
               if (user.soldCount > 0) ...[
@@ -299,6 +298,22 @@ class ProfileInfoHeader extends StatelessWidget {
 
 
         ],
+      ),
+    );
+  }
+
+  Widget _buildInitials() {
+    return Container(
+      color: const Color(0xFFEEF0FF),
+      child: Center(
+        child: Text(
+          user.name.isNotEmpty ? user.name[0].toUpperCase() : 'U',
+          style: const TextStyle(
+            fontSize: 22.0,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF3D38F5),
+          ),
+        ),
       ),
     );
   }

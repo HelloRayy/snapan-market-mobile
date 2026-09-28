@@ -14,6 +14,7 @@ import "package:snapan_market/features/locations/screens/campus_locations_picker
 import "package:snapan_market/features/map/screens/campus_map_screen.dart";
 import "package:snapan_market/features/messages/models/conversation_model.dart";
 import "package:snapan_market/features/messages/screens/chat_conversation_screen.dart";
+import "package:snapan_market/features/messages/services/direct_messages_service.dart";
 import "package:snapan_market/features/profile/screens/profile_screen.dart";
 
 class CheckoutScreen extends StatefulWidget {
@@ -174,28 +175,28 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 iconLeft: const Icon(Icons.chat_bubble_outline_rounded, size: 18.0, color: Colors.white),
                 onPressed: () {
                   Navigator.of(ctx).pop();
+                  final conv = ConversationModel(
+                    id: "conv-${widget.post.id}",
+                    user: ConversationUser(
+                      name: widget.post.sellerName,
+                      username: widget.post.sellerUsername,
+                      avatar: widget.post.sellerAvatar,
+                      classGroup: widget.post.department,
+                      isVerified: widget.post.seller.isVerified,
+                    ),
+                    lastMessage: "Halo, saya tertarik dengan ${widget.post.title ?? 'produk ini'}",
+                    timestamp: "Baru saja",
+                    isSeller: true,
+                    productContext: ProductContext(
+                      title: widget.post.title ?? "Produk",
+                      price: formatRupiah(widget.post.price ?? 0),
+                      image: widget.post.imageUrls.isNotEmpty ? widget.post.imageUrls.first : null,
+                    ),
+                  );
+                  DirectMessagesService.instance.addOrUpdateConversation(conv);
                   Navigator.of(context).push(
                     AppSlidePageRoute(
-                      builder: (_) => ChatConversationScreen(
-                        conversation: ConversationModel(
-                          id: "conv-${widget.post.id}",
-                          user: ConversationUser(
-                            name: widget.post.sellerName,
-                            username: widget.post.sellerUsername,
-                            avatar: widget.post.sellerAvatar,
-                            classGroup: widget.post.department,
-                            isVerified: widget.post.seller.isVerified,
-                          ),
-                          lastMessage: "Halo, saya tertarik dengan ${widget.post.title ?? 'produk ini'}",
-                          timestamp: "Baru saja",
-                          isSeller: true,
-                          productContext: ProductContext(
-                            title: widget.post.title ?? "Produk",
-                            price: formatRupiah(widget.post.price ?? 0),
-                            image: widget.post.imageUrls.isNotEmpty ? widget.post.imageUrls.first : null,
-                          ),
-                        ),
-                      ),
+                      builder: (_) => ChatConversationScreen(conversation: conv),
                     ),
                   );
                 },
@@ -319,28 +320,28 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           );
                         },
                         onChatTap: () {
+                          final conv = ConversationModel(
+                            id: "conv-${widget.post.id}",
+                            user: ConversationUser(
+                              name: widget.post.sellerName,
+                              username: widget.post.sellerUsername,
+                              avatar: widget.post.sellerAvatar,
+                              classGroup: widget.post.department,
+                              isVerified: widget.post.seller.isVerified,
+                            ),
+                            lastMessage: "Halo, saya tertarik dengan ${widget.post.title ?? 'produk ini'}",
+                            timestamp: "Baru saja",
+                            isSeller: true,
+                            productContext: ProductContext(
+                              title: widget.post.title ?? "Produk",
+                              price: formatRupiah(widget.post.price ?? 0),
+                              image: widget.post.imageUrls.isNotEmpty ? widget.post.imageUrls.first : null,
+                            ),
+                          );
+                          DirectMessagesService.instance.addOrUpdateConversation(conv);
                           Navigator.of(context).push(
                             AppSlidePageRoute(
-                              builder: (_) => ChatConversationScreen(
-                                conversation: ConversationModel(
-                                  id: "conv-${widget.post.id}",
-                                  user: ConversationUser(
-                                    name: widget.post.sellerName,
-                                    username: widget.post.sellerUsername,
-                                    avatar: widget.post.sellerAvatar,
-                                    classGroup: widget.post.department,
-                                    isVerified: widget.post.seller.isVerified,
-                                  ),
-                                  lastMessage: "Halo, saya tertarik dengan ${widget.post.title ?? 'produk ini'}",
-                                  timestamp: "Baru saja",
-                                  isSeller: true,
-                                  productContext: ProductContext(
-                                    title: widget.post.title ?? "Produk",
-                                    price: formatRupiah(widget.post.price ?? 0),
-                                    image: widget.post.imageUrls.isNotEmpty ? widget.post.imageUrls.first : null,
-                                  ),
-                                ),
-                              ),
+                              builder: (_) => ChatConversationScreen(conversation: conv),
                             ),
                           );
                         },

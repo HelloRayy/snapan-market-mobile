@@ -155,28 +155,13 @@ class _SearchScreenState extends State<SearchScreen> {
   // Filtered matching posts
   List<MarketPost> _getMatchingPosts() {
     if (_searchQuery.trim().isEmpty) return [];
-    if (_liveMatchingPosts.isNotEmpty) return _liveMatchingPosts;
-    final q = _searchQuery.toLowerCase().trim();
-    return mockMarketPosts.where((post) {
-      final inTitle = post.title?.toLowerCase().contains(q) ?? false;
-      final inDesc = post.description.toLowerCase().contains(q);
-      final inSeller = post.sellerName.toLowerCase().contains(q);
-      final inDept = post.department.toLowerCase().contains(q);
-      final inCategory = post.category?.toLowerCase().contains(q) ?? false;
-      return inTitle || inDesc || inSeller || inDept || inCategory;
-    }).toList();
+    return _liveMatchingPosts;
   }
 
   // Filtered matching accounts
   List<SuggestedAccount> _getMatchingAccounts() {
     if (_searchQuery.trim().isEmpty) return _accounts;
-    if (_liveMatchingAccounts.isNotEmpty) return _liveMatchingAccounts;
-    final q = _searchQuery.toLowerCase().trim();
-    return _accounts.where((acc) {
-      return acc.username.toLowerCase().contains(q) ||
-          acc.fullName.toLowerCase().contains(q) ||
-          acc.bio.toLowerCase().contains(q);
-    }).toList();
+    return _liveMatchingAccounts;
   }
 
   @override

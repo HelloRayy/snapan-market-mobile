@@ -13,6 +13,11 @@ import 'package:snapan_market/features/feed/components/post_submenu_popover.dart
 import 'package:snapan_market/features/feed/components/sticky_buy_bar.dart';
 import 'package:snapan_market/features/feed/components/media_lightbox_dialog.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
+import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
+import 'package:snapan_market/core/utils/formatters.dart';
+import 'package:snapan_market/features/messages/models/conversation_model.dart';
+import 'package:snapan_market/features/messages/screens/chat_conversation_screen.dart';
+import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
 
 /// PostDetailScreen
 /// 100% Sliced 1:1 from Web React PostDetailPage.tsx
@@ -567,9 +572,30 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     stockCount: _post.stock,
                     onBuyClick: _handleBuySheet,
                     onChatClick: () {
-                      setState(() {
-                        _isCommentingActive = true;
-                      });
+                      final conv = ConversationModel(
+                        id: 'conv-${_post.id}',
+                        user: ConversationUser(
+                          name: _post.seller.name,
+                          username: _post.seller.username ?? _post.seller.name.toLowerCase().replaceAll(' ', ''),
+                          avatar: _post.seller.avatar,
+                          classGroup: _post.seller.classGroup,
+                          isVerified: _post.seller.isVerified,
+                        ),
+                        lastMessage: 'Halo, saya tertarik dengan ${_post.title ?? 'produk ini'}',
+                        timestamp: 'Baru saja',
+                        isSeller: true,
+                        productContext: ProductContext(
+                          title: _post.title ?? 'Produk',
+                          price: formatRupiah(_post.price ?? 0),
+                          image: _post.images.isNotEmpty ? _post.images.first : null,
+                        ),
+                      );
+                      DirectMessagesService.instance.addOrUpdateConversation(conv);
+                      Navigator.of(context).push(
+                        AppSlidePageRoute(
+                          builder: (_) => ChatConversationScreen(conversation: conv),
+                        ),
+                      );
                     },
                   )
                 : CommentInputBar(

@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/features/search/models/search_models.dart";
 
 class SuggestedAccountTile extends StatelessWidget {
@@ -88,7 +89,7 @@ class SuggestedAccountTile extends StatelessWidget {
                         const Icon(
                           Icons.verified_rounded,
                           size: 15.0,
-                          color: Color(0xFF1D64EC),
+                          color: AppColors.verifiedBlue,
                         ),
                       ],
                     ],

@@ -548,8 +548,8 @@ class _MarketPostCardState extends State<MarketPostCard>
                           const SizedBox(width: 4.0),
                           const Icon(
                             Icons.verified_rounded,
-                            size: 14.5,
-                            color: AppColors.metaBlue,
+                            size: 15.0,
+                            color: AppColors.verifiedBlue,
                           ),
                         ],
                         const SizedBox(width: 6.0),

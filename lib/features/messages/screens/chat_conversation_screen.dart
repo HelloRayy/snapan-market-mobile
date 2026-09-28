@@ -300,8 +300,8 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                           const SizedBox(width: 3.5),
                           const Icon(
                             Icons.verified_rounded,
-                            size: 14.0,
-                            color: Color(0xFF008BFF),
+                            size: 14.5,
+                            color: AppColors.verifiedBlue,
                           ),
                         ],
                       ],

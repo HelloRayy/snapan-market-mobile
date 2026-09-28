@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/string_utils.dart';
 import 'package:snapan_market/features/profile/models/profile_user_model.dart';
 
@@ -62,7 +63,7 @@ class ProfileInfoHeader extends StatelessWidget {
                           const Icon(
                             Icons.verified_rounded,
                             size: 19.0,
-                            color: Color(0xFF1D64EC),
+                            color: AppColors.verifiedBlue,
                           ),
                         ],
                       ],

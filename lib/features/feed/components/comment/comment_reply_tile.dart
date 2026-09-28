@@ -186,7 +186,7 @@ class CommentReplyTile extends StatelessWidget {
                 const Icon(
                   Icons.verified_rounded,
                   size: 14.5,
-                  color: AppColors.primary,
+                  color: AppColors.verifiedBlue,
                 ),
               ],
               if (reply.user.isAuthor) ...[

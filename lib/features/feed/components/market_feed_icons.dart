@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// 1. Lucide-Style Heart Icon (Active: Solid Rose, Inactive: Sleek Outline)
 class FeedHeartIcon extends StatelessWidget {
@@ -479,7 +480,7 @@ class VerifiedBadgeIcon extends StatelessWidget {
     return Icon(
       Icons.verified_rounded,
       size: size,
-      color: color ?? const Color(0xFF3D38F5),
+      color: color ?? AppColors.verifiedBlue,
     );
   }
 }

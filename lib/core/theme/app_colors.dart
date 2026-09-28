@@ -44,7 +44,8 @@ class AppColors {
   static const Color cloudGray = Color(0xFFD5D5D5);
   static const Color ashGray = Color(0xFF969696);
   static const Color graphite = Color(0xFF424242);
-  static const Color metaBlue = Color(0xFF385898);
+  static const Color metaBlue = Color(0xFF1D64EC);
+  static const Color verifiedBlue = Color(0xFF1D64EC);
 
   // Gradients
   static const LinearGradient authGradient = LinearGradient(

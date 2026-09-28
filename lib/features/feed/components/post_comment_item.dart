@@ -320,7 +320,7 @@ class _PostCommentItemState extends State<PostCommentItem> {
                 const Icon(
                   Icons.verified_rounded,
                   size: 14.5,
-                  color: AppColors.primary,
+                  color: AppColors.verifiedBlue,
                 ),
               ],
               if (widget.comment.user.isAuthor) ...[

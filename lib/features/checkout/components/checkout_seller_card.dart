@@ -74,7 +74,7 @@ class CheckoutSellerCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 4.0),
-                      const Icon(Icons.verified, size: 14.0, color: AppColors.primary),
+                      const Icon(Icons.verified_rounded, size: 14.5, color: AppColors.verifiedBlue),
                     ],
                   ),
                   const SizedBox(height: 2.0),

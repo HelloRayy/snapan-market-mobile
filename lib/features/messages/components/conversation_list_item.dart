@@ -134,8 +134,8 @@ class ConversationListItem extends StatelessWidget {
                           const SizedBox(width: 4.0),
                           const Icon(
                             Icons.verified_rounded,
-                            size: 14.0,
-                            color: azurePrimary, // pen.dev syXho #008BFF
+                            size: 14.5,
+                            color: AppColors.verifiedBlue,
                           ),
                         ],
                       ],

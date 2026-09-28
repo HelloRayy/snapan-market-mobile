@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/profile/models/profile_user_model.dart';
 
@@ -114,7 +115,7 @@ class _ProfileReplyThreadCardState extends State<ProfileReplyThreadCard> {
                             ),
                             if (parent.seller.isVerified) ...[
                               const SizedBox(width: 3.0),
-                              const Icon(Icons.verified_rounded, size: 14.0, color: Color(0xFF1D64EC)),
+                              const Icon(Icons.verified_rounded, size: 14.0, color: AppColors.verifiedBlue),
                             ],
                             const SizedBox(width: 4.0),
                             Text(
@@ -240,7 +241,7 @@ class _ProfileReplyThreadCardState extends State<ProfileReplyThreadCard> {
                           ),
                           if (reply.user.isVerified) ...[
                             const SizedBox(width: 3.0),
-                            const Icon(Icons.verified_rounded, size: 14.0, color: Color(0xFF1D64EC)),
+                            const Icon(Icons.verified_rounded, size: 14.0, color: AppColors.verifiedBlue),
                           ],
                           const SizedBox(width: 4.0),
                           Text(

@@ -119,7 +119,7 @@ export const MarketPostCard = memo<MarketPostCardProps>(function MarketPostCard(
   return (
     <article
       onClick={() => onPostClick?.(item)}
-      className={`w-full border-b border-neutral-200 bg-pure-white hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none overflow-x-hidden feed-card-perf ${
+      className={`w-full border-b border-[#d5d5d5] bg-pure-white hover:bg-neutral-50/50 transition-colors cursor-pointer font-gt-standard select-none overflow-x-hidden feed-card-perf ${
         variant === 'detail' ? 'px-3.5 pt-3 pb-3.5' : 'px-3.5 py-3'
       }`}
     >

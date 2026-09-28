@@ -92,7 +92,7 @@ export const PostCardHeader: React.FC<PostCardHeaderProps> = ({
 
       <div className="flex items-center gap-1.5 shrink-0 ml-auto leading-none">
         <span
-          className="text-[13px] font-normal text-neutral-400 whitespace-nowrap tabular-nums cursor-default select-none leading-none"
+          className="text-[13px] font-normal text-[#969696] whitespace-nowrap tabular-nums cursor-default select-none leading-none"
           title={formatSmartTimestamp(item.timestamp).full}
         >
           {formatSmartTimestamp(item.timestamp).display}
@@ -106,10 +106,10 @@ export const PostCardHeader: React.FC<PostCardHeaderProps> = ({
             aria-expanded={isMenuOpen}
             aria-controls={`post-options-menu-${item.id}`}
             onClick={onToggleMenu}
-            className="w-5 h-5 flex items-center justify-center rounded-full hover:bg-neutral-100 text-neutral-400 hover:text-slate-700 transition-colors cursor-pointer"
+            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[#efefef] text-[#969696] hover:text-[#000000] active:scale-90 transition-all cursor-pointer"
             aria-label="Opsi postingan lainnya"
           >
-            <MoreHorizontal className="w-4 h-4" />
+            <MoreHorizontal className="w-[18px] h-[18px]" />
           </button>
         </div>
       </div>

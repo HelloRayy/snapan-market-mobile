@@ -33,7 +33,7 @@ export const FormattedText: React.FC<FormattedTextProps> = ({
       if (!part) return null;
       const key = `${lineKey}-${index}`;
 
-      // 1. @mention Tag (Brand Blue with Medium font-weight like WhatsApp/Threads)
+      // 1. @mention Tag (Meta Blue with Medium font-weight like Threads)
       if (part.startsWith('@')) {
         const username = part.slice(1);
         return (
@@ -45,7 +45,7 @@ export const FormattedText: React.FC<FormattedTextProps> = ({
                 onMentionClick(username);
               }
             }}
-            className="font-medium text-[#1d64ec] hover:underline cursor-pointer select-text"
+            className="font-medium text-[#385898] hover:underline cursor-pointer select-text"
           >
             {part}
           </span>
@@ -64,7 +64,7 @@ export const FormattedText: React.FC<FormattedTextProps> = ({
                 onHashtagClick(tag);
               }
             }}
-            className="font-semibold text-[#1d64ec] hover:underline cursor-pointer select-text"
+            className="font-semibold text-[#385898] hover:underline cursor-pointer select-text"
           >
             {part}
           </span>
@@ -80,7 +80,7 @@ export const FormattedText: React.FC<FormattedTextProps> = ({
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="text-[#1d64ec] hover:underline break-all select-text"
+            className="text-[#385898] hover:underline break-all select-text"
           >
             {part}
           </a>

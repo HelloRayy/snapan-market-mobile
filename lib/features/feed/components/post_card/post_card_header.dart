@@ -1,7 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
+import 'package:snapan_market/features/feed/components/delete_post_bottom_sheet.dart';
 import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
 import 'package:snapan_market/features/feed/components/post_card/post_author_avatar.dart';
 import 'package:snapan_market/features/feed/components/post_submenu_popover.dart';
@@ -17,6 +19,7 @@ class PostCardHeader extends StatelessWidget {
   final ValueChanged<String>? onTopicClick;
   final VoidCallback? onMoreOptionsClick;
   final ValueChanged<MarketPostModel>? onPostClick;
+  final ValueChanged<MarketPostModel>? onDeletePost;
 
   const PostCardHeader({
     super.key,
@@ -28,22 +31,41 @@ class PostCardHeader extends StatelessWidget {
     this.onTopicClick,
     this.onMoreOptionsClick,
     this.onPostClick,
+    this.onDeletePost,
   });
 
-  void _showOptionsMenu(BuildContext context, [Offset? tapPosition]) {
+  void _showOptionsMenu(BuildContext context, [Offset? tapPosition]) async {
     if (onMoreOptionsClick != null) {
       onMoreOptionsClick!();
       return;
     }
 
+    final currentUser = SupabaseService.instance.currentUser;
+    final bool isOwner = currentUser != null && (currentUser.id == item.seller.id);
+    final bool isAdmin = await SupabaseService.instance.isCurrentUserAdmin();
+
+    if (!context.mounted) return;
+
     PostSubmenuPopover.show(
       context: context,
       post: item,
       isSaved: item.isSaved,
+      isOwner: isOwner,
+      isAdmin: isAdmin,
       position: tapPosition,
       onToggleSave: () {
         final updated = item.copyWith(isSaved: !item.isSaved);
         onPostClick?.call(updated);
+      },
+      onDeletePost: () async {
+        final confirmed = await DeletePostBottomSheet.show(
+          context,
+          post: item,
+          isAdmin: isAdmin && !isOwner,
+        );
+        if (confirmed == true && context.mounted) {
+          onDeletePost?.call(item);
+        }
       },
       onHidePost: () {},
       onMuteAuthor: () {},

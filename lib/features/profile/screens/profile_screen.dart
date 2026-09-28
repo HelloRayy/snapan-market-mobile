@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:snapan-market/core/navigation/app_slide_page_route.dart';
+import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/auth/screens/auth_screen.dart';
@@ -268,13 +268,67 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _handlePostClick(MarketPostModel post) {
-    HapticFeedback.lightImpact();
-    Navigator.of(context).push(
-      AppSlidePageRoute(
-        builder: (_) => PostDetailScreen(post: post),
+  Future<void> _handleDeletePost(MarketPostModel post) async {
+    final int existingIndex = _allUserPosts.indexWhere((p) => p.id == post.id);
+    if (existingIndex == -1) return;
+
+    // 1. Optimistic removal from profile posts list
+    setState(() {
+      _allUserPosts.removeAt(existingIndex);
+    });
+
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Postingan berhasil dihapus'),
+        behavior: SnackBarBehavior.floating,
+        duration: Duration(seconds: 2),
       ),
     );
+
+    // 2. Perform backend deletion
+    try {
+      final isAdmin = await SupabaseService.instance.isCurrentUserAdmin();
+      final isOwner = SupabaseService.instance.currentUser?.id == post.seller.id;
+      await SupabaseService.instance.deletePost(post.id, asAdmin: isAdmin && !isOwner);
+    } catch (e) {
+      debugPrint('Error deleting post in profile: $e');
+      if (mounted) {
+        setState(() {
+          _allUserPosts.insert(existingIndex.clamp(0, _allUserPosts.length), post);
+        });
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Gagal menghapus postingan. Silakan coba lagi.'),
+            backgroundColor: Color(0xFFEF4444),
+            behavior: SnackBarBehavior.floating,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+  }
+
+  void _handlePostClick(MarketPostModel post) async {
+    HapticFeedback.lightImpact();
+    final result = await Navigator.of(context).push(
+      AppSlidePageRoute(
+        builder: (_) => PostDetailScreen(
+          post: post,
+          onDeletePost: _handleDeletePost,
+        ),
+      ),
+    );
+
+    if (result is Map && result['deleted'] == true) {
+      final postId = result['postId'] as String?;
+      if (postId != null) {
+        setState(() {
+          _allUserPosts.removeWhere((p) => p.id == postId);
+        });
+      }
+    }
   }
 
   void _handleLikeToggle(MarketPostModel item) {
@@ -384,7 +438,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Profil berhasil diperbarui ✨'),
+          content: Text('Profil berhasil diperbarui'),
           duration: Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
         ),
@@ -566,6 +620,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                     onLikeToggle: _handleLikeToggle,
                     onRepostToggle: _handleRepostToggle,
                     onImageClick: _handleImageClick,
+                    onDeletePost: _handleDeletePost,
                   );
                 },
               )

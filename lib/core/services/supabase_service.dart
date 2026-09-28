@@ -239,16 +239,48 @@ class SupabaseService {
     }
   }
 
-  /// Delete a post created by current user
-  Future<void> deletePost(String postId) async {
+  bool? _isAdminCache;
+  String? _isAdminCachedUserId;
+
+  /// Check if the currently logged-in user has an admin role
+  Future<bool> isCurrentUserAdmin() async {
+    final user = currentUser;
+    if (user == null) return false;
+    if (_isAdminCachedUserId == user.id && _isAdminCache != null) {
+      return _isAdminCache!;
+    }
+
+    try {
+      final res = await client
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .maybeSingle();
+
+      final role = res?['role'] as String?;
+      _isAdminCache = role == 'admin';
+      _isAdminCachedUserId = user.id;
+      return _isAdminCache!;
+    } catch (e) {
+      debugPrint('Error checking admin status: $e');
+      return false;
+    }
+  }
+
+  /// Delete a post created by current user, or any post if caller is admin
+  Future<void> deletePost(String postId, {bool asAdmin = false}) async {
     final user = currentUser;
     if (user == null) return;
 
     try {
-      await client
-          .from('market_posts')
-          .delete()
-          .match({'id': postId, 'seller_id': user.id});
+      if (asAdmin) {
+        await client.from('market_posts').delete().eq('id', postId);
+      } else {
+        await client
+            .from('market_posts')
+            .delete()
+            .match({'id': postId, 'seller_id': user.id});
+      }
     } catch (e) {
       debugPrint('Error deletePost: $e');
       rethrow;

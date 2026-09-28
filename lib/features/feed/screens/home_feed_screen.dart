@@ -413,8 +413,51 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     }
   }
 
-  void _handlePostClick(MarketPostModel item) {
-    Navigator.push(
+  Future<void> _handleDeletePost(MarketPostModel post) async {
+    final int existingIndex = _posts.indexWhere((p) => p.id == post.id);
+    if (existingIndex == -1) return;
+
+    // 1. Optimistic removal from feed state
+    setState(() {
+      _posts.removeAt(existingIndex);
+    });
+
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Postingan berhasil dihapus'),
+        behavior: SnackBarBehavior.floating,
+        duration: Duration(seconds: 2),
+      ),
+    );
+
+    // 2. Perform backend deletion in Supabase
+    try {
+      final isAdmin = await SupabaseService.instance.isCurrentUserAdmin();
+      final isOwner = SupabaseService.instance.currentUser?.id == post.seller.id;
+      await SupabaseService.instance.deletePost(post.id, asAdmin: isAdmin && !isOwner);
+    } catch (e) {
+      debugPrint('Error deleting post: $e');
+      // Rollback on failure
+      if (mounted) {
+        setState(() {
+          _posts.insert(existingIndex.clamp(0, _posts.length), post);
+        });
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Gagal menghapus postingan. Silakan coba lagi.'),
+            backgroundColor: Color(0xFFEF4444),
+            behavior: SnackBarBehavior.floating,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+  }
+
+  void _handlePostClick(MarketPostModel item) async {
+    final result = await Navigator.push(
       context,
       AppSlidePageRoute(
         builder: (context) => PostDetailScreen(
@@ -429,9 +472,21 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
             }
           },
           onRepostToggle: _handleRepostToggle,
+          onDeletePost: (deletedPost) {
+            _handleDeletePost(deletedPost);
+          },
         ),
       ),
     );
+
+    if (result is Map && result['deleted'] == true) {
+      final postId = result['postId'] as String?;
+      if (postId != null) {
+        setState(() {
+          _posts.removeWhere((p) => p.id == postId);
+        });
+      }
+    }
   }
 
   void _handleTopicClick(String topic) {
@@ -592,6 +647,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                     onTopicClick: _handleTopicClick,
                     onUserClick: _handleUserClick,
                     onImageClick: _handleImageClick,
+                    onDeletePost: _handleDeletePost,
                   );
                 },
               ),

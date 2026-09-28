@@ -21,6 +21,7 @@ class MarketPostCard extends StatefulWidget {
   final ValueChanged<String>? onTopicClick;
   final ValueChanged<String>? onUserClick;
   final void Function(MarketPostModel item, int imageIndex)? onImageClick;
+  final ValueChanged<MarketPostModel>? onDeletePost;
   final VoidCallback? onMoreOptionsClick;
   final String variant; // 'feed' | 'detail'
 
@@ -36,6 +37,7 @@ class MarketPostCard extends StatefulWidget {
     this.onUserClick,
     this.onImageClick,
     this.onMoreOptionsClick,
+    this.onDeletePost,
     this.variant = 'feed',
   });
 
@@ -204,6 +206,7 @@ class _MarketPostCardState extends State<MarketPostCard>
               onTopicClick: widget.onTopicClick,
               onMoreOptionsClick: widget.onMoreOptionsClick,
               onPostClick: widget.onPostClick,
+              onDeletePost: widget.onDeletePost,
             ),
             const SizedBox(height: 6.0),
             PostCaptionText(item: widget.item),
@@ -280,6 +283,7 @@ class _MarketPostCardState extends State<MarketPostCard>
                     onTopicClick: widget.onTopicClick,
                     onMoreOptionsClick: widget.onMoreOptionsClick,
                     onPostClick: widget.onPostClick,
+                    onDeletePost: widget.onDeletePost,
                   ),
                   const SizedBox(height: 2.0),
                   PostCaptionText(item: widget.item),

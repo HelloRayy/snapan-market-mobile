@@ -7,6 +7,7 @@ import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/feed/components/buy_bottom_sheet.dart';
 import 'package:snapan_market/features/feed/components/comment_input_bar.dart';
 import 'package:snapan_market/features/feed/components/market_post_card.dart';
+import 'package:snapan_market/features/feed/components/delete_post_bottom_sheet.dart';
 import 'package:snapan_market/features/feed/components/post_comment_item.dart';
 import 'package:snapan_market/features/feed/components/post_submenu_popover.dart';
 import 'package:snapan_market/features/feed/components/sticky_buy_bar.dart';
@@ -30,6 +31,7 @@ class PostDetailScreen extends StatefulWidget {
   final ValueChanged<MarketPostModel>? onLikeToggle;
   final ValueChanged<MarketPostModel>? onBookmarkToggle;
   final ValueChanged<MarketPostModel>? onRepostToggle;
+  final ValueChanged<MarketPostModel>? onDeletePost;
 
   const PostDetailScreen({
     super.key,
@@ -37,6 +39,7 @@ class PostDetailScreen extends StatefulWidget {
     this.onLikeToggle,
     this.onBookmarkToggle,
     this.onRepostToggle,
+    this.onDeletePost,
   });
 
   @override
@@ -258,6 +261,31 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
   }
 
+  Future<void> _confirmAndDeletePost() async {
+    final currentUser = SupabaseService.instance.currentUser;
+    final bool isOwner = currentUser != null && (currentUser.id == _post.seller.id);
+    final bool isAdmin = await SupabaseService.instance.isCurrentUserAdmin();
+
+    if (!mounted) return;
+
+    final confirmed = await DeletePostBottomSheet.show(
+      context,
+      post: _post,
+      isAdmin: isAdmin && !isOwner,
+    );
+
+    if (confirmed == true && mounted) {
+      widget.onDeletePost?.call(_post);
+      Navigator.of(context).pop({'deleted': true, 'postId': _post.id});
+
+      try {
+        await SupabaseService.instance.deletePost(_post.id, asAdmin: isAdmin && !isOwner);
+      } catch (e) {
+        debugPrint('Error deleting post from detail: $e');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authorUsername = _post.seller.username ?? _post.seller.name;
@@ -276,10 +304,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
             tooltip: 'Bagikan postingan',
             onTap: () {
               HapticFeedback.lightImpact();
+              Clipboard.setData(ClipboardData(text: 'https://snapan.id/post/${_post.id}'));
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Tautan postingan berhasil disalin 🔗'),
+                  content: Text('Tautan postingan berhasil disalin'),
                   behavior: SnackBarBehavior.floating,
                   duration: Duration(seconds: 2),
                 ),
@@ -289,12 +318,20 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           GlassToolbarAction(
             icon: Icons.more_horiz_rounded,
             tooltip: 'Menu lainnya',
-            onTap: () {
+            onTap: () async {
               HapticFeedback.lightImpact();
+              final currentUser = SupabaseService.instance.currentUser;
+              final bool isOwner = currentUser != null && (currentUser.id == _post.seller.id);
+              final bool isAdmin = await SupabaseService.instance.isCurrentUserAdmin();
+
+              if (!context.mounted) return;
+
               PostSubmenuPopover.show(
                 context: context,
                 post: _post,
                 isSaved: _post.isSaved,
+                isOwner: isOwner,
+                isAdmin: isAdmin,
                 onToggleSave: () {
                   final nextSaved = !_post.isSaved;
                   setState(() {
@@ -303,6 +340,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   SupabaseService.instance.togglePostBookmark(_post.id, !nextSaved);
                   widget.onBookmarkToggle?.call(_post);
                 },
+                onDeletePost: _confirmAndDeletePost,
               );
             },
           ),
@@ -342,6 +380,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     });
                     widget.onRepostToggle?.call(updated);
                   },
+                  onDeletePost: (_) => _confirmAndDeletePost(),
                   onImageClick: (item, idx) => _handleImageClick(item.images, idx),
                 ),
 

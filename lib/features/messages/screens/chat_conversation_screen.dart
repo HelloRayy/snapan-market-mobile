@@ -94,27 +94,6 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
       conversation: widget.conversation,
     );
     _scrollToBottom();
-
-    // Auto-Reply simulation matching ActiveChatOverlay.tsx
-    Future.delayed(const Duration(milliseconds: 1200), () {
-      if (!mounted) return;
-      final replyMsg = ChatMessageModel(
-        id: "reply-${DateTime.now().millisecondsSinceEpoch}",
-        senderId: widget.conversation.user.username,
-        text: "Halo! Pesan kamu sudah diterima yaa 👍 Btw barangnya masih ready dan bisa COD di area sekolah!",
-        timestamp: timeStr,
-        isMe: false,
-      );
-      setState(() {
-        _messages.add(replyMsg);
-      });
-      DirectMessagesService.instance.addMessage(
-        widget.conversation.id,
-        replyMsg,
-        conversation: widget.conversation,
-      );
-      _scrollToBottom();
-    });
   }
 
   void _handleViewProfile() {

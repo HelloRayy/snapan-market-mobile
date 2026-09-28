@@ -18,6 +18,15 @@ export interface SuggestedAccount {
 
 const INITIAL_SUGGESTED_ACCOUNTS: SuggestedAccount[] = [
   {
+    id: '0',
+    username: 'snaps',
+    fullName: 'Snaps Developer',
+    avatar: '/logo/smk8.png',
+    isVerified: true,
+    bio: 'Come see what Snapanians are talking about.',
+    followersCount: '12,8 rb pengikut',
+  },
+  {
     id: '1',
     username: 'growthflo',
     fullName: 'Flo',

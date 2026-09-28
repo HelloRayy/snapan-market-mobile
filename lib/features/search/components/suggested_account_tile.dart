@@ -38,18 +38,25 @@ class SuggestedAccountTile extends StatelessWidget {
                 ],
               ),
               child: ClipOval(
-                child: Image.network(
-                  account.avatar,
-                  width: 40.0,
-                  height: 40.0,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    width: 40.0,
-                    height: 40.0,
-                    color: const Color(0xFFE2E8F0),
-                    child: const Icon(Icons.person, color: Color(0xFF94A3B8)),
-                  ),
-                ),
+                child: account.avatar.startsWith('assets/')
+                    ? Image.asset(
+                        account.avatar,
+                        width: 40.0,
+                        height: 40.0,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.network(
+                        account.avatar,
+                        width: 40.0,
+                        height: 40.0,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          width: 40.0,
+                          height: 40.0,
+                          color: const Color(0xFFE2E8F0),
+                          child: const Icon(Icons.person, color: Color(0xFF94A3B8)),
+                        ),
+                      ),
               ),
             ),
             const SizedBox(width: 12.0),

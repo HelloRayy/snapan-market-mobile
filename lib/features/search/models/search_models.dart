@@ -56,6 +56,15 @@ class TrendingTag {
 
 const List<SuggestedAccount> kInitialSuggestedAccounts = [
   SuggestedAccount(
+    id: "0",
+    username: "snaps",
+    fullName: "Snaps Developer",
+    avatar: "assets/logo/smk8.png",
+    isVerified: true,
+    bio: "Come see what Snapanians are talking about.",
+    followersCount: "12,8 rb pengikut",
+  ),
+  SuggestedAccount(
     id: "1",
     username: "growthflo",
     fullName: "Flo",

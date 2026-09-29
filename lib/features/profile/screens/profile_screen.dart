@@ -38,6 +38,7 @@ import 'package:snapan_market/features/messages/services/direct_messages_service
 /// - Live search query filtering across posts, replies, and media
 class ProfileScreen extends StatefulWidget {
   final String? username;
+  final ProfileUserModel? initialUser;
   final VoidCallback? onBack;
   final VoidCallback? onOpenMenu;
   final bool showAppBar;
@@ -45,6 +46,7 @@ class ProfileScreen extends StatefulWidget {
   const ProfileScreen({
     super.key,
     this.username,
+    this.initialUser,
     this.onBack,
     this.onOpenMenu,
     this.showAppBar = true,
@@ -298,20 +300,25 @@ class ProfileScreenState extends State<ProfileScreen> {
       }
       _allUserReplies = [];
     } else {
-      final cleanUsername = widget.username!.replaceAll('@', '').trim();
-      _user = ProfileUserModel(
-        id: '',
-        name: cleanUsername,
-        username: cleanUsername,
-        avatar: '',
-        bio: '',
-        classGroup: '',
-        tags: const [],
-        followersCount: 0,
-        soldCount: 0,
-        rating: 5.0,
-        isVerified: false,
-      );
+      if (widget.initialUser != null) {
+        _user = widget.initialUser!;
+        _isLoading = false;
+      } else {
+        final cleanUsername = (widget.username ?? 'siswa').replaceAll('@', '').trim();
+        _user = ProfileUserModel(
+          id: '',
+          name: cleanUsername,
+          username: cleanUsername,
+          avatar: '',
+          bio: '',
+          classGroup: '',
+          tags: const [],
+          followersCount: 0,
+          soldCount: 0,
+          rating: 5.0,
+          isVerified: false,
+        );
+      }
 
       _allUserPosts = [];
       _allUserReplies = [];

@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/services/follow_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
 import 'package:snapan_market/features/feed/components/post_card/post_card.dart';
@@ -158,34 +159,31 @@ class _MarketPostCardState extends State<MarketPostCard>
     widget.onRepostToggle?.call(updated);
   }
 
-  void _handleFollowToggle() {
+  void _handleFollowToggle() async {
     HapticFeedback.lightImpact();
-    setState(() => _isFollowed = !_isFollowed);
-
-    if (widget.onFollowToggle != null) {
-      widget.onFollowToggle!(widget.item);
-    } else {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isFollowed
-                ? 'Mengikuti ${widget.item.seller.name}'
-                : 'Batal mengikuti ${widget.item.seller.name}',
-          ),
-          duration: const Duration(seconds: 1),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    }
+    await FollowService.instance.toggleFollow(
+      targetUserId: widget.item.seller.id,
+      targetUsername: widget.item.seller.username,
+    );
+    widget.onFollowToggle?.call(widget.item);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.variant == 'detail') {
-      return _buildDetailCard(context);
-    }
-    return _buildFeedCard(context);
+    return ListenableBuilder(
+      listenable: FollowService.instance,
+      builder: (context, _) {
+        _isFollowed = FollowService.instance.isFollowing(
+          widget.item.seller.id,
+          widget.item.seller.username,
+        );
+
+        if (widget.variant == 'detail') {
+          return _buildDetailCard(context);
+        }
+        return _buildFeedCard(context);
+      },
+    );
   }
 
   /// DETAIL VARIANT: Full width column layout

@@ -724,4 +724,66 @@ class SupabaseService {
         )
         .subscribe();
   }
+
+  // --- SOCIAL FOLLOWS ---
+
+  /// Fetch all followings for the authenticated user
+  Future<List<Map<String, dynamic>>> fetchFollowings() async {
+    final user = currentUser;
+    if (user == null) return [];
+    try {
+      final res = await client
+          .from('user_follows')
+          .select('following_id, following:profiles!user_follows_following_id_fkey(id, username)')
+          .eq('follower_id', user.id);
+      return (res as List<dynamic>).whereType<Map<String, dynamic>>().toList();
+    } catch (e) {
+      debugPrint('Error fetchFollowings: $e');
+      return [];
+    }
+  }
+
+  /// Follow a target user
+  Future<bool> followUser(String targetUserId) async {
+    final user = currentUser;
+    if (user == null || user.id == targetUserId) return false;
+    try {
+      await client.from('user_follows').insert({
+        'follower_id': user.id,
+        'following_id': targetUserId,
+      });
+
+      // Send in-app notification to target user
+      try {
+        await client.from('notifications').insert({
+          'user_id': targetUserId,
+          'actor_id': user.id,
+          'type': 'follow',
+          'message': 'mulai mengikuti profil Anda.',
+        });
+      } catch (_) {}
+
+      return true;
+    } catch (e) {
+      debugPrint('Error followUser: $e');
+      return false;
+    }
+  }
+
+  /// Unfollow a target user
+  Future<bool> unfollowUser(String targetUserId) async {
+    final user = currentUser;
+    if (user == null) return false;
+    try {
+      await client
+          .from('user_follows')
+          .delete()
+          .eq('follower_id', user.id)
+          .eq('following_id', targetUserId);
+      return true;
+    } catch (e) {
+      debugPrint('Error unfollowUser: $e');
+      return false;
+    }
+  }
 }

@@ -18,6 +18,11 @@ class SuggestedAccountTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap?.call();
+      },
+      borderRadius: BorderRadius.circular(8.0),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 8.0),
         child: Row(

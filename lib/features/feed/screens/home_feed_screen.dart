@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/update_info_bottom_sheet.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/services/app_update_service.dart';
+import 'package:snapan_market/core/services/follow_service.dart';
 import 'package:snapan_market/core/components/snaps_skeleton.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
@@ -143,9 +144,11 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   void initState() {
     super.initState();
     _initAnimations();
+    FollowService.instance.loadFollowings();
     _fetchPosts();
     _authSubscription = SupabaseService.instance.client.auth.onAuthStateChange.listen((data) {
       if (mounted) {
+        FollowService.instance.loadFollowings();
         _fetchPosts(isRefresh: true);
       }
     });

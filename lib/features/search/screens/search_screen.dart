@@ -7,6 +7,7 @@ import "package:snapan_market/features/feed/components/market_post_card.dart";
 import "package:snapan_market/features/feed/models/market_post_model.dart";
 import "package:snapan_market/features/feed/screens/post_detail_screen.dart";
 import "package:snapan_market/features/profile/screens/profile_screen.dart";
+import "package:snapan_market/features/profile/models/profile_user_model.dart";
 import "package:snapan_market/features/feed/components/home_menu_popover.dart";
 import "package:snapan_market/features/search/components/search_bar_header.dart";
 import "package:snapan_market/features/search/components/suggested_account_tile.dart";
@@ -136,11 +137,29 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
-  void _navigateToProfile(String username) {
+  void _navigateToProfile(String username, [SuggestedAccount? account]) {
+    ProfileUserModel? initialUser;
+    if (account != null) {
+      initialUser = ProfileUserModel(
+        id: account.id,
+        name: account.fullName.isNotEmpty ? account.fullName : account.username,
+        username: account.username,
+        avatar: account.avatar,
+        bio: account.bio,
+        classGroup: 'SMKN 8 Jakarta',
+        tags: const ['Developer', 'Official'],
+        followersCount: 142,
+        soldCount: 0,
+        rating: 5.0,
+        isVerified: account.isVerified,
+      );
+    }
+
     Navigator.of(context).push(
       AppSlidePageRoute(
         builder: (_) => ProfileScreen(
           username: username,
+          initialUser: initialUser,
           onBack: () => Navigator.of(context).pop(),
         ),
       ),
@@ -274,7 +293,7 @@ class _SearchScreenState extends State<SearchScreen> {
               final acc = _accounts[idx];
               return SuggestedAccountTile(
                 account: acc,
-                onTap: () => _navigateToProfile(acc.username),
+                onTap: () => _navigateToProfile(acc.username, acc),
                 onFollowTap: () => _toggleFollow(acc.id),
               );
             },
@@ -367,7 +386,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 final acc = matchingAccounts[idx];
                 return SuggestedAccountTile(
                   account: acc,
-                  onTap: () => _navigateToProfile(acc.username),
+                  onTap: () => _navigateToProfile(acc.username, acc),
                   onFollowTap: () => _toggleFollow(acc.id),
                 );
               },
@@ -390,7 +409,7 @@ class _SearchScreenState extends State<SearchScreen> {
           final acc = matchingAccounts[idx];
           return SuggestedAccountTile(
             account: acc,
-            onTap: () => _navigateToProfile(acc.username),
+            onTap: () => _navigateToProfile(acc.username, acc),
             onFollowTap: () => _toggleFollow(acc.id),
           );
         },

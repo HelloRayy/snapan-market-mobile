@@ -369,13 +369,22 @@ class MarketPostModel {
     }
 
     SellerModel postSeller;
+    final fallbackSellerId = json['seller_id']?.toString() ?? json['user_id']?.toString();
     if (json['seller'] is Map<String, dynamic>) {
-      postSeller = SellerModel.fromJson(json['seller']);
+      final sMap = Map<String, dynamic>.from(json['seller'] as Map);
+      if ((sMap['id'] == null || sMap['id'].toString().isEmpty) && fallbackSellerId != null) {
+        sMap['id'] = fallbackSellerId;
+      }
+      postSeller = SellerModel.fromJson(sMap);
     } else if (json['profiles'] is Map<String, dynamic>) {
-      postSeller = SellerModel.fromJson(json['profiles']);
+      final sMap = Map<String, dynamic>.from(json['profiles'] as Map);
+      if ((sMap['id'] == null || sMap['id'].toString().isEmpty) && fallbackSellerId != null) {
+        sMap['id'] = fallbackSellerId;
+      }
+      postSeller = SellerModel.fromJson(sMap);
     } else {
       postSeller = SellerModel(
-        id: json['seller_id']?.toString() ?? '',
+        id: fallbackSellerId ?? '',
         name: 'Penjual Snapan',
         avatar: '',
         classGroup: 'Siswa',

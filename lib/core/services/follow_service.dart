@@ -11,6 +11,7 @@ class FollowService extends ChangeNotifier {
   bool _isLoaded = false;
 
   final Map<String, int> _followerCounts = {};
+  final Set<String> _pendingToggles = {};
 
   bool get isLoaded => _isLoaded;
   Set<String> get followingIds => Set.unmodifiable(_followingIds);
@@ -134,38 +135,54 @@ class FollowService extends ChangeNotifier {
         ? resolvedId
         : (cleanUsername ?? '');
 
-    if (currentlyFollowing) {
-      // 1. Optimistic Unfollow (FE immediate update)
-      if (resolvedId != null) _followingIds.remove(resolvedId);
-      if (cleanUsername != null) _followingUsernames.remove(cleanUsername);
-      if (countKey.isNotEmpty) {
-        final cur = _followerCounts[countKey] ?? 1;
-        _followerCounts[countKey] = (cur > 0 ? cur - 1 : 0);
-      }
-      notifyListeners();
+    // Prevent race conditions and duplicate rapid taps
+    final String lockKey = countKey;
+    if (lockKey.isNotEmpty && _pendingToggles.contains(lockKey)) {
+      debugPrint('FollowService: Toggle already in progress for $lockKey, ignoring duplicate tap.');
+      return currentlyFollowing;
+    }
+    if (lockKey.isNotEmpty) {
+      _pendingToggles.add(lockKey);
+    }
 
-      // 2. Persist to BE asynchronously
-      if (resolvedId != null) {
-        await SupabaseService.instance.unfollowUser(resolvedId);
-        loadFollowerCount(resolvedId);
-      }
-      return false;
-    } else {
-      // 1. Optimistic Follow (FE immediate update)
-      if (resolvedId != null) _followingIds.add(resolvedId);
-      if (cleanUsername != null) _followingUsernames.add(cleanUsername);
-      if (countKey.isNotEmpty) {
-        final cur = _followerCounts[countKey] ?? 0;
-        _followerCounts[countKey] = cur + 1;
-      }
-      notifyListeners();
+    try {
+      if (currentlyFollowing) {
+        // 1. Optimistic Unfollow (FE immediate update)
+        if (resolvedId != null) _followingIds.remove(resolvedId);
+        if (cleanUsername != null) _followingUsernames.remove(cleanUsername);
+        if (countKey.isNotEmpty) {
+          final cur = _followerCounts[countKey] ?? 1;
+          _followerCounts[countKey] = (cur > 0 ? cur - 1 : 0);
+        }
+        notifyListeners();
 
-      // 2. Persist to BE asynchronously
-      if (resolvedId != null) {
-        await SupabaseService.instance.followUser(resolvedId);
-        loadFollowerCount(resolvedId);
+        // 2. Persist to BE asynchronously
+        if (resolvedId != null) {
+          await SupabaseService.instance.unfollowUser(resolvedId);
+          loadFollowerCount(resolvedId);
+        }
+        return false;
+      } else {
+        // 1. Optimistic Follow (FE immediate update)
+        if (resolvedId != null) _followingIds.add(resolvedId);
+        if (cleanUsername != null) _followingUsernames.add(cleanUsername);
+        if (countKey.isNotEmpty) {
+          final cur = _followerCounts[countKey] ?? 0;
+          _followerCounts[countKey] = cur + 1;
+        }
+        notifyListeners();
+
+        // 2. Persist to BE asynchronously
+        if (resolvedId != null) {
+          await SupabaseService.instance.followUser(resolvedId);
+          loadFollowerCount(resolvedId);
+        }
+        return true;
       }
-      return true;
+    } finally {
+      if (lockKey.isNotEmpty) {
+        _pendingToggles.remove(lockKey);
+      }
     }
   }
 }

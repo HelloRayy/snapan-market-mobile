@@ -159,12 +159,7 @@ class _MarketPostCardState extends State<MarketPostCard>
     widget.onRepostToggle?.call(updated);
   }
 
-  void _handleFollowToggle() async {
-    HapticFeedback.lightImpact();
-    await FollowService.instance.toggleFollow(
-      targetUserId: widget.item.seller.id,
-      targetUsername: widget.item.seller.username,
-    );
+  void _handleFollowToggle() {
     widget.onFollowToggle?.call(widget.item);
   }
 

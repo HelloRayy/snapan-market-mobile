@@ -26,12 +26,12 @@ class ProfileUserModel {
     required this.classGroup,
     this.tags = const [],
     this.link,
-    this.showSalesStats = true,
-    this.followersCount = 142,
-    this.soldCount = 24,
-    this.rating = 4.9,
-    this.reviewsCount = 18,
-    this.isVerified = true,
+    this.showSalesStats = false,
+    this.followersCount = 0,
+    this.soldCount = 0,
+    this.rating = 0.0,
+    this.reviewsCount = 0,
+    this.isVerified = false,
   });
 
   ProfileUserModel copyWith({

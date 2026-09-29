@@ -550,6 +550,22 @@ class SupabaseService {
     }
   }
 
+  /// Fetch suggested registered student profiles (excluding self)
+  Future<List<Map<String, dynamic>>> fetchSuggestedProfiles({int limit = 15}) async {
+    try {
+      final currentUserId = currentUser?.id;
+      var query = client.from('profiles').select().order('created_at', ascending: false).limit(limit);
+      if (currentUserId != null) {
+        query = client.from('profiles').select().neq('id', currentUserId).order('created_at', ascending: false).limit(limit);
+      }
+      final response = await query;
+      return (response as List<dynamic>).whereType<Map<String, dynamic>>().toList();
+    } catch (e) {
+      debugPrint('Error fetchSuggestedProfiles: $e');
+      return [];
+    }
+  }
+
   // --- NOTIFICATIONS ---
 
   /// Fetch notifications for current user

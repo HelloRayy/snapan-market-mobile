@@ -28,6 +28,7 @@ class _SearchScreenState extends State<SearchScreen> {
   String _searchQuery = "";
   bool _isSubmitted = false;
   bool _isSearching = false;
+  bool _isLoadingInitial = true;
   int _visibleSuggestedCount = 5;
   SearchResultsTab _activeTab = SearchResultsTab.top;
 
@@ -38,7 +39,37 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
-    _accounts = List.from(kInitialSuggestedAccounts);
+    _accounts = [];
+    _loadLiveSuggestedAccounts();
+  }
+
+  Future<void> _loadLiveSuggestedAccounts() async {
+    try {
+      final records = await SupabaseService.instance.fetchSuggestedProfiles(limit: 15);
+      if (records.isNotEmpty && mounted) {
+        setState(() {
+          _accounts = records.map<SuggestedAccount>((p) {
+            final classGroup = p['class_group'] as String? ?? 'Siswa SMKN 8 Jakarta';
+            return SuggestedAccount(
+              id: p['id'] as String? ?? '',
+              fullName: p['full_name'] as String? ?? 'Siswa Snapan',
+              username: p['username'] as String? ?? 'siswa',
+              avatar: (p['avatar_url'] as String?)?.isNotEmpty == true
+                  ? p['avatar_url'] as String
+                  : '',
+              bio: classGroup,
+              followersCount: classGroup,
+              isVerified: p['is_verified'] == true,
+            );
+          }).toList();
+          _isLoadingInitial = false;
+        });
+        return;
+      }
+    } catch (e) {
+      debugPrint('Error _loadLiveSuggestedAccounts: $e');
+    }
+    if (mounted) setState(() => _isLoadingInitial = false);
   }
 
   @override
@@ -158,11 +189,11 @@ class _SearchScreenState extends State<SearchScreen> {
         username: account.username,
         avatar: account.avatar,
         bio: account.bio,
-        classGroup: 'SMKN 8 Jakarta',
-        tags: const ['Developer', 'Official'],
-        followersCount: 142,
+        classGroup: account.bio.isNotEmpty ? account.bio : 'Siswa SMKN 8 Jakarta',
+        tags: const [],
+        followersCount: 0,
         soldCount: 0,
-        rating: 5.0,
+        rating: 0.0,
         isVerified: account.isVerified,
       );
     }

@@ -2,6 +2,7 @@ import "package:snapan_market/features/checkout/screens/checkout_screen.dart";
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/glass_toolbar_top.dart';
+import 'package:snapan_market/core/components/snaps_skeleton.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/feed/components/buy_bottom_sheet.dart';
@@ -58,6 +59,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   String? _replyToUser;
   String? _replyToCommentId;
   bool _isCommentingActive = false;
+  bool _isLoadingComments = true;
   final ScrollController _scrollController = ScrollController();
 
   bool get _isProductMode => _post.isProduct && (_post.price ?? 0) > 0;
@@ -80,19 +82,22 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     super.initState();
     _post = widget.post;
     _comments = List<PostCommentModel>.from(widget.post.comments);
+    _isLoadingComments = _comments.isEmpty;
     _loadLiveComments();
   }
 
   Future<void> _loadLiveComments() async {
     try {
       final live = await SupabaseService.instance.fetchPostComments(_post.id);
-      if (live.isNotEmpty && mounted) {
+      if (mounted) {
         setState(() {
-          _comments = live;
+          if (live.isNotEmpty) _comments = live;
+          _isLoadingComments = false;
         });
       }
     } catch (e) {
       debugPrint('Error _loadLiveComments: $e');
+      if (mounted) setState(() => _isLoadingComments = false);
     }
   }
 
@@ -514,8 +519,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   }),
                 ],
 
+                // Loading Skeleton if comments are still fetching
+                if (_post.threadChain.isEmpty && _comments.isEmpty && _isLoadingComments)
+                  const CommentListSkeleton(itemCount: 3),
+
                 // Empty State if no comments and no threadChain
-                if (_post.threadChain.isEmpty && _comments.isEmpty)
+                if (_post.threadChain.isEmpty && _comments.isEmpty && !_isLoadingComments)
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 48.0, horizontal: 24.0),
                     alignment: Alignment.center,

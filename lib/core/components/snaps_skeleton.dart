@@ -395,3 +395,68 @@ class SearchResultSkeleton extends StatelessWidget {
     );
   }
 }
+
+/// Sliced Comment Item Skeleton matching PostCommentItem 1:1
+class CommentItemSkeleton extends StatelessWidget {
+  const CommentItemSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(
+            color: Color(0xFFF1F5F9),
+            width: 0.8,
+          ),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SnapsSkeletonBox.circle(size: 34.0),
+          const SizedBox(width: 10.0),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SnapsSkeletonBox(width: 110.0, height: 12.0, borderRadius: 4.0),
+                    SnapsSkeletonBox(width: 30.0, height: 10.0, borderRadius: 4.0),
+                  ],
+                ),
+                SizedBox(height: 6.0),
+                SnapsSkeletonBox(width: double.infinity, height: 11.0, borderRadius: 4.0),
+                SizedBox(height: 4.0),
+                SnapsSkeletonBox(width: 180.0, height: 11.0, borderRadius: 4.0),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Comment List Skeleton wrapped in SnapsShimmer
+class CommentListSkeleton extends StatelessWidget {
+  final int itemCount;
+
+  const CommentListSkeleton({super.key, this.itemCount = 3});
+
+  @override
+  Widget build(BuildContext context) {
+    return SnapsShimmer(
+      child: Column(
+        children: List.generate(
+          itemCount,
+          (_) => const CommentItemSkeleton(),
+        ),
+      ),
+    );
+  }
+}

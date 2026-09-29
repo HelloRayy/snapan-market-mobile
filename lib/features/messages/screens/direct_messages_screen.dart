@@ -340,7 +340,11 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
                         );
                       },
                     )
-                  : _buildEmptyState(),
+                  : DirectMessagesService.instance.isFetchingConversations
+                      ? const SingleChildScrollView(
+                          child: ConversationListSkeleton(itemCount: 6),
+                        )
+                      : _buildEmptyState(),
             ),
           ],
         );

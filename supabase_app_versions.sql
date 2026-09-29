@@ -35,14 +35,14 @@ with check (public.is_admin());
 -- Index untuk query versi aktif terbaru dengan cepat
 create index if not exists idx_app_versions_active_code on public.app_versions (is_active, version_code desc);
 
--- Data contoh versi terbaru (bisa diubah URL download APK-nya)
+-- Data versi terbaru untuk rilis OTA v1.0.2
 insert into public.app_versions (version_code, version_name, download_url, title, changelog, is_mandatory, is_active)
 values (
-  2,
-  '1.0.1',
-  'https://raw.githubusercontent.com/HelloRayy/snapan-market-mobile/main/build/app/outputs/flutter-apk/app-release.apk',
-  'Pembaruan Snaps v1.0.1',
-  '• Fitur hapus postingan sendiri & moderasi admin\n• Perbaikan sinkronisasi edit profil ke database\n• Peningkatan kecepatan loading dan animasi',
+  3,
+  '1.0.2',
+  'https://github.com/HelloRayy/snapan-market-mobile/releases/download/v1.0.2/app-release.apk',
+  'Pembaruan Snaps v1.0.2',
+  '• Sidebar drawer navigasi baru dari sisi kiri ke kanan\n• Navigasi langsung ke profil saat mengetuk akun rekomendasi di pencarian\n• Peningkatan kecepatan dan perbaikan sistem',
   false,
   true
 );

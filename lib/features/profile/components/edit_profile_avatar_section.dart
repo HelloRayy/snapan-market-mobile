@@ -177,20 +177,9 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                     Container(
                       width: 52.0,
                       height: 52.0,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        color: const Color(0xFFF1F5F9),
-                        border: Border.all(
-                          color: const Color(0xFFE2E8F0),
-                          width: 1.0,
-                        ),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color(0x0A000000),
-                            blurRadius: 4.0,
-                            offset: Offset(0, 1),
-                          ),
-                        ],
+                        color: Color(0xFFF1F5F9),
                       ),
                       child: ClipOval(
                         child: _isUploadingAvatar
@@ -231,26 +220,20 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                       ),
                     ),
 
-                    // Black '+' badge on bottom right
+                    // Black '+' badge on bottom right (borderless cutout, no shadow)
                     Positioned(
                       bottom: -2.0,
                       right: -2.0,
                       child: Container(
-                        width: 22.0,
-                        height: 22.0,
+                        width: 20.0,
+                        height: 20.0,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: const Color(0xFF101010),
                           border: Border.all(
                             color: Colors.white,
-                            width: 2.0,
+                            width: 1.5,
                           ),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x1F000000),
-                              blurRadius: 2.0,
-                            ),
-                          ],
                         ),
                         child: const Center(
                           child: Icon(

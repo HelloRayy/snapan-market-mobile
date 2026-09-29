@@ -28,21 +28,10 @@ class PostAuthorAvatar extends StatelessWidget {
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            // Circular Avatar Container
-            Container(
+            // Circular Avatar Container (Threads standard: borderless, shadowless, pure image fill)
+            SizedBox(
               width: 42.0,
               height: 42.0,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x0D000000),
-                    blurRadius: 4.0,
-                    offset: Offset(0, 1),
-                  ),
-                ],
-              ),
               child: ClipOval(
                 child: Image.network(
                   seller.avatar,
@@ -66,7 +55,7 @@ class PostAuthorAvatar extends StatelessWidget {
               ),
             ),
 
-            // Thumb-friendly '+' Follow Badge
+            // Thumb-friendly '+' Follow Badge (Clean flat circle, no glow shadow, 1.5px white cutout ring)
             Positioned(
               right: -6.0,
               bottom: -6.0,
@@ -82,34 +71,14 @@ class PostAuthorAvatar extends StatelessWidget {
                     padding: const EdgeInsets.all(5.0),
                     color: Colors.transparent,
                     child: Container(
-                      width: 22.5,
-                      height: 22.5,
+                      width: 20.0,
+                      height: 20.0,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: isFollowed
-                              ? const [
-                                  Color(0xFF10B981), // Emerald 500
-                                  Color(0xFF059669), // Emerald 600
-                                ]
-                              : const [
-                                  Color(0xFF3B82F6), // Blue 500
-                                  Color(0xFF1D64EC), // Primary Blue
-                                ],
-                        ),
-                        border: Border.all(color: Colors.white, width: 2.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: (isFollowed
-                                    ? const Color(0xFF10B981)
-                                    : const Color(0xFF1D64EC))
-                                .withOpacity(0.35),
-                            blurRadius: 4.0,
-                            offset: const Offset(0, 1.5),
-                          ),
-                        ],
+                        color: isFollowed
+                            ? const Color(0xFF10B981) // Emerald when followed
+                            : const Color(0xFF000000), // Threads Ink Black #000000
+                        border: Border.all(color: Colors.white, width: 1.5),
                       ),
                       child: Center(
                         child: AnimatedSwitcher(

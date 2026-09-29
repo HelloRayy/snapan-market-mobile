@@ -285,6 +285,8 @@ class _MarketPostCardState extends State<MarketPostCard>
 
   /// Standard Single Post Row (Left Avatar, Right Content)
   Widget _buildSinglePostRow(BuildContext context) {
+    final bool hasCaption = widget.item.caption.trim().isNotEmpty;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -299,21 +301,42 @@ class _MarketPostCardState extends State<MarketPostCard>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PostCardHeader(
-                item: widget.item,
-                isDetail: false,
-                isFollowed: _isFollowed,
-                onFollowToggle: _handleFollowToggle,
-                onUserClick: widget.onUserClick,
-                onTopicClick: widget.onTopicClick,
-                onMoreOptionsClick: widget.onMoreOptionsClick,
-                onPostClick: widget.onPostClick,
-                onDeletePost: widget.onDeletePost,
-              ),
-              const SizedBox(height: 2.0),
-              PostCaptionText(item: widget.item),
+              if (hasCaption) ...[
+                PostCardHeader(
+                  item: widget.item,
+                  isDetail: false,
+                  isFollowed: _isFollowed,
+                  onFollowToggle: _handleFollowToggle,
+                  onUserClick: widget.onUserClick,
+                  onTopicClick: widget.onTopicClick,
+                  onMoreOptionsClick: widget.onMoreOptionsClick,
+                  onPostClick: widget.onPostClick,
+                  onDeletePost: widget.onDeletePost,
+                ),
+                const SizedBox(height: 2.0),
+                PostCaptionText(item: widget.item),
+              ] else ...[
+                // When post has no caption, center username vertically with the 42px avatar
+                SizedBox(
+                  height: 42.0,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: PostCardHeader(
+                      item: widget.item,
+                      isDetail: false,
+                      isFollowed: _isFollowed,
+                      onFollowToggle: _handleFollowToggle,
+                      onUserClick: widget.onUserClick,
+                      onTopicClick: widget.onTopicClick,
+                      onMoreOptionsClick: widget.onMoreOptionsClick,
+                      onPostClick: widget.onPostClick,
+                      onDeletePost: widget.onDeletePost,
+                    ),
+                  ),
+                ),
+              ],
               if (widget.item.images.isNotEmpty) ...[
-                const SizedBox(height: 10.0),
+                SizedBox(height: hasCaption ? 10.0 : 8.0),
                 PostMediaSection(item: widget.item, isDetail: false, onImageClick: widget.onImageClick),
               ],
               if (widget.item.locationTag != null && widget.item.locationTag!.isNotEmpty) ...[
@@ -354,6 +377,8 @@ class _MarketPostCardState extends State<MarketPostCard>
 
   /// Part 1 of Multi-part Thread with Vertical Line Connector extending downward
   Widget _buildPartOneWithConnector(BuildContext context) {
+    final bool hasCaption = widget.item.caption.trim().isNotEmpty;
+
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -388,21 +413,42 @@ class _MarketPostCardState extends State<MarketPostCard>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PostCardHeader(
-                  item: widget.item,
-                  isDetail: false,
-                  isFollowed: _isFollowed,
-                  onFollowToggle: _handleFollowToggle,
-                  onUserClick: widget.onUserClick,
-                  onTopicClick: widget.onTopicClick,
-                  onMoreOptionsClick: widget.onMoreOptionsClick,
-                  onPostClick: widget.onPostClick,
-                  onDeletePost: widget.onDeletePost,
-                ),
-                const SizedBox(height: 2.0),
-                PostCaptionText(item: widget.item),
+                if (hasCaption) ...[
+                  PostCardHeader(
+                    item: widget.item,
+                    isDetail: false,
+                    isFollowed: _isFollowed,
+                    onFollowToggle: _handleFollowToggle,
+                    onUserClick: widget.onUserClick,
+                    onTopicClick: widget.onTopicClick,
+                    onMoreOptionsClick: widget.onMoreOptionsClick,
+                    onPostClick: widget.onPostClick,
+                    onDeletePost: widget.onDeletePost,
+                  ),
+                  const SizedBox(height: 2.0),
+                  PostCaptionText(item: widget.item),
+                ] else ...[
+                  // When post has no caption, center username vertically with the 42px avatar
+                  SizedBox(
+                    height: 42.0,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: PostCardHeader(
+                        item: widget.item,
+                        isDetail: false,
+                        isFollowed: _isFollowed,
+                        onFollowToggle: _handleFollowToggle,
+                        onUserClick: widget.onUserClick,
+                        onTopicClick: widget.onTopicClick,
+                        onMoreOptionsClick: widget.onMoreOptionsClick,
+                        onPostClick: widget.onPostClick,
+                        onDeletePost: widget.onDeletePost,
+                      ),
+                    ),
+                  ),
+                ],
                 if (widget.item.images.isNotEmpty) ...[
-                  const SizedBox(height: 10.0),
+                  SizedBox(height: hasCaption ? 10.0 : 8.0),
                   PostMediaSection(item: widget.item, isDetail: false, onImageClick: widget.onImageClick),
                 ],
                 if (widget.item.locationTag != null && widget.item.locationTag!.isNotEmpty) ...[
@@ -467,13 +513,9 @@ class _MarketPostCardState extends State<MarketPostCard>
                   ),
                 ),
                 // Chained Part Avatar (36x36 circular, matching continuation in Threads)
-                Container(
+                SizedBox(
                   width: 36.0,
                   height: 36.0,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.border, width: 1.0),
-                  ),
                   child: ClipOval(
                     child: widget.item.seller.avatar.startsWith('assets/')
                         ? Image.asset(

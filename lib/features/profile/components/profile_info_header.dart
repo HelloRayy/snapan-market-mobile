@@ -88,20 +88,9 @@ class ProfileInfoHeader extends StatelessWidget {
               // Right Avatar (60x60px Apple HIG Standard with Zoom Viewer)
               GestureDetector(
                 onTap: onAvatarTap,
-                child: Container(
+                child: SizedBox(
                   width: 60.0,
                   height: 60.0,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x0A000000),
-                        blurRadius: 4.0,
-                        offset: Offset(0, 1),
-                      ),
-                    ],
-                  ),
                   child: ClipOval(
                     child: user.avatar.isNotEmpty
                         ? (user.avatar.startsWith('assets/')

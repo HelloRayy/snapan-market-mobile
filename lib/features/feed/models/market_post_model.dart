@@ -411,7 +411,11 @@ class MarketPostModel {
       isOfficialTopic: json['is_official_topic'] == true || json['isOfficialTopic'] == true,
       topicIcon: json['topic_icon']?.toString() ?? json['topicIcon']?.toString(),
       totalThreadParts: json['total_thread_parts'] as int? ?? json['totalThreadParts'] as int?,
-      locationTag: json['location_tag']?.toString() ?? json['locationTag']?.toString(),
+      locationTag: (json['location_tag']?.toString().trim().isNotEmpty == true)
+          ? json['location_tag'].toString().trim()
+          : (json['locationTag']?.toString().trim().isNotEmpty == true
+              ? json['locationTag'].toString().trim()
+              : 'SMKN8 Semarang - Snapan'),
       price: json['price'] != null ? (num.tryParse(json['price'].toString())?.toInt()) : null,
       originalPrice: json['original_price'] != null
           ? (num.tryParse(json['original_price'].toString())?.toInt())

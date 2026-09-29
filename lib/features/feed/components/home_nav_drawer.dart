@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:snapan_market/core/components/snaps_logo.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
@@ -68,49 +67,6 @@ class HomeNavDrawer extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // 1. Header: Brand Logo & Close Action Button
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 14.0),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: borderColor, width: 1.0),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const SnapsLogo(height: 26.0),
-                      const SizedBox(width: 8.0),
-                      Text(
-                        'Snaps.',
-                        style: GoogleFonts.inter(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.4,
-                          color: inkColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      LucideIcons.x,
-                      size: 20.0,
-                      color: mutedColor,
-                    ),
-                    splashRadius: 18.0,
-                    tooltip: 'Tutup Menu',
-                    onPressed: () {
-                      HapticFeedback.lightImpact();
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              ),
-            ),
 
             // 2. User Profile Tile / Guest Welcome Banner
             if (isAuthenticated)

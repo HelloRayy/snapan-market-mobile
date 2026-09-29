@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:snapan_market/core/components/snaps_skeleton.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/core/services/supabase_service.dart";
 import "package:snapan_market/features/activity/components/activity_item_tile.dart";
@@ -15,6 +16,7 @@ class ActivityScreen extends StatefulWidget {
 class _ActivityScreenState extends State<ActivityScreen> {
   int _activeTabIndex = 0; // 0: Semua, 1: Pesanan, 2: Interaksi
   late List<ActivityNotification> _notifications;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -29,10 +31,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
       if (mounted) {
         setState(() {
           _notifications = data.map((n) => ActivityNotification.fromJson(n)).toList();
+          _isLoading = false;
         });
       }
     } catch (e) {
       debugPrint('Error _loadLiveNotifications: $e');
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -120,8 +124,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
             // Notification List
             Expanded(
-              child: _filteredNotifications.isEmpty
-                  ? Center(
+              child: _isLoading
+                  ? const SingleChildScrollView(
+                      child: ActivityListSkeleton(itemCount: 6),
+                    )
+                  : _filteredNotifications.isEmpty
+                      ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

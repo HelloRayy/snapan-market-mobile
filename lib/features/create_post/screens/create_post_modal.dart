@@ -347,7 +347,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
           : null,
       'description': isProduct ? _descController.text.trim() : null,
       'images': uploadedImages,
-      'locationTag': _selectedLocation?.name ?? 'SMKN8 Semarang - Snapan',
+      'locationTag': _selectedLocation?.name ?? 'SMKN8 Jakarta - Snapan',
       'topicTag': _selectedTopic?.name,
       'subThreads': _subThreads
           .map((s) => {'caption': s.caption, 'images': s.images})

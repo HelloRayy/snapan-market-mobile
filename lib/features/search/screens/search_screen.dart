@@ -97,15 +97,16 @@ class _SearchScreenState extends State<SearchScreen> {
       final profiles = await SupabaseService.instance.searchProfiles(clean);
 
       final accounts = profiles.map<SuggestedAccount>((p) {
+        final classGroup = p['class_group'] as String? ?? 'Siswa SMKN 8 Jakarta';
         return SuggestedAccount(
           id: p['id'] as String? ?? '',
           fullName: p['full_name'] as String? ?? 'Siswa Snapan',
           username: p['username'] as String? ?? 'siswa',
           avatar: (p['avatar_url'] as String?)?.isNotEmpty == true
               ? p['avatar_url'] as String
-              : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&q=80',
-          bio: p['class_group'] as String? ?? 'Siswa SMKN 8 Semarang',
-          followersCount: 'Siswa SMKN 8',
+              : '',
+          bio: classGroup,
+          followersCount: classGroup,
           isVerified: p['is_verified'] == true,
         );
       }).toList();
@@ -291,6 +292,26 @@ class _SearchScreenState extends State<SearchScreen> {
 
     // 1. Idle State (No Query) -> Flat Suggested Accounts (No Tren Topik, No Container Card)
     if (!hasQuery) {
+      if (_isLoadingInitial && _accounts.isEmpty) {
+        return const SingleChildScrollView(
+          child: SearchResultSkeleton(),
+        );
+      }
+      if (_accounts.isEmpty) {
+        return const Center(
+          child: Padding(
+            padding: EdgeInsets.all(32.0),
+            child: Text(
+              'Belum ada akun siswa lain terdaftar',
+              style: TextStyle(
+                fontSize: 14.0,
+                color: Color(0xFF94A3B8),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        );
+      }
       return ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
         children: [

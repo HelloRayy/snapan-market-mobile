@@ -10,7 +10,7 @@ enum LocationCategory {
   sports,
 }
 
-/// Model data lengkap untuk Titik Temu COD Kampus SMKN 8 Semarang
+/// Model data lengkap untuk Titik Temu COD Kampus SMKN 8 Jakarta
 class CampusLocationSpot {
   final String id;
   final String name;
@@ -45,7 +45,7 @@ class CampusLocationSpot {
   });
 }
 
-/// Daftar resmi spot COD di area sekolah SMKN 8 Semarang
+/// Daftar resmi spot COD di area sekolah SMKN 8 Jakarta
 const List<CampusLocationSpot> kCampusLocationSpots = [
   CampusLocationSpot(
     id: "kantin-utama",

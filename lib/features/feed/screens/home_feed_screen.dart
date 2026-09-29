@@ -63,7 +63,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
   // Dynamic Feed Posts list
   List<MarketPostModel> _posts = [];
-  bool _isLoading = false;
+  bool _isLoading = true;
   bool _hasError = false;
   String _errorMessage = '';
   Map<String, dynamic>? _userProfile;

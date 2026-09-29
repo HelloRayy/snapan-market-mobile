@@ -54,22 +54,6 @@ class TrendingTag {
   });
 }
 
-const List<SuggestedAccount> kInitialSuggestedAccounts = [
-  SuggestedAccount(
-    id: "0",
-    username: "snaps",
-    fullName: "Snaps Developer",
-    avatar: "assets/logo/smk8.png",
-    isVerified: true,
-    bio: "Come see what Snapanians are talking about.",
-    followersCount: "Akun Resmi",
-  ),
-];
+const List<SuggestedAccount> kInitialSuggestedAccounts = [];
 
-const List<TrendingTag> kTrendingTags = [
-  TrendingTag(id: "1", tag: "snapandev", posts: "1.8 rb utas"),
-  TrendingTag(id: "2", tag: "vibe coding", posts: "3.4 rb utas"),
-  TrendingTag(id: "3", tag: "MarketDay", posts: "1.2 rb utas"),
-  TrendingTag(id: "4", tag: "PPLG1", posts: "856 utas"),
-  TrendingTag(id: "5", tag: "Kantin8", posts: "2.4 rb utas"),
-];
+const List<TrendingTag> kTrendingTags = [];

@@ -302,7 +302,7 @@ class ProfileScreenState extends State<ProfileScreen> {
             link: link ?? '',
             followersCount: 0,
             soldCount: 0,
-            rating: 5.0,
+            rating: 0.0,
             isVerified: false,
           );
         } else {
@@ -316,7 +316,7 @@ class ProfileScreenState extends State<ProfileScreen> {
             link: '',
             followersCount: 0,
             soldCount: 0,
-            rating: 5.0,
+            rating: 0.0,
             isVerified: false,
           );
         }
@@ -325,7 +325,6 @@ class ProfileScreenState extends State<ProfileScreen> {
     } else {
       if (widget.initialUser != null) {
         _user = widget.initialUser!;
-        _isLoading = false;
       } else {
         final cleanUsername = (widget.username ?? 'siswa').replaceAll('@', '').trim();
         _user = ProfileUserModel(
@@ -338,11 +337,12 @@ class ProfileScreenState extends State<ProfileScreen> {
           tags: const [],
           followersCount: 0,
           soldCount: 0,
-          rating: 5.0,
+          rating: 0.0,
           isVerified: false,
         );
       }
 
+      _isLoading = true;
       _allUserPosts = [];
       _allUserReplies = [];
     }

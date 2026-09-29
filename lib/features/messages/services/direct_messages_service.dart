@@ -25,6 +25,7 @@ class DirectMessagesService extends ChangeNotifier {
     if (currentUser == null || _isFetchingConversations) return;
 
     _isFetchingConversations = true;
+    notifyListeners();
     try {
       final records = await SupabaseService.instance.fetchConversations();
       final liveList = records.map((r) => ConversationModel.fromJson(r, currentUser.id)).toList();
@@ -42,6 +43,7 @@ class DirectMessagesService extends ChangeNotifier {
       debugPrint('Error loadConversations: $e');
     } finally {
       _isFetchingConversations = false;
+      notifyListeners();
     }
   }
 

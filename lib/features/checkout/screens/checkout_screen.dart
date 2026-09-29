@@ -75,7 +75,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 id: roomName.toLowerCase().replaceAll(" ", "-"),
                 name: roomName,
                 code: roomName.toUpperCase(),
-                buildingName: "Area SMKN 8 Semarang",
+                buildingName: "Area SMKN 8 Jakarta",
                 floor: floor,
                 category: LocationCategory.lobby,
                 categoryLabel: category,

@@ -269,7 +269,7 @@ class SupabaseService {
       if (originalPrice != null) 'original_price': originalPrice,
       'stock': stock ?? 1,
       'category': category ?? (postType == 'product' ? 'Produk Siswa' : 'Umum'),
-      'location_tag': (locationTag != null && locationTag.trim().isNotEmpty) ? locationTag.trim() : 'SMKN8 Semarang - Snapan',
+      'location_tag': (locationTag != null && locationTag.trim().isNotEmpty) ? locationTag.trim() : 'SMKN8 Jakarta - Snapan',
       if (topicTag != null && topicTag.isNotEmpty) 'topic_tag': topicTag,
       'images': images,
     };

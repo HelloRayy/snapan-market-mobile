@@ -57,7 +57,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
     _bioController = TextEditingController(text: widget.initialUser.bio);
     _linkController = TextEditingController(
-      text: widget.initialUser.link ?? 'https://instagram.com/${widget.initialUser.username.replaceAll('@', '')}',
+      text: widget.initialUser.link ?? '',
     );
 
     // Parse class group from initialUser

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/features/auth/models/auth_constants.dart';
 import 'package:snapan_market/features/profile/components/discard_changes_dialog.dart';
 import 'package:snapan_market/features/profile/components/edit_profile_avatar_section.dart';
 import 'package:snapan_market/features/profile/components/edit_profile_chips_editor.dart';
@@ -36,8 +37,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late final TextEditingController _nameController;
   late final TextEditingController _usernameController;
   late final TextEditingController _bioController;
-  late final TextEditingController _classController;
   late final TextEditingController _linkController;
+
+  String? _selectedGrade;
+  String? _selectedMajor;
+  String? _selectedClassNum;
 
   late String _avatar;
   late List<String> _tags;
@@ -52,10 +56,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       text: widget.initialUser.username.replaceAll('@', ''),
     );
     _bioController = TextEditingController(text: widget.initialUser.bio);
-    _classController = TextEditingController(text: widget.initialUser.classGroup);
     _linkController = TextEditingController(
       text: widget.initialUser.link ?? 'https://instagram.com/${widget.initialUser.username.replaceAll('@', '')}',
     );
+
+    // Parse class group from initialUser
+    final parts = widget.initialUser.classGroup.trim().split(RegExp(r'\s+'));
+    if (parts.length >= 3 &&
+        AuthConstants.gradeOptions.contains(parts[0]) &&
+        AuthConstants.majorOptions.contains(parts[1]) &&
+        AuthConstants.classNumOptions.contains(parts[2])) {
+      _selectedGrade = parts[0];
+      _selectedMajor = parts[1];
+      _selectedClassNum = parts[2];
+    } else {
+      for (final p in parts) {
+        if (AuthConstants.gradeOptions.contains(p)) _selectedGrade = p;
+        if (AuthConstants.majorOptions.contains(p)) _selectedMajor = p;
+        if (AuthConstants.classNumOptions.contains(p)) _selectedClassNum = p;
+      }
+    }
+
     _avatar = widget.initialUser.avatar;
     _tags = List<String>.from(widget.initialUser.tags);
     _showSalesStats = widget.initialUser.showSalesStats;
@@ -66,9 +87,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _nameController.dispose();
     _usernameController.dispose();
     _bioController.dispose();
-    _classController.dispose();
     _linkController.dispose();
     super.dispose();
+  }
+
+  String get _currentClassGroup {
+    if (_selectedGrade != null && _selectedMajor != null && _selectedClassNum != null) {
+      return '$_selectedGrade $_selectedMajor $_selectedClassNum';
+    }
+    return widget.initialUser.classGroup;
   }
 
   bool get _hasChanges {
@@ -78,7 +105,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return _nameController.text.trim() != widget.initialUser.name.trim() ||
         cleanCurrentUsername != cleanInitialUsername ||
         _bioController.text.trim() != widget.initialUser.bio.trim() ||
-        _classController.text.trim() != widget.initialUser.classGroup.trim() ||
+        _currentClassGroup.trim() != widget.initialUser.classGroup.trim() ||
         _linkController.text.trim() != (widget.initialUser.link ?? '').trim() ||
         _avatar != widget.initialUser.avatar ||
         _showSalesStats != widget.initialUser.showSalesStats ||
@@ -108,9 +135,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final cleanUsername = _usernameController.text.trim().isEmpty
         ? widget.initialUser.username
         : _usernameController.text.trim().toLowerCase().replaceAll(RegExp(r'[^a-z0-9._]'), '');
-    final cleanClass = _classController.text.trim().isEmpty
+    final cleanClass = _currentClassGroup.isEmpty
         ? widget.initialUser.classGroup
-        : _classController.text.trim();
+        : _currentClassGroup;
 
     final cleanInitialUsername = widget.initialUser.username.replaceAll('@', '').toLowerCase();
 
@@ -441,39 +468,79 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
 
-                    // Row 4: Kelas & Jurusan
+                    // Row 4: Kelas & Jurusan Dropdown Selector (Matching Auth Registration)
                     _FormRow(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Kelas & Jurusan',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.ink,
-                              letterSpacing: -0.1,
-                            ),
-                          ),
-                          const SizedBox(height: 4.0),
-                          TextField(
-                            controller: _classController,
-                            maxLength: 40,
-                            style: const TextStyle(
-                              fontSize: 15.5,
-                              color: AppColors.ink,
-                            ),
-                            decoration: const InputDecoration(
-                              hintText: 'Contoh: XII PPLG 1',
-                              hintStyle: TextStyle(
-                                fontSize: 15.5,
-                                color: AppColors.lightMuted,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Kelas & Jurusan',
+                                style: TextStyle(
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.ink,
+                                  letterSpacing: -0.1,
+                                ),
                               ),
-                              border: InputBorder.none,
-                              isDense: true,
-                              counterText: '',
-                              contentPadding: EdgeInsets.symmetric(vertical: 4.0),
-                            ),
+                              if (_selectedGrade != null && _selectedMajor != null && _selectedClassNum != null)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary.withValues(alpha: 0.08),
+                                    borderRadius: BorderRadius.circular(6.0),
+                                  ),
+                                  child: Text(
+                                    '$_selectedGrade $_selectedMajor $_selectedClassNum',
+                                    style: const TextStyle(
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 10.0),
+                          Row(
+                            children: [
+                              // 1. Grade Dropdown (X, XI, XII)
+                              Expanded(
+                                flex: 3,
+                                child: _ProfileDropdownField(
+                                  label: 'Kelas',
+                                  value: _selectedGrade,
+                                  options: AuthConstants.gradeOptions,
+                                  onChanged: (val) => setState(() => _selectedGrade = val),
+                                ),
+                              ),
+                              const SizedBox(width: 8.0),
+
+                              // 2. Major Dropdown (DKV, LK, PPLG, PS, TJKT)
+                              Expanded(
+                                flex: 4,
+                                child: _ProfileDropdownField(
+                                  label: 'Jurusan',
+                                  value: _selectedMajor,
+                                  options: AuthConstants.majorOptions,
+                                  onChanged: (val) => setState(() => _selectedMajor = val),
+                                ),
+                              ),
+                              const SizedBox(width: 8.0),
+
+                              // 3. Class Number Dropdown (1, 2, 3)
+                              Expanded(
+                                flex: 3,
+                                child: _ProfileDropdownField(
+                                  label: 'Ruang',
+                                  value: _selectedClassNum,
+                                  options: AuthConstants.classNumOptions,
+                                  onChanged: (val) => setState(() => _selectedClassNum = val),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -759,6 +826,69 @@ class _FormRow extends StatelessWidget {
             color: Color(0xFFF1F5F9),
           ),
       ],
+    );
+  }
+}
+
+/// Compact Modern Dropdown Field for Edit Profile Form
+class _ProfileDropdownField extends StatelessWidget {
+  final String label;
+  final String? value;
+  final List<String> options;
+  final ValueChanged<String?> onChanged;
+
+  const _ProfileDropdownField({
+    required this.label,
+    required this.value,
+    required this.options,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 44.0,
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(10.0),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: options.contains(value) ? value : null,
+          isExpanded: true,
+          hint: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 13.5,
+              color: AppColors.lightMuted,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          icon: const Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: Color(0xFF64748B),
+            size: 18.0,
+          ),
+          dropdownColor: Colors.white,
+          borderRadius: BorderRadius.circular(14.0),
+          elevation: 4,
+          menuMaxHeight: 260.0,
+          style: const TextStyle(
+            fontSize: 14.0,
+            fontWeight: FontWeight.w600,
+            color: AppColors.ink,
+          ),
+          onChanged: onChanged,
+          items: options.map((opt) {
+            return DropdownMenuItem<String>(
+              value: opt,
+              child: Text(opt),
+            );
+          }).toList(),
+        ),
+      ),
     );
   }
 }

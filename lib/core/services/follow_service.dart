@@ -10,8 +10,37 @@ class FollowService extends ChangeNotifier {
   final Set<String> _followingUsernames = {};
   bool _isLoaded = false;
 
+  final Map<String, int> _followerCounts = {};
+
   bool get isLoaded => _isLoaded;
   Set<String> get followingIds => Set.unmodifiable(_followingIds);
+
+  /// Get reactive cached follower count for user ID or username
+  int getFollowerCount(String? userId, [int defaultCount = 0]) {
+    if (userId == null || userId.isEmpty) return defaultCount;
+    return _followerCounts[userId] ?? defaultCount;
+  }
+
+  /// Manually seed or update follower count in memory
+  void setFollowerCount(String userId, int count) {
+    if (userId.isEmpty) return;
+    _followerCounts[userId] = count;
+    notifyListeners();
+  }
+
+  /// Load accurate follower count from Supabase
+  Future<int> loadFollowerCount(String userId) async {
+    if (userId.isEmpty) return 0;
+    try {
+      final count = await SupabaseService.instance.getFollowersCount(userId);
+      _followerCounts[userId] = count;
+      notifyListeners();
+      return count;
+    } catch (e) {
+      debugPrint('Error loadFollowerCount: $e');
+      return _followerCounts[userId] ?? 0;
+    }
+  }
 
   /// Checks if the target is the currently authenticated user
   bool isCurrentUser(String? userId, String? username) {
@@ -101,25 +130,40 @@ class FollowService extends ChangeNotifier {
 
     final cleanUsername = targetUsername?.toLowerCase().replaceAll('@', '').trim();
     final bool currentlyFollowing = isFollowing(resolvedId, targetUsername);
+    final String countKey = (resolvedId != null && resolvedId.isNotEmpty)
+        ? resolvedId
+        : (cleanUsername ?? '');
 
     if (currentlyFollowing) {
-      // Optimistic Unfollow
+      // 1. Optimistic Unfollow (FE immediate update)
       if (resolvedId != null) _followingIds.remove(resolvedId);
       if (cleanUsername != null) _followingUsernames.remove(cleanUsername);
+      if (countKey.isNotEmpty) {
+        final cur = _followerCounts[countKey] ?? 1;
+        _followerCounts[countKey] = (cur > 0 ? cur - 1 : 0);
+      }
       notifyListeners();
 
+      // 2. Persist to BE asynchronously
       if (resolvedId != null) {
         await SupabaseService.instance.unfollowUser(resolvedId);
+        loadFollowerCount(resolvedId);
       }
       return false;
     } else {
-      // Optimistic Follow
+      // 1. Optimistic Follow (FE immediate update)
       if (resolvedId != null) _followingIds.add(resolvedId);
       if (cleanUsername != null) _followingUsernames.add(cleanUsername);
+      if (countKey.isNotEmpty) {
+        final cur = _followerCounts[countKey] ?? 0;
+        _followerCounts[countKey] = cur + 1;
+      }
       notifyListeners();
 
+      // 2. Persist to BE asynchronously
       if (resolvedId != null) {
         await SupabaseService.instance.followUser(resolvedId);
+        loadFollowerCount(resolvedId);
       }
       return true;
     }

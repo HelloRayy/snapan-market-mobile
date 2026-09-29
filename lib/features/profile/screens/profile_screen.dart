@@ -62,6 +62,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   final ScrollController _scrollController = ScrollController();
   ProfileTab _activeTab = ProfileTab.threads;
   RealtimeChannel? _profileSubscription;
+  RealtimeChannel? _followRealtimeSubscription;
 
   // Search in Profile state
   bool _showSearch = false;
@@ -114,6 +115,8 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   void _setupRealtimeSubscription() {
     _profileSubscription?.unsubscribe();
+    _followRealtimeSubscription?.unsubscribe();
+
     final currentUser = SupabaseService.instance.currentUser;
     if (_isOwnProfile && currentUser != null) {
       _profileSubscription = SupabaseService.instance.subscribeToProfile(
@@ -135,6 +138,22 @@ class ProfileScreenState extends State<ProfileScreen> {
           });
         },
       );
+
+      _followRealtimeSubscription = SupabaseService.instance.subscribeToFollowers(
+        currentUser.id,
+        () {
+          if (!mounted) return;
+          FollowService.instance.loadFollowerCount(currentUser.id);
+        },
+      );
+    } else if (!_isOwnProfile && _user.id.isNotEmpty) {
+      _followRealtimeSubscription = SupabaseService.instance.subscribeToFollowers(
+        _user.id,
+        () {
+          if (!mounted) return;
+          FollowService.instance.loadFollowerCount(_user.id);
+        },
+      );
     }
   }
 
@@ -146,6 +165,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       try {
         final profile = await SupabaseService.instance.getProfile(currentUser.id);
         final livePosts = await SupabaseService.instance.fetchUserPosts(currentUser.id);
+        final ownFollowersCount = await FollowService.instance.loadFollowerCount(currentUser.id);
         final meta = currentUser.userMetadata ?? {};
         final metaTags = meta['tags'];
         List<String> userTags = _user.tags;
@@ -169,6 +189,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               bio: profile['bio'] as String? ?? (meta['bio'] as String?) ?? _user.bio,
               link: profile['link'] as String? ?? (meta['link'] as String?) ?? _user.link,
               tags: userTags,
+              followersCount: ownFollowersCount,
               isVerified: profile['is_verified'] as bool? ?? false,
             );
           } else {
@@ -187,6 +208,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               bio: (bio != null && bio.isNotEmpty) ? bio : _user.bio,
               link: link ?? _user.link,
               tags: userTags,
+              followersCount: ownFollowersCount,
             );
           }
           _allUserPosts = livePosts;
@@ -208,6 +230,7 @@ class ProfileScreenState extends State<ProfileScreen> {
           final p = matchedProfiles.first;
           final targetId = p['id'] as String? ?? '';
           final targetPosts = await SupabaseService.instance.fetchUserPosts(targetId);
+          final otherFollowersCount = await FollowService.instance.loadFollowerCount(targetId);
 
           if (!mounted) return;
           setState(() {
@@ -221,11 +244,13 @@ class ProfileScreenState extends State<ProfileScreen> {
                   : _user.avatar,
               bio: p['bio'] as String? ?? _user.bio,
               link: p['link'] as String? ?? _user.link,
+              followersCount: otherFollowersCount,
               isVerified: p['is_verified'] as bool? ?? false,
             );
             _allUserPosts = targetPosts;
             _isLoading = false;
           });
+          _setupRealtimeSubscription();
         } else {
           if (mounted) setState(() => _isLoading = false);
         }
@@ -537,6 +562,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   @override
   void dispose() {
     _profileSubscription?.unsubscribe();
+    _followRealtimeSubscription?.unsubscribe();
     _scrollController.dispose();
     super.dispose();
   }
@@ -643,38 +669,40 @@ class ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ProfileInfoHeader(
-                  user: _user,
-                  isOwnProfile: _isOwnProfile,
-                  onEditInterests: _handleEditProfile,
-                  onAvatarTap: _handleAvatarTap,
-                ),
                 ListenableBuilder(
                   listenable: FollowService.instance,
                   builder: (context, _) {
                     final isFollowing = FollowService.instance.isFollowing(_user.id, _user.username);
-                    return ProfileActionButtons(
-                      isOwnProfile: _isOwnProfile,
-                      isFollowing: isFollowing,
-                      isLoggedIn: SupabaseService.instance.isAuthenticated,
-                      onEditProfile: _handleEditProfile,
-                      onAuthTap: _handleOpenAuth,
-                      onToggleFollow: () async {
-                        final newStatus = await FollowService.instance.toggleFollow(
-                          targetUserId: _user.id,
-                          targetUsername: _user.username,
-                        );
-                        if (mounted) {
-                          setState(() {
-                            _user = _user.copyWith(
-                              followersCount: newStatus
-                                  ? _user.followersCount + 1
-                                  : (_user.followersCount > 0 ? _user.followersCount - 1 : 0),
+                    final reactiveFollowersCount = FollowService.instance.getFollowerCount(
+                      _user.id,
+                      _user.followersCount,
+                    );
+                    final displayUser = _user.copyWith(followersCount: reactiveFollowersCount);
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ProfileInfoHeader(
+                          user: displayUser,
+                          isOwnProfile: _isOwnProfile,
+                          onEditInterests: _handleEditProfile,
+                          onAvatarTap: _handleAvatarTap,
+                        ),
+                        ProfileActionButtons(
+                          isOwnProfile: _isOwnProfile,
+                          isFollowing: isFollowing,
+                          isLoggedIn: SupabaseService.instance.isAuthenticated,
+                          onEditProfile: _handleEditProfile,
+                          onAuthTap: _handleOpenAuth,
+                          onToggleFollow: () async {
+                            await FollowService.instance.toggleFollow(
+                              targetUserId: _user.id,
+                              targetUsername: _user.username,
                             );
-                          });
-                        }
-                      },
-                      onDirectMessage: _handleDirectMessage,
+                          },
+                          onDirectMessage: _handleDirectMessage,
+                        ),
+                      ],
                     );
                   },
                 ),

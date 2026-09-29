@@ -795,4 +795,72 @@ class SupabaseService {
       return false;
     }
   }
+
+  /// Get exact follower count for a user from public.user_follows
+  Future<int> getFollowersCount(String userId) async {
+    if (userId.isEmpty) return 0;
+    try {
+      final int count = await client
+          .from('user_follows')
+          .count(CountOption.exact)
+          .eq('following_id', userId);
+      return count;
+    } catch (e) {
+      debugPrint('Error getFollowersCount: $e');
+      try {
+        final res = await client
+            .from('user_follows')
+            .select('follower_id')
+            .eq('following_id', userId);
+        return (res as List).length;
+      } catch (e2) {
+        debugPrint('Error getFollowersCount fallback: $e2');
+        return 0;
+      }
+    }
+  }
+
+  /// Get exact following count for a user from public.user_follows
+  Future<int> getFollowingCount(String userId) async {
+    if (userId.isEmpty) return 0;
+    try {
+      final int count = await client
+          .from('user_follows')
+          .count(CountOption.exact)
+          .eq('follower_id', userId);
+      return count;
+    } catch (e) {
+      debugPrint('Error getFollowingCount: $e');
+      try {
+        final res = await client
+            .from('user_follows')
+            .select('following_id')
+            .eq('follower_id', userId);
+        return (res as List).length;
+      } catch (e2) {
+        debugPrint('Error getFollowingCount fallback: $e2');
+        return 0;
+      }
+    }
+  }
+
+  /// Subscribe to realtime changes on user_follows for a specific user
+  RealtimeChannel subscribeToFollowers(String userId, void Function() onFollowChange) {
+    return client
+        .channel('public:user_follows:following:$userId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'user_follows',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'following_id',
+            value: userId,
+          ),
+          callback: (payload) {
+            onFollowChange();
+          },
+        )
+        .subscribe();
+  }
 }

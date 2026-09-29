@@ -797,6 +797,7 @@ do $$ begin alter publication supabase_realtime add table public.order_notificat
 do $$ begin alter publication supabase_realtime add table public.conversations; exception when duplicate_object or others then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.direct_messages; exception when duplicate_object or others then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.market_posts; exception when duplicate_object or others then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.user_follows; exception when duplicate_object or others then null; end $$;
 
 
 

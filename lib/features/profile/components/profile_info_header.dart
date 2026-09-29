@@ -144,35 +144,14 @@ class ProfileInfoHeader extends StatelessWidget {
           // Row 3: Follower & Market Stats
           Row(
             children: [
-              if (user.followersCount > 0) ...[
-                // Followers Count
-                RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                      fontSize: 14.0,
-                      color: Color(0xFF64748B),
-                    ),
-                    children: [
-                      TextSpan(
-                        text: '${user.followersCount} ',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF0F172A),
-                        ),
-                      ),
-                      const TextSpan(text: 'pengikut'),
-                    ],
-                  ),
+              Text(
+                '${user.followersCount} pengikut',
+                style: const TextStyle(
+                  fontSize: 14.0,
+                  color: Color(0xFF64748B),
+                  fontWeight: FontWeight.normal,
                 ),
-              ] else ...[
-                const Text(
-                  '0 pengikut',
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    color: Color(0xFF64748B),
-                  ),
-                ),
-              ],
+              ),
 
               // Sold & Rating stats if applicable
               if (user.soldCount > 0) ...[

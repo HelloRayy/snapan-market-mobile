@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import 'package:snapan_market/core/theme/app_colors.dart';
+
 /// 4. User Nav Glyph using circular avatar with fallback to LucideIcons.user
 class UserNavGlyph extends StatelessWidget {
   final bool isActive;
@@ -21,7 +23,7 @@ class UserNavGlyph extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            color: isActive ? const Color(0xFF008BFF) : const Color(0xFFCBD5E1),
+            color: isActive ? AppColors.primary : const Color(0xFFCBD5E1),
             width: isActive ? 1.8 : 1.0,
           ),
         ),
@@ -42,7 +44,7 @@ class UserNavGlyph extends StatelessWidget {
     return Icon(
       LucideIcons.user,
       size: 20.0,
-      color: isActive ? const Color(0xFF008BFF) : const Color(0xFF1A1A1A),
+      color: isActive ? AppColors.primary : const Color(0xFF64748B),
     );
   }
 }

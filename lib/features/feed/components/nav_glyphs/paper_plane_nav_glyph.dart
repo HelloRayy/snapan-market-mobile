@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import 'package:snapan_market/core/theme/app_colors.dart';
+
 /// 2. Messages Nav Glyph using LucideIcons.messageSquare with Azure badge
 class PaperPlaneNavGlyph extends StatelessWidget {
   final bool isActive;
@@ -19,7 +21,7 @@ class PaperPlaneNavGlyph extends StatelessWidget {
     final icon = Icon(
       LucideIcons.messageSquare,
       size: 20.0,
-      color: isActive ? const Color(0xFF008BFF) : const Color(0xFF1A1A1A),
+      color: isActive ? AppColors.primary : const Color(0xFF64748B),
     );
 
     if (!hasBadge || badgeCount <= 0) {

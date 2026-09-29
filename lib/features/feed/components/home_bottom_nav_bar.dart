@@ -130,29 +130,18 @@ class HomeBottomNavBar extends StatelessWidget {
                       final double tabWidth = constraints.maxWidth / 4.0;
                       return Stack(
                         children: [
-                          // Sliding Selection Capsule (transitions-dev: 16-tabs-sliding)
+                          // Sliding Selection Capsule - Clean borderless soft pill wash
                           AnimatedPositioned(
-                            duration: const Duration(milliseconds: 250),
-                            curve: const Cubic(0.22, 1.0, 0.36, 1.0),
-                            left: currentTab.index * tabWidth + 2.0,
-                            top: 0.0,
-                            width: tabWidth - 4.0,
-                            height: 56.0,
+                            duration: const Duration(milliseconds: 260),
+                            curve: const Cubic(0.2, 0.9, 0.3, 1.0),
+                            left: currentTab.index * tabWidth + 3.0,
+                            top: 3.0,
+                            width: tabWidth - 6.0,
+                            height: 50.0,
                             child: Container(
                               decoration: BoxDecoration(
-                                color: AppColors.primaryPastel, // #EEF0FF
-                                borderRadius: BorderRadius.circular(28.0),
-                                border: Border.all(
-                                  color: AppColors.primaryBorder, // #D8DBFE
-                                  width: 1.0,
-                                ),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Color(0x0C3D38F5),
-                                    blurRadius: 8.0,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
+                                color: AppColors.primary.withValues(alpha: 0.08),
+                                borderRadius: BorderRadius.circular(25.0),
                               ),
                             ),
                           ),
@@ -241,10 +230,8 @@ class _DockTabItemState extends State<_DockTabItem> {
 
   @override
   Widget build(BuildContext context) {
-    const activeColor = AppColors.primary; // Electric Indigo #3D38F5 (WCAG AA 6.86:1)
+    const activeColor = AppColors.primary; // Electric Indigo #3D38F5
     const inactiveColor = Color(0xFF64748B); // Slate 500
-    const selectionFill = AppColors.primaryPastel; // #EEF0FF
-    const selectionBorder = AppColors.primaryBorder; // #D8DBFE
 
     return Expanded(
       child: GestureDetector(

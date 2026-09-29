@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import 'package:snapan_market/core/theme/app_colors.dart';
+
 /// 3. Heart Nav Glyph using LucideIcons.heart with optional red indicator dot
 class HeartNavGlyph extends StatelessWidget {
   final bool isActive;
@@ -17,7 +19,7 @@ class HeartNavGlyph extends StatelessWidget {
     final icon = Icon(
       LucideIcons.heart,
       size: 20.5,
-      color: isActive ? const Color(0xFF008BFF) : const Color(0xFF1A1A1A),
+      color: isActive ? AppColors.primary : const Color(0xFF64748B),
     );
 
     if (!hasBadge) return icon;

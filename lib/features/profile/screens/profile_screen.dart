@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
+import 'package:snapan_market/core/components/snaps_skeleton.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/auth/screens/auth_screen.dart';
@@ -65,6 +66,10 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   // Follow State (if viewing other user)
   bool _isFollowing = false;
+
+  static List<MarketPostModel>? _cachedOwnPosts;
+  static ProfileUserModel? _cachedOwnUser;
+  bool _isLoading = true;
 
   late ProfileUserModel _user;
   late List<MarketPostModel> _allUserPosts;
@@ -185,9 +190,13 @@ class ProfileScreenState extends State<ProfileScreen> {
             );
           }
           _allUserPosts = livePosts;
+          _isLoading = false;
+          _cachedOwnPosts = livePosts;
+          _cachedOwnUser = _user;
         });
       } catch (e) {
         debugPrint('Error _loadLiveProfile: $e');
+        if (mounted) setState(() => _isLoading = false);
       }
     } else {
       final cleanUsername = widget.username?.replaceAll('@', '').toLowerCase().trim();
@@ -215,63 +224,78 @@ class ProfileScreenState extends State<ProfileScreen> {
               isVerified: p['is_verified'] as bool? ?? false,
             );
             _allUserPosts = targetPosts;
+            _isLoading = false;
           });
+        } else {
+          if (mounted) setState(() => _isLoading = false);
         }
       } catch (e) {
         debugPrint('Error fetching other user profile from Supabase: $e');
+        if (mounted) setState(() => _isLoading = false);
       }
     }
   }
 
   void _initProfileData() {
     if (_isOwnProfile) {
-      final currentUser = SupabaseService.instance.currentUser;
-      if (currentUser != null) {
-        final meta = currentUser.userMetadata ?? {};
-        final fullName = (meta['full_name'] as String?)?.trim();
-        final username = (meta['username'] as String?)?.trim();
-        final classGroup = (meta['class_group'] as String?)?.trim();
-        final avatar = (meta['avatar_url'] as String?)?.trim() ?? '';
-        final bio = (meta['bio'] as String?)?.trim();
-        final link = (meta['link'] as String?)?.trim();
-        final tagsRaw = meta['tags'];
-        List<String> tags = [];
-        if (tagsRaw is List) {
-          tags = tagsRaw.map((e) => e.toString()).toList();
-        } else if (tagsRaw is String && tagsRaw.isNotEmpty) {
-          tags = tagsRaw.split(',');
-        }
-
-        _user = ProfileUserModel(
-          id: currentUser.id,
-          name: (fullName != null && fullName.isNotEmpty) ? fullName : 'Siswa Snapan',
-          username: (username != null && username.isNotEmpty) ? username : 'siswa',
-          classGroup: (classGroup != null && classGroup.isNotEmpty) ? classGroup : 'SMKN 8 Jakarta',
-          avatar: avatar,
-          bio: (bio != null && bio.isNotEmpty) ? bio : 'Siswa ${classGroup ?? 'SMKN 8 Jakarta'}',
-          tags: tags,
-          link: link ?? '',
-          followersCount: 0,
-          soldCount: 0,
-          rating: 5.0,
-          isVerified: false,
-        );
+      if (_cachedOwnPosts != null) {
+        _allUserPosts = List.from(_cachedOwnPosts!);
+        _isLoading = false;
       } else {
-        _user = const ProfileUserModel(
-          id: 'guest',
-          name: 'Tamu Snapan',
-          username: 'tamu',
-          classGroup: 'Belum Masuk',
-          avatar: '',
-          bio: 'Masuk atau daftar akun untuk melihat profil, mengunggah utas dan produk.',
-          link: '',
-          followersCount: 0,
-          soldCount: 0,
-          rating: 5.0,
-          isVerified: false,
-        );
+        _allUserPosts = [];
+        _isLoading = true;
       }
-      _allUserPosts = [];
+
+      if (_cachedOwnUser != null) {
+        _user = _cachedOwnUser!;
+      } else {
+        final currentUser = SupabaseService.instance.currentUser;
+        if (currentUser != null) {
+          final meta = currentUser.userMetadata ?? {};
+          final fullName = (meta['full_name'] as String?)?.trim();
+          final username = (meta['username'] as String?)?.trim();
+          final classGroup = (meta['class_group'] as String?)?.trim();
+          final avatar = (meta['avatar_url'] as String?)?.trim() ?? '';
+          final bio = (meta['bio'] as String?)?.trim();
+          final link = (meta['link'] as String?)?.trim();
+          final tagsRaw = meta['tags'];
+          List<String> tags = [];
+          if (tagsRaw is List) {
+            tags = tagsRaw.map((e) => e.toString()).toList();
+          } else if (tagsRaw is String && tagsRaw.isNotEmpty) {
+            tags = tagsRaw.split(',');
+          }
+
+          _user = ProfileUserModel(
+            id: currentUser.id,
+            name: (fullName != null && fullName.isNotEmpty) ? fullName : 'Siswa Snapan',
+            username: (username != null && username.isNotEmpty) ? username : 'siswa',
+            classGroup: (classGroup != null && classGroup.isNotEmpty) ? classGroup : 'SMKN 8 Jakarta',
+            avatar: avatar,
+            bio: (bio != null && bio.isNotEmpty) ? bio : 'Siswa ${classGroup ?? 'SMKN 8 Jakarta'}',
+            tags: tags,
+            link: link ?? '',
+            followersCount: 0,
+            soldCount: 0,
+            rating: 5.0,
+            isVerified: false,
+          );
+        } else {
+          _user = const ProfileUserModel(
+            id: 'guest',
+            name: 'Tamu Snapan',
+            username: 'tamu',
+            classGroup: 'Belum Masuk',
+            avatar: '',
+            bio: 'Masuk atau daftar akun untuk melihat profil, mengunggah utas dan produk.',
+            link: '',
+            followersCount: 0,
+            soldCount: 0,
+            rating: 5.0,
+            isVerified: false,
+          );
+        }
+      }
       _allUserReplies = [];
     } else {
       final cleanUsername = widget.username!.replaceAll('@', '').trim();
@@ -655,7 +679,11 @@ class ProfileScreenState extends State<ProfileScreen> {
 
           // 3. Tab Content Area
           if (_activeTab == ProfileTab.threads) ...[
-            if (displayPosts.isNotEmpty)
+            if (_isLoading && displayPosts.isEmpty)
+              const SliverToBoxAdapter(
+                child: FeedTimelineSkeleton(itemCount: 3),
+              )
+            else if (displayPosts.isNotEmpty)
               SliverList.builder(
                 itemCount: displayPosts.length,
                 itemBuilder: (context, index) {
@@ -706,7 +734,11 @@ class ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
           ] else if (_activeTab == ProfileTab.replies) ...[
-            if (displayReplies.isNotEmpty)
+            if (_isLoading && displayReplies.isEmpty)
+              const SliverToBoxAdapter(
+                child: FeedTimelineSkeleton(itemCount: 2),
+              )
+            else if (displayReplies.isNotEmpty)
               SliverList.builder(
                 itemCount: displayReplies.length,
                 itemBuilder: (context, index) {

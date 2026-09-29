@@ -14,12 +14,15 @@
 3. **NO Flutter Test / Analyze**:
    - Do not waste time running `flutter test` or `flutter analyze`. Focus 100% on direct code generation.
 
-4. **Default Codebase Navigation with Graphify (`graphify-out/`)**:
+4. **NO Mandatory `flutter build bundle`**:
+   - Do not run or require `flutter build bundle` routinely. Move directly to commit and push after clean code generation.
+
+5. **Default Codebase Navigation with Graphify (`graphify-out/`)**:
    - Query Graphify first for file searches, symbol locations, and architecture relationship discovery:
      ```bash
      uv tool run --from graphifyy graphify query "<search query>"
      ```
 
-5. **Mandatory Git Commit & Push**:
+6. **Mandatory Git Commit & Push**:
    - Run `git add .`, commit, and push after completing tasks.
 

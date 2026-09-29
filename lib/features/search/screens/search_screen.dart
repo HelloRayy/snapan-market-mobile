@@ -25,6 +25,7 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
   bool _isSubmitted = false;
+  bool _isSearching = false;
   int _visibleSuggestedCount = 5;
   SearchResultsTab _activeTab = SearchResultsTab.top;
 
@@ -57,6 +58,7 @@ class _SearchScreenState extends State<SearchScreen> {
       return;
     }
 
+    setState(() => _isSearching = true);
     try {
       final posts = await SupabaseService.instance.searchPosts(clean);
       final profiles = await SupabaseService.instance.searchProfiles(clean);
@@ -79,10 +81,12 @@ class _SearchScreenState extends State<SearchScreen> {
         setState(() {
           _liveMatchingPosts = posts;
           _liveMatchingAccounts = accounts;
+          _isSearching = false;
         });
       }
     } catch (e) {
       debugPrint('Error _performSearch: $e');
+      if (mounted) setState(() => _isSearching = false);
     }
   }
 
@@ -216,6 +220,13 @@ class _SearchScreenState extends State<SearchScreen> {
     List<MarketPost> matchingPosts,
     List<SuggestedAccount> matchingAccounts,
   ) {
+    // 0. Searching State -> Skeleton Loader
+    if (hasQuery && _isSearching) {
+      return const SingleChildScrollView(
+        child: SearchResultSkeleton(),
+      );
+    }
+
     // 1. Idle State (No Query) -> Flat Suggested Accounts (No Tren Topik, No Container Card)
     if (!hasQuery) {
       return ListView(

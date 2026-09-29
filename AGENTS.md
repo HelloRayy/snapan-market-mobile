@@ -24,15 +24,19 @@
    - Do not waste tool calls, round-trips, or token budget on running repetitive analyzers or test runners.
    - Guarantee syntactic and architectural correctness directly through clean, production-ready code.
 
-2. **STRICTLY PROHIBITED: Playwright / Headless Browser Without Explicit Order**:
+2. **NO Mandatory `flutter build bundle`**:
+   - Never mandate or routinely execute `flutter build bundle` after writing code.
+   - Do not run `flutter build bundle` on your own initiative; proceed directly with verification through code analysis and immediate commit/push unless the user explicitly asks to run a build.
+
+3. **STRICTLY PROHIBITED: Playwright / Headless Browser Without Explicit Order**:
    - Never launch Playwright, headless browser, or screenshot capture tasks on your own initiative.
    - Only run Playwright IF AND ONLY IF the user explicitly orders it (e.g. "buka playwright", "ambil screenshot").
 
-3. **100% Focus on Direct Flutter Codebase Generation**:
+4. **100% Focus on Direct Flutter Codebase Generation**:
    - Generate, refactor, and update Flutter widgets, models, controllers, and services in `lib/` in one clean pass.
    - Apply clean widget decomposition, idiomatic Dart naming, proper null safety, and const constructor optimization.
 
-4. **Default Codebase Search & Navigation with Graphify (`graphify-out/`)**:
+5. **Default Codebase Search & Navigation with Graphify (`graphify-out/`)**:
    - The repository maintains a pre-built knowledge graph (`graphify-out/graph.json`, `graphify-out/GRAPH_REPORT.md`, `graphify-out/graph.html`) containing 2,500+ nodes and 4,200+ edges across both Flutter and React codebases.
    - **MANDATORY**: All AI agents should query Graphify first to locate files, symbols, modules, or trace component relationships faster:
      ```bash
@@ -51,7 +55,7 @@
      uv tool run --from graphifyy graphify --update
      ```
 
-5. **Mandatory Automatic Git Commit & Push Directive**:
+6. **Mandatory Automatic Git Commit & Push Directive**:
    - After completing any task or code change:
      1. `git add .`
      2. `git commit -m "<type>(<scope>): <descriptive message>"`
@@ -123,7 +127,7 @@ flutter pub get
 # 2. Run app in development mode
 flutter run
 
-# 3. Build bundle for quick compilation verification (without running test/analyze)
+# 3. (Optional / Manual Only) Build bundle check - NOT required for agents
 flutter build bundle
 
 # 4. Build release APK for Android

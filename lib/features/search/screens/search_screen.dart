@@ -11,6 +11,7 @@ import "package:snapan_market/features/profile/models/profile_user_model.dart";
 import "package:snapan_market/features/feed/components/home_menu_popover.dart";
 import "package:snapan_market/features/search/components/search_bar_header.dart";
 import "package:snapan_market/features/search/components/suggested_account_tile.dart";
+import "package:snapan_market/core/services/follow_service.dart";
 import "package:snapan_market/features/search/models/search_models.dart";
 
 class SearchScreen extends StatefulWidget {
@@ -127,14 +128,25 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void _toggleFollow(String id) {
-    setState(() {
-      _accounts = _accounts.map((acc) {
-        if (acc.id == id) {
-          return acc.copyWith(isFollowing: !acc.isFollowing);
+    String? username;
+    for (final a in _accounts) {
+      if (a.id == id) {
+        username = a.username;
+        break;
+      }
+    }
+    if (username == null) {
+      for (final a in _liveMatchingAccounts) {
+        if (a.id == id) {
+          username = a.username;
+          break;
         }
-        return acc;
-      }).toList();
-    });
+      }
+    }
+    FollowService.instance.toggleFollow(
+      targetUserId: id,
+      targetUsername: username,
+    );
   }
 
   void _navigateToProfile(String username, [SuggestedAccount? account]) {

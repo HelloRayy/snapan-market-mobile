@@ -24,6 +24,7 @@ import 'package:snapan_market/features/profile/screens/edit_profile_screen.dart'
 import 'package:snapan_market/features/messages/models/conversation_model.dart';
 import 'package:snapan_market/features/messages/screens/chat_conversation_screen.dart';
 import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
+import 'package:snapan_market/core/services/follow_service.dart';
 
 
 /// Full Profile Screen matching ProfilePage.tsx 1:1
@@ -65,9 +66,6 @@ class ProfileScreenState extends State<ProfileScreen> {
   // Search in Profile state
   bool _showSearch = false;
   String _searchQuery = '';
-
-  // Follow State (if viewing other user)
-  bool _isFollowing = false;
 
   static List<MarketPostModel>? _cachedOwnPosts;
   static ProfileUserModel? _cachedOwnUser;
@@ -651,23 +649,34 @@ class ProfileScreenState extends State<ProfileScreen> {
                   onEditInterests: _handleEditProfile,
                   onAvatarTap: _handleAvatarTap,
                 ),
-                ProfileActionButtons(
-                  isOwnProfile: _isOwnProfile,
-                  isFollowing: _isFollowing,
-                  isLoggedIn: SupabaseService.instance.isAuthenticated,
-                  onEditProfile: _handleEditProfile,
-                  onAuthTap: _handleOpenAuth,
-                  onToggleFollow: () {
-                    setState(() {
-                      _isFollowing = !_isFollowing;
-                      _user = _user.copyWith(
-                        followersCount: _isFollowing
-                            ? _user.followersCount + 1
-                            : _user.followersCount - 1,
-                      );
-                    });
+                ListenableBuilder(
+                  listenable: FollowService.instance,
+                  builder: (context, _) {
+                    final isFollowing = FollowService.instance.isFollowing(_user.id, _user.username);
+                    return ProfileActionButtons(
+                      isOwnProfile: _isOwnProfile,
+                      isFollowing: isFollowing,
+                      isLoggedIn: SupabaseService.instance.isAuthenticated,
+                      onEditProfile: _handleEditProfile,
+                      onAuthTap: _handleOpenAuth,
+                      onToggleFollow: () async {
+                        final newStatus = await FollowService.instance.toggleFollow(
+                          targetUserId: _user.id,
+                          targetUsername: _user.username,
+                        );
+                        if (mounted) {
+                          setState(() {
+                            _user = _user.copyWith(
+                              followersCount: newStatus
+                                  ? _user.followersCount + 1
+                                  : (_user.followersCount > 0 ? _user.followersCount - 1 : 0),
+                            );
+                          });
+                        }
+                      },
+                      onDirectMessage: _handleDirectMessage,
+                    );
                   },
-                  onDirectMessage: _handleDirectMessage,
                 ),
                 const SizedBox(height: 10.0),
               ],

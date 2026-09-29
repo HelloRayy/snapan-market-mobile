@@ -4,6 +4,7 @@ import 'package:snapan_market/core/constants/supabase_constants.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/screens/home_feed_screen.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/core/services/follow_service.dart';
 import 'package:snapan_market/core/components/app_entrance_splash.dart';
 
 Future<void> main() async {
@@ -16,6 +17,10 @@ Future<void> main() async {
       authFlowType: AuthFlowType.pkce,
     ),
   );
+
+  if (Supabase.instance.client.auth.currentUser != null) {
+    FollowService.instance.loadFollowings();
+  }
 
   runApp(const SnapanMarketApp());
 }

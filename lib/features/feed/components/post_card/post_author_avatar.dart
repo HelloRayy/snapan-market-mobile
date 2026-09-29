@@ -25,7 +25,9 @@ class PostAuthorAvatar extends StatelessWidget {
       listenable: FollowService.instance,
       builder: (context, _) {
         final bool isMe = FollowService.instance.isCurrentUser(seller.id, seller.username);
-        final bool followed = isFollowed ?? FollowService.instance.isFollowing(seller.id, seller.username);
+        final bool followed = FollowService.instance.isLoaded
+            ? FollowService.instance.isFollowing(seller.id, seller.username)
+            : (FollowService.instance.isFollowing(seller.id, seller.username) || (isFollowed == true));
 
         return GestureDetector(
           onTap: onUserClick,

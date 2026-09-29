@@ -738,8 +738,17 @@ class SupabaseService {
           .eq('follower_id', user.id);
       return (res as List<dynamic>).whereType<Map<String, dynamic>>().toList();
     } catch (e) {
-      debugPrint('Error fetchFollowings: $e');
-      return [];
+      debugPrint('Error fetchFollowings with join: $e');
+      try {
+        final resSimple = await client
+            .from('user_follows')
+            .select('following_id')
+            .eq('follower_id', user.id);
+        return (resSimple as List<dynamic>).whereType<Map<String, dynamic>>().toList();
+      } catch (e2) {
+        debugPrint('Error fetchFollowings fallback: $e2');
+        return [];
+      }
     }
   }
 

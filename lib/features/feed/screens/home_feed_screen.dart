@@ -1,50 +1,35 @@
-import 'dart:async';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import "package:snapan_market/features/search/screens/search_screen.dart";
-import "package:snapan_market/features/map/screens/campus_map_screen.dart";
-import "package:snapan_market/features/activity/screens/activity_screen.dart";
-import 'package:snapan_market/features/auth/screens/auth_screen.dart';
-import 'package:snapan_market/features/auth/components/auth_prompt_overlay.dart';
-import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/update_info_bottom_sheet.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/services/app_update_service.dart';
-import 'package:snapan_market/core/services/follow_service.dart';
-import 'package:snapan_market/core/components/snaps_skeleton.dart';
-import 'package:snapan_market/core/theme/app_colors.dart';
-
-import 'package:snapan_market/features/feed/components/home_feed_header.dart';
-import 'package:snapan_market/features/feed/components/home_feed_tab_switch.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/features/activity/screens/activity_screen.dart';
+import 'package:snapan_market/features/auth/components/auth_prompt_overlay.dart';
+import 'package:snapan_market/features/auth/screens/auth_screen.dart';
+import 'package:snapan_market/features/create_post/models/create_post_types.dart';
+import 'package:snapan_market/features/create_post/screens/create_post_modal.dart';
 import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart';
-import 'package:snapan_market/features/feed/components/floating_plus_squircle_button.dart';
-import 'package:snapan_market/features/feed/components/floating_marketplace_squircle_button.dart';
+import 'package:snapan_market/features/feed/components/home_feed_fab_group.dart';
+import 'package:snapan_market/features/feed/components/home_feed_header.dart';
+import 'package:snapan_market/features/feed/components/home_feed_scrollable_list.dart';
+import 'package:snapan_market/features/feed/components/home_feed_tab_switch.dart';
 import 'package:snapan_market/features/feed/components/home_menu_popover.dart';
 import 'package:snapan_market/features/feed/components/home_nav_drawer.dart';
-import 'package:snapan_market/features/feed/components/market_post_card.dart';
+import 'package:snapan_market/features/feed/components/home_nav_tab_switcher.dart';
+import 'package:snapan_market/features/feed/components/media_lightbox_dialog.dart';
+import 'package:snapan_market/features/feed/controllers/home_feed_controller.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
-import 'package:snapan_market/features/feed/components/media_lightbox_dialog.dart';
 import 'package:snapan_market/features/messages/screens/direct_messages_screen.dart';
 import 'package:snapan_market/features/profile/screens/profile_screen.dart';
+import 'package:snapan_market/features/search/screens/search_screen.dart';
 
-import 'package:snapan_market/features/create_post/screens/create_post_modal.dart';
-
-import 'package:snapan_market/features/create_post/models/create_post_types.dart';
-
-/// Main Home Feed Screen
-///
-/// Features sticky [HomeFeedHeader] with tactile action controls,
-/// sticky [HomeFeedTabSwitch] for "Untuk Anda" and "Terbaru" feed modes,
-/// scroll-to-top behavior, dynamic [MarketPostCard] list feed, and bottom navigation.
+/// Main Home Feed Screen (<300 lines orchestrator).
 class HomeFeedScreen extends StatefulWidget {
   final VoidCallback? onLogout;
 
-  const HomeFeedScreen({
-    super.key,
-    this.onLogout,
-  });
+  const HomeFeedScreen({super.key, this.onLogout});
 
   @override
   State<HomeFeedScreen> createState() => _HomeFeedScreenState();
@@ -55,19 +40,27 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ProfileScreenState> _profileKey = GlobalKey<ProfileScreenState>();
   final ScrollController _scrollController = ScrollController();
+  final HomeFeedController _feedController = HomeFeedController();
+
   AnimationController? _fabAnimationController;
   Animation<double>? _fabAnimation;
   FeedTab _activeTab = FeedTab.forYou;
   HomeNavTab _currentNavTab = HomeNavTab.home;
   bool _isFabVisible = true;
 
-  // Dynamic Feed Posts list
-  List<MarketPostModel> _posts = [];
-  bool _isLoading = true;
-  bool _hasError = false;
-  String _errorMessage = '';
-  Map<String, dynamic>? _userProfile;
-  StreamSubscription<AuthState>? _authSubscription;
+  @override
+  void initState() {
+    super.initState();
+    _initAnimations();
+    _feedController.init();
+    _feedController.addListener(() {
+      if (mounted) setState(() {});
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkForAppUpdate();
+    });
+  }
 
   void _initAnimations() {
     _fabAnimationController ??= AnimationController(
@@ -75,87 +68,11 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       duration: const Duration(milliseconds: 240),
       value: 1.0,
     );
-
-    // Transitions.dev Motion Tokens:
-    // --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1) - entry pop-in
-    // --ease-smooth-in: cubic-bezier(0.32, 0, 0.67, 0) - exit dismissal
-    const easeSmoothOut = Cubic(0.22, 1.0, 0.36, 1.0);
-    const easeIn = Cubic(0.32, 0.0, 0.67, 0.0);
-
     _fabAnimation = CurvedAnimation(
       parent: _fabAnimationController!,
-      curve: easeSmoothOut,
-      reverseCurve: easeIn,
+      curve: const Cubic(0.22, 1.0, 0.36, 1.0),
+      reverseCurve: const Cubic(0.32, 0.0, 0.67, 0.0),
     );
-  }
-
-  Future<void> _fetchPosts({bool isRefresh = false}) async {
-    if (!isRefresh) {
-      setState(() {
-        _isLoading = true;
-        _hasError = false;
-        _errorMessage = '';
-      });
-    }
-
-    try {
-      final livePosts = await SupabaseService.instance.fetchFeedPosts();
-      final likedIds = await SupabaseService.instance.fetchLikedPostIds();
-      final savedIds = await SupabaseService.instance.fetchBookmarkedPostIds();
-
-      final currentUser = SupabaseService.instance.currentUser;
-      if (currentUser != null) {
-        SupabaseService.instance.getProfile(currentUser.id).then((p) {
-          if (mounted && p != null) {
-            setState(() {
-              _userProfile = p;
-            });
-          }
-        });
-      }
-
-      if (!mounted) return;
-      setState(() {
-        if (livePosts.isNotEmpty) {
-          _posts = livePosts.map((p) {
-            return p.copyWith(
-              isLiked: likedIds.contains(p.id),
-              isSaved: savedIds.contains(p.id),
-            );
-          }).toList();
-        } else {
-          _posts = [];
-        }
-        _isLoading = false;
-        _hasError = false;
-      });
-    } catch (e) {
-      debugPrint('Supabase fetch error: $e');
-      if (!mounted) return;
-      setState(() {
-        _posts = [];
-        _isLoading = false;
-        _hasError = false;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _initAnimations();
-    FollowService.instance.loadFollowings();
-    _fetchPosts();
-    _authSubscription = SupabaseService.instance.client.auth.onAuthStateChange.listen((data) {
-      if (mounted) {
-        FollowService.instance.loadFollowings();
-        _fetchPosts(isRefresh: true);
-      }
-    });
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkForAppUpdate();
-    });
   }
 
   Future<void> _checkForAppUpdate() async {
@@ -164,11 +81,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       if (update != null && mounted) {
         final info = await AppUpdateService.instance.getPackageInfo();
         if (!mounted) return;
-        UpdateInfoBottomSheet.show(
-          context,
-          update: update,
-          currentVersionName: info.version,
-        );
+        UpdateInfoBottomSheet.show(context, update: update, currentVersionName: info.version);
       }
     } catch (e) {
       debugPrint('Update check error: $e');
@@ -176,15 +89,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   }
 
   @override
-  void reassemble() {
-    super.reassemble();
-    _initAnimations();
-  }
-
-  @override
   void dispose() {
     HomeMenuPopover.dismiss();
-    _authSubscription?.cancel();
+    _feedController.dispose();
     _fabAnimationController?.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -204,18 +111,10 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     }
   }
 
-  // Backward compatibility alias methods
-  void _hideBars() => _hideFab();
-  void _showBars() => _showFab();
-
   void _scrollToTop() {
     _showFab();
     if (_scrollController.hasClients) {
-      _scrollController.animateTo(
-        0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOutCubic,
-      );
+      _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOutCubic);
     }
   }
 
@@ -229,132 +128,10 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           onSuccess: () {
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Pendaftaran/Login berhasil! Selamat datang di Snaps SMKN 8.'),
-                behavior: SnackBarBehavior.floating,
-              ),
+              const SnackBar(content: Text('Selamat datang di Snaps SMKN 8.'), behavior: SnackBarBehavior.floating),
             );
-            _fetchPosts(isRefresh: true);
-            setState(() {});
+            _feedController.fetchPosts(isRefresh: true);
           },
-        ),
-      ),
-    );
-  }
-
-  void _handleMenuTap() {
-    HapticFeedback.lightImpact();
-    _scaffoldKey.currentState?.openDrawer();
-  }
-
-  void _handleAppearanceTap() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Tampilan: Mode Terang (Default)'),
-        duration: Duration(seconds: 1),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
-  void _handleSettingsTap() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Pengaturan akun dibuka'),
-        duration: Duration(seconds: 1),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
-  void _handleLikedTap() {
-    setState(() {
-      _currentNavTab = HomeNavTab.activity;
-    });
-    _showBars();
-  }
-
-  void _handleArchiveTap() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Arsip postingan & aktivitas dibuka'),
-        duration: Duration(seconds: 1),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
-  void _handleReportTap() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Laporan masalah terkirim. Terima kasih atas masukan Anda!'),
-        duration: Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
-  Future<void> _handleManualUpdateCheck() async {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Memeriksa pembaruan sistem...'),
-        duration: Duration(seconds: 1),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-
-    try {
-      final info = await AppUpdateService.instance.getPackageInfo();
-      final update = await AppUpdateService.instance.checkForUpdate(isManual: true);
-
-      if (!mounted) return;
-
-      if (update != null) {
-        UpdateInfoBottomSheet.show(
-          context,
-          update: update,
-          currentVersionName: info.version,
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Aplikasi sudah versi terbaru: v${info.version} (Build ${info.buildNumber}).',
-            ),
-            duration: const Duration(seconds: 3),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Gagal memeriksa pembaruan: $e'),
-          duration: const Duration(seconds: 2),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    }
-  }
-
-  void _handleMapTap() {
-    Navigator.push(
-      context,
-      AppSlidePageRoute(
-        builder: (context) => CampusMapScreen(
-          onBack: () => Navigator.pop(context),
-        ),
-      ),
-    );
-  }
-
-  void _handleSearchTap() {
-    Navigator.push(
-      context,
-      AppSlidePageRoute(
-        builder: (context) => SearchScreen(
-          onBack: () => Navigator.pop(context),
         ),
       ),
     );
@@ -364,13 +141,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     if (!SupabaseService.instance.isAuthenticated) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Silakan masuk atau daftar akun untuk membuat postingan.'),
+          content: const Text('Silakan masuk untuk membuat postingan.'),
           behavior: SnackBarBehavior.floating,
-          action: SnackBarAction(
-            label: 'Masuk',
-            textColor: Colors.amber,
-            onPressed: _handleOpenAuth,
-          ),
+          action: SnackBarAction(label: 'Masuk', textColor: Colors.amber, onPressed: _handleOpenAuth),
         ),
       );
       return;
@@ -379,153 +152,10 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     CreatePostModal.show(
       context,
       initialMode: mode,
-      currentUserName: _userProfile?['full_name'] as String? ?? 'Siswa Snapan',
-      currentUserAvatar: _userProfile?['avatar_url'] as String?,
-      onSubmitPost: (data) async {
-        final postMode = data['postType'] as String? ?? 'thread';
-        final caption = data['caption'] as String? ?? '';
-        final title = data['title'] as String?;
-        final description = data['description'] as String?;
-        final locationTag = data['locationTag'] as String?;
-        final topicTag = data['topicTag'] as String?;
-        final price = data['price'] as int?;
-        final stock = data['stock'] as int?;
-        final images = (data['images'] as List<dynamic>?)?.cast<String>() ?? [];
-
-        try {
-          final liveCreated = await SupabaseService.instance.createPost(
-            postType: postMode,
-            caption: caption,
-            title: title,
-            description: description,
-            price: price,
-            stock: stock,
-            locationTag: locationTag,
-            topicTag: topicTag,
-            images: images,
-          );
-
-          if (mounted) {
-            setState(() {
-              _posts.insert(0, liveCreated);
-            });
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  postMode == 'product'
-                      ? 'Produk berhasil dipasang ke katalog COD SMKN 8!'
-                      : 'Utas berhasil diposting ke feed!',
-                ),
-                duration: const Duration(seconds: 2),
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          }
-        } catch (e) {
-          debugPrint('Error creating post in Supabase: $e');
-          final user = SupabaseService.instance.currentUser;
-          final fallbackPost = MarketPostModel(
-            id: 'post-local-${DateTime.now().millisecondsSinceEpoch}',
-            postType: postMode,
-            seller: SellerModel(
-              id: user?.id ?? 'current-user-1',
-              name: 'Akun Anda',
-              avatar: '',
-              classGroup: 'Siswa Snapan',
-            ),
-            caption: caption,
-            title: title,
-            price: price,
-            stock: stock,
-            locationTag: locationTag,
-            topicTag: topicTag,
-            images: images,
-            timestamp: 'Baru saja',
-          );
-
-          if (mounted) {
-            setState(() {
-              _posts.insert(0, fallbackPost);
-            });
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Tersimpan di offline: $e'),
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          }
-        }
-      },
+      currentUserName: _feedController.userProfile?['full_name'] as String? ?? 'Siswa Snapan',
+      currentUserAvatar: _feedController.userProfile?['avatar_url'] as String?,
+      onSubmitPost: (data) => _feedController.createPost(data),
     );
-  }
-
-  void _handleTabChanged(FeedTab tab) {
-    setState(() {
-      _activeTab = tab;
-    });
-  }
-
-  void _handleLikeToggle(MarketPostModel updatedItem) {
-    final index = _posts.indexWhere((p) => p.id == updatedItem.id);
-    if (index != -1) {
-      setState(() {
-        _posts[index] = updatedItem;
-      });
-      // Fire Supabase toggle asynchronously
-      SupabaseService.instance.togglePostLike(updatedItem.id, !updatedItem.isLiked);
-    }
-  }
-
-  void _handleRepostToggle(MarketPostModel updatedItem) {
-    final index = _posts.indexWhere((p) => p.id == updatedItem.id);
-    if (index != -1) {
-      setState(() {
-        _posts[index] = updatedItem;
-      });
-    }
-  }
-
-  Future<void> _handleDeletePost(MarketPostModel post) async {
-    final int existingIndex = _posts.indexWhere((p) => p.id == post.id);
-    if (existingIndex == -1) return;
-
-    // 1. Optimistic removal from feed state
-    setState(() {
-      _posts.removeAt(existingIndex);
-    });
-
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Postingan berhasil dihapus'),
-        behavior: SnackBarBehavior.floating,
-        duration: Duration(seconds: 2),
-      ),
-    );
-
-    // 2. Perform backend deletion in Supabase
-    try {
-      final isAdmin = await SupabaseService.instance.isCurrentUserAdmin();
-      final isOwner = SupabaseService.instance.currentUser?.id == post.seller.id;
-      await SupabaseService.instance.deletePost(post.id, asAdmin: isAdmin && !isOwner);
-    } catch (e) {
-      debugPrint('Error deleting post: $e');
-      // Rollback on failure
-      if (mounted) {
-        setState(() {
-          _posts.insert(existingIndex.clamp(0, _posts.length), post);
-        });
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Gagal menghapus postingan. Silakan coba lagi.'),
-            backgroundColor: Color(0xFFEF4444),
-            behavior: SnackBarBehavior.floating,
-            duration: Duration(seconds: 3),
-          ),
-        );
-      }
-    }
   }
 
   void _handlePostClick(MarketPostModel item) async {
@@ -534,361 +164,42 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       AppSlidePageRoute(
         builder: (context) => PostDetailScreen(
           post: item,
-          onLikeToggle: _handleLikeToggle,
-          onBookmarkToggle: (updated) {
-            final index = _posts.indexWhere((p) => p.id == updated.id);
-            if (index != -1) {
-              setState(() {
-                _posts[index] = updated;
-              });
-            }
-          },
-          onRepostToggle: _handleRepostToggle,
-          onDeletePost: (deletedPost) {
-            _handleDeletePost(deletedPost);
-          },
+          onLikeToggle: _feedController.toggleLike,
+          onBookmarkToggle: _feedController.updatePost,
+          onRepostToggle: _feedController.toggleRepost,
+          onDeletePost: _feedController.deletePost,
         ),
       ),
     );
 
     if (result is Map && result['deleted'] == true) {
       final postId = result['postId'] as String?;
-      if (postId != null) {
-        setState(() {
-          _posts.removeWhere((p) => p.id == postId);
-        });
-      }
+      if (postId != null) _feedController.removePostById(postId);
     }
   }
 
-  void _handleTopicClick(String topic) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Menampilkan postingan topik #$topic'),
-        duration: const Duration(seconds: 1),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
-  void _handleUserClick(String username) {
-    Navigator.push(
-      context,
-      AppSlidePageRoute(
-        builder: (context) => ProfileScreen(
-          username: username,
-          onBack: () => Navigator.pop(context),
-        ),
-      ),
-    );
-  }
-
-
-  void _handleImageClick(MarketPostModel item, int imageIndex) {
-    MediaLightboxDialog.show(
-      context: context,
-      images: item.images,
-      initialIndex: imageIndex,
-      post: item,
-      onLikeToggle: _handleLikeToggle,
-      onRepostToggle: _handleRepostToggle,
-      onPostClick: _handlePostClick,
-    );
-  }
-
-  List<MarketPostModel> get _displayedPosts {
-    if (_activeTab == FeedTab.latest) {
-      // For "Terbaru" tab, sort by latest posts
-      return _posts.reversed.toList();
-    }
-    return _posts;
-  }
-
-  Widget _buildHomeFeedTab(List<MarketPostModel> posts) {
-    return NotificationListener<ScrollNotification>(
-      onNotification: (notification) {
-        // Strictly ignore horizontal scrolls (e.g. image carousels) and nested scrollables
-        if (notification.depth != 0 || notification.metrics.axis != Axis.vertical) {
-          return false;
-        }
-
-        if (notification is ScrollUpdateNotification) {
-          final double delta = notification.scrollDelta ?? 0.0;
-          final double currentOffset = notification.metrics.pixels;
-          final double maxScroll = notification.metrics.maxScrollExtent;
-
-          if (currentOffset <= 10.0) {
-            // At or near top of the feed: always show FAB
-            _showFab();
-          } else if (currentOffset < maxScroll) {
-            if (delta > 2.0) {
-              // User scrolled down: hide FAB and keep it hidden
-              _hideFab();
-            } else if (delta < -2.0) {
-              // User scrolled up: reveal FAB
-              _showFab();
-            }
-          }
-        }
-        return false;
-      },
-      child: RefreshIndicator(
-        onRefresh: () => _fetchPosts(isRefresh: true),
-        color: AppColors.primary,
-        backgroundColor: Colors.white,
-        child: CustomScrollView(
-          controller: _scrollController,
-          physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics(),
-          ),
-          slivers: [
-            // Tab Bar Switch ("Untuk Anda" & "Terbaru") - scrolls away naturally with the feed
-            SliverToBoxAdapter(
-              child: RepaintBoundary(
-                child: HomeFeedTabSwitch(
-                  activeTab: _activeTab,
-                  onTabChanged: _handleTabChanged,
-                ),
-              ),
-            ),
-
-            if (_isLoading && _posts.isEmpty)
-              const SliverToBoxAdapter(
-                child: FeedTimelineSkeleton(itemCount: 4),
-              )
-            else if (_hasError && _posts.isEmpty)
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(32.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.wifi_off_rounded, size: 52, color: Color(0xFF94A3B8)),
-                        const SizedBox(height: 14),
-                        const Text(
-                          'Koneksi Terputus',
-                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: Color(0xFF1E293B)),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          _errorMessage,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
-                        ),
-                        const SizedBox(height: 18),
-                        ElevatedButton(
-                          onPressed: () => _fetchPosts(),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                          ),
-                          child: const Text('Coba Lagi', style: TextStyle(fontWeight: FontWeight.w600)),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              )
-            else if (posts.isEmpty)
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(32.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 54.0,
-                          height: 54.0,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF1F5F9),
-                            borderRadius: BorderRadius.circular(18.0),
-                          ),
-                          child: const Icon(
-                            Icons.dynamic_feed_rounded,
-                            size: 28.0,
-                            color: Color(0xFF94A3B8),
-                          ),
-                        ),
-                        const SizedBox(height: 14.0),
-                        const Text(
-                          'Belum Ada Utas',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF0F172A),
-                          ),
-                        ),
-                        const SizedBox(height: 6.0),
-                        const Text(
-                          'Jadilah yang pertama membuat utas atau menjual karya di SMKN 8!',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 13.0,
-                            color: Color(0xFF64748B),
-                            height: 1.4,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              )
-            else ...[
-              // Dynamic Feed Posts Sliver List
-              SliverList.builder(
-                itemCount: posts.length,
-                itemBuilder: (context, index) {
-                  final post = posts[index];
-                  return MarketPostCard(
-                    key: ValueKey(post.id),
-                    item: post,
-                    onLikeToggle: _handleLikeToggle,
-                    onRepostToggle: _handleRepostToggle,
-                    onPostClick: _handlePostClick,
-                    onTopicClick: _handleTopicClick,
-                    onUserClick: _handleUserClick,
-                    onImageClick: _handleImageClick,
-                    onDeletePost: _handleDeletePost,
-                  );
-                },
-              ),
-
-              // End of Feed Footer
-              SliverToBoxAdapter(
-            child: Container(
-              color: AppColors.canvas,
-              padding: const EdgeInsets.symmetric(vertical: 28.0, horizontal: 16.0),
-              child: Column(
-                children: [
-                  Container(
-                    width: 32.0,
-                    height: 3.0,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE2E8F0),
-                      borderRadius: BorderRadius.circular(2.0),
-                    ),
-                  ),
-                  const SizedBox(height: 14.0),
-                  const Text(
-                    'Scroll ke bawah untuk memuat postingan baru',
-                    style: TextStyle(
-                      fontSize: 13.0,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF94A3B8),
-                    ),
-                  ),
-                  if (widget.onLogout != null) ...[
-                    const SizedBox(height: 16.0),
-                    TextButton.icon(
-                      onPressed: widget.onLogout,
-                      icon: const Icon(
-                        Icons.logout_rounded,
-                        size: 16.0,
-                        color: AppColors.muted,
-                      ),
-                      label: const Text(
-                        'Keluar Akun',
-                        style: TextStyle(
-                          fontSize: 13.0,
-                          color: AppColors.muted,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 160.0), // Bottom clearance for floating dock & vertical duo FAB
-                ],
-              ),
-            ),
-          ),
-        ],
-      ],
-    ),
-  ),
-);
-}
-
-  Widget _buildNavTabScreen({required int index, required Widget child}) {
-    final int currentIndex = _currentNavTab.index;
-    final bool isCurrent = currentIndex == index;
-
-    // Transitions-polish: 08-page-side-by-side
-    // Directional page horizontal slide:
-    // - Active page (index == currentIndex): centered at Offset.zero with full opacity
-    // - Future pages (index > currentIndex): staged offscreen right at Offset(1.0, 0.0)
-    // - Past pages (index < currentIndex): retired slightly left in parallax at Offset(-0.25, 0.0) with fade-out
-    final Offset targetOffset = isCurrent
-        ? Offset.zero
-        : (index > currentIndex
-            ? const Offset(1.0, 0.0)
-            : const Offset(-0.25, 0.0));
-
-    final double targetOpacity = isCurrent
-        ? 1.0
-        : (index > currentIndex ? 1.0 : 0.0);
-
-    return Positioned.fill(
-      child: IgnorePointer(
-        ignoring: !isCurrent,
-        child: AnimatedSlide(
-          offset: targetOffset,
-          duration: const Duration(milliseconds: 280),
-          curve: const Cubic(0.22, 1.0, 0.36, 1.0),
-          child: AnimatedOpacity(
-            opacity: targetOpacity,
-            duration: const Duration(milliseconds: 240),
-            curve: const Cubic(0.22, 1.0, 0.36, 1.0),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: index > 0
-                    ? const [
-                        BoxShadow(
-                          color: Color(0x14000000),
-                          blurRadius: 18.0,
-                          offset: Offset(-4, 0),
-                        ),
-                      ]
-                    : null,
-              ),
-              child: child,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  List<MarketPostModel> get _displayedPosts =>
+      _activeTab == FeedTab.latest ? _feedController.posts.reversed.toList() : _feedController.posts;
 
   @override
   Widget build(BuildContext context) {
-    if (_fabAnimationController == null || _fabAnimation == null) {
-      _initAnimations();
-    }
-    final posts = _displayedPosts;
+    if (_fabAnimationController == null || _fabAnimation == null) _initAnimations();
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
-    final double fabBottomVisible = (bottomPadding > 0 ? bottomPadding + 8.0 : 18.0) + 62.0 + 12.0;
+    final double fabBottom = (bottomPadding > 0 ? bottomPadding + 8.0 : 18.0) + 62.0 + 12.0;
     final bool isUnauthenticated = SupabaseService.instance.currentUser == null;
 
-    final Widget scaffold = Scaffold(
+    final scaffold = Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       extendBody: true,
       drawer: HomeNavDrawer(
-        userProfile: _userProfile,
-        onAppearanceTap: _handleAppearanceTap,
-        onSettingsTap: _handleSettingsTap,
-        onLikedTap: _handleLikedTap,
-        onArchiveTap: _handleArchiveTap,
-        onReportTap: _handleReportTap,
-        onCheckUpdateTap: _handleManualUpdateCheck,
+        userProfile: _feedController.userProfile,
+        onAppearanceTap: () {},
+        onSettingsTap: () {},
+        onLikedTap: () => setState(() => _currentNavTab = HomeNavTab.activity),
+        onArchiveTap: () {},
+        onReportTap: () {},
+        onCheckUpdateTap: () => AppUpdateService.instance.checkForUpdate(isManual: true),
         onAuthTap: _handleOpenAuth,
         onLogout: widget.onLogout,
       ),
@@ -900,103 +211,51 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           HomeNavTab.activity => 'Aktivitas',
           HomeNavTab.profile => 'Profil',
         },
-        onMenuTap: _handleMenuTap,
-        onBackTap: _currentNavTab != HomeNavTab.home
-            ? () {
-                HapticFeedback.lightImpact();
-                setState(() {
-                  _currentNavTab = HomeNavTab.home;
-                });
-                _showFab();
-              }
-            : null,
-        onTitleTap: () {
-          if (_currentNavTab == HomeNavTab.home) {
-            _scrollToTop();
-          }
+        onMenuTap: () {
+          HapticFeedback.lightImpact();
+          _scaffoldKey.currentState?.openDrawer();
         },
-        onSearchTap: _handleSearchTap,
+        onBackTap: _currentNavTab != HomeNavTab.home ? () => setState(() => _currentNavTab = HomeNavTab.home) : null,
+        onTitleTap: () => _currentNavTab == HomeNavTab.home ? _scrollToTop() : null,
+        onSearchTap: () => Navigator.push(context, AppSlidePageRoute(builder: (_) => SearchScreen(onBack: () => Navigator.pop(context)))),
       ),
       body: Stack(
         children: [
-          // Smooth Tab Screens Directional Slide-in (Preserves State)
-          Positioned.fill(
-            child: Stack(
-              fit: StackFit.expand,
-              clipBehavior: Clip.none,
-              children: [
-                _buildNavTabScreen(
-                  index: 0,
-                  child: _buildHomeFeedTab(posts),
-                ),
-                _buildNavTabScreen(
-                  index: 1,
-                  child: const DirectMessagesScreen(showBackButton: false, showAppBar: false),
-                ),
-                _buildNavTabScreen(
-                  index: 2,
-                  child: const ActivityScreen(showAppBar: false),
-                ),
-                _buildNavTabScreen(
-                  index: 3,
-                  child: ProfileScreen(
-                    key: _profileKey,
-                    showAppBar: false,
-                    onOpenMenu: _handleMenuTap,
-                  ),
-                ),
-              ],
+          HomeNavTabSwitcher(
+            currentNavTab: _currentNavTab,
+            feedTab: HomeFeedScrollableList(
+              scrollController: _scrollController,
+              activeTab: _activeTab,
+              onTabChanged: (t) => setState(() => _activeTab = t),
+              isLoading: _feedController.isLoading,
+              hasError: _feedController.hasError,
+              errorMessage: _feedController.errorMessage,
+              posts: _displayedPosts,
+              onRefresh: () => _feedController.fetchPosts(isRefresh: true),
+              onRetry: () => _feedController.fetchPosts(),
+              onScrollToTop: _scrollToTop,
+              onShowFab: _showFab,
+              onHideFab: _hideFab,
+              onLikeToggle: _feedController.toggleLike,
+              onRepostToggle: _feedController.toggleRepost,
+              onPostClick: _handlePostClick,
+              onTopicClick: (_) {},
+              onUserClick: (u) => Navigator.push(context, AppSlidePageRoute(builder: (_) => ProfileScreen(username: u, onBack: () => Navigator.pop(context)))),
+              onImageClick: (item, idx) => MediaLightboxDialog.show(context: context, images: item.images, initialIndex: idx, post: item, onLikeToggle: _feedController.toggleLike, onRepostToggle: _feedController.toggleRepost, onPostClick: _handlePostClick),
+              onDeletePost: _feedController.deletePost,
+              onLogout: widget.onLogout,
             ),
+            messagesTab: const DirectMessagesScreen(showBackButton: false, showAppBar: false),
+            activityTab: const ActivityScreen(showAppBar: false),
+            profileTab: ProfileScreen(key: _profileKey, showAppBar: false, onOpenMenu: () => _scaffoldKey.currentState?.openDrawer()),
           ),
-          // Animated Floating Action Button Stack (Focused motion on FAB: hide on scroll down, reveal on scroll up/stop)
-          Positioned(
-            right: 20.0,
-            bottom: fabBottomVisible,
-            child: AnimatedBuilder(
-              animation: _fabAnimationController!,
-              builder: (context, _) {
-                final double fabProgress = _fabAnimation?.value ?? 1.0;
-                final double fabOffsetY = (1.0 - fabProgress) * 48.0;
-                final double fabScale = 0.6 + 0.4 * fabProgress;
-                final double fabOpacity = fabProgress.clamp(0.0, 1.0);
-                final bool isHomeTab = _currentNavTab == HomeNavTab.home;
-
-                return AnimatedOpacity(
-                  opacity: isHomeTab ? fabOpacity : 0.0,
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeOutCubic,
-                  child: AnimatedScale(
-                    scale: isHomeTab ? fabScale : 0.6,
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.easeOutCubic,
-                    alignment: Alignment.bottomRight,
-                    child: Transform.translate(
-                      offset: Offset(0, fabOffsetY),
-                      child: IgnorePointer(
-                        ignoring: !isHomeTab || fabProgress < 0.2,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            // White Marketplace Squircle Button (Langsung buka Mode Jualan)
-                            FloatingMarketplaceSquircleButton(
-                              onTap: () => _handleCreatePost(PostMode.product),
-                            ),
-                            const SizedBox(height: 6.0),
-                            // Azure Blue Squircle Button (Buka Buat Utas)
-                            FloatingPlusSquircleButton(
-                              onTap: () => _handleCreatePost(PostMode.thread),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
+          HomeFeedFabGroup(
+            currentNavTab: _currentNavTab,
+            fabAnimationController: _fabAnimationController!,
+            fabAnimation: _fabAnimation,
+            fabBottomVisible: fabBottom,
+            onCreatePost: _handleCreatePost,
           ),
-          // Fixed Bottom Nav Bar (No scroll motion, persistent dock)
           Positioned(
             left: 0,
             right: 0,
@@ -1006,18 +265,17 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                 currentTab: _currentNavTab,
                 hasUnreadMessages: true,
                 unreadMessagesCount: 20,
-                userAvatar: _userProfile?['avatar_url'] as String? ??
+                userAvatar: _feedController.userProfile?['avatar_url'] as String? ??
                     (SupabaseService.instance.currentUser?.userMetadata?['avatar_url'] as String?),
-                onSearchTap: _handleSearchTap,
+                onSearchTap: () => Navigator.push(
+                  context,
+                  AppSlidePageRoute(builder: (context) => SearchScreen(onBack: () => Navigator.pop(context))),
+                ),
                 onPostTap: _handleCreatePost,
                 onTabSelected: (tab) {
-                  setState(() {
-                    _currentNavTab = tab;
-                  });
+                  setState(() => _currentNavTab = tab);
                   _showFab();
-                  if (tab == HomeNavTab.profile) {
-                    _profileKey.currentState?.reloadProfile();
-                  }
+                  if (tab == HomeNavTab.profile) _profileKey.currentState?.reloadProfile();
                 },
               ),
             ),
@@ -1031,15 +289,10 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
         fit: StackFit.expand,
         children: [
           scaffold,
-          Positioned.fill(
-            child: AuthPromptOverlay(
-              onNavigateToAuth: _handleOpenAuth,
-            ),
-          ),
+          Positioned.fill(child: AuthPromptOverlay(onNavigateToAuth: _handleOpenAuth)),
         ],
       );
     }
-
     return scaffold;
   }
 }

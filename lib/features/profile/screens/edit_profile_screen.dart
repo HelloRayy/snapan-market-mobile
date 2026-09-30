@@ -6,19 +6,11 @@ import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/auth/models/auth_constants.dart';
 import 'package:snapan_market/features/profile/components/discard_changes_dialog.dart';
 import 'package:snapan_market/features/profile/components/edit_profile_avatar_section.dart';
-import 'package:snapan_market/features/profile/components/edit_profile_chips_editor.dart';
+import 'package:snapan_market/features/profile/components/edit_profile_bottom_bar.dart';
+import 'package:snapan_market/features/profile/components/edit_profile_form_fields.dart';
 import 'package:snapan_market/features/profile/models/profile_user_model.dart';
 
-/// Full Edit Profile Screen matching EditProfilePage.tsx 1:1
-///
-/// Features:
-/// - Header Bar with Back navigation & Unsaved Changes Guard
-/// - Name & Avatar Selector with 6-Preset Avatars Accordion
-/// - @username, Bio with isolated ValueListenable live counter, Class & Major fields
-/// - Interactive Interest Chips Editor (add via enter/comma, remove via X)
-/// - External Link, Sales Stats Toggle, and Profile Privacy info
-/// - Permanently Fixed Dual Action CTA Bar (Discard & Save)
-/// - Hardware / Gesture PopScope interception
+/// Full Edit Profile Screen (<250 lines orchestrator).
 class EditProfileScreen extends StatefulWidget {
   final ProfileUserModel initialUser;
   final ValueChanged<ProfileUserModel> onSave;
@@ -52,29 +44,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.initialUser.name);
-    _usernameController = TextEditingController(
-      text: widget.initialUser.username.replaceAll('@', ''),
-    );
+    _usernameController = TextEditingController(text: widget.initialUser.username.replaceAll('@', ''));
     _bioController = TextEditingController(text: widget.initialUser.bio);
-    _linkController = TextEditingController(
-      text: widget.initialUser.link ?? '',
-    );
+    _linkController = TextEditingController(text: widget.initialUser.link ?? '');
 
-    // Parse class group from initialUser
     final parts = widget.initialUser.classGroup.trim().split(RegExp(r'\s+'));
-    if (parts.length >= 3 &&
-        AuthConstants.gradeOptions.contains(parts[0]) &&
-        AuthConstants.majorOptions.contains(parts[1]) &&
-        AuthConstants.classNumOptions.contains(parts[2])) {
-      _selectedGrade = parts[0];
-      _selectedMajor = parts[1];
-      _selectedClassNum = parts[2];
-    } else {
-      for (final p in parts) {
-        if (AuthConstants.gradeOptions.contains(p)) _selectedGrade = p;
-        if (AuthConstants.majorOptions.contains(p)) _selectedMajor = p;
-        if (AuthConstants.classNumOptions.contains(p)) _selectedClassNum = p;
-      }
+    for (final p in parts) {
+      if (AuthConstants.gradeOptions.contains(p)) _selectedGrade = p;
+      if (AuthConstants.majorOptions.contains(p)) _selectedMajor = p;
+      if (AuthConstants.classNumOptions.contains(p)) _selectedClassNum = p;
     }
 
     _avatar = widget.initialUser.avatar;
@@ -118,33 +96,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       Navigator.of(context).pop();
       return;
     }
-
     final shouldDiscard = await DiscardChangesDialog.show(context);
-    if (shouldDiscard == true && mounted) {
-      Navigator.of(context).pop();
-    }
+    if (shouldDiscard == true && mounted) Navigator.of(context).pop();
   }
 
   Future<void> _handleSave() async {
     if (_isSaving) return;
     HapticFeedback.mediumImpact();
 
-    final cleanName = _nameController.text.trim().isEmpty
-        ? widget.initialUser.name
-        : _nameController.text.trim();
+    final cleanName = _nameController.text.trim().isEmpty ? widget.initialUser.name : _nameController.text.trim();
     final cleanUsername = _usernameController.text.trim().isEmpty
         ? widget.initialUser.username
         : _usernameController.text.trim().toLowerCase().replaceAll(RegExp(r'[^a-z0-9._]'), '');
-    final cleanClass = _currentClassGroup.isEmpty
-        ? widget.initialUser.classGroup
-        : _currentClassGroup;
-
+    final cleanClass = _currentClassGroup.isEmpty ? widget.initialUser.classGroup : _currentClassGroup;
     final cleanInitialUsername = widget.initialUser.username.replaceAll('@', '').toLowerCase();
 
     setState(() => _isSaving = true);
 
     try {
-      // 1. Check username collision if username was changed
       if (cleanUsername != cleanInitialUsername) {
         final isTaken = await SupabaseService.instance.isUsernameTaken(cleanUsername);
         if (isTaken) {
@@ -162,39 +131,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         }
       }
 
-      // 2. Upload avatar if selected from local file storage
-      String finalAvatar = _avatar;
-      if (!finalAvatar.startsWith('http://') && !finalAvatar.startsWith('https://')) {
-        try {
-          final file = File(finalAvatar);
-          if (await file.exists()) {
-            final bytes = await file.readAsBytes();
-            final uploaded = await SupabaseService.instance.uploadImage(
-              bytes: bytes,
-              fileName: finalAvatar.split(Platform.pathSeparator).last,
-              bucket: 'avatars',
-            );
-            if (uploaded != null && uploaded.isNotEmpty) {
-              finalAvatar = uploaded;
-            }
-          }
-        } catch (e) {
-          debugPrint('Error uploading avatar during save: $e');
+      String finalAvatarUrl = _avatar;
+      if (!finalAvatarUrl.startsWith('http://') &&
+          !finalAvatarUrl.startsWith('https://') &&
+          !finalAvatarUrl.startsWith('assets/')) {
+        final file = File(finalAvatarUrl);
+        if (await file.exists()) {
+          final bytes = await file.readAsBytes();
+          final fileName = finalAvatarUrl.split(Platform.pathSeparator).last;
+          final uploaded = await SupabaseService.instance.uploadImage(
+            bytes: bytes,
+            fileName: fileName,
+            bucket: 'avatars',
+          );
+          if (uploaded != null) finalAvatarUrl = uploaded;
         }
       }
 
-      final updated = widget.initialUser.copyWith(
-        name: cleanName,
-        username: cleanUsername,
-        bio: _bioController.text.trim(),
-        classGroup: cleanClass,
-        avatar: finalAvatar,
-        tags: _tags,
-        link: _linkController.text.trim(),
-        showSalesStats: _showSalesStats,
-      );
-
-      // 3. Persist directly to Supabase DB and synchronize auth user metadata
       final currentUser = SupabaseService.instance.currentUser;
       if (currentUser != null) {
         await SupabaseService.instance.updateProfile(
@@ -202,27 +155,38 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           fullName: cleanName,
           username: cleanUsername,
           classGroup: cleanClass,
-          avatarUrl: finalAvatar,
+          avatarUrl: finalAvatarUrl,
           bio: _bioController.text.trim(),
           tags: _tags,
           link: _linkController.text.trim(),
         );
       }
 
+      final updated = widget.initialUser.copyWith(
+        name: cleanName,
+        username: cleanUsername,
+        avatar: finalAvatarUrl,
+        bio: _bioController.text.trim(),
+        classGroup: cleanClass,
+        link: _linkController.text.trim(),
+        tags: _tags,
+        showSalesStats: _showSalesStats,
+      );
+
       widget.onSave(updated);
+
       if (mounted) {
-        Navigator.of(context).pop(updated);
+        setState(() => _isSaving = false);
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profil berhasil diperbarui'), behavior: SnackBarBehavior.floating),
+        );
       }
-    } catch (err) {
-      debugPrint('Error saving profile: $err');
+    } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Gagal menyimpan profil. Silakan periksa koneksi dan coba lagi.'),
-            backgroundColor: Color(0xFFEF4444),
-            behavior: SnackBarBehavior.floating,
-          ),
+          SnackBar(content: Text('Gagal menyimpan profil: $e'), backgroundColor: const Color(0xFFEF4444), behavior: SnackBarBehavior.floating),
         );
       }
     }
@@ -230,663 +194,73 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 80.0;
+    final isKeyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
 
     return PopScope(
-      canPop: !_hasChanges,
+      canPop: !_hasChanges && !_isSaving,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) {
-          _handleAttemptExit();
-        }
+        if (!didPop) _handleAttemptExit();
       },
       child: Scaffold(
-        backgroundColor: AppColors.white,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(50.0),
-          child: Container(
-            color: AppColors.white,
-            child: SafeArea(
-              bottom: false,
-              child: Container(
-                height: 50.0,
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                decoration: const BoxDecoration(
-                  color: AppColors.white,
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Color(0xFFF1F5F9),
-                      width: 0.8,
-                    ),
-                  ),
-                ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // Truly Centered Title (Dead center of the entire screen width)
-                    const Center(
-                      child: Text(
-                        'Edit Profile',
-                        style: TextStyle(
-                          fontSize: 17.0,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.ink,
-                          letterSpacing: -0.3,
-                        ),
-                      ),
-                    ),
-
-                    // Left Back Button
-                    Positioned(
-                      left: 0,
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back_rounded,
-                          size: 22.0,
-                          color: AppColors.ink,
-                        ),
-                        tooltip: 'Kembali',
-                        onPressed: _handleAttemptExit,
-                      ),
-                    ),
-
-                    // Right action: Simpan button if keyboard is active
-                    if (isKeyboardOpen)
-                      Positioned(
-                        right: 0,
-                        child: TextButton(
-                          onPressed: _isSaving ? null : _handleSave,
-                          style: TextButton.styleFrom(
-                            foregroundColor: AppColors.primary,
-                            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          ),
-                          child: _isSaving
-                              ? const SizedBox(
-                                  width: 16.0,
-                                  height: 16.0,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2.0,
-                                    color: AppColors.primary,
-                                  ),
-                                )
-                              : const Text(
-                                  'Simpan',
-                                  style: TextStyle(
-                                    fontSize: 15.0,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                        ),
-                      ),
-                  ],
-                ),
-
-              ),
-            ),
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_rounded, color: AppColors.ink),
+            onPressed: _handleAttemptExit,
           ),
+          title: const Text('Edit Profil', style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.w700, color: AppColors.ink)),
+          actions: [
+            if (_hasChanges)
+              TextButton(
+                onPressed: _isSaving ? null : _handleSave,
+                child: _isSaving
+                    ? const SizedBox(width: 16.0, height: 16.0, child: CircularProgressIndicator(strokeWidth: 2.0, color: AppColors.primary))
+                    : const Text('Simpan', style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w700, color: AppColors.primary)),
+              ),
+          ],
         ),
-
         body: Column(
           children: [
-            // Scrollable Form Fields Area
             Expanded(
               child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics(),
-                ),
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                 padding: const EdgeInsets.fromLTRB(20.0, 4.0, 20.0, 24.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Row 1: Nama & Avatar with 6 Preset Avatars Accordion
                     EditProfileAvatarSection(
                       nameController: _nameController,
                       currentAvatar: _avatar,
-                      onAvatarChanged: (newAvatar) {
-                        setState(() => _avatar = newAvatar);
-                      },
+                      onAvatarChanged: (newAvatar) => setState(() => _avatar = newAvatar),
                     ),
-
-                    // Row 2: Nama Pengguna (@username)
-                    _FormRow(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Nama pengguna',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.ink,
-                              letterSpacing: -0.1,
-                            ),
-                          ),
-                          const SizedBox(height: 4.0),
-                          Row(
-                            children: [
-                              const Text(
-                                '@',
-                                style: TextStyle(
-                                  fontSize: 15.5,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.ink,
-                                ),
-                              ),
-                              const SizedBox(width: 2.0),
-                              Expanded(
-                                child: TextField(
-                                  controller: _usernameController,
-                                  maxLength: 30,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9._]')),
-                                    TextInputFormatter.withFunction((oldValue, newValue) {
-                                      return newValue.copyWith(
-                                        text: newValue.text.toLowerCase(),
-                                      );
-                                    }),
-                                  ],
-                                  style: const TextStyle(
-                                    fontSize: 15.5,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.ink,
-                                  ),
-                                  decoration: const InputDecoration(
-                                    hintText: 'username_kamu',
-                                    hintStyle: TextStyle(
-                                      fontSize: 15.5,
-                                      color: AppColors.lightMuted,
-                                      fontWeight: FontWeight.normal,
-                                    ),
-                                    border: InputBorder.none,
-                                    isDense: true,
-                                    counterText: '',
-                                    contentPadding: EdgeInsets.zero,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Row 3: Bio with live counter (isolated ValueListenable for 0ms typing lag)
-                    _FormRow(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Bio',
-                                style: TextStyle(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.ink,
-                                  letterSpacing: -0.1,
-                                ),
-                              ),
-                              ValueListenableBuilder<TextEditingValue>(
-                                valueListenable: _bioController,
-                                builder: (context, value, _) => Text(
-                                  '${value.text.length}/150',
-                                  style: const TextStyle(
-                                    fontSize: 11.5,
-                                    color: AppColors.lightMuted,
-                                    fontFeatures: [FontFeature.tabularFigures()],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4.0),
-                          TextField(
-                            controller: _bioController,
-                            maxLength: 150,
-                            maxLines: 3,
-                            minLines: 2,
-                            style: const TextStyle(
-                              fontSize: 14.5,
-                              color: AppColors.ink,
-                              height: 1.35,
-                            ),
-                            decoration: const InputDecoration(
-                              hintText: 'Tulis bio singkat tentang Anda...',
-                              hintStyle: TextStyle(
-                                fontSize: 14.5,
-                                color: AppColors.lightMuted,
-                              ),
-                              border: InputBorder.none,
-                              isDense: true,
-                              counterText: '',
-                              contentPadding: EdgeInsets.symmetric(vertical: 4.0),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Row 4: Kelas & Jurusan Dropdown Selector (Matching Auth Registration)
-                    _FormRow(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Kelas & Jurusan',
-                                style: TextStyle(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.ink,
-                                  letterSpacing: -0.1,
-                                ),
-                              ),
-                              if (_selectedGrade != null && _selectedMajor != null && _selectedClassNum != null)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primary.withValues(alpha: 0.08),
-                                    borderRadius: BorderRadius.circular(6.0),
-                                  ),
-                                  child: Text(
-                                    '$_selectedGrade $_selectedMajor $_selectedClassNum',
-                                    style: const TextStyle(
-                                      fontSize: 12.0,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColors.primary,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                          const SizedBox(height: 10.0),
-                          Row(
-                            children: [
-                              // 1. Grade Dropdown (X, XI, XII)
-                              Expanded(
-                                flex: 3,
-                                child: _ProfileDropdownField(
-                                  label: 'Kelas',
-                                  value: _selectedGrade,
-                                  options: AuthConstants.gradeOptions,
-                                  onChanged: (val) => setState(() => _selectedGrade = val),
-                                ),
-                              ),
-                              const SizedBox(width: 8.0),
-
-                              // 2. Major Dropdown (DKV, LK, PPLG, PS, TJKT)
-                              Expanded(
-                                flex: 4,
-                                child: _ProfileDropdownField(
-                                  label: 'Jurusan',
-                                  value: _selectedMajor,
-                                  options: AuthConstants.majorOptions,
-                                  onChanged: (val) => setState(() => _selectedMajor = val),
-                                ),
-                              ),
-                              const SizedBox(width: 8.0),
-
-                              // 3. Class Number Dropdown (1, 2, 3)
-                              Expanded(
-                                flex: 3,
-                                child: _ProfileDropdownField(
-                                  label: 'Ruang',
-                                  value: _selectedClassNum,
-                                  options: AuthConstants.classNumOptions,
-                                  onChanged: (val) => setState(() => _selectedClassNum = val),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Row 5: Minat Chips Editor
-                    _FormRow(
-                      child: EditProfileChipsEditor(
-                        tags: _tags,
-                        onTagsChanged: (updatedTags) {
-                          setState(() => _tags = updatedTags);
-                        },
-                      ),
-                    ),
-
-                    // Row 6: Tautan (Link / Instagram / WA)
-                    _FormRow(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              Text(
-                                'Tautan',
-                                style: TextStyle(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.ink,
-                                  letterSpacing: -0.1,
-                                ),
-                              ),
-                              Icon(
-                                Icons.chevron_right_rounded,
-                                size: 18.0,
-                                color: AppColors.lightMuted,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4.0),
-                          TextField(
-                            controller: _linkController,
-                            maxLength: 100,
-                            style: const TextStyle(
-                              fontSize: 15.0,
-                              color: AppColors.ink,
-                            ),
-                            decoration: const InputDecoration(
-                              hintText: 'https://instagram.com/... atau https://wa.me/...',
-                              hintStyle: TextStyle(
-                                fontSize: 14.0,
-                                color: AppColors.lightMuted,
-                              ),
-                              border: InputBorder.none,
-                              isDense: true,
-                              counterText: '',
-                              contentPadding: EdgeInsets.symmetric(vertical: 4.0),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Row 7: Toggle - Tampilkan statistik penjualan
-                    _FormRow(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Tampilkan statistik penjualan',
-                            style: TextStyle(
-                              fontSize: 14.5,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.ink,
-                              letterSpacing: -0.1,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              HapticFeedback.lightImpact();
-                              setState(() => _showSalesStats = !_showSalesStats);
-                            },
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              width: 44.0,
-                              height: 26.0,
-                              padding: const EdgeInsets.all(2.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(13.0),
-                                color: _showSalesStats
-                                    ? AppColors.primary
-                                    : const Color(0xFFCBD5E1),
-                              ),
-                              alignment: _showSalesStats
-                                  ? Alignment.centerRight
-                                  : Alignment.centerLeft,
-                              child: Container(
-                                width: 22.0,
-                                height: 22.0,
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Color(0x1F000000),
-                                      blurRadius: 2.0,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Row 8: Privasi profil
-                    _FormRow(
-                      showDivider: false,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Text(
-                            'Privasi profil',
-                            style: TextStyle(
-                              fontSize: 14.5,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.ink,
-                              letterSpacing: -0.1,
-                            ),
-                          ),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Publik',
-                                style: TextStyle(
-                                  fontSize: 13.5,
-                                  color: AppColors.lightMuted,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                              ),
-                              SizedBox(width: 2.0),
-                              Icon(
-                                Icons.chevron_right_rounded,
-                                size: 16.0,
-                                color: AppColors.lightMuted,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                    EditProfileFormFields(
+                      usernameController: _usernameController,
+                      bioController: _bioController,
+                      linkController: _linkController,
+                      selectedGrade: _selectedGrade,
+                      selectedMajor: _selectedMajor,
+                      selectedClassNum: _selectedClassNum,
+                      onGradeChanged: (val) => setState(() => _selectedGrade = val),
+                      onMajorChanged: (val) => setState(() => _selectedMajor = val),
+                      onClassNumChanged: (val) => setState(() => _selectedClassNum = val),
+                      tags: _tags,
+                      onTagsChanged: (t) => setState(() => _tags = t),
+                      showSalesStats: _showSalesStats,
+                      onToggleSalesStats: (v) => setState(() => _showSalesStats = v),
                     ),
                   ],
                 ),
               ),
             ),
-
-            // Permanently Fixed Bottom Dual Action CTA Bar (Hidden when software keyboard is open)
             if (!isKeyboardOpen)
-              Container(
-                padding: const EdgeInsets.fromLTRB(20.0, 12.0, 20.0, 16.0),
-                decoration: const BoxDecoration(
-                  color: AppColors.white,
-                  border: Border(
-                    top: BorderSide(
-                      color: Color(0xFFF1F5F9),
-                      width: 1.0,
-                    ),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0x0A000000),
-                      blurRadius: 16.0,
-                      offset: Offset(0, -4),
-                    ),
-                  ],
-                ),
-                child: SafeArea(
-                  top: false,
-                  child: Row(
-                    children: [
-                      // Discard Button (Left)
-                      Expanded(
-                        child: SizedBox(
-                          height: 46.0,
-                          child: OutlinedButton(
-                            onPressed: _handleAttemptExit,
-                            style: OutlinedButton.styleFrom(
-                              backgroundColor: AppColors.white,
-                              foregroundColor: AppColors.ink,
-                              side: const BorderSide(
-                                color: AppColors.border,
-                                width: 1.0,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24.0),
-                              ),
-                            ),
-                            child: const Text(
-                              'Discard',
-                              style: TextStyle(
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.ink,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(width: 12.0),
-
-                      // Save Button (Right)
-                      Expanded(
-                        child: SizedBox(
-                          height: 46.0,
-                          child: ElevatedButton(
-                            onPressed: _isSaving ? null : _handleSave,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF101010),
-                              foregroundColor: AppColors.white,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24.0),
-                              ),
-                            ),
-                            child: _isSaving
-                                ? const SizedBox(
-                                    width: 20.0,
-                                    height: 20.0,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2.0,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : const Text(
-                                    'Save',
-                                    style: TextStyle(
-                                      fontSize: 15.0,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColors.white,
-                                    ),
-                                  ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              EditProfileBottomBar(
+                isSaving: _isSaving,
+                onDiscard: _handleAttemptExit,
+                onSave: _handleSave,
               ),
-
           ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Declarative wrapper for individual form rows with consistent vertical padding and dividers
-class _FormRow extends StatelessWidget {
-  final Widget child;
-  final bool showDivider;
-
-  const _FormRow({
-    required this.child,
-    this.showDivider = true,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 14.0),
-          child: child,
-        ),
-        if (showDivider)
-          const Divider(
-            height: 1.0,
-            thickness: 0.8,
-            color: Color(0xFFF1F5F9),
-          ),
-      ],
-    );
-  }
-}
-
-/// Compact Modern Dropdown Field for Edit Profile Form
-class _ProfileDropdownField extends StatelessWidget {
-  final String label;
-  final String? value;
-  final List<String> options;
-  final ValueChanged<String?> onChanged;
-
-  const _ProfileDropdownField({
-    required this.label,
-    required this.value,
-    required this.options,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 44.0,
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(10.0),
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: options.contains(value) ? value : null,
-          isExpanded: true,
-          hint: Text(
-            label,
-            style: const TextStyle(
-              fontSize: 13.5,
-              color: AppColors.lightMuted,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          icon: const Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: Color(0xFF64748B),
-            size: 18.0,
-          ),
-          dropdownColor: Colors.white,
-          borderRadius: BorderRadius.circular(14.0),
-          elevation: 4,
-          menuMaxHeight: 260.0,
-          style: const TextStyle(
-            fontSize: 14.0,
-            fontWeight: FontWeight.w600,
-            color: AppColors.ink,
-          ),
-          onChanged: onChanged,
-          items: options.map((opt) {
-            return DropdownMenuItem<String>(
-              value: opt,
-              child: Text(opt),
-            );
-          }).toList(),
         ),
       ),
     );

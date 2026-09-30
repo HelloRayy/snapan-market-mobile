@@ -1,0 +1,181 @@
+import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class SupabaseSocialService {
+  SupabaseSocialService(this._client);
+  final SupabaseClient _client;
+
+  User? get _currentUser => _client.auth.currentUser;
+
+  /// Fetch notifications for current user
+  Future<List<Map<String, dynamic>>> fetchNotifications() async {
+    final user = _currentUser;
+    if (user == null) return [];
+
+    try {
+      final response = await _client
+          .from('notifications')
+          .select('*, actor:profiles!notifications_actor_id_fkey(*)')
+          .eq('user_id', user.id)
+          .order('created_at', ascending: false)
+          .limit(40);
+
+      return (response as List<dynamic>).whereType<Map<String, dynamic>>().toList();
+    } catch (e) {
+      debugPrint('Error fetchNotifications: $e');
+      return [];
+    }
+  }
+
+  /// Mark all notifications as read for current user
+  Future<void> markNotificationsAsRead() async {
+    final user = _currentUser;
+    if (user == null) return;
+
+    try {
+      await _client
+          .from('notifications')
+          .update({'is_read': true})
+          .eq('user_id', user.id);
+    } catch (e) {
+      debugPrint('Error markNotificationsAsRead: $e');
+    }
+  }
+
+  /// Fetch all followings for the authenticated user
+  Future<List<Map<String, dynamic>>> fetchFollowings() async {
+    final user = _currentUser;
+    if (user == null) return [];
+    try {
+      final res = await _client
+          .from('user_follows')
+          .select('following_id, following:profiles!user_follows_following_id_fkey(id, username)')
+          .eq('follower_id', user.id);
+      return (res as List<dynamic>).whereType<Map<String, dynamic>>().toList();
+    } catch (e) {
+      debugPrint('Error fetchFollowings with join: $e');
+      try {
+        final resSimple = await _client
+            .from('user_follows')
+            .select('following_id')
+            .eq('follower_id', user.id);
+        return (resSimple as List<dynamic>).whereType<Map<String, dynamic>>().toList();
+      } catch (e2) {
+        debugPrint('Error fetchFollowings fallback: $e2');
+        return [];
+      }
+    }
+  }
+
+  /// Follow a target user
+  Future<bool> followUser(String targetUserId) async {
+    final user = _currentUser;
+    if (user == null || user.id == targetUserId) return false;
+    try {
+      await _client.from('user_follows').insert({
+        'follower_id': user.id,
+        'following_id': targetUserId,
+      });
+
+      // Send in-app notification to target user
+      try {
+        await _client.from('notifications').insert({
+          'user_id': targetUserId,
+          'actor_id': user.id,
+          'type': 'follow',
+          'message': 'mulai mengikuti profil Anda.',
+        });
+      } catch (_) {}
+
+      return true;
+    } catch (e) {
+      debugPrint('Error followUser: $e');
+      return false;
+    }
+  }
+
+  /// Unfollow a target user
+  Future<bool> unfollowUser(String targetUserId) async {
+    final user = _currentUser;
+    if (user == null) return false;
+    try {
+      await _client
+          .from('user_follows')
+          .delete()
+          .eq('follower_id', user.id)
+          .eq('following_id', targetUserId);
+      return true;
+    } catch (e) {
+      debugPrint('Error unfollowUser: $e');
+      return false;
+    }
+  }
+
+  /// Get exact follower count for a user from public.user_follows
+  Future<int> getFollowersCount(String userId) async {
+    if (userId.isEmpty) return 0;
+    try {
+      final int count = await _client
+          .from('user_follows')
+          .count(CountOption.exact)
+          .eq('following_id', userId);
+      return count;
+    } catch (e) {
+      debugPrint('Error getFollowersCount: $e');
+      try {
+        final res = await _client
+            .from('user_follows')
+            .select('follower_id')
+            .eq('following_id', userId);
+        return (res as List).length;
+      } catch (e2) {
+        debugPrint('Error getFollowersCount fallback: $e2');
+        return 0;
+      }
+    }
+  }
+
+  /// Get exact following count for a user from public.user_follows
+  Future<int> getFollowingCount(String userId) async {
+    if (userId.isEmpty) return 0;
+    try {
+      final int count = await _client
+          .from('user_follows')
+          .count(CountOption.exact)
+          .eq('follower_id', userId);
+      return count;
+    } catch (e) {
+      debugPrint('Error getFollowingCount: $e');
+      try {
+        final res = await _client
+            .from('user_follows')
+            .select('following_id')
+            .eq('follower_id', userId);
+        return (res as List).length;
+      } catch (e2) {
+        debugPrint('Error getFollowingCount fallback: $e2');
+        return 0;
+      }
+    }
+  }
+
+  /// Subscribe to realtime changes on user_follows for a specific user
+  RealtimeChannel subscribeToFollowers(String userId, void Function() onFollowChange) {
+    return _client
+        .channel('public:user_follows:following:$userId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'user_follows',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'following_id',
+            value: userId,
+          ),
+          callback: (payload) {
+            onFollowChange();
+          },
+        )
+        .subscribe();
+  }
+}

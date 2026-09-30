@@ -61,6 +61,26 @@
      2. `git commit -m "<type>(<scope>): <descriptive message>"`
      3. `git push`
 
+7. **Strict File Size Cap (Max 250–300 Lines Per File)**:
+   - Every Dart file must be strictly bounded in size (target <= 250 lines, hard cap 300 lines).
+   - If a screen, widget, or service exceeds 250 lines, it MUST be decomposed into modular single-responsibility sub-components in `<feature>/components/`.
+   - Never write monolithic screens that inline all sub-widgets with private helper methods (`_buildHeader`, `_buildCard`, `_buildForm`). Decompose into separate widget classes in separate files.
+
+8. **Instant Screenshot-to-Code Protocol (Zero Wasted Reads)**:
+   - When the user provides a screenshot or asks for a UI fix:
+     - **Step 1: Visual Text Grep**: Identify unique visible text/labels from the screenshot (e.g. "Kategori", "Detail Produk", "Kirim Pesan"). Run:
+       ```bash
+       git grep -i "kata_kunci" lib/
+       ```
+     - **Step 2: UI Map Reference**: If text is dynamic (e.g. price, user name), consult `docs/UI_MAP.md` to pinpoint the exact screen and sub-component file in one shot.
+     - **Step 3: Surgical Target Read**: Open ONLY the identified component file using `view_file`. NEVER read full screen orchestrators when fixing a sub-component.
+     - **Step 4: Surgical Edit**: Edit using `replace_file_content` directly on the modular component.
+
+9. **Modular Architecture Structure Convention**:
+   - Screens (`<feature>/screens/`) must only serve as orchestrators (Scaffold, AppBar, layout structure, scroll view, state binding).
+   - Visual cards, bottom sheets, headers, and form sections must live in `<feature>/components/`.
+   - Backend services must follow domain separation under `lib/core/services/supabase/`.
+
 ---
 
 ## Flutter Architecture & Modular Structure (`lib/`)

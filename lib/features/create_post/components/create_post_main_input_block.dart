@@ -72,18 +72,25 @@ class CreatePostMainInputBlock extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(18.0),
-                    child: Image.network(
-                      currentUserAvatar,
-                      width: 36.0,
-                      height: 36.0,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        width: 36,
-                        height: 36,
-                        color: const Color(0xFFF1F5F9),
-                        child: const Icon(Icons.person_rounded, size: 20, color: AppColors.muted),
-                      ),
-                    ),
+                    child: currentUserAvatar.isNotEmpty
+                        ? Image.network(
+                            currentUserAvatar,
+                            width: 36.0,
+                            height: 36.0,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              width: 36,
+                              height: 36,
+                              color: const Color(0xFFF1F5F9),
+                              child: const Icon(Icons.person_rounded, size: 20, color: AppColors.muted),
+                            ),
+                          )
+                        : Container(
+                            width: 36,
+                            height: 36,
+                            color: const Color(0xFFF1F5F9),
+                            child: const Icon(Icons.person_rounded, size: 20, color: AppColors.muted),
+                          ),
                   ),
                   const SizedBox(height: 6.0),
                   if (postMode == PostMode.thread)

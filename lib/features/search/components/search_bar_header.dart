@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
-
-enum SearchResultsTab { top, latest, profiles }
+import "package:snapan_market/features/search/models/search_models.dart";
+export "package:snapan_market/features/search/models/search_models.dart" show SearchResultsTab;
 
 /// Combined Top Bar Header & Search Bar for Search Screen
 ///

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/components/snaps_skeleton.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
 
@@ -24,16 +25,19 @@ class CreatePostAuthorLine extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // Author Username
-        Text(
-          authorName,
-          style: const TextStyle(
-            fontSize: 14.5,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF0F172A),
-            letterSpacing: -0.2,
+        // Author Username or Skeleton Box if loading
+        if (authorName.trim().isEmpty)
+          const SnapsSkeletonBox(width: 80.0, height: 14.0, borderRadius: 4.0)
+        else
+          Text(
+            authorName,
+            style: const TextStyle(
+              fontSize: 14.5,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF0F172A),
+              letterSpacing: -0.2,
+            ),
           ),
-        ),
         const SizedBox(width: 4.0),
 
         // Chevron Right Separator

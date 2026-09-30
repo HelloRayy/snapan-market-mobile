@@ -20,8 +20,8 @@ class CreatePostModal extends StatefulWidget {
   const CreatePostModal({
     super.key,
     this.initialMode = PostMode.thread,
-    this.currentUserName = 'Siswa Snapan',
-    this.currentUserAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+    this.currentUserName = '',
+    this.currentUserAvatar = '',
     this.onSubmitPost,
   });
 
@@ -38,8 +38,8 @@ class CreatePostModal extends StatefulWidget {
         fullscreenDialog: true,
         pageBuilder: (context, _, __) => CreatePostModal(
           initialMode: initialMode,
-          currentUserName: currentUserName ?? 'Siswa Snapan',
-          currentUserAvatar: currentUserAvatar ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+          currentUserName: currentUserName ?? '',
+          currentUserAvatar: currentUserAvatar ?? '',
           onSubmitPost: onSubmitPost,
         ),
         transitionsBuilder: (context, animation, _, child) => SlideTransition(

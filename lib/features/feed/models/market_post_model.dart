@@ -44,10 +44,10 @@ class SellerModel {
   factory SellerModel.fromJson(Map<String, dynamic> json) {
     return SellerModel(
       id: json['id']?.toString() ?? '',
-      name: json['full_name']?.toString() ?? json['name']?.toString() ?? 'Pengguna Snapan',
+      name: json['full_name']?.toString() ?? json['name']?.toString() ?? (json['username'] != null ? '@${json['username']}' : 'Pengguna'),
       username: json['username']?.toString(),
       avatar: json['avatar_url']?.toString() ?? json['avatar']?.toString() ?? '',
-      classGroup: json['class_group']?.toString() ?? json['classGroup']?.toString() ?? 'Siswa Snapan',
+      classGroup: json['class_group']?.toString() ?? json['classGroup']?.toString() ?? '',
       isVerified: json['is_verified'] == true || json['isVerified'] == true,
     );
   }

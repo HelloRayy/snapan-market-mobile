@@ -152,7 +152,11 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     CreatePostModal.show(
       context,
       initialMode: mode,
-      currentUserName: _feedController.userProfile?['full_name'] as String? ?? 'Siswa Snapan',
+      currentUserName: (_feedController.userProfile?['full_name'] as String?)?.isNotEmpty == true
+          ? _feedController.userProfile!['full_name'] as String
+          : ((_feedController.userProfile?['username'] as String?)?.isNotEmpty == true
+              ? '@${_feedController.userProfile!['username']}'
+              : ''),
       currentUserAvatar: _feedController.userProfile?['avatar_url'] as String?,
       onSubmitPost: (data) => _feedController.createPost(data),
     );

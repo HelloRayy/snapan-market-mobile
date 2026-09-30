@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/components/snaps_skeleton.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/services/follow_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
@@ -13,6 +14,7 @@ import 'package:snapan_market/features/messages/screens/chat_conversation_screen
 import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
 import 'package:snapan_market/features/profile/components/profile_action_buttons.dart';
 import 'package:snapan_market/features/profile/components/profile_content_tabs.dart';
+import 'package:snapan_market/features/profile/components/profile_header_skeleton.dart';
 import 'package:snapan_market/features/profile/components/profile_info_header.dart';
 import 'package:snapan_market/features/profile/components/profile_media_grid.dart';
 import 'package:snapan_market/features/profile/components/profile_search_bar.dart';
@@ -103,11 +105,13 @@ class ProfileScreenState extends State<ProfileScreen> {
       _handleOpenAuth();
       return;
     }
+    final user = _controller.user;
+    if (user == null) return;
     HapticFeedback.lightImpact();
     final updated = await Navigator.of(context).push<ProfileUserModel>(
       AppSlidePageRoute(
         builder: (_) => EditProfileScreen(
-          initialUser: _controller.user,
+          initialUser: user,
           onSave: (saved) => _controller.updateUser(saved),
         ),
       ),
@@ -134,6 +138,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   void _handleDirectMessage() {
     final user = _controller.user;
+    if (user == null) return;
     final conv = ConversationModel(
       id: 'conv_${user.id.isNotEmpty ? user.id : user.username}',
       user: ConversationUser(
@@ -154,104 +159,192 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = _controller.user;
-    final displayPosts = _controller.allUserPosts.where((p) {
-      if (_searchQuery.isEmpty) return true;
-      return p.caption.toLowerCase().contains(_searchQuery.toLowerCase());
-    }).toList();
+    final Widget body;
 
-    final displayReplies = _controller.allUserReplies.where((t) {
-      if (_searchQuery.isEmpty) return true;
-      return t.reply.content.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          t.parentPost.caption.toLowerCase().contains(_searchQuery.toLowerCase());
-    }).toList();
-
-    final mediaItems = _controller.allUserPosts
-        .expand((p) => p.images.map((img) => ProfileMediaItem(imageUrl: img, post: p)))
-        .where((m) => _searchQuery.isEmpty || m.post.caption.toLowerCase().contains(_searchQuery.toLowerCase()))
-        .toList();
-
-    final body = RefreshIndicator(
-      onRefresh: () => _controller.loadProfile(isOwnProfile: _isOwnProfile, username: widget.username),
-      child: CustomScrollView(
+    if (_controller.isLoading && _controller.user == null) {
+      // 1. Shimmer Skeleton state while fetching live profile
+      body = CustomScrollView(
         controller: _scrollController,
         physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         slivers: [
-          if (_showSearch)
-            SliverToBoxAdapter(
-              child: ProfileSearchBar(
-                searchQuery: _searchQuery,
-                onChanged: (val) => setState(() => _searchQuery = val),
-                onClear: () => setState(() => _searchQuery = ''),
-              ),
-            ),
-          SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ListenableBuilder(
-                  listenable: FollowService.instance,
-                  builder: (context, _) {
-                    final isFollowing = FollowService.instance.isFollowing(user.id, user.username);
-                    final reactiveFollowers = FollowService.instance.getFollowerCount(user.id, user.followersCount);
-                    final displayUser = user.copyWith(followersCount: reactiveFollowers);
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ProfileInfoHeader(
-                          user: displayUser,
-                          isOwnProfile: _isOwnProfile,
-                          onEditInterests: _handleEditProfile,
-                          onAvatarTap: () {
-                            if (user.avatar.isNotEmpty) {
-                              MediaLightboxDialog.show(context: context, images: [user.avatar], initialIndex: 0);
-                            }
-                          },
-                        ),
-                        ProfileActionButtons(
-                          isOwnProfile: _isOwnProfile,
-                          isFollowing: isFollowing,
-                          isLoggedIn: SupabaseService.instance.isAuthenticated,
-                          onEditProfile: _handleEditProfile,
-                          onAuthTap: _handleOpenAuth,
-                          onToggleFollow: () => FollowService.instance.toggleFollow(targetUserId: user.id, targetUsername: user.username),
-                          onDirectMessage: _handleDirectMessage,
-                        ),
-                      ],
-                    );
-                  },
-                ),
-                const SizedBox(height: 10.0),
-              ],
-            ),
-          ),
+          const SliverToBoxAdapter(child: ProfileHeaderSkeleton()),
           SliverToBoxAdapter(
             child: RepaintBoundary(
               child: ProfileTabBar(
-                activeTab: _activeTab,
-                onTabChanged: (tab) => setState(() => _activeTab = tab),
+                activeTab: ProfileTab.threads,
+                onTabChanged: (_) {},
               ),
             ),
           ),
-          ProfileContentTabs(
-            activeTab: _activeTab,
-            isLoading: _controller.isLoading,
-            displayPosts: displayPosts,
-            displayReplies: displayReplies,
-            mediaItems: mediaItems,
-            username: user.username,
-            onPostClick: _handlePostClick,
-            onLikeToggle: _controller.toggleLike,
-            onRepostToggle: _controller.toggleRepost,
-            onImageClick: (item, idx) => MediaLightboxDialog.show(context: context, images: item.images, initialIndex: idx, post: item),
-            onDeletePost: (post) => _controller.removePost(post.id),
-            onReplyImageClick: (imgs, idx) => MediaLightboxDialog.show(context: context, images: imgs, initialIndex: idx),
+          const SliverToBoxAdapter(
+            child: FeedTimelineSkeleton(itemCount: 4),
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 120.0)),
         ],
-      ),
-    );
+      );
+    } else if (_controller.isNotFound) {
+      // 2. User Not Found state
+      body = Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFF1F5F9),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.person_off_rounded, size: 32, color: Color(0xFF94A3B8)),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Pengguna Tidak Ditemukan',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF0F172A),
+                  letterSpacing: -0.3,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Profil yang Anda cari tidak terdaftar atau telah dihapus.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, color: Color(0xFF64748B), height: 1.4),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () {
+                  if (widget.onBack != null) {
+                    widget.onBack!();
+                  } else {
+                    Navigator.of(context).maybePop();
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0F172A),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  elevation: 0,
+                ),
+                child: const Text('Kembali', style: TextStyle(fontWeight: FontWeight.w600)),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else if (_controller.user != null) {
+      // 3. Fully loaded live profile data
+      final user = _controller.user!;
+      final displayPosts = _controller.allUserPosts.where((p) {
+        if (_searchQuery.isEmpty) return true;
+        return p.caption.toLowerCase().contains(_searchQuery.toLowerCase());
+      }).toList();
+
+      final displayReplies = _controller.allUserReplies.where((t) {
+        if (_searchQuery.isEmpty) return true;
+        return t.reply.content.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+            t.parentPost.caption.toLowerCase().contains(_searchQuery.toLowerCase());
+      }).toList();
+
+      final mediaItems = _controller.allUserPosts
+          .expand((p) => p.images.map((img) => ProfileMediaItem(imageUrl: img, post: p)))
+          .where((m) => _searchQuery.isEmpty || m.post.caption.toLowerCase().contains(_searchQuery.toLowerCase()))
+          .toList();
+
+      body = RefreshIndicator(
+        onRefresh: () => _controller.loadProfile(isOwnProfile: _isOwnProfile, username: widget.username),
+        child: CustomScrollView(
+          controller: _scrollController,
+          physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          slivers: [
+            if (_showSearch)
+              SliverToBoxAdapter(
+                child: ProfileSearchBar(
+                  searchQuery: _searchQuery,
+                  onChanged: (val) => setState(() => _searchQuery = val),
+                  onClear: () => setState(() => _searchQuery = ''),
+                ),
+              ),
+            SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ListenableBuilder(
+                    listenable: FollowService.instance,
+                    builder: (context, _) {
+                      final isFollowing = FollowService.instance.isFollowing(user.id, user.username);
+                      final reactiveFollowers = FollowService.instance.getFollowerCount(user.id, user.followersCount);
+                      final displayUser = user.copyWith(followersCount: reactiveFollowers);
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ProfileInfoHeader(
+                            user: displayUser,
+                            isOwnProfile: _isOwnProfile,
+                            onEditInterests: _handleEditProfile,
+                            onAvatarTap: () {
+                              if (user.avatar.isNotEmpty) {
+                                MediaLightboxDialog.show(context: context, images: [user.avatar], initialIndex: 0);
+                              }
+                            },
+                          ),
+                          ProfileActionButtons(
+                            isOwnProfile: _isOwnProfile,
+                            isFollowing: isFollowing,
+                            isLoggedIn: SupabaseService.instance.isAuthenticated,
+                            onEditProfile: _handleEditProfile,
+                            onAuthTap: _handleOpenAuth,
+                            onToggleFollow: () => FollowService.instance.toggleFollow(targetUserId: user.id, targetUsername: user.username),
+                            onDirectMessage: _handleDirectMessage,
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 10.0),
+                ],
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: RepaintBoundary(
+                child: ProfileTabBar(
+                  activeTab: _activeTab,
+                  onTabChanged: (tab) => setState(() => _activeTab = tab),
+                ),
+              ),
+            ),
+            ProfileContentTabs(
+              activeTab: _activeTab,
+              isLoading: _controller.isLoading,
+              displayPosts: displayPosts,
+              displayReplies: displayReplies,
+              mediaItems: mediaItems,
+              username: user.username,
+              onPostClick: _handlePostClick,
+              onLikeToggle: _controller.toggleLike,
+              onRepostToggle: _controller.toggleRepost,
+              onImageClick: (item, idx) => MediaLightboxDialog.show(context: context, images: item.images, initialIndex: idx, post: item),
+              onDeletePost: (post) => _controller.removePost(post.id),
+              onReplyImageClick: (imgs, idx) => MediaLightboxDialog.show(context: context, images: imgs, initialIndex: idx),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 120.0)),
+          ],
+        ),
+      );
+    } else {
+      body = const Center(
+        child: Text(
+          'Silakan masuk untuk melihat profil.',
+          style: TextStyle(color: Color(0xFF64748B), fontSize: 14),
+        ),
+      );
+    }
 
     if (widget.showAppBar) {
       return Scaffold(

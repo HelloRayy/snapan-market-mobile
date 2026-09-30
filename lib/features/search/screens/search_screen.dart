@@ -48,11 +48,13 @@ class _SearchScreenState extends State<SearchScreen> {
       if (records.isNotEmpty && mounted) {
         setState(() {
           _accounts = records.map<SuggestedAccount>((p) {
-            final classGroup = p['class_group'] as String? ?? 'Siswa SMKN 8 Semarang';
+            final uName = p['username'] as String? ?? '';
+            final fName = p['full_name'] as String?;
+            final classGroup = p['class_group'] as String? ?? 'SMKN 8 Jakarta';
             return SuggestedAccount(
               id: p['id'] as String? ?? '',
-              fullName: p['full_name'] as String? ?? 'Siswa Snapan',
-              username: p['username'] as String? ?? 'siswa',
+              fullName: (fName != null && fName.isNotEmpty) ? fName : (uName.isNotEmpty ? '@$uName' : 'Pengguna'),
+              username: uName,
               avatar: (p['avatar_url'] as String?)?.isNotEmpty == true
                   ? p['avatar_url'] as String
                   : '',
@@ -96,11 +98,13 @@ class _SearchScreenState extends State<SearchScreen> {
       final profiles = await SupabaseService.instance.searchProfiles(clean);
 
       final accounts = profiles.map<SuggestedAccount>((p) {
-        final classGroup = p['class_group'] as String? ?? 'Siswa SMKN 8 Semarang';
+        final uName = p['username'] as String? ?? '';
+        final fName = p['full_name'] as String?;
+        final classGroup = p['class_group'] as String? ?? 'SMKN 8 Jakarta';
         return SuggestedAccount(
           id: p['id'] as String? ?? '',
-          fullName: p['full_name'] as String? ?? 'Siswa Snapan',
-          username: p['username'] as String? ?? 'siswa',
+          fullName: (fName != null && fName.isNotEmpty) ? fName : (uName.isNotEmpty ? '@$uName' : 'Pengguna'),
+          username: uName,
           avatar: (p['avatar_url'] as String?)?.isNotEmpty == true
               ? p['avatar_url'] as String
               : '',

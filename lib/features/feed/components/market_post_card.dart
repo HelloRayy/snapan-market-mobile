@@ -154,8 +154,11 @@ class _MarketPostCardState extends State<MarketPostCard>
     HapticFeedback.mediumImpact();
     setState(() => _isFollowed = !_isFollowed);
     final sellerId = widget.item.seller.id;
-    if (sellerId != null && sellerId.isNotEmpty) {
-      FollowService.instance.toggleFollow(sellerId);
+    if (sellerId.isNotEmpty) {
+      FollowService.instance.toggleFollow(
+        targetUserId: sellerId,
+        targetUsername: widget.item.seller.username,
+      );
     }
     widget.onFollowToggle?.call(widget.item);
   }

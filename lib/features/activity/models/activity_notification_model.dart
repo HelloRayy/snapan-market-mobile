@@ -39,10 +39,9 @@ class ActivityNotification {
     }
 
     final actor = json['actor'] as Map<String, dynamic>?;
-    final actorName = actor?['full_name']?.toString() ?? 'Siswa Snapan';
-    final actorUsername = actor?['username']?.toString() ?? 'siswa';
-    final actorAvatar = actor?['avatar_url']?.toString() ??
-        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&q=80';
+    final actorUsername = actor?['username']?.toString() ?? '';
+    final actorName = actor?['full_name']?.toString() ?? (actorUsername.isNotEmpty ? '@$actorUsername' : 'Pengguna');
+    final actorAvatar = actor?['avatar_url']?.toString() ?? '';
 
     return ActivityNotification(
       id: json['id']?.toString() ?? '',

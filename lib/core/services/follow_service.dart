@@ -108,8 +108,8 @@ class FollowService extends ChangeNotifier {
 
   /// Toggle follow state optimistically and persist to Supabase
   Future<bool> toggleFollow({
-    required String? targetUserId,
-    required String? targetUsername,
+    String? targetUserId,
+    String? targetUsername,
   }) async {
     final user = SupabaseService.instance.currentUser;
     if (user == null) return false;

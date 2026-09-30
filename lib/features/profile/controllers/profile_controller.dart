@@ -6,21 +6,8 @@ import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/profile/models/profile_user_model.dart';
 
 class ProfileController extends ChangeNotifier {
-  ProfileUserModel user = const ProfileUserModel(
-    id: '',
-    name: 'Siswa Snapan',
-    username: 'siswa',
-    classGroup: 'SMKN 8 Jakarta',
-    avatar: '',
-    bio: '',
-    followersCount: 0,
-    soldCount: 0,
-    tags: [],
-    isVerified: false,
-    rating: 0.0,
-    showSalesStats: false,
-  );
-
+  ProfileUserModel? user;
+  bool isNotFound = false;
   List<MarketPostModel> allUserPosts = [];
   List<ProfileReplyThreadModel> allUserReplies = [];
   bool isLoading = true;
@@ -34,10 +21,16 @@ class ProfileController extends ChangeNotifier {
   }
 
   Future<void> loadProfile({required bool isOwnProfile, String? username}) async {
+    isLoading = true;
+    isNotFound = false;
+    user = null;
+    notifyListeners();
+
     if (isOwnProfile) {
       final currentUser = SupabaseService.instance.currentUser;
       if (currentUser == null) {
         isLoading = false;
+        user = null;
         notifyListeners();
         return;
       }
@@ -48,87 +41,109 @@ class ProfileController extends ChangeNotifier {
         final ownFollowersCount = await FollowService.instance.loadFollowerCount(currentUser.id);
         final meta = currentUser.userMetadata ?? {};
         final metaTags = meta['tags'];
-        List<String> userTags = user.tags;
+        List<String> userTags = [];
         if (profile?['interests'] is String && (profile!['interests'] as String).isNotEmpty) {
           userTags = (profile['interests'] as String).split(',');
         } else if (metaTags is List) {
           userTags = metaTags.map((e) => e.toString()).toList();
         }
 
-        if (profile != null) {
-          user = user.copyWith(
-            id: profile['id'] as String? ?? currentUser.id,
-            name: profile['full_name'] as String? ?? user.name,
-            username: profile['username'] as String? ?? user.username,
-            classGroup: profile['class_group'] as String? ?? user.classGroup,
-            avatar: (profile['avatar_url'] as String?)?.isNotEmpty == true
-                ? profile['avatar_url'] as String
-                : user.avatar,
-            bio: profile['bio'] as String? ?? (meta['bio'] as String?) ?? user.bio,
-            link: profile['link'] as String? ?? (meta['link'] as String?) ?? user.link,
-            tags: userTags,
-            followersCount: ownFollowersCount,
-            isVerified: profile['is_verified'] as bool? ?? false,
-          );
-        } else {
-          final fullName = (meta['full_name'] as String?)?.trim();
-          final metaUsername = (meta['username'] as String?)?.trim();
-          final classGroup = (meta['class_group'] as String?)?.trim();
-          final avatar = (meta['avatar_url'] as String?)?.trim() ?? '';
-          final bio = (meta['bio'] as String?)?.trim();
-          final link = (meta['link'] as String?)?.trim();
+        final fullName = profile?['full_name'] as String? ?? (meta['full_name'] as String?)?.trim();
+        final metaUsername = profile?['username'] as String? ?? (meta['username'] as String?)?.trim();
+        final classGroup = profile?['class_group'] as String? ?? (meta['class_group'] as String?)?.trim() ?? 'SMKN 8 Jakarta';
+        final avatar = profile?['avatar_url'] as String? ?? (meta['avatar_url'] as String?)?.trim() ?? '';
+        final bio = profile?['bio'] as String? ?? (meta['bio'] as String?)?.trim() ?? '';
+        final link = profile?['link'] as String? ?? (meta['link'] as String?)?.trim() ?? '';
+        final isVerified = profile?['is_verified'] as bool? ?? false;
 
-          user = user.copyWith(
-            name: (fullName != null && fullName.isNotEmpty) ? fullName : user.name,
-            username: (metaUsername != null && metaUsername.isNotEmpty) ? metaUsername : user.username,
-            classGroup: (classGroup != null && classGroup.isNotEmpty) ? classGroup : user.classGroup,
-            avatar: avatar.isNotEmpty ? avatar : user.avatar,
-            bio: (bio != null && bio.isNotEmpty) ? bio : user.bio,
-            link: link ?? user.link,
-            tags: userTags,
-            followersCount: ownFollowersCount,
-          );
-        }
+        final displayName = (fullName != null && fullName.isNotEmpty)
+            ? fullName
+            : (metaUsername != null && metaUsername.isNotEmpty ? '@$metaUsername' : 'Pengguna');
+        final displayUsername = (metaUsername != null && metaUsername.isNotEmpty)
+            ? metaUsername
+            : (currentUser.email?.split('@').first ?? 'siswa');
+
+        user = ProfileUserModel(
+          id: currentUser.id,
+          name: displayName,
+          username: displayUsername,
+          classGroup: classGroup,
+          avatar: avatar,
+          bio: bio,
+          link: link,
+          tags: userTags,
+          followersCount: ownFollowersCount,
+          soldCount: 0,
+          isVerified: isVerified,
+          rating: 0.0,
+          showSalesStats: false,
+        );
+
         allUserPosts = livePosts;
         isLoading = false;
+        isNotFound = false;
         notifyListeners();
         _setupRealtime(currentUser.id, isOwn: true);
       } catch (e) {
-        debugPrint('Error loadProfile: $e');
+        debugPrint('Error loadProfile own: $e');
         isLoading = false;
         notifyListeners();
       }
     } else {
       final cleanUsername = username?.replaceAll('@', '').toLowerCase().trim();
-      if (cleanUsername == null || cleanUsername.isEmpty) return;
+      if (cleanUsername == null || cleanUsername.isEmpty) {
+        isLoading = false;
+        isNotFound = true;
+        notifyListeners();
+        return;
+      }
 
       try {
-        final matched = await SupabaseService.instance.searchProfiles(cleanUsername);
-        if (matched.isNotEmpty) {
-          final p = matched.first;
+        Map<String, dynamic>? p = await SupabaseService.instance.getProfileByUsername(cleanUsername);
+        p ??= await SupabaseService.instance.getProfile(cleanUsername);
+        if (p == null) {
+          final matched = await SupabaseService.instance.searchProfiles(cleanUsername);
+          if (matched.isNotEmpty) p = matched.first;
+        }
+
+        if (p != null) {
           final targetId = p['id'] as String? ?? '';
           final targetPosts = await SupabaseService.instance.fetchUserPosts(targetId);
           final otherFollowers = await FollowService.instance.loadFollowerCount(targetId);
 
-          user = user.copyWith(
+          final fullName = p['full_name'] as String?;
+          final uName = p['username'] as String? ?? cleanUsername;
+
+          user = ProfileUserModel(
             id: targetId,
-            name: p['full_name'] as String? ?? user.name,
-            username: p['username'] as String? ?? cleanUsername,
-            classGroup: p['class_group'] as String? ?? user.classGroup,
-            avatar: (p['avatar_url'] as String?)?.isNotEmpty == true ? p['avatar_url'] as String : user.avatar,
-            bio: p['bio'] as String? ?? user.bio,
-            link: p['link'] as String? ?? user.link,
+            name: (fullName != null && fullName.isNotEmpty) ? fullName : '@$uName',
+            username: uName,
+            classGroup: p['class_group'] as String? ?? 'SMKN 8 Jakarta',
+            avatar: (p['avatar_url'] as String?)?.isNotEmpty == true ? p['avatar_url'] as String : '',
+            bio: p['bio'] as String? ?? '',
+            link: p['link'] as String? ?? '',
             followersCount: otherFollowers,
+            soldCount: 0,
+            rating: 0.0,
+            showSalesStats: false,
             isVerified: p['is_verified'] as bool? ?? false,
           );
           allUserPosts = targetPosts;
           isLoading = false;
+          isNotFound = false;
           notifyListeners();
           _setupRealtime(targetId, isOwn: false);
+        } else {
+          user = null;
+          allUserPosts = [];
+          isLoading = false;
+          isNotFound = true;
+          notifyListeners();
         }
       } catch (e) {
         debugPrint('Error load other profile: $e');
         isLoading = false;
+        isNotFound = true;
         notifyListeners();
       }
     }
@@ -138,15 +153,17 @@ class ProfileController extends ChangeNotifier {
     disposeSubscriptions();
     if (isOwn) {
       _profileSubscription = SupabaseService.instance.subscribeToProfile(userId, (newRecord) {
-        user = user.copyWith(
-          name: newRecord['full_name'] as String? ?? user.name,
-          username: newRecord['username'] as String? ?? user.username,
-          classGroup: newRecord['class_group'] as String? ?? user.classGroup,
-          avatar: (newRecord['avatar_url'] as String?)?.isNotEmpty == true ? newRecord['avatar_url'] as String : user.avatar,
-          bio: newRecord['bio'] as String? ?? user.bio,
-          isVerified: newRecord['is_verified'] as bool? ?? false,
-        );
-        notifyListeners();
+        if (user != null) {
+          user = user!.copyWith(
+            name: newRecord['full_name'] as String? ?? user!.name,
+            username: newRecord['username'] as String? ?? user!.username,
+            classGroup: newRecord['class_group'] as String? ?? user!.classGroup,
+            avatar: (newRecord['avatar_url'] as String?)?.isNotEmpty == true ? newRecord['avatar_url'] as String : user!.avatar,
+            bio: newRecord['bio'] as String? ?? user!.bio,
+            isVerified: newRecord['is_verified'] as bool? ?? false,
+          );
+          notifyListeners();
+        }
       });
     }
     _followRealtimeSubscription = SupabaseService.instance.subscribeToFollowers(userId, () {

@@ -1,3 +1,5 @@
+enum SearchResultsTab { top, latest, profiles }
+
 class SuggestedAccount {
   final String id;
   final String username;

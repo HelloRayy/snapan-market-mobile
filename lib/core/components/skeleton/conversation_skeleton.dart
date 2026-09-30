@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:snapan-market/core/components/skeleton/snaps_shimmer.dart';
+import 'package:snapan_market/core/components/skeleton/snaps_shimmer.dart';
 
 /// Sliced Conversation Tile Skeleton matching ConversationTile 1:1 (<100 lines)
 class ConversationTileSkeleton extends StatelessWidget {

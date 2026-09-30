@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:snapan-market/core/components/skeleton/snaps_shimmer.dart';
+import 'package:snapan_market/core/components/skeleton/snaps_shimmer.dart';
 
 /// Sliced Activity Item Skeleton matching ActivityItemTile 1:1 (<100 lines)
 class ActivityItemSkeleton extends StatelessWidget {

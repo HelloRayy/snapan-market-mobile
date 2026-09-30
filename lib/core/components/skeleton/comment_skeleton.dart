@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:snapan-market/core/components/skeleton/snaps_shimmer.dart';
+import 'package:snapan_market/core/components/skeleton/snaps_shimmer.dart';
 
 /// Sliced Comment Item Skeleton matching PostCommentItem 1:1 (<150 lines)
 class CommentItemSkeleton extends StatelessWidget {

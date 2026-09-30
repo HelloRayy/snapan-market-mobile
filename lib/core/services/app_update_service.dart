@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snapan_market/core/models/app_version_model.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 
 /// Service for checking app updates and querying latest releases from Supabase
 ///
-/// Features cooldown management and session protection to prevent annoying repeat popups.
+/// Features persistent cooldown management and session protection to prevent annoying repeat popups.
 class AppUpdateService {
   AppUpdateService._();
   static final AppUpdateService instance = AppUpdateService._();
+
+  static const _kDismissedCodeKey = 'app_update_dismissed_code';
+  static const _kDismissedTimeKey = 'app_update_dismissed_time';
 
   AppVersionModel? _cachedLatestUpdate;
   PackageInfo? _cachedPackageInfo;
 
   bool _hasPromptedThisSession = false;
-  int? _dismissedVersionCode;
-  DateTime? _dismissedTimestamp;
 
   /// Returns package info of currently running app
   Future<PackageInfo> getPackageInfo() async {
@@ -23,11 +25,16 @@ class AppUpdateService {
     return _cachedPackageInfo!;
   }
 
-  /// Mark the update as dismissed for this session/cooldown
-  void dismissUpdate(int versionCode) {
-    _dismissedVersionCode = versionCode;
-    _dismissedTimestamp = DateTime.now();
+  /// Mark the update as dismissed with persistent disk cooldown (24 hours)
+  Future<void> dismissUpdate(int versionCode) async {
     _hasPromptedThisSession = true;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_kDismissedCodeKey, versionCode);
+      await prefs.setInt(_kDismissedTimeKey, DateTime.now().millisecondsSinceEpoch);
+    } catch (e) {
+      debugPrint('Error saving update dismissal to SharedPreferences: $e');
+    }
   }
 
   /// Mark that a prompt was shown in this session
@@ -65,12 +72,20 @@ class AppUpdateService {
             debugPrint('Update available (v${latest.versionName}) but already prompted this session.');
             return null;
           }
-          if (_dismissedVersionCode == latest.versionCode && _dismissedTimestamp != null) {
-            final difference = DateTime.now().difference(_dismissedTimestamp!);
-            if (difference.inHours < 12) {
-              debugPrint('Update v${latest.versionName} was dismissed ${difference.inHours}h ago. Cooldown active.');
-              return null;
+          try {
+            final prefs = await SharedPreferences.getInstance();
+            final int? dismissedCode = prefs.getInt(_kDismissedCodeKey);
+            final int? dismissedTime = prefs.getInt(_kDismissedTimeKey);
+
+            if (dismissedCode == latest.versionCode && dismissedTime != null) {
+              final difference = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(dismissedTime));
+              if (difference.inHours < 24) {
+                debugPrint('Update v${latest.versionName} was dismissed ${difference.inHours}h ago. 24h cooldown active.');
+                return null;
+              }
             }
+          } catch (e) {
+            debugPrint('Error reading update dismissal from SharedPreferences: $e');
           }
         }
 

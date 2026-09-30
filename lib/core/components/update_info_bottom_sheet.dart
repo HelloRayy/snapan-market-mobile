@@ -74,6 +74,7 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
       OtaUpdate().execute(
         widget.update.downloadUrl,
         destinationFilename: filename,
+        androidProviderAuthority: 'com.snapan.market.snapan_market.ota_update_provider',
       ).listen(
         (OtaEvent event) {
           if (!mounted) return;
@@ -110,7 +111,7 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
             case OtaStatus.PERMISSION_NOT_GRANTED_ERROR:
               setState(() {
                 _isDownloading = false;
-                _errorMessage = 'Izin pemasangan aplikasi tidak diizinkan di pengaturan.';
+                _errorMessage = 'Izin pemasangan aplikasi belum diaktifkan. Buka Pengaturan HP > Aplikasi > Snaps > Aktifkan "Instal aplikasi tidak dikenal", lalu coba lagi.';
               });
               break;
 
@@ -303,18 +304,55 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
               if (_errorMessage != null) ...[
                 const SizedBox(height: 12.0),
                 Container(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(12.0),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFEE2E2),
                     borderRadius: BorderRadius.circular(10.0),
+                    border: Border.all(color: const Color(0xFFFCA5A5), width: 0.8),
                   ),
-                  child: Text(
-                    _errorMessage!,
-                    style: const TextStyle(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFFB91C1C),
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _errorMessage!,
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFFB91C1C),
+                          height: 1.4,
+                        ),
+                      ),
+                      const SizedBox(height: 8.0),
+                      InkWell(
+                        onTap: () {
+                          HapticFeedback.selectionClick();
+                          Clipboard.setData(ClipboardData(text: widget.update.downloadUrl));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Link download APK disalin ke clipboard! Buka browser untuk mengunduh.'),
+                              behavior: SnackBarBehavior.floating,
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                        },
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.copy_rounded, size: 14.0, color: Color(0xFFB91C1C)),
+                            SizedBox(width: 5.0),
+                            Text(
+                              'Salin Link Download APK Manual',
+                              style: TextStyle(
+                                fontSize: 12.0,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFFB91C1C),
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

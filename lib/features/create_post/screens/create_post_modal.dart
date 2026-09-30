@@ -43,10 +43,13 @@ class CreatePostModal extends StatefulWidget {
           onSubmitPost: onSubmitPost,
         ),
         transitionsBuilder: (context, animation, _, child) => SlideTransition(
-          position: animation.drive(Tween(begin: const Offset(0.0, 1.0), end: Offset.zero).chain(CurveTween(curve: Curves.easeOutCubic))),
+          position: Tween<Offset>(begin: const Offset(0.0, 1.0), end: Offset.zero).animate(
+            CurvedAnimation(parent: animation, curve: const Cubic(0.25, 1.0, 0.5, 1.0), reverseCurve: Curves.easeInCubic),
+          ),
           child: child,
         ),
-        transitionDuration: const Duration(milliseconds: 260),
+        transitionDuration: const Duration(milliseconds: 350),
+        reverseTransitionDuration: const Duration(milliseconds: 300),
       ),
     );
   }
@@ -151,8 +154,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
       'price': isProduct ? int.tryParse(_priceController.text.replaceAll(RegExp(r'\D'), '')) ?? 0 : null,
       'stock': isProduct ? int.tryParse(_stockController.text.trim()) ?? 1 : null,
       'description': isProduct ? _descController.text.trim() : null,
-      'images': uploadedImages,
-      'locationTag': _selectedLocation?.name ?? 'SMKN 8 Semarang',
+      'images': uploadedImages, 'locationTag': _selectedLocation?.name ?? 'SMKN 8 Semarang',
       'topicTag': _selectedTopic?.name,
       'subThreads': _subThreads.map((s) => {'caption': s.caption, 'images': s.images}).toList(),
       'createdAt': DateTime.now().toIso8601String(),

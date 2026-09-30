@@ -1,26 +1,35 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// iOS-grade Parallax Page Route with Interactive Swipe-Back Gesture
-/// Matching Threads & Instagram mobile motion design
+/// iOS-grade Parallax Page Route with Interactive Swipe-Back Gesture.
+/// Matching Threads & Instagram mobile motion design:
+/// - Consistent 380ms entry duration with genuine Apple decelerating ease-out
+/// - 320ms exit duration with responsive return acceleration
+/// - Native interactive edge-swipe gesture support
 class AppSlidePageRoute<T> extends PageRoute<T> with CupertinoRouteTransitionMixin<T> {
   final WidgetBuilder builder;
   @override
   final bool maintainState;
-  final Duration transitionDurationOverride;
+  final Duration _duration;
+  final Duration _reverseDuration;
 
   AppSlidePageRoute({
     required this.builder,
     this.maintainState = true,
-    this.transitionDurationOverride = const Duration(milliseconds: 320),
+    Duration transitionDuration = const Duration(milliseconds: 380),
+    Duration reverseTransitionDuration = const Duration(milliseconds: 320),
     super.settings,
-  });
+  }) : _duration = transitionDuration,
+       _reverseDuration = reverseTransitionDuration;
 
   @override
   Widget buildContent(BuildContext context) => builder(context);
 
   @override
-  Duration get transitionDuration => transitionDurationOverride;
+  Duration get transitionDuration => _duration;
+
+  @override
+  Duration get reverseTransitionDuration => _reverseDuration;
 
   @override
   String? get title => null;
@@ -35,20 +44,9 @@ class AppSlidePageRoute<T> extends PageRoute<T> with CupertinoRouteTransitionMix
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    // Standard Cupertino Parallax & Swipe-Back transition with smooth cubic curve
-    return CupertinoPageTransition(
-      primaryRouteAnimation: CurvedAnimation(
-        parent: animation,
-        curve: Curves.easeOutCubic,
-        reverseCurve: Curves.easeInCubic,
-      ),
-      secondaryRouteAnimation: CurvedAnimation(
-        parent: secondaryAnimation,
-        curve: Curves.easeOutCubic,
-        reverseCurve: Curves.easeInCubic,
-      ),
-      linearTransition: false,
-      child: child,
-    );
+    // Delegates to CupertinoRouteTransitionMixin.buildPageTransitions which correctly
+    // pairs the single iOS native linearToEaseOut curve, underlying route parallax shift,
+    // and interactive swipe-back gesture detector without double-curve compounding.
+    return super.buildTransitions(context, animation, secondaryAnimation, child);
   }
 }

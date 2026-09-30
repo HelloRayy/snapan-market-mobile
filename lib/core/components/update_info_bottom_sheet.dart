@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ota_update/ota_update.dart';
 import 'package:snapan_market/core/models/app_version_model.dart';
+import 'package:snapan_market/core/services/app_update_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Interactive In-App Update Modal Bottom Sheet
@@ -23,6 +24,7 @@ class UpdateInfoBottomSheet extends StatefulWidget {
     required String currentVersionName,
   }) {
     HapticFeedback.mediumImpact();
+    AppUpdateService.instance.markPrompted();
 
     return showModalBottomSheet<void>(
       context: context,
@@ -32,6 +34,11 @@ class UpdateInfoBottomSheet extends StatefulWidget {
       backgroundColor: Colors.transparent,
       builder: (ctx) => PopScope(
         canPop: !update.isMandatory,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) {
+            AppUpdateService.instance.dismissUpdate(update.versionCode);
+          }
+        },
         child: UpdateInfoBottomSheet(
           update: update,
           currentVersionName: currentVersionName,
@@ -84,6 +91,12 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                 _isDownloading = false;
                 _isInstalling = true;
                 _downloadProgress = 100;
+              });
+              // Automatically dismiss the bottom sheet after installer is handed off to Android
+              Future.delayed(const Duration(milliseconds: 1000), () {
+                if (mounted) {
+                  Navigator.of(context, rootNavigator: true).maybePop();
+                }
               });
               break;
 
@@ -383,7 +396,10 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                 SizedBox(
                   height: 44.0,
                   child: TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () {
+                      AppUpdateService.instance.dismissUpdate(widget.update.versionCode);
+                      Navigator.of(context).pop();
+                    },
                     style: TextButton.styleFrom(
                       foregroundColor: const Color(0xFF64748B),
                       shape: RoundedRectangleBorder(

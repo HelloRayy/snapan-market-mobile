@@ -160,7 +160,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
   Future<void> _checkForAppUpdate() async {
     try {
-      final update = await AppUpdateService.instance.checkForUpdate();
+      final update = await AppUpdateService.instance.checkForUpdate(isManual: false);
       if (update != null && mounted) {
         final info = await AppUpdateService.instance.getPackageInfo();
         if (!mounted) return;
@@ -305,7 +305,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
     try {
       final info = await AppUpdateService.instance.getPackageInfo();
-      final update = await AppUpdateService.instance.checkForUpdate();
+      final update = await AppUpdateService.instance.checkForUpdate(isManual: true);
 
       if (!mounted) return;
 

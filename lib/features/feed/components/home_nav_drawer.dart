@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:snapan_market/core/services/app_update_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
@@ -201,6 +202,23 @@ class HomeNavDrawer extends StatelessWidget {
                     inkColor: inkColor,
                     mutedColor: mutedColor,
                     hoverColor: tileHoverColor,
+                    trailingWidget: AppUpdateService.instance.hasAvailableUpdate
+                        ? Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 2.5),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: const Text(
+                              'Update',
+                              style: TextStyle(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
+                        : null,
                     onTap: onCheckUpdateTap,
                   ),
 
@@ -291,6 +309,7 @@ class HomeNavDrawer extends StatelessWidget {
     VoidCallback? onTap,
     Color? textColor,
     Color? iconColor,
+    Widget? trailingWidget,
     bool hasChevron = false,
     bool isDestructive = false,
   }) {
@@ -332,7 +351,9 @@ class HomeNavDrawer extends StatelessWidget {
                   ),
                 ),
               ),
-              if (hasChevron)
+              if (trailingWidget != null)
+                trailingWidget
+              else if (hasChevron)
                 Icon(
                   LucideIcons.chevronRight,
                   size: 16.0,

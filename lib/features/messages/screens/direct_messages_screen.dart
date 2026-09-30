@@ -126,7 +126,7 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
                 name: user['full_name'] as String? ?? user['username'] as String? ?? 'Siswa SMKN 8',
                 username: user['username'] as String? ?? 'user',
                 avatar: user['avatar_url'] as String? ?? '',
-                classGroup: user['class_group'] as String? ?? 'SMKN 8 Jakarta',
+                classGroup: user['class_group'] as String? ?? 'SMKN 8 Semarang',
                 isVerified: user['is_verified'] as bool? ?? false,
               ),
               lastMessage: '',
@@ -682,7 +682,7 @@ class _NewChatBottomSheetState extends State<_NewChatBottomSheet> {
                             final name = user['full_name'] as String? ?? 'Siswa';
                             final username = user['username'] as String? ?? '';
                             final avatar = user['avatar_url'] as String? ?? '';
-                            final classGroup = user['class_group'] as String? ?? 'SMKN 8 Jakarta';
+                            final classGroup = user['class_group'] as String? ?? 'SMKN 8 Semarang';
 
                             return ListTile(
                               contentPadding: const EdgeInsets.symmetric(vertical: 4.0),

@@ -624,7 +624,7 @@ create index if not exists idx_order_notifications_order on public.order_notific
 
 
 -- ========================================================
--- 🏫 SEED DATA: TITIK TEMU COD SMKN 8 JAKARTA
+-- 🏫 SEED DATA: TITIK TEMU COD SMKN 8 SEMARANG
 -- ========================================================
 insert into public.school_meeting_points (id, floor, name, area_category, description, coordinates_x, coordinates_y)
 values

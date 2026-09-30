@@ -253,7 +253,7 @@ class HomeNavDrawer extends StatelessWidget {
                   ),
                   const SizedBox(height: 2.0),
                   Text(
-                    'E-Commerce & Social Feed • SMKN 8 Jakarta',
+                    'E-Commerce & Social Feed • SMKN 8 Semarang',
                     style: GoogleFonts.inter(
                       fontSize: 10.5,
                       color: mutedColor,

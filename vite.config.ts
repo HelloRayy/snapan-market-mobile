@@ -15,7 +15,7 @@ export default defineConfig({
       manifest: {
         name: 'Snaps',
         short_name: 'Snaps',
-        description: 'Snaps - Social Marketplace SMKN 8 Jakarta',
+        description: 'Snaps - Social Marketplace SMKN 8 Semarang',
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',

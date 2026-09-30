@@ -1,5 +1,5 @@
 # 🗄️ SPESIFIKASI LENGKAP BACKEND & DATABASE: IN-APP ORDERS, SCHOOL MAP, & SALES STATS
-## SNAPAN MARKET MOBILE PWA — SMKN 8 JAKARTA
+## SNAPAN MARKET MOBILE PWA — SMKN 8 SEMARANG
 > **Dokumentasi Teknis untuk Backend Workstation (Laptop B / Supabase Engineer)**  
 > *Mencakup Skema Tabel PostgreSQL, Relasi Domain, Stored Functions, RLS Security Policies, Realtime Events, dan SQL Migrations.*
 
@@ -98,7 +98,7 @@ CREATE TABLE public.orders (
 ---
 
 ### 2.2. Tabel `school_meeting_points` (Denah Hotspot SMKN 8)
-Tabel master data titik temu lokasi COD di lingkungan sekolah SMKN 8 Jakarta.
+Tabel master data titik temu lokasi COD di lingkungan sekolah SMKN 8 Semarang.
 
 ```sql
 CREATE TABLE public.school_meeting_points (

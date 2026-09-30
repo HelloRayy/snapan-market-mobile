@@ -11,7 +11,7 @@ export const CheckoutDescription: React.FC<CheckoutDescriptionProps> = ({ descri
   const rawText =
     description && description.trim().length > 0
       ? description
-      : 'Barang berkualitas siap serah terima fisik (COD) di lingkungan sekolah SMKN 8 Jakarta. Silakan hubungi penjual untuk informasi lebih lanjut.';
+      : 'Barang berkualitas siap serah terima fisik (COD) di lingkungan sekolah SMKN 8 Semarang. Silakan hubungi penjual untuk informasi lebih lanjut.';
 
   const isLong = rawText.length > 150;
   const displayText = !isLong || isExpanded ? rawText : `${rawText.slice(0, 140)}...`;

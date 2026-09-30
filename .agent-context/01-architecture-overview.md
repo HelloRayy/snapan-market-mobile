@@ -1,7 +1,7 @@
 # 01 - Architecture Overview
 
 ## Project Mission
-**Snapan Market Mobile** is a specialized campus commerce and social platform tailored for the **SMKN 8 Jakarta** vocational school ecosystem. It merges:
+**Snapan Market Mobile** is a specialized campus commerce and social platform tailored for the **SMKN 8 Semarang** vocational school ecosystem. It merges:
 1. **Threads-style Social Timeline**: Real-time school discussion threads, multimedia carousels, hashtags, and author interactions.
 2. **Vocational Campus Marketplace**: Student project showcase, secondhand school supplies, vocational services (PPLG, DKV, Kuliner), and in-campus Cash-on-Delivery (COD) meeting points.
 

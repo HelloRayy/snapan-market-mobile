@@ -1,5 +1,5 @@
 # 📱 DOKUMENTASI SUPER LENGKAP: OVERVIEW, FITUR & ARSITEKTUR INTERAKSI
-## SNAPAN MARKET MOBILE PWA — SMKN 8 JAKARTA
+## SNAPAN MARKET MOBILE PWA — SMKN 8 SEMARANG
 > **Spesifikasi Produk, Detail Interaksi Pengguna (User Flows), State Machine, dan Rekayasa Motion Kelas Industri**  
 > *Disusun sebagai Panduan Resmi Pengujian Aplikasi, Presentasi Ujian/PJBL, dan Dokumentasi Portofolio Teknis.*
 
@@ -25,7 +25,7 @@
 ## 1. Overview Aplikasi, Visi, & Dampak Sosial-Ekonomi Sekolah
 
 ### 💡 Latar Belakang & Visi Produk
-**Snapan Market Mobile** adalah platform terintegrasi *2-in-1* yang menggabungkan kekuatan **Marketplace Ekonomi Kreatif** dengan **Media Sosial Forum Utas (*Threads-style Social Network*)** yang dirancang eksklusif dan aman untuk seluruh ekosistem **SMKN 8 Jakarta** ("Snapan").
+**Snapan Market Mobile** adalah platform terintegrasi *2-in-1* yang menggabungkan kekuatan **Marketplace Ekonomi Kreatif** dengan **Media Sosial Forum Utas (*Threads-style Social Network*)** yang dirancang eksklusif dan aman untuk seluruh ekosistem **SMKN 8 Semarang** ("Snapan").
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -227,7 +227,7 @@ Pusat eksplorasi konten dan pencarian warga sekolah:
 
 #### 3. Modal Verifikasi Resmi SMKN 8 (`VerifiedBadgeModal.tsx`)
 - Mengetuk icon Centang Biru membuka modal elegan yang menjelaskan status verifikasi resmi:
-  - *Identitas*: Terdaftar sebagai siswa/guru aktif SMKN 8 Jakarta.
+  - *Identitas*: Terdaftar sebagai siswa/guru aktif SMKN 8 Semarang.
   - *Keamanan*: Telah tervalidasi NIS/NIP sekolah dan bebas dari riwayat pelanggaran komunitas.
 
 #### 4. Halaman Edit Profil (`EditProfilePage.tsx`)
@@ -322,4 +322,4 @@ Mengapa interaksi di Snapan Market Mobile terasa sangat responsif dan tidak pata
 
 ---
 
-> **Snapan Market Mobile — Menghubungkan Kreativitas, Transaksi, dan Komunitas Siswa SMKN 8 Jakarta.**
+> **Snapan Market Mobile — Menghubungkan Kreativitas, Transaksi, dan Komunitas Siswa SMKN 8 Semarang.**

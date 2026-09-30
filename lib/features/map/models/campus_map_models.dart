@@ -38,7 +38,7 @@ const List<CampusRoom> kCampusRooms = [
     floor: 1,
     category: "canteen",
     categoryLabel: "Kantin & Makanan",
-    description: "Pusat jajanan, minuman dingin, dan meja makan santai siswa SMKN 8 Jakarta.",
+    description: "Pusat jajanan, minuman dingin, dan meja makan santai siswa SMKN 8 Semarang.",
     hint: "Spot COD paling ramai saat jam istirahat. Dekat stan jus & snack.",
     pinPosition: Offset(660, 705),
     isPopularCodSpot: true,

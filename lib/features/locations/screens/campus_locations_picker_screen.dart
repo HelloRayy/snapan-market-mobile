@@ -95,7 +95,7 @@ class _CampusLocationsPickerScreenState extends State<CampusLocationsPickerScree
                 id: roomName.toLowerCase().replaceAll(" ", "-"),
                 name: roomName,
                 code: roomName.toUpperCase(),
-                buildingName: "Area SMKN 8 Jakarta",
+                buildingName: "Area SMKN 8 Semarang",
                 floor: floor,
                 category: LocationCategory.lobby,
                 categoryLabel: category,
@@ -143,7 +143,7 @@ class _CampusLocationsPickerScreenState extends State<CampusLocationsPickerScree
               ),
             ),
             Text(
-              "SMK Negeri 8 Jakarta",
+              "SMK Negeri 8 Semarang",
               style: TextStyle(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w400,

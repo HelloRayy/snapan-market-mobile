@@ -242,7 +242,7 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="email@smkn8jakarta.sch.id"
+                      placeholder="email@smkn8semarang.sch.id"
                       style={{ fontSize: '16px' }}
                       className="w-full h-11 pl-10 pr-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-brand-primary outline-none text-sm text-slate-900 transition-all"
                     />

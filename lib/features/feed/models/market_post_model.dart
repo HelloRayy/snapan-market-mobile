@@ -424,7 +424,7 @@ class MarketPostModel {
           ? json['location_tag'].toString().trim()
           : (json['locationTag']?.toString().trim().isNotEmpty == true
               ? json['locationTag'].toString().trim()
-              : 'SMKN8 Jakarta - Snapan'),
+              : 'SMKN8 Semarang - Snapan'),
       price: json['price'] != null ? (num.tryParse(json['price'].toString())?.toInt()) : null,
       originalPrice: json['original_price'] != null
           ? (num.tryParse(json['original_price'].toString())?.toInt())

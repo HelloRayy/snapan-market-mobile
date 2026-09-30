@@ -40,7 +40,7 @@ export const CheckoutProductHeader: React.FC<CheckoutProductHeaderProps> = ({ po
       <div className="flex items-center gap-1.5 text-[13px] text-neutral-500 font-normal">
         <MapPin className="w-3.5 h-3.5 text-[#3d38f5] shrink-0 stroke-[2.2]" />
         <span>
-          SMKN 8 Jakarta · <span className="text-slate-800 font-semibold">{post.seller.classGroup || 'XII PPLG 1'}</span>
+          SMKN 8 Semarang · <span className="text-slate-800 font-semibold">{post.seller.classGroup || 'XII PPLG 1'}</span>
         </span>
       </div>
     </section>

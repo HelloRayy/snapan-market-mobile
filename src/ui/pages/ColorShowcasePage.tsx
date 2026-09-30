@@ -220,7 +220,7 @@ export const ColorShowcasePage: React.FC<{ onBack: () => void }> = ({ onBack }) 
               </h2>
               <div className="flex items-center gap-1.5 text-[13px] text-neutral-500 font-normal mt-1">
                 <MapPin className="w-3.5 h-3.5 shrink-0 stroke-[2.2]" style={{ color: currentOption.primaryHex }} />
-                <span>SMKN 8 Jakarta · <strong className="text-slate-800">XII PPLG 1</strong></span>
+                <span>SMKN 8 Semarang · <strong className="text-slate-800">XII PPLG 1</strong></span>
               </div>
             </div>
 

@@ -109,7 +109,7 @@ class ConversationModel {
         name: otherProfile['full_name'] as String? ?? otherProfile['username'] as String? ?? 'Siswa',
         username: otherProfile['username'] as String? ?? 'user',
         avatar: otherProfile['avatar_url'] as String? ?? '',
-        classGroup: otherProfile['class_group'] as String? ?? 'SMKN 8 Jakarta',
+        classGroup: otherProfile['class_group'] as String? ?? 'SMKN 8 Semarang',
         isVerified: otherProfile['is_verified'] == true,
       ),
       lastMessage: json['last_message'] as String? ?? '',

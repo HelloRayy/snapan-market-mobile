@@ -55,7 +55,7 @@ class CheckoutLocationCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "SMK Negeri 8 Jakarta",
+                        "SMK Negeri 8 Semarang",
                         style: TextStyle(
                           fontSize: 11.5,
                           fontWeight: FontWeight.w400,

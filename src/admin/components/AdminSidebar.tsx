@@ -77,7 +77,7 @@ export function AdminSidebar({
                 PRO
               </span>
             </div>
-            <div className="text-[11px] text-kumo-subtle">SMKN 8 Jakarta</div>
+            <div className="text-[11px] text-kumo-subtle">SMKN 8 Semarang</div>
           </div>
         </div>
       </div>

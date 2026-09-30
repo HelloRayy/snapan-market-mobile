@@ -261,7 +261,7 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Titik Temu COD SMKN 8 Jakarta',
+                            'Titik Temu COD SMKN 8 Semarang',
                             style: TextStyle(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w500,
@@ -270,7 +270,7 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
                           ),
                           const SizedBox(height: 2.0),
                           Text(
-                            widget.post.locationTag ?? 'SMKN8 Jakarta - Snapan',
+                            widget.post.locationTag ?? 'SMKN8 Semarang - Snapan',
                             style: const TextStyle(
                               fontSize: 13.0,
                               fontWeight: FontWeight.w700,

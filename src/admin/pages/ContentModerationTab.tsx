@@ -549,7 +549,7 @@ export function ContentModerationTab() {
                     )}
                   </div>
                   <div className="text-[11px] text-kumo-subtle">
-                    @{selectedPostPreview.seller?.username || 'user'} • {selectedPostPreview.seller?.class_group || 'SMKN 8 Jakarta'}
+                    @{selectedPostPreview.seller?.username || 'user'} • {selectedPostPreview.seller?.class_group || 'SMKN 8 Semarang'}
                   </div>
                 </div>
               </div>

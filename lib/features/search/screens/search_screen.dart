@@ -49,7 +49,7 @@ class _SearchScreenState extends State<SearchScreen> {
       if (records.isNotEmpty && mounted) {
         setState(() {
           _accounts = records.map<SuggestedAccount>((p) {
-            final classGroup = p['class_group'] as String? ?? 'Siswa SMKN 8 Jakarta';
+            final classGroup = p['class_group'] as String? ?? 'Siswa SMKN 8 Semarang';
             return SuggestedAccount(
               id: p['id'] as String? ?? '',
               fullName: p['full_name'] as String? ?? 'Siswa Snapan',
@@ -97,7 +97,7 @@ class _SearchScreenState extends State<SearchScreen> {
       final profiles = await SupabaseService.instance.searchProfiles(clean);
 
       final accounts = profiles.map<SuggestedAccount>((p) {
-        final classGroup = p['class_group'] as String? ?? 'Siswa SMKN 8 Jakarta';
+        final classGroup = p['class_group'] as String? ?? 'Siswa SMKN 8 Semarang';
         return SuggestedAccount(
           id: p['id'] as String? ?? '',
           fullName: p['full_name'] as String? ?? 'Siswa Snapan',
@@ -190,7 +190,7 @@ class _SearchScreenState extends State<SearchScreen> {
         username: account.username,
         avatar: account.avatar,
         bio: account.bio,
-        classGroup: account.bio.isNotEmpty ? account.bio : 'Siswa SMKN 8 Jakarta',
+        classGroup: account.bio.isNotEmpty ? account.bio : 'Siswa SMKN 8 Semarang',
         tags: const [],
         followersCount: 0,
         soldCount: 0,

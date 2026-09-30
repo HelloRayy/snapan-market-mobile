@@ -17,16 +17,16 @@ class OnboardingSlide {
 final List<OnboardingSlide> onboardingSlides = [
   const OnboardingSlide(
     id: 0,
-    title: 'Pusat Jual Beli Warga SMKN 8 Jakarta',
+    title: 'Pusat Jual Beli Warga SMKN 8 Semarang',
     description:
-        'Mulai dari barang preloved, jajanan lezat kantin, hingga karya buatanmu — tawarkan semua produkmu langsung ke teman & guru di SMKN 8 Jakarta.',
+        'Mulai dari barang preloved, jajanan lezat kantin, hingga karya buatanmu — tawarkan semua produkmu langsung ke teman & guru di SMKN 8 Semarang.',
     assetPath: 'assets/onboarding/market-1.png',
   ),
   const OnboardingSlide(
     id: 1,
     title: 'Jual & Kelola Produkmu dengan Mudah',
     description:
-        'Unggah foto produk, atur harga, dan terima pesanan langsung dari teman & guru di SMKN 8 Jakarta hanya dalam beberapa langkah.',
+        'Unggah foto produk, atur harga, dan terima pesanan langsung dari teman & guru di SMKN 8 Semarang hanya dalam beberapa langkah.',
     assetPath: 'assets/onboarding/market-2.png',
   ),
   const OnboardingSlide(

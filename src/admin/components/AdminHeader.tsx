@@ -15,7 +15,7 @@ interface AdminHeaderProps {
 const tabTitles: Record<AdminTab, { title: string; subtitle: string }> = {
   overview: {
     title: 'Dashboard Overview',
-    subtitle: 'Statistik ekosistem siswa dan metrik operasional SMKN 8 Jakarta',
+    subtitle: 'Statistik ekosistem siswa dan metrik operasional SMKN 8 Semarang',
   },
   users: {
     title: 'Manajemen Siswa & Role',

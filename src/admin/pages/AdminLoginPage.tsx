@@ -45,7 +45,7 @@ export function AdminLoginPage({ onSuccess, onBackToApp }: AdminLoginPageProps) 
       if (!isAdmin) {
         await supabase.auth.signOut();
         setErrorMessage(
-          'Akses ditolak: Akun Anda tidak memiliki hak otorisasi Admin SMKN 8 Jakarta.'
+          'Akses ditolak: Akun Anda tidak memiliki hak otorisasi Admin SMKN 8 Semarang.'
         );
         setIsLoading(false);
         return;
@@ -92,7 +92,7 @@ export function AdminLoginPage({ onSuccess, onBackToApp }: AdminLoginPageProps) 
               </Badge>
             </div>
             <p className="text-xs text-kumo-subtle">
-              Sistem Manajemen Terpadu Marketplace & Feed SMKN 8 Jakarta
+              Sistem Manajemen Terpadu Marketplace & Feed SMKN 8 Semarang
             </p>
           </div>
         </div>
@@ -179,7 +179,7 @@ export function AdminLoginPage({ onSuccess, onBackToApp }: AdminLoginPageProps) 
         {/* Footer info */}
         <div className="text-center">
           <p className="text-[11px] text-kumo-subtle">
-            Hanya dapat diakses oleh akun terverifikasi dengan role <span className="font-mono text-indigo-600">admin</span> pada basis data SMKN 8 Jakarta.
+            Hanya dapat diakses oleh akun terverifikasi dengan role <span className="font-mono text-indigo-600">admin</span> pada basis data SMKN 8 Semarang.
           </p>
         </div>
       </div>

@@ -459,7 +459,7 @@ void main() {
       await tester.pumpWidget(const SnapanMarketApp());
 
       // 1. Verify Onboarding Slide 0 is displayed
-      expect(find.text('Pusat Jual Beli Warga SMKN 8 Jakarta'), findsOneWidget);
+      expect(find.text('Pusat Jual Beli Warga SMKN 8 Semarang'), findsOneWidget);
       expect(find.text('Lewati'), findsOneWidget);
       expect(find.text('Lanjutkan'), findsOneWidget);
 
@@ -529,7 +529,7 @@ void main() {
       await tester.tap(logoutButton);
       await tester.pumpAndSettle();
       // Verify returning to Onboarding
-      expect(find.text('Pusat Jual Beli Warga SMKN 8 Jakarta'), findsOneWidget);
+      expect(find.text('Pusat Jual Beli Warga SMKN 8 Semarang'), findsOneWidget);
     });
   });
 

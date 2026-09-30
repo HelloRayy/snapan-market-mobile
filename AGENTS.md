@@ -1,7 +1,7 @@
 # Repository Guidelines
 
 ## Project Overview
-**Snapan Market Mobile (sNaps)** is a mobile-first app designed exclusively for the **SMKN 8 Jakarta** student ecosystem, integrating an e-commerce vocational marketplace with a Threads-style social networking feed. The platform allows students and staff to circulate preloved school supplies, commercialize vocational works (PPLG, DKV, Kuliner), place COD orders with designated campus meeting points, and interact in academic community discussion threads.
+**Snapan Market Mobile (sNaps)** is a mobile-first app designed exclusively for the **SMKN 8 Semarang** student ecosystem, integrating an e-commerce vocational marketplace with a Threads-style social networking feed. The platform allows students and staff to circulate preloved school supplies, commercialize vocational works (PPLG, DKV, Kuliner), place COD orders with designated campus meeting points, and interact in academic community discussion threads.
 
 ---
 

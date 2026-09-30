@@ -15,7 +15,7 @@
 ## 1. Konsep Dasar & Latar Belakang Aplikasi
 
 ### 💡 Apa Itu Snapan Market Mobile?
-**Snapan Market Mobile** adalah platform marketplace dan forum komunitas digital *mobile-first* yang dikembangkan khusus untuk ekosistem siswa, guru, dan warga sekolah **SMKN 8 Jakarta**.
+**Snapan Market Mobile** adalah platform marketplace dan forum komunitas digital *mobile-first* yang dikembangkan khusus untuk ekosistem siswa, guru, dan warga sekolah **SMKN 8 Semarang**.
 
 ### ⚠️ Masalah Nyata yang Diselesaikan:
 1. **Pusat Promosi Terpadu Siswa**: Menggantikan promosi jual-beli barang preloved (seragam, buku, alat praktik), karya kejuruan (desain, coding, kerajinan), dan kuliner kantin yang sebelumnya hanya tersebar di status WhatsApp/Instagram Story yang hilang dalam 24 jam.
@@ -103,4 +103,4 @@ Aplikasi Snapan Market Mobile mengadopsi standar desain modern kelas industri (a
 
 ---
 
-> **Snapan Market Mobile — Platform Marketplace & Komunitas Siswa SMKN 8 Jakarta.**
+> **Snapan Market Mobile — Platform Marketplace & Komunitas Siswa SMKN 8 Semarang.**

@@ -21,6 +21,7 @@ class HomeNavDrawer extends StatelessWidget {
   final VoidCallback? onLikedTap;
   final VoidCallback? onArchiveTap;
   final VoidCallback? onReportTap;
+  final VoidCallback? onCheckUpdateTap;
   final VoidCallback? onLogout;
   final VoidCallback? onAuthTap;
   final Map<String, dynamic>? userProfile;
@@ -32,6 +33,7 @@ class HomeNavDrawer extends StatelessWidget {
     this.onLikedTap,
     this.onArchiveTap,
     this.onReportTap,
+    this.onCheckUpdateTap,
     this.onLogout,
     this.onAuthTap,
     this.userProfile,
@@ -191,6 +193,17 @@ class HomeNavDrawer extends StatelessWidget {
                     onTap: onReportTap,
                   ),
 
+                  // 6. Periksa pembaruan
+                  _buildDrawerItem(
+                    context: context,
+                    icon: LucideIcons.refreshCw,
+                    label: 'Periksa pembaruan',
+                    inkColor: inkColor,
+                    mutedColor: mutedColor,
+                    hoverColor: tileHoverColor,
+                    onTap: onCheckUpdateTap,
+                  ),
+
                   const SizedBox(height: 8.0),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -244,7 +257,7 @@ class HomeNavDrawer extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Snaps Market Mobile',
+                    'Snaps Market Mobile v1.0.2 (Build 3)',
                     style: GoogleFonts.inter(
                       fontSize: 12.0,
                       fontWeight: FontWeight.w600,

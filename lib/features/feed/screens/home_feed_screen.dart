@@ -294,6 +294,50 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     );
   }
 
+  Future<void> _handleManualUpdateCheck() async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Memeriksa pembaruan sistem...'),
+        duration: Duration(seconds: 1),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+
+    try {
+      final info = await AppUpdateService.instance.getPackageInfo();
+      final update = await AppUpdateService.instance.checkForUpdate();
+
+      if (!mounted) return;
+
+      if (update != null) {
+        UpdateInfoBottomSheet.show(
+          context,
+          update: update,
+          currentVersionName: info.version,
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Aplikasi sudah versi terbaru: v${info.version} (Build ${info.buildNumber}).',
+            ),
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal memeriksa pembaruan: $e'),
+          duration: const Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
   void _handleMapTap() {
     Navigator.push(
       context,
@@ -844,6 +888,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
         onLikedTap: _handleLikedTap,
         onArchiveTap: _handleArchiveTap,
         onReportTap: _handleReportTap,
+        onCheckUpdateTap: _handleManualUpdateCheck,
         onAuthTap: _handleOpenAuth,
         onLogout: widget.onLogout,
       ),

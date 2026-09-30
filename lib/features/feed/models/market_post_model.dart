@@ -361,6 +361,29 @@ class MarketPostModel {
     this.comments = const [],
   });
 
+  /// Normalizes legacy or variant location labels to the standard "SMKN 8 Semarang".
+  /// Preserves specific designated campus spots (e.g. "Lab PPLG 1", "Kantin Belakang").
+  static String normalizeLocationTag(String? raw) {
+    if (raw == null) return 'SMKN 8 Semarang';
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) return 'SMKN 8 Semarang';
+    final lower = trimmed.toLowerCase();
+    if (lower == 'smkn 8' ||
+        lower == 'smkn8' ||
+        lower == 'smkn 8 jakarta' ||
+        lower == 'smkn8 jakarta' ||
+        lower == 'smkn 8 jakarta - snapan' ||
+        lower == 'smkn8 jakarta - snapan' ||
+        lower == 'smkn 8 semarang - snapan' ||
+        lower == 'smkn8 semarang - snapan' ||
+        lower == 'smkn 8 semarang' ||
+        lower == 'smkn8 semarang' ||
+        lower == 'snapan') {
+      return 'SMKN 8 Semarang';
+    }
+    return trimmed;
+  }
+
   factory MarketPostModel.fromJson(Map<String, dynamic> json) {
     final rawImages = json['images'];
     List<String> parsedImages = [];
@@ -420,11 +443,9 @@ class MarketPostModel {
       isOfficialTopic: json['is_official_topic'] == true || json['isOfficialTopic'] == true,
       topicIcon: json['topic_icon']?.toString() ?? json['topicIcon']?.toString(),
       totalThreadParts: json['total_thread_parts'] as int? ?? json['totalThreadParts'] as int?,
-      locationTag: (json['location_tag']?.toString().trim().isNotEmpty == true)
-          ? json['location_tag'].toString().trim()
-          : (json['locationTag']?.toString().trim().isNotEmpty == true
-              ? json['locationTag'].toString().trim()
-              : 'SMKN 8 Semarang'),
+      locationTag: normalizeLocationTag(
+        json['location_tag']?.toString() ?? json['locationTag']?.toString(),
+      ),
       price: json['price'] != null ? (num.tryParse(json['price'].toString())?.toInt()) : null,
       originalPrice: json['original_price'] != null
           ? (num.tryParse(json['original_price'].toString())?.toInt())
@@ -489,7 +510,7 @@ class MarketPostModel {
       isOfficialTopic: isOfficialTopic ?? this.isOfficialTopic,
       topicIcon: topicIcon ?? this.topicIcon,
       totalThreadParts: totalThreadParts ?? this.totalThreadParts,
-      locationTag: locationTag ?? this.locationTag,
+      locationTag: locationTag != null ? normalizeLocationTag(locationTag) : this.locationTag,
       price: price ?? this.price,
       originalPrice: originalPrice ?? this.originalPrice,
       stock: stock ?? this.stock,

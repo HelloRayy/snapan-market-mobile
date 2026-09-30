@@ -55,7 +55,7 @@ class HomeNavDrawer extends StatelessWidget {
     final String displayName = userProfile?['full_name'] ??
         currentUser?.userMetadata?['full_name'] ??
         currentUser?.email?.split('@').first ??
-        'Siswa SMKN 8';
+        'Siswa SMKN 8 Semarang';
     final String displayEmail = currentUser?.email ?? 'Belum masuk';
 
     return Drawer(

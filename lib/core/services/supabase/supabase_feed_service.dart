@@ -61,7 +61,7 @@ class SupabaseFeedService {
       if (originalPrice != null) 'original_price': originalPrice,
       'stock': stock ?? 1,
       'category': category ?? (postType == 'product' ? 'Produk Siswa' : 'Umum'),
-      'location_tag': (locationTag != null && locationTag.trim().isNotEmpty) ? locationTag.trim() : 'SMKN 8 Semarang',
+      'location_tag': MarketPostModel.normalizeLocationTag(locationTag),
       if (topicTag != null && topicTag.isNotEmpty) 'topic_tag': topicTag,
       'images': images,
     };

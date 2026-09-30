@@ -40,7 +40,7 @@ class CheckoutProductHeader extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8.0),
               ),
               child: Text(
-                post.department.isNotEmpty ? post.department : "SMKN 8",
+                post.department.isNotEmpty ? post.department : "SMKN 8 Semarang",
                 style: const TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w600,

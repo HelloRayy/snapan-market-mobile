@@ -113,7 +113,7 @@ const List<CampusLocationSpot> kCampusLocationSpots = [
   ),
   CampusLocationSpot(
     id: "perpustakaan-lt2",
-    name: "Perpustakaan Digital SMKN 8",
+    name: "Perpustakaan Digital SMKN 8 Semarang",
     code: "PERPUS",
     buildingName: "Gedung Literasi Lt. 2",
     floor: 2,

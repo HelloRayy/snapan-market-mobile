@@ -113,7 +113,7 @@ class ChatAppBarTitle extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  user.isOnline ? "Aktif sekarang" : (user.classGroup ?? "Siswa SMKN 8"),
+                  user.isOnline ? "Aktif sekarang" : (user.classGroup ?? "Siswa SMKN 8 Semarang"),
                   style: TextStyle(
                     fontFamily: 'SF Pro',
                     fontSize: 11.0,

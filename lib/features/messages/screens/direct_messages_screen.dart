@@ -121,7 +121,7 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
             final conv = ConversationModel(
               id: convId,
               user: ConversationUser(
-                name: user['full_name'] as String? ?? user['username'] as String? ?? 'Siswa SMKN 8',
+                name: user['full_name'] as String? ?? user['username'] as String? ?? 'Siswa SMKN 8 Semarang',
                 username: user['username'] as String? ?? 'user',
                 avatar: user['avatar_url'] as String? ?? '',
                 classGroup: user['class_group'] as String? ?? 'SMKN 8 Semarang',

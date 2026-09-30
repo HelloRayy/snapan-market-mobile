@@ -194,15 +194,12 @@ class CreatePostProductFields extends StatelessWidget {
                       id: 'preset_${preset['name']}',
                       name: preset['name']!,
                       subtitle: 'Titik Temu COD Sekolah',
-                      distance: 'Kampus SMKN 8',
+                      distance: 'Kampus SMKN 8 Semarang',
                     ),
                   );
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10.0,
-                    vertical: 5.0,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
                   decoration: BoxDecoration(
                     color: selectedLocation?.name == preset['name']
                         ? const Color(0xFFEFF6FF)
@@ -283,8 +280,7 @@ class CreatePostProductFields extends StatelessWidget {
       fillColor: Colors.white,
       focusColor: Colors.white,
       hoverColor: Colors.white,
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12.0),
         borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.0),

@@ -86,18 +86,18 @@ const List<SchoolPlace> kRichSchoolPlaces = [
   SchoolPlace(
     id: 'p1',
     name: 'Lab PPLG 1 & 2',
-    subtitle: 'Gedung Kejuruan Lantai 2 · SMKN 8',
+    subtitle: 'Gedung Kejuruan Lantai 2 · SMKN 8 Semarang',
     distance: 'Sekitar sini',
   ),
   SchoolPlace(
     id: 'p2',
-    name: 'Kantin Belakang SMKN 8',
+    name: 'Kantin Belakang SMKN 8 Semarang',
     subtitle: 'Area Pujasera & Kuliner Siswa',
     distance: '50 m',
   ),
   SchoolPlace(
     id: 'p3',
-    name: 'Lapangan Utama SMKN 8',
+    name: 'Lapangan Utama SMKN 8 Semarang',
     subtitle: 'Area Olahraga & Lapangan Upacara',
     distance: '30 m',
   ),
@@ -127,7 +127,7 @@ const List<SchoolPlace> kRichSchoolPlaces = [
   ),
   SchoolPlace(
     id: 'p8',
-    name: 'Musholla As-Salam SMKN 8',
+    name: 'Musholla As-Salam SMKN 8 Semarang',
     subtitle: 'Tempat Ibadah Sekolah',
     distance: '90 m',
   ),

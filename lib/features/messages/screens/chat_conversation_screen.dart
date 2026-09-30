@@ -226,7 +226,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                         product: widget.conversation.productContext!,
                         location: widget.conversation.id == "17892348123791823"
                             ? "Lab Fisika Lt 2"
-                            : "Kantin Belakang SMKN 8",
+                            : "Kantin Belakang SMKN 8 Semarang",
                         onViewProduct: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(

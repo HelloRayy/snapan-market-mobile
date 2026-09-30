@@ -50,7 +50,7 @@ class _SearchScreenState extends State<SearchScreen> {
           _accounts = records.map<SuggestedAccount>((p) {
             final uName = p['username'] as String? ?? '';
             final fName = p['full_name'] as String?;
-            final classGroup = p['class_group'] as String? ?? 'SMKN 8 Jakarta';
+            final classGroup = p['class_group'] as String? ?? 'SMKN 8 Semarang';
             return SuggestedAccount(
               id: p['id'] as String? ?? '',
               fullName: (fName != null && fName.isNotEmpty) ? fName : (uName.isNotEmpty ? '@$uName' : 'Pengguna'),
@@ -100,7 +100,7 @@ class _SearchScreenState extends State<SearchScreen> {
       final accounts = profiles.map<SuggestedAccount>((p) {
         final uName = p['username'] as String? ?? '';
         final fName = p['full_name'] as String?;
-        final classGroup = p['class_group'] as String? ?? 'SMKN 8 Jakarta';
+        final classGroup = p['class_group'] as String? ?? 'SMKN 8 Semarang';
         return SuggestedAccount(
           id: p['id'] as String? ?? '',
           fullName: (fName != null && fName.isNotEmpty) ? fName : (uName.isNotEmpty ? '@$uName' : 'Pengguna'),

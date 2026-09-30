@@ -270,7 +270,7 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
                           ),
                           const SizedBox(height: 2.0),
                           Text(
-                            widget.post.locationTag ?? 'SMKN8 Semarang - Snapan',
+                            widget.post.locationTag ?? 'SMKN 8 Semarang',
                             style: const TextStyle(
                               fontSize: 13.0,
                               fontWeight: FontWeight.w700,

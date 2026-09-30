@@ -152,7 +152,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
       'stock': isProduct ? int.tryParse(_stockController.text.trim()) ?? 1 : null,
       'description': isProduct ? _descController.text.trim() : null,
       'images': uploadedImages,
-      'locationTag': _selectedLocation?.name ?? 'SMKN8 Semarang - Snapan',
+      'locationTag': _selectedLocation?.name ?? 'SMKN 8 Semarang',
       'topicTag': _selectedTopic?.name,
       'subThreads': _subThreads.map((s) => {'caption': s.caption, 'images': s.images}).toList(),
       'createdAt': DateTime.now().toIso8601String(),

@@ -50,7 +50,7 @@ class ProfileController extends ChangeNotifier {
 
         final fullName = profile?['full_name'] as String? ?? (meta['full_name'] as String?)?.trim();
         final metaUsername = profile?['username'] as String? ?? (meta['username'] as String?)?.trim();
-        final classGroup = profile?['class_group'] as String? ?? (meta['class_group'] as String?)?.trim() ?? 'SMKN 8 Jakarta';
+        final classGroup = profile?['class_group'] as String? ?? (meta['class_group'] as String?)?.trim() ?? 'SMKN 8 Semarang';
         final avatar = profile?['avatar_url'] as String? ?? (meta['avatar_url'] as String?)?.trim() ?? '';
         final bio = profile?['bio'] as String? ?? (meta['bio'] as String?)?.trim() ?? '';
         final link = profile?['link'] as String? ?? (meta['link'] as String?)?.trim() ?? '';
@@ -118,7 +118,7 @@ class ProfileController extends ChangeNotifier {
             id: targetId,
             name: (fullName != null && fullName.isNotEmpty) ? fullName : '@$uName',
             username: uName,
-            classGroup: p['class_group'] as String? ?? 'SMKN 8 Jakarta',
+            classGroup: p['class_group'] as String? ?? 'SMKN 8 Semarang',
             avatar: (p['avatar_url'] as String?)?.isNotEmpty == true ? p['avatar_url'] as String : '',
             bio: p['bio'] as String? ?? '',
             link: p['link'] as String? ?? '',

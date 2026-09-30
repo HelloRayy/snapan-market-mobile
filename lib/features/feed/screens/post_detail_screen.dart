@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:snapan-market/core/components/glass_toolbar_top.dart';
-import 'package:snapan-market/core/services/supabase_service.dart';
-import 'package:snapan-market/core/theme/app_colors.dart';
-import 'package:snapan-market/features/feed/components/buy_bottom_sheet.dart';
-import 'package:snapan-market/features/feed/components/market_post_card.dart';
-import 'package:snapan-market/features/feed/components/media_lightbox_dialog.dart';
-import 'package:snapan-market/features/feed/components/post_detail_bottom_bar.dart';
-import 'package:snapan-market/features/feed/components/post_detail_comments_header.dart';
-import 'package:snapan-market/features/feed/components/post_detail_comments_list.dart';
-import 'package:snapan-market/features/feed/controllers/post_detail_controller.dart';
-import 'package:snapan-market/features/feed/models/market_post_model.dart';
+import 'package:snapan_market/core/components/glass_toolbar_top.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/features/feed/components/buy_bottom_sheet.dart';
+import 'package:snapan_market/features/feed/components/market_post_card.dart';
+import 'package:snapan_market/features/feed/components/media_lightbox_dialog.dart';
+import 'package:snapan_market/features/feed/components/post_detail_bottom_bar.dart';
+import 'package:snapan_market/features/feed/components/post_detail_comments_header.dart';
+import 'package:snapan_market/features/feed/components/post_detail_comments_list.dart';
+import 'package:snapan_market/features/feed/controllers/post_detail_controller.dart';
+import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// Focused single post detail view with author thread continuation, comments, and buyer actions.
 class PostDetailScreen extends StatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:snapan-market/features/messages/services/direct_messages_service.dart';
+import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
 
 /// Horizontal carousel filter chips ("Obrolan", "Pembeli", "Belum Dibaca") for Direct Messages.
 class DirectMessagesFilterTabs extends StatelessWidget {

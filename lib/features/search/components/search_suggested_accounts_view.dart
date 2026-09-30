@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:snapan-market/core/components/snaps_skeleton.dart';
-import 'package:snapan-market/features/search/components/suggested_account_tile.dart';
-import 'package:snapan-market/features/search/models/search_models.dart';
+import 'package:snapan_market/core/components/snaps_skeleton.dart';
+import 'package:snapan_market/features/search/components/suggested_account_tile.dart';
+import 'package:snapan_market/features/search/models/search_models.dart';
 
 /// Renders the idle state with suggested student accounts to follow.
 class SearchSuggestedAccountsView extends StatefulWidget {

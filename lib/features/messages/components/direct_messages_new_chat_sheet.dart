@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:snapan-market/core/services/supabase_service.dart';
-import 'package:snapan-market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Bottom sheet dialog to search SMKN 8 students and initiate a new direct chat.
 class DirectMessagesNewChatSheet extends StatefulWidget {

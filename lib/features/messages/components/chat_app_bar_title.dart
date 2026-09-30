@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:snapan-market/core/theme/app_colors.dart';
-import 'package:snapan-market/features/feed/components/media_lightbox_dialog.dart';
-import 'package:snapan-market/features/messages/models/conversation_model.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/features/feed/components/media_lightbox_dialog.dart';
+import 'package:snapan_market/features/messages/models/conversation_model.dart';
 
 /// Top bar header title widget displaying user avatar, name, verification, and presence.
 class ChatAppBarTitle extends StatelessWidget {

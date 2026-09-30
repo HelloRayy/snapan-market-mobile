@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:snapan-market/features/feed/components/market_post_card.dart';
-import 'package:snapan-market/features/feed/models/market_post_model.dart';
-import 'package:snapan-market/features/search/components/suggested_account_tile.dart';
-import 'package:snapan-market/features/search/models/search_models.dart';
+import 'package:snapan_market/features/feed/components/market_post_card.dart';
+import 'package:snapan_market/features/feed/models/market_post_model.dart';
+import 'package:snapan_market/features/search/components/suggested_account_tile.dart';
+import 'package:snapan_market/features/search/models/search_models.dart';
 
 /// Renders search results (typing suggestions, accounts list, posts feed, or empty state).
 class SearchResultsView extends StatelessWidget {

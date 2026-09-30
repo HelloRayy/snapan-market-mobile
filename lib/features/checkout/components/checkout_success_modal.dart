@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:snapan-market/core/components/kumo_button.dart';
-import 'package:snapan-market/core/navigation/app_slide_page_route.dart';
-import 'package:snapan-market/core/utils/formatters.dart';
-import 'package:snapan-market/features/feed/models/market_post_model.dart';
-import 'package:snapan-market/features/locations/models/campus_location_spot.dart';
-import 'package:snapan-market/features/messages/models/conversation_model.dart';
-import 'package:snapan-market/features/messages/screens/chat_conversation_screen.dart';
-import 'package:snapan-market/features/messages/services/direct_messages_service.dart';
+import 'package:snapan_market/core/components/kumo_button.dart';
+import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
+import 'package:snapan_market/core/utils/formatters.dart';
+import 'package:snapan_market/features/feed/models/market_post_model.dart';
+import 'package:snapan_market/features/locations/models/campus_location_spot.dart';
+import 'package:snapan_market/features/messages/models/conversation_model.dart';
+import 'package:snapan_market/features/messages/screens/chat_conversation_screen.dart';
+import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
 
 /// Modal bottom sheet shown upon successful COD order creation.
 class CheckoutSuccessModal extends StatelessWidget {

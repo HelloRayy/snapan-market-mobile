@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:snapan-market/core/utils/formatters.dart';
+import 'package:snapan_market/core/utils/formatters.dart';
 
 /// Sticky bottom CTA bar with total COD price and submit order button.
 class CheckoutBottomBar extends StatelessWidget {

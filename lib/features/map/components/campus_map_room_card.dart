@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:snapan-market/core/components/kumo_button.dart';
-import 'package:snapan-market/features/map/models/campus_map_models.dart';
+import 'package:snapan_market/core/components/kumo_button.dart';
+import 'package:snapan_market/features/map/models/campus_map_models.dart';
 
 /// Floating bottom card displaying selected room/spot details and confirmation CTA.
 class CampusMapRoomCard extends StatelessWidget {

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:snapan-market/core/components/snaps_skeleton.dart';
-import 'package:snapan-market/core/navigation/app_slide_page_route.dart';
-import 'package:snapan-market/core/services/follow_service.dart';
-import 'package:snapan-market/core/services/supabase_service.dart';
-import 'package:snapan-market/features/feed/components/home_menu_popover.dart';
-import 'package:snapan-market/features/feed/models/market_post_model.dart';
-import 'package:snapan-market/features/feed/screens/post_detail_screen.dart';
-import 'package:snapan-market/features/profile/models/profile_user_model.dart';
-import 'package:snapan-market/features/profile/screens/profile_screen.dart';
-import 'package:snapan-market/features/search/components/search_bar_header.dart';
-import 'package:snapan-market/features/search/components/search_results_view.dart';
-import 'package:snapan-market/features/search/components/search_suggested_accounts_view.dart';
-import 'package:snapan-market/features/search/models/search_models.dart';
+import 'package:snapan_market/core/components/snaps_skeleton.dart';
+import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
+import 'package:snapan_market/core/services/follow_service.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/features/feed/components/home_menu_popover.dart';
+import 'package:snapan_market/features/feed/models/market_post_model.dart';
+import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
+import 'package:snapan_market/features/profile/models/profile_user_model.dart';
+import 'package:snapan_market/features/profile/screens/profile_screen.dart';
+import 'package:snapan_market/features/search/components/search_bar_header.dart';
+import 'package:snapan_market/features/search/components/search_results_view.dart';
+import 'package:snapan_market/features/search/components/search_suggested_accounts_view.dart';
+import 'package:snapan_market/features/search/models/search_models.dart';
 
 /// Halaman Pencarian & Saran Akun Siswa SMKN 8 Semarang
 class SearchScreen extends StatefulWidget {

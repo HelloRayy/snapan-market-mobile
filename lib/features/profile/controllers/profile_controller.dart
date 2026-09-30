@@ -6,21 +6,19 @@ import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/profile/models/profile_user_model.dart';
 
 class ProfileController extends ChangeNotifier {
-  ProfileUserModel user = ProfileUserModel(
+  ProfileUserModel user = const ProfileUserModel(
     id: '',
     name: 'Siswa Snapan',
     username: 'siswa',
-    classGroup: 'SMKN 8 Semarang',
+    classGroup: 'SMKN 8 Jakarta',
     avatar: '',
     bio: '',
     followersCount: 0,
-    followingCount: 0,
-    itemsSold: 0,
-    tags: const [],
+    soldCount: 0,
+    tags: [],
     isVerified: false,
-    rating: 5.0,
-    salesCount: 0,
-    showSalesStats: true,
+    rating: 0.0,
+    showSalesStats: false,
   );
 
   List<MarketPostModel> allUserPosts = [];

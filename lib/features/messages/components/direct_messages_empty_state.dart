@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:snapan-market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Empty state widget for Direct Messages inbox when no conversations match.
 class DirectMessagesEmptyState extends StatelessWidget {

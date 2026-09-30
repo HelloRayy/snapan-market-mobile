@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:snapan-market/features/messages/models/chat_message_model.dart';
+import 'package:snapan_market/features/messages/models/chat_message_model.dart';
 
 /// Single chat message bubble matching 1:1 chat-bubble.tsx specs.
 class ChatMessageBubble extends StatelessWidget {

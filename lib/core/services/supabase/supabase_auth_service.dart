@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:snapan_market/core/constants/supabase_constants.dart';
+import 'package:snapan_market/core/services/poll_sync_service.dart';
 
 class SupabaseAuthService {
   SupabaseAuthService(this._client);
@@ -32,6 +33,7 @@ class SupabaseAuthService {
     try {
       _isAdminCache = null;
       _isAdminCachedUserId = null;
+      PollSyncService.instance.clear();
       await _client.auth.signOut();
     } catch (e) {
       debugPrint('Error signOut: $e');

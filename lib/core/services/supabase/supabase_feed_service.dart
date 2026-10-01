@@ -134,19 +134,12 @@ class SupabaseFeedService {
   Future<bool> togglePostLike(String postId, bool isCurrentlyLiked) async {
     final user = _currentUser;
     if (user == null) return !isCurrentlyLiked;
-
     try {
       if (isCurrentlyLiked) {
-        await _client
-            .from('post_likes')
-            .delete()
-            .match({'post_id': postId, 'user_id': user.id});
+        await _client.from('post_likes').delete().match({'post_id': postId, 'user_id': user.id});
         return false;
       } else {
-        await _client.from('post_likes').insert({
-          'post_id': postId,
-          'user_id': user.id,
-        });
+        await _client.from('post_likes').insert({'post_id': postId, 'user_id': user.id});
         return true;
       }
     } catch (e) {
@@ -159,20 +152,9 @@ class SupabaseFeedService {
   Future<Set<String>> fetchLikedPostIds() async {
     final user = _currentUser;
     if (user == null) return {};
-
     try {
-      final response = await _client
-          .from('post_likes')
-          .select('post_id')
-          .eq('user_id', user.id);
-
-      final set = (response as List<dynamic>)
-          .whereType<Map<String, dynamic>>()
-          .map((e) => e['post_id']?.toString() ?? '')
-          .where((id) => id.isNotEmpty)
-          .toSet();
-
-      return set;
+      final response = await _client.from('post_likes').select('post_id').eq('user_id', user.id);
+      return (response as List<dynamic>).whereType<Map<String, dynamic>>().map((e) => e['post_id']?.toString() ?? '').where((id) => id.isNotEmpty).toSet();
     } catch (e) {
       debugPrint('Error fetchLikedPostIds: $e');
       return {};
@@ -183,19 +165,12 @@ class SupabaseFeedService {
   Future<bool> togglePostBookmark(String postId, bool isCurrentlySaved) async {
     final user = _currentUser;
     if (user == null) return !isCurrentlySaved;
-
     try {
       if (isCurrentlySaved) {
-        await _client
-            .from('post_bookmarks')
-            .delete()
-            .match({'post_id': postId, 'user_id': user.id});
+        await _client.from('post_bookmarks').delete().match({'post_id': postId, 'user_id': user.id});
         return false;
       } else {
-        await _client.from('post_bookmarks').insert({
-          'post_id': postId,
-          'user_id': user.id,
-        });
+        await _client.from('post_bookmarks').insert({'post_id': postId, 'user_id': user.id});
         return true;
       }
     } catch (e) {
@@ -208,20 +183,9 @@ class SupabaseFeedService {
   Future<Set<String>> fetchBookmarkedPostIds() async {
     final user = _currentUser;
     if (user == null) return {};
-
     try {
-      final response = await _client
-          .from('post_bookmarks')
-          .select('post_id')
-          .eq('user_id', user.id);
-
-      final set = (response as List<dynamic>)
-          .whereType<Map<String, dynamic>>()
-          .map((e) => e['post_id']?.toString() ?? '')
-          .where((id) => id.isNotEmpty)
-          .toSet();
-
-      return set;
+      final response = await _client.from('post_bookmarks').select('post_id').eq('user_id', user.id);
+      return (response as List<dynamic>).whereType<Map<String, dynamic>>().map((e) => e['post_id']?.toString() ?? '').where((id) => id.isNotEmpty).toSet();
     } catch (e) {
       debugPrint('Error fetchBookmarkedPostIds: $e');
       return {};

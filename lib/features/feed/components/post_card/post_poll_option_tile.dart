@@ -46,14 +46,6 @@ class PostPollOptionTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            if (poll.isMultipleChoice) ...[
-              Icon(
-                isSelected ? Icons.check_box_rounded : Icons.check_box_outline_blank_rounded,
-                size: 18.0,
-                color: isSelected ? AppColors.primary : const Color(0xFF94A3B8),
-              ),
-              const SizedBox(width: 10.0),
-            ],
             Expanded(
               child: Text(
                 option.text,

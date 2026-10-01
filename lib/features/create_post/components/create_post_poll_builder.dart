@@ -12,8 +12,6 @@ class CreatePostPollBuilder extends StatelessWidget {
   final ValueChanged<Duration> onDurationChanged;
   final bool allowChangeVote;
   final ValueChanged<bool> onAllowChangeVoteChanged;
-  final bool isMultipleChoice;
-  final ValueChanged<bool> onMultipleChoiceChanged;
 
   const CreatePostPollBuilder({
     super.key,
@@ -25,8 +23,6 @@ class CreatePostPollBuilder extends StatelessWidget {
     required this.onDurationChanged,
     required this.allowChangeVote,
     required this.onAllowChangeVoteChanged,
-    required this.isMultipleChoice,
-    required this.onMultipleChoiceChanged,
   });
 
   static const List<Duration> _durations = [
@@ -184,24 +180,6 @@ class CreatePostPollBuilder extends StatelessWidget {
                     onChanged: (val) {
                       HapticFeedback.selectionClick();
                       onAllowChangeVoteChanged(val);
-                    },
-                    activeColor: AppColors.primary,
-                  ),
-                ],
-              ),
-              const Divider(height: 1.0, color: Color(0xFFE2E8F0)),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Pilihan ganda (Multiple choice)',
-                    style: TextStyle(fontSize: 13.0, fontWeight: FontWeight.w500, color: Color(0xFF1E293B)),
-                  ),
-                  Switch.adaptive(
-                    value: isMultipleChoice,
-                    onChanged: (val) {
-                      HapticFeedback.selectionClick();
-                      onMultipleChoiceChanged(val);
                     },
                     activeColor: AppColors.primary,
                   ),

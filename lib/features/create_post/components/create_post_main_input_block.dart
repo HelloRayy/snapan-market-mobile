@@ -35,8 +35,6 @@ class CreatePostMainInputBlock extends StatelessWidget {
   final ValueChanged<Duration> onPollDurationChanged;
   final bool pollAllowChangeVote;
   final ValueChanged<bool> onPollAllowChangeVoteChanged;
-  final bool pollIsMultipleChoice;
-  final ValueChanged<bool> onPollMultipleChoiceChanged;
 
   const CreatePostMainInputBlock({
     super.key,
@@ -66,8 +64,6 @@ class CreatePostMainInputBlock extends StatelessWidget {
     required this.onPollDurationChanged,
     required this.pollAllowChangeVote,
     required this.onPollAllowChangeVoteChanged,
-    required this.pollIsMultipleChoice,
-    required this.onPollMultipleChoiceChanged,
   });
 
   @override
@@ -163,8 +159,6 @@ class CreatePostMainInputBlock extends StatelessWidget {
                       onDurationChanged: onPollDurationChanged,
                       allowChangeVote: pollAllowChangeVote,
                       onAllowChangeVoteChanged: onPollAllowChangeVoteChanged,
-                      isMultipleChoice: pollIsMultipleChoice,
-                      onMultipleChoiceChanged: onPollMultipleChoiceChanged,
                     ),
                   ],
                   const SizedBox(height: 10.0),

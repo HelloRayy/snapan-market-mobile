@@ -85,7 +85,6 @@ class _CreatePostModalState extends State<CreatePostModal> {
   final List<TextEditingController> _pollOptionControllers = [TextEditingController(), TextEditingController(), TextEditingController()];
   Duration _pollDeadlineDuration = const Duration(hours: 24);
   bool _pollAllowChangeVote = true;
-  bool _pollIsMultipleChoice = false;
   String _audiencePrivacy = 'Semua orang dapat membalas';
   bool _isSubmitting = false;
   bool _showSellingIntentBanner = false;
@@ -175,7 +174,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
             'votes_count': 0,
           }).toList(),
           'total_votes': 0,
-          'is_multiple_choice': _pollIsMultipleChoice,
+          'is_multiple_choice': false,
           'allow_change_vote': _pollAllowChangeVote,
           'expires_at': DateTime.now().add(_pollDeadlineDuration).toUtc().toIso8601String(),
           'is_closed': false,
@@ -283,8 +282,6 @@ class _CreatePostModalState extends State<CreatePostModal> {
                             onPollDurationChanged: (d) => setState(() => _pollDeadlineDuration = d),
                             pollAllowChangeVote: _pollAllowChangeVote,
                             onPollAllowChangeVoteChanged: (v) => setState(() => _pollAllowChangeVote = v),
-                            pollIsMultipleChoice: _pollIsMultipleChoice,
-                            onPollMultipleChoiceChanged: (v) => setState(() => _pollIsMultipleChoice = v),
                           ),
                           if (_postMode == PostMode.product) ...[
                             const SizedBox(height: 8.0),

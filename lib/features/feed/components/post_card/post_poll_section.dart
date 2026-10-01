@@ -31,21 +31,8 @@ class PostPollSection extends StatelessWidget {
     if (poll == null || poll.isExpired) return;
     if (poll.hasVoted && !poll.allowChangeVote) return;
 
-    if (poll.isMultipleChoice) {
-      final currentVotes = List<String>.from(poll.userVotedOptionIds);
-      if (currentVotes.contains(option.id)) {
-        if (currentVotes.length > 1) {
-          currentVotes.remove(option.id);
-          _submitVote(currentVotes);
-        }
-      } else {
-        currentVotes.add(option.id);
-        _submitVote(currentVotes);
-      }
-    } else {
-      if (!poll.userVotedOptionIds.contains(option.id)) {
-        _submitVote([option.id]);
-      }
+    if (!poll.userVotedOptionIds.contains(option.id)) {
+      _submitVote([option.id]);
     }
   }
 

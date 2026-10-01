@@ -10,14 +10,14 @@ import 'package:snapan_market/features/auth/components/auth_prompt_overlay.dart'
 import 'package:snapan_market/features/auth/screens/auth_screen.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
 import 'package:snapan_market/features/create_post/screens/create_post_modal.dart';
-import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart';
-import 'package:snapan_market/features/feed/components/home_feed_fab_group.dart';
+import 'package:snapan_market/features/feed/components/home_dock_overlay.dart';
 import 'package:snapan_market/features/feed/components/home_feed_header.dart';
 import 'package:snapan_market/features/feed/components/home_feed_scrollable_list.dart';
 import 'package:snapan_market/features/feed/components/home_feed_tab_switch.dart';
 import 'package:snapan_market/features/feed/components/home_menu_popover.dart';
 import 'package:snapan_market/features/feed/components/home_nav_drawer.dart';
 import 'package:snapan_market/features/feed/components/home_nav_tab_switcher.dart';
+import 'package:snapan_market/features/feed/components/home_push_drawer_layout.dart';
 import 'package:snapan_market/features/feed/components/media_lightbox_dialog.dart';
 import 'package:snapan_market/features/feed/controllers/home_feed_controller.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
@@ -38,10 +38,10 @@ class HomeFeedScreen extends StatefulWidget {
 
 class _HomeFeedScreenState extends State<HomeFeedScreen>
     with TickerProviderStateMixin {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ProfileScreenState> _profileKey = GlobalKey<ProfileScreenState>();
   final ScrollController _scrollController = ScrollController();
   final HomeFeedController _feedController = HomeFeedController();
+  final HomePushDrawerController _drawerController = HomePushDrawerController();
 
   AnimationController? _fabAnimationController;
   Animation<double>? _fabAnimation;
@@ -90,7 +90,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   }
 
   Future<void> _handleManualCheckUpdate() async {
-    Navigator.of(context).maybePop();
+    _drawerController.close();
     try {
       final update = await AppUpdateService.instance.checkForUpdate(isManual: true);
       if (!mounted) return;
@@ -108,6 +108,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
   @override
   void dispose() {
+    _drawerController.dispose();
     HomeMenuPopover.dismiss();
     _feedController.dispose();
     _fabAnimationController?.dispose();
@@ -137,6 +138,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   }
 
   void _handleOpenAuth() {
+    _drawerController.close();
     HomeMenuPopover.dismiss();
     Navigator.push(
       context,
@@ -155,60 +157,29 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
   void _handleCreatePost([PostMode mode = PostMode.thread]) {
     if (!SupabaseService.instance.isAuthenticated) {
-      SnapsToast.show(
-        context,
-        'Silakan masuk untuk membuat postingan.',
-        hasBottomNav: true,
-        action: SnackBarAction(label: 'Masuk', textColor: Colors.amber, onPressed: _handleOpenAuth),
-      );
+      SnapsToast.show(context, 'Silakan masuk untuk membuat postingan.', hasBottomNav: true, action: SnackBarAction(label: 'Masuk', textColor: Colors.amber, onPressed: _handleOpenAuth));
       return;
     }
-
-    CreatePostModal.show(
-      context,
-      initialMode: mode,
-      currentUserName: (_feedController.userProfile?['full_name'] as String?)?.isNotEmpty == true
-          ? _feedController.userProfile!['full_name'] as String
-          : ((_feedController.userProfile?['username'] as String?)?.isNotEmpty == true
-              ? '@${_feedController.userProfile!['username']}'
-              : ''),
-      currentUserAvatar: _feedController.userProfile?['avatar_url'] as String?,
-      onSubmitPost: (data) => _feedController.createPost(data),
-    );
+    final name = (_feedController.userProfile?['full_name'] as String?)?.isNotEmpty == true
+        ? _feedController.userProfile!['full_name'] as String
+        : ((_feedController.userProfile?['username'] as String?)?.isNotEmpty == true ? '@${_feedController.userProfile!['username']}' : '');
+    CreatePostModal.show(context, initialMode: mode, currentUserName: name, currentUserAvatar: _feedController.userProfile?['avatar_url'] as String?, onSubmitPost: _feedController.createPost);
   }
 
   void _handlePostClick(MarketPostModel item) async {
-    final result = await Navigator.push(
-      context,
-      AppSlidePageRoute(
-        builder: (context) => PostDetailScreen(
-          post: item,
-          onLikeToggle: _feedController.toggleLike,
-          onBookmarkToggle: _feedController.updatePost,
-          onRepostToggle: _feedController.toggleRepost,
-          onDeletePost: _feedController.deletePost,
-        ),
-      ),
-    );
-
+    final result = await Navigator.push(context, AppSlidePageRoute(builder: (context) => PostDetailScreen(post: item, onLikeToggle: _feedController.toggleLike, onBookmarkToggle: _feedController.updatePost, onRepostToggle: _feedController.toggleRepost, onDeletePost: _feedController.deletePost)));
     if (result is Map) {
-      if (result['deleted'] == true) {
-        final postId = result['postId'] as String?;
-        if (postId != null) _feedController.removePostById(postId);
+      if (result['deleted'] == true && result['postId'] is String) {
+        _feedController.removePostById(result['postId'] as String);
       } else if (result['updatedPost'] is MarketPostModel) {
         _feedController.updatePost(result['updatedPost'] as MarketPostModel);
       }
     }
   }
 
-  List<MarketPostModel> get _displayedPosts {
-    if (_activeTab == FeedTab.market) {
-      return _feedController.posts
-          .where((p) => p.postType == 'product' || (p.price != null && p.price! > 0))
-          .toList();
-    }
-    return _feedController.posts;
-  }
+  List<MarketPostModel> get _displayedPosts => _activeTab == FeedTab.market
+      ? _feedController.posts.where((p) => p.postType == 'product' || (p.price != null && p.price! > 0)).toList()
+      : _feedController.posts;
 
   @override
   Widget build(BuildContext context) {
@@ -218,20 +189,8 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     final bool isUnauthenticated = SupabaseService.instance.currentUser == null;
 
     final scaffold = Scaffold(
-      key: _scaffoldKey,
       backgroundColor: Colors.white,
       extendBody: true,
-      drawer: HomeNavDrawer(
-        userProfile: _feedController.userProfile,
-        onAppearanceTap: () {},
-        onSettingsTap: () {},
-        onLikedTap: () => setState(() => _currentNavTab = HomeNavTab.activity),
-        onArchiveTap: () {},
-        onReportTap: () {},
-        onCheckUpdateTap: _handleManualCheckUpdate,
-        onAuthTap: _handleOpenAuth,
-        onLogout: widget.onLogout,
-      ),
       appBar: HomeFeedHeader(
         isDark: false,
         title: switch (_currentNavTab) {
@@ -242,7 +201,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
         },
         onMenuTap: () {
           HapticFeedback.lightImpact();
-          _scaffoldKey.currentState?.openDrawer();
+          _drawerController.open();
         },
         onBackTap: _currentNavTab != HomeNavTab.home ? () => setState(() => _currentNavTab = HomeNavTab.home) : null,
         onTitleTap: () => _currentNavTab == HomeNavTab.home ? _scrollToTop() : null,
@@ -277,52 +236,56 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
             ),
             messagesTab: const DirectMessagesScreen(showBackButton: false, showAppBar: false),
             activityTab: const ActivityScreen(showAppBar: false),
-            profileTab: ProfileScreen(key: _profileKey, showAppBar: false, onOpenMenu: () => _scaffoldKey.currentState?.openDrawer()),
+            profileTab: ProfileScreen(key: _profileKey, showAppBar: false, onOpenMenu: _drawerController.open),
           ),
-          HomeFeedFabGroup(
+          HomeDockOverlay(
+            drawerController: _drawerController,
             currentNavTab: _currentNavTab,
             fabAnimationController: _fabAnimationController!,
             fabAnimation: _fabAnimation,
-            fabBottomVisible: fabBottom,
+            fabBottom: fabBottom,
             onCreatePost: _handleCreatePost,
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: RepaintBoundary(
-              child: HomeBottomNavBar(
-                currentTab: _currentNavTab,
-                hasUnreadMessages: true,
-                unreadMessagesCount: 20,
-                userAvatar: _feedController.userProfile?['avatar_url'] as String? ??
-                    (SupabaseService.instance.currentUser?.userMetadata?['avatar_url'] as String?),
-                onSearchTap: () => Navigator.push(
-                  context,
-                  AppSlidePageRoute(builder: (context) => SearchScreen(onBack: () => Navigator.pop(context))),
-                ),
-                onPostTap: _handleCreatePost,
-                onTabSelected: (tab) {
-                  setState(() => _currentNavTab = tab);
-                  _showFab();
-                  if (tab == HomeNavTab.profile) _profileKey.currentState?.reloadProfile();
-                },
-              ),
-            ),
+            onTabSelected: (tab) {
+              setState(() => _currentNavTab = tab);
+              _showFab();
+              if (tab == HomeNavTab.profile) _profileKey.currentState?.reloadProfile();
+            },
+            userAvatar: _feedController.userProfile?['avatar_url'] as String? ??
+                (SupabaseService.instance.currentUser?.userMetadata?['avatar_url'] as String?),
           ),
         ],
       ),
+    );
+
+    final pushLayout = HomePushDrawerLayout(
+      controller: _drawerController,
+      drawer: HomeNavDrawer(
+        userProfile: _feedController.userProfile,
+        onAppearanceTap: () {},
+        onSettingsTap: () {},
+        onLikedTap: () {
+          _drawerController.close();
+          setState(() => _currentNavTab = HomeNavTab.activity);
+        },
+        onArchiveTap: () {},
+        onReportTap: () {},
+        onCheckUpdateTap: _handleManualCheckUpdate,
+        onAuthTap: _handleOpenAuth,
+        onLogout: widget.onLogout,
+        onClose: _drawerController.close,
+      ),
+      content: scaffold,
     );
 
     if (isUnauthenticated) {
       return Stack(
         fit: StackFit.expand,
         children: [
-          scaffold,
+          pushLayout,
           Positioned.fill(child: AuthPromptOverlay(onNavigateToAuth: _handleOpenAuth)),
         ],
       );
     }
-    return scaffold;
+    return pushLayout;
   }
 }

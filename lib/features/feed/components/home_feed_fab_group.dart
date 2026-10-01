@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
-import 'package:snapan_market/features/feed/components/floating_marketplace_squircle_button.dart';
 import 'package:snapan_market/features/feed/components/floating_plus_squircle_button.dart';
 import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart';
 
@@ -47,18 +46,8 @@ class HomeFeedFabGroup extends StatelessWidget {
                 offset: Offset(0, fabOffsetY),
                 child: IgnorePointer(
                   ignoring: !isHomeTab || fabProgress < 0.2,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      FloatingMarketplaceSquircleButton(
-                        onTap: () => onCreatePost(PostMode.product),
-                      ),
-                      const SizedBox(height: 6.0),
-                      FloatingPlusSquircleButton(
-                        onTap: () => onCreatePost(PostMode.thread),
-                      ),
-                    ],
+                  child: FloatingPlusSquircleButton(
+                    onTap: () => onCreatePost(PostMode.thread),
                   ),
                 ),
               ),

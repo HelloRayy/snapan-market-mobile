@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -144,7 +145,7 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
                 ),
               )
             : Icon(
-                leadingIcon ?? Icons.arrow_back_rounded,
+                leadingIcon ?? CupertinoIcons.chevron_back,
                 size: 22.0,
                 color: const Color(0xFF1A1A1A),
               ),

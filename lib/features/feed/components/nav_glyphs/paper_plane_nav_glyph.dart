@@ -1,9 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import 'package:snapan_market/core/theme/app_colors.dart';
 
-/// 2. Messages Nav Glyph using LucideIcons.messageSquare with Azure badge
+/// 2. Messages Nav Glyph using CupertinoIcons (chat_bubble_2_fill / chat_bubble_2) with Azure badge
 class PaperPlaneNavGlyph extends StatelessWidget {
   final bool isActive;
   final bool hasBadge;
@@ -19,8 +19,8 @@ class PaperPlaneNavGlyph extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final icon = Icon(
-      LucideIcons.messageSquare,
-      size: 20.0,
+      isActive ? CupertinoIcons.chat_bubble_2_fill : CupertinoIcons.chat_bubble_2,
+      size: 21.0,
       color: isActive ? AppColors.primary : const Color(0xFF64748B),
     );
 

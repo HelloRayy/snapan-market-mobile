@@ -1,9 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import 'package:snapan_market/core/theme/app_colors.dart';
 
-/// 4. User Nav Glyph using circular avatar with fallback to LucideIcons.user
+/// 4. User Nav Glyph using circular avatar with fallback to CupertinoIcons (person_fill / person)
 class UserNavGlyph extends StatelessWidget {
   final bool isActive;
   final String? userAvatar;
@@ -42,7 +42,7 @@ class UserNavGlyph extends StatelessWidget {
 
   Widget _buildFallbackGlyph() {
     return Icon(
-      LucideIcons.user,
+      isActive ? CupertinoIcons.person_fill : CupertinoIcons.person,
       size: 20.0,
       color: isActive ? AppColors.primary : const Color(0xFF64748B),
     );

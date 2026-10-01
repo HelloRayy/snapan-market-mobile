@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/glass_toolbar_top.dart';
@@ -122,36 +123,36 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: GlassToolbarTop(
-          leadingIcon: Icons.arrow_back_rounded,
+          leadingIcon: CupertinoIcons.chevron_back,
           leadingTooltip: 'Kembali',
           onLeadingTap: () => Navigator.pop(context, {'updatedPost': post}),
-        title: 'Postingan',
-        showVerifiedBadge: true,
-        trailingActions: [
-          GlassToolbarAction(
-            icon: Icons.share_outlined,
-            tooltip: 'Bagikan postingan',
-            onTap: () {
-              HapticFeedback.lightImpact();
-              Clipboard.setData(ClipboardData(text: 'https://snapan.id/post/${post.id}'));
-              SnapsToast.show(
-                context,
-                'Tautan postingan berhasil disalin',
-                hasBottomNav: false,
-              );
-            },
-          ),
-          GlassToolbarAction(
-            icon: Icons.more_horiz_rounded,
-            tooltip: 'Menu lainnya',
-            onTap: () => _controller.showSubmenu(
-              context: context,
-              onBookmarkToggle: widget.onBookmarkToggle,
-              onDeletePost: widget.onDeletePost,
+          title: 'Postingan',
+          showVerifiedBadge: false,
+          trailingActions: [
+            GlassToolbarAction(
+              icon: CupertinoIcons.share,
+              tooltip: 'Bagikan postingan',
+              onTap: () {
+                HapticFeedback.lightImpact();
+                Clipboard.setData(ClipboardData(text: 'https://snapan.id/post/${post.id}'));
+                SnapsToast.show(
+                  context,
+                  'Tautan postingan berhasil disalin',
+                  hasBottomNav: false,
+                );
+              },
             ),
-          ),
-        ],
-      ),
+            GlassToolbarAction(
+              icon: CupertinoIcons.ellipsis,
+              tooltip: 'Menu lainnya',
+              onTap: () => _controller.showSubmenu(
+                context: context,
+                onBookmarkToggle: widget.onBookmarkToggle,
+                onDeletePost: widget.onDeletePost,
+              ),
+            ),
+          ],
+        ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         behavior: HitTestBehavior.opaque,

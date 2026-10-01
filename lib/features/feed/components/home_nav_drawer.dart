@@ -1,7 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:snapan_market/core/services/app_update_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -25,6 +24,7 @@ class HomeNavDrawer extends StatelessWidget {
   final VoidCallback? onCheckUpdateTap;
   final VoidCallback? onLogout;
   final VoidCallback? onAuthTap;
+  final VoidCallback? onClose;
   final Map<String, dynamic>? userProfile;
 
   const HomeNavDrawer({
@@ -37,6 +37,7 @@ class HomeNavDrawer extends StatelessWidget {
     this.onCheckUpdateTap,
     this.onLogout,
     this.onAuthTap,
+    this.onClose,
     this.userProfile,
   });
 
@@ -60,7 +61,7 @@ class HomeNavDrawer extends StatelessWidget {
 
     return Drawer(
       width: 280.0,
-      elevation: 16.0,
+      elevation: 0.0,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.zero,
       ),
@@ -92,7 +93,8 @@ class HomeNavDrawer extends StatelessWidget {
                       child: userProfile?['avatar_url'] == null
                           ? Text(
                               displayName.isNotEmpty ? displayName[0].toUpperCase() : 'S',
-                              style: GoogleFonts.inter(
+                              style: const TextStyle(
+                                fontFamily: 'SFPro',
                                 fontSize: 16.0,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.white,
@@ -109,7 +111,8 @@ class HomeNavDrawer extends StatelessWidget {
                             displayName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.inter(
+                            style: TextStyle(
+                              fontFamily: 'SFPro',
                               fontSize: 14.5,
                               fontWeight: FontWeight.w600,
                               color: inkColor,
@@ -120,7 +123,8 @@ class HomeNavDrawer extends StatelessWidget {
                             displayEmail,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.inter(
+                            style: TextStyle(
+                              fontFamily: 'SFPro',
                               fontSize: 12.0,
                               color: mutedColor,
                             ),
@@ -141,7 +145,7 @@ class HomeNavDrawer extends StatelessWidget {
                   // 1. Tampilan
                   _buildDrawerItem(
                     context: context,
-                    icon: LucideIcons.palette,
+                    icon: CupertinoIcons.circle_lefthalf_fill,
                     label: 'Tampilan',
                     hasChevron: true,
                     inkColor: inkColor,
@@ -153,7 +157,7 @@ class HomeNavDrawer extends StatelessWidget {
                   // 2. Pengaturan
                   _buildDrawerItem(
                     context: context,
-                    icon: LucideIcons.settings,
+                    icon: CupertinoIcons.gear_alt,
                     label: 'Pengaturan',
                     inkColor: inkColor,
                     mutedColor: mutedColor,
@@ -164,7 +168,7 @@ class HomeNavDrawer extends StatelessWidget {
                   // 3. Disukai
                   _buildDrawerItem(
                     context: context,
-                    icon: LucideIcons.heart,
+                    icon: CupertinoIcons.heart,
                     label: 'Disukai',
                     inkColor: inkColor,
                     mutedColor: mutedColor,
@@ -175,7 +179,7 @@ class HomeNavDrawer extends StatelessWidget {
                   // 4. Arsip
                   _buildDrawerItem(
                     context: context,
-                    icon: LucideIcons.bookmark,
+                    icon: CupertinoIcons.archivebox,
                     label: 'Arsip',
                     inkColor: inkColor,
                     mutedColor: mutedColor,
@@ -186,7 +190,7 @@ class HomeNavDrawer extends StatelessWidget {
                   // 5. Laporkan masalah
                   _buildDrawerItem(
                     context: context,
-                    icon: LucideIcons.messageSquareWarning,
+                    icon: CupertinoIcons.exclamationmark_bubble,
                     label: 'Laporkan masalah',
                     inkColor: inkColor,
                     mutedColor: mutedColor,
@@ -197,7 +201,7 @@ class HomeNavDrawer extends StatelessWidget {
                   // 6. Periksa pembaruan
                   _buildDrawerItem(
                     context: context,
-                    icon: LucideIcons.refreshCw,
+                    icon: CupertinoIcons.arrow_clockwise,
                     label: 'Periksa pembaruan',
                     inkColor: inkColor,
                     mutedColor: mutedColor,
@@ -212,6 +216,7 @@ class HomeNavDrawer extends StatelessWidget {
                             child: const Text(
                               'Update',
                               style: TextStyle(
+                                fontFamily: 'SFPro',
                                 fontSize: 10.5,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.white,
@@ -233,7 +238,7 @@ class HomeNavDrawer extends StatelessWidget {
                   if (!isAuthenticated)
                     _buildDrawerItem(
                       context: context,
-                      icon: LucideIcons.logIn,
+                      icon: CupertinoIcons.arrow_right_square,
                       label: 'Masuk / Daftar Akun',
                       textColor: AppColors.primary,
                       iconColor: AppColors.primary,
@@ -247,7 +252,7 @@ class HomeNavDrawer extends StatelessWidget {
                   else
                     _buildDrawerItem(
                       context: context,
-                      icon: LucideIcons.logOut,
+                      icon: CupertinoIcons.square_arrow_right,
                       label: 'Logout',
                       textColor: AppColors.error,
                       iconColor: AppColors.error,
@@ -276,7 +281,8 @@ class HomeNavDrawer extends StatelessWidget {
                 children: [
                   Text(
                     'Snaps - Stable Version V 1.0.4',
-                    style: GoogleFonts.inter(
+                    style: TextStyle(
+                      fontFamily: 'SFPro',
                       fontSize: 12.0,
                       fontWeight: FontWeight.w600,
                       color: inkColor,
@@ -285,7 +291,8 @@ class HomeNavDrawer extends StatelessWidget {
                   const SizedBox(height: 2.0),
                   Text(
                     'E-Commerce & Social Feed • SMKN 8 Semarang',
-                    style: GoogleFonts.inter(
+                    style: TextStyle(
+                      fontFamily: 'SFPro',
                       fontSize: 10.5,
                       color: mutedColor,
                     ),
@@ -321,7 +328,11 @@ class HomeNavDrawer extends StatelessWidget {
       child: InkWell(
         onTap: () {
           HapticFeedback.lightImpact();
-          Navigator.of(context).pop(); // Close drawer first
+          if (onClose != null) {
+            onClose!();
+          } else {
+            Navigator.of(context).maybePop();
+          }
           onTap?.call();
         },
         borderRadius: BorderRadius.circular(10.0),
@@ -336,14 +347,15 @@ class HomeNavDrawer extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                size: 19.0,
+                size: 20.0,
                 color: effectiveIconColor,
               ),
               const SizedBox(width: 14.0),
               Expanded(
                 child: Text(
                   label,
-                  style: GoogleFonts.inter(
+                  style: TextStyle(
+                    fontFamily: 'SFPro',
                     fontSize: 14.5,
                     fontWeight: isDestructive ? FontWeight.w600 : FontWeight.w500,
                     color: effectiveTextColor,
@@ -355,8 +367,8 @@ class HomeNavDrawer extends StatelessWidget {
                 trailingWidget
               else if (hasChevron)
                 Icon(
-                  LucideIcons.chevronRight,
-                  size: 16.0,
+                  CupertinoIcons.chevron_forward,
+                  size: 15.0,
                   color: mutedColor,
                 ),
             ],
@@ -372,31 +384,34 @@ class HomeNavDrawer extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-        title: Text(
+        title: const Text(
           'Keluar dari Snaps?',
-          style: GoogleFonts.inter(
+          style: TextStyle(
+            fontFamily: 'SFPro',
             fontSize: 17.0,
             fontWeight: FontWeight.w700,
-            color: const Color(0xFF0F172A),
+            color: Color(0xFF0F172A),
           ),
         ),
-        content: Text(
+        content: const Text(
           'Anda harus masuk kembali untuk membuat postingan, pesan, dan berbelanja.',
-          style: GoogleFonts.inter(
+          style: TextStyle(
+            fontFamily: 'SFPro',
             fontSize: 14.0,
-            color: const Color(0xFF64748B),
+            color: Color(0xFF64748B),
           ),
         ),
         actionsPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(
+            child: const Text(
               'Batal',
-              style: GoogleFonts.inter(
+              style: TextStyle(
+                fontFamily: 'SFPro',
                 fontSize: 14.5,
                 fontWeight: FontWeight.w600,
-                color: const Color(0xFF64748B),
+                color: Color(0xFF64748B),
               ),
             ),
           ),
@@ -413,9 +428,10 @@ class HomeNavDrawer extends StatelessWidget {
               Navigator.pop(ctx);
               onLogoutAction?.call();
             },
-            child: Text(
+            child: const Text(
               'Logout',
-              style: GoogleFonts.inter(
+              style: TextStyle(
+                fontFamily: 'SFPro',
                 fontSize: 14.5,
                 fontWeight: FontWeight.w600,
               ),

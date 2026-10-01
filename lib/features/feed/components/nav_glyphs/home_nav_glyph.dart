@@ -1,9 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
-
+import 'package:flutter/cupertino.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
-/// 1. Home Nav Glyph using LucideIcons.home
+/// 1. Home Nav Glyph using CupertinoIcons (house_fill / house)
 class HomeNavGlyph extends StatelessWidget {
   final bool isActive;
 
@@ -12,8 +10,8 @@ class HomeNavGlyph extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Icon(
-      LucideIcons.home,
-      size: 21.0,
+      isActive ? CupertinoIcons.house_fill : CupertinoIcons.house,
+      size: 22.0,
       color: isActive ? AppColors.primary : const Color(0xFF64748B),
     );
   }

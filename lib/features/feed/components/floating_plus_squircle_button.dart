@@ -1,13 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// Floating Plus Squircle Button
+/// Floating Plus Rectangle Button
 /// Sliced from the user's layout sketch:
-/// - Squircle / rounded box shape (`borderRadius: BorderRadius.circular(18.0)`)
+/// - Ergonomic wide rectangle shape (`width: 60.0`, `height: 44.0`, `borderRadius: 16.0`)
 /// - Positioned floating at the bottom right above the Center Bot Bar
 /// - Azure blue gradient (`#269DFF` to `#008BFF`) from pen.dev spec
-/// - Specular top shine highlight + diffuse glow shadow
-/// - Tactile micro-press feedback
+/// - Native CupertinoIcons.plus (size 26) with tactile micro-press feedback
 class FloatingPlusSquircleButton extends StatefulWidget {
   final VoidCallback onTap;
 
@@ -31,7 +31,7 @@ class _FloatingPlusSquircleButtonState extends State<FloatingPlusSquircleButton>
       child: GestureDetector(
         onTapDown: (_) {
           setState(() => _isPressed = true);
-          HapticFeedback.mediumImpact();
+          HapticFeedback.lightImpact();
         },
         onTapUp: (_) => setState(() => _isPressed = false),
         onTapCancel: () => setState(() => _isPressed = false),
@@ -45,8 +45,8 @@ class _FloatingPlusSquircleButtonState extends State<FloatingPlusSquircleButton>
           duration: const Duration(milliseconds: 80),
           curve: Curves.easeOutCubic,
           child: Container(
-            width: 48.0,
-            height: 40.0,
+            width: 60.0,
+            height: 44.0,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16.0),
               gradient: const LinearGradient(
@@ -68,9 +68,9 @@ class _FloatingPlusSquircleButtonState extends State<FloatingPlusSquircleButton>
             ),
             child: const Center(
               child: Icon(
-                Icons.add_rounded,
+                CupertinoIcons.plus,
                 color: Colors.white,
-                size: 24.0,
+                size: 26.0,
               ),
             ),
           ),

@@ -1,9 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import 'package:snapan_market/core/theme/app_colors.dart';
 
-/// 3. Heart Nav Glyph using LucideIcons.heart with optional red indicator dot
+/// 3. Heart Nav Glyph using CupertinoIcons (heart_fill / heart) with optional red indicator dot
 class HeartNavGlyph extends StatelessWidget {
   final bool isActive;
   final bool hasBadge;
@@ -17,8 +17,8 @@ class HeartNavGlyph extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final icon = Icon(
-      LucideIcons.heart,
-      size: 20.5,
+      isActive ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+      size: 21.0,
       color: isActive ? AppColors.primary : const Color(0xFF64748B),
     );
 

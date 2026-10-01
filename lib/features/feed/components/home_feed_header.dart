@@ -1,7 +1,5 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:snapan_market/core/components/glass_toolbar_top.dart';
 import 'package:snapan_market/core/components/snaps_logo.dart';
 
 /// Top App Bar Header for Home Feed
@@ -50,7 +48,7 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
                   icon: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 200),
                     child: Icon(
-                      onBackTap != null ? LucideIcons.arrowLeft : LucideIcons.menu,
+                      onBackTap != null ? CupertinoIcons.chevron_back : CupertinoIcons.bars,
                       key: ValueKey(onBackTap != null),
                       size: 22.0,
                       color: iconColor,
@@ -73,8 +71,9 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
                       ? const SnapsLogo(height: 34.0)
                       : Text(
                           title,
-                          style: GoogleFonts.inter(
-                            fontSize: 16.0,
+                          style: TextStyle(
+                            fontFamily: 'SFPro',
+                            fontSize: 16.5,
                             fontWeight: FontWeight.w700,
                             letterSpacing: -0.3,
                             color: textColor,
@@ -88,8 +87,8 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
                 right: 0,
                 child: IconButton(
                   icon: Icon(
-                    LucideIcons.search,
-                    size: 21.0,
+                    CupertinoIcons.search,
+                    size: 22.0,
                     color: iconColor,
                   ),
                   onPressed: onSearchTap,

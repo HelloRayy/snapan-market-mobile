@@ -304,7 +304,7 @@ void main() {
 
   group('HomeFeedTabSwitch Widget Tests', () {
     testWidgets(
-        'Renders 47px switch bar with "Untuk Anda" and "Terbaru" tabs & active indicator',
+        'Renders 47px switch bar with "Untuk Anda" and "Jualan" tabs & active indicator',
         (WidgetTester tester) async {
       FeedTab currentTab = FeedTab.forYou;
 
@@ -335,29 +335,29 @@ void main() {
 
       // Verify both tab labels exist
       expect(find.text('Untuk Anda'), findsOneWidget);
-      expect(find.text('Terbaru'), findsOneWidget);
+      expect(find.text('Jualan'), findsOneWidget);
 
       // Verify active styling on "Untuk Anda" (w700 & AppColors.ink)
       final forYouText = tester.widget<Text>(find.text('Untuk Anda'));
       expect(forYouText.style?.fontWeight, FontWeight.w700);
       expect(forYouText.style?.color, AppColors.ink);
 
-      // Verify inactive styling on "Terbaru" (w500 & 0xFF8E8E93)
-      final latestText = tester.widget<Text>(find.text('Terbaru'));
-      expect(latestText.style?.fontWeight, FontWeight.w500);
-      expect(latestText.style?.color, const Color(0xFF8E8E93));
+      // Verify inactive styling on "Jualan" (w500 & 0xFF8E8E93)
+      final marketText = tester.widget<Text>(find.text('Jualan'));
+      expect(marketText.style?.fontWeight, FontWeight.w500);
+      expect(marketText.style?.color, const Color(0xFF8E8E93));
 
-      // Tap on "Terbaru" tab
-      await tester.tap(find.text('Terbaru'));
+      // Tap on "Jualan" tab
+      await tester.tap(find.text('Jualan'));
       await tester.pumpAndSettle();
 
-      // Verify currentTab switched to FeedTab.latest
-      expect(currentTab, FeedTab.latest);
+      // Verify currentTab switched to FeedTab.market
+      expect(currentTab, FeedTab.market);
 
-      // Verify styling updated: "Terbaru" is now active (w700 & AppColors.ink)
-      final latestTextActive = tester.widget<Text>(find.text('Terbaru'));
-      expect(latestTextActive.style?.fontWeight, FontWeight.w700);
-      expect(latestTextActive.style?.color, AppColors.ink);
+      // Verify styling updated: "Jualan" is now active (w700 & AppColors.ink)
+      final marketTextActive = tester.widget<Text>(find.text('Jualan'));
+      expect(marketTextActive.style?.fontWeight, FontWeight.w700);
+      expect(marketTextActive.style?.color, AppColors.ink);
 
       // Verify "Untuk Anda" is now inactive (w500 & 0xFF8E8E93)
       final forYouTextInactive = tester.widget<Text>(find.text('Untuk Anda'));

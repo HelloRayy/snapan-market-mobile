@@ -56,6 +56,23 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
   int _downloadProgress = 0;
   String? _errorMessage;
   bool _isInstalling = false;
+  Future<void> _openDownloadInBrowser() async {
+    HapticFeedback.lightImpact();
+    try {
+      const platform = MethodChannel('com.snapan.market/browser');
+      await platform.invokeMethod('openUrl', {'url': widget.update.downloadUrl});
+    } catch (_) {
+      Clipboard.setData(ClipboardData(text: widget.update.downloadUrl));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Link download APK disalin ke clipboard! Buka browser untuk mengunduh.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
 
   void _startOtaUpdate() {
     if (_isDownloading) return;
@@ -75,6 +92,7 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
         widget.update.downloadUrl,
         destinationFilename: filename,
         androidProviderAuthority: 'com.snapan.market.snapan_market.ota_update_provider',
+        usePackageInstaller: true,
       ).listen(
         (OtaEvent event) {
           if (!mounted) return;
@@ -122,6 +140,22 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                 _isDownloading = false;
                 _errorMessage = 'Gagal mengunduh file pembaruan. Periksa koneksi internet Anda.';
               });
+              break;
+
+            case OtaStatus.INSTALLATION_ERROR:
+              setState(() {
+                _isDownloading = false;
+                _isInstalling = false;
+                _errorMessage = 'Pemasangan paket gagal atau dibatalkan. Anda dapat mengunduh manual melalui tombol di bawah.';
+              });
+              break;
+
+            case OtaStatus.INSTALLATION_DONE:
+              setState(() {
+                _isDownloading = false;
+                _isInstalling = false;
+              });
+              Navigator.of(context, rootNavigator: true).maybePop();
               break;
 
             default:
@@ -322,35 +356,53 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                           height: 1.4,
                         ),
                       ),
-                      const SizedBox(height: 8.0),
-                      InkWell(
-                        onTap: () {
-                          HapticFeedback.selectionClick();
-                          Clipboard.setData(ClipboardData(text: widget.update.downloadUrl));
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Link download APK disalin ke clipboard! Buka browser untuk mengunduh.'),
-                              behavior: SnackBarBehavior.floating,
-                              duration: Duration(seconds: 3),
-                            ),
-                          );
-                        },
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.copy_rounded, size: 14.0, color: Color(0xFFB91C1C)),
-                            SizedBox(width: 5.0),
-                            Text(
-                              'Salin Link Download APK Manual',
-                              style: TextStyle(
-                                fontSize: 12.0,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFFB91C1C),
-                                decoration: TextDecoration.underline,
+                      const SizedBox(height: 10.0),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: _openDownloadInBrowser,
+                              icon: const Icon(Icons.open_in_browser_rounded, size: 16.0),
+                              label: const Text('Buka di Browser (Download Manual)'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFB91C1C),
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                visualDensity: VisualDensity.compact,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                textStyle: const TextStyle(
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 8.0),
+                          IconButton(
+                            onPressed: () {
+                              HapticFeedback.selectionClick();
+                              Clipboard.setData(ClipboardData(text: widget.update.downloadUrl));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Link download APK disalin ke clipboard!'),
+                                  behavior: SnackBarBehavior.floating,
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.copy_rounded, size: 16.0, color: Color(0xFFB91C1C)),
+                            tooltip: 'Salin Link',
+                            style: IconButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                                side: const BorderSide(color: Color(0xFFFCA5A5)),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

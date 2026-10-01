@@ -174,6 +174,7 @@ class HomeFeedScrollableList extends StatelessWidget {
   }
 
   Widget _buildEmptyState() {
+    final isMarket = activeTab == FeedTab.market;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
@@ -187,26 +188,28 @@ class HomeFeedScrollableList extends StatelessWidget {
                 color: const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(18.0),
               ),
-              child: const Icon(
-                Icons.dynamic_feed_rounded,
+              child: Icon(
+                isMarket ? Icons.storefront_outlined : Icons.dynamic_feed_rounded,
                 size: 28.0,
-                color: Color(0xFF94A3B8),
+                color: const Color(0xFF94A3B8),
               ),
             ),
             const SizedBox(height: 14.0),
-            const Text(
-              'Belum Ada Utas',
-              style: TextStyle(
+            Text(
+              isMarket ? 'Belum Ada Jualan' : 'Belum Ada Postingan',
+              style: const TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.w700,
                 color: Color(0xFF0F172A),
               ),
             ),
             const SizedBox(height: 6.0),
-            const Text(
-              'Jadilah yang pertama membuat utas atau menjual karya di SMKN 8!',
+            Text(
+              isMarket
+                  ? 'Belum ada produk atau karya yang dijual saat ini. Mulai jual karyamu!'
+                  : 'Jadilah yang pertama membuat utas atau menjual karya di SMKN 8!',
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 13.0,
                 color: Color(0xFF64748B),
                 height: 1.4,

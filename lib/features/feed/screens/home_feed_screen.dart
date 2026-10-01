@@ -182,8 +182,14 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     }
   }
 
-  List<MarketPostModel> get _displayedPosts =>
-      _activeTab == FeedTab.latest ? _feedController.posts.reversed.toList() : _feedController.posts;
+  List<MarketPostModel> get _displayedPosts {
+    if (_activeTab == FeedTab.market) {
+      return _feedController.posts
+          .where((p) => p.postType == 'product' || (p.price != null && p.price! > 0))
+          .toList();
+    }
+    return _feedController.posts;
+  }
 
   @override
   Widget build(BuildContext context) {

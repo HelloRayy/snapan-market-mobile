@@ -5,19 +5,19 @@ import 'package:snapan_market/core/theme/app_colors.dart';
 /// Enum representing the available tabs in Home Feed
 enum FeedTab {
   forYou,
-  latest;
+  market;
 
   String get label {
     switch (this) {
       case FeedTab.forYou:
         return 'Untuk Anda';
-      case FeedTab.latest:
-        return 'Terbaru';
+      case FeedTab.market:
+        return 'Jualan';
     }
   }
 }
 
-/// Home Feed Tab Switch Bar ("Untuk Anda" & "Terbaru")
+/// Home Feed Tab Switch Bar ("Untuk Anda" & "Jualan")
 ///
 /// Features a 47px fixed height container, balanced 50/50 tab buttons,
 /// a smooth 2.5px active indicator bar transition, and tactile micro-tap interactions.
@@ -90,12 +90,12 @@ class HomeFeedTabSwitch extends StatelessWidget implements PreferredSizeWidget {
               ),
               Expanded(
                 child: _TabButton(
-                  tab: FeedTab.latest,
-                  isActive: activeTab == FeedTab.latest,
+                  tab: FeedTab.market,
+                  isActive: activeTab == FeedTab.market,
                   onTap: () {
-                    if (activeTab != FeedTab.latest) {
+                    if (activeTab != FeedTab.market) {
                       HapticFeedback.selectionClick();
-                      onTabChanged(FeedTab.latest);
+                      onTabChanged(FeedTab.market);
                     }
                   },
                 ),

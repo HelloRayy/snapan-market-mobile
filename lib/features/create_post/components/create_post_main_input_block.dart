@@ -70,47 +70,56 @@ class CreatePostMainInputBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: 36.0,
-              child: Column(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(18.0),
-                    child: currentUserAvatar.isNotEmpty
-                        ? Image.network(
-                            currentUserAvatar,
-                            width: 36.0,
-                            height: 36.0,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(
-                              width: 36,
-                              height: 36,
-                              color: const Color(0xFFF1F5F9),
-                              child: const Icon(Icons.person_rounded, size: 20, color: AppColors.muted),
-                            ),
-                          )
-                        : Container(
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // 1. Dynamic Thread Line (Behind Avatar, centered: 36/2 - 2/2 = 17.0)
+          if (postMode == PostMode.thread)
+            Positioned(
+              left: 17.0,
+              top: 42.0,
+              bottom: 0.0,
+              child: Container(
+                width: 2.0,
+                color: const Color(0xFFE2E8F0),
+              ),
+            ),
+
+          // 2. Content Row: Avatar (top-aligned) + Main Input Column
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: 36.0,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(18.0),
+                  child: currentUserAvatar.isNotEmpty
+                      ? Image.network(
+                          currentUserAvatar,
+                          width: 36.0,
+                          height: 36.0,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
                             width: 36,
                             height: 36,
                             color: const Color(0xFFF1F5F9),
                             child: const Icon(Icons.person_rounded, size: 20, color: AppColors.muted),
                           ),
-                  ),
-                  const SizedBox(height: 6.0),
-                  if (postMode == PostMode.thread)
-                    Expanded(child: Container(width: 2.0, color: const Color(0xFFE2E8F0))),
-                ],
+                        )
+                      : Container(
+                          width: 36,
+                          height: 36,
+                          color: const Color(0xFFF1F5F9),
+                          child: const Icon(Icons.person_rounded, size: 20, color: AppColors.muted),
+                        ),
+                ),
               ),
-            ),
-            const SizedBox(width: 12.0),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+              const SizedBox(width: 12.0),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                   CreatePostAuthorLine(
                     authorName: currentUserName,
                     selectedTopic: selectedTopic,
@@ -185,15 +194,16 @@ class CreatePostMainInputBlock extends StatelessWidget {
                     onAudioTap: () {},
                   ),
                   const SizedBox(height: 8.0),
-                  CreatePostSellingToggle(
-                    isProductMode: postMode == PostMode.product,
-                    onToggle: onToggleMode,
-                  ),
-                ],
+                    CreatePostSellingToggle(
+                      isProductMode: postMode == PostMode.product,
+                      onToggle: onToggleMode,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }

@@ -37,79 +37,79 @@ class CreatePostSubThreads extends StatelessWidget {
 
         // 2. Sub-Threads Chain List
         if (subThreads.isNotEmpty) ...[
-          for (int i = 0; i < subThreads.length; i++) ...[
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 36.0,
-                    child: Column(
-                      children: [
-                        Center(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12.0),
-                            child: Image.network(
-                              currentUserAvatar,
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Positioned(
+                  left: 17.0,
+                  top: 30.0,
+                  bottom: 0.0,
+                  child: Container(
+                    width: 2.0,
+                    color: const Color(0xFFE2E8F0),
+                  ),
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 36.0,
+                      child: Center(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12.0),
+                          child: Image.network(
+                            currentUserAvatar,
+                            width: 24.0,
+                            height: 24.0,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
                               width: 24.0,
                               height: 24.0,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Container(
-                                width: 24.0,
-                                height: 24.0,
-                                color: const Color(0xFFF1F5F9),
-                                child: const Icon(
-                                  Icons.person_rounded,
-                                  size: 14.0,
-                                  color: AppColors.muted,
-                                ),
+                              color: const Color(0xFFF1F5F9),
+                              child: const Icon(
+                                Icons.person_rounded,
+                                size: 14.0,
+                                color: AppColors.muted,
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 6.0),
-                        Expanded(
-                          child: Container(
-                            width: 2.0,
-                            color: const Color(0xFFE2E8F0),
+                      ),
+                    ),
+                    const SizedBox(width: 12.0),
+                    Expanded(
+                      child: TextField(
+                        minLines: 1,
+                        maxLines: null,
+                        style: const TextStyle(
+                          fontSize: 14.5,
+                          color: AppColors.ink,
+                          height: 1.35,
+                        ),
+                        decoration: const InputDecoration(
+                          hintText: 'Lanjutan utas...',
+                          hintStyle: TextStyle(
+                            fontSize: 14.0,
+                            color: Color(0xFF94A3B8),
                           ),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.zero,
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 12.0),
-                  Expanded(
-                    child: TextField(
-                      minLines: 1,
-                      maxLines: null,
-                      style: const TextStyle(
-                        fontSize: 14.5,
-                        color: AppColors.ink,
-                        height: 1.35,
+                        onChanged: (val) => subThreads[i].caption = val,
                       ),
-                      decoration: const InputDecoration(
-                        hintText: 'Lanjutan utas...',
-                        hintStyle: TextStyle(
-                          fontSize: 14.0,
-                          color: Color(0xFF94A3B8),
-                        ),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.zero,
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.close_rounded,
+                        size: 16.0,
+                        color: AppColors.muted,
                       ),
-                      onChanged: (val) => subThreads[i].caption = val,
+                      onPressed: () => onRemoveSubThread(i),
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.close_rounded,
-                      size: 16.0,
-                      color: AppColors.muted,
-                    ),
-                    onPressed: () => onRemoveSubThread(i),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
             ),
             SizedBox(
               width: 36.0,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
 import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart';
+export 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart' show HomeNavTab, HomeBottomNavBar;
 import 'package:snapan_market/features/feed/components/home_feed_fab_group.dart';
 import 'package:snapan_market/features/feed/components/home_nav_tab_switcher.dart';
 import 'package:snapan_market/features/feed/components/home_push_drawer_layout.dart';

@@ -10,6 +10,7 @@ import 'package:snapan_market/features/auth/components/auth_prompt_overlay.dart'
 import 'package:snapan_market/features/auth/screens/auth_screen.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
 import 'package:snapan_market/features/create_post/screens/create_post_modal.dart';
+import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart';
 import 'package:snapan_market/features/feed/components/home_dock_overlay.dart';
 import 'package:snapan_market/features/feed/components/home_feed_header.dart';
 import 'package:snapan_market/features/feed/components/home_feed_scrollable_list.dart';

@@ -88,6 +88,29 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     }
   }
 
+  Future<void> _handleManualCheckUpdate() async {
+    Navigator.of(context).maybePop();
+    try {
+      final update = await AppUpdateService.instance.checkForUpdate(isManual: true);
+      if (!mounted) return;
+      if (update != null) {
+        final info = await AppUpdateService.instance.getPackageInfo();
+        if (!mounted) return;
+        UpdateInfoBottomSheet.show(context, update: update, currentVersionName: info.version);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Aplikasi Anda sudah versi terbaru.'),
+            behavior: SnackBarBehavior.floating,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Manual update check error: $e');
+    }
+  }
+
   @override
   void dispose() {
     HomeMenuPopover.dismiss();
@@ -209,7 +232,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
         onLikedTap: () => setState(() => _currentNavTab = HomeNavTab.activity),
         onArchiveTap: () {},
         onReportTap: () {},
-        onCheckUpdateTap: () => AppUpdateService.instance.checkForUpdate(isManual: true),
+        onCheckUpdateTap: _handleManualCheckUpdate,
         onAuthTap: _handleOpenAuth,
         onLogout: widget.onLogout,
       ),

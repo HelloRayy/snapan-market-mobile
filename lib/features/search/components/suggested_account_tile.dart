@@ -1,3 +1,4 @@
+import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
@@ -68,7 +69,7 @@ class SuggestedAccountTile extends StatelessWidget {
                           width: 40.0,
                           height: 40.0,
                           color: const Color(0xFFE2E8F0),
-                          child: const Icon(Icons.person, color: Color(0xFF94A3B8)),
+                          child: const Icon(CupertinoIcons.person_fill, color: Color(0xFF94A3B8)),
                         ),
                       ),
               ),
@@ -101,7 +102,7 @@ class SuggestedAccountTile extends StatelessWidget {
                       if (account.isVerified) ...[
                         const SizedBox(width: 4.0),
                         const Icon(
-                          Icons.verified_rounded,
+                          CupertinoIcons.checkmark_seal_fill,
                           size: 15.0,
                           color: AppColors.verifiedBlue,
                         ),

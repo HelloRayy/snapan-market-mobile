@@ -1,5 +1,5 @@
+import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
-import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:snapan_market/features/search/models/search_models.dart";
 export "package:snapan_market/features/search/models/search_models.dart" show SearchResultsTab;
 
@@ -66,7 +66,7 @@ class SearchBarHeader extends StatelessWidget {
                     left: 0,
                     child: IconButton(
                       icon: const Icon(
-                        LucideIcons.arrowLeft,
+                        CupertinoIcons.chevron_back,
                         size: 22.0,
                         color: Color(0xFF1A1A1A),
                       ),
@@ -111,7 +111,7 @@ class SearchBarHeader extends StatelessWidget {
                   children: [
                     // Search Icon
                     const Icon(
-                      LucideIcons.search,
+                      CupertinoIcons.search,
                       size: 18.0,
                       color: Color(0xFF94A3B8),
                     ),
@@ -160,8 +160,8 @@ class SearchBarHeader extends StatelessWidget {
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
-                              Icons.close_rounded,
-                              size: 13.0,
+                              CupertinoIcons.xmark,
+                              size: 11.0,
                               color: Colors.white,
                             ),
                           ),

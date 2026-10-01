@@ -36,7 +36,8 @@ class CreatePostSubThreads extends StatelessWidget {
         ),
 
         // 2. Sub-Threads Chain List
-        if (subThreads.isNotEmpty) ...[
+        if (subThreads.isNotEmpty)
+          for (int i = 0; i < subThreads.length; i++) ...[
             Stack(
               clipBehavior: Clip.none,
               children: [
@@ -123,7 +124,6 @@ class CreatePostSubThreads extends StatelessWidget {
               ),
             ),
           ],
-        ],
 
         // 3. Sub-Thread Continuation Trigger ("Tambahkan ke utas")
         GestureDetector(

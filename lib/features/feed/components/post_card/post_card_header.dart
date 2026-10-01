@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -206,7 +207,7 @@ class PostCardHeader extends StatelessWidget {
                 height: 28.0,
                 child: Center(
                   child: Icon(
-                    Icons.more_horiz_rounded,
+                    CupertinoIcons.ellipsis,
                     size: 19.0,
                     color: AppColors.ashGray,
                   ),

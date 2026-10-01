@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -131,7 +132,7 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                     ),
                     child: const Center(
                       child: Icon(
-                        Icons.attach_file_rounded,
+                        CupertinoIcons.paperclip,
                         color: Color(0xFF1A1A1A), // pen.dev #1A1A1A
                         size: 20.0,
                       ),
@@ -242,8 +243,8 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                           ),
                           child: const Center(
                             child: Icon(
-                              Icons.arrow_upward_rounded,
-                              size: 20.0,
+                              CupertinoIcons.arrow_up,
+                              size: 19.0,
                               color: Colors.white,
                             ),
                           ),
@@ -256,9 +257,9 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                       height: 36.0,
                       child: Center(
                         child: Icon(
-                          Icons.sentiment_satisfied_rounded,
+                          CupertinoIcons.smiley,
                           color: Color(0xFF727272), // pen.dev #727272
-                          size: 22.0,
+                          size: 21.0,
                         ),
                       ),
                     ),

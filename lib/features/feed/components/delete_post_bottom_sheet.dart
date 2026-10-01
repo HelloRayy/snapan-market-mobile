@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -88,8 +89,8 @@ class DeletePostBottomSheet extends StatelessWidget {
                   ),
                   child: const Center(
                     child: Icon(
-                      Icons.delete_outline_rounded,
-                      size: 28.0,
+                      CupertinoIcons.trash,
+                      size: 26.0,
                       color: Color(0xFFEF4444),
                     ),
                   ),
@@ -142,7 +143,7 @@ class DeletePostBottomSheet extends StatelessWidget {
                   child: Row(
                     children: [
                       const Icon(
-                        Icons.format_quote_rounded,
+                        CupertinoIcons.quote_bubble,
                         size: 16.0,
                         color: Color(0xFF94A3B8),
                       ),

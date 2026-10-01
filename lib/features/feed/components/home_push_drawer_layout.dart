@@ -20,7 +20,7 @@ class HomePushDrawerController extends ChangeNotifier {
 
   void open() {
     HapticFeedback.lightImpact();
-    _animController?.animateTo(1.0, duration: const Duration(milliseconds: 280), curve: Curves.easeOutCubic);
+    _animController?.animateTo(1.0, duration: const Duration(milliseconds: 320), curve: const Cubic(0.16, 1.0, 0.3, 1.0));
   }
 
   void close() {
@@ -39,7 +39,7 @@ class HomePushDrawerController extends ChangeNotifier {
 
 /// Interactive Push Drawer Layout for Home Feed Screen (<220 lines).
 ///
-/// Smoothly translates and scales the main content card to the right (~260dp, scale 0.90, radius 20px),
+/// Smoothly translates and scales the main content card to the right (~285dp, scale 1.0, radius 0px),
 /// providing a modern iOS / Threads style push drawer experience with hybrid gestures.
 class HomePushDrawerLayout extends StatefulWidget {
   final HomePushDrawerController? controller;
@@ -49,16 +49,18 @@ class HomePushDrawerLayout extends StatefulWidget {
   final double pushDistance;
   final double scale;
   final double borderRadius;
+  final double scrimOpacity;
 
   const HomePushDrawerLayout({
     super.key,
     this.controller,
     required this.drawer,
     required this.content,
-    this.drawerWidth = 280.0,
-    this.pushDistance = 280.0,
+    this.drawerWidth = 285.0,
+    this.pushDistance = 285.0,
     this.scale = 1.0,
     this.borderRadius = 0.0,
+    this.scrimOpacity = 0.05,
   });
 
   @override
@@ -77,11 +79,12 @@ class _HomePushDrawerLayoutState extends State<HomePushDrawerLayout>
     super.initState();
     _animController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 280),
+      duration: const Duration(milliseconds: 320),
+      reverseDuration: const Duration(milliseconds: 240),
     );
     _curvedAnimation = CurvedAnimation(
       parent: _animController,
-      curve: Curves.easeOutCubic,
+      curve: const Cubic(0.16, 1.0, 0.3, 1.0),
       reverseCurve: Curves.easeInCubic,
     );
     _effectiveController.attach(_animController);
@@ -150,7 +153,7 @@ class _HomePushDrawerLayoutState extends State<HomePushDrawerLayout>
                   bottom: 0,
                   width: widget.drawerWidth,
                   child: Transform.translate(
-                    offset: Offset(-30.0 * (1.0 - progress), 0.0),
+                    offset: Offset(-35.0 * (1.0 - progress), 0.0),
                     child: Opacity(
                       opacity: progress.clamp(0.0, 1.0),
                       child: widget.drawer,
@@ -158,7 +161,7 @@ class _HomePushDrawerLayoutState extends State<HomePushDrawerLayout>
                   ),
                 ),
 
-                // 2. Main Content Card (Pure Translation, Scale 1.0, Gray Dimming)
+                // 2. Main Content Card (Pure Translation, Scale 1.0, Subtle Dimming)
                 Transform(
                   alignment: Alignment.centerLeft,
                   transform: Matrix4.identity()
@@ -171,10 +174,10 @@ class _HomePushDrawerLayoutState extends State<HomePushDrawerLayout>
                       boxShadow: isPartiallyOpen
                           ? [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.18 * progress),
-                                blurRadius: 24.0,
-                                spreadRadius: 1.0,
-                                offset: const Offset(-8.0, 0.0),
+                                color: Colors.black.withValues(alpha: 0.45 * progress),
+                                blurRadius: 36.0,
+                                spreadRadius: 0.0,
+                                offset: const Offset(-14.0, 0.0),
                               ),
                             ]
                           : null,
@@ -183,11 +186,11 @@ class _HomePushDrawerLayoutState extends State<HomePushDrawerLayout>
                     child: Stack(
                       children: [
                         widget.content,
-                        // 2a. Gray dimming overlay over shifted feed screen
+                        // 2a. Subtle dimming overlay over shifted feed screen (5%)
                         if (isPartiallyOpen)
                           Positioned.fill(
                             child: ColoredBox(
-                              color: const Color(0xFF0F172A).withValues(alpha: 0.25 * progress),
+                              color: Colors.black.withValues(alpha: widget.scrimOpacity * progress),
                             ),
                           ),
                       ],

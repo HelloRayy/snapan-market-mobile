@@ -60,7 +60,7 @@ class HomeNavDrawer extends StatelessWidget {
     final String displayEmail = currentUser?.email ?? 'Belum masuk';
 
     return Drawer(
-      width: 280.0,
+      width: 285.0,
       elevation: 0.0,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.zero,

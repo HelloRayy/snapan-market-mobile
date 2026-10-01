@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// Modal bottom sheet providing conversation actions (view profile, report, clear chat).
@@ -51,17 +52,17 @@ class ChatOptionsSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.person_outline_rounded, color: Color(0xFF0F172A)),
+              leading: const Icon(CupertinoIcons.person, color: Color(0xFF0F172A)),
               title: const Text('Lihat Profil', style: TextStyle(fontWeight: FontWeight.w600)),
               onTap: onViewProfile,
             ),
             ListTile(
-              leading: const Icon(Icons.shield_outlined, color: Color(0xFF0F172A)),
+              leading: const Icon(CupertinoIcons.shield, color: Color(0xFF0F172A)),
               title: const Text('Laporkan Pengguna', style: TextStyle(fontWeight: FontWeight.w600)),
               onTap: onReportUser,
             ),
             ListTile(
-              leading: const Icon(Icons.delete_outline_rounded, color: Colors.red),
+              leading: const Icon(CupertinoIcons.trash, color: Colors.red),
               title: const Text('Bersihkan Obrolan', style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600)),
               onTap: onClearChat,
             ),

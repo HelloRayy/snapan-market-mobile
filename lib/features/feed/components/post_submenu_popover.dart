@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -154,7 +155,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
         children: [
           // 1. Simpan ke Markah / Hapus
           PostSubmenuItem(
-            icon: _isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+            icon: _isSaved ? CupertinoIcons.bookmark_fill : CupertinoIcons.bookmark,
             iconColor: _isSaved ? AppColors.primary : const Color(0xFF334155),
             label: _isSaved ? 'Hapus Markah' : 'Simpan Markah',
             onTap: () {
@@ -167,7 +168,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
 
           // 2. Salin Tautan
           PostSubmenuItem(
-            icon: Icons.link_rounded,
+            icon: CupertinoIcons.link,
             label: 'Salin Tautan',
             onTap: () {
               Clipboard.setData(ClipboardData(text: 'https://snapan.id/post/${widget.post.id}'));
@@ -184,7 +185,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
           if (widget.isOwner) ...[
             if (widget.post.poll != null && !widget.post.poll!.isExpired) ...[
               PostSubmenuItem(
-                icon: Icons.timer_off_outlined,
+                icon: CupertinoIcons.stopwatch,
                 iconColor: const Color(0xFFD97706),
                 textColor: const Color(0xFFD97706),
                 label: 'Tutup Polling',
@@ -196,7 +197,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
             ],
             // 3. Hapus Postingan (Milik Sendiri)
             PostSubmenuItem(
-              icon: Icons.delete_outline_rounded,
+              icon: CupertinoIcons.trash,
               iconColor: const Color(0xFFEF4444),
               textColor: const Color(0xFFEF4444),
               label: 'Hapus Postingan',
@@ -208,7 +209,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
           ] else ...[
             // 3. Senyapkan User
             PostSubmenuItem(
-              icon: Icons.notifications_off_outlined,
+              icon: CupertinoIcons.bell_slash,
               label: 'Senyapkan $authorHandle',
               onTap: () {
                 widget.onMuteAuthor?.call();
@@ -219,7 +220,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
 
             // 4. Sembunyikan Postingan
             PostSubmenuItem(
-              icon: Icons.visibility_off_outlined,
+              icon: CupertinoIcons.eye_slash,
               label: 'Sembunyikan Post',
               onTap: () {
                 widget.onHidePost?.call();
@@ -234,7 +235,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
                 child: Divider(height: 1.0, thickness: 0.6, color: Color(0xFFF1F5F9)),
               ),
               PostSubmenuItem(
-                icon: Icons.delete_outline_rounded,
+                icon: CupertinoIcons.trash,
                 iconColor: const Color(0xFFEF4444),
                 textColor: const Color(0xFFEF4444),
                 label: 'Hapus Post (Admin)',
@@ -252,7 +253,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
 
             // 5. Laporkan Postingan (Destructive Red)
             PostSubmenuItem(
-              icon: Icons.flag_outlined,
+              icon: CupertinoIcons.flag,
               iconColor: const Color(0xFFEF4444),
               textColor: const Color(0xFFEF4444),
               label: 'Laporkan Post',

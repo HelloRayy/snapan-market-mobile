@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -204,8 +205,8 @@ class _CommentInputBarState extends State<CommentInputBar> {
                           child: const Padding(
                             padding: EdgeInsets.all(4.0),
                             child: Icon(
-                              Icons.close_rounded,
-                              size: 18.0,
+                              CupertinoIcons.xmark,
+                              size: 15.0,
                               color: Color(0xFF94A3B8),
                             ),
                           ),
@@ -287,14 +288,14 @@ class _CommentInputBarState extends State<CommentInputBar> {
                                     height: 30.0,
                                     fit: BoxFit.cover,
                                     errorBuilder: (_, __, ___) => const Icon(
-                                      Icons.attach_file_rounded,
+                                      CupertinoIcons.paperclip,
                                       color: Color(0xFF1A1A1A),
                                       size: 20.0,
                                     ),
                                   ),
                                 )
                               : const Icon(
-                                  Icons.attach_file_rounded,
+                                  CupertinoIcons.paperclip,
                                   color: Color(0xFF1A1A1A), // pen.dev #1A1A1A
                                   size: 20.0,
                                 ),
@@ -405,8 +406,8 @@ class _CommentInputBarState extends State<CommentInputBar> {
                               ),
                               child: const Center(
                                 child: Icon(
-                                  Icons.arrow_upward_rounded,
-                                  size: 20.0,
+                                  CupertinoIcons.arrow_up,
+                                  size: 19.0,
                                   color: Colors.white,
                                 ),
                               ),
@@ -419,7 +420,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                           height: 36.0,
                           child: Center(
                             child: Icon(
-                              Icons.sentiment_satisfied_rounded,
+                              CupertinoIcons.smiley,
                               color: Color(0xFF727272), // pen.dev #727272
                               size: 22.0,
                             ),

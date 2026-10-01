@@ -1,3 +1,4 @@
+import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 
 class TrendingTagTile extends StatelessWidget {
@@ -63,7 +64,7 @@ class TrendingTagTile extends StatelessWidget {
               ),
             ),
 
-            const Icon(Icons.chevron_right, size: 18.0, color: Color(0xFF94A3B8)),
+            const Icon(CupertinoIcons.chevron_forward, size: 16.0, color: Color(0xFF94A3B8)),
           ],
         ),
       ),

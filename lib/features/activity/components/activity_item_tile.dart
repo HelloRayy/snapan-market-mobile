@@ -1,3 +1,4 @@
+import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/features/activity/models/activity_notification_model.dart";
@@ -37,7 +38,7 @@ class ActivityItemTile extends StatelessWidget {
                       width: 44.0,
                       height: 44.0,
                       color: const Color(0xFFE2E8F0),
-                      child: const Icon(Icons.person, color: Color(0xFF94A3B8)),
+                      child: const Icon(CupertinoIcons.person_fill, color: Color(0xFF94A3B8)),
                     ),
                   ),
                 ),
@@ -155,13 +156,13 @@ class ActivityItemTile extends StatelessWidget {
   IconData _getBadgeIcon(ActivityType type) {
     switch (type) {
       case ActivityType.like:
-        return Icons.favorite;
+        return CupertinoIcons.heart_fill;
       case ActivityType.comment:
-        return Icons.chat_bubble;
+        return CupertinoIcons.chat_bubble_fill;
       case ActivityType.order:
-        return Icons.shopping_bag;
+        return CupertinoIcons.bag_fill;
       case ActivityType.system:
-        return Icons.verified;
+        return CupertinoIcons.checkmark_seal_fill;
     }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/kumo_button.dart';
@@ -101,7 +102,7 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
                         ? NetworkImage(widget.post.seller.avatar)
                         : null,
                     child: widget.post.seller.avatar.isEmpty
-                        ? const Icon(Icons.person, color: AppColors.muted, size: 20)
+                        ? const Icon(CupertinoIcons.person_fill, color: AppColors.muted, size: 20)
                         : null,
                   ),
                   const SizedBox(width: 12.0),
@@ -145,7 +146,7 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
                         color: Color(0xFFF1F5F9),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.close_rounded, size: 18.0, color: Color(0xFF64748B)),
+                      child: const Icon(CupertinoIcons.xmark, size: 16.0, color: Color(0xFF64748B)),
                     ),
                   ),
                 ],
@@ -172,11 +173,11 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
                               widget.post.images.first,
                               fit: BoxFit.cover,
                               errorBuilder: (_, __, ___) => const Icon(
-                                Icons.image_not_supported_outlined,
+                                CupertinoIcons.photo,
                                 color: AppColors.muted,
                               ),
                             )
-                          : const Icon(Icons.shopping_bag_outlined, color: AppColors.muted),
+                          : const Icon(CupertinoIcons.bag, color: AppColors.muted),
                     ),
                   ),
                   const SizedBox(width: 14.0),
@@ -250,7 +251,7 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: const Icon(
-                        Icons.location_on_rounded,
+                        CupertinoIcons.location_solid,
                         size: 16.0,
                         color: AppColors.primary,
                       ),
@@ -306,7 +307,7 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
                     child: Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.remove_rounded, size: 18.0),
+                          icon: const Icon(CupertinoIcons.minus, size: 16.0),
                           visualDensity: VisualDensity.compact,
                           onPressed: _quantity > 1
                               ? () {
@@ -327,7 +328,7 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.add_rounded, size: 18.0),
+                          icon: const Icon(CupertinoIcons.plus, size: 16.0),
                           visualDensity: VisualDensity.compact,
                           onPressed: _quantity < _maxStock
                               ? () {

@@ -261,6 +261,11 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
     final pushLayout = HomePushDrawerLayout(
       controller: _effectiveDrawerController,
+      drawerWidth: 285.0,
+      pushDistance: 285.0,
+      scale: 1.0,
+      borderRadius: 0.0,
+      scrimOpacity: 0.05,
       drawer: HomeNavDrawer(
         userProfile: _feedController.userProfile,
         onAppearanceTap: () {},

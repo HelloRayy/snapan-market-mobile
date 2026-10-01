@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/features/feed/components/market_post_card.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
@@ -49,7 +50,7 @@ class SearchResultsView extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 14.0),
               child: Row(
                 children: [
-                  const Icon(Icons.search, size: 18.0, color: Color(0xFF64748B)),
+                  const Icon(CupertinoIcons.search, size: 18.0, color: Color(0xFF64748B)),
                   const SizedBox(width: 12.0),
                   Expanded(
                     child: Text(
@@ -63,7 +64,7 @@ class SearchResultsView extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  const Icon(Icons.chevron_right, size: 18.0, color: Color(0xFF94A3B8)),
+                  const Icon(CupertinoIcons.chevron_forward, size: 16.0, color: Color(0xFF94A3B8)),
                 ],
               ),
             ),
@@ -158,7 +159,7 @@ class SearchResultsView extends StatelessWidget {
                 color: Color(0xFFF1F5F9),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.search_off_rounded, size: 28.0, color: Color(0xFF94A3B8)),
+              child: const Icon(CupertinoIcons.search, size: 28.0, color: Color(0xFF94A3B8)),
             ),
             const SizedBox(height: 14.0),
             Text(

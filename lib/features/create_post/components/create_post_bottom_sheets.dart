@@ -89,7 +89,7 @@ class CreatePostBottomSheets {
                             child: Row(
                               children: [
                                 Icon(
-                                  t.isOfficial ? Icons.stars_rounded : Icons.tag_rounded,
+                                  t.isOfficial ? CupertinoIcons.star_fill : CupertinoIcons.number,
                                   size: 16.0,
                                   color: t.isOfficial ? AppColors.primary : AppColors.muted,
                                 ),
@@ -202,7 +202,7 @@ class CreatePostBottomSheets {
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(
-                                    Icons.arrow_upward_rounded,
+                                    CupertinoIcons.arrow_up,
                                     size: 14.0,
                                     color: Colors.white,
                                   ),

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:snapan_market/core/services/media_upload_service.dart';
@@ -38,13 +39,13 @@ class CreatePostImageHelper {
               ),
               const SizedBox(height: 14),
               ListTile(
-                leading: const Icon(Icons.photo_library_outlined, color: AppColors.primary),
+                leading: const Icon(CupertinoIcons.photo_on_rectangle, color: AppColors.primary),
                 title: const Text('Buka Galeri Foto', style: TextStyle(fontWeight: FontWeight.w600)),
                 subtitle: const Text('Pilih foto dari perangkat (Kompres 1080p otomatis)'),
                 onTap: () => Navigator.pop(ctx, ImageSource.gallery),
               ),
               ListTile(
-                leading: const Icon(Icons.camera_alt_outlined, color: AppColors.primary),
+                leading: const Icon(CupertinoIcons.camera, color: AppColors.primary),
                 title: const Text('Ambil Foto Kamera', style: TextStyle(fontWeight: FontWeight.w600)),
                 subtitle: const Text('Foto langsung barang jualan atau karya'),
                 onTap: () => Navigator.pop(ctx, ImageSource.camera),

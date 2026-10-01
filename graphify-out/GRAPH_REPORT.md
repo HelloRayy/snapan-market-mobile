@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e9b90b1b`
+- Built from commit: `5bf9f615`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -376,10 +376,10 @@
   docs/overview-dan-interaksi-aplikasi.md → src/ui/components/ui/ConfirmActionModal.tsx
 - `4. Halaman Edit Profil (`EditProfilePage.tsx`)` --references--> `ConfirmActionModal()`  [INFERRED]
   docs/overview-dan-interaksi-aplikasi.md → src/ui/components/ui/ConfirmActionModal.tsx
-- `5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT` --references--> `subscribeToOrderNotifications()`  [INFERRED]
-  docs/backend-task-backlog.md → src/services/api/realtimeService.ts
-- `1. Aksi User:` --references--> `CreatePostModal()`  [INFERRED]
-  docs/fe-to-be-data-contract.md → src/ui/components/marketplace/CreatePostModal.tsx
+- `🟢 2. Component Design & React Patterns` --references--> `cn()`  [INFERRED]
+  docs/coding-standards.md → src/utils/cn.ts
+- `5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT` --references--> `toggleCommentLike()`  [INFERRED]
+  docs/backend-task-backlog.md → src/services/api/commentService.ts
 
 ## Import Cycles
 - None detected.
@@ -1441,7 +1441,7 @@ Cohesion: 0.33
 Nodes (5): 🔵 1. TypeScript & Type Safety, 🟢 2. Component Design & React Patterns, 🟡 3. Tailwind CSS v4 Guidelines, 🔴 4. State Management (Zustand & React State), Coding Standards & Best Practices
 
 ## Knowledge Gaps
-- **3109 isolated node(s):** `authorName`, `selectedTopic`, `topicTriggerKey`, `onTopicTriggerTap`, `onTopicClear` (+3104 more)
+- **3109 isolated node(s):** `subThreads`, `currentUserAvatar`, `onAddSubThread`, `onRemoveSubThread`, `build` (+3104 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 3516 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **83 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -1450,11 +1450,11 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `react` connect `react` to `PwaLandingPage.tsx`, `triggerHaptic`, `lucide-react`, `CreatePostModal.tsx`, `cn`, `SearchPage.tsx`, `AdminDashboard.tsx`, `ButtonPrimary.tsx`, `DesignSystemPage.tsx`, `useAuth`, `App.tsx`, `package.json`, `HomePage.tsx`, `ProductCard.tsx`, `CommentDetailPage.tsx`, `MarketBottomNav.tsx`, `kumo.d.ts`, `MarketPostItem`, `OnboardingScreen.tsx`?**
   _High betweenness centrality (0.010) - this node is a cross-community bridge._
-- **Why does `MarketPostItem` connect `MarketPostItem` to `App.tsx`, `DesignSystemPage.tsx`, `marketPostsService.ts`, `CreatePostModal.tsx`, `HomePage.tsx`, `SearchPage.tsx`, `CommentDetailPage.tsx`, `2. 📋 SPESIFIKASI PAYLOAD & RESPONSE PER FITUR UI`?**
-  _High betweenness centrality (0.004) - this node is a cross-community bridge._
-- **Why does `lucide-react` connect `lucide-react` to `App.tsx`, `PwaLandingPage.tsx`, `triggerHaptic`, `CommentDetailPage.tsx`, `MarketPostItem`, `DesignSystemPage.tsx`, `CreatePostModal.tsx`, `package.json`, `HomePage.tsx`, `useAuth`, `ProductCard.tsx`, `OnboardingScreen.tsx`, `SearchPage.tsx`, `AdminDashboard.tsx`, `ButtonPrimary.tsx`, `react`, `MarketBottomNav.tsx`?**
-  _High betweenness centrality (0.003) - this node is a cross-community bridge._
-- **What connects `authorName`, `selectedTopic`, `topicTriggerKey` to the rest of the system?**
+- **Why does `AppSlidePageRoute` connect `checkout_screen.dart` to `app_slide_page_route.dart`, `post_poll_section.dart`, `post_detail_bottom_bar.dart`?**
+  _High betweenness centrality (0.006) - this node is a cross-community bridge._
+- **Why does `4. Bedah Detail Interaksi Komponen & State Machine per Halaman` connect `📱 DOKUMENTASI SUPER LENGKAP: OVERVIEW, FITUR & ARSITEKTUR INTERAKSI` to `SearchPage.tsx`?**
+  _High betweenness centrality (0.006) - this node is a cross-community bridge._
+- **What connects `subThreads`, `currentUserAvatar`, `onAddSubThread` to the rest of the system?**
   _3109 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `search_controller.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.08 - nodes in this community are weakly interconnected._

@@ -93,21 +93,21 @@ class PostPollModel {
     return true;
   }
 
-  /// Human-readable remaining time string (e.g. "Berakhir dalam 18 jam" or "Polling ditutup")
+  /// Human-readable remaining time string (e.g. "23 jam lagi" or "Polling ditutup")
   String get remainingTimeLabel {
     if (isExpired) return 'Polling ditutup';
-    if (expiresAt == null) return 'Berakhir dalam 24 jam';
+    if (expiresAt == null) return '24 jam lagi';
     final diff = expiresAt!.difference(DateTime.now());
     if (diff.isNegative) return 'Polling ditutup';
 
     if (diff.inDays > 0) {
-      return 'Berakhir dalam ${diff.inDays} hari';
+      return '${diff.inDays} hari lagi';
     } else if (diff.inHours > 0) {
-      return 'Berakhir dalam ${diff.inHours} jam';
+      return '${diff.inHours} jam lagi';
     } else if (diff.inMinutes > 0) {
-      return 'Berakhir dalam ${diff.inMinutes} menit';
+      return '${diff.inMinutes} menit lagi';
     } else {
-      return 'Berakhir sebentar lagi';
+      return 'Sebentar lagi';
     }
   }
 

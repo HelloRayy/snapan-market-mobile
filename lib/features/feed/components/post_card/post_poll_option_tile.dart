@@ -78,17 +78,21 @@ class PostPollOptionTile extends StatelessWidget {
     final percentageInt = poll.getPercentageInt(option);
     final isWinning = poll.isWinning(option);
     final isUserPick = poll.userVotedOptionIds.contains(option.id);
+    final canVote = !poll.isExpired && poll.allowChangeVote;
 
-    return Container(
-      height: 44.0,
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(12.0),
-        border: Border.all(
-          color: isUserPick ? AppColors.primary.withOpacity(0.4) : const Color(0xFFE2E8F0),
-          width: 1.0,
+    return InkWell(
+      onTap: canVote ? onTap : null,
+      borderRadius: BorderRadius.circular(12.0),
+      child: Container(
+        height: 44.0,
+        decoration: BoxDecoration(
+          color: const Color(0xFFF8FAFC),
+          borderRadius: BorderRadius.circular(12.0),
+          border: Border.all(
+            color: isUserPick ? AppColors.primary.withOpacity(0.4) : const Color(0xFFE2E8F0),
+            width: 1.0,
+          ),
         ),
-      ),
       clipBehavior: Clip.antiAlias,
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -172,6 +176,7 @@ class PostPollOptionTile extends StatelessWidget {
           );
         },
       ),
-    );
-  }
+    ),
+  );
+}
 }

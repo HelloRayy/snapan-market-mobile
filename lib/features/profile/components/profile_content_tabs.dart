@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/snaps_skeleton.dart';
 import 'package:snapan_market/features/feed/components/market_post_card.dart';
@@ -71,7 +72,7 @@ class ProfileContentTabs extends StatelessWidget {
           alignment: Alignment.center,
           child: const Column(
             children: [
-              Icon(Icons.inventory_2_outlined, size: 36.0, color: Color(0xFFCBD5E1)),
+              Icon(CupertinoIcons.archivebox, size: 36.0, color: Color(0xFFCBD5E1)),
               SizedBox(height: 10.0),
               Text('Belum ada postingan', style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
               SizedBox(height: 4.0),
@@ -104,7 +105,7 @@ class ProfileContentTabs extends StatelessWidget {
           alignment: Alignment.center,
           child: Column(
             children: [
-              const Icon(Icons.chat_bubble_outline_rounded, size: 36.0, color: Color(0xFFCBD5E1)),
+              const Icon(CupertinoIcons.chat_bubble, size: 36.0, color: Color(0xFFCBD5E1)),
               const SizedBox(height: 10.0),
               const Text('Belum ada balasan', style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
               const SizedBox(height: 4.0),

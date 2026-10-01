@@ -1,3 +1,4 @@
+import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
@@ -104,7 +105,7 @@ class ChatProductCard extends StatelessWidget {
                           width: 56.0,
                           height: 56.0,
                           color: const Color(0xFFE2E8F0),
-                          child: const Icon(Icons.shopping_bag_outlined, color: AppColors.muted, size: 24.0),
+                          child: const Icon(CupertinoIcons.bag, color: AppColors.muted, size: 24.0),
                         ),
                       ),
                     ),

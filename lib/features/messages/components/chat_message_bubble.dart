@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/features/messages/models/chat_message_model.dart';
 
@@ -67,7 +68,7 @@ class ChatMessageBubble extends StatelessWidget {
                       ),
                       const SizedBox(width: 4.0),
                       const Icon(
-                        Icons.done_all_rounded,
+                        CupertinoIcons.checkmark_alt,
                         size: 14.0,
                         color: Colors.white,
                       ),

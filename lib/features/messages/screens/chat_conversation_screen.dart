@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -172,7 +173,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7F9),
       appBar: GlassToolbarTop(
-        leadingIcon: Icons.arrow_back_rounded,
+        leadingIcon: CupertinoIcons.chevron_back,
         leadingTooltip: "Kembali",
         onLeadingTap: () => Navigator.of(context).pop(),
         showVerifiedBadge: false,
@@ -182,7 +183,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
         ),
         trailingActions: [
           GlassToolbarAction(
-            icon: Icons.phone_outlined,
+            icon: CupertinoIcons.phone,
             tooltip: 'Panggilan',
             onTap: () {
               HapticFeedback.lightImpact();
@@ -196,7 +197,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
             },
           ),
           GlassToolbarAction(
-            icon: Icons.more_horiz_rounded,
+            icon: CupertinoIcons.ellipsis,
             tooltip: 'Menu lainnya',
             onTap: () {
               HapticFeedback.lightImpact();

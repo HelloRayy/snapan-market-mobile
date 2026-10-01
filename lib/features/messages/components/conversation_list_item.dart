@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -92,7 +93,7 @@ class ConversationListItem extends StatelessWidget {
                               conversation.user.avatar,
                               fit: BoxFit.cover,
                               errorBuilder: (_, __, ___) => const Icon(
-                                Icons.person_rounded,
+                                CupertinoIcons.person_fill,
                                 color: AppColors.muted,
                                 size: 26.0,
                               ),
@@ -133,7 +134,7 @@ class ConversationListItem extends StatelessWidget {
                         if (conversation.user.isVerified) ...[
                           const SizedBox(width: 4.0),
                           const Icon(
-                            Icons.verified_rounded,
+                            CupertinoIcons.checkmark_seal_fill,
                             size: 14.5,
                             color: AppColors.verifiedBlue,
                           ),
@@ -148,7 +149,7 @@ class ConversationListItem extends StatelessWidget {
                       children: [
                         if (conversation.isSender) ...[
                           Icon(
-                            Icons.done_all_rounded,
+                            CupertinoIcons.checkmark_alt,
                             size: 15.0,
                             color: hasUnread ? const Color(0xFF94A3B8) : azurePrimary,
                           ),

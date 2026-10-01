@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/kumo_button.dart';
@@ -140,7 +141,7 @@ class ProfileActionButtons extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    isFollowing ? Icons.how_to_reg_rounded : Icons.person_add_alt_1_rounded,
+                    isFollowing ? CupertinoIcons.person_crop_circle_badge_checkmark : CupertinoIcons.person_badge_plus,
                     size: 16.0,
                     color: isFollowing ? const Color(0xFF0F172A) : Colors.white,
                   ),
@@ -188,7 +189,7 @@ class ProfileActionButtons extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.chat_bubble_outline_rounded,
+                    CupertinoIcons.chat_bubble,
                     size: 16.0,
                     color: Color(0xFF0F172A),
                   ),

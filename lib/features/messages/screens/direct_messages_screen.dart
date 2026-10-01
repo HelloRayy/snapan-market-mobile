@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -196,7 +197,7 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
                     child: Row(
                       children: [
-                        const Icon(Icons.search_rounded, size: 18.0, color: Color(0xFF94A3B8)),
+                        const Icon(CupertinoIcons.search, size: 18.0, color: Color(0xFF94A3B8)),
                         const SizedBox(width: 8.0),
                         Expanded(
                           child: TextField(
@@ -214,7 +215,7 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
                         if (_searchQuery.isNotEmpty)
                           GestureDetector(
                             onTap: () => _searchController.clear(),
-                            child: const Icon(Icons.cancel_rounded, size: 16.0, color: Color(0xFF94A3B8)),
+                            child: const Icon(CupertinoIcons.clear_thick_circled, size: 16.0, color: Color(0xFF94A3B8)),
                           ),
                       ],
                     ),

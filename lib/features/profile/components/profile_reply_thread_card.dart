@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -115,7 +116,7 @@ class _ProfileReplyThreadCardState extends State<ProfileReplyThreadCard> {
                             ),
                             if (parent.seller.isVerified) ...[
                               const SizedBox(width: 3.0),
-                              const Icon(Icons.verified_rounded, size: 14.0, color: AppColors.verifiedBlue),
+                              const Icon(CupertinoIcons.checkmark_seal_fill, size: 14.0, color: AppColors.verifiedBlue),
                             ],
                             const SizedBox(width: 4.0),
                             Text(
@@ -169,7 +170,7 @@ class _ProfileReplyThreadCardState extends State<ProfileReplyThreadCard> {
                                 child: Row(
                                   children: [
                                     Icon(
-                                      _parentLiked ? Icons.favorite_rounded : Icons.favorite_outline_rounded,
+                                      _parentLiked ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
                                       size: 16.0,
                                       color: _parentLiked ? const Color(0xFFEF4444) : const Color(0xFF94A3B8),
                                     ),
@@ -188,7 +189,7 @@ class _ProfileReplyThreadCardState extends State<ProfileReplyThreadCard> {
                               const SizedBox(width: 16.0),
                               Row(
                                 children: [
-                                  const Icon(Icons.chat_bubble_outline_rounded, size: 15.0, color: Color(0xFF94A3B8)),
+                                  const Icon(CupertinoIcons.chat_bubble, size: 15.0, color: Color(0xFF94A3B8)),
                                   const SizedBox(width: 4.0),
                                   Text(
                                     '${parent.commentsCount}',
@@ -241,7 +242,7 @@ class _ProfileReplyThreadCardState extends State<ProfileReplyThreadCard> {
                           ),
                           if (reply.user.isVerified) ...[
                             const SizedBox(width: 3.0),
-                            const Icon(Icons.verified_rounded, size: 14.0, color: AppColors.verifiedBlue),
+                            const Icon(CupertinoIcons.checkmark_seal_fill, size: 14.0, color: AppColors.verifiedBlue),
                           ],
                           const SizedBox(width: 4.0),
                           Text(
@@ -278,7 +279,7 @@ class _ProfileReplyThreadCardState extends State<ProfileReplyThreadCard> {
                               child: Row(
                                 children: [
                                   Icon(
-                                    _replyLiked ? Icons.favorite_rounded : Icons.favorite_outline_rounded,
+                                    _replyLiked ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
                                     size: 16.0,
                                     color: _replyLiked ? const Color(0xFFEF4444) : const Color(0xFF94A3B8),
                                   ),

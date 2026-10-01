@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -79,7 +80,7 @@ class _DirectMessagesNewChatSheetState extends State<DirectMessagesNewChatSheet>
                 ),
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
-                  child: const Icon(Icons.close_rounded, size: 22.0, color: Color(0xFF94A3B8)),
+                  child: const Icon(CupertinoIcons.xmark, size: 20.0, color: Color(0xFF94A3B8)),
                 ),
               ],
             ),
@@ -94,7 +95,7 @@ class _DirectMessagesNewChatSheetState extends State<DirectMessagesNewChatSheet>
                 children: [
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Icon(Icons.search_rounded, size: 18.0, color: Color(0xFF94A3B8)),
+                    child: Icon(CupertinoIcons.search, size: 18.0, color: Color(0xFF94A3B8)),
                   ),
                   Expanded(
                     child: TextField(
@@ -118,7 +119,7 @@ class _DirectMessagesNewChatSheetState extends State<DirectMessagesNewChatSheet>
                       },
                       child: const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Icon(Icons.cancel_rounded, size: 16.0, color: Color(0xFF94A3B8)),
+                        child: Icon(CupertinoIcons.clear_thick_circled, size: 16.0, color: Color(0xFF94A3B8)),
                       ),
                     ),
                 ],

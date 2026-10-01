@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ProfileSearchBar extends StatelessWidget {
@@ -27,7 +28,7 @@ class ProfileSearchBar extends StatelessWidget {
           children: [
             const Padding(
               padding: EdgeInsets.only(left: 12.0, right: 8.0),
-              child: Icon(Icons.search_rounded, size: 18.0, color: Color(0xFF94A3B8)),
+              child: Icon(CupertinoIcons.search, size: 18.0, color: Color(0xFF94A3B8)),
             ),
             Expanded(
               child: TextField(
@@ -50,7 +51,7 @@ class ProfileSearchBar extends StatelessWidget {
                 onTap: onClear,
                 child: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Icon(Icons.cancel_rounded, size: 16.0, color: Color(0xFF94A3B8)),
+                  child: Icon(CupertinoIcons.clear_thick_circled, size: 16.0, color: Color(0xFF94A3B8)),
                 ),
               ),
           ],

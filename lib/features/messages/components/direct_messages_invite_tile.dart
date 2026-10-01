@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// "Undang Teman SMKN 8" action tile matching iOS pen.dev specs.
@@ -29,7 +30,7 @@ class DirectMessagesInviteTile extends StatelessWidget {
                   height: 48.0,
                   child: Center(
                     child: Icon(
-                      Icons.person_add_outlined,
+                      CupertinoIcons.person_badge_plus,
                       color: Color(0xFF008BFF),
                       size: 24.0,
                     ),
@@ -50,8 +51,8 @@ class DirectMessagesInviteTile extends StatelessWidget {
                 ),
               ),
               Icon(
-                Icons.chevron_right_rounded,
-                size: 20.0,
+                CupertinoIcons.chevron_forward,
+                size: 16.0,
                 color: Color(0x4D3C3C43),
               ),
             ],

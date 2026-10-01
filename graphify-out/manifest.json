@@ -744,10 +744,10 @@
     "semantic_hash": "93f7b2d8a1b68ee0eb5cc7ec4363d74b"
   },
   "lib/features/profile/screens/profile_screen.dart": {
-    "mtime": 1790781895.0482955,
-    "seen": 1790840491.4092662,
-    "ast_hash": "7722bd65f43454b15a4a6f673903cbc6",
-    "semantic_hash": "7722bd65f43454b15a4a6f673903cbc6"
+    "mtime": 1790840627.084766,
+    "seen": 1790840630.7023108,
+    "ast_hash": "949a1d861a59aa72f1d2a4abe263fa75",
+    "semantic_hash": ""
   },
   "lib/features/search/components/search_bar_header.dart": {
     "mtime": 1790781132.5314097,

@@ -15,6 +15,10 @@ class SearchResultsView extends StatelessWidget {
   final void Function(String username, [SuggestedAccount? account]) onNavigateToProfile;
   final ValueChanged<MarketPost> onNavigateToPostDetail;
   final ValueChanged<String> onToggleFollow;
+  final ValueChanged<MarketPost>? onLikeToggle;
+  final ValueChanged<MarketPost>? onBookmarkToggle;
+  final ValueChanged<MarketPost>? onRepostToggle;
+  final void Function(MarketPost item, List<String> optionIds)? onVotePoll;
 
   const SearchResultsView({
     super.key,
@@ -27,6 +31,10 @@ class SearchResultsView extends StatelessWidget {
     required this.onNavigateToProfile,
     required this.onNavigateToPostDetail,
     required this.onToggleFollow,
+    this.onLikeToggle,
+    this.onBookmarkToggle,
+    this.onRepostToggle,
+    this.onVotePoll,
   });
 
   @override

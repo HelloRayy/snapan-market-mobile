@@ -14262,7 +14262,7 @@
       "file_type": "code",
       "norm_label": "_buildemptystate",
       "source_file": "lib/features/search/components/search_results_view.dart",
-      "source_location": "L144"
+      "source_location": "L148"
     },
     {
       "id": "lib_features_search_components_search_results_view_issubmitted",
@@ -117012,7 +117012,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/features/search/components/search_results_view.dart",
-      "source_location": "L144",
+      "source_location": "L148",
       "weight": 1.0
     },
     {
@@ -131965,5 +131965,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "054c49ac5f4b5eb6b3267f6fd17e2200ac673695"
+  "built_at_commit": "a02653b8e57265df94d858bb0e01714cda5c5a75"
 }

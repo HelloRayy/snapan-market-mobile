@@ -1,7 +1,7 @@
 # Graph Report - snapan-market-mobile  (2026-10-01)
 
 ## Corpus Check
-- 518 files · ~664,527 words
+- 518 files · ~664,559 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 37 file(s) not represented in the graph (top: .xml 11, (none) 7, .woff2 5)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `054c49ac`
+- Built from commit: `a02653b8`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -355,19 +355,19 @@
 5. `supabase` - 23 edges
 6. `useAuth()` - 22 edges
 7. `MarketPostModel` - 21 edges
-8. `Core Principles` - 20 edges
-9. `AppSlidePageRoute` - 20 edges
+8. `AppSlidePageRoute` - 20 edges
+9. `Core Principles` - 20 edges
 10. `cn()` - 19 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `3. Response Data Model yang Digunakan Komponen FE (`MarketPostItem`):` --references--> `MarketPostItem`  [INFERRED]
   docs/fe-to-be-data-contract.md → src/types/marketFeed.ts
-- `5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT` --references--> `subscribeToOrderNotifications()`  [INFERRED]
-  docs/backend-task-backlog.md → src/services/api/realtimeService.ts
 - `🟢 2. Component Design & React Patterns` --references--> `cn()`  [INFERRED]
   docs/coding-standards.md → src/utils/cn.ts
-- `1. Aksi User:` --references--> `CreatePostModal()`  [INFERRED]
-  docs/fe-to-be-data-contract.md → src/ui/components/marketplace/CreatePostModal.tsx
+- `5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT` --references--> `toggleCommentLike()`  [INFERRED]
+  docs/backend-task-backlog.md → src/services/api/commentService.ts
+- `5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT` --references--> `subscribeToOrderNotifications()`  [INFERRED]
+  docs/backend-task-backlog.md → src/services/api/realtimeService.ts
 - `3. Sistem Pengaman Draf Cerdas (*Draft Engine*)` --references--> `ConfirmActionModal()`  [INFERRED]
   docs/overview-dan-interaksi-aplikasi.md → src/ui/components/ui/ConfirmActionModal.tsx
 
@@ -1403,11 +1403,11 @@ Nodes (3): package:flutter_test/flutter_test.dart, package:snapan_market/main.da
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `react` connect `react` to `PostDetailPage.tsx`, `App.tsx`, `ButtonPrimary.tsx`, `HomePage.tsx`, `triggerHaptic`, `kumo.d.ts`, `useAuth.ts`, `lucide-react`, `OnboardingScreen.tsx`, `package.json`, `cn`, `MarketBottomNav.tsx`, `SearchPage.tsx`, `DesignSystemPage.tsx`, `MarketPostCard.tsx`, `AdminDashboard.tsx`, `PwaLandingPage.tsx`?**
-  _High betweenness centrality (0.012) - this node is a cross-community bridge._
-- **Why does `_MockHttpClient` connect `_MockHttpClient` to `widget_test.dart`?**
+  _High betweenness centrality (0.015) - this node is a cross-community bridge._
+- **Why does `lucide-react` connect `lucide-react` to `PostDetailPage.tsx`, `App.tsx`, `ButtonPrimary.tsx`, `HomePage.tsx`, `triggerHaptic`, `OnboardingScreen.tsx`, `useAuth.ts`, `react`, `package.json`, `MarketBottomNav.tsx`, `SearchPage.tsx`, `DesignSystemPage.tsx`, `MarketPostCard.tsx`, `AdminDashboard.tsx`, `PwaLandingPage.tsx`?**
+  _High betweenness centrality (0.007) - this node is a cross-community bridge._
+- **Why does `_` connect `_` to `package:flutter/material.dart`, `package:flutter/services.dart`, `package:snapan-market/core/theme/app_colors.dart`?**
   _High betweenness centrality (0.006) - this node is a cross-community bridge._
-- **Why does `MarketPostModel` connect `package:snapan_market/features/feed/models/market_post_model.dart` to `buy_bottom_sheet.dart`, `post_action_bar.dart`, `market_post_card.dart`, `market_post_model.dart`, `post_card_header.dart`, `List`, `post_detail_bottom_bar.dart`, `post_card_content_column.dart`, `post_poll_model.dart`, `post_poll_section.dart`, `media_lightbox_dialog.dart`, `post_submenu_popover.dart`, `post_detail_screen.dart`, `package:flutter/services.dart`, `profile_user_model.dart`?**
-  _High betweenness centrality (0.005) - this node is a cross-community bridge._
 - **What connects `isSubmitted`, `searchQuery`, `activeTab` to the rest of the system?**
   _3001 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `PostDetailPage.tsx` be split into smaller, more focused modules?**

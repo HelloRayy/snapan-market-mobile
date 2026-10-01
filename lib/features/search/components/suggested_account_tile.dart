@@ -34,7 +34,7 @@ class SuggestedAccountTile extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 8.0),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Avatar (40x40px matching HomeFeed style)
             Container(
@@ -79,6 +79,7 @@ class SuggestedAccountTile extends StatelessWidget {
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   // 1. Username + Verified Badge Row
                   Row(
@@ -120,34 +121,6 @@ class SuggestedAccountTile extends StatelessWidget {
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                  ),
-
-                  // 3. Bio Description
-                  if (account.bio.isNotEmpty) ...[
-                    const SizedBox(height: 3.0),
-                    Text(
-                      account.bio,
-                      style: const TextStyle(
-                        fontSize: 13.0,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF334155),
-                        height: 1.30,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-
-                  // 4. Followers Count
-                  const SizedBox(height: 4.0),
-                  Text(
-                    account.followersCount,
-                    style: const TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF94A3B8),
-                      height: 1.15,
-                    ),
                   ),
                 ],
               ),

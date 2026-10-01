@@ -50,7 +50,6 @@ class _SearchScreenState extends State<SearchScreen> {
           _accounts = records.map<SuggestedAccount>((p) {
             final uName = p['username'] as String? ?? '';
             final fName = p['full_name'] as String?;
-            final classGroup = p['class_group'] as String? ?? 'SMKN 8 Semarang';
             return SuggestedAccount(
               id: p['id'] as String? ?? '',
               fullName: (fName != null && fName.isNotEmpty) ? fName : (uName.isNotEmpty ? '@$uName' : 'Pengguna'),
@@ -58,8 +57,8 @@ class _SearchScreenState extends State<SearchScreen> {
               avatar: (p['avatar_url'] as String?)?.isNotEmpty == true
                   ? p['avatar_url'] as String
                   : '',
-              bio: classGroup,
-              followersCount: classGroup,
+              bio: p['bio'] as String? ?? '',
+              followersCount: '',
               isVerified: p['is_verified'] == true,
             );
           }).toList();
@@ -100,7 +99,6 @@ class _SearchScreenState extends State<SearchScreen> {
       final accounts = profiles.map<SuggestedAccount>((p) {
         final uName = p['username'] as String? ?? '';
         final fName = p['full_name'] as String?;
-        final classGroup = p['class_group'] as String? ?? 'SMKN 8 Semarang';
         return SuggestedAccount(
           id: p['id'] as String? ?? '',
           fullName: (fName != null && fName.isNotEmpty) ? fName : (uName.isNotEmpty ? '@$uName' : 'Pengguna'),
@@ -108,8 +106,8 @@ class _SearchScreenState extends State<SearchScreen> {
           avatar: (p['avatar_url'] as String?)?.isNotEmpty == true
               ? p['avatar_url'] as String
               : '',
-          bio: classGroup,
-          followersCount: classGroup,
+          bio: p['bio'] as String? ?? '',
+          followersCount: '',
           isVerified: p['is_verified'] == true,
         );
       }).toList();
@@ -191,7 +189,7 @@ class _SearchScreenState extends State<SearchScreen> {
         username: account.username,
         avatar: account.avatar,
         bio: account.bio,
-        classGroup: account.bio.isNotEmpty ? account.bio : 'Siswa SMKN 8 Semarang',
+        classGroup: 'Siswa SMKN 8 Semarang',
         tags: const [],
         followersCount: 0,
         soldCount: 0,

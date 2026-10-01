@@ -1,149 +1,216 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/services/app_update_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
-import 'package:snapan_market/features/feed/components/drawer/home_nav_channels_card.dart';
-import 'package:snapan_market/features/feed/components/drawer/home_nav_footer.dart';
-import 'package:snapan_market/features/feed/components/drawer/home_nav_header.dart';
-import 'package:snapan_market/features/feed/components/drawer/home_nav_preferences_card.dart';
-import 'package:snapan_market/features/feed/components/drawer/home_nav_quick_pills.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/features/feed/components/drawer/home_drawer_footer.dart';
+import 'package:snapan_market/features/feed/components/drawer/home_drawer_item.dart';
+import 'package:snapan_market/features/feed/components/drawer/home_drawer_logout_dialog.dart';
+import 'package:snapan_market/features/feed/components/drawer/home_drawer_profile_header.dart';
 
-/// Clean Orchestrator for Left-to-Right Navigation Drawer (<130 lines).
+/// Minimalist Left-to-Right Navigation Drawer for Home Feed
 ///
-/// Implements 1:1 parity with the Source of Truth HTML design:
-/// 1. HomeNavHeader (User profile & create post button)
-/// 2. HomeNavQuickPills (Disukai & Arsip buttons)
-/// 3. HomeNavChannelsCard (Feeds & Vocational Channels SMKN 8)
-/// 4. HomeNavPreferencesCard (Theme, settings, reporting)
-/// 5. HomeNavFooter (Logout & Version Branding)
+/// Displays a pure vertical list reflecting existing menu options:
+/// 1. Tampilan (Mode Tema)
+/// 2. Pengaturan (Settings)
+/// 3. Disukai (Liked Activity)
+/// 4. Arsip (Archive)
+/// 5. Laporkan masalah (Report issue)
+/// 6. Periksa pembaruan (Check update)
+/// 7. Masuk / Daftar Akun (Guest) OR Logout (Authenticated)
 class HomeNavDrawer extends StatelessWidget {
-  final Map<String, dynamic>? userProfile;
-  final VoidCallback? onForYouTap;
-  final VoidCallback? onMarketTap;
-  final VoidCallback? onCreatePost;
-  final VoidCallback? onLikedTap;
-  final VoidCallback? onArchiveTap;
   final VoidCallback? onAppearanceTap;
   final VoidCallback? onSettingsTap;
+  final VoidCallback? onLikedTap;
+  final VoidCallback? onArchiveTap;
   final VoidCallback? onReportTap;
   final VoidCallback? onCheckUpdateTap;
-  final ValueChanged<String>? onChannelTap;
   final VoidCallback? onLogout;
   final VoidCallback? onAuthTap;
   final VoidCallback? onClose;
+  final Map<String, dynamic>? userProfile;
 
   const HomeNavDrawer({
     super.key,
-    this.userProfile,
-    this.onForYouTap,
-    this.onMarketTap,
-    this.onCreatePost,
-    this.onLikedTap,
-    this.onArchiveTap,
     this.onAppearanceTap,
     this.onSettingsTap,
+    this.onLikedTap,
+    this.onArchiveTap,
     this.onReportTap,
     this.onCheckUpdateTap,
-    this.onChannelTap,
     this.onLogout,
     this.onAuthTap,
     this.onClose,
+    this.userProfile,
   });
 
   @override
   Widget build(BuildContext context) {
     final bool isAuthenticated = SupabaseService.instance.isAuthenticated;
+    final currentUser = SupabaseService.instance.currentUser;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final Color bgColor = isDark ? const Color(0xFF101010) : Colors.white;
+    final Color inkColor = isDark ? const Color(0xFFF3F5F7) : const Color(0xFF111827);
+    final Color mutedColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+    final Color borderColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9);
+    final Color tileHoverColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC);
+
+    final String displayName = userProfile?['full_name'] ??
+        currentUser?.userMetadata?['full_name'] ??
+        currentUser?.email?.split('@').first ??
+        'Siswa SMKN 8 Semarang';
+    final String displayEmail = currentUser?.email ?? 'Belum masuk';
 
     return Drawer(
       width: 285.0,
       elevation: 0.0,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-      backgroundColor: const Color(0xFF000000),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.zero,
+      ),
+      backgroundColor: bgColor,
       surfaceTintColor: Colors.transparent,
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
-          child: Column(
-            children: [
-              // Scrollable Main Section
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    children: [
-                      // 1. Profile & Quick Action Header
-                      HomeNavHeader(
-                        userProfile: userProfile,
-                        onCreatePost: () {
-                          onClose?.call();
-                          onCreatePost?.call();
-                        },
-                      ),
-                      const SizedBox(height: 14.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // 1. User Profile Tile / Guest Welcome Banner
+            if (isAuthenticated)
+              HomeDrawerProfileHeader(
+                userProfile: userProfile,
+                displayName: displayName,
+                displayEmail: displayEmail,
+                borderColor: borderColor,
+                inkColor: inkColor,
+                mutedColor: mutedColor,
+                isDark: isDark,
+              ),
 
-                      // 2. Quick Action Pills (Disukai & Arsip)
-                      HomeNavQuickPills(
-                        onLikedTap: () {
-                          onClose?.call();
-                          onLikedTap?.call();
-                        },
-                        onArchiveTap: () {
-                          onClose?.call();
-                          onArchiveTap?.call();
-                        },
-                      ),
-                      const SizedBox(height: 14.0),
-
-                      // 3. Main Feeds & Vocational Channels Card
-                      HomeNavChannelsCard(
-                        onForYouTap: () {
-                          onClose?.call();
-                          onForYouTap?.call();
-                        },
-                        onMarketTap: () {
-                          onClose?.call();
-                          onMarketTap?.call();
-                        },
-                        onChannelTap: (channelId) {
-                          onClose?.call();
-                          onChannelTap?.call(channelId);
-                        },
-                      ),
-                      const SizedBox(height: 12.0),
-
-                      // 4. Secondary Preferences Card
-                      HomeNavPreferencesCard(
-                        onAppearanceTap: () {
-                          onClose?.call();
-                          onAppearanceTap?.call();
-                        },
-                        onSettingsTap: () {
-                          onClose?.call();
-                          onSettingsTap?.call();
-                        },
-                        onReportTap: () {
-                          onClose?.call();
-                          onReportTap?.call();
-                        },
-                      ),
-                      const SizedBox(height: 14.0),
-                    ],
+            // 2. Main Navigation List (Pure vertical matching original)
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 12.0),
+                physics: const BouncingScrollPhysics(),
+                children: [
+                  HomeDrawerItem(
+                    icon: CupertinoIcons.circle_lefthalf_fill,
+                    label: 'Tampilan',
+                    hasChevron: true,
+                    inkColor: inkColor,
+                    mutedColor: mutedColor,
+                    hoverColor: tileHoverColor,
+                    onTap: onAppearanceTap,
+                    onClose: onClose,
                   ),
-                ),
+                  HomeDrawerItem(
+                    icon: CupertinoIcons.gear_alt,
+                    label: 'Pengaturan',
+                    inkColor: inkColor,
+                    mutedColor: mutedColor,
+                    hoverColor: tileHoverColor,
+                    onTap: onSettingsTap,
+                    onClose: onClose,
+                  ),
+                  HomeDrawerItem(
+                    icon: CupertinoIcons.heart,
+                    label: 'Disukai',
+                    inkColor: inkColor,
+                    mutedColor: mutedColor,
+                    hoverColor: tileHoverColor,
+                    onTap: onLikedTap,
+                    onClose: onClose,
+                  ),
+                  HomeDrawerItem(
+                    icon: CupertinoIcons.archivebox,
+                    label: 'Arsip',
+                    inkColor: inkColor,
+                    mutedColor: mutedColor,
+                    hoverColor: tileHoverColor,
+                    onTap: onArchiveTap,
+                    onClose: onClose,
+                  ),
+                  HomeDrawerItem(
+                    icon: CupertinoIcons.exclamationmark_bubble,
+                    label: 'Laporkan masalah',
+                    inkColor: inkColor,
+                    mutedColor: mutedColor,
+                    hoverColor: tileHoverColor,
+                    onTap: onReportTap,
+                    onClose: onClose,
+                  ),
+                  HomeDrawerItem(
+                    icon: CupertinoIcons.arrow_clockwise,
+                    label: 'Periksa pembaruan',
+                    inkColor: inkColor,
+                    mutedColor: mutedColor,
+                    hoverColor: tileHoverColor,
+                    trailingWidget: AppUpdateService.instance.hasAvailableUpdate
+                        ? Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 2.5),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: const Text(
+                              'Update',
+                              style: TextStyle(
+                                fontFamily: 'SFPro',
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
+                        : null,
+                    onTap: onCheckUpdateTap,
+                    onClose: onClose,
+                  ),
+                  const SizedBox(height: 8.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Divider(color: borderColor, height: 1.0),
+                  ),
+                  const SizedBox(height: 8.0),
+                  if (!isAuthenticated)
+                    HomeDrawerItem(
+                      icon: CupertinoIcons.arrow_right_square,
+                      label: 'Masuk / Daftar Akun',
+                      textColor: AppColors.primary,
+                      iconColor: AppColors.primary,
+                      inkColor: inkColor,
+                      mutedColor: mutedColor,
+                      hoverColor: isDark
+                          ? const Color(0xFF1E1B4B)
+                          : const Color(0xFFEEF0FF),
+                      onTap: onAuthTap,
+                      onClose: onClose,
+                    )
+                  else
+                    HomeDrawerItem(
+                      icon: CupertinoIcons.square_arrow_right,
+                      label: 'Logout',
+                      textColor: AppColors.error,
+                      iconColor: AppColors.error,
+                      isDestructive: true,
+                      inkColor: inkColor,
+                      mutedColor: mutedColor,
+                      hoverColor: isDark
+                          ? const Color(0xFF450A0A)
+                          : const Color(0xFFFEF2F2),
+                      onTap: () => HomeDrawerLogoutDialog.show(context, onLogout),
+                      onClose: onClose,
+                    ),
+                ],
               ),
+            ),
 
-              // 5. Pinned Bottom Footer & Logout Action
-              HomeNavFooter(
-                isAuthenticated: isAuthenticated,
-                onLogout: () {
-                  onClose?.call();
-                  onLogout?.call();
-                },
-                onAuthTap: () {
-                  onClose?.call();
-                  onAuthTap?.call();
-                },
-              ),
-            ],
-          ),
+            // 3. Footer Branding & Version
+            HomeDrawerFooter(
+              borderColor: borderColor,
+              inkColor: inkColor,
+              mutedColor: mutedColor,
+            ),
+          ],
         ),
       ),
     );

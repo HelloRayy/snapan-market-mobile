@@ -268,16 +268,14 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       scrimOpacity: 0.05,
       drawer: HomeNavDrawer(
         userProfile: _feedController.userProfile,
-        onForYouTap: () => setState(() {
-          _currentNavTab = HomeNavTab.home;
-          _activeTab = FeedTab.forYou;
-        }),
-        onMarketTap: () => setState(() {
-          _currentNavTab = HomeNavTab.home;
-          _activeTab = FeedTab.market;
-        }),
-        onCreatePost: () => _handleCreatePost(),
-        onLikedTap: () => setState(() => _currentNavTab = HomeNavTab.activity),
+        onAppearanceTap: () {},
+        onSettingsTap: () {},
+        onLikedTap: () {
+          _effectiveDrawerController.close();
+          setState(() => _currentNavTab = HomeNavTab.activity);
+        },
+        onArchiveTap: () {},
+        onReportTap: () {},
         onCheckUpdateTap: _handleManualCheckUpdate,
         onAuthTap: _handleOpenAuth,
         onLogout: widget.onLogout,

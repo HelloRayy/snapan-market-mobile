@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2c2324ae`
+- Built from commit: `5fc91a28`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -375,14 +375,14 @@
 ## Surprising Connections (you probably didn't know these)
 - `3. Response Data Model yang Digunakan Komponen FE (`MarketPostItem`):` --references--> `MarketPostItem`  [INFERRED]
   docs/fe-to-be-data-contract.md → src/types/marketFeed.ts
-- `3. Sistem Pengaman Draf Cerdas (*Draft Engine*)` --references--> `ConfirmActionModal()`  [INFERRED]
-  docs/overview-dan-interaksi-aplikasi.md → src/ui/components/ui/ConfirmActionModal.tsx
-- `4. Halaman Edit Profil (`EditProfilePage.tsx`)` --references--> `ConfirmActionModal()`  [INFERRED]
-  docs/overview-dan-interaksi-aplikasi.md → src/ui/components/ui/ConfirmActionModal.tsx
+- `🧪 5. Testing & Verification Plan` --references--> `PostDetailPage()`  [INFERRED]
+  SPEC.md → src/ui/pages/PostDetailPage.tsx
 - `5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT` --references--> `toggleCommentLike()`  [INFERRED]
   docs/backend-task-backlog.md → src/services/api/commentService.ts
 - `5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT` --references--> `subscribeToOrderNotifications()`  [INFERRED]
   docs/backend-task-backlog.md → src/services/api/realtimeService.ts
+- `3. Preservasi State Navigasi (*Zero State Loss*)` --references--> `SearchPage()`  [INFERRED]
+  docs/overview-dan-interaksi-aplikasi.md → src/ui/pages/SearchPage.tsx
 
 ## Import Cycles
 - None detected.
@@ -1456,7 +1456,7 @@ Cohesion: 0.29
 Nodes (6): build, OnboardingSlideView, slide, OnboardingSlide, package:flutter_svg/flutter_svg.dart, package:snapan_market/features/onboarding/models/onboarding_slide.dart
 
 ## Knowledge Gaps
-- **3108 isolated node(s):** `onCompleted`, `_controller`, `_eraserAnim`, `_holdMs`, `_wipeMs` (+3103 more)
+- **3108 isolated node(s):** `onForYouTap`, `onMarketTap`, `onChannelTap`, `build`, `_buildItem` (+3103 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 3515 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **83 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -1464,10 +1464,12 @@ Nodes (6): build, OnboardingSlideView, slide, OnboardingSlide, package:flutter_s
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `react` connect `react` to `PwaLandingPage.tsx`, `triggerHaptic`, `kumo.d.ts`, `MarketPostItem`, `DesignSystemPage.tsx`, `CreatePostModal.tsx`, `package.json`, `cn`, `HomePage.tsx`, `PostDetailPage.tsx`, `ProductCard.tsx`, `App.tsx`, `AdminDashboard.tsx`, `lucide-react`?**
-  _High betweenness centrality (0.010) - this node is a cross-community bridge._
+  _High betweenness centrality (0.013) - this node is a cross-community bridge._
+- **Why does `_MockHttpClientResponse` connect `supabase_auth_service.dart` to `widget_test.dart`, `List`?**
+  _High betweenness centrality (0.006) - this node is a cross-community bridge._
 - **Why does `lucide-react` connect `lucide-react` to `PwaLandingPage.tsx`, `triggerHaptic`, `MarketPostItem`, `DesignSystemPage.tsx`, `CreatePostModal.tsx`, `package.json`, `cn`, `HomePage.tsx`, `PostDetailPage.tsx`, `ProductCard.tsx`, `App.tsx`, `AdminDashboard.tsx`, `react`?**
   _High betweenness centrality (0.005) - this node is a cross-community bridge._
-- **What connects `onCompleted`, `_controller`, `_eraserAnim` to the rest of the system?**
+- **What connects `onForYouTap`, `onMarketTap`, `onChannelTap` to the rest of the system?**
   _3108 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `search_controller.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.08 - nodes in this community are weakly interconnected._
@@ -1475,5 +1477,3 @@ _Questions this graph is uniquely positioned to answer:_
   _Cohesion score 0.022988505747126436 - nodes in this community are weakly interconnected._
 - **Should `supabase_service.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.029850746268656716 - nodes in this community are weakly interconnected._
-- **Should `triggerHaptic` be split into smaller, more focused modules?**
-  _Cohesion score 0.07092198581560284 - nodes in this community are weakly interconnected._

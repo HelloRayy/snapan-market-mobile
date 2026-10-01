@@ -3552,9 +3552,9 @@
     "semantic_hash": ""
   },
   "lib/features/feed/components/drawer/home_nav_channels_card.dart": {
-    "mtime": 1790865987.8295703,
-    "seen": 1790866215.0082357,
-    "ast_hash": "166615491ce46174f812e9f897fcd16d",
+    "mtime": 1790866619.7853937,
+    "seen": 1790866637.0985084,
+    "ast_hash": "e0c2f07ab9a825a3f5f718e56a888882",
     "semantic_hash": ""
   },
   "lib/features/feed/components/drawer/home_nav_footer.dart": {
@@ -3570,9 +3570,9 @@
     "semantic_hash": ""
   },
   "lib/features/feed/components/drawer/home_nav_preferences_card.dart": {
-    "mtime": 1790865994.8086016,
-    "seen": 1790866215.0082402,
-    "ast_hash": "43c620660f2a008cbdbf41f77879f2bc",
+    "mtime": 1790866623.209409,
+    "seen": 1790866637.0985153,
+    "ast_hash": "c3e1579c8d825f04aa71e96400af5b2e",
     "semantic_hash": ""
   },
   "lib/features/feed/components/drawer/home_nav_quick_pills.dart": {

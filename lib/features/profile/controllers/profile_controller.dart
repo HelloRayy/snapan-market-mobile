@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:snapan_market/core/services/follow_service.dart';
+import 'package:snapan_market/core/services/poll_sync_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/profile/models/profile_user_model.dart';
@@ -14,6 +15,34 @@ class ProfileController extends ChangeNotifier {
 
   RealtimeChannel? _profileSubscription;
   RealtimeChannel? _followRealtimeSubscription;
+
+  ProfileController() {
+    PollSyncService.instance.addListener(_handlePollSyncUpdate);
+  }
+
+  @override
+  void dispose() {
+    PollSyncService.instance.removeListener(_handlePollSyncUpdate);
+    disposeSubscriptions();
+    super.dispose();
+  }
+
+  void _handlePollSyncUpdate() {
+    bool hasChanges = false;
+    final updated = allUserPosts.map((p) {
+      if (p.poll == null) return p;
+      final synced = PollSyncService.instance.syncPost(p);
+      if (synced != p) {
+        hasChanges = true;
+        return synced;
+      }
+      return p;
+    }).toList();
+    if (hasChanges) {
+      allUserPosts = updated;
+      notifyListeners();
+    }
+  }
 
   void disposeSubscriptions() {
     _profileSubscription?.unsubscribe();
@@ -38,48 +67,18 @@ class ProfileController extends ChangeNotifier {
       try {
         final profile = await SupabaseService.instance.getProfile(currentUser.id);
         final livePosts = await SupabaseService.instance.fetchUserPosts(currentUser.id);
-        final ownFollowersCount = await FollowService.instance.loadFollowerCount(currentUser.id);
-        final meta = currentUser.userMetadata ?? {};
-        final metaTags = meta['tags'];
-        List<String> userTags = [];
-        if (profile?['interests'] is String && (profile!['interests'] as String).isNotEmpty) {
-          userTags = (profile['interests'] as String).split(',');
-        } else if (metaTags is List) {
-          userTags = metaTags.map((e) => e.toString()).toList();
-        }
+        final livePosts = await SupabaseService.instance.fetchUserPosts(currentUser.id);
+        final ownFollowers = await FollowService.instance.loadFollowerCount(currentUser.id);
 
-        final fullName = profile?['full_name'] as String? ?? (meta['full_name'] as String?)?.trim();
-        final metaUsername = profile?['username'] as String? ?? (meta['username'] as String?)?.trim();
-        final classGroup = profile?['class_group'] as String? ?? (meta['class_group'] as String?)?.trim() ?? 'SMKN 8 Semarang';
-        final avatar = profile?['avatar_url'] as String? ?? (meta['avatar_url'] as String?)?.trim() ?? '';
-        final bio = profile?['bio'] as String? ?? (meta['bio'] as String?)?.trim() ?? '';
-        final link = profile?['link'] as String? ?? (meta['link'] as String?)?.trim() ?? '';
-        final isVerified = profile?['is_verified'] as bool? ?? false;
-
-        final displayName = (fullName != null && fullName.isNotEmpty)
-            ? fullName
-            : (metaUsername != null && metaUsername.isNotEmpty ? '@$metaUsername' : 'Pengguna');
-        final displayUsername = (metaUsername != null && metaUsername.isNotEmpty)
-            ? metaUsername
-            : (currentUser.email?.split('@').first ?? 'siswa');
-
-        user = ProfileUserModel(
+        user = _buildUserModel(
           id: currentUser.id,
-          name: displayName,
-          username: displayUsername,
-          classGroup: classGroup,
-          avatar: avatar,
-          bio: bio,
-          link: link,
-          tags: userTags,
-          followersCount: ownFollowersCount,
-          soldCount: 0,
-          isVerified: isVerified,
-          rating: 0.0,
-          showSalesStats: false,
+          profile: profile,
+          meta: currentUser.userMetadata ?? {},
+          followersCount: ownFollowers,
+          fallbackUsername: currentUser.email?.split('@').first,
         );
 
-        allUserPosts = livePosts;
+        allUserPosts = await _enrichPosts(livePosts);
         isLoading = false;
         isNotFound = false;
         notifyListeners();
@@ -109,26 +108,15 @@ class ProfileController extends ChangeNotifier {
         if (p != null) {
           final targetId = p['id'] as String? ?? '';
           final targetPosts = await SupabaseService.instance.fetchUserPosts(targetId);
-          final otherFollowers = await FollowService.instance.loadFollowerCount(targetId);
+          final followers = await FollowService.instance.loadFollowerCount(targetId);
 
-          final fullName = p['full_name'] as String?;
-          final uName = p['username'] as String? ?? cleanUsername;
-
-          user = ProfileUserModel(
+          user = _buildUserModel(
             id: targetId,
-            name: (fullName != null && fullName.isNotEmpty) ? fullName : '@$uName',
-            username: uName,
-            classGroup: p['class_group'] as String? ?? 'SMKN 8 Semarang',
-            avatar: (p['avatar_url'] as String?)?.isNotEmpty == true ? p['avatar_url'] as String : '',
-            bio: p['bio'] as String? ?? '',
-            link: p['link'] as String? ?? '',
-            followersCount: otherFollowers,
-            soldCount: 0,
-            rating: 0.0,
-            showSalesStats: false,
-            isVerified: p['is_verified'] as bool? ?? false,
+            profile: p,
+            followersCount: followers,
+            fallbackUsername: cleanUsername,
           );
-          allUserPosts = targetPosts;
+          allUserPosts = await _enrichPosts(targetPosts);
           isLoading = false;
           isNotFound = false;
           notifyListeners();
@@ -173,23 +161,77 @@ class ProfileController extends ChangeNotifier {
 
   void toggleLike(MarketPostModel item) {
     final isLiked = item.isLiked;
-    final updated = item.copyWith(
-      isLiked: !isLiked,
-      likesCount: isLiked ? (item.likesCount - 1) : (item.likesCount + 1),
-    );
+    final updated = item.copyWith(isLiked: !isLiked, likesCount: isLiked ? (item.likesCount - 1) : (item.likesCount + 1));
     allUserPosts = allUserPosts.map((p) => p.id == item.id ? updated : p).toList();
     notifyListeners();
     SupabaseService.instance.togglePostLike(item.id, !item.isLiked);
   }
 
-  void toggleRepost(MarketPostModel item) {
-    final isReposted = item.isReposted;
-    final updated = item.copyWith(
-      isReposted: !isReposted,
-      repostsCount: isReposted ? (item.repostsCount - 1) : (item.repostsCount + 1),
-    );
+  void toggleBookmark(MarketPostModel item) {
+    final isSaved = item.isSaved;
+    final updated = item.copyWith(isSaved: !isSaved);
     allUserPosts = allUserPosts.map((p) => p.id == item.id ? updated : p).toList();
     notifyListeners();
+    SupabaseService.instance.togglePostBookmark(item.id, !isSaved);
+  }
+
+  void toggleRepost(MarketPostModel item) {
+    final isReposted = item.isReposted;
+    final updated = item.copyWith(isReposted: !isReposted, repostsCount: isReposted ? (item.repostsCount - 1) : (item.repostsCount + 1));
+    allUserPosts = allUserPosts.map((p) => p.id == item.id ? updated : p).toList();
+    notifyListeners();
+  }
+
+  void updatePost(MarketPostModel updated) {
+    final idx = allUserPosts.indexWhere((p) => p.id == updated.id);
+    if (idx != -1) {
+      allUserPosts[idx] = updated;
+      notifyListeners();
+    }
+  }
+
+  Future<void> votePoll(String postId, List<String> optionIds) async {
+    final idx = allUserPosts.indexWhere((p) => p.id == postId);
+    if (idx == -1) return;
+    final currentPost = allUserPosts[idx];
+    if (currentPost.poll == null) return;
+
+    final poll = currentPost.poll!;
+    final prevVotes = poll.userVotedOptionIds;
+
+    final updatedOpts = poll.options.map((opt) {
+      int count = opt.votesCount;
+      if (prevVotes.contains(opt.id) && !optionIds.contains(opt.id)) count = (count - 1).clamp(0, 999999);
+      if (!prevVotes.contains(opt.id) && optionIds.contains(opt.id)) count += 1;
+      return opt.copyWith(votesCount: count);
+    }).toList();
+
+    final optimistic = poll.copyWith(
+      options: updatedOpts,
+      totalVotes: updatedOpts.fold(0, (s, o) => s + o.votesCount),
+      userVotedOptionIds: optionIds,
+    );
+
+    allUserPosts[idx] = currentPost.copyWith(poll: optimistic);
+    PollSyncService.instance.registerUserVote(postId, optionIds, optimistic);
+    notifyListeners();
+
+    try {
+      final serverPoll = await SupabaseService.instance.votePoll(postId: postId, optionIds: optionIds);
+      final cIdx = allUserPosts.indexWhere((p) => p.id == postId);
+      if (cIdx != -1) {
+        allUserPosts[cIdx] = allUserPosts[cIdx].copyWith(poll: serverPoll);
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error votePoll profile: $e');
+      PollSyncService.instance.registerUserVote(postId, prevVotes, poll);
+      final cIdx = allUserPosts.indexWhere((p) => p.id == postId);
+      if (cIdx != -1) {
+        allUserPosts[cIdx] = currentPost;
+        notifyListeners();
+      }
+    }
   }
 
   void removePost(String postId) {
@@ -200,13 +242,54 @@ class ProfileController extends ChangeNotifier {
   void updateUser(ProfileUserModel updated) {
     user = updated;
     allUserPosts = allUserPosts.map((p) => p.copyWith(
-      seller: p.seller.copyWith(
-        name: updated.name,
-        username: updated.username,
-        avatar: updated.avatar,
-        classGroup: updated.classGroup,
-      ),
+      seller: p.seller.copyWith(name: updated.name, username: updated.username, avatar: updated.avatar, classGroup: updated.classGroup),
     )).toList();
     notifyListeners();
   }
+
+  Future<List<MarketPostModel>> _enrichPosts(List<MarketPostModel> posts) async {
+    final likedIds = await SupabaseService.instance.fetchLikedPostIds();
+    final savedIds = await SupabaseService.instance.fetchBookmarkedPostIds();
+    return posts.map((p) => p.copyWith(
+      isLiked: likedIds.contains(p.id),
+      isSaved: savedIds.contains(p.id),
+    )).toList();
+  }
+
+  ProfileUserModel _buildUserModel({
+    required String id,
+    required Map<String, dynamic>? profile,
+    Map<String, dynamic> meta = const {},
+    required int followersCount,
+    String? fallbackUsername,
+  }) {
+    final rawInterests = profile?['interests'];
+    final metaTags = meta['tags'];
+    List<String> tags = [];
+    if (rawInterests is String && rawInterests.isNotEmpty) {
+      tags = rawInterests.split(',');
+    } else if (metaTags is List) {
+      tags = metaTags.map((e) => e.toString()).toList();
+    }
+
+    final fullName = profile?['full_name'] as String? ?? (meta['full_name'] as String?)?.trim();
+    final uName = profile?['username'] as String? ?? (meta['username'] as String?)?.trim() ?? fallbackUsername ?? 'siswa';
+
+    return ProfileUserModel(
+      id: id,
+      name: (fullName != null && fullName.isNotEmpty) ? fullName : '@$uName',
+      username: uName,
+      classGroup: profile?['class_group'] as String? ?? (meta['class_group'] as String?)?.trim() ?? 'SMKN 8 Semarang',
+      avatar: (profile?['avatar_url'] as String?)?.isNotEmpty == true
+          ? profile!['avatar_url'] as String
+          : ((meta['avatar_url'] as String?)?.trim() ?? ''),
+      bio: profile?['bio'] as String? ?? (meta['bio'] as String?)?.trim() ?? '',
+      link: profile?['link'] as String? ?? (meta['link'] as String?)?.trim() ?? '',
+      tags: tags,
+      followersCount: followersCount,
+      isVerified: profile?['is_verified'] as bool? ?? false,
+    );
+  }
 }
+
+

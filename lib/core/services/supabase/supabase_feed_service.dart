@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:snapan_market/core/services/poll_sync_service.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 class SupabaseFeedService {
@@ -20,41 +21,15 @@ class SupabaseFeedService {
           .order('created_at', ascending: false)
           .range(offset, offset + limit - 1);
 
-      final user = _currentUser;
-      final Map<String, List<String>> userVotesMap = {};
-      if (user != null) {
-        try {
-          final votesResponse = await _client
-              .from('post_poll_votes')
-              .select('post_id, option_id')
-              .eq('user_id', user.id);
-          if (votesResponse is List) {
-            for (final row in votesResponse) {
-              final pid = row['post_id']?.toString();
-              final oid = row['option_id']?.toString();
-              if (pid != null && oid != null) {
-                userVotesMap.putIfAbsent(pid, () => []).add(oid);
-              }
-            }
-          }
-        } catch (_) {}
-      }
-
-      final list = (response as List<dynamic>)
+      final rawList = (response as List<dynamic>)
           .whereType<Map<String, dynamic>>()
-          .map((json) {
-            final postId = json['id']?.toString() ?? '';
-            final userVotes = userVotesMap[postId];
-            if (userVotes != null && userVotes.isNotEmpty) {
-              final copy = Map<String, dynamic>.from(json);
-              copy['user_voted_options'] = userVotes;
-              return MarketPostModel.fromJson(copy);
-            }
-            return MarketPostModel.fromJson(json);
-          })
+          .map((json) => MarketPostModel.fromJson(json))
           .toList();
 
-      return list;
+      return await PollSyncService.instance.hydrateAndSyncPosts(
+        client: _client,
+        posts: rawList,
+      );
     } catch (e) {
       debugPrint('Error fetchFeedPosts: $e');
       rethrow;
@@ -140,10 +115,15 @@ class SupabaseFeedService {
           .eq('seller_id', userId)
           .order('created_at', ascending: false);
 
-      return (response as List<dynamic>)
+      final rawList = (response as List<dynamic>)
           .whereType<Map<String, dynamic>>()
           .map((json) => MarketPostModel.fromJson(json))
           .toList();
+
+      return await PollSyncService.instance.hydrateAndSyncPosts(
+        client: _client,
+        posts: rawList,
+      );
     } catch (e) {
       debugPrint('Error fetchUserPosts: $e');
       return [];
@@ -310,10 +290,15 @@ class SupabaseFeedService {
           .order('created_at', ascending: false)
           .limit(30);
 
-      return (response as List<dynamic>)
+      final rawList = (response as List<dynamic>)
           .whereType<Map<String, dynamic>>()
           .map((json) => MarketPostModel.fromJson(json))
           .toList();
+
+      return await PollSyncService.instance.hydrateAndSyncPosts(
+        client: _client,
+        posts: rawList,
+      );
     } catch (e) {
       debugPrint('Error searchPosts: $e');
       return [];

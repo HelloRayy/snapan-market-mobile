@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:snapan_market/core/services/poll_sync_service.dart';
 import 'package:snapan_market/features/feed/models/post_poll_model.dart';
 
 /// Dedicated service for poll voting and management in Supabase
@@ -25,10 +26,13 @@ class SupabasePollService {
         'p_option_ids': optionIds,
       });
 
-      return PostPollModel.fromJson(
+      final result = PostPollModel.fromJson(
         Map<String, dynamic>.from(response as Map),
         userVotedOptionIds: optionIds,
       );
+
+      PollSyncService.instance.registerUserVote(postId, optionIds, result);
+      return result;
     } catch (e) {
       debugPrint('Error votePoll: $e');
       rethrow;
@@ -47,7 +51,9 @@ class SupabasePollService {
         'p_post_id': postId,
       });
 
-      return PostPollModel.fromJson(Map<String, dynamic>.from(response as Map));
+      final result = PostPollModel.fromJson(Map<String, dynamic>.from(response as Map));
+      PollSyncService.instance.registerPollModel(postId, result);
+      return result;
     } catch (e) {
       debugPrint('Error closePoll: $e');
       rethrow;
@@ -75,6 +81,7 @@ class SupabasePollService {
           }
         }
       }
+      PollSyncService.instance.seedVotes(result);
       return result;
     } catch (e) {
       debugPrint('Error fetchUserPollVotes: $e');
@@ -82,3 +89,4 @@ class SupabasePollService {
     }
   }
 }
+

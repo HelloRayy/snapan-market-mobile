@@ -36,9 +36,10 @@
    - Generate, refactor, and update Flutter widgets, models, controllers, and services in `lib/` in one clean pass.
    - Apply clean widget decomposition, idiomatic Dart naming, proper null safety, and const constructor optimization.
 
-5. **Default Codebase Search & Navigation with Graphify (`graphify-out/`)**:
-   - The repository maintains a pre-built knowledge graph (`graphify-out/graph.json`, `graphify-out/GRAPH_REPORT.md`, `graphify-out/graph.html`) containing 2,500+ nodes and 4,200+ edges across both Flutter and React codebases.
-   - **MANDATORY**: All AI agents should query Graphify first to locate files, symbols, modules, or trace component relationships faster:
+5. **Strict Anti-Grep & Architecture Discovery Rule with Graphify (`graphify-out/`)**:
+   - **STRICTLY PROHIBITED: Sequential `git grep` looping (>2 times in a row)**. Never perform blind grep spirals across multiple files to trace architecture or component relationships.
+   - The repository maintains an active knowledge graph (`graphify-out/graph.json`, `graphify-out/GRAPH_REPORT.md`, `graphify-out/graph.html`) containing 4,700+ nodes and 6,800+ edges across both Flutter and React codebases.
+   - **MANDATORY**: All AI agents MUST query Graphify on the first pass to locate files, symbols, modules, or trace component relationships faster:
      ```bash
      uv tool run --from graphifyy graphify query "<symbol or concept>"
      ```
@@ -50,12 +51,13 @@
      ```bash
      uv tool run --from graphifyy graphify explain "<NodeName>"
      ```
-   - To update the graph after introducing new modules:
-     ```bash
-     uv tool run --from graphifyy graphify --update
-     ```
 
-6. **Mandatory Automatic Git Commit & Push Directive**:
+6. **Mandatory Automatic Git Hook Graphify Sync, Commit & Push Directive**:
+   - The repository has an active post-commit git hook (`graphify hook install`) that automatically updates `graphify-out/graph.json` in the background after every commit.
+   - For manual incremental sync if needed:
+     ```bash
+     uv tool run --from graphifyy graphify extract . --code-only
+     ```
    - After completing any task or code change:
      1. `git add .`
      2. `git commit -m "<type>(<scope>): <descriptive message>"`

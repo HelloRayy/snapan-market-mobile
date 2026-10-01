@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:snapan_market/core/services/follow_service.dart';
+import 'package:snapan_market/core/services/poll_sync_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
@@ -15,6 +16,7 @@ class HomeFeedController extends ChangeNotifier {
 
   void init() {
     FollowService.instance.loadFollowings();
+    PollSyncService.instance.addListener(_handlePollSyncUpdate);
     fetchPosts();
     _authSubscription = SupabaseService.instance.client.auth.onAuthStateChange.listen((_) {
       FollowService.instance.loadFollowings();
@@ -24,8 +26,26 @@ class HomeFeedController extends ChangeNotifier {
 
   @override
   void dispose() {
+    PollSyncService.instance.removeListener(_handlePollSyncUpdate);
     _authSubscription?.cancel();
     super.dispose();
+  }
+
+  void _handlePollSyncUpdate() {
+    bool hasChanges = false;
+    final updated = posts.map((p) {
+      if (p.poll == null) return p;
+      final synced = PollSyncService.instance.syncPost(p);
+      if (synced != p) {
+        hasChanges = true;
+        return synced;
+      }
+      return p;
+    }).toList();
+    if (hasChanges) {
+      posts = updated;
+      notifyListeners();
+    }
   }
 
   Future<void> fetchPosts({bool isRefresh = false}) async {
@@ -117,6 +137,7 @@ class HomeFeedController extends ChangeNotifier {
     );
 
     posts[idx] = currentPost.copyWith(poll: optimisticPoll);
+    PollSyncService.instance.registerUserVote(postId, optionIds, optimisticPoll);
     notifyListeners();
 
     try {
@@ -131,6 +152,7 @@ class HomeFeedController extends ChangeNotifier {
       }
     } catch (e) {
       debugPrint('Error votePoll: $e');
+      PollSyncService.instance.registerUserVote(postId, previousVotes, currentPoll);
       final currentIdx = posts.indexWhere((p) => p.id == postId);
       if (currentIdx != -1) {
         posts[currentIdx] = currentPost;

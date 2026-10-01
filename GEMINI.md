@@ -17,13 +17,16 @@
 4. **NO Mandatory `flutter build bundle`**:
    - Do not run or require `flutter build bundle` routinely. Move directly to commit and push after clean code generation.
 
-5. **Default Codebase Navigation with Graphify (`graphify-out/`)**:
-   - Query Graphify first for file searches, symbol locations, and architecture relationship discovery:
+5. **Strict Anti-Grep & Architecture Discovery with Graphify (`graphify-out/`)**:
+   - **STRICTLY PROHIBITED: Sequential `git grep` looping (>2 times)**. Never perform blind grep spirals across multiple files to trace dependencies or features.
+   - MANDATORY: Query Graphify on the first pass for file searches, symbol locations, and architecture relationship discovery:
      ```bash
      uv tool run --from graphifyy graphify query "<search query>"
      ```
+   - Use `uv tool run --from graphifyy graphify path "<Source>" "<Target>"` to trace cross-module connections without reading files.
 
-6. **Mandatory Git Commit & Push**:
+6. **Mandatory Automatic Git Hook Graphify Sync, Commit & Push**:
+   - The repository has an active post-commit git hook (`graphify hook install`) that automatically updates `graphify-out/graph.json` in the background after every commit.
    - Run `git add .`, commit, and push after completing tasks.
 
 7. **Strict File Size Cap (Max 250–300 Lines)**:

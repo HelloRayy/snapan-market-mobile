@@ -33,7 +33,7 @@ class PostPollOptionTile extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12.0),
       child: Container(
-        height: 42.0,
+        height: 44.0,
         padding: const EdgeInsets.symmetric(horizontal: 14.0),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primary.withOpacity(0.06) : Colors.white,
@@ -44,6 +44,7 @@ class PostPollOptionTile extends StatelessWidget {
           ),
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             if (poll.isMultipleChoice) ...[
               Icon(
@@ -62,6 +63,7 @@ class PostPollOptionTile extends StatelessWidget {
                   fontSize: 13.5,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                   color: isSelected ? AppColors.primary : const Color(0xFF0F172A),
+                  height: 1.25,
                 ),
               ),
             ),
@@ -78,7 +80,7 @@ class PostPollOptionTile extends StatelessWidget {
     final isUserPick = poll.userVotedOptionIds.contains(option.id);
 
     return Container(
-      height: 42.0,
+      height: 44.0,
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(12.0),
@@ -91,64 +93,79 @@ class PostPollOptionTile extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           return Stack(
+            fit: StackFit.expand,
             children: [
-              TweenAnimationBuilder<double>(
-                tween: Tween<double>(begin: 0.0, end: percentage),
-                duration: const Duration(milliseconds: 400),
-                curve: Curves.easeOutCubic,
-                builder: (context, val, _) {
-                  return Container(
-                    width: constraints.maxWidth * val,
-                    height: double.infinity,
-                    decoration: BoxDecoration(
-                      color: isWinning
-                          ? AppColors.primary.withOpacity(0.18)
-                          : (isUserPick
-                              ? AppColors.primary.withOpacity(0.10)
-                              : const Color(0xFFE2E8F0).withOpacity(0.7)),
-                      borderRadius: BorderRadius.circular(11.0),
-                    ),
-                  );
-                },
+              Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween<double>(begin: 0.0, end: percentage),
+                  duration: const Duration(milliseconds: 400),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, val, _) {
+                    return Container(
+                      width: constraints.maxWidth * val,
+                      height: double.infinity,
+                      decoration: BoxDecoration(
+                        color: isWinning
+                            ? AppColors.primary.withOpacity(0.18)
+                            : (isUserPick
+                                ? AppColors.primary.withOpacity(0.10)
+                                : const Color(0xFFE2E8F0).withOpacity(0.7)),
+                      ),
+                    );
+                  },
+                ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          if (isUserPick) ...[
-                            const Icon(Icons.check_circle_rounded, size: 15.0, color: AppColors.primary),
-                            const SizedBox(width: 6.0),
-                          ],
-                          Flexible(
-                            child: Text(
-                              option.text,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 13.5,
-                                fontWeight: isWinning ? FontWeight.w700 : FontWeight.w500,
-                                color: const Color(0xFF0F172A),
+              Positioned.fill(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if (isUserPick) ...[
+                              const Icon(
+                                Icons.check_circle_rounded,
+                                size: 16.0,
+                                color: AppColors.primary,
+                              ),
+                              const SizedBox(width: 8.0),
+                            ],
+                            Flexible(
+                              child: Text(
+                                option.text,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 13.5,
+                                  fontWeight: isWinning ? FontWeight.w700 : FontWeight.w500,
+                                  color: const Color(0xFF0F172A),
+                                  height: 1.25,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8.0),
-                    Text(
-                      '$percentageInt%',
-                      style: TextStyle(
-                        fontSize: 13.0,
-                        fontWeight: isWinning ? FontWeight.w700 : FontWeight.w600,
-                        color: isWinning ? AppColors.primary : const Color(0xFF475569),
-                        fontFeatures: const [FontFeature.tabularFigures()],
+                      const SizedBox(width: 10.0),
+                      Text(
+                        '$percentageInt%',
+                        style: TextStyle(
+                          fontSize: 13.0,
+                          fontWeight: isWinning ? FontWeight.w700 : FontWeight.w600,
+                          color: isWinning ? AppColors.primary : const Color(0xFF475569),
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                          height: 1.25,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],

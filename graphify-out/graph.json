@@ -7349,12 +7349,12 @@
     },
     {
       "id": "voidcallback",
-      "label": "VoidCallback?",
+      "label": "VoidCallback",
       "_origin": "ast",
       "community": 101,
       "community_name": "VoidCallback?",
       "file_type": "code",
-      "norm_label": "voidcallback?",
+      "norm_label": "voidcallback",
       "source_file": null,
       "source_location": null
     },
@@ -14823,7 +14823,7 @@
       "file_type": "code",
       "norm_label": "_buildemptystate",
       "source_file": "lib/features/search/components/search_results_view.dart",
-      "source_location": "L148"
+      "source_location": "L147"
     },
     {
       "id": "lib_features_search_components_search_results_view_issubmitted",
@@ -46093,7 +46093,7 @@
       "file_type": "code",
       "norm_label": "_buildusermodel",
       "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L259"
+      "source_location": "L258"
     },
     {
       "id": "lib_features_profile_controllers_profile_controller_dispose",
@@ -46126,7 +46126,7 @@
       "file_type": "code",
       "norm_label": "_enrichposts",
       "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L250"
+      "source_location": "L249"
     },
     {
       "id": "lib_features_profile_controllers_profile_controller_followrealtimesubscription",
@@ -46203,7 +46203,7 @@
       "file_type": "code",
       "norm_label": "removepost",
       "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L237"
+      "source_location": "L236"
     },
     {
       "id": "lib_features_profile_controllers_profile_controller_setuprealtime",
@@ -46214,7 +46214,7 @@
       "file_type": "code",
       "norm_label": "_setuprealtime",
       "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L140"
+      "source_location": "L139"
     },
     {
       "id": "lib_features_profile_controllers_profile_controller_togglebookmark",
@@ -46225,7 +46225,7 @@
       "file_type": "code",
       "norm_label": "togglebookmark",
       "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L170"
+      "source_location": "L169"
     },
     {
       "id": "lib_features_profile_controllers_profile_controller_togglelike",
@@ -46236,7 +46236,7 @@
       "file_type": "code",
       "norm_label": "togglelike",
       "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L162"
+      "source_location": "L161"
     },
     {
       "id": "lib_features_profile_controllers_profile_controller_togglerepost",
@@ -46247,7 +46247,7 @@
       "file_type": "code",
       "norm_label": "togglerepost",
       "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L178"
+      "source_location": "L177"
     },
     {
       "id": "lib_features_profile_controllers_profile_controller_updatepost",
@@ -46258,7 +46258,7 @@
       "file_type": "code",
       "norm_label": "updatepost",
       "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L185"
+      "source_location": "L184"
     },
     {
       "id": "lib_features_profile_controllers_profile_controller_updateuser",
@@ -46269,7 +46269,7 @@
       "file_type": "code",
       "norm_label": "updateuser",
       "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L242"
+      "source_location": "L241"
     },
     {
       "id": "lib_features_profile_controllers_profile_controller_user",
@@ -46291,7 +46291,7 @@
       "file_type": "code",
       "norm_label": "votepoll",
       "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L193"
+      "source_location": "L192"
     },
     {
       "id": "profileusermodel",
@@ -116027,6 +116027,17 @@
     },
     {
       "source": "lib_features_profile_controllers_profile_controller",
+      "target": "lib_features_profile_controllers_profile_controller_setuprealtime",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/profile/controllers/profile_controller.dart",
+      "source_location": "L139",
+      "weight": 1.0
+    },
+    {
+      "source": "lib_features_profile_controllers_profile_controller",
       "target": "lib_features_profile_controllers_profile_controller_isloading",
       "relation": "defines",
       "_origin": "ast",
@@ -116034,17 +116045,6 @@
       "confidence_score": 1.0,
       "source_file": "lib/features/profile/controllers/profile_controller.dart",
       "source_location": "L14",
-      "weight": 1.0
-    },
-    {
-      "source": "lib_features_profile_controllers_profile_controller",
-      "target": "lib_features_profile_controllers_profile_controller_setuprealtime",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L140",
       "weight": 1.0
     },
     {
@@ -116066,7 +116066,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L162",
+      "source_location": "L161",
+      "weight": 1.0
+    },
+    {
+      "source": "lib_features_profile_controllers_profile_controller",
+      "target": "lib_features_profile_controllers_profile_controller_togglebookmark",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/profile/controllers/profile_controller.dart",
+      "source_location": "L169",
       "weight": 1.0
     },
     {
@@ -116082,24 +116093,13 @@
     },
     {
       "source": "lib_features_profile_controllers_profile_controller",
-      "target": "lib_features_profile_controllers_profile_controller_togglebookmark",
-      "relation": "defines",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L170",
-      "weight": 1.0
-    },
-    {
-      "source": "lib_features_profile_controllers_profile_controller",
       "target": "lib_features_profile_controllers_profile_controller_togglerepost",
       "relation": "defines",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L178",
+      "source_location": "L177",
       "weight": 1.0
     },
     {
@@ -116110,7 +116110,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L185",
+      "source_location": "L184",
       "weight": 1.0
     },
     {
@@ -116121,7 +116121,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L193",
+      "source_location": "L192",
       "weight": 1.0
     },
     {
@@ -116132,7 +116132,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L237",
+      "source_location": "L236",
       "weight": 1.0
     },
     {
@@ -116154,7 +116154,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L242",
+      "source_location": "L241",
       "weight": 1.0
     },
     {
@@ -116165,7 +116165,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L250",
+      "source_location": "L249",
       "weight": 1.0
     },
     {
@@ -116176,7 +116176,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/features/profile/controllers/profile_controller.dart",
-      "source_location": "L259",
+      "source_location": "L258",
       "weight": 1.0
     },
     {
@@ -117177,7 +117177,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/features/search/components/search_results_view.dart",
-      "source_location": "L148",
+      "source_location": "L147",
       "weight": 1.0
     },
     {
@@ -132350,5 +132350,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "d412d0cc34850e38ea3c56242c6f49d585173cac"
+  "built_at_commit": "4c4db2fc0cf10481651545e46b6e9e2aec91b267"
 }

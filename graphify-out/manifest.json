@@ -3282,9 +3282,9 @@
     "semantic_hash": "cc1ac5d03c0c60b16b68470e024d417a"
   },
   "lib/features/profile/components/profile_content_tabs.dart": {
-    "mtime": 1790840581.3345625,
-    "seen": 1790840586.0640907,
-    "ast_hash": "7b8c4a0fc66c33b521d37634620000b1",
+    "mtime": 1790841315.1118264,
+    "seen": 1790841413.2492163,
+    "ast_hash": "47ea9305b3e917ae6a6e0ec3e7c88182",
     "semantic_hash": ""
   },
   "lib/features/profile/components/profile_search_bar.dart": {
@@ -3294,15 +3294,15 @@
     "semantic_hash": "d1e290d68068ee8908d164d63ecd5074"
   },
   "lib/features/profile/controllers/profile_controller.dart": {
-    "mtime": 1790840561.1004725,
-    "seen": 1790840586.0641067,
-    "ast_hash": "8e4543b348a71e7878a88338f3f76cc3",
+    "mtime": 1790841371.6580777,
+    "seen": 1790841413.2492242,
+    "ast_hash": "e98038575581f4cb3ff8240de2bc77d0",
     "semantic_hash": ""
   },
   "lib/features/search/components/search_results_view.dart": {
-    "mtime": 1790840661.1769176,
-    "seen": 1790840664.1861846,
-    "ast_hash": "d5bbbfc68a856d5172f5f7cf6c876b57",
+    "mtime": 1790841329.839892,
+    "seen": 1790841413.2492304,
+    "ast_hash": "0295151fd4ef83ff3b7bdee724a04a81",
     "semantic_hash": ""
   },
   "lib/features/search/components/search_suggested_accounts_view.dart": {
@@ -3516,9 +3516,9 @@
     "semantic_hash": ""
   },
   "lib/features/search/controllers/search_controller.dart": {
-    "mtime": 1790840867.5588355,
-    "seen": 1790841040.3268867,
-    "ast_hash": "6e861ee2377b19f4f13e2cd6d9f75c12",
+    "mtime": 1790841386.4851437,
+    "seen": 1790841413.2492342,
+    "ast_hash": "42644910dfcb19ba0c7c62988ad22819",
     "semantic_hash": ""
   }
 }

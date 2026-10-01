@@ -1,7 +1,7 @@
 # Graph Report - snapan-market-mobile  (2026-10-01)
 
 ## Corpus Check
-- 519 files · ~664,828 words
+- 519 files · ~664,813 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 37 file(s) not represented in the graph (top: .xml 11, (none) 7, .woff2 5)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `d412d0cc`
+- Built from commit: `4c4db2fc`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -370,14 +370,14 @@
 ## Surprising Connections (you probably didn't know these)
 - `3. Response Data Model yang Digunakan Komponen FE (`MarketPostItem`):` --references--> `MarketPostItem`  [INFERRED]
   docs/fe-to-be-data-contract.md → src/types/marketFeed.ts
-- `🟢 2. Component Design & React Patterns` --references--> `cn()`  [INFERRED]
-  docs/coding-standards.md → src/utils/cn.ts
-- `5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT` --references--> `toggleCommentLike()`  [INFERRED]
-  docs/backend-task-backlog.md → src/services/api/commentService.ts
-- `5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT` --references--> `subscribeToOrderNotifications()`  [INFERRED]
-  docs/backend-task-backlog.md → src/services/api/realtimeService.ts
+- `C. Autentikasi & Autorisasi (Auth Guardrails)` --references--> `signOut()`  [INFERRED]
+  .agents/skills/security/SKILL.md → src/services/api/authService.ts
 - `3. Sistem Pengaman Draf Cerdas (*Draft Engine*)` --references--> `ConfirmActionModal()`  [INFERRED]
   docs/overview-dan-interaksi-aplikasi.md → src/ui/components/ui/ConfirmActionModal.tsx
+- `4. Halaman Edit Profil (`EditProfilePage.tsx`)` --references--> `ConfirmActionModal()`  [INFERRED]
+  docs/overview-dan-interaksi-aplikasi.md → src/ui/components/ui/ConfirmActionModal.tsx
+- `🟢 2. Component Design & React Patterns` --references--> `cn()`  [INFERRED]
+  docs/coding-standards.md → src/utils/cn.ts
 
 ## Import Cycles
 - None detected.
@@ -1423,7 +1423,7 @@ Cohesion: 0.50
 Nodes (3): kMockUserReplies, kPresetAvatars, package:snapan_market/features/profile/models/profile_user_model.dart
 
 ## Knowledge Gaps
-- **3013 isolated node(s):** `SupabaseAuthService`, `_client`, `currentUser`, `isAuthenticated`, `onAuthStateChange` (+3008 more)
+- **3013 isolated node(s):** `activeTab`, `isLoading`, `displayPosts`, `displayReplies`, `mediaItems` (+3008 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 3406 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **85 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -1431,12 +1431,12 @@ Nodes (3): kMockUserReplies, kPresetAvatars, package:snapan_market/features/prof
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `react` connect `react` to `App.tsx`, `HomePage.tsx`, `triggerHaptic`, `kumo.d.ts`, `MarketPostItem`, `EditProfilePage.tsx`, `CreatePostModal.tsx`, `package.json`, `cn`, `useAuth.ts`, `SearchPage.tsx`, `lucide-react`, `CreateOptionBottomSheet.tsx`, `DesignSystemPage.tsx`, `AdminDashboard.tsx`, `PwaLandingPage.tsx`?**
-  _High betweenness centrality (0.018) - this node is a cross-community bridge._
-- **Why does `_` connect `_` to `package:flutter/material.dart`, `package:flutter/services.dart`, `package:snapan-market/core/theme/app_colors.dart`?**
-  _High betweenness centrality (0.006) - this node is a cross-community bridge._
+  _High betweenness centrality (0.010) - this node is a cross-community bridge._
+- **Why does `lucide-react` connect `lucide-react` to `App.tsx`, `react`, `HomePage.tsx`, `triggerHaptic`, `MarketPostItem`, `EditProfilePage.tsx`, `CreatePostModal.tsx`, `package.json`, `cn`, `SearchPage.tsx`, `CreateOptionBottomSheet.tsx`, `DesignSystemPage.tsx`, `AdminDashboard.tsx`, `PwaLandingPage.tsx`?**
+  _High betweenness centrality (0.004) - this node is a cross-community bridge._
 - **Why does `triggerHaptic()` connect `triggerHaptic` to `App.tsx`, `react`, `HomePage.tsx`, `MarketPostItem`, `CreatePostModal.tsx`, `cn`, `SearchPage.tsx`, `DesignSystemPage.tsx`, `PwaLandingPage.tsx`?**
-  _High betweenness centrality (0.005) - this node is a cross-community bridge._
-- **What connects `SupabaseAuthService`, `_client`, `currentUser` to the rest of the system?**
+  _High betweenness centrality (0.003) - this node is a cross-community bridge._
+- **What connects `activeTab`, `isLoading`, `displayPosts` to the rest of the system?**
   _3013 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `search_controller.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.08 - nodes in this community are weakly interconnected._

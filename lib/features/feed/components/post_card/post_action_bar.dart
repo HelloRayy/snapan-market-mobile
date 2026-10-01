@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
+import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
@@ -191,9 +192,7 @@ class PostActionBar extends StatelessWidget {
                     onShareClick!(item);
                   } else {
                     Clipboard.setData(ClipboardData(text: 'https://snapan.id/post/${item.id}'));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Tautan disalin ke papan klip')),
-                    );
+                    SnapsToast.show(context, 'Tautan disalin ke papan klip');
                   }
                 },
                 behavior: HitTestBehavior.opaque,

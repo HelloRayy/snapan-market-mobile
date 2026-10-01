@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/features/feed/components/post_submenu_item.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
@@ -115,14 +116,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
   }
 
   void _showFeedback(String message) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    SnapsToast.show(context, message, hasBottomNav: true);
   }
 
   @override

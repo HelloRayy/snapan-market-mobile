@@ -4,6 +4,7 @@ import 'package:snapan_market/core/components/update_info_bottom_sheet.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/services/app_update_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/features/activity/screens/activity_screen.dart';
 import 'package:snapan_market/features/auth/components/auth_prompt_overlay.dart';
 import 'package:snapan_market/features/auth/screens/auth_screen.dart';
@@ -98,13 +99,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
         if (!mounted) return;
         UpdateInfoBottomSheet.show(context, update: update, currentVersionName: info.version);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Aplikasi Anda sudah versi terbaru.'),
-            behavior: SnackBarBehavior.floating,
-            duration: Duration(seconds: 2),
-          ),
-        );
+        SnapsToast.show(context, 'Aplikasi Anda sudah versi terbaru.', hasBottomNav: true);
       }
     } catch (e) {
       debugPrint('Manual update check error: $e');
@@ -150,9 +145,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           onBack: () => Navigator.pop(context),
           onSuccess: () {
             Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Selamat datang di Snaps SMKN 8.'), behavior: SnackBarBehavior.floating),
-            );
+            SnapsToast.show(context, 'Selamat datang di Snaps SMKN 8.', hasBottomNav: true);
             _feedController.fetchPosts(isRefresh: true);
           },
         ),
@@ -162,12 +155,11 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
   void _handleCreatePost([PostMode mode = PostMode.thread]) {
     if (!SupabaseService.instance.isAuthenticated) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Silakan masuk untuk membuat postingan.'),
-          behavior: SnackBarBehavior.floating,
-          action: SnackBarAction(label: 'Masuk', textColor: Colors.amber, onPressed: _handleOpenAuth),
-        ),
+      SnapsToast.show(
+        context,
+        'Silakan masuk untuk membuat postingan.',
+        hasBottomNav: true,
+        action: SnackBarAction(label: 'Masuk', textColor: Colors.amber, onPressed: _handleOpenAuth),
       );
       return;
     }

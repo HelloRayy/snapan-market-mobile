@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/glass_toolbar_top.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/features/feed/components/buy_bottom_sheet.dart';
 import 'package:snapan_market/features/feed/components/market_post_card.dart';
 import 'package:snapan_market/features/feed/components/media_lightbox_dialog.dart';
@@ -86,13 +87,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       context,
       post: _controller.post,
       onConfirmOrder: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Pesanan COD berhasil dibuat untuk ${_controller.post.seller.name}!'),
-            duration: const Duration(seconds: 3),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: AppColors.primary,
-          ),
+        SnapsToast.show(
+          context,
+          'Pesanan COD berhasil dibuat untuk ${_controller.post.seller.name}!',
+          hasBottomNav: false,
+          backgroundColor: AppColors.primary,
+          duration: const Duration(seconds: 3),
         );
       },
     );
@@ -134,12 +134,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
             onTap: () {
               HapticFeedback.lightImpact();
               Clipboard.setData(ClipboardData(text: 'https://snapan.id/post/${post.id}'));
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Tautan postingan berhasil disalin'),
-                  behavior: SnackBarBehavior.floating,
-                  duration: Duration(seconds: 2),
-                ),
+              SnapsToast.show(
+                context,
+                'Tautan postingan berhasil disalin',
+                hasBottomNav: false,
               );
             },
           ),

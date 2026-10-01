@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/snaps_skeleton.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
+import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/features/feed/components/home_menu_popover.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
@@ -113,12 +114,11 @@ class _SearchScreenState extends State<SearchScreen> {
                 onBack: widget.onBack ?? () => Navigator.of(context).pop(),
                 onMenuTap: () => HomeMenuPopover.toggle(context: context),
                 onOpenAppTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Snapan Market v0.1.0'),
-                      duration: Duration(seconds: 1),
-                      behavior: SnackBarBehavior.floating,
-                    ),
+                  SnapsToast.show(
+                    context,
+                    'Snapan Market v0.1.0',
+                    hasBottomNav: false,
+                    duration: const Duration(seconds: 1),
                   );
                 },
                 hasQuery: hasQuery,

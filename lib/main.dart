@@ -44,6 +44,20 @@ class SnapanMarketApp extends StatelessWidget {
           surface: Colors.white,
         ),
         scaffoldBackgroundColor: Colors.white,
+        snackBarTheme: SnackBarThemeData(
+          behavior: SnackBarBehavior.floating,
+          insetPadding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 96.0),
+          backgroundColor: const Color(0xFF1E293B),
+          contentTextStyle: const TextStyle(
+            color: Colors.white,
+            fontSize: 13.5,
+            fontWeight: FontWeight.w500,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+            side: const BorderSide(color: Color(0x14FFFFFF), width: 0.8),
+          ),
+        ),
       ),
       home: const AppRoot(),
     );

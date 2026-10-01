@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/snaps_skeleton.dart';
@@ -201,7 +202,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                   color: Color(0xFFF1F5F9),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.person_off_rounded, size: 32, color: Color(0xFF94A3B8)),
+                child: const Icon(CupertinoIcons.person_crop_circle_badge_exclam, size: 32, color: Color(0xFF94A3B8)),
               ),
               const SizedBox(height: 16),
               const Text(

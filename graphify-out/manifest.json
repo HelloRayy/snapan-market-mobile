@@ -696,9 +696,9 @@
     "semantic_hash": ""
   },
   "lib/features/profile/components/profile_info_header.dart": {
-    "mtime": 1790865321.2785866,
-    "seen": 1790865330.7473598,
-    "ast_hash": "d5d84a0d77f735264b78f3254e3d0acd",
+    "mtime": 1790865347.661705,
+    "seen": 1790865357.4660263,
+    "ast_hash": "fdc949b10bf6d6384d416f8ec492bda1",
     "semantic_hash": ""
   },
   "lib/features/profile/components/profile_media_grid.dart": {

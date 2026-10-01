@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
@@ -207,7 +208,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           backgroundColor: Colors.white,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded, color: AppColors.ink),
+            icon: const Icon(CupertinoIcons.chevron_back, color: AppColors.ink),
             onPressed: _handleAttemptExit,
           ),
           title: const Text('Edit Profil', style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.w700, color: AppColors.ink)),

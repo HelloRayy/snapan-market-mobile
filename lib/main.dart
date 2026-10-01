@@ -5,6 +5,7 @@ import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/screens/home_feed_screen.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/services/follow_service.dart';
+import 'package:snapan_market/features/splash/screens/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,15 +68,66 @@ class SnapanMarketApp extends StatelessWidget {
   }
 }
 
-class AppRoot extends StatelessWidget {
+class AppRoot extends StatefulWidget {
   const AppRoot({super.key});
 
   @override
+  State<AppRoot> createState() => _AppRootState();
+}
+
+class _AppRootState extends State<AppRoot> with SingleTickerProviderStateMixin {
+  late final AnimationController _fadeController;
+  late final Animation<double> _fadeAnimation;
+  bool _showSplash = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fadeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+    );
+    _fadeAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _fadeController,
+        curve: Curves.easeOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _fadeController.dispose();
+    super.dispose();
+  }
+
+  void _handleSplashCompleted() {
+    _fadeController.forward().then((_) {
+      if (mounted) {
+        setState(() {
+          _showSplash = false;
+        });
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return HomeFeedScreen(
-      onLogout: () async {
-        await SupabaseService.instance.signOut();
-      },
+    return Stack(
+      children: [
+        HomeFeedScreen(
+          onLogout: () async {
+            await SupabaseService.instance.signOut();
+          },
+        ),
+        if (_showSplash)
+          FadeTransition(
+            opacity: _fadeAnimation,
+            child: SplashScreen(
+              onCompleted: _handleSplashCompleted,
+            ),
+          ),
+      ],
     );
   }
 }

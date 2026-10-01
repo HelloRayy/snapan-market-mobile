@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `4e3fedd9`
+- Built from commit: `0b8c3e79`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -376,7 +376,7 @@
 7. `Core Principles` - 20 edges
 8. `cn()` - 19 edges
 9. `compilerOptions` - 19 edges
-10. `framer-motion` - 16 edges
+10. `Core Principles` - 16 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `3. Response Data Model yang Digunakan Komponen FE (`MarketPostItem`):` --references--> `MarketPostItem`  [INFERRED]
@@ -385,10 +385,10 @@
   docs/overview-dan-interaksi-aplikasi.md → src/ui/components/ui/ConfirmActionModal.tsx
 - `4. Halaman Edit Profil (`EditProfilePage.tsx`)` --references--> `ConfirmActionModal()`  [INFERRED]
   docs/overview-dan-interaksi-aplikasi.md → src/ui/components/ui/ConfirmActionModal.tsx
-- `🧪 5. Testing & Verification Plan` --references--> `PostDetailPage()`  [INFERRED]
-  SPEC.md → src/ui/pages/PostDetailPage.tsx
-- `5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT` --references--> `subscribeToOrderNotifications()`  [INFERRED]
-  docs/backend-task-backlog.md → src/services/api/realtimeService.ts
+- `C. Autentikasi & Autorisasi (Auth Guardrails)` --references--> `signOut()`  [INFERRED]
+  .agents/skills/security/SKILL.md → src/services/api/authService.ts
+- `🟢 2. Component Design & React Patterns` --references--> `cn()`  [INFERRED]
+  docs/coding-standards.md → src/utils/cn.ts
 
 ## Import Cycles
 - None detected.
@@ -1482,7 +1482,7 @@ Cohesion: 0.33
 Nodes (5): build, EditProfileBottomBar, isSaving, onDiscard, onSave
 
 ## Knowledge Gaps
-- **3057 isolated node(s):** `message`, `build`, `ChatProductCardShape`, `product`, `location` (+3052 more)
+- **3057 isolated node(s):** `user`, `isOwnProfile`, `onEditInterests`, `onAvatarTap`, `build` (+3052 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 3457 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **85 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -1490,12 +1490,12 @@ Nodes (5): build, EditProfileBottomBar, isSaving, onDiscard, onSave
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `react` connect `react` to `App.tsx`, `HomePage.tsx`, `kumo.d.ts`, `triggerHaptic`, `lucide-react`, `DesignSystemPage.tsx`, `CreatePostModal.tsx`, `package.json`, `cn`, `ProductCard.tsx`, `SearchPage.tsx`, `AdminDashboard.tsx`, `useAuth.ts`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
-- **Why does `lucide-react` connect `lucide-react` to `App.tsx`, `react`, `triggerHaptic`, `HomePage.tsx`, `DesignSystemPage.tsx`, `CreatePostModal.tsx`, `package.json`, `cn`, `ProductCard.tsx`, `SearchPage.tsx`, `AdminDashboard.tsx`, `useAuth.ts`?**
-  _High betweenness centrality (0.004) - this node is a cross-community bridge._
-- **Why does `@supabase/supabase-js` connect `api/supabase.ts` to `test-backend.ts`, `package.json`, `chatService.ts`, `test-e2e-flow.ts`, `useAuth.ts`?**
-  _High betweenness centrality (0.004) - this node is a cross-community bridge._
-- **What connects `message`, `build`, `ChatProductCardShape` to the rest of the system?**
+  _High betweenness centrality (0.013) - this node is a cross-community bridge._
+- **Why does `_` connect `_` to `package:flutter/services.dart`, `package:snapan_market/core/theme/app_colors.dart`, `package:flutter/cupertino.dart`, `package:flutter/material.dart`?**
+  _High betweenness centrality (0.006) - this node is a cross-community bridge._
+- **Why does `AppSlidePageRoute` connect `AppSlidePageRoute` to `app_slide_page_route.dart`, `post_poll_section.dart`, `post_detail_bottom_bar.dart`?**
+  _High betweenness centrality (0.006) - this node is a cross-community bridge._
+- **What connects `user`, `isOwnProfile`, `onEditInterests` to the rest of the system?**
   _3057 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `search_controller.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.08 - nodes in this community are weakly interconnected._

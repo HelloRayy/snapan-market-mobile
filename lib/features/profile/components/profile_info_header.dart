@@ -62,7 +62,7 @@ class ProfileInfoHeader extends StatelessWidget {
                         if (user.isVerified) ...[
                           const SizedBox(width: 4.5),
                           const Icon(
-                            Icons.verified_rounded,
+                            CupertinoIcons.checkmark_seal_fill,
                             size: 19.0,
                             color: AppColors.verifiedBlue,
                           ),
@@ -186,8 +186,8 @@ class ProfileInfoHeader extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(
-                      Icons.star_rounded,
-                      size: 16.0,
+                      CupertinoIcons.star_fill,
+                      size: 15.0,
                       color: Color(0xFFEAB308),
                     ),
                     const SizedBox(width: 2.0),

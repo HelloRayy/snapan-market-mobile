@@ -137,7 +137,6 @@ class SearchResultsView extends StatelessWidget {
           onPostClick: (_) => onNavigateToPostDetail(post),
           onUserClick: (_) => onNavigateToProfile(post.sellerUsername),
           onLikeToggle: onLikeToggle != null ? (_) => onLikeToggle!(post) : null,
-          onBookmarkToggle: onBookmarkToggle != null ? (_) => onBookmarkToggle!(post) : null,
           onRepostToggle: onRepostToggle != null ? (_) => onRepostToggle!(post) : null,
           onVotePoll: onVotePoll,
         );

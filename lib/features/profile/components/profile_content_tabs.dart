@@ -57,7 +57,6 @@ class ProfileContentTabs extends StatelessWidget {
               item: post,
               onPostClick: onPostClick,
               onLikeToggle: onLikeToggle,
-              onBookmarkToggle: onBookmarkToggle,
               onRepostToggle: onRepostToggle,
               onImageClick: onImageClick,
               onVotePoll: onVotePoll,

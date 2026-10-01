@@ -194,7 +194,7 @@ class AppSearchController extends ChangeNotifier {
     }).toList();
     final optimistic = poll.copyWith(
       options: updatedOpts,
-      totalVotes: updatedOpts.fold(0, (s, o) => s + o.votesCount),
+      totalVotes: updatedOpts.fold<int>(0, (int s, o) => s + o.votesCount),
       userVotedOptionIds: optionIds,
     );
     liveMatchingPosts = liveMatchingPosts.map((p) => p.id == post.id ? post.copyWith(poll: optimistic) : p).toList();

@@ -67,7 +67,6 @@ class ProfileController extends ChangeNotifier {
       try {
         final profile = await SupabaseService.instance.getProfile(currentUser.id);
         final livePosts = await SupabaseService.instance.fetchUserPosts(currentUser.id);
-        final livePosts = await SupabaseService.instance.fetchUserPosts(currentUser.id);
         final ownFollowers = await FollowService.instance.loadFollowerCount(currentUser.id);
 
         user = _buildUserModel(
@@ -208,7 +207,7 @@ class ProfileController extends ChangeNotifier {
 
     final optimistic = poll.copyWith(
       options: updatedOpts,
-      totalVotes: updatedOpts.fold(0, (s, o) => s + o.votesCount),
+      totalVotes: updatedOpts.fold<int>(0, (int s, o) => s + o.votesCount),
       userVotedOptionIds: optionIds,
     );
 

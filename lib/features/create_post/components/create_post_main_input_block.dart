@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/create_post/components/create_post_author_line.dart';
@@ -103,14 +104,14 @@ class CreatePostMainInputBlock extends StatelessWidget {
                             width: 36,
                             height: 36,
                             color: const Color(0xFFF1F5F9),
-                            child: const Icon(Icons.person_rounded, size: 20, color: AppColors.muted),
+                            child: const Icon(CupertinoIcons.person_fill, size: 20, color: AppColors.muted),
                           ),
                         )
                       : Container(
                           width: 36,
                           height: 36,
                           color: const Color(0xFFF1F5F9),
-                          child: const Icon(Icons.person_rounded, size: 20, color: AppColors.muted),
+                          child: const Icon(CupertinoIcons.person_fill, size: 20, color: AppColors.muted),
                         ),
                 ),
               ),

@@ -25,7 +25,7 @@ class CreatePostSellingIntentBanner extends StatelessWidget {
       child: Row(
         children: [
           const Icon(
-            Icons.auto_awesome_rounded,
+            CupertinoIcons.sparkles,
             size: 15.0,
             color: AppColors.primary,
           ),
@@ -180,8 +180,8 @@ class CreatePostImagesPreview extends StatelessWidget {
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
-                            Icons.close_rounded,
-                            size: 14.0,
+                            CupertinoIcons.xmark,
+                            size: 12.0,
                             color: Colors.white,
                           ),
                         ),
@@ -203,7 +203,7 @@ class CreatePostImagesPreview extends StatelessWidget {
       height: 185.0,
       color: const Color(0xFFF1F5F9),
       child: const Icon(
-        Icons.broken_image_outlined,
+        CupertinoIcons.photo,
         size: 32.0,
         color: AppColors.muted,
       ),
@@ -253,7 +253,7 @@ class CreatePostGifPreview extends StatelessWidget {
                         width: double.infinity,
                         color: const Color(0xFFF1F5F9),
                         child: const Icon(
-                          Icons.gif_box_outlined,
+                          CupertinoIcons.photo,
                           size: 32.0,
                           color: AppColors.muted,
                         ),
@@ -272,8 +272,8 @@ class CreatePostGifPreview extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
-                          Icons.close_rounded,
-                          size: 14.0,
+                          CupertinoIcons.xmark,
+                          size: 12.0,
                           color: Colors.white,
                         ),
                       ),

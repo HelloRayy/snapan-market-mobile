@@ -96,8 +96,27 @@ class CreatePostMediaToolbar extends StatelessWidget {
 
             // 2. GIF
             _MediaIconButton(
-              icon: Icons.gif_box_outlined,
               tooltip: 'GIF',
+              customWidget: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4.5, vertical: 2.0),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: const Color(0xFF64748B),
+                    width: 1.4,
+                  ),
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+                child: const Text(
+                  'GIF',
+                  style: TextStyle(
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.3,
+                    color: Color(0xFF64748B),
+                    fontFamily: 'SFPro',
+                  ),
+                ),
+              ),
               onTap: onPickGif,
             ),
             const SizedBox(width: 2.0),
@@ -122,7 +141,7 @@ class CreatePostMediaToolbar extends StatelessWidget {
 
             // 5. Topik
             _MediaIconButton(
-              icon: Icons.scatter_plot_rounded,
+              icon: CupertinoIcons.number,
               tooltip: 'Topik',
               onTap: onPickTopic,
             ),
@@ -210,13 +229,15 @@ class _QuickEmojiPillState extends State<_QuickEmojiPill> {
 
 /// Action Icon Button for Media Toolbar (Supports Active Highlight State)
 class _MediaIconButton extends StatefulWidget {
-  final IconData icon;
+  final IconData? icon;
+  final Widget? customWidget;
   final String tooltip;
   final bool isActive;
   final VoidCallback onTap;
 
   const _MediaIconButton({
-    required this.icon,
+    this.icon,
+    this.customWidget,
     required this.tooltip,
     this.isActive = false,
     required this.onTap,
@@ -249,15 +270,18 @@ class _MediaIconButtonState extends State<_MediaIconButton> {
           height: 36.0,
           color: Colors.transparent,
           child: Center(
-            child: Icon(
-              widget.icon,
-              size: 21.5,
-              color: widget.isActive
-                  ? AppColors.primary
-                  : _isPressed
-                      ? AppColors.ink
-                      : const Color(0xFF64748B),
-            ),
+            child: widget.customWidget ??
+                (widget.icon != null
+                    ? Icon(
+                        widget.icon,
+                        size: 21.5,
+                        color: widget.isActive
+                            ? AppColors.primary
+                            : _isPressed
+                                ? AppColors.ink
+                                : const Color(0xFF64748B),
+                      )
+                    : const SizedBox.shrink()),
           ),
         ),
       ),

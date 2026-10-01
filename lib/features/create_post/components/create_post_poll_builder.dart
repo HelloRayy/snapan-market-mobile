@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -99,8 +100,8 @@ class CreatePostPollBuilder extends StatelessWidget {
                   child: const Padding(
                     padding: EdgeInsets.all(4.0),
                     child: Icon(
-                      Icons.close_rounded,
-                      size: 18.0,
+                      CupertinoIcons.xmark,
+                      size: 16.0,
                       color: Color(0xFF94A3B8),
                     ),
                   ),

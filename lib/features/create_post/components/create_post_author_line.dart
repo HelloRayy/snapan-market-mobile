@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/snaps_skeleton.dart';
@@ -42,8 +43,8 @@ class CreatePostAuthorLine extends StatelessWidget {
 
         // Chevron Right Separator
         const Icon(
-          Icons.chevron_right_rounded,
-          size: 16.0,
+          CupertinoIcons.chevron_forward,
+          size: 13.0,
           color: Color(0xFF94A3B8),
         ),
         const SizedBox(width: 2.0),
@@ -62,8 +63,8 @@ class CreatePostAuthorLine extends StatelessWidget {
               if (selectedTopic != null) ...[
                 Icon(
                   selectedTopic!.isOfficial
-                      ? Icons.stars_rounded
-                      : Icons.tag_rounded,
+                      ? CupertinoIcons.star_fill
+                      : CupertinoIcons.number,
                   size: 14.0,
                   color: selectedTopic!.isOfficial
                       ? AppColors.primary
@@ -87,8 +88,8 @@ class CreatePostAuthorLine extends StatelessWidget {
                     onTopicClear();
                   },
                   child: const Icon(
-                    Icons.close_rounded,
-                    size: 14.0,
+                    CupertinoIcons.xmark,
+                    size: 12.0,
                     color: Color(0xFF94A3B8),
                   ),
                 ),

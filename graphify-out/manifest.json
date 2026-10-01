@@ -774,10 +774,10 @@
     "semantic_hash": "b57e8a25834e12e90b8224b5fb2ee1e3"
   },
   "lib/features/search/screens/search_screen.dart": {
-    "mtime": 1790819360.8644285,
-    "seen": 1790840491.4093115,
-    "ast_hash": "6e3730f0b73be64273ed7c6b7670c132",
-    "semantic_hash": "6e3730f0b73be64273ed7c6b7670c132"
+    "mtime": 1790840882.6479027,
+    "seen": 1790841040.3268893,
+    "ast_hash": "cb58dd76db594aa8d5c1b9ef68cbb04d",
+    "semantic_hash": ""
   },
   "lib/main.dart": {
     "mtime": 1790785077.8248463,
@@ -3012,10 +3012,10 @@
     "semantic_hash": "319b27d936b2ecd0afba8e140081b9cb"
   },
   "lib/core/services/supabase/supabase_auth_service.dart": {
-    "mtime": 1790733140.9747934,
-    "seen": 1790734761.6091225,
-    "ast_hash": "e4bd449e7d3bbe819312970fdb275f2d",
-    "semantic_hash": "e4bd449e7d3bbe819312970fdb275f2d"
+    "mtime": 1790840923.7110853,
+    "seen": 1790841040.3266525,
+    "ast_hash": "c27cad8a644abfe127126dacf5ec7cb7",
+    "semantic_hash": ""
   },
   "lib/core/services/supabase/supabase_chat_service.dart": {
     "mtime": 1790733170.8979235,
@@ -3024,10 +3024,10 @@
     "semantic_hash": "aa59f8db7c4deb5721d81a6f052cd4be"
   },
   "lib/core/services/supabase/supabase_feed_service.dart": {
-    "mtime": 1790840357.9215689,
-    "seen": 1790840491.4041855,
-    "ast_hash": "7c824ac547b52417d467f5cc4eec796f",
-    "semantic_hash": "7c824ac547b52417d467f5cc4eec796f"
+    "mtime": 1790841011.5174758,
+    "seen": 1790841040.3266575,
+    "ast_hash": "d7b79fc4c9d1058ae06926620b17e208",
+    "semantic_hash": ""
   },
   "lib/core/services/supabase/supabase_profile_service.dart": {
     "mtime": 1790733152.353843,
@@ -3513,6 +3513,12 @@
     "mtime": 1790521879.1273668,
     "seen": 1790840586.0649292,
     "ast_hash": "e0d1eae4aaad0f848f8875ee797bb3c7",
+    "semantic_hash": ""
+  },
+  "lib/features/search/controllers/search_controller.dart": {
+    "mtime": 1790840867.5588355,
+    "seen": 1790841040.3268867,
+    "ast_hash": "6e861ee2377b19f4f13e2cd6d9f75c12",
     "semantic_hash": ""
   }
 }

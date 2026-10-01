@@ -67,6 +67,13 @@ class PostCardHeader extends StatelessWidget {
           onDeletePost?.call(item);
         }
       },
+      onClosePoll: () {
+        SupabaseService.instance.closePoll(item.id);
+        if (item.poll != null) {
+          final updated = item.copyWith(poll: item.poll!.copyWith(isClosed: true));
+          onPostClick?.call(updated);
+        }
+      },
       onHidePost: () {},
       onMuteAuthor: () {},
       onReport: () {},

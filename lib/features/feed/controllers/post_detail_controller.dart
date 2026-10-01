@@ -120,6 +120,48 @@ class PostDetailController extends ChangeNotifier {
     }
   }
 
+  /// Vote in a poll with optimistic UI update
+  Future<void> votePoll(List<String> optionIds) async {
+    if (post.poll == null) return;
+    final currentPoll = post.poll!;
+    final previousVotes = currentPoll.userVotedOptionIds;
+
+    final updatedOptions = currentPoll.options.map((opt) {
+      int count = opt.votesCount;
+      if (previousVotes.contains(opt.id) && !optionIds.contains(opt.id)) {
+        count = (count - 1).clamp(0, 999999);
+      } else if (!previousVotes.contains(opt.id) && optionIds.contains(opt.id)) {
+        count += 1;
+      }
+      return opt.copyWith(votesCount: count);
+    }).toList();
+
+    int total = updatedOptions.fold(0, (sum, opt) => sum + opt.votesCount);
+
+    final optimisticPoll = currentPoll.copyWith(
+      options: updatedOptions,
+      totalVotes: total,
+      userVotedOptionIds: optionIds,
+    );
+
+    post = post.copyWith(poll: optimisticPoll);
+    notifyListeners();
+
+    try {
+      final serverPoll = await SupabaseService.instance.votePoll(
+        postId: post.id,
+        optionIds: optionIds,
+      );
+      post = post.copyWith(poll: serverPoll);
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error votePoll detail: $e');
+      post = post.copyWith(poll: currentPoll);
+      notifyListeners();
+      rethrow;
+    }
+  }
+
   Future<void> showSubmenu({
     required BuildContext context,
     required ValueChanged<MarketPostModel>? onBookmarkToggle,
@@ -160,6 +202,20 @@ class PostDetailController extends ChangeNotifier {
             await SupabaseService.instance.deletePost(post.id, asAdmin: isAdmin && !isOwner);
           } catch (e) {
             debugPrint('Error deleting post: $e');
+          }
+        }
+      },
+      onClosePoll: () async {
+        if (post.poll != null) {
+          final updated = post.copyWith(poll: post.poll!.copyWith(isClosed: true));
+          post = updated;
+          notifyListeners();
+          try {
+            final serverPoll = await SupabaseService.instance.closePoll(post.id);
+            post = post.copyWith(poll: serverPoll);
+            notifyListeners();
+          } catch (e) {
+            debugPrint('Error closePoll: $e');
           }
         }
       },

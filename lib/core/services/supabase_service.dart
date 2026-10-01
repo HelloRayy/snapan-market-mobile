@@ -7,6 +7,7 @@ import 'package:snapan_market/core/services/supabase/supabase_feed_service.dart'
 import 'package:snapan_market/core/services/supabase/supabase_chat_service.dart';
 import 'package:snapan_market/core/services/supabase/supabase_social_service.dart';
 import 'package:snapan_market/core/services/supabase/supabase_storage_service.dart';
+import 'package:snapan_market/core/services/supabase/supabase_poll_service.dart';
 
 export 'package:snapan_market/core/services/supabase/supabase_auth_service.dart';
 export 'package:snapan_market/core/services/supabase/supabase_profile_service.dart';
@@ -14,6 +15,7 @@ export 'package:snapan_market/core/services/supabase/supabase_feed_service.dart'
 export 'package:snapan_market/core/services/supabase/supabase_chat_service.dart';
 export 'package:snapan_market/core/services/supabase/supabase_social_service.dart';
 export 'package:snapan_market/core/services/supabase/supabase_storage_service.dart';
+export 'package:snapan_market/core/services/supabase/supabase_poll_service.dart';
 
 /// Unified Facade for Supabase services across Snapan Market Mobile.
 /// Decomposed into domain-specific modules under `lib/core/services/supabase/`.
@@ -30,6 +32,7 @@ class SupabaseService {
   late final SupabaseChatService chat = SupabaseChatService(client);
   late final SupabaseSocialService social = SupabaseSocialService(client);
   late final SupabaseStorageService storage = SupabaseStorageService(client);
+  late final SupabasePollService poll = SupabasePollService(client);
 
   // --- AUTH DELEGATIONS ---
   User? get currentUser => auth.currentUser;
@@ -109,6 +112,7 @@ class SupabaseService {
     String? locationTag,
     String? topicTag,
     List<String> images = const [],
+    Map<String, dynamic>? poll,
   }) =>
       feed.createPost(
         postType: postType,
@@ -122,7 +126,17 @@ class SupabaseService {
         locationTag: locationTag,
         topicTag: topicTag,
         images: images,
+        poll: poll,
       );
+
+  // --- POLL DELEGATIONS ---
+  Future<PostPollModel> votePoll({
+    required String postId,
+    required List<String> optionIds,
+  }) =>
+      poll.votePoll(postId: postId, optionIds: optionIds);
+
+  Future<PostPollModel> closePoll(String postId) => poll.closePoll(postId);
 
   Future<void> deletePost(String postId, {bool asAdmin = false}) =>
       feed.deletePost(postId, asAdmin: asAdmin);

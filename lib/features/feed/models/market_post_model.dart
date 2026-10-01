@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:snapan_market/features/feed/models/post_poll_model.dart';
+export 'package:snapan_market/features/feed/models/post_poll_model.dart';
 export 'package:snapan_market/features/feed/models/mock_market_posts.dart';
 
 typedef MarketPost = MarketPostModel;
@@ -333,6 +335,7 @@ class MarketPostModel {
   final String timestamp;
   final List<ThreadChainItemModel> threadChain;
   final List<PostCommentModel> comments;
+  final PostPollModel? poll;
 
   const MarketPostModel({
     required this.id,
@@ -359,6 +362,7 @@ class MarketPostModel {
     required this.timestamp,
     this.threadChain = const [],
     this.comments = const [],
+    this.poll,
   });
 
   /// Normalizes legacy or variant location labels to the standard "SMKN 8 Semarang".
@@ -432,6 +436,19 @@ class MarketPostModel {
           .toList();
     }
 
+    PostPollModel? parsedPoll;
+    if (json['poll'] is Map) {
+      final rawUserVotes = json['user_voted_options'] ?? json['userVotedOptions'];
+      List<String> userVotes = [];
+      if (rawUserVotes is List) {
+        userVotes = rawUserVotes.map((e) => e.toString()).toList();
+      }
+      parsedPoll = PostPollModel.fromJson(
+        Map<String, dynamic>.from(json['poll'] as Map),
+        userVotedOptionIds: userVotes,
+      );
+    }
+
     return MarketPostModel(
       id: json['id']?.toString() ?? '',
       postType: json['post_type']?.toString() ?? json['postType']?.toString() ?? 'thread',
@@ -461,6 +478,7 @@ class MarketPostModel {
       timestamp: _formatRelativeTimestamp(json['created_at'] ?? json['timestamp']),
       threadChain: parsedChain,
       comments: parsedComments,
+      poll: parsedPoll,
     );
   }
 
@@ -498,6 +516,7 @@ class MarketPostModel {
     String? timestamp,
     List<ThreadChainItemModel>? threadChain,
     List<PostCommentModel>? comments,
+    PostPollModel? poll,
   }) {
     return MarketPostModel(
       id: id ?? this.id,
@@ -524,6 +543,7 @@ class MarketPostModel {
       timestamp: timestamp ?? this.timestamp,
       threadChain: threadChain ?? this.threadChain,
       comments: comments ?? this.comments,
+      poll: poll ?? this.poll,
     );
   }
 }

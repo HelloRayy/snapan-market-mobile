@@ -199,9 +199,13 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       ),
     );
 
-    if (result is Map && result['deleted'] == true) {
-      final postId = result['postId'] as String?;
-      if (postId != null) _feedController.removePostById(postId);
+    if (result is Map) {
+      if (result['deleted'] == true) {
+        final postId = result['postId'] as String?;
+        if (postId != null) _feedController.removePostById(postId);
+      } else if (result['updatedPost'] is MarketPostModel) {
+        _feedController.updatePost(result['updatedPost'] as MarketPostModel);
+      }
     }
   }
 
@@ -276,6 +280,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
               onUserClick: (u) => Navigator.push(context, AppSlidePageRoute(builder: (_) => ProfileScreen(username: u, onBack: () => Navigator.pop(context)))),
               onImageClick: (item, idx) => MediaLightboxDialog.show(context: context, images: item.images, initialIndex: idx, post: item, onLikeToggle: _feedController.toggleLike, onRepostToggle: _feedController.toggleRepost, onPostClick: _handlePostClick),
               onDeletePost: _feedController.deletePost,
+              onVotePoll: (post, optionIds) => _feedController.votePoll(post.id, optionIds),
               onLogout: widget.onLogout,
             ),
             messagesTab: const DirectMessagesScreen(showBackButton: false, showAppBar: false),

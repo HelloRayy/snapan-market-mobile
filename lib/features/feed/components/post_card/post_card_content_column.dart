@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:snapan_market/features/feed/components/post_card/post_card_header.dart';
 import 'package:snapan_market/features/feed/components/post_card/post_caption_text.dart';
 import 'package:snapan_market/features/feed/components/post_card/post_media_section.dart';
+import 'package:snapan_market/features/feed/components/post_card/post_poll_section.dart';
 import 'package:snapan_market/features/feed/components/post_card/post_action_bar.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
@@ -16,6 +17,7 @@ class PostCardContentColumn extends StatelessWidget {
   final ValueChanged<MarketPostModel>? onPostClick;
   final ValueChanged<MarketPostModel>? onDeletePost;
   final void Function(MarketPostModel item, int imageIndex)? onImageClick;
+  final void Function(MarketPostModel item, List<String> optionIds)? onVotePoll;
   final bool isLiked;
   final int likesCount;
   final bool isReposted;
@@ -38,6 +40,7 @@ class PostCardContentColumn extends StatelessWidget {
     this.onPostClick,
     this.onDeletePost,
     this.onImageClick,
+    this.onVotePoll,
     required this.isLiked,
     required this.likesCount,
     required this.isReposted,
@@ -87,6 +90,13 @@ class PostCardContentColumn extends StatelessWidget {
                 onDeletePost: onDeletePost,
               ),
             ),
+          ),
+        ],
+        if (item.poll != null) ...[
+          const SizedBox(height: 8.0),
+          PostPollSection(
+            post: item,
+            onVote: onVotePoll,
           ),
         ],
         if (item.images.isNotEmpty) ...[

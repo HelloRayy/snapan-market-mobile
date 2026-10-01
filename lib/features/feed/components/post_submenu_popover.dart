@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/features/feed/components/post_submenu_item.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// 1:1 Popover Contextual Menu for Post Three-Dot ('...') Trigger
@@ -15,6 +16,7 @@ class PostSubmenuPopover extends StatefulWidget {
   final VoidCallback? onMuteAuthor;
   final VoidCallback? onReport;
   final VoidCallback? onDeletePost;
+  final VoidCallback? onClosePoll;
 
   const PostSubmenuPopover({
     super.key,
@@ -27,6 +29,7 @@ class PostSubmenuPopover extends StatefulWidget {
     this.onMuteAuthor,
     this.onReport,
     this.onDeletePost,
+    this.onClosePoll,
   });
 
   /// Shows the popover anchored to the tap position with transparent background
@@ -41,6 +44,7 @@ class PostSubmenuPopover extends StatefulWidget {
     VoidCallback? onMuteAuthor,
     VoidCallback? onReport,
     VoidCallback? onDeletePost,
+    VoidCallback? onClosePoll,
     Offset? position,
   }) {
     HapticFeedback.lightImpact();
@@ -72,6 +76,7 @@ class PostSubmenuPopover extends StatefulWidget {
                   onMuteAuthor: onMuteAuthor,
                   onReport: onReport,
                   onDeletePost: onDeletePost,
+                  onClosePoll: onClosePoll,
                 ),
               ),
             ),
@@ -154,7 +159,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 1. Simpan ke Markah / Hapus
-          _PopoverItem(
+          PostSubmenuItem(
             icon: _isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
             iconColor: _isSaved ? AppColors.primary : const Color(0xFF334155),
             label: _isSaved ? 'Hapus Markah' : 'Simpan Markah',
@@ -167,7 +172,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
           ),
 
           // 2. Salin Tautan
-          _PopoverItem(
+          PostSubmenuItem(
             icon: Icons.link_rounded,
             label: 'Salin Tautan',
             onTap: () {
@@ -183,8 +188,20 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
           ),
 
           if (widget.isOwner) ...[
+            if (widget.post.poll != null && !widget.post.poll!.isExpired) ...[
+              PostSubmenuItem(
+                icon: Icons.timer_off_outlined,
+                iconColor: const Color(0xFFD97706),
+                textColor: const Color(0xFFD97706),
+                label: 'Tutup Polling',
+                onTap: () {
+                  Navigator.pop(context);
+                  widget.onClosePoll?.call();
+                },
+              ),
+            ],
             // 3. Hapus Postingan (Milik Sendiri)
-            _PopoverItem(
+            PostSubmenuItem(
               icon: Icons.delete_outline_rounded,
               iconColor: const Color(0xFFEF4444),
               textColor: const Color(0xFFEF4444),
@@ -196,7 +213,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
             ),
           ] else ...[
             // 3. Senyapkan User
-            _PopoverItem(
+            PostSubmenuItem(
               icon: Icons.notifications_off_outlined,
               label: 'Senyapkan $authorHandle',
               onTap: () {
@@ -207,7 +224,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
             ),
 
             // 4. Sembunyikan Postingan
-            _PopoverItem(
+            PostSubmenuItem(
               icon: Icons.visibility_off_outlined,
               label: 'Sembunyikan Post',
               onTap: () {
@@ -222,7 +239,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
                 padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
                 child: Divider(height: 1.0, thickness: 0.6, color: Color(0xFFF1F5F9)),
               ),
-              _PopoverItem(
+              PostSubmenuItem(
                 icon: Icons.delete_outline_rounded,
                 iconColor: const Color(0xFFEF4444),
                 textColor: const Color(0xFFEF4444),
@@ -240,7 +257,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
             ),
 
             // 5. Laporkan Postingan (Destructive Red)
-            _PopoverItem(
+            PostSubmenuItem(
               icon: Icons.flag_outlined,
               iconColor: const Color(0xFFEF4444),
               textColor: const Color(0xFFEF4444),
@@ -253,74 +270,6 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
             ),
           ],
         ],
-      ),
-    );
-  }
-}
-
-class _PopoverItem extends StatefulWidget {
-  final IconData icon;
-  final String label;
-  final Color? iconColor;
-  final Color? textColor;
-  final VoidCallback onTap;
-
-  const _PopoverItem({
-    required this.icon,
-    required this.label,
-    this.iconColor,
-    this.textColor,
-    required this.onTap,
-  });
-
-  @override
-  State<_PopoverItem> createState() => _PopoverItemState();
-}
-
-class _PopoverItemState extends State<_PopoverItem> {
-  bool _isPressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _isPressed = true),
-      onTapUp: (_) => setState(() => _isPressed = false),
-      onTapCancel: () => setState(() => _isPressed = false),
-      onTap: () {
-        HapticFeedback.selectionClick();
-        widget.onTap();
-      },
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 100),
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 9.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
-          color: _isPressed ? const Color(0xFFF8FAFC) : Colors.transparent,
-        ),
-        child: Row(
-          children: [
-            Icon(
-              widget.icon,
-              size: 18.0,
-              color: widget.iconColor ?? const Color(0xFF334155),
-            ),
-            const SizedBox(width: 10.0),
-            Expanded(
-              child: Text(
-                widget.label,
-                style: TextStyle(
-                  fontSize: 14.0,
-                  fontWeight: FontWeight.w500,
-                  color: widget.textColor ?? const Color(0xFF0F172A),
-                  letterSpacing: -0.15,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

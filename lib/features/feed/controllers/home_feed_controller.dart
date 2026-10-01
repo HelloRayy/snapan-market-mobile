@@ -79,11 +79,93 @@ class HomeFeedController extends ChangeNotifier {
         locationTag: data['locationTag'] as String?,
         topicTag: data['topicTag'] as String?,
         images: (data['images'] as List<dynamic>?)?.cast<String>() ?? [],
+        poll: data['poll'] as Map<String, dynamic>?,
       );
       posts.insert(0, liveCreated);
       notifyListeners();
     } catch (e) {
       debugPrint('Error creating post: $e');
+    }
+  }
+
+  /// Vote in a poll with instantaneous optimistic UI update
+  Future<void> votePoll(String postId, List<String> optionIds) async {
+    final idx = posts.indexWhere((p) => p.id == postId);
+    if (idx == -1) return;
+    final currentPost = posts[idx];
+    if (currentPost.poll == null) return;
+
+    final currentPoll = currentPost.poll!;
+    final previousVotes = currentPoll.userVotedOptionIds;
+
+    final updatedOptions = currentPoll.options.map((opt) {
+      int count = opt.votesCount;
+      if (previousVotes.contains(opt.id) && !optionIds.contains(opt.id)) {
+        count = (count - 1).clamp(0, 999999);
+      } else if (!previousVotes.contains(opt.id) && optionIds.contains(opt.id)) {
+        count += 1;
+      }
+      return opt.copyWith(votesCount: count);
+    }).toList();
+
+    int total = updatedOptions.fold(0, (sum, opt) => sum + opt.votesCount);
+
+    final optimisticPoll = currentPoll.copyWith(
+      options: updatedOptions,
+      totalVotes: total,
+      userVotedOptionIds: optionIds,
+    );
+
+    posts[idx] = currentPost.copyWith(poll: optimisticPoll);
+    notifyListeners();
+
+    try {
+      final serverPoll = await SupabaseService.instance.votePoll(
+        postId: postId,
+        optionIds: optionIds,
+      );
+      final currentIdx = posts.indexWhere((p) => p.id == postId);
+      if (currentIdx != -1) {
+        posts[currentIdx] = posts[currentIdx].copyWith(poll: serverPoll);
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error votePoll: $e');
+      final currentIdx = posts.indexWhere((p) => p.id == postId);
+      if (currentIdx != -1) {
+        posts[currentIdx] = currentPost;
+        notifyListeners();
+      }
+      rethrow;
+    }
+  }
+
+  /// Close poll prematurely
+  Future<void> closePoll(String postId) async {
+    final idx = posts.indexWhere((p) => p.id == postId);
+    if (idx == -1) return;
+    final currentPost = posts[idx];
+    if (currentPost.poll == null) return;
+
+    final optimisticPoll = currentPost.poll!.copyWith(isClosed: true);
+    posts[idx] = currentPost.copyWith(poll: optimisticPoll);
+    notifyListeners();
+
+    try {
+      final serverPoll = await SupabaseService.instance.closePoll(postId);
+      final currentIdx = posts.indexWhere((p) => p.id == postId);
+      if (currentIdx != -1) {
+        posts[currentIdx] = posts[currentIdx].copyWith(poll: serverPoll);
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error closePoll: $e');
+      final currentIdx = posts.indexWhere((p) => p.id == postId);
+      if (currentIdx != -1) {
+        posts[currentIdx] = currentPost;
+        notifyListeners();
+      }
+      rethrow;
     }
   }
 

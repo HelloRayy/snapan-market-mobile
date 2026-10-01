@@ -113,12 +113,18 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   Widget build(BuildContext context) {
     final post = _controller.post;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: GlassToolbarTop(
-        leadingIcon: Icons.arrow_back_rounded,
-        leadingTooltip: 'Kembali',
-        onLeadingTap: () => Navigator.pop(context),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        Navigator.pop(context, {'updatedPost': post});
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: GlassToolbarTop(
+          leadingIcon: Icons.arrow_back_rounded,
+          leadingTooltip: 'Kembali',
+          onLeadingTap: () => Navigator.pop(context, {'updatedPost': post}),
         title: 'Postingan',
         showVerifiedBadge: true,
         trailingActions: [
@@ -179,6 +185,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       onDeletePost: widget.onDeletePost,
                     ),
                     onImageClick: (item, idx) => _handleImageClick(item.images, idx),
+                    onVotePoll: (item, optionIds) => _controller.votePoll(optionIds),
                   ),
                   PostDetailCommentsHeader(
                     isProductMode: _isProductMode,
@@ -215,6 +222,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

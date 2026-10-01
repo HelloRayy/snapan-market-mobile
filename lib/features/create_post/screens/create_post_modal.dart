@@ -83,6 +83,9 @@ class _CreatePostModalState extends State<CreatePostModal> {
   bool _showPoll = false;
   bool _showEmojiBar = false;
   final List<TextEditingController> _pollOptionControllers = [TextEditingController(), TextEditingController(), TextEditingController()];
+  Duration _pollDeadlineDuration = const Duration(hours: 24);
+  bool _pollAllowChangeVote = true;
+  bool _pollIsMultipleChoice = false;
   String _audiencePrivacy = 'Semua orang dapat membalas';
   bool _isSubmitting = false;
   bool _showSellingIntentBanner = false;
@@ -138,7 +141,15 @@ class _CreatePostModalState extends State<CreatePostModal> {
     if (picked != null && mounted) setState(() => _images.addAll(picked));
   }
 
-  bool get _canSubmit => _captionController.text.trim().isNotEmpty || _images.isNotEmpty || _productTitleController.text.trim().isNotEmpty;
+  bool get _canSubmit {
+    final hasPoll = _showPoll &&
+        _postMode == PostMode.thread &&
+        _pollOptionControllers.where((c) => c.text.trim().isNotEmpty).length >= 2;
+    return _captionController.text.trim().isNotEmpty ||
+        _images.isNotEmpty ||
+        _productTitleController.text.trim().isNotEmpty ||
+        hasPoll;
+  }
 
   Future<void> _handleSubmit() async {
     if (!_canSubmit) return;
@@ -147,6 +158,31 @@ class _CreatePostModalState extends State<CreatePostModal> {
 
     final uploadedImages = await CreatePostImageHelper.uploadAllImages(_images);
     final isProduct = _postMode == PostMode.product;
+
+    Map<String, dynamic>? pollData;
+    if (_showPoll && !isProduct) {
+      final validOptions = _pollOptionControllers
+          .map((c) => c.text.trim())
+          .where((t) => t.isNotEmpty)
+          .toList();
+
+      if (validOptions.length >= 2) {
+        pollData = {
+          'id': 'poll-${DateTime.now().millisecondsSinceEpoch}',
+          'options': validOptions.asMap().entries.map((e) => {
+            'id': 'opt-${e.key + 1}',
+            'text': e.value,
+            'votes_count': 0,
+          }).toList(),
+          'total_votes': 0,
+          'is_multiple_choice': _pollIsMultipleChoice,
+          'allow_change_vote': _pollAllowChangeVote,
+          'expires_at': DateTime.now().add(_pollDeadlineDuration).toUtc().toIso8601String(),
+          'is_closed': false,
+        };
+      }
+    }
+
     final payload = {
       'postType': isProduct ? 'product' : 'thread',
       'caption': _captionController.text.trim(),
@@ -154,9 +190,11 @@ class _CreatePostModalState extends State<CreatePostModal> {
       'price': isProduct ? int.tryParse(_priceController.text.replaceAll(RegExp(r'\D'), '')) ?? 0 : null,
       'stock': isProduct ? int.tryParse(_stockController.text.trim()) ?? 1 : null,
       'description': isProduct ? _descController.text.trim() : null,
-      'images': uploadedImages, 'locationTag': _selectedLocation?.name ?? 'SMKN 8 Semarang',
+      'images': uploadedImages,
+      'locationTag': _selectedLocation?.name ?? 'SMKN 8 Semarang',
       'topicTag': _selectedTopic?.name,
       'subThreads': _subThreads.map((s) => {'caption': s.caption, 'images': s.images}).toList(),
+      'poll': pollData,
       'createdAt': DateTime.now().toIso8601String(),
     };
 
@@ -241,6 +279,12 @@ class _CreatePostModalState extends State<CreatePostModal> {
                               _showPoll = false;
                               for (var c in _pollOptionControllers) { c.clear(); }
                             }),
+                            pollDeadlineDuration: _pollDeadlineDuration,
+                            onPollDurationChanged: (d) => setState(() => _pollDeadlineDuration = d),
+                            pollAllowChangeVote: _pollAllowChangeVote,
+                            onPollAllowChangeVoteChanged: (v) => setState(() => _pollAllowChangeVote = v),
+                            pollIsMultipleChoice: _pollIsMultipleChoice,
+                            onPollMultipleChoiceChanged: (v) => setState(() => _pollIsMultipleChoice = v),
                           ),
                           if (_postMode == PostMode.product) ...[
                             const SizedBox(height: 8.0),

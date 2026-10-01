@@ -3300,10 +3300,10 @@
     "semantic_hash": ""
   },
   "lib/features/search/components/search_results_view.dart": {
-    "mtime": 1790780863.997626,
-    "seen": 1790840491.4092681,
-    "ast_hash": "6fd749c91cc90c300e98d69f00dc8058",
-    "semantic_hash": "6fd749c91cc90c300e98d69f00dc8058"
+    "mtime": 1790840661.1769176,
+    "seen": 1790840664.1861846,
+    "ast_hash": "d5bbbfc68a856d5172f5f7cf6c876b57",
+    "semantic_hash": ""
   },
   "lib/features/search/components/search_suggested_accounts_view.dart": {
     "mtime": 1790780863.997804,

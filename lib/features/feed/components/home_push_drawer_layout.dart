@@ -56,9 +56,9 @@ class HomePushDrawerLayout extends StatefulWidget {
     required this.drawer,
     required this.content,
     this.drawerWidth = 280.0,
-    this.pushDistance = 260.0,
-    this.scale = 0.90,
-    this.borderRadius = 20.0,
+    this.pushDistance = 280.0,
+    this.scale = 1.0,
+    this.borderRadius = 0.0,
   });
 
   @override
@@ -143,44 +143,55 @@ class _HomePushDrawerLayoutState extends State<HomePushDrawerLayout>
             color: themeBg,
             child: Stack(
               children: [
-                // 1. Left Drawer Content with subtle parallax slide
+                // 1. Left Drawer Content with slide and fade-in (0.0 -> 1.0)
                 Positioned(
                   left: 0,
                   top: 0,
                   bottom: 0,
                   width: widget.drawerWidth,
                   child: Transform.translate(
-                    offset: Offset(-36.0 * (1.0 - progress), 0.0),
+                    offset: Offset(-30.0 * (1.0 - progress), 0.0),
                     child: Opacity(
-                      opacity: (0.35 + 0.65 * progress).clamp(0.0, 1.0),
+                      opacity: progress.clamp(0.0, 1.0),
                       child: widget.drawer,
                     ),
                   ),
                 ),
 
-                // 2. Main Content Card (Translated, Scaled, Rounded with Elevation Shadow)
+                // 2. Main Content Card (Pure Translation, Scale 1.0, Gray Dimming)
                 Transform(
                   alignment: Alignment.centerLeft,
                   transform: Matrix4.identity()
                     ..translate(widget.pushDistance * progress, 0.0)
-                    ..scale(1.0 - ((1.0 - widget.scale) * progress)),
+                    ..scale(widget.scale == 1.0 ? 1.0 : 1.0 - ((1.0 - widget.scale) * progress)),
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(widget.borderRadius * progress),
+                      borderRadius: widget.borderRadius > 0 ? BorderRadius.circular(widget.borderRadius * progress) : null,
                       boxShadow: isPartiallyOpen
                           ? [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.12 * progress),
-                                blurRadius: 28.0,
+                                color: Colors.black.withValues(alpha: 0.18 * progress),
+                                blurRadius: 24.0,
                                 spreadRadius: 1.0,
-                                offset: const Offset(-6.0, 4.0),
+                                offset: const Offset(-8.0, 0.0),
                               ),
                             ]
                           : null,
                     ),
-                    clipBehavior: isPartiallyOpen ? Clip.antiAlias : Clip.none,
-                    child: widget.content,
+                    clipBehavior: widget.borderRadius > 0 ? Clip.antiAlias : Clip.none,
+                    child: Stack(
+                      children: [
+                        widget.content,
+                        // 2a. Gray dimming overlay over shifted feed screen
+                        if (isPartiallyOpen)
+                          Positioned.fill(
+                            child: ColoredBox(
+                              color: const Color(0xFF0F172A).withValues(alpha: 0.25 * progress),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
 

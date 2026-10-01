@@ -20,7 +20,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _eraserAnim;
-  late final Animation<double> _subtitleFadeAnim;
 
   // Timeline durations (SNAPS-1 spec)
   static const int _holdMs = 750;
@@ -45,13 +44,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       ),
     );
 
-    _subtitleFadeAnim = Tween<double>(begin: 1.0, end: 0.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Interval(wipeStart, 1.0, curve: Curves.easeOut),
-      ),
-    );
-
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         widget.onCompleted();
@@ -71,48 +63,16 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          // Centered Logo with Reverse Diagonal Eraser
-          Center(
-            child: AnimatedBuilder(
-              animation: _eraserAnim,
-              builder: (context, _) {
-                return EraserLogo(
-                  progress: _eraserAnim.value,
-                  height: 48.0,
-                );
-              },
-            ),
-          ),
-
-          // Bottom Branding Subtitle
-          Positioned(
-            bottom: 40.0 + MediaQuery.paddingOf(context).bottom,
-            left: 0,
-            right: 0,
-            child: AnimatedBuilder(
-              animation: _subtitleFadeAnim,
-              builder: (context, _) {
-                return Opacity(
-                  opacity: _subtitleFadeAnim.value,
-                  child: const Center(
-                    child: Text(
-                      'SMKN 8 SEMARANG',
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.8,
-                        color: Color(0xFF94A3B8),
-                        fontFamily: 'SFPro',
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
+      body: Center(
+        child: AnimatedBuilder(
+          animation: _eraserAnim,
+          builder: (context, _) {
+            return EraserLogo(
+              progress: _eraserAnim.value,
+              height: 48.0,
+            );
+          },
+        ),
       ),
     );
   }

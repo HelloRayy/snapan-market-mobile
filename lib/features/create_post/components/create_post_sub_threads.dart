@@ -70,7 +70,7 @@ class CreatePostSubThreads extends StatelessWidget {
                               height: 24.0,
                               color: const Color(0xFFF1F5F9),
                               child: const Icon(
-                                Icons.person_rounded,
+                                CupertinoIcons.person_fill,
                                 size: 14.0,
                                 color: AppColors.muted,
                               ),
@@ -103,8 +103,8 @@ class CreatePostSubThreads extends StatelessWidget {
                     ),
                     IconButton(
                       icon: const Icon(
-                        Icons.close_rounded,
-                        size: 16.0,
+                        CupertinoIcons.xmark,
+                        size: 14.0,
                         color: AppColors.muted,
                       ),
                       onPressed: () => onRemoveSubThread(i),

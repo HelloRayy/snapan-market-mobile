@@ -42,7 +42,8 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   final GlobalKey<ProfileScreenState> _profileKey = GlobalKey<ProfileScreenState>();
   final ScrollController _scrollController = ScrollController();
   final HomeFeedController _feedController = HomeFeedController();
-  final HomePushDrawerController _drawerController = HomePushDrawerController();
+  HomePushDrawerController? _drawerController;
+  HomePushDrawerController get _effectiveDrawerController => _drawerController ??= HomePushDrawerController();
 
   AnimationController? _fabAnimationController;
   Animation<double>? _fabAnimation;
@@ -91,7 +92,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   }
 
   Future<void> _handleManualCheckUpdate() async {
-    _drawerController.close();
+    _drawerController?.close();
     try {
       final update = await AppUpdateService.instance.checkForUpdate(isManual: true);
       if (!mounted) return;
@@ -109,7 +110,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
   @override
   void dispose() {
-    _drawerController.dispose();
+    _drawerController?.dispose();
     HomeMenuPopover.dismiss();
     _feedController.dispose();
     _fabAnimationController?.dispose();
@@ -139,7 +140,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   }
 
   void _handleOpenAuth() {
-    _drawerController.close();
+    _drawerController?.close();
     HomeMenuPopover.dismiss();
     Navigator.push(
       context,
@@ -202,7 +203,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
         },
         onMenuTap: () {
           HapticFeedback.lightImpact();
-          _drawerController.open();
+          _effectiveDrawerController.open();
         },
         onBackTap: _currentNavTab != HomeNavTab.home ? () => setState(() => _currentNavTab = HomeNavTab.home) : null,
         onTitleTap: () => _currentNavTab == HomeNavTab.home ? _scrollToTop() : null,
@@ -237,10 +238,10 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
             ),
             messagesTab: const DirectMessagesScreen(showBackButton: false, showAppBar: false),
             activityTab: const ActivityScreen(showAppBar: false),
-            profileTab: ProfileScreen(key: _profileKey, showAppBar: false, onOpenMenu: _drawerController.open),
+            profileTab: ProfileScreen(key: _profileKey, showAppBar: false, onOpenMenu: () => _effectiveDrawerController.open()),
           ),
           HomeDockOverlay(
-            drawerController: _drawerController,
+            drawerController: _effectiveDrawerController,
             currentNavTab: _currentNavTab,
             fabAnimationController: _fabAnimationController!,
             fabAnimation: _fabAnimation,
@@ -259,13 +260,13 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     );
 
     final pushLayout = HomePushDrawerLayout(
-      controller: _drawerController,
+      controller: _effectiveDrawerController,
       drawer: HomeNavDrawer(
         userProfile: _feedController.userProfile,
         onAppearanceTap: () {},
         onSettingsTap: () {},
         onLikedTap: () {
-          _drawerController.close();
+          _effectiveDrawerController.close();
           setState(() => _currentNavTab = HomeNavTab.activity);
         },
         onArchiveTap: () {},
@@ -273,7 +274,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
         onCheckUpdateTap: _handleManualCheckUpdate,
         onAuthTap: _handleOpenAuth,
         onLogout: widget.onLogout,
-        onClose: _drawerController.close,
+        onClose: () => _effectiveDrawerController.close(),
       ),
       content: scaffold,
     );

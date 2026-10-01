@@ -42,7 +42,7 @@ class HomePushDrawerController extends ChangeNotifier {
 /// Smoothly translates and scales the main content card to the right (~260dp, scale 0.90, radius 20px),
 /// providing a modern iOS / Threads style push drawer experience with hybrid gestures.
 class HomePushDrawerLayout extends StatefulWidget {
-  final HomePushDrawerController controller;
+  final HomePushDrawerController? controller;
   final Widget drawer;
   final Widget content;
   final double drawerWidth;
@@ -52,7 +52,7 @@ class HomePushDrawerLayout extends StatefulWidget {
 
   const HomePushDrawerLayout({
     super.key,
-    required this.controller,
+    this.controller,
     required this.drawer,
     required this.content,
     this.drawerWidth = 280.0,
@@ -69,6 +69,8 @@ class _HomePushDrawerLayoutState extends State<HomePushDrawerLayout>
     with SingleTickerProviderStateMixin {
   late final AnimationController _animController;
   late final Animation<double> _curvedAnimation;
+  HomePushDrawerController? _internalController;
+  HomePushDrawerController get _effectiveController => widget.controller ?? (_internalController ??= HomePushDrawerController());
 
   @override
   void initState() {
@@ -82,12 +84,22 @@ class _HomePushDrawerLayoutState extends State<HomePushDrawerLayout>
       curve: Curves.easeOutCubic,
       reverseCurve: Curves.easeInCubic,
     );
-    widget.controller.attach(_animController);
+    _effectiveController.attach(_animController);
+  }
+
+  @override
+  void didUpdateWidget(HomePushDrawerLayout oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller?.detach();
+      _effectiveController.attach(_animController);
+    }
   }
 
   @override
   void dispose() {
-    widget.controller.detach();
+    _effectiveController.detach();
+    _internalController?.dispose();
     _animController.dispose();
     super.dispose();
   }
@@ -100,13 +112,13 @@ class _HomePushDrawerLayoutState extends State<HomePushDrawerLayout>
   void _handleDragEnd(DragEndDetails details) {
     final velocity = details.primaryVelocity ?? 0.0;
     if (velocity < -300) {
-      widget.controller.close();
+      _effectiveController.close();
     } else if (velocity > 300) {
-      widget.controller.open();
+      _effectiveController.open();
     } else if (_animController.value > 0.45) {
-      widget.controller.open();
+      _effectiveController.open();
     } else {
-      widget.controller.close();
+      _effectiveController.close();
     }
   }
 
@@ -121,10 +133,10 @@ class _HomePushDrawerLayoutState extends State<HomePushDrawerLayout>
         final bool isPartiallyOpen = progress > 0.005;
 
         return PopScope(
-          canPop: !widget.controller.isOpen,
+          canPop: !_effectiveController.isOpen,
           onPopInvokedWithResult: (didPop, _) {
-            if (!didPop && widget.controller.isOpen) {
-              widget.controller.close();
+            if (!didPop && _effectiveController.isOpen) {
+              _effectiveController.close();
             }
           },
           child: Container(
@@ -181,7 +193,7 @@ class _HomePushDrawerLayoutState extends State<HomePushDrawerLayout>
                     bottom: 0,
                     child: GestureDetector(
                       behavior: HitTestBehavior.opaque,
-                      onTap: widget.controller.close,
+                      onTap: _effectiveController.close,
                       onHorizontalDragUpdate: _handleDragUpdate,
                       onHorizontalDragEnd: _handleDragEnd,
                       child: const ColoredBox(color: Colors.transparent),

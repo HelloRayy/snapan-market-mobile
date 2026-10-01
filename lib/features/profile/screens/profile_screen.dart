@@ -88,15 +88,19 @@ class ProfileScreenState extends State<ProfileScreen> {
         builder: (_) => PostDetailScreen(
           post: item,
           onLikeToggle: _controller.toggleLike,
-          onBookmarkToggle: (_) {},
+          onBookmarkToggle: _controller.toggleBookmark,
           onRepostToggle: _controller.toggleRepost,
           onDeletePost: (deleted) => _controller.removePost(deleted.id),
         ),
       ),
     );
-    if (result is Map && result['deleted'] == true) {
-      final postId = result['postId'] as String?;
-      if (postId != null) _controller.removePost(postId);
+    if (result is Map) {
+      if (result['deleted'] == true) {
+        final postId = result['postId'] as String?;
+        if (postId != null) _controller.removePost(postId);
+      } else if (result['updatedPost'] is MarketPostModel) {
+        _controller.updatePost(result['updatedPost'] as MarketPostModel);
+      }
     }
   }
 
@@ -328,7 +332,9 @@ class ProfileScreenState extends State<ProfileScreen> {
               username: user.username,
               onPostClick: _handlePostClick,
               onLikeToggle: _controller.toggleLike,
+              onBookmarkToggle: _controller.toggleBookmark,
               onRepostToggle: _controller.toggleRepost,
+              onVotePoll: (post, optionIds) => _controller.votePoll(post.id, optionIds),
               onImageClick: (item, idx) => MediaLightboxDialog.show(context: context, images: item.images, initialIndex: idx, post: item),
               onDeletePost: (post) => _controller.removePost(post.id),
               onReplyImageClick: (imgs, idx) => MediaLightboxDialog.show(context: context, images: imgs, initialIndex: idx),

@@ -16,8 +16,10 @@ class ProfileContentTabs extends StatelessWidget {
   final String username;
   final ValueChanged<MarketPostModel> onPostClick;
   final ValueChanged<MarketPostModel> onLikeToggle;
+  final ValueChanged<MarketPostModel>? onBookmarkToggle;
   final ValueChanged<MarketPostModel> onRepostToggle;
   final void Function(MarketPostModel, int) onImageClick;
+  final void Function(MarketPostModel, List<String>)? onVotePoll;
   final ValueChanged<MarketPostModel> onDeletePost;
   final void Function(List<String>, int) onReplyImageClick;
 
@@ -31,8 +33,10 @@ class ProfileContentTabs extends StatelessWidget {
     required this.username,
     required this.onPostClick,
     required this.onLikeToggle,
+    this.onBookmarkToggle,
     required this.onRepostToggle,
     required this.onImageClick,
+    this.onVotePoll,
     required this.onDeletePost,
     required this.onReplyImageClick,
   });
@@ -53,8 +57,10 @@ class ProfileContentTabs extends StatelessWidget {
               item: post,
               onPostClick: onPostClick,
               onLikeToggle: onLikeToggle,
+              onBookmarkToggle: onBookmarkToggle,
               onRepostToggle: onRepostToggle,
               onImageClick: onImageClick,
+              onVotePoll: onVotePoll,
               onDeletePost: onDeletePost,
             );
           },

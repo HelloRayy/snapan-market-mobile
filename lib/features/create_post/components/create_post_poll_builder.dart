@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:snapan-market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Threads-style Interactive Polling Builder Component with settings
 class CreatePostPollBuilder extends StatelessWidget {

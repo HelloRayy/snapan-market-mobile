@@ -76,7 +76,12 @@ class _PostPollSectionState extends State<PostPollSection> {
           onPressed: () {
             Navigator.push(
               context,
-              AppSlidePageRoute(builder: (_) => const AuthScreen()),
+              AppSlidePageRoute(
+                builder: (navCtx) => AuthScreen(
+                  onBack: () => Navigator.pop(navCtx),
+                  onSuccess: () => Navigator.pop(navCtx),
+                ),
+              ),
             );
           },
         ),

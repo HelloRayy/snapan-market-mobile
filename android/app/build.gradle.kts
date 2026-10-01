@@ -59,7 +59,8 @@ tasks.matching { it.name == "assembleRelease" }.configureEach {
         val flutterApkDir = file("$rootBuildDir/app/outputs/flutter-apk")
         val releaseApk = file("$flutterApkDir/app-release.apk")
         if (releaseApk.exists()) {
-            val targetApk = file("$flutterApkDir/Snaps - Stable Version V 1.0.3.apk")
+            val vName = android.defaultConfig.versionName ?: "1.0.4"
+            val targetApk = file("$flutterApkDir/Snaps - Stable Version V $vName.apk")
             releaseApk.copyTo(targetApk, overwrite = true)
             println("[Snaps Build] Output custom APK created: ${targetApk.absolutePath}")
         }

@@ -275,7 +275,7 @@ class HomeNavDrawer extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Snaps - Stable Version V 1.0.3',
+                    'Snaps - Stable Version V 1.0.4',
                     style: GoogleFonts.inter(
                       fontSize: 12.0,
                       fontWeight: FontWeight.w600,

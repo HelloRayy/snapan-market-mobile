@@ -172,7 +172,7 @@ class _MarketPostCardState extends State<MarketPostCard>
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
         decoration: const BoxDecoration(
           color: Colors.white,
-          border: Border(bottom: BorderSide(color: AppColors.cloudGray, width: 1.0)),
+          border: Border(bottom: BorderSide(color: AppColors.separator, width: 0.8)),
         ),
         child: PostCardContentColumn(
           item: widget.item,
@@ -209,7 +209,7 @@ class _MarketPostCardState extends State<MarketPostCard>
         padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
         decoration: const BoxDecoration(
           color: Colors.white,
-          border: Border(bottom: BorderSide(color: AppColors.cloudGray, width: 1.0)),
+          border: Border(bottom: BorderSide(color: AppColors.separator, width: 0.8)),
         ),
         child: hasChain
             ? Column(

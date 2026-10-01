@@ -28,6 +28,8 @@ class AppColors {
   static const Color mutedGray = muted;
   static const Color lightMuted = Color(0xFF999999);
   static const Color border = Color(0xFFE2E8F0);
+  static const Color separator = Color(0xFFF1F5F9);
+  static const Color divider = Color(0xFFF1F5F9);
   static const Color selectionBg = Color(0xFFEDEDED);
   static const Color inputBg = Color(0xFFF8FAFC);
 

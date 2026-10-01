@@ -3546,9 +3546,9 @@
     "semantic_hash": ""
   },
   "lib/features/splash/screens/splash_screen.dart": {
-    "mtime": 1790865389.9418948,
-    "seen": 1790865509.1701562,
-    "ast_hash": "b0fff8b9ba55a835fa37e886ec2d7955",
+    "mtime": 1790866435.2975695,
+    "seen": 1790866538.3928025,
+    "ast_hash": "026578f3cd0faf680380a868b275696e",
     "semantic_hash": ""
   },
   "lib/features/feed/components/drawer/home_nav_channels_card.dart": {

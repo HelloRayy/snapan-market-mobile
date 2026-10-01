@@ -133,7 +133,7 @@ class HomeNavChannelsCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.between,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
@@ -174,7 +174,7 @@ class HomeNavChannelsCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 2.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.between,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,

@@ -68,7 +68,7 @@ class HomeNavPreferencesCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.between,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [

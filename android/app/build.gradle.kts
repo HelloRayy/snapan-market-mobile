@@ -52,3 +52,16 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+tasks.matching { it.name == "assembleRelease" }.configureEach {
+    doLast {
+        val rootBuildDir = rootProject.layout.buildDirectory.get().asFile
+        val flutterApkDir = file("$rootBuildDir/app/outputs/flutter-apk")
+        val releaseApk = file("$flutterApkDir/app-release.apk")
+        if (releaseApk.exists()) {
+            val targetApk = file("$flutterApkDir/Snaps - Stable Version V 1.0.3.apk")
+            releaseApk.copyTo(targetApk, overwrite = true)
+            println("[Snaps Build] Output custom APK created: ${targetApk.absolutePath}")
+        }
+    }
+}

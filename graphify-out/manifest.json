@@ -456,15 +456,15 @@
     "semantic_hash": ""
   },
   "lib/features/feed/components/nav_glyphs/home_nav_glyph.dart": {
-    "mtime": 1790862323.7688286,
-    "seen": 1790862619.5321121,
-    "ast_hash": "31fd95f5d7594b7044943dfc2c83d41e",
+    "mtime": 1790961153.186432,
+    "seen": 1790961207.0269682,
+    "ast_hash": "292da11a80d4169b1d2a29b287abd193",
     "semantic_hash": ""
   },
   "lib/features/feed/components/nav_glyphs/paper_plane_nav_glyph.dart": {
-    "mtime": 1790862330.6338565,
-    "seen": 1790862619.5321128,
-    "ast_hash": "a095bc50e50e10063789d3697f880f9d",
+    "mtime": 1790961168.8884983,
+    "seen": 1790961207.0269768,
+    "ast_hash": "3a96a909771134e89929704bd1e40c45",
     "semantic_hash": ""
   },
   "lib/features/feed/components/nav_glyphs/user_nav_glyph.dart": {
@@ -3630,9 +3630,9 @@
     "semantic_hash": ""
   },
   "src/admin/components/UserDetailModal.tsx": {
-    "mtime": 1790961027.2278984,
-    "seen": 1790961107.8070264,
-    "ast_hash": "508af0ce02e51a72f3bcd33c0d2c108d",
+    "mtime": 1790961206.142656,
+    "seen": 1790961207.027334,
+    "ast_hash": "9c5ee1ffab1ba4ef4e3f0aa3b0511748",
     "semantic_hash": ""
   },
   "src/admin/components/ServerStatusCard.tsx": {
@@ -3741,6 +3741,12 @@
     "mtime": 1790960859.7941892,
     "seen": 1790960935.5544193,
     "ast_hash": "a39014b93588d3a3800b75d4aa8996ba",
+    "semantic_hash": ""
+  },
+  "src/admin/components/RoleSelectDropdown.tsx": {
+    "mtime": 1790961183.42656,
+    "seen": 1790961207.0273104,
+    "ast_hash": "22b1f9ab283e8decfadef9af853ce760",
     "semantic_hash": ""
   }
 }

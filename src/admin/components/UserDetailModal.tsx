@@ -2,13 +2,14 @@ import { useState } from 'react';
 import type { ProfileRow } from '../services/adminService';
 import { UserAvatar } from './UserAvatar';
 import { AdminModalPortal } from './AdminModalPortal';
+import { RoleSelectDropdown, type UserRole } from './RoleSelectDropdown';
 
 interface UserDetailModalProps {
   user: ProfileRow | null;
   isOpen: boolean;
   onClose: () => void;
   onToggleVerify: (userId: string, currentStatus: boolean) => Promise<void>;
-  onChangeRole: (user: ProfileRow, newRole: 'buyer' | 'seller' | 'admin') => void;
+  onChangeRole: (user: ProfileRow, newRole: UserRole) => void;
   isUpdating: boolean;
 }
 
@@ -35,11 +36,11 @@ export function UserDetailModal({
       <div
         style={{
           width: '100%',
-          maxWidth: '720px',
+          maxWidth: '820px',
           background: '#ffffff',
-          borderRadius: '10px',
+          borderRadius: '12px',
           border: '1px solid #e4e7ec',
-          boxShadow: '0 20px 35px rgba(0, 0, 0, 0.15)',
+          boxShadow: '0 25px 45px rgba(0, 0, 0, 0.16)',
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
@@ -47,10 +48,10 @@ export function UserDetailModal({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Header (CoolAdmin Styled) */}
+        {/* Modal Header */}
         <div
           style={{
-            padding: '18px 24px',
+            padding: '16px 24px',
             borderBottom: '1px solid #f1f3f5',
             display: 'flex',
             alignItems: 'center',
@@ -62,7 +63,7 @@ export function UserDetailModal({
             <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#1f2937' }}>
               Inspeksi Profil Siswa
             </h3>
-            <p style={{ margin: '2px 0 0', fontSize: '12.5px', color: '#64748b' }}>
+            <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#64748b' }}>
               Bergabung sejak{' '}
               {new Date(user.created_at).toLocaleDateString('id-ID', {
                 day: 'numeric',
@@ -93,271 +94,356 @@ export function UserDetailModal({
           </button>
         </div>
 
-        {/* Modal Body */}
+        {/* Modal Body - 2 Columns Layout */}
         <div
           style={{
-            padding: '24px',
+            padding: '22px 24px',
             overflowY: 'auto',
-            display: 'flex',
-            flexDirection: 'column',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
             gap: '20px',
+            alignItems: 'start',
           }}
         >
-          {/* Hero Profile Card */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '16px',
-              padding: '16px',
-              borderRadius: '8px',
-              background: '#f8fafc',
-              border: '1px solid #e4e7ec',
-            }}
-          >
-            <UserAvatar
-              avatarUrl={user.avatar_url}
-              name={user.full_name}
-              size={56}
-              borderRadius="10px"
-              role={user.role}
+          {/* Kolom 1 (Kiri): Profil & Data Akademik */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {/* Hero Profile Card */}
+            <div
               style={{
-                fontSize: '22px',
-                border: '1px solid rgba(66, 114, 215, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '14px',
+                padding: '14px 16px',
+                borderRadius: '8px',
+                background: '#f8fafc',
+                border: '1px solid #e4e7ec',
               }}
-            />
+            >
+              <UserAvatar
+                avatarUrl={user.avatar_url}
+                name={user.full_name}
+                size={54}
+                borderRadius="10px"
+                role={user.role}
+                style={{
+                  fontSize: '20px',
+                  border: '1px solid rgba(66, 114, 215, 0.2)',
+                }}
+              />
 
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                <h4
-                  style={{
-                    margin: 0,
-                    fontSize: '15.5px',
-                    fontWeight: 700,
-                    color: '#1f2937',
-                    letterSpacing: '-0.01em',
-                  }}
-                >
-                  {user.full_name || 'Siswa SMKN 8 Semarang'}
-                </h4>
-                {user.is_verified && (
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                  <h4
+                    style={{
+                      margin: 0,
+                      fontSize: '15px',
+                      fontWeight: 700,
+                      color: '#1f2937',
+                    }}
+                  >
+                    {user.full_name || 'Siswa SMKN 8'}
+                  </h4>
+                  {user.is_verified && (
+                    <span style={{ color: '#4272d7', fontSize: '13px' }} title="Akun Resmi">
+                      <i className="fa-solid fa-circle-check"></i>
+                    </span>
+                  )}
+                </div>
+                <p style={{ margin: '2px 0 6px', fontSize: '12px', color: '#64748b' }}>
+                  @{user.username || 'username'}
+                </p>
+
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      padding: '1px 8px',
+                      borderRadius: '4px',
+                      fontSize: '10.5px',
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      background: user.role === 'admin' ? '#eff6ff' : '#f1f5f9',
+                      color: user.role === 'admin' ? '#2563eb' : '#475569',
+                      border: `1px solid ${user.role === 'admin' ? '#bfdbfe' : '#e2e8f0'}`,
+                    }}
+                  >
+                    {user.role}
+                  </span>
+
                   <span
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '4px',
-                      color: '#4272d7',
-                      fontSize: '13px',
+                      padding: '1px 8px',
+                      borderRadius: '4px',
+                      fontSize: '10.5px',
+                      fontWeight: 600,
+                      background: user.is_verified ? '#ecfdf5' : '#fff7ed',
+                      color: user.is_verified ? '#059669' : '#ea580c',
+                      border: `1px solid ${user.is_verified ? '#a7f3d0' : '#fed7aa'}`,
                     }}
-                    title="Akun Siswa Resmi"
                   >
-                    <i className="fa-solid fa-circle-check"></i>
+                    <i
+                      className={`fa-solid ${user.is_verified ? 'fa-circle-check' : 'fa-circle-exclamation'}`}
+                      style={{ fontSize: '9px' }}
+                    ></i>
+                    {user.is_verified ? 'Terverifikasi' : 'Belum Verifikasi'}
                   </span>
-                )}
+                </div>
               </div>
-              <p style={{ margin: '2px 0 8px', fontSize: '12.5px', color: '#64748b' }}>
-                @{user.username || 'username'}
-              </p>
+            </div>
 
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                <span
-                  className={`role ${user.role === 'admin' ? 'admin' : 'user'}`}
+            {/* Informasi Akademik Card */}
+            <div>
+              <div
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  color: '#64748b',
+                  marginBottom: '8px',
+                }}
+              >
+                Informasi Akademik & Kejuruan
+              </div>
+
+              <div
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid #e4e7ec',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                }}
+              >
+                <div
                   style={{
-                    display: 'inline-block',
-                    padding: '2px 10px',
-                    borderRadius: '4px',
-                    fontSize: '11px',
-                    fontWeight: 600,
-                    textTransform: 'uppercase',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '10px 14px',
+                    borderBottom: '1px solid #f1f3f5',
+                    fontSize: '12.5px',
                   }}
                 >
-                  {user.role}
-                </span>
+                  <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i className="fa-solid fa-graduation-cap" style={{ width: '14px', color: '#94a3b8' }}></i>
+                    Kelas & Jurusan
+                  </span>
+                  <span style={{ fontWeight: 600, color: '#1f2937' }}>
+                    {user.class_group || 'Umum'}
+                  </span>
+                </div>
 
-                <span
+                <div
                   style={{
-                    display: 'inline-flex',
+                    display: 'flex',
                     alignItems: 'center',
-                    gap: '4px',
-                    padding: '2px 8px',
-                    borderRadius: '4px',
-                    fontSize: '11px',
+                    justifyContent: 'space-between',
+                    padding: '10px 14px',
+                    borderBottom: '1px solid #f1f3f5',
+                    fontSize: '12.5px',
+                  }}
+                >
+                  <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i className="fa-solid fa-bag-shopping" style={{ width: '14px', color: '#94a3b8' }}></i>
+                    Transaksi COD
+                  </span>
+                  <span style={{ fontWeight: 600, color: '#1f2937', fontVariantNumeric: 'tabular-nums' }}>
+                    {user.verified_sales_count || 0} order
+                  </span>
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '10px 14px',
+                    borderBottom: '1px solid #f1f3f5',
+                    fontSize: '12.5px',
+                  }}
+                >
+                  <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i className="fa-solid fa-chart-line" style={{ width: '14px', color: '#94a3b8' }}></i>
+                    Total Perputaran
+                  </span>
+                  <span style={{ fontWeight: 700, color: '#4272d7', fontVariantNumeric: 'tabular-nums' }}>
+                    Rp {(user.total_revenue_idr || 0).toLocaleString('id-ID')}
+                  </span>
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '10px 14px',
+                    fontSize: '12.5px',
+                  }}
+                >
+                  <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i className="fa-solid fa-fingerprint" style={{ width: '14px', color: '#94a3b8' }}></i>
+                    User UUID
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopyId}
+                    style={{
+                      background: '#f8fafc',
+                      border: '1px solid #e4e7ec',
+                      borderRadius: '4px',
+                      padding: '2px 8px',
+                      fontFamily: 'monospace',
+                      fontSize: '11px',
+                      color: '#4272d7',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                    }}
+                  >
+                    <span>{user.id.slice(0, 8)}...</span>
+                    <span style={{ fontSize: '10px', color: '#64748b' }}>
+                      {copiedId ? 'Disalin' : 'Salin'}
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Kolom 2 (Kanan): Otorisasi & Kontrol Akses */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {/* Otorisasi Hak Akses (Dropdown Input) */}
+            <div>
+              <div
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  color: '#64748b',
+                  marginBottom: '8px',
+                }}
+              >
+                Otorisasi Hak Akses (RBAC)
+              </div>
+
+              <RoleSelectDropdown
+                currentRole={user.role as UserRole}
+                onChangeRole={(newRole) => onChangeRole(user, newRole)}
+                disabled={isUpdating}
+              />
+
+              <p style={{ margin: '6px 0 0', fontSize: '11px', color: '#94a3b8' }}>
+                Perubahan hak akses diterapkan langsung ke baris database akun.
+              </p>
+            </div>
+
+            {/* Status Verifikasi Resmi Card */}
+            <div>
+              <div
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  color: '#64748b',
+                  marginBottom: '8px',
+                }}
+              >
+                Tindakan Status Verifikasi
+              </div>
+
+              <div
+                style={{
+                  padding: '14px 16px',
+                  background: user.is_verified ? '#f0fdf4' : '#fafaf9',
+                  border: user.is_verified ? '1px solid #bbf7d0' : '1px solid #e7e5e4',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <i
+                    className={`fa-solid ${
+                      user.is_verified ? 'fa-circle-check' : 'fa-circle-question'
+                    }`}
+                    style={{
+                      color: user.is_verified ? '#16a34a' : '#78716c',
+                      fontSize: '15px',
+                    }}
+                  ></i>
+                  <span
+                    style={{
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      color: user.is_verified ? '#15803d' : '#44403c',
+                    }}
+                  >
+                    {user.is_verified ? 'Lencana Resmi Aktif' : 'Status Belum Terverifikasi'}
+                  </span>
+                </div>
+
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: '11.5px',
+                    lineHeight: 1.45,
+                    color: user.is_verified ? '#166534' : '#78716c',
+                  }}
+                >
+                  {user.is_verified
+                    ? 'Akun telah divalidasi sebagai siswa/staff resmi SMKN 8 Semarang dengan reputasi terpercaya.'
+                    : 'Berikan lencana centang verifikasi setelah memeriksa identitas dan NIS/NISN siswa.'}
+                </p>
+
+                <button
+                  type="button"
+                  disabled={isUpdating}
+                  onClick={() => onToggleVerify(user.id, user.is_verified)}
+                  style={{
+                    width: '100%',
+                    height: '36px',
+                    marginTop: '4px',
+                    padding: '0 14px',
+                    borderRadius: '6px',
+                    fontSize: '12.5px',
                     fontWeight: 600,
-                    background: user.is_verified ? '#e0f3f1' : '#fff1e6',
-                    color: user.is_verified ? '#11998e' : '#f97316',
-                    border: `1px solid ${user.is_verified ? '#a7f3d0' : '#fed7aa'}`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '7px',
+                    cursor: isUpdating ? 'not-allowed' : 'pointer',
+                    border: user.is_verified ? '1px solid #fca5a5' : '1px solid #4272d7',
+                    background: user.is_verified ? '#fef2f2' : '#4272d7',
+                    color: user.is_verified ? '#dc2626' : '#ffffff',
+                    boxShadow: user.is_verified ? 'none' : '0 2px 6px rgba(66, 114, 215, 0.28)',
+                    transition: 'all 120ms ease',
                   }}
                 >
                   <i
-                    className={`fa-solid ${user.is_verified ? 'fa-circle-check' : 'fa-circle-exclamation'}`}
-                    style={{ fontSize: '10px' }}
+                    className={`fa-solid ${
+                      isUpdating
+                        ? 'fa-arrows-rotate fa-spin'
+                        : user.is_verified
+                        ? 'fa-ban'
+                        : 'fa-check'
+                    }`}
                   ></i>
-                  {user.is_verified ? 'Terverifikasi' : 'Belum Verifikasi'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Academic & Platform Information */}
-          <div>
-            <div
-              style={{
-                fontSize: '11px',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                color: '#64748b',
-                marginBottom: '8px',
-              }}
-            >
-              Informasi Akademik & Kejuruan
-            </div>
-
-            <div
-              style={{
-                background: '#ffffff',
-                border: '1px solid #e4e7ec',
-                borderRadius: '8px',
-                overflow: 'hidden',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '12px 16px',
-                  borderBottom: '1px solid #f1f3f5',
-                  fontSize: '13px',
-                }}
-              >
-                <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <i className="fa-solid fa-graduation-cap" style={{ width: '16px', color: '#94a3b8' }}></i>
-                  Kelas & Jurusan
-                </span>
-                <span style={{ fontWeight: 600, color: '#1f2937' }}>
-                  {user.class_group || 'Umum'}
-                </span>
-              </div>
-
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '12px 16px',
-                  borderBottom: '1px solid #f1f3f5',
-                  fontSize: '13px',
-                }}
-              >
-                <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <i className="fa-solid fa-bag-shopping" style={{ width: '16px', color: '#94a3b8' }}></i>
-                  Transaksi Terverifikasi
-                </span>
-                <span style={{ fontWeight: 600, color: '#1f2937', fontVariantNumeric: 'tabular-nums' }}>
-                  {user.verified_sales_count || 0} transaksi
-                </span>
-              </div>
-
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '12px 16px',
-                  borderBottom: '1px solid #f1f3f5',
-                  fontSize: '13px',
-                }}
-              >
-                <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <i className="fa-solid fa-chart-line" style={{ width: '16px', color: '#94a3b8' }}></i>
-                  Total Perputaran COD
-                </span>
-                <span style={{ fontWeight: 700, color: '#4272d7', fontVariantNumeric: 'tabular-nums' }}>
-                  Rp {(user.total_revenue_idr || 0).toLocaleString('id-ID')}
-                </span>
-              </div>
-
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '12px 16px',
-                  fontSize: '13px',
-                }}
-              >
-                <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <i className="fa-solid fa-fingerprint" style={{ width: '16px', color: '#94a3b8' }}></i>
-                  User UUID
-                </span>
-                <button
-                  type="button"
-                  onClick={handleCopyId}
-                  style={{
-                    background: '#f8fafc',
-                    border: '1px solid #e4e7ec',
-                    borderRadius: '4px',
-                    padding: '3px 8px',
-                    fontFamily: 'monospace',
-                    fontSize: '11px',
-                    color: '#4272d7',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                  }}
-                >
-                  <span>{user.id.slice(0, 10)}...</span>
-                  <span style={{ fontSize: '10px', color: '#64748b' }}>
-                    {copiedId ? 'Disalin!' : 'Salin'}
+                  <span>
+                    {isUpdating
+                      ? 'Memproses...'
+                      : user.is_verified
+                      ? 'Cabut Verifikasi Akun'
+                      : 'Verifikasi Akun Sekarang'}
                   </span>
                 </button>
               </div>
-            </div>
-          </div>
-
-          {/* RBAC Role Selector */}
-          <div>
-            <div
-              style={{
-                fontSize: '11px',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                color: '#64748b',
-                marginBottom: '8px',
-              }}
-            >
-              Otorisasi Hak Akses (RBAC)
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-              {(['buyer', 'seller', 'admin'] as const).map((r) => {
-                const isSelected = user.role === r;
-                return (
-                  <button
-                    key={r}
-                    type="button"
-                    disabled={isUpdating}
-                    onClick={() => onChangeRole(user, r)}
-                    style={{
-                      padding: '10px 8px',
-                      borderRadius: '6px',
-                      fontSize: '12.5px',
-                      fontWeight: isSelected ? 700 : 500,
-                      textAlign: 'center',
-                      cursor: 'pointer',
-                      transition: 'all 120ms ease',
-                      border: isSelected ? '1.5px solid #4272d7' : '1px solid #e4e7ec',
-                      background: isSelected ? '#eaf0fc' : '#ffffff',
-                      color: isSelected ? '#4272d7' : '#475569',
-                    }}
-                  >
-                    {r === 'buyer' ? 'Siswa (Buyer)' : r === 'seller' ? 'Penjual (Seller)' : 'Staff Admin'}
-                  </button>
-                );
-              })}
             </div>
           </div>
         </div>
@@ -365,65 +451,30 @@ export function UserDetailModal({
         {/* Modal Footer */}
         <div
           style={{
-            padding: '16px 24px',
+            padding: '12px 24px',
             borderTop: '1px solid #f1f3f5',
             background: '#f8fafc',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '12px',
+            justifyContent: 'flex-end',
           }}
         >
           <button
             type="button"
-            className="m-btn m-btn--ghost"
             onClick={onClose}
             style={{
-              height: '38px',
-              padding: '0 16px',
+              height: '36px',
+              padding: '0 18px',
               fontSize: '13px',
-              fontWeight: 500,
+              fontWeight: 600,
               background: '#ffffff',
               border: '1px solid #e4e7ec',
               color: '#475569',
               borderRadius: '6px',
-            }}
-          >
-            Tutup
-          </button>
-
-          <button
-            type="button"
-            disabled={isUpdating}
-            onClick={() => onToggleVerify(user.id, user.is_verified)}
-            style={{
-              height: '38px',
-              padding: '0 18px',
-              fontSize: '13px',
-              fontWeight: 600,
-              borderRadius: '6px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
               cursor: 'pointer',
-              border: user.is_verified ? '1px solid #fed7aa' : '1px solid #4272d7',
-              background: user.is_verified ? '#fff1e6' : '#4272d7',
-              color: user.is_verified ? '#c2410c' : '#ffffff',
-              boxShadow: user.is_verified ? 'none' : '0 2px 6px rgba(66, 114, 215, 0.35)',
             }}
           >
-            <i
-              className={`fa-solid ${
-                isUpdating ? 'fa-arrows-rotate fa-spin' : user.is_verified ? 'fa-circle-xmark' : 'fa-circle-check'
-              }`}
-            ></i>
-            <span>
-              {isUpdating
-                ? 'Memproses...'
-                : user.is_verified
-                ? 'Cabut Verifikasi'
-                : 'Verifikasi Siswa'}
-            </span>
+            Selesai
           </button>
         </div>
       </div>

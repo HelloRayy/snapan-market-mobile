@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { StatsCard } from '../components/StatsCard';
+import { ServerStatusCard } from '../components/ServerStatusCard';
 import type { AdminStats } from '../services/adminService';
 import type { AdminTab } from '../components/AdminSidebar';
 
@@ -554,107 +555,9 @@ export function OverviewTab({
           </section>
         </div>
 
-        {/* Right Column: Operational Status & Meeting Points */}
+        {/* Right Column: Server Status & Logs & Quick Actions */}
         <div className="col-lg-5">
-          {/* Status Sistem Operasional */}
-          <section className="m-card">
-            <header className="m-card__header">
-              <div>
-                <h2 className="m-card__title">Status Ekosistem</h2>
-                <p className="m-card__subtitle">Infrastruktur dan koneksi real-time kampus.</p>
-              </div>
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '5px',
-                  padding: '3px 8px',
-                  borderRadius: '4px',
-                  background: '#e0f3f1',
-                  color: '#11998e',
-                  fontSize: '11px',
-                  fontWeight: 700,
-                }}
-              >
-                <i className="fa-solid fa-circle" style={{ fontSize: '6px' }}></i>
-                LIVE
-              </span>
-            </header>
-
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              <li className="activity-item">
-                <div
-                  className="activity-item__avatar"
-                  style={{
-                    background: '#eaf0fc',
-                    color: '#4272d7',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: '8px',
-                    width: '36px',
-                    height: '36px',
-                  }}
-                >
-                  <i className="fa-solid fa-database"></i>
-                </div>
-                <div className="activity-item__body">
-                  <p className="activity-item__text">
-                    <b>Supabase PostgreSQL</b> terhubung aktif dan responsif.
-                  </p>
-                  <span className="activity-item__time">Latensi normal</span>
-                </div>
-              </li>
-
-              <li className="activity-item">
-                <div
-                  className="activity-item__avatar"
-                  style={{
-                    background: '#e0f3f1',
-                    color: '#11998e',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: '8px',
-                    width: '36px',
-                    height: '36px',
-                  }}
-                >
-                  <i className="fa-solid fa-bolt"></i>
-                </div>
-                <div className="activity-item__body">
-                  <p className="activity-item__text">
-                    <b>Realtime WebSocket</b> aktif untuk notifikasi & transaksi.
-                  </p>
-                  <span className="activity-item__time">Uptime 99.98%</span>
-                </div>
-              </li>
-
-              <li className="activity-item">
-                <div
-                  className="activity-item__avatar"
-                  style={{
-                    background: '#fff1e6',
-                    color: '#f97316',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: '8px',
-                    width: '36px',
-                    height: '36px',
-                  }}
-                >
-                  <i className="fa-solid fa-shield-halved"></i>
-                </div>
-                <div className="activity-item__body">
-                  <p className="activity-item__text">
-                    <b>RLS Security Policy</b> melindungi data privasi siswa SMKN 8.
-                  </p>
-                  <span className="activity-item__time">Proteksi Aktif</span>
-                </div>
-              </li>
-            </ul>
-          </section>
+          <ServerStatusCard />
 
           {/* Quick Shortcuts */}
           <section className="m-card" style={{ marginTop: '16px' }}>

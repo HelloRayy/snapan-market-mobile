@@ -3312,15 +3312,15 @@
     "semantic_hash": "d52c7eda502cd90b8a2e7e87a1288b9d"
   },
   "src/admin/components/AdminHeader.tsx": {
-    "mtime": 1790954219.1920128,
-    "seen": 1790954806.6210444,
-    "ast_hash": "0289c825e04c64017da5ef9d74c871fb",
+    "mtime": 1790955163.0595906,
+    "seen": 1790955254.9636316,
+    "ast_hash": "8dd8b47b9ff9f5f071790db9ec2a8a5e",
     "semantic_hash": ""
   },
   "src/admin/components/AdminSidebar.tsx": {
-    "mtime": 1790954203.6039093,
-    "seen": 1790954806.621049,
-    "ast_hash": "6031a950039d679b1368280589dbd2d6",
+    "mtime": 1790955145.116504,
+    "seen": 1790955254.963635,
+    "ast_hash": "38f6906ac2acc59650bceb5534176193",
     "semantic_hash": ""
   },
   "src/admin/components/StatsCard.tsx": {
@@ -3330,9 +3330,9 @@
     "semantic_hash": ""
   },
   "src/admin/pages/AdminDashboard.tsx": {
-    "mtime": 1790954186.133793,
-    "seen": 1790954806.6211026,
-    "ast_hash": "92c316e9c8227dbbd355eefe2e2e6502",
+    "mtime": 1790955122.4703944,
+    "seen": 1790955254.9636586,
+    "ast_hash": "83e649dfc0b6f4e849afbe210e1caf22",
     "semantic_hash": ""
   },
   "src/admin/pages/AdminLoginPage.tsx": {
@@ -3354,9 +3354,9 @@
     "semantic_hash": ""
   },
   "src/admin/pages/OverviewTab.tsx": {
-    "mtime": 1790954711.6484165,
-    "seen": 1790954806.6211205,
-    "ast_hash": "b1ae415a6a2e017ac5e023c78327997e",
+    "mtime": 1790955208.0728083,
+    "seen": 1790955254.9636657,
+    "ast_hash": "e4c0e8789d7ea45fb76ece8d7a9e6c43",
     "semantic_hash": ""
   },
   "src/admin/pages/UsersManagementTab.tsx": {

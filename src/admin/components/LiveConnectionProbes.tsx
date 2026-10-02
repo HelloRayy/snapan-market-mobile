@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/services/api/supabase';
 
 export interface ProbeResult {
@@ -20,6 +20,11 @@ export function LiveConnectionProbes({ onProbeComplete }: LiveConnectionProbesPr
   const [authLatency, setAuthLatency] = useState<number | null>(null);
   const [storageStatus, setStorageStatus] = useState<'READY' | 'ERROR'>('READY');
   const [lastCheckTime, setLastCheckTime] = useState<string>('');
+
+  const onProbeCompleteRef = useRef(onProbeComplete);
+  useEffect(() => {
+    onProbeCompleteRef.current = onProbeComplete;
+  }, [onProbeComplete]);
 
   const runAllProbes = useCallback(async () => {
     setIsRunningProbes(true);
@@ -142,12 +147,13 @@ export function LiveConnectionProbes({ onProbeComplete }: LiveConnectionProbesPr
 
     setLastCheckTime(nowStr);
     setIsRunningProbes(false);
-    onProbeComplete?.(results);
-  }, [onProbeComplete]);
+    onProbeCompleteRef.current?.(results);
+  }, []);
 
   useEffect(() => {
     runAllProbes();
-    const interval = setInterval(runAllProbes, 40000); // Probe every 40s
+    const thirtyMinutesMs = 30 * 60 * 1000;
+    const interval = setInterval(runAllProbes, thirtyMinutesMs);
     return () => clearInterval(interval);
   }, [runAllProbes]);
 

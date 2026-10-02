@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { UptimeServiceRow, type DayBarData } from '../components/UptimeServiceRow';
 import { LiveConnectionProbes, type ProbeResult } from '../components/LiveConnectionProbes';
 
@@ -82,6 +82,8 @@ export function ServerMonitorTab() {
     },
   ]);
 
+  const logsContainerRef = useRef<HTMLDivElement>(null);
+
   const computeBars = useMemo(() => create90DayBars('compute'), []);
   const analyticsBars = useMemo(() => create90DayBars('analytics'), []);
   const gatewayBars = useMemo(() => create90DayBars('gateway'), []);
@@ -89,7 +91,7 @@ export function ServerMonitorTab() {
   const dbBars = useMemo(() => create90DayBars('db'), []);
   const realtimeBars = useMemo(() => create90DayBars('realtime'), []);
 
-  const handleProbeComplete = (results: ProbeResult[]) => {
+  const handleProbeComplete = useCallback((results: ProbeResult[]) => {
     const newLogs = results.map((r, idx) => ({
       id: `${Date.now()}_${idx}`,
       time: r.timestamp,
@@ -97,8 +99,8 @@ export function ServerMonitorTab() {
       text: `${r.service}: ${r.detail}`,
       level: (r.status === 'healthy' ? 'ok' : r.status === 'warning' ? 'warn' : 'err') as 'ok' | 'warn' | 'err',
     }));
-    setProbeLogs((prev) => [...newLogs, ...prev.slice(0, 15)]);
-  };
+    setProbeLogs((prev) => [...newLogs, ...prev.slice(0, 30)]);
+  }, []);
 
   const filteredLogs = probeLogs.filter((l) => {
     if (activeLogCategory === 'all') return true;
@@ -107,6 +109,13 @@ export function ServerMonitorTab() {
     if (activeLogCategory === 'auth') return l.service.toLowerCase().includes('auth');
     return true;
   });
+
+  // Automatically scroll to bottom when new logs arrive
+  useEffect(() => {
+    if (logsContainerRef.current) {
+      logsContainerRef.current.scrollTop = logsContainerRef.current.scrollHeight;
+    }
+  }, [filteredLogs]);
 
   return (
     <>
@@ -263,15 +272,19 @@ export function ServerMonitorTab() {
         </header>
 
         <div
+          ref={logsContainerRef}
           style={{
-            background: '#0f172a',
-            borderRadius: '6px',
-            padding: '14px 16px',
+            background: '#f8fafc',
+            border: '1px solid #e2e8f0',
+            borderRadius: '8px',
+            padding: '16px 18px',
             fontFamily: 'monospace',
             fontSize: '12px',
-            color: '#cbd5e1',
-            maxHeight: '220px',
+            color: '#334155',
+            height: '360px',
+            maxHeight: '420px',
             overflowY: 'auto',
+            lineHeight: 1.6,
           }}
         >
           {filteredLogs.map((log) => (
@@ -280,25 +293,35 @@ export function ServerMonitorTab() {
               style={{
                 display: 'flex',
                 gap: '10px',
-                padding: '4px 0',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                padding: '5px 0',
+                borderBottom: '1px solid #f1f5f9',
               }}
             >
-              <span style={{ color: '#64748b' }}>[{log.time}]</span>
+              <span style={{ color: '#94a3b8', flexShrink: 0 }}>[{log.time}]</span>
               <span
                 style={{
                   fontWeight: 700,
+                  flexShrink: 0,
                   color:
-                    log.level === 'ok'
-                      ? '#4ade80'
-                      : log.level === 'warn'
-                      ? '#facc15'
-                      : '#f87171',
+                    log.service.toLowerCase().includes('postgre')
+                      ? '#2563eb'
+                      : log.service.toLowerCase().includes('realtime')
+                      ? '#059669'
+                      : log.service.toLowerCase().includes('auth')
+                      ? '#d97706'
+                      : '#7c3aed',
                 }}
               >
                 [{log.service.toUpperCase()}]
               </span>
-              <span style={{ color: '#e2e8f0', flex: 1 }}>{log.text}</span>
+              <span
+                style={{
+                  color: log.level === 'warn' ? '#d97706' : log.level === 'err' ? '#dc2626' : '#334155',
+                  flex: 1,
+                }}
+              >
+                {log.text}
+              </span>
             </div>
           ))}
         </div>

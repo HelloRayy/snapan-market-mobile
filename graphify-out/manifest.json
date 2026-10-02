@@ -3312,15 +3312,15 @@
     "semantic_hash": "d52c7eda502cd90b8a2e7e87a1288b9d"
   },
   "src/admin/components/AdminHeader.tsx": {
-    "mtime": 1790955163.0595906,
-    "seen": 1790955254.9636316,
-    "ast_hash": "8dd8b47b9ff9f5f071790db9ec2a8a5e",
+    "mtime": 1790956207.99365,
+    "seen": 1790956260.4579966,
+    "ast_hash": "f5080d38a2ec43502701a119e7602d4f",
     "semantic_hash": ""
   },
   "src/admin/components/AdminSidebar.tsx": {
-    "mtime": 1790955145.116504,
-    "seen": 1790955254.963635,
-    "ast_hash": "38f6906ac2acc59650bceb5534176193",
+    "mtime": 1790956217.065648,
+    "seen": 1790956260.4579978,
+    "ast_hash": "ec6960cbb9a84abf95637edc3a3a8b31",
     "semantic_hash": ""
   },
   "src/admin/components/StatsCard.tsx": {
@@ -3330,9 +3330,9 @@
     "semantic_hash": ""
   },
   "src/admin/pages/AdminDashboard.tsx": {
-    "mtime": 1790955122.4703944,
-    "seen": 1790955254.9636586,
-    "ast_hash": "83e649dfc0b6f4e849afbe210e1caf22",
+    "mtime": 1790955875.1098392,
+    "seen": 1790956260.458016,
+    "ast_hash": "eda4c4d44f0cba0d8b52bc34f97f6d31",
     "semantic_hash": ""
   },
   "src/admin/pages/AdminLoginPage.tsx": {
@@ -3342,9 +3342,9 @@
     "semantic_hash": "a856dd852317c817b78b7b9b01cb7480"
   },
   "src/admin/pages/ContentModerationTab.tsx": {
-    "mtime": 1790954762.0226524,
-    "seen": 1790954806.6211128,
-    "ast_hash": "302d0f0e035688a4b3d2f7a7b3b9c292",
+    "mtime": 1790956105.2186725,
+    "seen": 1790956260.458018,
+    "ast_hash": "f1f30fb3cc319eacbe45c33a48243993",
     "semantic_hash": ""
   },
   "src/admin/pages/MeetingPointsTab.tsx": {
@@ -3354,15 +3354,15 @@
     "semantic_hash": ""
   },
   "src/admin/pages/OverviewTab.tsx": {
-    "mtime": 1790955354.0084531,
-    "seen": 1790955396.470138,
-    "ast_hash": "649943a525d331f62a7ddf28a2440f66",
+    "mtime": 1790956176.696657,
+    "seen": 1790956260.4580202,
+    "ast_hash": "03e4e32aa4f8d874ebcc4f03e75b74bb",
     "semantic_hash": ""
   },
   "src/admin/pages/UsersManagementTab.tsx": {
-    "mtime": 1790954732.9525158,
-    "seen": 1790954806.6211243,
-    "ast_hash": "b13056c53017bb90d2da8f46fd44df9e",
+    "mtime": 1790955973.5963147,
+    "seen": 1790956260.4580216,
+    "ast_hash": "4f483e71cd054b3c35d7f3ae9c95d770",
     "semantic_hash": ""
   },
   "src/admin/services/adminService.ts": {
@@ -3624,21 +3624,45 @@
     "semantic_hash": ""
   },
   "src/admin/components/PostDetailModal.tsx": {
-    "mtime": 1790954953.5725782,
-    "seen": 1790954999.95284,
-    "ast_hash": "f763672ac511df7cd5655cadb8f3dd02",
+    "mtime": 1790956069.7166803,
+    "seen": 1790956260.4580023,
+    "ast_hash": "fd8665cccb96cffac82af66ac479cb73",
     "semantic_hash": ""
   },
   "src/admin/components/UserDetailModal.tsx": {
-    "mtime": 1790954931.4374712,
-    "seen": 1790954999.9528546,
-    "ast_hash": "e96ef6ca8e0962e7199df6bf418889ca",
+    "mtime": 1790956029.618585,
+    "seen": 1790956260.4580088,
+    "ast_hash": "df8716589f80b19372e4a63d4cbe64ce",
     "semantic_hash": ""
   },
   "src/admin/components/ServerStatusCard.tsx": {
-    "mtime": 1790955323.5033283,
-    "seen": 1790955396.4701188,
-    "ast_hash": "c6900ae3c4007fe58004f2988f2528b0",
+    "mtime": 1790956152.1176622,
+    "seen": 1790956260.4580033,
+    "ast_hash": "df42dbc4afdfa3c36e3fa478653d2de8",
+    "semantic_hash": ""
+  },
+  "src/admin/components/LiveConnectionProbes.tsx": {
+    "mtime": 1790955717.4190779,
+    "seen": 1790956260.4579997,
+    "ast_hash": "d5775367a59199714ae2d109b5d2815b",
+    "semantic_hash": ""
+  },
+  "src/admin/components/UptimeServiceRow.tsx": {
+    "mtime": 1790955662.774814,
+    "seen": 1790956260.458006,
+    "ast_hash": "e8c0491ae397a75821cdabb5bc0120e8",
+    "semantic_hash": ""
+  },
+  "src/admin/components/UserAvatar.tsx": {
+    "mtime": 1790955637.2166905,
+    "seen": 1790956260.458007,
+    "ast_hash": "6a982d2c9c88b382cb22fd3e9761a792",
+    "semantic_hash": ""
+  },
+  "src/admin/pages/ServerMonitorTab.tsx": {
+    "mtime": 1790955742.0381966,
+    "seen": 1790956260.458021,
+    "ast_hash": "143e205d9ff29a821e58f61839ba1fe3",
     "semantic_hash": ""
   }
 }

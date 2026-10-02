@@ -61,17 +61,17 @@ export function AdminSidebar({
               style={{
                 fontSize: '15px',
                 fontWeight: 700,
-                color: '#ffffff',
+                color: '#1f2937',
                 lineHeight: 1.2,
                 letterSpacing: '-0.01em',
               }}
             >
-              Snaps<span style={{ color: '#93b4ec' }}>Admin</span>
+              Snaps<span style={{ color: '#4272d7' }}>Admin</span>
             </div>
             <div
               style={{
                 fontSize: '11px',
-                color: '#94a3b8',
+                color: '#64748b',
                 fontWeight: 500,
               }}
             >
@@ -113,7 +113,9 @@ export function AdminSidebar({
       >
         <nav className="navbar-sidebar" style={{ flex: 1 }}>
           <ul className="list-unstyled navbar__list">
-            <div className="nav-group-label">Main Dashboard</div>
+            <div className="nav-group-label" style={{ textTransform: 'none', letterSpacing: 'normal' }}>
+              Menu Utama
+            </div>
             <li className={activeTab === 'overview' ? 'active' : ''}>
               <a
                 href="#overview"
@@ -124,11 +126,13 @@ export function AdminSidebar({
                 }}
               >
                 <i className="fa-solid fa-gauge-high"></i>
-                <span style={{ flex: 1 }}>Overview Ekosistem</span>
+                <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Ringkasan</span>
               </a>
             </li>
 
-            <div className="nav-group-label">Manajemen & Keamanan</div>
+            <div className="nav-group-label" style={{ textTransform: 'none', letterSpacing: 'normal' }}>
+              Manajemen
+            </div>
             <li className={activeTab === 'users' ? 'active' : ''}>
               <a
                 href="#users"
@@ -139,7 +143,7 @@ export function AdminSidebar({
                 }}
               >
                 <i className="fa-solid fa-users"></i>
-                <span style={{ flex: 1 }}>Direktori Siswa</span>
+                <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Data Siswa</span>
                 {stats?.totalUsers != null && stats.totalUsers > 0 && (
                   <span
                     style={{
@@ -147,8 +151,8 @@ export function AdminSidebar({
                       fontWeight: 700,
                       padding: '2px 7px',
                       borderRadius: '10px',
-                      background: activeTab === 'users' ? '#ffffff' : 'rgba(255, 255, 255, 0.12)',
-                      color: activeTab === 'users' ? '#4272d7' : '#94a3b8',
+                      background: activeTab === 'users' ? '#4272d7' : '#f1f5f9',
+                      color: activeTab === 'users' ? '#ffffff' : '#64748b',
                       fontVariantNumeric: 'tabular-nums',
                     }}
                   >
@@ -168,7 +172,7 @@ export function AdminSidebar({
                 }}
               >
                 <i className="fa-solid fa-shield-halved"></i>
-                <span style={{ flex: 1 }}>Moderasi Konten</span>
+                <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Moderasi</span>
                 {stats?.totalPosts != null && stats.totalPosts > 0 && (
                   <span
                     style={{
@@ -176,8 +180,8 @@ export function AdminSidebar({
                       fontWeight: 700,
                       padding: '2px 7px',
                       borderRadius: '10px',
-                      background: activeTab === 'moderation' ? '#ffffff' : 'rgba(255, 255, 255, 0.12)',
-                      color: activeTab === 'moderation' ? '#4272d7' : '#94a3b8',
+                      background: activeTab === 'moderation' ? '#4272d7' : '#f1f5f9',
+                      color: activeTab === 'moderation' ? '#ffffff' : '#64748b',
                       fontVariantNumeric: 'tabular-nums',
                     }}
                   >
@@ -187,7 +191,9 @@ export function AdminSidebar({
               </a>
             </li>
 
-            <div className="nav-group-label">Logistik Kampus</div>
+            <div className="nav-group-label" style={{ textTransform: 'none', letterSpacing: 'normal' }}>
+              Logistik
+            </div>
             <li className={activeTab === 'meeting-points' ? 'active' : ''}>
               <a
                 href="#meeting-points"
@@ -198,7 +204,7 @@ export function AdminSidebar({
                 }}
               >
                 <i className="fa-solid fa-map-location-dot"></i>
-                <span style={{ flex: 1 }}>Titik Temu COD</span>
+                <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Titik COD</span>
                 {stats?.totalMeetingPoints != null && stats.totalMeetingPoints > 0 && (
                   <span
                     style={{
@@ -206,8 +212,8 @@ export function AdminSidebar({
                       fontWeight: 700,
                       padding: '2px 7px',
                       borderRadius: '10px',
-                      background: activeTab === 'meeting-points' ? '#ffffff' : 'rgba(255, 255, 255, 0.12)',
-                      color: activeTab === 'meeting-points' ? '#4272d7' : '#94a3b8',
+                      background: activeTab === 'meeting-points' ? '#4272d7' : '#f1f5f9',
+                      color: activeTab === 'meeting-points' ? '#ffffff' : '#64748b',
                       fontVariantNumeric: 'tabular-nums',
                     }}
                   >
@@ -217,7 +223,9 @@ export function AdminSidebar({
               </a>
             </li>
 
-            <div className="nav-group-label">Infrastruktur & Sistem</div>
+            <div className="nav-group-label" style={{ textTransform: 'none', letterSpacing: 'normal' }}>
+              Infrastruktur
+            </div>
             <li className={activeTab === 'server' ? 'active' : ''}>
               <a
                 href="#server"
@@ -228,18 +236,18 @@ export function AdminSidebar({
                 }}
               >
                 <i className="fa-solid fa-server"></i>
-                <span style={{ flex: 1 }}>Status Server & DB</span>
+                <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Status Server</span>
                 <span
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '5px',
+                    gap: '4px',
                     fontSize: '10px',
                     fontWeight: 700,
-                    padding: '2px 7px',
+                    padding: '2px 6px',
                     borderRadius: '10px',
-                    background: activeTab === 'server' ? '#ffffff' : 'rgba(16, 185, 129, 0.18)',
-                    color: activeTab === 'server' ? '#059669' : '#34d399',
+                    background: activeTab === 'server' ? '#4272d7' : '#e0f3f1',
+                    color: activeTab === 'server' ? '#ffffff' : '#059669',
                   }}
                 >
                   <span
@@ -247,7 +255,7 @@ export function AdminSidebar({
                       width: '6px',
                       height: '6px',
                       borderRadius: '50%',
-                      background: '#10b981',
+                      background: activeTab === 'server' ? '#ffffff' : '#10b981',
                       display: 'inline-block',
                     }}
                   />
@@ -259,14 +267,14 @@ export function AdminSidebar({
         </nav>
 
         {/* Bottom Section: Connected Profile Card, Live DB, Logout */}
-        <div style={{ padding: '16px 14px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+        <div style={{ padding: '16px 14px', borderTop: '1px solid #e4e7ec' }}>
           {/* Connected Admin Profile Card */}
           <div
             style={{
               padding: '10px 12px',
               borderRadius: '8px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              background: '#f8fafc',
+              border: '1px solid #e4e7ec',
               marginBottom: '10px',
               display: 'flex',
               alignItems: 'center',
@@ -279,7 +287,7 @@ export function AdminSidebar({
               size={36}
               role={adminProfile?.role || 'admin'}
               style={{
-                border: '1px solid rgba(255, 255, 255, 0.2)',
+                border: '1px solid #d4e2fa',
               }}
             />
 
@@ -288,7 +296,7 @@ export function AdminSidebar({
                 style={{
                   fontSize: '12.5px',
                   fontWeight: 600,
-                  color: '#ffffff',
+                  color: '#1f2937',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -300,7 +308,7 @@ export function AdminSidebar({
               <div
                 style={{
                   fontSize: '10.5px',
-                  color: '#94a3b8',
+                  color: '#64748b',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -312,14 +320,14 @@ export function AdminSidebar({
 
             <span
               style={{
-                fontSize: '9.5px',
+                fontSize: '10px',
                 fontWeight: 700,
                 padding: '2px 6px',
                 borderRadius: '4px',
-                background: 'rgba(66, 114, 215, 0.3)',
-                color: '#93b4ec',
-                border: '1px solid rgba(66, 114, 215, 0.4)',
-                textTransform: 'uppercase',
+                background: '#eaf0fc',
+                color: '#4272d7',
+                border: '1px solid #d4e2fa',
+                textTransform: 'none',
               }}
             >
               Admin
@@ -331,15 +339,15 @@ export function AdminSidebar({
             style={{
               padding: '8px 12px',
               borderRadius: '6px',
-              background: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(255, 255, 255, 0.05)',
+              background: '#f8fafc',
+              border: '1px solid #e4e7ec',
               marginBottom: '10px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
             }}
           >
-            <span style={{ fontSize: '11px', color: '#94a3b8' }}>
+            <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>
               Database PostgreSQL
             </span>
             <span
@@ -363,9 +371,9 @@ export function AdminSidebar({
             onClick={onLogout}
             className="w-100 text-start"
             style={{
-              background: 'rgba(239, 68, 68, 0.12)',
-              border: '1px solid rgba(239, 68, 68, 0.25)',
-              color: '#f87171',
+              background: '#fff1f2',
+              border: '1px solid #fecdd3',
+              color: '#e11d48',
               borderRadius: '6px',
               padding: '9px 12px',
               fontSize: '12.5px',
@@ -374,8 +382,10 @@ export function AdminSidebar({
               alignItems: 'center',
               gap: '10px',
               cursor: 'pointer',
-              transition: 'all 120ms ease',
+              transition: 'background-color 120ms ease',
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = '#ffe4e6')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = '#fff1f2')}
           >
             <i className="fa-solid fa-arrow-right-from-bracket"></i>
             <span>Keluar dari Admin</span>

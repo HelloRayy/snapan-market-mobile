@@ -85,7 +85,7 @@ export function ServerStatusCard({ onNavigateDetails }: ServerStatusCardProps = 
 
   useEffect(() => {
     measurePing();
-    const interval = setInterval(measurePing, 45000); // Auto ping every 45s
+    const interval = setInterval(measurePing, 30 * 60 * 1000); // Auto ping every 30 mins
     return () => clearInterval(interval);
   }, [measurePing]);
 
@@ -234,22 +234,23 @@ export function ServerStatusCard({ onNavigateDetails }: ServerStatusCardProps = 
         </div>
       </div>
 
-      {/* Terminal Log Console */}
+      {/* Terminal Log Console (Light Theme) */}
       <div
         style={{
-          background: '#1c2333',
+          background: '#f8fafc',
+          border: '1px solid #e2e8f0',
           borderRadius: '6px',
           padding: '10px 12px',
           maxHeight: '180px',
           overflowY: 'auto',
           fontFamily: 'monospace',
           fontSize: '11px',
-          color: '#cbd5e1',
+          color: '#334155',
           lineHeight: 1.6,
         }}
       >
         {filteredLogs.length === 0 ? (
-          <div style={{ color: '#64748b', textAlign: 'center', padding: '12px 0' }}>
+          <div style={{ color: '#94a3b8', textAlign: 'center', padding: '12px 0' }}>
             Tidak ada log untuk filter ini.
           </div>
         ) : (
@@ -260,28 +261,28 @@ export function ServerStatusCard({ onNavigateDetails }: ServerStatusCardProps = 
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: '8px',
-                padding: '2px 0',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+                padding: '3px 0',
+                borderBottom: '1px solid #f1f5f9',
               }}
             >
-              <span style={{ color: '#64748b', flexShrink: 0 }}>{log.timestamp}</span>
+              <span style={{ color: '#94a3b8', flexShrink: 0 }}>{log.timestamp}</span>
               <span
                 style={{
                   fontWeight: 700,
                   color:
                     log.service === 'DB'
-                      ? '#60a5fa'
+                      ? '#2563eb'
                       : log.service === 'AUTH'
-                      ? '#34d399'
+                      ? '#059669'
                       : log.service === 'REALTIME'
-                      ? '#fb923c'
-                      : '#f472b6',
+                      ? '#ea580c'
+                      : '#9333ea',
                   flexShrink: 0,
                 }}
               >
                 [{log.service}]
               </span>
-              <span style={{ color: log.level === 'warn' ? '#fcd34d' : '#f1f5f9', flex: 1 }}>
+              <span style={{ color: log.level === 'warn' ? '#d97706' : '#334155', flex: 1 }}>
                 {log.message}
               </span>
             </div>

@@ -24,11 +24,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   late final Animation<double> _scaleAnim;
   late final Animation<double> _eraserAnim;
 
-  // Timeline durations (SNAPS-1 spec + entrance motion)
-  static const int _entranceMs = 200;
-  static const int _holdMs = 750;
-  static const int _wipeMs = 450;
-  static const int _totalMs = _entranceMs + _holdMs + _wipeMs; // 1400ms
+  // Timeline durations (Polished smooth motion)
+  static const int _entranceMs = 400;
+  static const int _holdMs = 700;
+  static const int _wipeMs = 600;
+  static const int _totalMs = _entranceMs + _holdMs + _wipeMs; // 1700ms
 
   @override
   void initState() {
@@ -46,23 +46,23 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       duration: const Duration(milliseconds: _totalMs),
     );
 
-    // 1. Entrance Fade & Scale: 0 -> 200ms
-    final entranceEnd = _entranceMs / _totalMs; // 200 / 1400 ~ 0.1428
+    // 1. Entrance Fade & Scale: 0 -> 400ms (smooth deceleration)
+    final entranceEnd = _entranceMs / _totalMs; // ~0.2353
     _fadeAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Interval(0.0, entranceEnd, curve: Curves.easeOutCubic),
+        curve: Interval(0.0, entranceEnd, curve: Curves.easeOutQuart),
       ),
     );
-    _scaleAnim = Tween<double>(begin: 0.96, end: 1.0).animate(
+    _scaleAnim = Tween<double>(begin: 0.92, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Interval(0.0, entranceEnd, curve: Curves.easeOutCubic),
+        curve: Interval(0.0, entranceEnd, curve: Curves.easeOutQuart),
       ),
     );
 
-    // 2. Eraser wipe begins after entrance (200ms) + static hold (750ms) = 950ms
-    final wipeStart = (_entranceMs + _holdMs) / _totalMs; // 950 / 1400 ~ 0.6785
+    // 2. Eraser wipe begins after entrance (400ms) + static hold (700ms) = 1100ms
+    final wipeStart = (_entranceMs + _holdMs) / _totalMs; // ~0.6470
     _eraserAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
@@ -99,7 +99,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 scale: _scaleAnim.value,
                 child: EraserLogo(
                   progress: _eraserAnim.value,
-                  height: 48.0,
+                  height: 64.0,
+                  feather: 0.20,
                 ),
               ),
             );

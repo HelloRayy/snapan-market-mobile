@@ -89,6 +89,53 @@
     - **ZERO AUTHORITY TO MUTATE ISSUE STATES**: The agent is strictly prohibited from mutating issue states or changing statuses (e.g., Todo to In Progress, In Progress to Done, or vice versa).
     - Status transitions and ticket management on Plane.so are the exclusive prerogative of the user.
 
+11. **Mandatory Standard Response Format for Build APK Release & In-App Update**:
+    - Whenever the user asks to build an APK release, prepare a release, or requests the release procedure, the agent MUST ALWAYS provide the exact 4-step manual guide format with dynamic version calculation:
+      ```markdown
+      ### Cara Manual Langkah demi Langkah
+
+      1. **Naikkan Versi**:
+         Buka `pubspec.yaml`, ubah nomor versi (angka setelah `+` harus lebih besar dari versi terpasang):
+         ```yaml
+         version: <new_version_name>+<new_version_code>
+         ```
+
+      2. **Build APK**:
+         ```bash
+         flutter build apk --release
+         ```
+
+      3. **Upload File APK ke GitHub Release**:
+         - Buat release baru di GitHub dengan tag `v<new_version_name>`.
+         - Lampirkan file `build/app/outputs/flutter-apk/app-release.apk`.
+         - URL download menjadi:
+           ```text
+           https://github.com/HelloRayy/snapan-market-mobile/releases/download/v<new_version_name>/app-release.apk
+           ```
+
+      4. **Aktifkan Pembaruan di Supabase**:
+         Buka Supabase Dashboard > SQL Editor, jalankan:
+         ```sql
+         INSERT INTO public.app_versions (
+           version_code,
+           version_name,
+           download_url,
+           title,
+           changelog,
+           is_mandatory,
+           is_active
+         ) VALUES (
+           <new_version_code>,
+           '<new_version_name>',
+           'https://github.com/HelloRayy/snapan-market-mobile/releases/download/v<new_version_name>/app-release.apk',
+           'Pembaruan Snaps v<new_version_name>',
+           '<descriptive changelog of recent features & fixes>',
+           false,
+           true
+         );
+         ```
+      ```
+
 ---
 
 ## Flutter Architecture & Modular Structure (`lib/`)

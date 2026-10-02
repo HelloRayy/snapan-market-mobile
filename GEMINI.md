@@ -40,4 +40,12 @@
    - The agent has ZERO authority to update issue states (e.g. moving from Todo/In Progress to Done, or vice versa).
    - State changes and ticket transitions are strictly managed manually by the user.
 
+10. **Mandatory Build APK Release & In-App Update Response Format**:
+    - Whenever the user asks to build an APK release or prepare a release, always output the 4-step manual guide format:
+      1. Naikkan Versi di `pubspec.yaml`
+      2. `flutter build apk --release`
+      3. Upload File APK ke GitHub Release
+      4. Query SQL `INSERT INTO public.app_versions` di Supabase Dashboard.
+
+
 

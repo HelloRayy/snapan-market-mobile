@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 interface SlideOverDrawerProps {
@@ -29,20 +30,22 @@ export function SlideOverDrawer({
     if (isOpen) {
       document.addEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'hidden';
+      document.body.classList.add('admin-has-overlay');
     }
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
+      document.body.classList.remove('admin-has-overlay');
     };
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
+  return createPortal(
+    <div className="fixed inset-0 overflow-hidden" style={{ zIndex: 100000 }}>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-slate-900/20 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
+        className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -83,6 +86,7 @@ export function SlideOverDrawer({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

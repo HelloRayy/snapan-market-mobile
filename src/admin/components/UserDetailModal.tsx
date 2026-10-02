@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { ProfileRow } from '../services/adminService';
 import { UserAvatar } from './UserAvatar';
+import { AdminModalPortal } from './AdminModalPortal';
 
 interface UserDetailModalProps {
   user: ProfileRow | null;
@@ -30,20 +31,7 @@ export function UserDetailModal({
   };
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 9999,
-        background: 'rgba(15, 23, 42, 0.6)',
-        backdropFilter: 'blur(3px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '16px',
-      }}
-      onClick={onClose}
-    >
+    <AdminModalPortal isOpen={isOpen} onClose={onClose}>
       <div
         style={{
           width: '100%',
@@ -439,6 +427,6 @@ export function UserDetailModal({
           </button>
         </div>
       </div>
-    </div>
+    </AdminModalPortal>
   );
 }

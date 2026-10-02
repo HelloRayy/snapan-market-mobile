@@ -31,20 +31,7 @@ export function PostDetailModal({
   };
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 9999,
-        background: 'rgba(15, 23, 42, 0.6)',
-        backdropFilter: 'blur(3px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '16px',
-      }}
-      onClick={onClose}
-    >
+    <AdminModalPortal isOpen={isOpen} onClose={onClose}>
       <div
         style={{
           width: '100%',
@@ -58,7 +45,6 @@ export function PostDetailModal({
           flexDirection: 'column',
           maxHeight: '90vh',
         }}
-        onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
         <div
@@ -295,6 +281,6 @@ export function PostDetailModal({
           </button>
         </div>
       </div>
-    </div>
+    </AdminModalPortal>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { adminService, type SchoolMeetingPointRow } from '../services/adminService';
+import { AdminModalPortal } from '../components/AdminModalPortal';
 
 export function MeetingPointsTab() {
   const [spots, setSpots] = useState<SchoolMeetingPointRow[]>([]);
@@ -381,31 +382,17 @@ export function MeetingPointsTab() {
       </section>
 
       {/* Add / Edit Spot Modal */}
-      {isModalOpen && (
+      <AdminModalPortal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <div
           style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 9999,
-            background: 'rgba(15, 23, 42, 0.55)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '16px',
+            background: '#ffffff',
+            borderRadius: '8px',
+            padding: '24px',
+            maxWidth: '480px',
+            width: '100%',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
           }}
-          onClick={() => setIsModalOpen(false)}
         >
-          <div
-            style={{
-              background: '#ffffff',
-              borderRadius: '8px',
-              padding: '24px',
-              maxWidth: '480px',
-              width: '100%',
-              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
             <div
               style={{
                 display: 'flex',
@@ -538,24 +525,14 @@ export function MeetingPointsTab() {
               </div>
             </form>
           </div>
-        </div>
-      )}
+        </AdminModalPortal>
 
       {/* Confirmation Modal for Delete Spot */}
-      {deleteConfirmSpot && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 9999,
-            background: 'rgba(15, 23, 42, 0.55)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '16px',
-          }}
-          onClick={() => setDeleteConfirmSpot(null)}
-        >
+      <AdminModalPortal
+        isOpen={!!deleteConfirmSpot}
+        onClose={() => setDeleteConfirmSpot(null)}
+      >
+        {deleteConfirmSpot && (
           <div
             style={{
               background: '#ffffff',
@@ -565,7 +542,6 @@ export function MeetingPointsTab() {
               width: '100%',
               boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
             }}
-            onClick={(e) => e.stopPropagation()}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
               <div
@@ -615,8 +591,8 @@ export function MeetingPointsTab() {
               </button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </AdminModalPortal>
     </>
   );
 }

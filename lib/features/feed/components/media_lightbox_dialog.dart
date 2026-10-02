@@ -1,19 +1,15 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:snapan_market/core/utils/formatters.dart';
-import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
+import 'package:snapan_market/features/feed/components/lightbox/lightbox_action_bar.dart';
+import 'package:snapan_market/features/feed/components/lightbox/lightbox_image_viewer.dart';
+import 'package:snapan_market/features/feed/components/lightbox/lightbox_nav_arrows.dart';
+import 'package:snapan_market/features/feed/components/lightbox/lightbox_top_header.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// Clean, Light-Themed Fullscreen Media Lightbox Dialog
 ///
-/// Matches Web React `MediaLightboxModal.tsx` 1:1:
-/// - Light canvas background (`Colors.white`)
-/// - Circular light close button at top-left
-/// - Multi-image counter pill at top-right (`1 / N`)
-/// - Multi-image swipeable PageView with pinch-to-zoom (InteractiveViewer)
-/// - Left/right floating chevron buttons for web/desktop
-/// - Bottom floating white glass capsule with social actions (Like, Comment, Repost, Share)
+/// Full-width edge-to-edge image presentation with pinch-to-zoom,
+/// swipe navigation, and interactive social controls.
 class MediaLightboxDialog extends StatefulWidget {
   final List<String> images;
   final int initialIndex;
@@ -80,7 +76,6 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
   late PageController _pageController;
   late int _currentIndex;
 
-  // Social action states (if post is provided)
   bool _isLiked = false;
   int _likesCount = 0;
   bool _isReposted = false;
@@ -187,401 +182,64 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
 
     return Material(
       color: Colors.white,
-      child: SafeArea(
-        top: false,
-        bottom: false,
-        child: Stack(
-          children: [
-            // 1. Center Image Gallery with PageView and InteractiveViewer (Zero crop & safe bounds)
-            Positioned(
-              top: topPadding + 64.0,
-              bottom: bottomPadding + (widget.post != null ? 80.0 : 24.0),
-              left: 0,
-              right: 0,
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: widget.images.length,
-                onPageChanged: (idx) {
-                  setState(() {
-                    _currentIndex = idx;
-                  });
-                },
-                itemBuilder: (context, index) {
-                  return Center(
-                    child: InteractiveViewer(
-                      minScale: 1.0,
-                      maxScale: 4.0,
-                      child: Image.network(
-                        widget.images[index],
-                        fit: BoxFit.contain,
-                        loadingBuilder: (context, child, progress) {
-                          if (progress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: progress.expectedTotalBytes != null
-                                  ? progress.cumulativeBytesLoaded /
-                                      progress.expectedTotalBytes!
-                                  : null,
-                              strokeWidth: 2.0,
-                              color: const Color(0xFF008BFF),
-                            ),
-                          );
-                        },
-                        errorBuilder: (_, __, ___) => const Center(
-                          child: Icon(
-                            Icons.broken_image_outlined,
-                            size: 48.0,
-                            color: Color(0xFF94A3B8),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
+      child: Stack(
+        children: [
+          // 1. Edge-to-edge full width PageView with pinch-to-zoom (No padding / safearea restrictions)
+          Positioned.fill(
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: widget.images.length,
+              onPageChanged: (idx) => setState(() => _currentIndex = idx),
+              itemBuilder: (context, index) {
+                return LightboxImageViewer(
+                  imageUrl: widget.images[index],
+                  screenWidth: mediaQuery.size.width,
+                );
+              },
             ),
+          ),
 
-            // 2. Left Floating Arrow Button (For web/desktop or quick tap)
-            if (widget.images.length > 1 && _currentIndex > 0)
-              Positioned(
-                left: 16.0,
-                top: 0,
-                bottom: 0,
-                child: Center(
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () {
-                        _pageController.previousPage(
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.easeInOut,
-                        );
-                      },
-                      child: Container(
-                        width: 40.0,
-                        height: 40.0,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.95),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: const Color(0xFFE2E8F0),
-                            width: 1.0,
-                          ),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x14000000),
-                              blurRadius: 8.0,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.chevron_left_rounded,
-                          size: 24.0,
-                          color: Color(0xFF1E293B),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-            // 3. Right Floating Arrow Button (For web/desktop or quick tap)
-            if (widget.images.length > 1 && _currentIndex < widget.images.length - 1)
-              Positioned(
-                right: 16.0,
-                top: 0,
-                bottom: 0,
-                child: Center(
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () {
-                        _pageController.nextPage(
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.easeInOut,
-                        );
-                      },
-                      child: Container(
-                        width: 40.0,
-                        height: 40.0,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.95),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: const Color(0xFFE2E8F0),
-                            width: 1.0,
-                          ),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x14000000),
-                              blurRadius: 8.0,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.chevron_right_rounded,
-                          size: 24.0,
-                          color: Color(0xFF1E293B),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-            // 4. Top Header Bar: Clean Light Circular Close Button + Counter Badge
-            Positioned(
-              top: topPadding + 12.0,
-              left: 16.0,
-              right: 16.0,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Top-Left: Light Circular Close Button
-                  MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () => Navigator.of(context).pop(),
-                      child: Container(
-                        width: 40.0,
-                        height: 40.0,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: const Color(0xFFE2E8F0),
-                            width: 1.0,
-                          ),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x10000000),
-                              blurRadius: 6.0,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.close_rounded,
-                          size: 20.0,
-                          color: Color(0xFF0F172A),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Top-Right: Counter Badge for Multi-Image [ 1 / 3 ]
-                  if (widget.images.length > 1)
-                    Container(
-                      height: 32.0,
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF8FAFC),
-                        borderRadius: BorderRadius.circular(16.0),
-                        border: Border.all(
-                          color: const Color(0xFFE2E8F0),
-                          width: 1.0,
-                        ),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color(0x0A000000),
-                            blurRadius: 4.0,
-                            offset: Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                      child: Text(
-                        '${_currentIndex + 1} / ${widget.images.length}',
-                        style: const TextStyle(
-                          fontSize: 12.0,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF334155),
-                          fontFeatures: [FontFeature.tabularFigures()],
-                          letterSpacing: -0.2,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+          // 2. Navigation Chevrons (web/desktop or quick tap)
+          LightboxNavArrows(
+            currentIndex: _currentIndex,
+            totalImages: widget.images.length,
+            onPrevious: () => _pageController.previousPage(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
             ),
+            onNext: () => _pageController.nextPage(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
+            ),
+          ),
 
-            // 5. Bottom Gradient Shadow Bar (Flat Action Bar)
-            if (widget.post != null)
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  padding: EdgeInsets.only(
-                    top: 24.0,
-                    bottom: bottomPadding > 0 ? bottomPadding + 8.0 : 16.0,
-                    left: 20.0,
-                    right: 20.0,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      colors: [
-                        Colors.white.withValues(alpha: 0.98),
-                        Colors.white.withValues(alpha: 0.85),
-                        Colors.white.withValues(alpha: 0.0),
-                      ],
-                      stops: const [0.0, 0.55, 1.0],
-                    ),
-                  ),
-                  child: Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        // Like Button
-                        MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: _handleLikeToggle,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  ScaleTransition(
-                                    scale: _likeScaleAnim,
-                                    child: FeedHeartIcon(
-                                      isLiked: _isLiked,
-                                      size: 20.0,
-                                      activeColor: const Color(0xFFE11D48),
-                                      inactiveColor: const Color(0xFF334155),
-                                    ),
-                                  ),
-                                  if (_likesCount > 0) ...[
-                                    const SizedBox(width: 5.0),
-                                    Text(
-                                      formatCompactNumber(_likesCount),
-                                      style: TextStyle(
-                                        fontSize: 12.5,
-                                        fontWeight: _isLiked ? FontWeight.w600 : FontWeight.w400,
-                                        color: _isLiked
-                                            ? const Color(0xFFE11D48)
-                                            : const Color(0xFF475569),
-                                        fontFeatures: const [FontFeature.tabularFigures()],
-                                      ),
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
+          // 3. Top Header Bar: Close Button + Counter Badge
+          LightboxTopHeader(
+            topPadding: topPadding,
+            currentIndex: _currentIndex,
+            totalImages: widget.images.length,
+            onClose: () => Navigator.of(context).pop(),
+          ),
 
-                        const SizedBox(width: 12.0),
-
-                        // Comment Button
-                        MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: () {
-                              Navigator.of(context).pop();
-                              widget.onPostClick?.call(widget.post!);
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const FeedCommentIcon(
-                                    size: 19.0,
-                                    color: Color(0xFF334155),
-                                  ),
-                                  if (widget.post!.commentsCount > 0) ...[
-                                    const SizedBox(width: 5.0),
-                                    Text(
-                                      formatCompactNumber(widget.post!.commentsCount),
-                                      style: const TextStyle(
-                                        fontSize: 12.5,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(0xFF475569),
-                                        fontFeatures: [FontFeature.tabularFigures()],
-                                      ),
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(width: 12.0),
-
-                        // Repost Button
-                        MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: _handleRepostToggle,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  FeedRepostIcon(
-                                    isReposted: _isReposted,
-                                    size: 19.0,
-                                    activeColor: const Color(0xFF10B981),
-                                    inactiveColor: const Color(0xFF334155),
-                                  ),
-                                  if (_repostsCount > 0) ...[
-                                    const SizedBox(width: 5.0),
-                                    Text(
-                                      formatCompactNumber(_repostsCount),
-                                      style: TextStyle(
-                                        fontSize: 12.5,
-                                        fontWeight: _isReposted ? FontWeight.w600 : FontWeight.w400,
-                                        color: _isReposted
-                                            ? const Color(0xFF10B981)
-                                            : const Color(0xFF475569),
-                                        fontFeatures: const [FontFeature.tabularFigures()],
-                                      ),
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(width: 12.0),
-
-                        // Share Button
-                        MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: _handleShare,
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-                              child: FeedShareIcon(
-                                size: 19.0,
-                                color: Color(0xFF334155),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
+          // 4. Bottom Action Bar: Like, Comment, Repost, Share
+          if (widget.post != null)
+            LightboxActionBar(
+              post: widget.post!,
+              bottomPadding: bottomPadding,
+              isLiked: _isLiked,
+              likesCount: _likesCount,
+              isReposted: _isReposted,
+              repostsCount: _repostsCount,
+              likeScaleAnim: _likeScaleAnim,
+              onLikeToggle: _handleLikeToggle,
+              onCommentClick: () {
+                Navigator.of(context).pop();
+                widget.onPostClick?.call(widget.post!);
+              },
+              onRepostToggle: _handleRepostToggle,
+              onShareClick: _handleShare,
+            ),
+        ],
       ),
     );
   }

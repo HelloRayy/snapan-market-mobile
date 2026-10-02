@@ -420,10 +420,10 @@
     "semantic_hash": "376353f3b5906493c77c19082a5b284f"
   },
   "lib/features/feed/components/market_feed_icons.dart": {
-    "mtime": 1790578963.2928765,
-    "seen": 1790734761.6116412,
-    "ast_hash": "b17d302c1b85995e2b4522516f642acd",
-    "semantic_hash": "b17d302c1b85995e2b4522516f642acd"
+    "mtime": 1790960627.4962049,
+    "seen": 1790960666.8349571,
+    "ast_hash": "04b82216e1977a6f12335795ff77338d",
+    "semantic_hash": ""
   },
   "lib/features/feed/components/market_post_card.dart": {
     "mtime": 1790840273.3351924,

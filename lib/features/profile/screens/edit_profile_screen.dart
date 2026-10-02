@@ -239,13 +239,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
           title: const Text('Edit Profil', style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.w700, color: AppColors.ink)),
           actions: [
-            if (_hasChanges)
-              TextButton(
-                onPressed: _isSaving ? null : _handleSave,
-                child: _isSaving
-                    ? const SizedBox(width: 16.0, height: 16.0, child: CircularProgressIndicator(strokeWidth: 2.0, color: AppColors.primary))
-                    : const Text('Simpan', style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w700, color: AppColors.primary)),
-              ),
+            TextButton(
+              onPressed: (_hasChanges && !_isSaving) ? _handleSave : null,
+              child: _isSaving
+                  ? const SizedBox(
+                      width: 16.0,
+                      height: 16.0,
+                      child: CircularProgressIndicator(strokeWidth: 2.0, color: AppColors.primary),
+                    )
+                  : Text(
+                      'Simpan',
+                      style: TextStyle(
+                        fontSize: 15.0,
+                        fontWeight: FontWeight.w700,
+                        color: _hasChanges ? AppColors.primary : const Color(0xFF94A3B8),
+                      ),
+                    ),
+            ),
           ],
         ),
         body: Column(

@@ -241,6 +241,21 @@ class SupabaseFeedService {
     }
   }
 
+  /// Delete a comment by its id
+  Future<void> deleteComment(String commentId) async {
+    final user = _currentUser;
+    if (user == null) {
+      throw Exception('Anda harus masuk untuk menghapus komentar.');
+    }
+
+    try {
+      await _client.from('post_comments').delete().eq('id', commentId);
+    } catch (e) {
+      debugPrint('Error deleteComment: $e');
+      rethrow;
+    }
+  }
+
   /// Search posts by keyword in caption or title
   Future<List<MarketPostModel>> searchPosts(String query) async {
     if (query.trim().isEmpty) return [];

@@ -169,6 +169,9 @@ class SupabaseService {
         parentCommentId: parentCommentId,
       );
 
+  Future<void> deleteComment(String commentId) =>
+      feed.deleteComment(commentId);
+
   Future<List<MarketPostModel>> searchPosts(String query) =>
       feed.searchPosts(query);
 

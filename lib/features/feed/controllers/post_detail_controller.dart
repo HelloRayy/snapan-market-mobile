@@ -120,6 +120,64 @@ class PostDetailController extends ChangeNotifier {
     }
   }
 
+  /// Delete a comment with optimistic UI update and error rollback
+  Future<bool> deleteComment(BuildContext context, String commentId) async {
+    HapticFeedback.mediumImpact();
+
+    int removedCount = 1;
+    final topComment = comments.where((c) => c.id == commentId).firstOrNull;
+    if (topComment != null) {
+      removedCount = 1 + topComment.replies.length;
+    }
+
+    final previousComments = List<PostCommentModel>.from(comments);
+    final previousCount = post.commentsCount;
+
+    comments = comments.where((c) => c.id != commentId).map((c) {
+      if (c.replies.any((r) => r.id == commentId)) {
+        return c.copyWith(
+          replies: c.replies.where((r) => r.id != commentId).toList(),
+        );
+      }
+      return c;
+    }).toList();
+
+    post = post.copyWith(
+      commentsCount: (post.commentsCount - removedCount).clamp(0, 999999),
+    );
+    notifyListeners();
+
+    try {
+      await SupabaseService.instance.deleteComment(commentId);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Komentar berhasil dihapus'),
+            duration: Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+      return true;
+    } catch (e) {
+      debugPrint('Error deleting comment: $e');
+      comments = previousComments;
+      post = post.copyWith(commentsCount: previousCount);
+      notifyListeners();
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Gagal menghapus komentar. Coba lagi.'),
+            duration: Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+      return false;
+    }
+  }
+
   /// Vote in a poll with optimistic UI update
   Future<void> votePoll(List<String> optionIds) async {
     if (post.poll == null) return;

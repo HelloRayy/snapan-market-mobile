@@ -199,6 +199,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     isProductMode: _isProductMode,
                     onReplyClick: (u, [cId]) => _controller.setReply(u, cId),
                     onImageClick: _handleImageClick,
+                    onDeleteComment: (cId) => _controller.deleteComment(context, cId),
                   ),
                   const SizedBox(height: 100.0),
                 ],

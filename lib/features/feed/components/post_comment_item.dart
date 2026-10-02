@@ -17,6 +17,8 @@ class PostCommentItem extends StatefulWidget {
   final bool isNested;
   final bool isLastNested;
   final String? parentCommentId;
+  final String? postAuthorId;
+  final ValueChanged<String>? onDeleteComment;
 
   const PostCommentItem({
     super.key,
@@ -29,6 +31,8 @@ class PostCommentItem extends StatefulWidget {
     this.isNested = false,
     this.isLastNested = false,
     this.parentCommentId,
+    this.postAuthorId,
+    this.onDeleteComment,
   });
 
   @override
@@ -112,6 +116,8 @@ class _PostCommentItemState extends State<PostCommentItem> {
         onUserClick: widget.onUserClick,
         onImageClick: widget.onImageClick,
         onShare: _copyToClipboard,
+        postAuthorId: widget.postAuthorId,
+        onDeleteComment: widget.onDeleteComment,
       );
     }
 
@@ -263,6 +269,8 @@ class _PostCommentItemState extends State<PostCommentItem> {
                         onUserClick: widget.onUserClick,
                         onImageClick: widget.onImageClick,
                         onShare: _copyToClipboard,
+                        postAuthorId: widget.postAuthorId,
+                        onDeleteComment: widget.onDeleteComment,
                       ),
                     ],
                   );
@@ -346,8 +354,10 @@ class _PostCommentItemState extends State<PostCommentItem> {
             context: context,
             comment: widget.comment,
             parentCommentId: widget.comment.id,
+            postAuthorId: widget.postAuthorId,
             onReplyClick: widget.onReplyClick,
             onReplyToComment: widget.onReplyToComment,
+            onDeleteComment: widget.onDeleteComment,
           ),
           borderRadius: BorderRadius.circular(19.0),
           splashColor: const Color(0xFFF1F5F9),

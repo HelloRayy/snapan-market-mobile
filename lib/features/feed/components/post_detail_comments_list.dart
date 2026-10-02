@@ -12,6 +12,7 @@ class PostDetailCommentsList extends StatelessWidget {
   final bool isProductMode;
   final void Function(String username, [String? commentId]) onReplyClick;
   final void Function(List<String> images, int index) onImageClick;
+  final ValueChanged<String>? onDeleteComment;
 
   const PostDetailCommentsList({
     super.key,
@@ -21,6 +22,7 @@ class PostDetailCommentsList extends StatelessWidget {
     required this.isProductMode,
     required this.onReplyClick,
     required this.onImageClick,
+    this.onDeleteComment,
   });
 
   @override
@@ -62,9 +64,11 @@ class PostDetailCommentsList extends StatelessWidget {
           ...comments.map((comment) => PostCommentItem(
                 key: ValueKey(comment.id),
                 comment: comment,
+                postAuthorId: post.seller.id,
                 onReplyClick: (u) => onReplyClick(u, comment.id),
                 onReplyToComment: (u, cId) => onReplyClick(u, cId),
                 onImageClick: onImageClick,
+                onDeleteComment: onDeleteComment,
               )),
         if (post.threadChain.isEmpty && comments.isEmpty && isLoadingComments)
           const CommentListSkeleton(itemCount: 3),

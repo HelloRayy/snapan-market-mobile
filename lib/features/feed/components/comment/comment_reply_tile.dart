@@ -21,6 +21,8 @@ class CommentReplyTile extends StatelessWidget {
   final ValueChanged<String>? onUserClick;
   final void Function(List<String> images, int index)? onImageClick;
   final ValueChanged<String> onShare;
+  final String? postAuthorId;
+  final ValueChanged<String>? onDeleteComment;
 
   const CommentReplyTile({
     super.key,
@@ -34,6 +36,8 @@ class CommentReplyTile extends StatelessWidget {
     this.onUserClick,
     this.onImageClick,
     required this.onShare,
+    this.postAuthorId,
+    this.onDeleteComment,
   });
 
   @override
@@ -212,8 +216,10 @@ class CommentReplyTile extends StatelessWidget {
             context: context,
             comment: reply,
             parentCommentId: parentCommentId,
+            postAuthorId: postAuthorId,
             onReplyClick: onReplyClick,
             onReplyToComment: onReplyToComment,
+            onDeleteComment: onDeleteComment,
           ),
           borderRadius: BorderRadius.circular(19.0),
           splashColor: const Color(0xFFF1F5F9),

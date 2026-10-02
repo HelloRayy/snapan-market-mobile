@@ -90,7 +90,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   }
 
   Future<void> _handleManualCheckUpdate() async {
-    _drawerController?.close();
+    Navigator.of(context).maybePop();
     try {
       final update = await AppUpdateService.instance.checkForUpdate(isManual: true);
       if (!mounted) return;
@@ -108,7 +108,6 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
   @override
   void dispose() {
-    _drawerController?.dispose();
     HomeMenuPopover.dismiss();
     _feedController.dispose();
     _fabAnimationController?.dispose();
@@ -138,7 +137,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
   }
 
   void _handleOpenAuth() {
-    _drawerController?.close();
+    Navigator.of(context).maybePop();
     HomeMenuPopover.dismiss();
     Navigator.push(
       context,

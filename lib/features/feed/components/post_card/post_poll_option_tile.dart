@@ -52,6 +52,8 @@ class PostPollOptionTile extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
+                  fontFamily: 'SFPro',
+                  fontFamilyFallback: const ['AppleColorEmoji'],
                   fontSize: 13.5,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                   color: isSelected ? AppColors.primary : const Color(0xFF0F172A),
@@ -139,6 +141,8 @@ class PostPollOptionTile extends StatelessWidget {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
+                                  fontFamily: 'SFPro',
+                                  fontFamilyFallback: const ['AppleColorEmoji'],
                                   fontSize: 13.5,
                                   fontWeight: isWinning ? FontWeight.w700 : FontWeight.w500,
                                   color: const Color(0xFF0F172A),

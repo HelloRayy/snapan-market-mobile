@@ -48,6 +48,8 @@ class ChatMessageBubble extends StatelessWidget {
                   Text(
                     message.text,
                     style: const TextStyle(
+                      fontFamily: 'SFPro',
+                      fontFamilyFallback: ['AppleColorEmoji'],
                       fontSize: 14.5,
                       color: Colors.white,
                       height: 1.38,
@@ -119,6 +121,8 @@ class ChatMessageBubble extends StatelessWidget {
                   Text(
                     message.text,
                     style: const TextStyle(
+                      fontFamily: 'SFPro',
+                      fontFamilyFallback: ['AppleColorEmoji'],
                       fontSize: 14.5,
                       color: Color(0xFF0F172A),
                       height: 1.38,

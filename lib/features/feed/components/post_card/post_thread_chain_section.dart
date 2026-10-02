@@ -137,7 +137,7 @@ class PostThreadChainItem extends StatelessWidget {
                       chain.timestamp,
                       style: const TextStyle(
                         fontSize: 13.0,
-                        color: AppColors.graphite,
+                        color: Color(0xFF64748B),
                         fontFeatures: [FontFeature.tabularFigures()],
                       ),
                     ),

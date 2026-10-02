@@ -192,7 +192,7 @@ class PostCardHeader extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 13.0,
                 fontWeight: FontWeight.normal,
-                color: AppColors.graphite,
+                color: Color(0xFF64748B),
                 fontFeatures: [FontFeature.tabularFigures()],
               ),
             ),

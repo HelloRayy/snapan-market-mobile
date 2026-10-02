@@ -42,67 +42,47 @@ class _ThreadsHomePainter extends CustomPainter {
     final w = size.width;
     final h = size.height;
 
-    // Outer bounding coordinates with padding for 2.2px stroke
-    final left = w * 0.12;
-    final right = w * 0.88;
-    final bottom = h * 0.88;
-    final eaveY = h * 0.42;
-    final peakY = h * 0.12;
+    // Geometric proportions calibrated 1:1 to reference outline:
+    final left = w * 0.13;
+    final right = w * 0.87;
+    final bottom = h * 0.87;
+    final eaveY = h * 0.43;
+    final peakY = h * 0.13;
     final peakX = w * 0.50;
-    final r = w * 0.085; // Corner rounding radius (~2.0px)
+    final cornerR = w * 0.08; // Bottom corner radius (~1.8px)
 
-    final path = Path();
-    // 1. Start bottom-left, rounded into bottom edge
-    path.moveTo(left + r, bottom);
-    // 2. Bottom flat edge to bottom-right
-    path.lineTo(right - r, bottom);
-    // 3. Bottom-right rounded corner
-    path.arcToPoint(
-      Offset(right, bottom - r),
-      radius: Radius.circular(r),
-    );
-    // 4. Right vertical wall up to eave
-    path.lineTo(right, eaveY + r);
-    // 5. Right eave rounded corner transitioning to roof slope
-    path.arcToPoint(
-      Offset(right - r * 0.6, eaveY - r * 0.4),
-      radius: Radius.circular(r),
-    );
-    // 6. Roof slope up towards peak
-    path.lineTo(peakX + r * 0.6, peakY + r * 0.5);
-    // 7. Peak rounded top ridge
-    path.arcToPoint(
-      Offset(peakX - r * 0.6, peakY + r * 0.5),
-      radius: Radius.circular(r),
-    );
-    // 8. Roof slope down towards left eave
-    path.lineTo(left + r * 0.6, eaveY - r * 0.4);
-    // 9. Left eave rounded corner transitioning into left wall
-    path.arcToPoint(
-      Offset(left, eaveY + r),
-      radius: Radius.circular(r),
-    );
-    // 10. Left vertical wall down towards base
-    path.lineTo(left, bottom - r);
-    // 11. Bottom-left rounded corner back to start
-    path.arcToPoint(
-      Offset(left + r, bottom),
-      radius: Radius.circular(r),
-    );
-    path.close();
+    final path = Path()
+      ..moveTo(left, eaveY)
+      ..lineTo(peakX, peakY)
+      ..lineTo(right, eaveY)
+      ..lineTo(right, bottom - cornerR)
+      ..arcToPoint(
+        Offset(right - cornerR, bottom),
+        radius: Radius.circular(cornerR),
+      )
+      ..lineTo(left + cornerR, bottom)
+      ..arcToPoint(
+        Offset(left, bottom - cornerR),
+        radius: Radius.circular(cornerR),
+      )
+      ..close();
 
-    final paint = Paint()
+    final strokePaint = Paint()
       ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.1
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
 
     if (isFilled) {
-      paint.style = PaintingStyle.fill;
-      canvas.drawPath(path, paint);
+      final fillPaint = Paint()
+        ..color = color
+        ..style = PaintingStyle.fill;
+
+      canvas.drawPath(path, fillPaint);
+      canvas.drawPath(path, strokePaint);
     } else {
-      paint.style = PaintingStyle.stroke;
-      paint.strokeWidth = 2.2;
-      canvas.drawPath(path, paint);
+      canvas.drawPath(path, strokePaint);
     }
   }
 

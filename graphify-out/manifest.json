@@ -780,10 +780,10 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1788237081.4833472,
-    "seen": 1790510031.17306,
-    "ast_hash": "1a0051ddf6cd27722dc26b6534794021",
-    "semantic_hash": "1a0051ddf6cd27722dc26b6534794021"
+    "mtime": 1790953933.2461078,
+    "seen": 1790954806.6209867,
+    "ast_hash": "fec47019aac21f7b93f93244f52eaafb",
+    "semantic_hash": ""
   },
   "playwright.config.ts": {
     "mtime": 1788152223.90051,
@@ -3312,27 +3312,27 @@
     "semantic_hash": "d52c7eda502cd90b8a2e7e87a1288b9d"
   },
   "src/admin/components/AdminHeader.tsx": {
-    "mtime": 1790953170.823454,
-    "seen": 1790953569.254921,
-    "ast_hash": "fd6a624d0e63a8d194ec1e784b18d911",
+    "mtime": 1790954219.1920128,
+    "seen": 1790954806.6210444,
+    "ast_hash": "0289c825e04c64017da5ef9d74c871fb",
     "semantic_hash": ""
   },
   "src/admin/components/AdminSidebar.tsx": {
-    "mtime": 1790953192.3056557,
-    "seen": 1790953569.254923,
-    "ast_hash": "626e9f15edd26b601d81f82c7a2334f0",
+    "mtime": 1790954203.6039093,
+    "seen": 1790954806.621049,
+    "ast_hash": "6031a950039d679b1368280589dbd2d6",
     "semantic_hash": ""
   },
   "src/admin/components/StatsCard.tsx": {
-    "mtime": 1790953209.0518093,
-    "seen": 1790953569.2549286,
-    "ast_hash": "7b8a49ee0a937eb5ab208079d9b86771",
+    "mtime": 1790954238.4231179,
+    "seen": 1790954806.621063,
+    "ast_hash": "4d96563ab41052b5e2dce24f2d7ed5f5",
     "semantic_hash": ""
   },
   "src/admin/pages/AdminDashboard.tsx": {
-    "mtime": 1790940242.1400702,
-    "seen": 1790940524.199629,
-    "ast_hash": "17468ae49cb7ed448f16e539ebe044ff",
+    "mtime": 1790954186.133793,
+    "seen": 1790954806.6211026,
+    "ast_hash": "92c316e9c8227dbbd355eefe2e2e6502",
     "semantic_hash": ""
   },
   "src/admin/pages/AdminLoginPage.tsx": {
@@ -3342,27 +3342,27 @@
     "semantic_hash": "a856dd852317c817b78b7b9b01cb7480"
   },
   "src/admin/pages/ContentModerationTab.tsx": {
-    "mtime": 1790953441.4137557,
-    "seen": 1790953569.2549424,
-    "ast_hash": "bdc6463a305f2102b61f5a81485b53df",
+    "mtime": 1790954762.0226524,
+    "seen": 1790954806.6211128,
+    "ast_hash": "302d0f0e035688a4b3d2f7a7b3b9c292",
     "semantic_hash": ""
   },
   "src/admin/pages/MeetingPointsTab.tsx": {
-    "mtime": 1790953499.6132846,
-    "seen": 1790953569.2549431,
-    "ast_hash": "7e4feb717df464ae27ca080210171a60",
+    "mtime": 1790954658.6111689,
+    "seen": 1790954806.621117,
+    "ast_hash": "aee5e36044f122423ea95509166c9ffa",
     "semantic_hash": ""
   },
   "src/admin/pages/OverviewTab.tsx": {
-    "mtime": 1790953271.9033477,
-    "seen": 1790953569.2549443,
-    "ast_hash": "2a0e73bb55b464f18613342d11dd2878",
+    "mtime": 1790954711.6484165,
+    "seen": 1790954806.6211205,
+    "ast_hash": "b1ae415a6a2e017ac5e023c78327997e",
     "semantic_hash": ""
   },
   "src/admin/pages/UsersManagementTab.tsx": {
-    "mtime": 1790953389.2092907,
-    "seen": 1790953569.254945,
-    "ast_hash": "d81eea5eba2e0882e47785dce340ddc1",
+    "mtime": 1790954732.9525158,
+    "seen": 1790954806.6211243,
+    "ast_hash": "b13056c53017bb90d2da8f46fd44df9e",
     "semantic_hash": ""
   },
   "src/admin/services/adminService.ts": {

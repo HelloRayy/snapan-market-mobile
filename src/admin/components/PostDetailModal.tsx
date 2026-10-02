@@ -1,6 +1,4 @@
-import { X, Trash2, ExternalLink } from 'lucide-react';
 import type { MarketPostRow, ProfileRow } from '../services/adminService';
-import { Badge } from './tremor/Badge';
 
 type PostWithSeller = MarketPostRow & { seller?: ProfileRow | null };
 
@@ -32,21 +30,52 @@ export function PostDetailModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 9999,
+        background: 'rgba(15, 23, 42, 0.6)',
+        backdropFilter: 'blur(3px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '16px',
+      }}
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 flex flex-col max-h-[90vh]"
+        style={{
+          width: '100%',
+          maxWidth: '560px',
+          background: '#ffffff',
+          borderRadius: '10px',
+          border: '1px solid #e4e7ec',
+          boxShadow: '0 20px 35px rgba(0, 0, 0, 0.15)',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          maxHeight: '90vh',
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+        <div
+          style={{
+            padding: '18px 24px',
+            borderBottom: '1px solid #f1f3f5',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            background: '#ffffff',
+          }}
+        >
           <div>
-            <h3 className="text-base font-bold text-slate-900">
+            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#1f2937' }}>
               Inspeksi Konten Feed
             </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              ID: {post.id.slice(0, 8)}... • Diterbitkan {new Date(post.created_at).toLocaleDateString('id-ID', {
+            <p style={{ margin: '2px 0 0', fontSize: '12.5px', color: '#64748b' }}>
+              ID: {post.id.slice(0, 8)}... • Diterbitkan{' '}
+              {new Date(post.created_at).toLocaleDateString('id-ID', {
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric',
@@ -54,75 +83,165 @@ export function PostDetailModal({
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
             aria-label="Tutup modal"
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '6px',
+              background: '#f8fafc',
+              border: '1px solid #e4e7ec',
+              color: '#64748b',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              fontSize: '14px',
+            }}
           >
-            <X className="h-4 w-4" />
+            <i className="fa-solid fa-xmark"></i>
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto space-y-5 text-xs">
+        <div
+          style={{
+            padding: '24px',
+            overflowY: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px',
+          }}
+        >
           {/* Images Grid */}
           {images.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+            <div>
+              <div
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  color: '#64748b',
+                  marginBottom: '8px',
+                }}
+              >
                 Lampiran Media ({images.length})
-              </h4>
-              <div className="grid grid-cols-2 gap-2">
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 {images.map((imgUrl, i) => (
                   <a
                     key={i}
                     href={imgUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="relative aspect-video rounded-xl overflow-hidden bg-slate-100 border border-slate-200 block group"
+                    style={{
+                      aspectRatio: '16/9',
+                      borderRadius: '8px',
+                      overflow: 'hidden',
+                      background: '#f1f5f9',
+                      border: '1px solid #e4e7ec',
+                      display: 'block',
+                      position: 'relative',
+                    }}
                   >
                     <img
                       src={imgUrl}
-                      alt={`Preview ${i + 1}`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                      alt={`Lampiran ${i + 1}`}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
-                    <div className="absolute inset-0 bg-slate-900/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-semibold">
-                      <ExternalLink className="h-4 w-4" />
-                    </div>
                   </a>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Title & Price */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Badge variant={post.post_type === 'product' ? 'indigo' : 'slate'} className="uppercase">
+          {/* Title, Badge & Price */}
+          <div
+            style={{
+              padding: '16px',
+              borderRadius: '8px',
+              background: '#f8fafc',
+              border: '1px solid #e4e7ec',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <span
+                style={{
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  background: post.post_type === 'product' ? '#eaf0fc' : '#fff1e6',
+                  color: post.post_type === 'product' ? '#4272d7' : '#f97316',
+                  border: `1px solid ${post.post_type === 'product' ? '#d4e2fa' : '#fed7aa'}`,
+                }}
+              >
                 {post.post_type}
-              </Badge>
-              <span className="text-sm font-bold text-slate-900 tabular-nums">
+              </span>
+              <span style={{ fontSize: '15px', fontWeight: 700, color: '#4272d7', fontVariantNumeric: 'tabular-nums' }}>
                 {formatPrice(post.price)}
               </span>
             </div>
-            <h4 className="text-base font-bold text-slate-900">
+
+            <h4 style={{ margin: '0 0 6px', fontSize: '15px', fontWeight: 700, color: '#1f2937' }}>
               {post.title || 'Postingan Tanpa Judul'}
             </h4>
-            <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 leading-relaxed whitespace-pre-wrap">
+
+            <p style={{ margin: 0, fontSize: '13px', color: '#475569', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
               {post.caption || post.description || 'Tidak ada deskripsi tambahan.'}
-            </div>
+            </p>
           </div>
 
           {/* Author Card */}
-          <div className="space-y-2">
-            <h5 className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+          <div>
+            <div
+              style={{
+                fontSize: '11px',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                color: '#64748b',
+                marginBottom: '8px',
+              }}
+            >
               Penulis / Siswa Pemilik
-            </h5>
-            <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-white">
-              <div className="h-10 w-10 rounded-xl bg-[#EEF0FF] border border-[#D8DBFE] flex items-center justify-center font-bold text-xs text-[#3D38F5] shrink-0">
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '12px 16px',
+                borderRadius: '8px',
+                background: '#ffffff',
+                border: '1px solid #e4e7ec',
+              }}
+            >
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '8px',
+                  background: '#eaf0fc',
+                  color: '#4272d7',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 700,
+                  fontSize: '14px',
+                  overflow: 'hidden',
+                  flexShrink: 0,
+                }}
+              >
                 {post.seller?.avatar_url ? (
                   <img
                     src={post.seller.avatar_url}
-                    alt={post.seller.full_name || ''}
-                    className="h-full w-full rounded-xl object-cover"
+                    alt=""
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 ) : post.seller?.full_name ? (
                   post.seller.full_name.charAt(0).toUpperCase()
@@ -131,50 +250,67 @@ export function PostDetailModal({
                 )}
               </div>
               <div>
-                <div className="text-xs font-bold text-slate-900">
+                <div style={{ fontWeight: 600, fontSize: '13.5px', color: '#1f2937' }}>
                   {post.seller?.full_name || 'Siswa SMKN 8'}
                 </div>
-                <div className="text-[11px] text-slate-500">
+                <div style={{ fontSize: '11.5px', color: '#64748b' }}>
                   @{post.seller?.username || 'user'} • {post.seller?.class_group || 'Umum'}
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Metadata Table */}
-          <div className="rounded-xl border border-slate-200 bg-white divide-y divide-slate-100">
-            <div className="flex items-center justify-between p-3">
-              <span className="text-slate-500">Kategori / Topik</span>
-              <span className="font-semibold text-slate-900">{post.category || post.topic_tag || 'Umum'}</span>
-            </div>
-            {post.location_tag && (
-              <div className="flex items-center justify-between p-3">
-                <span className="text-slate-500">Lokasi COD</span>
-                <span className="font-semibold text-slate-900">{post.location_tag}</span>
-              </div>
-            )}
-            <div className="flex items-center justify-between p-3">
-              <span className="text-slate-500">Waktu Dibuat</span>
-              <span className="font-semibold text-slate-900">
-                {new Date(post.created_at).toLocaleString('id-ID')}
-              </span>
-            </div>
-          </div>
         </div>
 
         {/* Modal Footer */}
-        <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between gap-3">
+        <div
+          style={{
+            padding: '16px 24px',
+            borderTop: '1px solid #f1f3f5',
+            background: '#f8fafc',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '12px',
+          }}
+        >
           <button
+            type="button"
+            className="m-btn m-btn--ghost"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-200/60 transition-colors cursor-pointer"
+            style={{
+              height: '38px',
+              padding: '0 16px',
+              fontSize: '13px',
+              fontWeight: 500,
+              background: '#ffffff',
+              border: '1px solid #e4e7ec',
+              color: '#475569',
+              borderRadius: '6px',
+            }}
           >
             Tutup
           </button>
+
           <button
+            type="button"
             onClick={() => onRequestTakedown(post)}
-            className="px-4 py-2 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+            style={{
+              height: '38px',
+              padding: '0 18px',
+              fontSize: '13px',
+              fontWeight: 600,
+              borderRadius: '6px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              cursor: 'pointer',
+              border: '1px solid #dc3545',
+              background: '#dc3545',
+              color: '#ffffff',
+              boxShadow: '0 2px 6px rgba(220, 53, 69, 0.35)',
+            }}
           >
-            <Trash2 className="h-3.5 w-3.5" />
+            <i className="fa-solid fa-trash-can"></i>
             <span>Takedown Postingan</span>
           </button>
         </div>

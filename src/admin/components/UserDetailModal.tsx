@@ -1,16 +1,5 @@
 import { useState } from 'react';
-import {
-  X,
-  CheckCircle2,
-  XCircle,
-  Copy,
-  ShieldCheck,
-  GraduationCap,
-  ShoppingBag,
-  TrendingUp,
-} from 'lucide-react';
 import type { ProfileRow } from '../services/adminService';
-import { Badge } from './tremor/Badge';
 
 interface UserDetailModalProps {
   user: ProfileRow | null;
@@ -41,21 +30,52 @@ export function UserDetailModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 9999,
+        background: 'rgba(15, 23, 42, 0.6)',
+        backdropFilter: 'blur(3px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '16px',
+      }}
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 flex flex-col max-h-[90vh]"
+        style={{
+          width: '100%',
+          maxWidth: '560px',
+          background: '#ffffff',
+          borderRadius: '10px',
+          border: '1px solid #e4e7ec',
+          boxShadow: '0 20px 35px rgba(0, 0, 0, 0.15)',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          maxHeight: '90vh',
+        }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+        {/* Modal Header (CoolAdmin Styled) */}
+        <div
+          style={{
+            padding: '18px 24px',
+            borderBottom: '1px solid #f1f3f5',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            background: '#ffffff',
+          }}
+        >
           <div>
-            <h3 className="text-base font-bold text-slate-900">
+            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#1f2937' }}>
               Inspeksi Profil Siswa
             </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Bergabung sejak {new Date(user.created_at).toLocaleDateString('id-ID', {
+            <p style={{ margin: '2px 0 0', fontSize: '12.5px', color: '#64748b' }}>
+              Bergabung sejak{' '}
+              {new Date(user.created_at).toLocaleDateString('id-ID', {
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric',
@@ -63,24 +83,71 @@ export function UserDetailModal({
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
             aria-label="Tutup modal"
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '6px',
+              background: '#f8fafc',
+              border: '1px solid #e4e7ec',
+              color: '#64748b',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              fontSize: '14px',
+            }}
           >
-            <X className="h-4 w-4" />
+            <i className="fa-solid fa-xmark"></i>
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto space-y-5 text-xs">
+        <div
+          style={{
+            padding: '24px',
+            overflowY: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px',
+          }}
+        >
           {/* Hero Profile Card */}
-          <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200/80">
-            <div className="h-14 w-14 rounded-xl bg-[#EEF0FF] border-2 border-[#D8DBFE] flex items-center justify-center font-bold text-xl text-[#3D38F5] shrink-0 overflow-hidden shadow-2xs">
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '16px',
+              padding: '16px',
+              borderRadius: '8px',
+              background: '#f8fafc',
+              border: '1px solid #e4e7ec',
+            }}
+          >
+            <div
+              style={{
+                width: '56px',
+                height: '56px',
+                borderRadius: '10px',
+                background: user.role === 'admin' ? '#fff1e6' : '#eaf0fc',
+                color: user.role === 'admin' ? '#f97316' : '#4272d7',
+                border: '1px solid rgba(66, 114, 215, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 700,
+                fontSize: '22px',
+                flexShrink: 0,
+                overflow: 'hidden',
+              }}
+            >
               {user.avatar_url ? (
                 <img
                   src={user.avatar_url}
                   alt={user.full_name || ''}
-                  className="h-full w-full object-cover"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
               ) : user.full_name ? (
                 user.full_name.charAt(0).toUpperCase()
@@ -88,78 +155,191 @@ export function UserDetailModal({
                 'S'
               )}
             </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <h4 className="text-sm font-bold text-slate-900 truncate">
-                  {user.full_name || 'Tanpa Nama Lengkap'}
+
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <h4
+                  style={{
+                    margin: 0,
+                    fontSize: '15.5px',
+                    fontWeight: 700,
+                    color: '#1f2937',
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  {user.full_name || 'Siswa SMKN 8 Semarang'}
                 </h4>
                 {user.is_verified && (
-                  <CheckCircle2 className="h-3.5 w-3.5 text-blue-600 fill-blue-50" />
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      color: '#4272d7',
+                      fontSize: '13px',
+                    }}
+                    title="Akun Siswa Resmi"
+                  >
+                    <i className="fa-solid fa-circle-check"></i>
+                  </span>
                 )}
               </div>
-              <p className="text-xs text-slate-500">@{user.username || 'username'}</p>
-              <div className="mt-2 flex items-center gap-1.5 flex-wrap">
-                <Badge
-                  variant={
-                    user.role === 'admin'
-                      ? 'purple'
-                      : user.role === 'seller'
-                      ? 'indigo'
-                      : 'slate'
-                  }
-                  className="uppercase text-[10px]"
+              <p style={{ margin: '2px 0 8px', fontSize: '12.5px', color: '#64748b' }}>
+                @{user.username || 'username'}
+              </p>
+
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <span
+                  className={`role ${user.role === 'admin' ? 'admin' : 'user'}`}
+                  style={{
+                    display: 'inline-block',
+                    padding: '2px 10px',
+                    borderRadius: '4px',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                  }}
                 >
-                  <ShieldCheck className="h-3 w-3 mr-0.5" />
                   {user.role}
-                </Badge>
-                <Badge variant={user.is_verified ? 'emerald' : 'amber'}>
+                </span>
+
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    background: user.is_verified ? '#e0f3f1' : '#fff1e6',
+                    color: user.is_verified ? '#11998e' : '#f97316',
+                    border: `1px solid ${user.is_verified ? '#a7f3d0' : '#fed7aa'}`,
+                  }}
+                >
+                  <i
+                    className={`fa-solid ${user.is_verified ? 'fa-circle-check' : 'fa-circle-exclamation'}`}
+                    style={{ fontSize: '10px' }}
+                  ></i>
                   {user.is_verified ? 'Terverifikasi' : 'Belum Verifikasi'}
-                </Badge>
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Academic & Stats Table */}
-          <div className="space-y-2">
-            <h5 className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+          {/* Academic & Platform Information */}
+          <div>
+            <div
+              style={{
+                fontSize: '11px',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                color: '#64748b',
+                marginBottom: '8px',
+              }}
+            >
               Informasi Akademik & Kejuruan
-            </h5>
-            <div className="rounded-xl border border-slate-200 bg-white divide-y divide-slate-100">
-              <div className="flex items-center justify-between p-3">
-                <span className="text-slate-500 flex items-center gap-2">
-                  <GraduationCap className="h-4 w-4 text-slate-400" /> Kelas & Jurusan
+            </div>
+
+            <div
+              style={{
+                background: '#ffffff',
+                border: '1px solid #e4e7ec',
+                borderRadius: '8px',
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '12px 16px',
+                  borderBottom: '1px solid #f1f3f5',
+                  fontSize: '13px',
+                }}
+              >
+                <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <i className="fa-solid fa-graduation-cap" style={{ width: '16px', color: '#94a3b8' }}></i>
+                  Kelas & Jurusan
                 </span>
-                <span className="font-semibold text-slate-900">
+                <span style={{ fontWeight: 600, color: '#1f2937' }}>
                   {user.class_group || 'Umum'}
                 </span>
               </div>
-              <div className="flex items-center justify-between p-3">
-                <span className="text-slate-500 flex items-center gap-2">
-                  <ShoppingBag className="h-4 w-4 text-slate-400" /> Transaksi Terverifikasi
+
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '12px 16px',
+                  borderBottom: '1px solid #f1f3f5',
+                  fontSize: '13px',
+                }}
+              >
+                <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <i className="fa-solid fa-bag-shopping" style={{ width: '16px', color: '#94a3b8' }}></i>
+                  Transaksi Terverifikasi
                 </span>
-                <span className="font-semibold text-slate-900 tabular-nums">
+                <span style={{ fontWeight: 600, color: '#1f2937', fontVariantNumeric: 'tabular-nums' }}>
                   {user.verified_sales_count || 0} transaksi
                 </span>
               </div>
-              <div className="flex items-center justify-between p-3">
-                <span className="text-slate-500 flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-slate-400" /> Total Perputaran COD
+
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '12px 16px',
+                  borderBottom: '1px solid #f1f3f5',
+                  fontSize: '13px',
+                }}
+              >
+                <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <i className="fa-solid fa-chart-line" style={{ width: '16px', color: '#94a3b8' }}></i>
+                  Total Perputaran COD
                 </span>
-                <span className="font-semibold text-slate-900 tabular-nums">
+                <span style={{ fontWeight: 700, color: '#4272d7', fontVariantNumeric: 'tabular-nums' }}>
                   Rp {(user.total_revenue_idr || 0).toLocaleString('id-ID')}
                 </span>
               </div>
-              <div className="flex items-center justify-between p-3">
-                <span className="text-slate-500 flex items-center gap-2">
-                  <Copy className="h-4 w-4 text-slate-400" /> User UUID
+
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '12px 16px',
+                  fontSize: '13px',
+                }}
+              >
+                <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <i className="fa-solid fa-fingerprint" style={{ width: '16px', color: '#94a3b8' }}></i>
+                  User UUID
                 </span>
                 <button
+                  type="button"
                   onClick={handleCopyId}
-                  className="font-mono text-[11px] text-[#3D38F5] hover:underline flex items-center gap-1 cursor-pointer"
+                  style={{
+                    background: '#f8fafc',
+                    border: '1px solid #e4e7ec',
+                    borderRadius: '4px',
+                    padding: '3px 8px',
+                    fontFamily: 'monospace',
+                    fontSize: '11px',
+                    color: '#4272d7',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
                 >
-                  {user.id.slice(0, 10)}...
-                  <span className="text-[10px] bg-slate-100 px-1 py-0.5 rounded border border-slate-200">
-                    {copiedId ? 'Disalin' : 'Salin'}
+                  <span>{user.id.slice(0, 10)}...</span>
+                  <span style={{ fontSize: '10px', color: '#64748b' }}>
+                    {copiedId ? 'Disalin!' : 'Salin'}
                   </span>
                 </button>
               </div>
@@ -167,23 +347,41 @@ export function UserDetailModal({
           </div>
 
           {/* RBAC Role Selector */}
-          <div className="space-y-2">
-            <h5 className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+          <div>
+            <div
+              style={{
+                fontSize: '11px',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                color: '#64748b',
+                marginBottom: '8px',
+              }}
+            >
               Otorisasi Hak Akses (RBAC)
-            </h5>
-            <div className="grid grid-cols-3 gap-2">
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
               {(['buyer', 'seller', 'admin'] as const).map((r) => {
                 const isSelected = user.role === r;
                 return (
                   <button
                     key={r}
+                    type="button"
                     disabled={isUpdating}
                     onClick={() => onChangeRole(user, r)}
-                    className={`py-2 px-3 rounded-xl border text-xs font-semibold capitalize transition-all cursor-pointer text-center ${
-                      isSelected
-                        ? 'bg-[#EEF0FF] text-[#3D38F5] border-[#D8DBFE] ring-1 ring-[#3D38F5]/20'
-                        : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-                    }`}
+                    style={{
+                      padding: '10px 8px',
+                      borderRadius: '6px',
+                      fontSize: '12.5px',
+                      fontWeight: isSelected ? 700 : 500,
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 120ms ease',
+                      border: isSelected ? '1.5px solid #4272d7' : '1px solid #e4e7ec',
+                      background: isSelected ? '#eaf0fc' : '#ffffff',
+                      color: isSelected ? '#4272d7' : '#475569',
+                    }}
                   >
                     {r === 'buyer' ? 'Siswa (Buyer)' : r === 'seller' ? 'Penjual (Seller)' : 'Staff Admin'}
                   </button>
@@ -194,33 +392,67 @@ export function UserDetailModal({
         </div>
 
         {/* Modal Footer */}
-        <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between gap-3">
+        <div
+          style={{
+            padding: '16px 24px',
+            borderTop: '1px solid #f1f3f5',
+            background: '#f8fafc',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '12px',
+          }}
+        >
           <button
+            type="button"
+            className="m-btn m-btn--ghost"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-200/60 transition-colors cursor-pointer"
+            style={{
+              height: '38px',
+              padding: '0 16px',
+              fontSize: '13px',
+              fontWeight: 500,
+              background: '#ffffff',
+              border: '1px solid #e4e7ec',
+              color: '#475569',
+              borderRadius: '6px',
+            }}
           >
             Tutup
           </button>
+
           <button
+            type="button"
             disabled={isUpdating}
             onClick={() => onToggleVerify(user.id, user.is_verified)}
-            className={`px-4 py-2 rounded-xl font-semibold text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ${
-              user.is_verified
-                ? 'bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100'
-                : 'bg-[#3D38F5] text-white hover:bg-[#312BD9]'
-            }`}
+            style={{
+              height: '38px',
+              padding: '0 18px',
+              fontSize: '13px',
+              fontWeight: 600,
+              borderRadius: '6px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              cursor: 'pointer',
+              border: user.is_verified ? '1px solid #fed7aa' : '1px solid #4272d7',
+              background: user.is_verified ? '#fff1e6' : '#4272d7',
+              color: user.is_verified ? '#c2410c' : '#ffffff',
+              boxShadow: user.is_verified ? 'none' : '0 2px 6px rgba(66, 114, 215, 0.35)',
+            }}
           >
-            {user.is_verified ? (
-              <>
-                <XCircle className="h-3.5 w-3.5" />
-                <span>Cabut Verifikasi</span>
-              </>
-            ) : (
-              <>
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                <span>Verifikasi Siswa</span>
-              </>
-            )}
+            <i
+              className={`fa-solid ${
+                isUpdating ? 'fa-arrows-rotate fa-spin' : user.is_verified ? 'fa-circle-xmark' : 'fa-circle-check'
+              }`}
+            ></i>
+            <span>
+              {isUpdating
+                ? 'Memproses...'
+                : user.is_verified
+                ? 'Cabut Verifikasi'
+                : 'Verifikasi Siswa'}
+            </span>
           </button>
         </div>
       </div>

@@ -3318,9 +3318,9 @@
     "semantic_hash": ""
   },
   "src/admin/components/AdminSidebar.tsx": {
-    "mtime": 1790956217.065648,
-    "seen": 1790956260.4579978,
-    "ast_hash": "ec6960cbb9a84abf95637edc3a3a8b31",
+    "mtime": 1790956625.164801,
+    "seen": 1790956664.6658177,
+    "ast_hash": "cb263d5365f41242fd36241d88045994",
     "semantic_hash": ""
   },
   "src/admin/components/StatsCard.tsx": {
@@ -3636,15 +3636,15 @@
     "semantic_hash": ""
   },
   "src/admin/components/ServerStatusCard.tsx": {
-    "mtime": 1790956152.1176622,
-    "seen": 1790956260.4580033,
-    "ast_hash": "df42dbc4afdfa3c36e3fa478653d2de8",
+    "mtime": 1790956424.5726027,
+    "seen": 1790956664.6658375,
+    "ast_hash": "5414833c854d4997f2f742bcd070e5fc",
     "semantic_hash": ""
   },
   "src/admin/components/LiveConnectionProbes.tsx": {
-    "mtime": 1790955717.4190779,
-    "seen": 1790956260.4579997,
-    "ast_hash": "d5775367a59199714ae2d109b5d2815b",
+    "mtime": 1790956393.8956094,
+    "seen": 1790956664.6658254,
+    "ast_hash": "2e8fa46d8893f779b7991e37260fbdf9",
     "semantic_hash": ""
   },
   "src/admin/components/UptimeServiceRow.tsx": {
@@ -3660,9 +3660,9 @@
     "semantic_hash": ""
   },
   "src/admin/pages/ServerMonitorTab.tsx": {
-    "mtime": 1790955742.0381966,
-    "seen": 1790956260.458021,
-    "ast_hash": "143e205d9ff29a821e58f61839ba1fe3",
+    "mtime": 1790956518.3355823,
+    "seen": 1790956664.6658912,
+    "ast_hash": "07c542d0f1fc423af2e09c94e34a77b4",
     "semantic_hash": ""
   }
 }

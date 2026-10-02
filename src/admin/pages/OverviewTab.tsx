@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { StatsCard } from '../components/StatsCard';
 import { ServerStatusCard } from '../components/ServerStatusCard';
+import { ServerStatusGaugeCard } from '../components/ServerStatusGaugeCard';
 import { UserAvatar } from '../components/UserAvatar';
 import type { AdminStats } from '../services/adminService';
 import type { AdminTab } from '../components/AdminSidebar';
@@ -362,15 +363,11 @@ export function OverviewTab({
           />
         </div>
         <div className="col-sm-6 col-lg-3">
-          <StatsCard
-            title="Titik Temu COD"
-            value={stats.totalMeetingPoints}
-            iconClass="fa-solid fa-map-location-dot"
-            colorVariant="c4"
-            delta="100%"
-            deltaPeriod="spot aktif"
-            deltaPositive={true}
-            sparklineData={[3, 4, 4, 5, 5, 6, stats.totalMeetingPoints || 6]}
+          <ServerStatusGaugeCard
+            uptimePercentage={99.98}
+            statusText="Live"
+            latencyMs={42}
+            onClick={() => onNavigateTab('server')}
           />
         </div>
       </div>

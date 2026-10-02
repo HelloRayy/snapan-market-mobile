@@ -1,7 +1,7 @@
 # Graph Report - snapan-market-mobile  (2026-10-02)
 
 ## Corpus Check
-- 543 files · ~674,214 words
+- 543 files · ~674,301 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 43 file(s) not represented in the graph (top: .xml 11, (none) 7, .css 7)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `d832dfb1`
+- Built from commit: `63094577`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -392,14 +392,14 @@
 ## Surprising Connections (you probably didn't know these)
 - `3. Response Data Model yang Digunakan Komponen FE (`MarketPostItem`):` --references--> `MarketPostItem`  [INFERRED]
   docs/fe-to-be-data-contract.md → src/types/marketFeed.ts
-- `1. Aksi User:` --references--> `CreatePostModal()`  [INFERRED]
-  docs/fe-to-be-data-contract.md → src/ui/components/marketplace/CreatePostModal.tsx
+- `5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT` --references--> `subscribeToOrderNotifications()`  [INFERRED]
+  docs/backend-task-backlog.md → src/services/api/realtimeService.ts
 - `3. Sistem Pengaman Draf Cerdas (*Draft Engine*)` --references--> `ConfirmActionModal()`  [INFERRED]
   docs/overview-dan-interaksi-aplikasi.md → src/ui/components/ui/ConfirmActionModal.tsx
 - `4. Halaman Edit Profil (`EditProfilePage.tsx`)` --references--> `ConfirmActionModal()`  [INFERRED]
   docs/overview-dan-interaksi-aplikasi.md → src/ui/components/ui/ConfirmActionModal.tsx
-- `C. Autentikasi & Autorisasi (Auth Guardrails)` --references--> `signOut()`  [INFERRED]
-  .agents/skills/security/SKILL.md → src/services/api/authService.ts
+- `5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT` --references--> `toggleCommentLike()`  [INFERRED]
+  docs/backend-task-backlog.md → src/services/api/commentService.ts
 
 ## Import Cycles
 - None detected.
@@ -1481,7 +1481,7 @@ Cohesion: 0.67
 Nodes (3): HttpClientResponse, Stream, _MockHttpClientResponse
 
 ## Knowledge Gaps
-- **3102 isolated node(s):** `LiveConnectionProbesProps`, `PostWithSeller`, `PostDetailModalProps`, `LogEntry`, `ServerStatusCardProps` (+3097 more)
+- **3102 isolated node(s):** `LiveConnectionProbesProps`, `LogEntry`, `ServerStatusCardProps`, `CreatePostDraftsSheetProps`, `CreatePostFooterProps` (+3097 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 3531 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **99 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -1489,12 +1489,10 @@ Nodes (3): HttpClientResponse, Stream, _MockHttpClientResponse
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `react` connect `react` to `App.tsx`, `Campus2DMap.tsx`, `kumo.d.ts`, `AdminDashboard.tsx`, `MarketPostItem`, `SearchPage.tsx`, `CreatePostModal.tsx`, `package.json`, `cn`, `triggerHaptic`, `useAuth`, `ProductCard.tsx`, `DesignSystemPage.tsx`?**
-  _High betweenness centrality (0.016) - this node is a cross-community bridge._
+  _High betweenness centrality (0.013) - this node is a cross-community bridge._
 - **Why does `_` connect `_` to `package:flutter/services.dart`, `package:snapan_market/core/theme/app_colors.dart`, `package:flutter/material.dart`?**
   _High betweenness centrality (0.006) - this node is a cross-community bridge._
-- **Why does `_MockHttpClientResponse` connect `_MockHttpClientResponse` to `widget_test.dart`, `List`?**
-  _High betweenness centrality (0.006) - this node is a cross-community bridge._
-- **What connects `LiveConnectionProbesProps`, `PostWithSeller`, `PostDetailModalProps` to the rest of the system?**
+- **What connects `LiveConnectionProbesProps`, `LogEntry`, `ServerStatusCardProps` to the rest of the system?**
   _3102 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `search_controller.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.08 - nodes in this community are weakly interconnected._
@@ -1502,3 +1500,5 @@ _Questions this graph is uniquely positioned to answer:_
   _Cohesion score 0.022988505747126436 - nodes in this community are weakly interconnected._
 - **Should `react` be split into smaller, more focused modules?**
   _Cohesion score 0.04208860759493671 - nodes in this community are weakly interconnected._
+- **Should `supabase_service.dart` be split into smaller, more focused modules?**
+  _Cohesion score 0.029850746268656716 - nodes in this community are weakly interconnected._

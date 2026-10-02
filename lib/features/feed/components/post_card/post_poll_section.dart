@@ -99,18 +99,44 @@ class PostPollSection extends StatelessWidget {
   }
 
   Widget _buildFooter(PostPollModel poll) {
+    final hasLocation = post.locationTag != null && post.locationTag!.isNotEmpty;
+
     return Padding(
-      padding: const EdgeInsets.only(top: 2.0),
-      child: Text(
-        '${poll.totalVotes} suara • ${poll.remainingTimeLabel}',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: const TextStyle(
-          fontSize: 12.0,
-          fontWeight: FontWeight.w400,
-          color: Color(0xFF64748B),
-          letterSpacing: -0.1,
-        ),
+      padding: const EdgeInsets.only(top: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Text(
+              '${poll.totalVotes} suara • ${poll.remainingTimeLabel}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFF64748B),
+                letterSpacing: -0.1,
+              ),
+            ),
+          ),
+          if (hasLocation) ...[
+            const SizedBox(width: 8.0),
+            Flexible(
+              child: Text(
+                post.locationTag!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
+                style: const TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF64748B),
+                  letterSpacing: -0.1,
+                ),
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

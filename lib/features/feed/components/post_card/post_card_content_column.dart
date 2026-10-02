@@ -107,7 +107,7 @@ class PostCardContentColumn extends StatelessWidget {
             onImageClick: onImageClick,
           ),
         ],
-        if (item.locationTag != null && item.locationTag!.isNotEmpty) ...[
+        if (item.locationTag != null && item.locationTag!.isNotEmpty && item.poll == null) ...[
           const SizedBox(height: 6.0),
           Text(
             item.locationTag!,

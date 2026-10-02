@@ -83,6 +83,12 @@
    - Visual cards, bottom sheets, headers, and form sections must live in `<feature>/components/`.
    - Backend services must follow domain separation under `lib/core/services/supabase/`.
 
+10. **Strict Read-Only Directive for Plane.so (`/plane`)**:
+    - All interactions with Plane.so via MCP tools or `/plane` are **STRICTLY READ-ONLY**.
+    - The agent is permitted ONLY to read issue summaries, task descriptions, problem contexts, and requirements (e.g. via `get-issue`, `list-issues`, `get-project`).
+    - **ZERO AUTHORITY TO MUTATE ISSUE STATES**: The agent is strictly prohibited from mutating issue states or changing statuses (e.g., Todo to In Progress, In Progress to Done, or vice versa).
+    - Status transitions and ticket management on Plane.so are the exclusive prerogative of the user.
+
 ---
 
 ## Flutter Architecture & Modular Structure (`lib/`)

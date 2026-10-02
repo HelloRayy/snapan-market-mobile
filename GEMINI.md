@@ -35,3 +35,9 @@
 8. **Screenshot-to-Code SOP (Zero Unnecessary File Reads)**:
    - Always run `git grep -i "visible_text" lib/` or check `docs/UI_MAP.md` first. Read ONLY the specific sub-widget, never the entire 1000-line screen file.
 
+9. **Strict Read-Only Directive for Plane.so (`/plane`)**:
+   - Plane.so access via MCP tools or `/plane` is 100% read-only (reading issue details, descriptions, requirements).
+   - The agent has ZERO authority to update issue states (e.g. moving from Todo/In Progress to Done, or vice versa).
+   - State changes and ticket transitions are strictly managed manually by the user.
+
+

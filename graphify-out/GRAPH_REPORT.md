@@ -1,17 +1,17 @@
 # Graph Report - snapan-market-mobile  (2026-10-02)
 
 ## Corpus Check
-- 548 files · ~676,312 words
+- 548 files · ~676,236 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 43 file(s) not represented in the graph (top: .xml 11, (none) 7, .css 7)
 
 ## Summary
-- 5012 nodes · 7216 edges · 364 communities (266 shown, 98 thin omitted)
+- 5012 nodes · 7221 edges · 364 communities (266 shown, 98 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 45 edges (avg confidence: 0.93)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `d8d94d57`
+- Built from commit: `1c739cc0`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -392,12 +392,12 @@
   docs/fe-to-be-data-contract.md → src/types/marketFeed.ts
 - `5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT` --references--> `getMeetingPointById()`  [INFERRED]
   docs/backend-task-backlog.md → src/services/api/meetingPointService.ts
+- `1. Aksi User:` --references--> `CreatePostModal()`  [INFERRED]
+  docs/fe-to-be-data-contract.md → src/ui/components/marketplace/CreatePostModal.tsx
 - `3. Sistem Pengaman Draf Cerdas (*Draft Engine*)` --references--> `ConfirmActionModal()`  [INFERRED]
   docs/overview-dan-interaksi-aplikasi.md → src/ui/components/ui/ConfirmActionModal.tsx
 - `4. Halaman Edit Profil (`EditProfilePage.tsx`)` --references--> `ConfirmActionModal()`  [INFERRED]
   docs/overview-dan-interaksi-aplikasi.md → src/ui/components/ui/ConfirmActionModal.tsx
-- `3. Preservasi State Navigasi (*Zero State Loss*)` --references--> `SearchPage()`  [INFERRED]
-  docs/overview-dan-interaksi-aplikasi.md → src/ui/pages/SearchPage.tsx
 
 ## Import Cycles
 - None detected.
@@ -987,8 +987,8 @@ Cohesion: 0.21
 Nodes (5): ConversationWithParticipant, DirectMessageWithSender, Conversation, DirectMessage, Profile
 
 ### Community 146 - "ContentModerationTab.tsx"
-Cohesion: 0.29
-Nodes (7): AdminModalPortal(), AdminModalPortalProps, PostDetailModal(), PostDetailModalProps, PostWithSeller, ContentModerationTab(), PostWithSeller
+Cohesion: 0.24
+Nodes (8): AdminModalPortal(), AdminModalPortalProps, PostDetailModal(), PostDetailModalProps, PostWithSeller, ContentModerationTab(), PostWithSeller, MeetingPointsTab()
 
 ### Community 147 - "Animations"
 Cohesion: 0.17
@@ -1223,12 +1223,12 @@ Cohesion: 0.15
 Nodes (12): build, CampusMapHeader, _CategoryChip, currentFloor, _FloorButton, isActive, label, onBack (+4 more)
 
 ### Community 206 - "adminService.ts"
-Cohesion: 0.31
-Nodes (8): HeaderSearchPopover(), HeaderSearchPopoverProps, PostDetailDrawerProps, PostWithSeller, adminService, GlobalSearchResult, MarketPostRow, SchoolMeetingPointRow
+Cohesion: 0.35
+Nodes (7): HeaderSearchPopover(), HeaderSearchPopoverProps, PostDetailDrawerProps, PostWithSeller, GlobalSearchResult, MarketPostRow, SchoolMeetingPointRow
 
 ### Community 207 - "AdminDashboard.tsx"
-Cohesion: 0.15
-Nodes (13): AdminHeader(), AdminHeaderProps, AdminSidebar(), AdminSidebarProps, AdminTab, AdminDashboard(), AdminDashboardProps, MeetingPointsTab() (+5 more)
+Cohesion: 0.17
+Nodes (12): AdminHeader(), AdminHeaderProps, AdminSidebar(), AdminSidebarProps, AdminTab, AdminDashboard(), AdminDashboardProps, OverviewTabProps (+4 more)
 
 ### Community 208 - "snaps_skeleton.dart"
 Cohesion: 0.25
@@ -1463,15 +1463,15 @@ Cohesion: 0.29
 Nodes (6): BadgeProps, ButtonProps, @cloudflare/kumo, InputProps, LayerCardComponent, LayerCardProps
 
 ### Community 362 - "AdminLoginPage.tsx"
-Cohesion: 0.40
-Nodes (3): @cloudflare/kumo, AdminLoginPageProps, AdminLoginPage
+Cohesion: 0.33
+Nodes (4): @cloudflare/kumo, AdminLoginPageProps, adminService, AdminLoginPage
 
 ### Community 369 - "floating_kumo_fab.dart"
 Cohesion: 0.33
 Nodes (6): build, createState, FloatingKumoFabButton, _FloatingKumoFabButtonState, _isPressed, onTap
 
 ## Knowledge Gaps
-- **3108 isolated node(s):** `label`, `value`, `options`, `hasError`, `onChanged` (+3103 more)
+- **3108 isolated node(s):** `PostWithSeller`, `PostDetailModalProps`, `SlideOverDrawerProps`, `LogEntry`, `ServerStatusCardProps` (+3103 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 3540 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **98 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -1479,12 +1479,12 @@ Nodes (6): build, createState, FloatingKumoFabButton, _FloatingKumoFabButtonStat
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `react` connect `react` to `CreatePostModal.tsx`, `cn`, `ContentModerationTab.tsx`, `useAuth.ts`, `MarketPostItem`, `App.tsx`, `ServerMonitorTab.tsx`, `SearchPage.tsx`, `adminService.ts`, `package.json`, `AdminDashboard.tsx`, `ProfileRow`, `triggerHaptic`, `HomePage.tsx`, `DesignSystemPage.tsx`, `lucide-react`, `kumo.d.ts`, `AdminLoginPage.tsx`, `OverviewTab.tsx`, `OnboardingScreen.tsx`?**
-  _High betweenness centrality (0.018) - this node is a cross-community bridge._
-- **Why does `_` connect `_` to `package:flutter/services.dart`, `package:snapan_market/core/theme/app_colors.dart`, `package:flutter/material.dart`?**
-  _High betweenness centrality (0.006) - this node is a cross-community bridge._
-- **Why does `signOut()` connect `useAuth.ts` to `MarketPostItem`?**
-  _High betweenness centrality (0.004) - this node is a cross-community bridge._
-- **What connects `label`, `value`, `options` to the rest of the system?**
+  _High betweenness centrality (0.016) - this node is a cross-community bridge._
+- **Why does `lucide-react` connect `lucide-react` to `DesignSystemPage.tsx`, `react`, `MarketPostItem`, `AdminLoginPage.tsx`, `SearchPage.tsx`, `adminService.ts`, `AdminDashboard.tsx`, `package.json`, `CreatePostModal.tsx`, `triggerHaptic`, `App.tsx`, `HomePage.tsx`, `OnboardingScreen.tsx`?**
+  _High betweenness centrality (0.003) - this node is a cross-community bridge._
+- **Why does `triggerHaptic()` connect `triggerHaptic` to `DesignSystemPage.tsx`, `lucide-react`, `react`, `MarketPostItem`, `SearchPage.tsx`, `CreatePostModal.tsx`, `App.tsx`, `HomePage.tsx`?**
+  _High betweenness centrality (0.003) - this node is a cross-community bridge._
+- **What connects `PostWithSeller`, `PostDetailModalProps`, `SlideOverDrawerProps` to the rest of the system?**
   _3108 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `search_controller.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.08 - nodes in this community are weakly interconnected._

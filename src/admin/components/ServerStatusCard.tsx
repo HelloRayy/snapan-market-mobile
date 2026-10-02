@@ -9,7 +9,11 @@ interface LogEntry {
   message: string;
 }
 
-export function ServerStatusCard() {
+interface ServerStatusCardProps {
+  onNavigateDetails?: () => void;
+}
+
+export function ServerStatusCard({ onNavigateDetails }: ServerStatusCardProps = {}) {
   const [latencyMs, setLatencyMs] = useState<number | null>(null);
   const [isPinging, setIsPinging] = useState(false);
   const [dbStatus, setDbStatus] = useState<'online' | 'degraded' | 'offline'>('online');
@@ -284,6 +288,20 @@ export function ServerStatusCard() {
           ))
         )}
       </div>
+
+      {onNavigateDetails && (
+        <div style={{ marginTop: '12px', textAlign: 'right' }}>
+          <button
+            type="button"
+            className="m-btn m-btn--ghost"
+            onClick={onNavigateDetails}
+            style={{ fontSize: '11.5px', height: '30px', padding: '0 10px', gap: '6px' }}
+          >
+            <span>Monitor Server Penuh & Uptime 90 Hari</span>
+            <i className="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      )}
     </section>
   );
 }

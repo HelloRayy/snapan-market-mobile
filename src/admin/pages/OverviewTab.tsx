@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { StatsCard } from '../components/StatsCard';
 import { ServerStatusCard } from '../components/ServerStatusCard';
+import { UserAvatar } from '../components/UserAvatar';
 import type { AdminStats } from '../services/adminService';
 import type { AdminTab } from '../components/AdminSidebar';
 
@@ -420,9 +421,13 @@ export function OverviewTab({
                       <tr key={u.id} style={{ cursor: 'pointer' }} onClick={() => onNavigateTab('users')}>
                         <td>
                           <div className="row-product">
-                            <div className="row-product__icon" style={{ background: '#eaf0fc', color: '#4272d7' }}>
-                              {u.full_name ? u.full_name[0].toUpperCase() : 'S'}
-                            </div>
+                            <UserAvatar
+                              avatarUrl={u.avatar_url}
+                              name={u.full_name}
+                              size={36}
+                              role={u.role}
+                              style={{ marginRight: '10px' }}
+                            />
                             <div>
                               <div style={{ fontWeight: 600, color: '#1f2937' }}>
                                 {u.full_name || 'Siswa SMKN 8'}
@@ -513,7 +518,15 @@ export function OverviewTab({
                           </div>
                         </td>
                         <td style={{ color: '#475569', fontSize: '12.5px' }}>
-                          {post.seller?.full_name || 'Siswa'}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <UserAvatar
+                              avatarUrl={post.seller?.avatar_url}
+                              name={post.seller?.full_name}
+                              size={24}
+                              role={post.seller?.role}
+                            />
+                            <span>{post.seller?.full_name || 'Siswa'}</span>
+                          </div>
                         </td>
                         <td>
                           <span
@@ -557,7 +570,7 @@ export function OverviewTab({
 
         {/* Right Column: Server Status & Logs & Quick Actions */}
         <div className="col-lg-5">
-          <ServerStatusCard />
+          <ServerStatusCard onNavigateDetails={() => onNavigateTab('server')} />
 
           {/* Quick Shortcuts */}
           <section className="m-card" style={{ marginTop: '16px' }}>
@@ -601,6 +614,18 @@ export function OverviewTab({
                 <span>
                   <i className="fa-solid fa-map-location-dot" style={{ marginRight: '8px' }}></i>
                   Kelola Spot Titik Temu COD
+                </span>
+                <i className="fa-solid fa-chevron-right" style={{ fontSize: '10px' }}></i>
+              </button>
+
+              <button
+                type="button"
+                className="m-btn m-btn--ghost w-100 justify-content-between"
+                onClick={() => onNavigateTab('server')}
+              >
+                <span>
+                  <i className="fa-solid fa-server" style={{ marginRight: '8px', color: '#10b981' }}></i>
+                  Pantau Kesehatan Server & Uptime
                 </span>
                 <i className="fa-solid fa-chevron-right" style={{ fontSize: '10px' }}></i>
               </button>

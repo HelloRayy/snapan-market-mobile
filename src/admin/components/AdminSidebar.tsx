@@ -1,6 +1,7 @@
 import type { ProfileRow, AdminStats } from '../services/adminService';
+import { UserAvatar } from './UserAvatar';
 
-export type AdminTab = 'overview' | 'users' | 'moderation' | 'meeting-points';
+export type AdminTab = 'overview' | 'users' | 'moderation' | 'meeting-points' | 'server';
 
 interface AdminSidebarProps {
   activeTab: AdminTab;
@@ -24,7 +25,6 @@ export function AdminSidebar({
 }: AdminSidebarProps) {
   const displayName = adminProfile?.full_name || adminEmail.split('@')[0] || 'Administrator';
   const displayUsername = adminProfile?.username ? `@${adminProfile.username}` : adminEmail;
-  const initial = displayName ? displayName[0].toUpperCase() : 'A';
 
   return (
     <aside className="menu-sidebar" id="main-sidebar">
@@ -216,6 +216,45 @@ export function AdminSidebar({
                 )}
               </a>
             </li>
+
+            <div className="nav-group-label">Infrastruktur & Sistem</div>
+            <li className={activeTab === 'server' ? 'active' : ''}>
+              <a
+                href="#server"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onTabChange('server');
+                  onCloseMobile?.();
+                }}
+              >
+                <i className="fa-solid fa-server"></i>
+                <span style={{ flex: 1 }}>Status Server & DB</span>
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    fontSize: '10px',
+                    fontWeight: 700,
+                    padding: '2px 7px',
+                    borderRadius: '10px',
+                    background: activeTab === 'server' ? '#ffffff' : 'rgba(16, 185, 129, 0.18)',
+                    color: activeTab === 'server' ? '#059669' : '#34d399',
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '6px',
+                      height: '6px',
+                      borderRadius: '50%',
+                      background: '#10b981',
+                      display: 'inline-block',
+                    }}
+                  />
+                  LIVE
+                </span>
+              </a>
+            </li>
           </ul>
         </nav>
 
@@ -234,33 +273,15 @@ export function AdminSidebar({
               gap: '10px',
             }}
           >
-            <div
+            <UserAvatar
+              avatarUrl={adminProfile?.avatar_url}
+              name={displayName}
+              size={36}
+              role={adminProfile?.role || 'admin'}
               style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '8px',
-                background: '#4272d7',
-                color: '#ffffff',
                 border: '1px solid rgba(255, 255, 255, 0.2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 700,
-                fontSize: '14px',
-                flexShrink: 0,
-                overflow: 'hidden',
               }}
-            >
-              {adminProfile?.avatar_url ? (
-                <img
-                  src={adminProfile.avatar_url}
-                  alt={displayName}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              ) : (
-                initial
-              )}
-            </div>
+            />
 
             <div style={{ flex: 1, minWidth: 0 }}>
               <div

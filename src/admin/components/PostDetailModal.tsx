@@ -1,4 +1,5 @@
 import type { MarketPostRow, ProfileRow } from '../services/adminService';
+import { UserAvatar } from './UserAvatar';
 
 type PostWithSeller = MarketPostRow & { seller?: ProfileRow | null };
 
@@ -221,34 +222,12 @@ export function PostDetailModal({
                 border: '1px solid #e4e7ec',
               }}
             >
-              <div
-                style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '8px',
-                  background: '#eaf0fc',
-                  color: '#4272d7',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontWeight: 700,
-                  fontSize: '14px',
-                  overflow: 'hidden',
-                  flexShrink: 0,
-                }}
-              >
-                {post.seller?.avatar_url ? (
-                  <img
-                    src={post.seller.avatar_url}
-                    alt=""
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                ) : post.seller?.full_name ? (
-                  post.seller.full_name.charAt(0).toUpperCase()
-                ) : (
-                  'S'
-                )}
-              </div>
+              <UserAvatar
+                avatarUrl={post.seller?.avatar_url}
+                name={post.seller?.full_name}
+                size={40}
+                role={post.seller?.role}
+              />
               <div>
                 <div style={{ fontWeight: 600, fontSize: '13.5px', color: '#1f2937' }}>
                   {post.seller?.full_name || 'Siswa SMKN 8'}

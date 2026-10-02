@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { adminService, type ProfileRow } from '../services/adminService';
 import { UserDetailModal } from '../components/UserDetailModal';
+import { UserAvatar } from '../components/UserAvatar';
 
 export function UsersManagementTab() {
   const [users, setUsers] = useState<ProfileRow[]>([]);
@@ -262,15 +263,13 @@ export function UsersManagementTab() {
                   <tr key={u.id}>
                     <td>
                       <div className="row-product" style={{ cursor: 'pointer' }} onClick={() => handleRowClick(u)}>
-                        <div
-                          className="row-product__icon"
-                          style={{
-                            background: u.role === 'admin' ? '#fff1e6' : '#eaf0fc',
-                            color: u.role === 'admin' ? '#f97316' : '#4272d7',
-                          }}
-                        >
-                          {u.full_name ? u.full_name[0].toUpperCase() : 'S'}
-                        </div>
+                        <UserAvatar
+                          avatarUrl={u.avatar_url}
+                          name={u.full_name}
+                          size={36}
+                          role={u.role}
+                          style={{ marginRight: '10px' }}
+                        />
                         <div>
                           <div style={{ fontWeight: 600, color: '#1f2937' }}>
                             {u.full_name || 'Siswa SMKN 8'}

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { adminService, type MarketPostRow, type ProfileRow } from '../services/adminService';
 import { PostDetailModal } from '../components/PostDetailModal';
+import { UserAvatar } from '../components/UserAvatar';
 
 type PostWithSeller = MarketPostRow & { seller?: ProfileRow | null };
 
@@ -273,11 +274,21 @@ export function ContentModerationTab() {
                         </div>
                       </td>
                       <td>
-                        <div style={{ fontWeight: 500, color: '#1f2937' }}>
-                          {post.seller?.full_name || 'Siswa'}
-                        </div>
-                        <div style={{ fontSize: '11px', color: '#94a3b8' }}>
-                          @{post.seller?.username || 'user'}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <UserAvatar
+                            avatarUrl={post.seller?.avatar_url}
+                            name={post.seller?.full_name}
+                            size={32}
+                            role={post.seller?.role}
+                          />
+                          <div>
+                            <div style={{ fontWeight: 600, color: '#1f2937' }}>
+                              {post.seller?.full_name || 'Siswa'}
+                            </div>
+                            <div style={{ fontSize: '11px', color: '#94a3b8' }}>
+                              @{post.seller?.username || 'user'}
+                            </div>
+                          </div>
                         </div>
                       </td>
                       <td>

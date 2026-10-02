@@ -7,6 +7,7 @@ import { OverviewTab } from './OverviewTab';
 import { UsersManagementTab } from './UsersManagementTab';
 import { ContentModerationTab } from './ContentModerationTab';
 import { MeetingPointsTab } from './MeetingPointsTab';
+import { ServerMonitorTab } from './ServerMonitorTab';
 import { Loader2 } from 'lucide-react';
 import '../styles/cooladmin.css';
 
@@ -194,6 +195,10 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
 
               <div className={activeTab === 'meeting-points' ? 'block' : 'hidden'}>
                 <MeetingPointsTab />
+              </div>
+
+              <div className={activeTab === 'server' ? 'block' : 'hidden'}>
+                <ServerMonitorTab />
               </div>
             </div>
           </div>

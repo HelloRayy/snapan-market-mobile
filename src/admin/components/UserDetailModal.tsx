@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { ProfileRow } from '../services/adminService';
+import { UserAvatar } from './UserAvatar';
 
 interface UserDetailModalProps {
   user: ProfileRow | null;
@@ -126,35 +127,17 @@ export function UserDetailModal({
               border: '1px solid #e4e7ec',
             }}
           >
-            <div
+            <UserAvatar
+              avatarUrl={user.avatar_url}
+              name={user.full_name}
+              size={56}
+              borderRadius="10px"
+              role={user.role}
               style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: '10px',
-                background: user.role === 'admin' ? '#fff1e6' : '#eaf0fc',
-                color: user.role === 'admin' ? '#f97316' : '#4272d7',
-                border: '1px solid rgba(66, 114, 215, 0.2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 700,
                 fontSize: '22px',
-                flexShrink: 0,
-                overflow: 'hidden',
+                border: '1px solid rgba(66, 114, 215, 0.2)',
               }}
-            >
-              {user.avatar_url ? (
-                <img
-                  src={user.avatar_url}
-                  alt={user.full_name || ''}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              ) : user.full_name ? (
-                user.full_name.charAt(0).toUpperCase()
-              ) : (
-                'S'
-              )}
-            </div>
+            />
 
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>

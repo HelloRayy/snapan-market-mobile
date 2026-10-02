@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { AdminTab } from './AdminSidebar';
 import type { ProfileRow } from '../services/adminService';
+import { UserAvatar } from './UserAvatar';
 
 interface AdminHeaderProps {
   activeTab: AdminTab;
@@ -30,7 +31,6 @@ export function AdminHeader({
 
   const displayName = adminProfile?.full_name || adminEmail.split('@')[0] || 'Administrator';
   const displayUsername = adminProfile?.username ? `@${adminProfile.username}` : adminEmail;
-  const initial = displayName ? displayName[0].toUpperCase() : 'A';
 
   return (
     <header className="header-desktop">
@@ -144,33 +144,16 @@ export function AdminHeader({
                     transition: 'background 120ms ease',
                   }}
                 >
-                  <div
+                  <UserAvatar
+                    avatarUrl={adminProfile?.avatar_url}
+                    name={displayName}
+                    size={36}
+                    borderRadius="50%"
+                    role={adminRole}
                     style={{
-                      width: '36px',
-                      height: '36px',
-                      borderRadius: '50%',
-                      background: '#eaf0fc',
-                      color: '#4272d7',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontWeight: 700,
-                      fontSize: '14px',
                       border: '1.5px solid #d4e2fa',
-                      overflow: 'hidden',
-                      flexShrink: 0,
                     }}
-                  >
-                    {adminProfile?.avatar_url ? (
-                      <img
-                        src={adminProfile.avatar_url}
-                        alt={displayName}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                    ) : (
-                      initial
-                    )}
-                  </div>
+                  />
                   <div className="content d-none d-sm-block text-start">
                     <span
                       style={{

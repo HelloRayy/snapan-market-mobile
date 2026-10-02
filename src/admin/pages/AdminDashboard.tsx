@@ -8,6 +8,7 @@ import { UsersManagementTab } from './UsersManagementTab';
 import { ContentModerationTab } from './ContentModerationTab';
 import { MeetingPointsTab } from './MeetingPointsTab';
 import { Loader2 } from 'lucide-react';
+import '../styles/cooladmin.css';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -23,6 +24,24 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
   const [adminEmail, setAdminEmail] = useState<string>('admin@snapan.id');
   const [adminRole, setAdminRole] = useState<string>('admin');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  // Apply body.app for CoolAdmin stylesheet scoping
+  useEffect(() => {
+    document.body.classList.add('app');
+    return () => {
+      document.body.classList.remove('app');
+      document.body.classList.remove('sidebar-open');
+    };
+  }, []);
+
+  // Sync sidebar-open class on body for responsive mobile drawer
+  useEffect(() => {
+    if (isMobileSidebarOpen) {
+      document.body.classList.add('sidebar-open');
+    } else {
+      document.body.classList.remove('sidebar-open');
+    }
+  }, [isMobileSidebarOpen]);
 
   // Verify auth on mount
   useEffect(() => {
@@ -104,8 +123,8 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex selection:bg-[#3D38F5] selection:text-white font-sans antialiased">
-      {/* Sidebar (Responsive drawer on mobile, fixed on desktop) */}
+    <div className="page-wrapper">
+      {/* CoolAdmin Sidebar */}
       <AdminSidebar
         activeTab={activeTab}
         onTabChange={(tab) => {
@@ -117,9 +136,9 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
         onCloseMobile={() => setIsMobileSidebarOpen(false)}
       />
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col md:pl-64 pl-0 min-w-0 transition-[padding] duration-200">
-        {/* Top Header */}
+      {/* CoolAdmin Page Container */}
+      <div className="page-container">
+        {/* CoolAdmin Header Desktop */}
         <AdminHeader
           activeTab={activeTab}
           adminEmail={adminEmail}
@@ -129,29 +148,41 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
           onToggleMobileSidebar={() => setIsMobileSidebarOpen((prev) => !prev)}
         />
 
-        {/* Tab Views with Zero-Lag State Caching */}
-        <main className="flex-1 overflow-y-auto">
-          <div className={activeTab === 'overview' ? 'block' : 'hidden'}>
-            <OverviewTab
-              stats={stats}
-              isLoading={isLoadingStats}
-              onNavigateTab={(tab) => setActiveTab(tab)}
-            />
-          </div>
+        {/* CoolAdmin Main Content */}
+        <main className="main-content" id="main-content">
+          <div className="section__content section__content--p30">
+            <div className="container-fluid">
+              <div className={activeTab === 'overview' ? 'block' : 'hidden'}>
+                <OverviewTab
+                  stats={stats}
+                  isLoading={isLoadingStats}
+                  onNavigateTab={(tab) => setActiveTab(tab)}
+                  onRefresh={loadStats}
+                  isRefreshing={isRefreshing}
+                />
+              </div>
 
-          <div className={activeTab === 'users' ? 'block' : 'hidden'}>
-            <UsersManagementTab />
-          </div>
+              <div className={activeTab === 'users' ? 'block' : 'hidden'}>
+                <UsersManagementTab />
+              </div>
 
-          <div className={activeTab === 'moderation' ? 'block' : 'hidden'}>
-            <ContentModerationTab />
-          </div>
+              <div className={activeTab === 'moderation' ? 'block' : 'hidden'}>
+                <ContentModerationTab />
+              </div>
 
-          <div className={activeTab === 'meeting-points' ? 'block' : 'hidden'}>
-            <MeetingPointsTab />
+              <div className={activeTab === 'meeting-points' ? 'block' : 'hidden'}>
+                <MeetingPointsTab />
+              </div>
+            </div>
           </div>
         </main>
       </div>
+
+      {/* Mobile Drawer Backdrop */}
+      <div
+        className="sidebar-backdrop"
+        onClick={() => setIsMobileSidebarOpen(false)}
+      />
     </div>
   );
 }

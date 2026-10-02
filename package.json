@@ -14,10 +14,10 @@
     "capture:target": "node scripts/capture-target.js",
     "extract:computed": "node scripts/extract-computed.js",
     "analyze:diff": "node scripts/analyze-diff.js"
-
   },
   "dependencies": {
     "@cloudflare/kumo": "^2.9.1",
+    "@fortawesome/fontawesome-free": "^7.3.1",
     "@mappedin/mappedin-js": "^6.24.1",
     "@supabase/supabase-js": "^2.45.0",
     "@types/three": "^0.185.4",

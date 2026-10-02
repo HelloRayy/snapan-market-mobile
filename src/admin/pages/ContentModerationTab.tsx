@@ -1,29 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import {
-  Search,
-  Trash2,
-  AlertTriangle,
-  RefreshCw,
-  Eye,
-  ChevronLeft,
-  ChevronRight,
-  ImageIcon,
-  Grid,
-  List as ListIcon,
-  CheckCircle2,
-} from 'lucide-react';
 import { adminService, type MarketPostRow, type ProfileRow } from '../services/adminService';
 import { PostDetailModal } from '../components/PostDetailModal';
-import {
-  Card,
-  Badge,
-  Table,
-  TableHead,
-  TableHeaderCell,
-  TableBody,
-  TableRow,
-  TableCell,
-} from '../components/tremor';
 
 type PostWithSeller = MarketPostRow & { seller?: ProfileRow | null };
 
@@ -35,13 +12,13 @@ export function ContentModerationTab() {
   const [postTypeFilter, setPostTypeFilter] = useState('all');
   const [page, setPage] = useState(1);
   const pageSize = 12;
-  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
 
   // Deletion / Takedown State
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [targetPostForDelete, setTargetPostForDelete] = useState<PostWithSeller | null>(null);
   const [selectedPostPreview, setSelectedPostPreview] = useState<PostWithSeller | null>(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const fetchPosts = useCallback(async () => {
@@ -72,7 +49,7 @@ export function ContentModerationTab() {
 
   const handleInspectPost = (post: PostWithSeller) => {
     setSelectedPostPreview(post);
-    setIsDrawerOpen(true);
+    setIsModalOpen(true);
   };
 
   const confirmTakedown = async () => {
@@ -85,14 +62,15 @@ export function ContentModerationTab() {
       setPosts((prev) => prev.filter((p) => p.id !== postId));
       setTotalCount((prev) => Math.max(0, prev - 1));
       if (selectedPostPreview?.id === postId) {
-        setIsDrawerOpen(false);
+        setIsModalOpen(false);
         setSelectedPostPreview(null);
       }
       setFeedbackMsg({
         type: 'success',
-        text: 'Postingan berhasil di-takedown dari database Supabase.',
+        text: 'Postingan berhasil di-takedown dari database.',
       });
       setTargetPostForDelete(null);
+      setTimeout(() => setFeedbackMsg(null), 3000);
     } catch (e: any) {
       setFeedbackMsg({ type: 'error', text: e?.message || `Gagal menghapus postingan: ${e}` });
     } finally {
@@ -100,385 +78,498 @@ export function ContentModerationTab() {
     }
   };
 
+  const totalPages = Math.ceil(totalCount / pageSize) || 1;
+
   const formatPrice = (price: number | null) => {
     if (price == null || price === 0) return 'Gratis / Diskusi';
     return `Rp ${price.toLocaleString('id-ID')}`;
   };
 
-  const totalPages = Math.ceil(totalCount / pageSize) || 1;
-
   return (
-    <div className="p-4 md:p-8 space-y-5 max-w-7xl mx-auto">
-      {/* 1. Feedback Notification Toast */}
-      {feedbackMsg && (
-        <div
-          className={`p-3.5 rounded-xl border text-xs flex items-center justify-between transition-all ${
-            feedbackMsg.type === 'success'
-              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-              : 'bg-rose-50 text-rose-800 border-rose-200'
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-            <span>{feedbackMsg.text}</span>
-          </div>
-          <button
-            onClick={() => setFeedbackMsg(null)}
-            className="text-xs font-semibold hover:underline cursor-pointer"
-          >
-            Tutup
-          </button>
+    <>
+      {/* 1. Page Header (CoolAdmin Source of Truth) */}
+      <div className="page-header">
+        <div>
+          <h1>Moderasi Konten & Feed</h1>
+          <p className="subtitle">
+            Pantau postingan karya siswa, deteksi pelanggaran norma sekolah, dan lakukan takedown.
+          </p>
         </div>
-      )}
-
-      {/* 2. Search & Category Filter Controls */}
-      <Card className="p-4 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Cari judul postingan, caption, atau nama siswa..."
-            value={search}
-            onChange={(e) => {
-              setPage(1);
-              setSearch(e.target.value);
-            }}
-            className="w-full h-9 pl-9 pr-4 rounded-lg border border-slate-200 bg-slate-50/50 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#3D38F5] focus:ring-2 focus:ring-[#3D38F5]/10 outline-none transition-all"
-          />
-        </div>
-
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* Post Type Segmented Control */}
-          <div className="flex items-center gap-1 p-1 rounded-lg bg-slate-100 border border-slate-200/60 overflow-x-auto">
-            {(
-              [
-                { id: 'all', label: 'Semua Tipe' },
-                { id: 'product', label: 'Marketplace' },
-                { id: 'thread', label: 'Threads Diskusi' },
-              ] as const
-            ).map((t) => (
-              <button
-                key={t.id}
-                onClick={() => {
-                  setPage(1);
-                  setPostTypeFilter(t.id);
-                }}
-                className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
-                  postTypeFilter === t.id
-                    ? 'bg-white text-slate-900 shadow-2xs font-semibold'
-                    : 'text-slate-500 hover:text-slate-900'
-                }`}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-
-          {/* View Mode Switcher */}
-          <div className="flex items-center p-1 rounded-lg bg-slate-100 border border-slate-200/60">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded-md transition-all cursor-pointer ${
-                viewMode === 'grid' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-900'
-              }`}
-              title="Tampilan Grid Card"
-            >
-              <Grid className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => setViewMode('table')}
-              className={`p-1.5 rounded-md transition-all cursor-pointer ${
-                viewMode === 'table' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-900'
-              }`}
-              title="Tampilan Data Tabel"
-            >
-              <ListIcon className="h-4 w-4" />
-            </button>
-          </div>
-
+        <div className="page-header__actions">
           <button
+            type="button"
+            className="m-btn m-btn--ghost"
             onClick={fetchPosts}
             disabled={isLoading}
-            className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+            aria-label="Refresh data"
           >
-            <RefreshCw className={`h-3.5 w-3.5 text-[#3D38F5] ${isLoading ? 'animate-spin' : ''}`} />
-            <span className="hidden sm:inline">Refresh</span>
+            <i className={`fa-solid fa-arrows-rotate ${isLoading ? 'fa-spin' : ''}`}></i>
+            Segarkan
           </button>
         </div>
-      </Card>
+      </div>
 
-      {/* 4. Content Presentation (Grid or Table) */}
-      {isLoading ? (
-        <div className="py-20 text-center text-slate-400">
-          <RefreshCw className="h-6 w-6 animate-spin text-[#3D38F5] mx-auto mb-2" />
-          <span className="text-xs">Memuat katalog konten feed...</span>
+      {/* Feedback banner if any */}
+      {feedbackMsg && (
+        <div
+          style={{
+            marginBottom: '16px',
+            padding: '12px 16px',
+            borderRadius: '6px',
+            background: feedbackMsg.type === 'success' ? '#e0f3f1' : '#fce7f3',
+            color: feedbackMsg.type === 'success' ? '#11998e' : '#ec4899',
+            fontSize: '13px',
+            fontWeight: 500,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+        >
+          <i
+            className={`fa-solid ${
+              feedbackMsg.type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'
+            }`}
+          ></i>
+          <span>{feedbackMsg.text}</span>
         </div>
-      ) : posts.length === 0 ? (
-        <Card className="p-16 text-center space-y-2">
-          <p className="font-semibold text-slate-800 text-sm">Tidak ada postingan ditemukan</p>
-          <p className="text-xs text-slate-400">Ubah filter pencarian atau pastikan feed aktif di mobile app.</p>
-        </Card>
-      ) : viewMode === 'grid' ? (
-        /* GRID VIEW */
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4.5">
-          {posts.map((p) => {
-            const firstImage = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : null;
-            return (
-              <Card
-                key={p.id}
-                onClick={() => handleInspectPost(p)}
-                className="p-0 overflow-hidden hover:ring-slate-300 transition-all flex flex-col justify-between cursor-pointer group"
-              >
-                <div>
-                  {/* Thumbnail */}
-                  <div className="aspect-video w-full bg-slate-100 border-b border-slate-100 relative overflow-hidden">
-                    {firstImage ? (
-                      <img
-                        src={firstImage}
-                        alt={p.title || 'Feed'}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-50">
-                        <ImageIcon className="h-8 w-8 text-slate-300" />
-                      </div>
-                    )}
-                    <div className="absolute top-2.5 left-2.5">
-                      <Badge variant={p.post_type === 'product' ? 'indigo' : 'slate'} className="bg-white/95 backdrop-blur-xs">
-                        {p.post_type}
-                      </Badge>
-                    </div>
-                  </div>
-
-                  {/* Body Content */}
-                  <div className="p-4 space-y-2">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-[#3D38F5] tabular-nums">
-                        {formatPrice(p.price)}
-                      </span>
-                      <span className="text-[10.5px] text-slate-400">
-                        {new Date(p.created_at).toLocaleDateString('id-ID', {
-                          day: 'numeric',
-                          month: 'short',
-                        })}
-                      </span>
-                    </div>
-
-                    <h3 className="text-sm font-bold text-slate-900 line-clamp-1 group-hover:text-[#3D38F5] transition-colors">
-                      {p.title || p.caption || 'Postingan Tanpa Judul'}
-                    </h3>
-
-                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
-                      {p.caption || p.description || 'Tidak ada deskripsi.'}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Author Footer & Takedown Action */}
-                <div
-                  className="p-3 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between gap-2"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="flex items-center gap-2 truncate">
-                    <div className="h-6 w-6 rounded-full bg-[#EEF0FF] text-[#3D38F5] font-bold text-[10px] flex items-center justify-center shrink-0">
-                      {p.seller?.full_name ? p.seller.full_name[0].toUpperCase() : 'S'}
-                    </div>
-                    <span className="text-xs text-slate-600 font-medium truncate">
-                      {p.seller?.full_name || 'Siswa'}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      onClick={() => handleInspectPost(p)}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors cursor-pointer"
-                      title="Lihat Detail"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => setTargetPostForDelete(p)}
-                      className="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 transition-colors cursor-pointer"
-                      title="Takedown Postingan"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      ) : (
-        /* TABLE VIEW */
-        <Card className="p-0 overflow-hidden">
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableHeaderCell className="pl-6">Konten & Thumbnail</TableHeaderCell>
-                <TableHeaderCell>Tipe & Kategori</TableHeaderCell>
-                <TableHeaderCell>Penulis / Siswa</TableHeaderCell>
-                <TableHeaderCell>Harga</TableHeaderCell>
-                <TableHeaderCell>Tanggal</TableHeaderCell>
-                <TableHeaderCell className="pr-6 text-right">Moderasi</TableHeaderCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {posts.map((p) => {
-                const firstImage = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : null;
-                return (
-                  <TableRow
-                    key={p.id}
-                    onClick={() => handleInspectPost(p)}
-                    className="cursor-pointer group"
-                  >
-                    <TableCell className="pl-6">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-14 rounded-lg bg-slate-100 border border-slate-200/80 overflow-hidden shrink-0 flex items-center justify-center">
-                          {firstImage ? (
-                            <img src={firstImage} alt="" className="h-full w-full object-cover" />
-                          ) : (
-                            <ImageIcon className="h-4 w-4 text-slate-400" />
-                          )}
-                        </div>
-                        <div className="truncate max-w-[220px]">
-                          <div className="font-semibold text-slate-900 group-hover:text-[#3D38F5] transition-colors truncate">
-                            {p.title || p.caption || 'Tanpa Judul'}
-                          </div>
-                          <div className="text-[11px] text-slate-400 truncate">
-                            ID: {p.id.slice(0, 8)}...
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-
-                    <TableCell>
-                      <Badge variant={p.post_type === 'product' ? 'indigo' : 'slate'} className="uppercase font-semibold text-[10px]">
-                        {p.post_type}
-                      </Badge>
-                    </TableCell>
-
-                    <TableCell>
-                      <div className="font-medium text-slate-800">
-                        {p.seller?.full_name || 'Siswa'}
-                      </div>
-                      <div className="text-[11px] text-slate-400">
-                        @{p.seller?.username || 'user'}
-                      </div>
-                    </TableCell>
-
-                    <TableCell className="font-bold text-slate-900 tabular-nums">
-                      {formatPrice(p.price)}
-                    </TableCell>
-
-                    <TableCell className="text-[11px] text-slate-500 tabular-nums">
-                      {new Date(p.created_at).toLocaleDateString('id-ID')}
-                    </TableCell>
-
-                    <TableCell className="pr-6 text-right" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          onClick={() => handleInspectPost(p)}
-                          className="h-7.5 px-2.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 font-medium flex items-center gap-1 transition-colors cursor-pointer text-xs"
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                          <span>Detail</span>
-                        </button>
-                        <button
-                          onClick={() => setTargetPostForDelete(p)}
-                          className="h-7.5 px-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 font-medium flex items-center gap-1 transition-colors cursor-pointer text-xs"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                          <span>Takedown</span>
-                        </button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </Card>
       )}
 
-      {/* 5. Pagination Bar */}
-      <Card className="p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-        <div>
-          Menampilkan <span className="font-semibold text-slate-900">{posts.length}</span> dari{' '}
-          <span className="font-semibold text-slate-900">{totalCount}</span> postingan (Halaman {page} dari {totalPages})
-        </div>
+      {/* 2. Main Moderation Card */}
+      <section className="m-card">
+        {/* Filter Bar Header */}
+        <header className="m-card__header d-flex flex-wrap align-items-center justify-content-between">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            {/* Search Input */}
+            <div style={{ position: 'relative', width: '260px' }}>
+              <input
+                type="text"
+                className="au-input"
+                placeholder="Cari judul, konten, seller..."
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+                style={{
+                  width: '100%',
+                  height: '36px',
+                  borderRadius: '6px',
+                  border: '1px solid #e4e7ec',
+                  padding: '0 12px 0 34px',
+                  fontSize: '13px',
+                }}
+              />
+              <i
+                className="fa-solid fa-magnifying-glass"
+                style={{
+                  position: 'absolute',
+                  left: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#94a3b8',
+                  fontSize: '12px',
+                }}
+              ></i>
+            </div>
 
-        <div className="flex items-center gap-1.5">
-          <button
-            disabled={page <= 1 || isLoading}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="h-8 px-3 rounded-lg border border-slate-200 bg-white font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-2xs flex items-center gap-1"
-          >
-            <ChevronLeft className="h-3.5 w-3.5" />
-            <span>Sebelumnya</span>
-          </button>
-          <button
-            disabled={page >= totalPages || isLoading}
-            onClick={() => setPage((p) => p + 1)}
-            className="h-8 px-3 rounded-lg border border-slate-200 bg-white font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-2xs flex items-center gap-1"
-          >
-            <span>Berikutnya</span>
-            <ChevronRight className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      </Card>
+            {/* Filter Post Type */}
+            <select
+              value={postTypeFilter}
+              onChange={(e) => {
+                setPostTypeFilter(e.target.value);
+                setPage(1);
+              }}
+              style={{
+                height: '36px',
+                borderRadius: '6px',
+                border: '1px solid #e4e7ec',
+                padding: '0 10px',
+                fontSize: '13px',
+                color: '#475569',
+                background: '#ffffff',
+              }}
+            >
+              <option value="all">Semua Tipe Konten</option>
+              <option value="product">Produk & Karya Kejuruan</option>
+              <option value="thread">Threads & Diskusi</option>
+            </select>
 
-      {/* 6. Classic Center Modal Pop-up for Post Moderation */}
+            {/* View Mode Toggle */}
+            <div style={{ display: 'flex', border: '1px solid #e4e7ec', borderRadius: '6px', overflow: 'hidden' }}>
+              <button
+                type="button"
+                onClick={() => setViewMode('table')}
+                style={{
+                  height: '34px',
+                  padding: '0 12px',
+                  border: 0,
+                  background: viewMode === 'table' ? '#4272d7' : '#ffffff',
+                  color: viewMode === 'table' ? '#ffffff' : '#475569',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                }}
+              >
+                <i className="fa-solid fa-table-list"></i>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('grid')}
+                style={{
+                  height: '34px',
+                  padding: '0 12px',
+                  border: 0,
+                  background: viewMode === 'grid' ? '#4272d7' : '#ffffff',
+                  color: viewMode === 'grid' ? '#ffffff' : '#475569',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                }}
+              >
+                <i className="fa-solid fa-table-cells-large"></i>
+              </button>
+            </div>
+          </div>
+
+          <div style={{ fontSize: '12.5px', color: '#64748b' }}>
+            Total: <b>{totalCount}</b> postingan aktif
+          </div>
+        </header>
+
+        {/* View Mode 1: Table */}
+        {viewMode === 'table' ? (
+          <div className="table-responsive">
+            <table className="m-table">
+              <thead>
+                <tr>
+                  <th>Konten / Judul</th>
+                  <th>Penulis / Seller</th>
+                  <th>Tipe Post</th>
+                  <th>Harga</th>
+                  <th className="num">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={5} style={{ textAlign: 'center', padding: '32px 0', color: '#94a3b8' }}>
+                      <i className="fa-solid fa-arrows-rotate fa-spin" style={{ marginRight: '8px' }}></i>
+                      Memuat postingan feed...
+                    </td>
+                  </tr>
+                ) : posts.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} style={{ textAlign: 'center', padding: '32px 0', color: '#94a3b8' }}>
+                      Tidak ada postingan yang sesuai filter.
+                    </td>
+                  </tr>
+                ) : (
+                  posts.map((post) => (
+                    <tr key={post.id}>
+                      <td>
+                        <div style={{ fontWeight: 600, color: '#1f2937' }}>
+                          {post.title || post.caption || post.description || 'Karya Siswa'}
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>
+                          {post.caption || post.description ? `${(post.caption || post.description || '').slice(0, 65)}...` : '-'}
+                        </div>
+                      </td>
+                      <td>
+                        <div style={{ fontWeight: 500, color: '#1f2937' }}>
+                          {post.seller?.full_name || 'Siswa'}
+                        </div>
+                        <div style={{ fontSize: '11px', color: '#94a3b8' }}>
+                          @{post.seller?.username || 'user'}
+                        </div>
+                      </td>
+                      <td>
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            textTransform: 'uppercase',
+                            background: post.post_type === 'product' ? '#eaf0fc' : '#fff1e6',
+                            color: post.post_type === 'product' ? '#4272d7' : '#f97316',
+                          }}
+                        >
+                          {post.post_type || 'product'}
+                        </span>
+                      </td>
+                      <td style={{ fontSize: '13px', fontWeight: 600, color: '#1f2937' }}>
+                        {formatPrice(post.price)}
+                      </td>
+                      <td className="num">
+                        <div className="table-data-feature">
+                          {/* Inspect Modal Button */}
+                          <button
+                            type="button"
+                            className="item"
+                            title="Tinjau Detail Postingan"
+                            onClick={() => handleInspectPost(post)}
+                            style={{ border: 0, cursor: 'pointer' }}
+                          >
+                            <i className="fa-solid fa-eye"></i>
+                          </button>
+
+                          {/* Takedown Button */}
+                          <button
+                            type="button"
+                            className="item"
+                            title="Takedown Postingan"
+                            disabled={deletingId === post.id}
+                            onClick={() => setTargetPostForDelete(post)}
+                            style={{ border: 0, cursor: 'pointer', color: '#dc3545' }}
+                          >
+                            <i className="fa-solid fa-trash-can"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          /* View Mode 2: Grid */
+          <div className="row row-tight" style={{ marginTop: '8px' }}>
+            {isLoading ? (
+              <div style={{ width: '100%', textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
+                <i className="fa-solid fa-arrows-rotate fa-spin" style={{ marginRight: '8px' }}></i>
+                Memuat galeri feed...
+              </div>
+            ) : posts.length === 0 ? (
+              <div style={{ width: '100%', textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
+                Tidak ada postingan yang ditemukan.
+              </div>
+            ) : (
+              posts.map((post) => {
+                const img = Array.isArray(post.images) && post.images.length > 0 ? post.images[0] : null;
+                return (
+                  <div key={post.id} className="col-sm-6 col-lg-4" style={{ marginBottom: '16px' }}>
+                    <div
+                      style={{
+                        background: '#ffffff',
+                        border: '1px solid #e4e7ec',
+                        borderRadius: '8px',
+                        overflow: 'hidden',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                      }}
+                    >
+                      <div
+                        style={{
+                          height: '140px',
+                          background: '#f8fafc',
+                          position: 'relative',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        {img ? (
+                          <img
+                            src={img}
+                            alt=""
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                        ) : (
+                          <i className="fa-regular fa-image" style={{ fontSize: '32px', color: '#cbd5e1' }}></i>
+                        )}
+                        <span
+                          style={{
+                            position: 'absolute',
+                            top: '8px',
+                            right: '8px',
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            fontSize: '10.5px',
+                            fontWeight: 700,
+                            textTransform: 'uppercase',
+                            background: post.post_type === 'product' ? '#4272d7' : '#f97316',
+                            color: '#ffffff',
+                          }}
+                        >
+                          {post.post_type || 'product'}
+                        </span>
+                      </div>
+                      <div style={{ padding: '14px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ fontWeight: 600, fontSize: '14px', color: '#1f2937' }}>
+                          {post.title || 'Karya Siswa'}
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px', flex: 1 }}>
+                          {post.caption || post.description ? `${(post.caption || post.description || '').slice(0, 60)}...` : '-'}
+                        </div>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            marginTop: '12px',
+                            paddingTop: '10px',
+                            borderTop: '1px solid #f1f3f5',
+                          }}
+                        >
+                          <span style={{ fontSize: '13px', fontWeight: 700, color: '#4272d7' }}>
+                            {formatPrice(post.price)}
+                          </span>
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <button
+                              type="button"
+                              className="m-btn m-btn--ghost"
+                              onClick={() => handleInspectPost(post)}
+                              style={{ height: '28px', padding: '0 8px', fontSize: '11px' }}
+                            >
+                              <i className="fa-solid fa-eye"></i>
+                            </button>
+                            <button
+                              type="button"
+                              className="m-btn m-btn--ghost"
+                              onClick={() => setTargetPostForDelete(post)}
+                              style={{ height: '28px', padding: '0 8px', fontSize: '11px', color: '#dc3545' }}
+                            >
+                              <i className="fa-solid fa-trash-can"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        )}
+
+        {/* Pagination Footer */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingTop: '16px',
+            marginTop: '8px',
+            borderTop: '1px solid #f1f3f5',
+          }}
+        >
+          <div style={{ fontSize: '12.5px', color: '#94a3b8' }}>
+            Halaman {page} dari {totalPages}
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              type="button"
+              className="m-btn m-btn--ghost"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              style={{ height: '32px', padding: '0 12px', fontSize: '12px' }}
+            >
+              <i className="fa-solid fa-chevron-left"></i>
+              Sebelumnya
+            </button>
+            <button
+              type="button"
+              className="m-btn m-btn--ghost"
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              style={{ height: '32px', padding: '0 12px', fontSize: '12px' }}
+            >
+              Selanjutnya
+              <i className="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Post Detail Inspection Modal */}
       <PostDetailModal
         post={selectedPostPreview}
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         onRequestTakedown={(post) => {
           setTargetPostForDelete(post);
+          setIsModalOpen(false);
         }}
       />
 
-      {/* 7. Modal Confirmation for Post Takedown */}
+      {/* Confirmation Modal for Takedown */}
       {targetPostForDelete && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
-                <AlertTriangle className="h-5 w-5" />
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            background: 'rgba(15, 23, 42, 0.55)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px',
+          }}
+          onClick={() => setTargetPostForDelete(null)}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '8px',
+              padding: '24px',
+              maxWidth: '440px',
+              width: '100%',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  background: '#fee2e2',
+                  color: '#dc3545',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '18px',
+                }}
+              >
+                <i className="fa-solid fa-triangle-exclamation"></i>
               </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Takedown Postingan</h3>
-                <p className="text-xs text-slate-500">Tindakan ini permanen dan menghapus konten dari feed.</p>
+                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#1f2937' }}>
+                  Konfirmasi Takedown
+                </h3>
+                <span style={{ fontSize: '12px', color: '#64748b' }}>
+                  Tindakan ini permanen dan tidak dapat dibatalkan.
+                </span>
               </div>
             </div>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Apakah Anda yakin ingin menghapus postingan{' '}
-              <strong className="text-slate-900">
-                "{targetPostForDelete.title || targetPostForDelete.caption || 'Tanpa Judul'}"
-              </strong>{' '}
-              karya siswa <strong className="text-slate-900">@{targetPostForDelete.seller?.username || 'user'}</strong>?
+            <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: 1.5, margin: '0 0 20px' }}>
+              Apakah Anda yakin ingin menghapus postingan <b>"{targetPostForDelete.title || 'Karya Siswa'}"</b> karya <b>{targetPostForDelete.seller?.full_name || 'Siswa'}</b>?
             </p>
 
-            <div className="flex items-center justify-end gap-2 pt-2">
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
               <button
-                disabled={deletingId === targetPostForDelete.id}
+                type="button"
+                className="m-btn m-btn--ghost"
                 onClick={() => setTargetPostForDelete(null)}
-                className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
               >
                 Batal
               </button>
               <button
-                disabled={deletingId === targetPostForDelete.id}
+                type="button"
+                className="m-btn m-btn--primary"
+                style={{ background: '#dc3545', borderColor: '#dc3545' }}
+                disabled={deletingId != null}
                 onClick={confirmTakedown}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white transition-colors cursor-pointer shadow-xs disabled:opacity-50"
               >
-                {deletingId === targetPostForDelete.id ? 'Menghapus...' : 'Konfirmasi Takedown'}
+                {deletingId ? 'Menghapus...' : 'Ya, Takedown Konten'}
               </button>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

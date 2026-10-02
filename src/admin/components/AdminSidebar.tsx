@@ -1,13 +1,3 @@
-import type { ReactNode } from 'react';
-import {
-  LayoutDashboard,
-  Users,
-  ShieldAlert,
-  MapPin,
-  LogOut,
-  ChevronRight,
-} from 'lucide-react';
-
 export type AdminTab = 'overview' | 'users' | 'moderation' | 'meeting-points';
 
 interface AdminSidebarProps {
@@ -18,153 +8,210 @@ interface AdminSidebarProps {
   onCloseMobile?: () => void;
 }
 
-interface NavSection {
-  title: string;
-  items: {
-    id: AdminTab;
-    label: string;
-    icon: ReactNode;
-    badge?: string;
-  }[];
-}
-
 export function AdminSidebar({
   activeTab,
   onTabChange,
   onLogout,
-  isOpenMobile = false,
   onCloseMobile,
 }: AdminSidebarProps) {
-  const navSections: NavSection[] = [
-    {
-      title: 'MAIN DASHBOARD',
-      items: [
-        {
-          id: 'overview',
-          label: 'Overview Ekosistem',
-          icon: <LayoutDashboard className="h-4 w-4" />,
-        },
-      ],
-    },
-    {
-      title: 'MANAJEMEN & KEAMANAN',
-      items: [
-        {
-          id: 'users',
-          label: 'Direktori Siswa',
-          icon: <Users className="h-4 w-4" />,
-        },
-        {
-          id: 'moderation',
-          label: 'Moderasi Konten',
-          icon: <ShieldAlert className="h-4 w-4" />,
-        },
-      ],
-    },
-    {
-      title: 'LOGISTIK KAMPUS',
-      items: [
-        {
-          id: 'meeting-points',
-          label: 'Titik Temu COD',
-          icon: <MapPin className="h-4 w-4" />,
-        },
-      ],
-    },
-  ];
-
   return (
-    <>
-      {/* Mobile Backdrop */}
-      {isOpenMobile && (
-        <div
-          className="fixed inset-0 z-40 bg-slate-900/30 backdrop-blur-xs md:hidden"
-          onClick={onCloseMobile}
-        />
-      )}
-
-      <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-slate-200/80 bg-white select-none transition-transform duration-200 ease-in-out md:translate-x-0 ${
-          isOpenMobile ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-        }`}
-      >
-        {/* Brand Header */}
-        <div className="flex h-16 items-center justify-between border-b border-slate-100 px-5">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#3D38F5] text-white font-bold text-sm shadow-[0_2px_8px_rgba(61,56,245,0.25)]">
-              8
+    <aside className="menu-sidebar" id="main-sidebar">
+      {/* Brand Header */}
+      <div className="logo d-flex align-items-center justify-content-between">
+        <a
+          href="#/admin"
+          onClick={(e) => {
+            e.preventDefault();
+            onTabChange('overview');
+          }}
+          className="d-flex align-items-center text-decoration-none"
+          style={{ gap: '10px' }}
+        >
+          <div
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              background: '#4272d7',
+              color: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 800,
+              fontSize: '15px',
+              boxShadow: '0 2px 6px rgba(66, 114, 215, 0.4)',
+            }}
+          >
+            8
+          </div>
+          <div>
+            <div
+              style={{
+                fontSize: '15px',
+                fontWeight: 700,
+                color: '#ffffff',
+                lineHeight: 1.2,
+                letterSpacing: '-0.01em',
+              }}
+            >
+              Snaps<span style={{ color: '#93b4ec' }}>Admin</span>
             </div>
-            <div>
-              <div className="text-sm font-bold tracking-tight text-slate-900 flex items-center gap-1.5">
-                <span>Snaps.</span>
-                <span className="rounded-md bg-[#EEF0FF] px-1.5 py-0.5 text-[9.5px] font-bold text-[#3D38F5] border border-[#D8DBFE]">
-                  Admin
-                </span>
-              </div>
-              <div className="text-[11px] font-medium text-slate-400">SMKN 8 Semarang</div>
+            <div
+              style={{
+                fontSize: '11px',
+                color: '#94a3b8',
+                fontWeight: 500,
+              }}
+            >
+              SMKN 8 Semarang
             </div>
           </div>
-        </div>
+        </a>
 
-        {/* Navigation Sections */}
-        <div className="flex-1 overflow-y-auto px-3.5 py-4 space-y-5">
-          {navSections.map((section) => (
-            <div key={section.title} className="space-y-1">
-              <div className="px-2.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                {section.title}
-              </div>
-              {section.items.map((item) => {
-                const isActive = activeTab === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => onTabChange(item.id)}
-                    className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold transition-all cursor-pointer text-left ${
-                      isActive
-                        ? 'bg-[#3D38F5] text-white shadow-xs'
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <span className={isActive ? 'text-white' : 'text-slate-400'}>
-                        {item.icon}
-                      </span>
-                      <span>{item.label}</span>
-                    </div>
-                    {isActive ? (
-                      <ChevronRight className="h-3.5 w-3.5 text-white/80" />
-                    ) : null}
-                  </button>
-                );
-              })}
-            </div>
-          ))}
-        </div>
+        {/* Mobile close button */}
+        {onCloseMobile && (
+          <button
+            type="button"
+            className="sidebar-close d-lg-none"
+            onClick={onCloseMobile}
+            aria-label="Tutup navigasi"
+            style={{
+              background: 'transparent',
+              border: 0,
+              color: '#94a3b8',
+              fontSize: '18px',
+              padding: '6px',
+              cursor: 'pointer',
+            }}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        )}
+      </div>
 
-        {/* Footer Info & Logout */}
-        <div className="border-t border-slate-100 p-4 space-y-3 bg-slate-50/50">
-          <div className="rounded-lg bg-white p-3 border border-slate-200/80 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-slate-800">Sistem Kampus</span>
-              <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 uppercase">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Live
+      {/* Navigation List */}
+      <div className="menu-sidebar__content">
+        <nav className="navbar-sidebar">
+          <ul className="list-unstyled navbar__list">
+            <div className="nav-group-label">Main Dashboard</div>
+            <li className={activeTab === 'overview' ? 'active' : ''}>
+              <a
+                href="#overview"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onTabChange('overview');
+                  onCloseMobile?.();
+                }}
+              >
+                <i className="fa-solid fa-gauge-high"></i>
+                Overview Ekosistem
+              </a>
+            </li>
+
+            <div className="nav-group-label">Manajemen & Keamanan</div>
+            <li className={activeTab === 'users' ? 'active' : ''}>
+              <a
+                href="#users"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onTabChange('users');
+                  onCloseMobile?.();
+                }}
+              >
+                <i className="fa-solid fa-users"></i>
+                Direktori Siswa
+              </a>
+            </li>
+
+            <li className={activeTab === 'moderation' ? 'active' : ''}>
+              <a
+                href="#moderation"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onTabChange('moderation');
+                  onCloseMobile?.();
+                }}
+              >
+                <i className="fa-solid fa-shield-halved"></i>
+                Moderasi Konten
+              </a>
+            </li>
+
+            <div className="nav-group-label">Logistik Kampus</div>
+            <li className={activeTab === 'meeting-points' ? 'active' : ''}>
+              <a
+                href="#meeting-points"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onTabChange('meeting-points');
+                  onCloseMobile?.();
+                }}
+              >
+                <i className="fa-solid fa-map-location-dot"></i>
+                Titik Temu COD
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        {/* Footer info & logout in sidebar */}
+        <div style={{ padding: '20px 14px', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+          <div
+            style={{
+              padding: '12px',
+              borderRadius: '6px',
+              background: 'rgba(255, 255, 255, 0.04)',
+              border: '1px solid rgba(255, 255, 255, 0.06)',
+              marginBottom: '12px',
+            }}
+          >
+            <div className="d-flex align-items-center justify-content-between">
+              <span style={{ fontSize: '11px', color: '#cbd5e1', fontWeight: 600 }}>
+                Status Database
+              </span>
+              <span
+                style={{
+                  fontSize: '10px',
+                  color: '#10b981',
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                }}
+              >
+                <i className="fa-solid fa-circle" style={{ fontSize: '7px' }}></i>
+                LIVE
               </span>
             </div>
-            <div className="mt-1 text-[11px] text-slate-500">
-              Database: Supabase PostgreSQL
+            <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
+              Supabase PostgreSQL
             </div>
           </div>
 
           <button
+            type="button"
             onClick={onLogout}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-100 transition-colors cursor-pointer"
+            className="w-100 text-start"
+            style={{
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+              color: '#f87171',
+              borderRadius: '6px',
+              padding: '9px 12px',
+              fontSize: '13px',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              cursor: 'pointer',
+              transition: 'background 120ms ease',
+            }}
           >
-            <LogOut className="h-3.5 w-3.5" />
-            <span>Keluar Portal</span>
+            <i className="fa-solid fa-arrow-right-from-bracket"></i>
+            Keluar dari Admin
           </button>
         </div>
-      </aside>
-    </>
+      </div>
+    </aside>
   );
 }

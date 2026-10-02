@@ -1,17 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import {
-  Plus,
-  MapPin,
-  Trash2,
-  CheckCircle2,
-  RefreshCw,
-  Edit2,
-  X,
-  Search,
-  Building,
-} from 'lucide-react';
 import { adminService, type SchoolMeetingPointRow } from '../services/adminService';
-import { Card, Badge } from '../components/tremor';
 
 export function MeetingPointsTab() {
   const [spots, setSpots] = useState<SchoolMeetingPointRow[]>([]);
@@ -80,8 +68,9 @@ export function MeetingPointsTab() {
       );
       setFeedbackMsg({
         type: 'success',
-        text: `Titik temu ${!currentStatus ? 'diaktifkan' : 'dinonaktifkan'}`,
+        text: `Titik temu ${!currentStatus ? 'diaktifkan' : 'dinonaktifkan'}.`,
       });
+      setTimeout(() => setFeedbackMsg(null), 3000);
     } catch (e: any) {
       setFeedbackMsg({ type: 'error', text: `Gagal mengubah status: ${e?.message || e}` });
     }
@@ -93,8 +82,9 @@ export function MeetingPointsTab() {
     try {
       await adminService.deleteMeetingPoint(deleteConfirmSpot.id);
       setSpots((prev) => prev.filter((s) => s.id !== deleteConfirmSpot.id));
-      setFeedbackMsg({ type: 'success', text: `Spot "${spotName}" berhasil dihapus` });
+      setFeedbackMsg({ type: 'success', text: `Spot "${spotName}" berhasil dihapus.` });
       setDeleteConfirmSpot(null);
+      setTimeout(() => setFeedbackMsg(null), 3000);
     } catch (e: any) {
       setFeedbackMsg({ type: 'error', text: `Gagal menghapus: ${e?.message || e}` });
     }
@@ -103,261 +93,380 @@ export function MeetingPointsTab() {
   const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
-    setIsSubmitting(true);
 
+    setIsSubmitting(true);
     try {
       if (editingSpot) {
         const updated = await adminService.updateMeetingPoint(editingSpot.id, {
           name: name.trim(),
           floor,
           area_category: areaCategory,
-          description: description.trim() || undefined,
+          description: description.trim(),
           coordinates_x: coordX,
           coordinates_y: coordY,
         });
-        setSpots((prev) => prev.map((s) => (s.id === editingSpot.id ? updated : s)));
-        setFeedbackMsg({ type: 'success', text: 'Titik temu berhasil diperbarui' });
+        setSpots((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
+        setFeedbackMsg({ type: 'success', text: `Spot "${updated.name}" berhasil diperbarui.` });
       } else {
         const created = await adminService.createMeetingPoint({
           name: name.trim(),
           floor,
           area_category: areaCategory,
-          description: description.trim() || undefined,
+          description: description.trim(),
           coordinates_x: coordX,
           coordinates_y: coordY,
           is_active: true,
         });
-        setSpots((prev) => [...prev, created]);
-        setFeedbackMsg({ type: 'success', text: 'Titik temu baru berhasil ditambahkan' });
+        setSpots((prev) => [created, ...prev]);
+        setFeedbackMsg({ type: 'success', text: `Spot "${created.name}" berhasil ditambahkan.` });
       }
       setIsModalOpen(false);
-    } catch (e: any) {
-      setFeedbackMsg({ type: 'error', text: `Gagal menyimpan: ${e?.message || e}` });
+      setTimeout(() => setFeedbackMsg(null), 3000);
+    } catch (err: any) {
+      setFeedbackMsg({ type: 'error', text: `Gagal menyimpan spot: ${err?.message || err}` });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const filteredSpots = useMemo(() => {
-    return spots.filter((s) => {
+    return spots.filter((spot) => {
       const matchSearch =
-        s.name.toLowerCase().includes(search.toLowerCase()) ||
-        s.area_category.toLowerCase().includes(search.toLowerCase()) ||
-        (s.description && s.description.toLowerCase().includes(search.toLowerCase()));
-      const matchFloor = floorFilter === 'all' || s.floor === floorFilter;
+        spot.name.toLowerCase().includes(search.toLowerCase()) ||
+        spot.area_category.toLowerCase().includes(search.toLowerCase()) ||
+        (spot.description && spot.description.toLowerCase().includes(search.toLowerCase()));
+      const matchFloor = floorFilter === 'all' || spot.floor === floorFilter;
       return matchSearch && matchFloor;
     });
   }, [spots, search, floorFilter]);
 
   return (
-    <div className="p-4 md:p-8 space-y-5 max-w-7xl mx-auto">
-      {/* 1. Notification Toast */}
-      {feedbackMsg && (
-        <div
-          className={`p-3.5 rounded-xl border text-xs flex items-center justify-between transition-all ${
-            feedbackMsg.type === 'success'
-              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-              : 'bg-rose-50 text-rose-800 border-rose-200'
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-            <span>{feedbackMsg.text}</span>
-          </div>
-          <button
-            onClick={() => setFeedbackMsg(null)}
-            className="text-xs font-semibold hover:underline cursor-pointer"
-          >
-            Tutup
-          </button>
+    <>
+      {/* 1. Page Header (CoolAdmin Source of Truth) */}
+      <div className="page-header">
+        <div>
+          <h1>Titik Temu COD Kampus</h1>
+          <p className="subtitle">
+            Daftar spot resmi yang diakui sekolah untuk serah terima transaksi COD siswa SMKN 8 Semarang.
+          </p>
         </div>
-      )}
-
-      {/* 2. Search & Floor Filter */}
-      <Card className="p-4 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Cari nama spot, bengkel, kantin..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-9 pl-9 pr-4 rounded-lg border border-slate-200 bg-slate-50/50 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#3D38F5] focus:ring-2 focus:ring-[#3D38F5]/10 outline-none transition-all"
-          />
-        </div>
-
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* Floor Segmented Control */}
-          <div className="flex items-center gap-1 p-1 rounded-lg bg-slate-100 border border-slate-200/60 overflow-x-auto">
-            {(
-              [
-                { id: 'all', label: 'Semua Lantai' },
-                { id: 1, label: 'Lantai 1' },
-                { id: 2, label: 'Lantai 2' },
-                { id: 3, label: 'Lantai 3' },
-              ] as const
-            ).map((f) => (
-              <button
-                key={f.id}
-                onClick={() => setFloorFilter(f.id)}
-                className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
-                  floorFilter === f.id
-                    ? 'bg-white text-slate-900 shadow-2xs font-semibold'
-                    : 'text-slate-500 hover:text-slate-900'
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-
+        <div className="page-header__actions">
           <button
+            type="button"
+            className="m-btn m-btn--ghost"
             onClick={fetchSpots}
             disabled={isLoading}
-            className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+            aria-label="Refresh spot COD"
           >
-            <RefreshCw className={`h-3.5 w-3.5 text-[#3D38F5] ${isLoading ? 'animate-spin' : ''}`} />
-            <span className="hidden sm:inline">Refresh</span>
+            <i className={`fa-solid fa-arrows-rotate ${isLoading ? 'fa-spin' : ''}`}></i>
+            Segarkan
           </button>
-
-          <button
-            onClick={openAddModal}
-            className="flex items-center gap-1.5 h-9 px-3.5 rounded-lg bg-[#3D38F5] hover:bg-[#312BD9] text-xs font-semibold text-white transition-all shadow-xs cursor-pointer"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Tambah Spot COD</span>
+          <button type="button" className="m-btn m-btn--primary" onClick={openAddModal}>
+            <i className="fa-solid fa-plus"></i>
+            Tambah Spot COD
           </button>
         </div>
-      </Card>
+      </div>
 
-      {/* 4. Spot Card Grid */}
-      {isLoading ? (
-        <div className="py-20 text-center text-slate-400">
-          <RefreshCw className="h-6 w-6 animate-spin text-[#3D38F5] mx-auto mb-2" />
-          <span className="text-xs">Memuat titik temu COD...</span>
-        </div>
-      ) : filteredSpots.length === 0 ? (
-        <Card className="p-16 text-center space-y-2">
-          <p className="font-semibold text-slate-800 text-sm">Tidak ada titik temu ditemukan</p>
-          <p className="text-xs text-slate-400">Gunakan tombol "Tambah Spot COD" untuk membuat lokasi baru.</p>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4.5">
-          {filteredSpots.map((spot) => (
-            <Card
-              key={spot.id}
-              className={`p-5 flex flex-col justify-between transition-all ${
-                spot.is_active
-                  ? 'hover:ring-slate-300'
-                  : 'bg-slate-50/60 opacity-60 ring-slate-200'
-              }`}
-            >
-              <div>
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                  <div className="flex items-center gap-2.5">
-                    <div
-                      className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 border ${
-                        spot.is_active
-                          ? 'bg-[#EEF0FF] text-[#3D38F5] border-[#D8DBFE]'
-                          : 'bg-slate-100 text-slate-400 border-slate-200'
-                      }`}
-                    >
-                      <MapPin className="h-4.5 w-4.5" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-slate-900 line-clamp-1">{spot.name}</h3>
-                      <p className="text-[11px] text-slate-400 font-medium">Lantai {spot.floor}</p>
-                    </div>
-                  </div>
-
-                  <Badge variant={spot.is_active ? 'emerald' : 'slate'}>
-                    <span className={`h-1.5 w-1.5 rounded-full ${spot.is_active ? 'bg-emerald-500' : 'bg-slate-400'}`} />
-                    {spot.is_active ? 'Aktif' : 'Nonaktif'}
-                  </Badge>
-                </div>
-
-                <div className="py-3.5 space-y-1.5 text-xs text-slate-600">
-                  <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-semibold uppercase tracking-wider">
-                    <Building className="h-3 w-3" />
-                    <span>{spot.area_category}</span>
-                  </div>
-                  <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                    {spot.description || 'Tidak ada deskripsi patokan area.'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                <button
-                  onClick={() => handleToggleActive(spot.id, spot.is_active)}
-                  className={`text-xs font-semibold px-2.5 py-1 rounded-lg border transition-colors cursor-pointer ${
-                    spot.is_active
-                      ? 'border-slate-200 text-slate-600 hover:bg-slate-100'
-                      : 'border-emerald-200 text-emerald-700 bg-emerald-50 hover:bg-emerald-100'
-                  }`}
-                >
-                  {spot.is_active ? 'Nonaktifkan' : 'Aktifkan'}
-                </button>
-
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => openEditModal(spot)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
-                    title="Edit Spot"
-                  >
-                    <Edit2 className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => setDeleteConfirmSpot(spot)}
-                    className="p-1.5 rounded-lg text-rose-400 hover:text-rose-700 hover:bg-rose-50 transition-colors cursor-pointer"
-                    title="Hapus Spot"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            </Card>
-          ))}
+      {/* Feedback banner if any */}
+      {feedbackMsg && (
+        <div
+          style={{
+            marginBottom: '16px',
+            padding: '12px 16px',
+            borderRadius: '6px',
+            background: feedbackMsg.type === 'success' ? '#e0f3f1' : '#fce7f3',
+            color: feedbackMsg.type === 'success' ? '#11998e' : '#ec4899',
+            fontSize: '13px',
+            fontWeight: 500,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+        >
+          <i
+            className={`fa-solid ${
+              feedbackMsg.type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'
+            }`}
+          ></i>
+          <span>{feedbackMsg.text}</span>
         </div>
       )}
 
-      {/* 5. Add / Edit Modal */}
+      {/* 2. Main Meeting Points Table Card */}
+      <section className="m-card">
+        {/* Filter Bar Header */}
+        <header className="m-card__header d-flex flex-wrap align-items-center justify-content-between">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            {/* Search Input */}
+            <div style={{ position: 'relative', width: '260px' }}>
+              <input
+                type="text"
+                className="au-input"
+                placeholder="Cari nama spot, kategori..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                style={{
+                  width: '100%',
+                  height: '36px',
+                  borderRadius: '6px',
+                  border: '1px solid #e4e7ec',
+                  padding: '0 12px 0 34px',
+                  fontSize: '13px',
+                }}
+              />
+              <i
+                className="fa-solid fa-magnifying-glass"
+                style={{
+                  position: 'absolute',
+                  left: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#94a3b8',
+                  fontSize: '12px',
+                }}
+              ></i>
+            </div>
+
+            {/* Filter Floor */}
+            <select
+              value={floorFilter}
+              onChange={(e) =>
+                setFloorFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))
+              }
+              style={{
+                height: '36px',
+                borderRadius: '6px',
+                border: '1px solid #e4e7ec',
+                padding: '0 10px',
+                fontSize: '13px',
+                color: '#475569',
+                background: '#ffffff',
+              }}
+            >
+              <option value="all">Semua Lantai Gedung</option>
+              <option value="1">Lantai 1</option>
+              <option value="2">Lantai 2</option>
+              <option value="3">Lantai 3</option>
+            </select>
+          </div>
+
+          <div style={{ fontSize: '12.5px', color: '#64748b' }}>
+            Total: <b>{filteredSpots.length}</b> spot terdaftar
+          </div>
+        </header>
+
+        {/* Data Table (CoolAdmin m-table) */}
+        <div className="table-responsive">
+          <table className="m-table">
+            <thead>
+              <tr>
+                <th>Nama Titik Temu</th>
+                <th>Kategori Area</th>
+                <th>Lantai Gedung</th>
+                <th>Status Spot</th>
+                <th className="num">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={5} style={{ textAlign: 'center', padding: '32px 0', color: '#94a3b8' }}>
+                    <i className="fa-solid fa-arrows-rotate fa-spin" style={{ marginRight: '8px' }}></i>
+                    Memuat daftar spot COD...
+                  </td>
+                </tr>
+              ) : filteredSpots.length === 0 ? (
+                <tr>
+                  <td colSpan={5} style={{ textAlign: 'center', padding: '32px 0', color: '#94a3b8' }}>
+                    Belum ada titik temu COD yang terdaftar.
+                  </td>
+                </tr>
+              ) : (
+                filteredSpots.map((spot) => (
+                  <tr key={spot.id}>
+                    <td>
+                      <div className="row-product">
+                        <div
+                          className="row-product__icon"
+                          style={{
+                            background: spot.is_active ? '#e0f3f1' : '#f1f5f9',
+                            color: spot.is_active ? '#11998e' : '#94a3b8',
+                          }}
+                        >
+                          <i className="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 600, color: '#1f2937' }}>{spot.name}</div>
+                          <div style={{ fontSize: '12px', color: '#64748b' }}>
+                            {spot.description || 'Zona serah terima COD'}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          padding: '2px 8px',
+                          borderRadius: '4px',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          background: '#eaf0fc',
+                          color: '#4272d7',
+                        }}
+                      >
+                        {spot.area_category}
+                      </span>
+                    </td>
+                    <td style={{ fontSize: '13px', color: '#475569', fontWeight: 500 }}>
+                      Lantai {spot.floor}
+                    </td>
+                    <td>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleActive(spot.id, spot.is_active)}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          border: '1px solid',
+                          fontSize: '11.5px',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          background: spot.is_active ? '#e0f3f1' : '#f8fafc',
+                          borderColor: spot.is_active ? '#a7f3d0' : '#e2e8f0',
+                          color: spot.is_active ? '#10b981' : '#94a3b8',
+                        }}
+                      >
+                        <i
+                          className={`fa-solid ${spot.is_active ? 'fa-circle-check' : 'fa-circle-xmark'}`}
+                        ></i>
+                        {spot.is_active ? 'Aktif' : 'Nonaktif'}
+                      </button>
+                    </td>
+                    <td className="num">
+                      <div className="table-data-feature">
+                        {/* Edit Button */}
+                        <button
+                          type="button"
+                          className="item"
+                          title="Edit Spot"
+                          onClick={() => openEditModal(spot)}
+                          style={{ border: 0, cursor: 'pointer' }}
+                        >
+                          <i className="fa-solid fa-pen-to-square"></i>
+                        </button>
+
+                        {/* Delete Button */}
+                        <button
+                          type="button"
+                          className="item"
+                          title="Hapus Spot"
+                          onClick={() => setDeleteConfirmSpot(spot)}
+                          style={{ border: 0, cursor: 'pointer', color: '#dc3545' }}
+                        >
+                          <i className="fa-solid fa-trash-can"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Add / Edit Spot Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="text-base font-bold text-slate-900">
-                {editingSpot ? 'Edit Titik Temu COD' : 'Tambah Titik Temu COD Baru'}
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            background: 'rgba(15, 23, 42, 0.55)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px',
+          }}
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '8px',
+              padding: '24px',
+              maxWidth: '480px',
+              width: '100%',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '16px',
+                paddingBottom: '12px',
+                borderBottom: '1px solid #f1f3f5',
+              }}
+            >
+              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#1f2937' }}>
+                {editingSpot ? 'Edit Titik Temu COD' : 'Tambah Titik Temu COD'}
               </h3>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                style={{ background: 'transparent', border: 0, color: '#94a3b8', cursor: 'pointer' }}
               >
-                <X className="h-4 w-4" />
+                <i className="fa-solid fa-xmark"></i>
               </button>
             </div>
 
-            <form onSubmit={handleSubmitForm} className="space-y-4 text-xs">
+            <form onSubmit={handleSubmitForm} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Nama Spot / Lokasi</label>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>
+                  Nama Titik Temu
+                </label>
                 <input
                   type="text"
                   required
-                  placeholder="Contoh: Depan Bengkel PPLG Lt. 2"
+                  placeholder="Contoh: Gazebo Depan Bengkel PPLG"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full h-9.5 px-3 rounded-xl border border-slate-200 text-xs text-slate-900 outline-none focus:border-[#3D38F5]"
+                  style={{
+                    width: '100%',
+                    height: '38px',
+                    borderRadius: '6px',
+                    border: '1px solid #e4e7ec',
+                    padding: '0 12px',
+                    fontSize: '13px',
+                  }}
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Lantai</label>
+                  <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>
+                    Lantai Gedung
+                  </label>
                   <select
                     value={floor}
                     onChange={(e) => setFloor(Number(e.target.value))}
-                    className="w-full h-9.5 px-3 rounded-xl border border-slate-200 text-xs text-slate-900 outline-none focus:border-[#3D38F5] bg-white cursor-pointer"
+                    style={{
+                      width: '100%',
+                      height: '38px',
+                      borderRadius: '6px',
+                      border: '1px solid #e4e7ec',
+                      padding: '0 10px',
+                      fontSize: '13px',
+                      background: '#ffffff',
+                    }}
                   >
                     <option value={1}>Lantai 1</option>
                     <option value={2}>Lantai 2</option>
@@ -366,43 +475,63 @@ export function MeetingPointsTab() {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Kategori Area</label>
+                  <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>
+                    Kategori Area
+                  </label>
                   <select
                     value={areaCategory}
                     onChange={(e) => setAreaCategory(e.target.value)}
-                    className="w-full h-9.5 px-3 rounded-xl border border-slate-200 text-xs text-slate-900 outline-none focus:border-[#3D38F5] bg-white cursor-pointer"
+                    style={{
+                      width: '100%',
+                      height: '38px',
+                      borderRadius: '6px',
+                      border: '1px solid #e4e7ec',
+                      padding: '0 10px',
+                      fontSize: '13px',
+                      background: '#ffffff',
+                    }}
                   >
                     <option value="Kantin & Sosialisasi">Kantin & Sosialisasi</option>
-                    <option value="Laboratorium & Bengkel">Lab & Bengkel PPLG/DKV</option>
-                    <option value="Ruang Kelas & Koridor">Ruang Kelas & Koridor</option>
-                    <option value="Area Terbuka & Lapangan">Lapangan & Gerbang</option>
+                    <option value="Bengkel / Lab">Bengkel / Lab</option>
+                    <option value="Lapangan & Selasar">Lapangan & Selasar</option>
+                    <option value="Lobby Utama">Lobby Utama</option>
+                    <option value="Perpustakaan">Perpustakaan</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Patokan / Catatan Lokasi</label>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>
+                  Deskripsi / Petunjuk Arah
+                </label>
                 <textarea
-                  rows={2}
-                  placeholder="Deskripsi patokan agar siswa mudah bertemu..."
+                  rows={3}
+                  placeholder="Petunjuk detail agar siswa mudah menemukan spot..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full p-3 rounded-xl border border-slate-200 text-xs text-slate-900 outline-none focus:border-[#3D38F5]"
+                  style={{
+                    width: '100%',
+                    borderRadius: '6px',
+                    border: '1px solid #e4e7ec',
+                    padding: '8px 12px',
+                    fontSize: '13px',
+                    resize: 'none',
+                  }}
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
                 <button
                   type="button"
+                  className="m-btn m-btn--ghost"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-3.5 py-2 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
+                  className="m-btn m-btn--primary"
                   disabled={isSubmitting}
-                  className="px-4 py-2 rounded-xl font-semibold bg-[#3D38F5] hover:bg-[#312BD9] text-white transition-colors cursor-pointer shadow-xs disabled:opacity-50"
                 >
                   {isSubmitting ? 'Menyimpan...' : editingSpot ? 'Simpan Perubahan' : 'Tambah Spot'}
                 </button>
@@ -412,34 +541,75 @@ export function MeetingPointsTab() {
         </div>
       )}
 
-      {/* 6. Delete Confirmation Modal */}
+      {/* Confirmation Modal for Delete Spot */}
       {deleteConfirmSpot && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
-                <Trash2 className="h-5 w-5" />
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            background: 'rgba(15, 23, 42, 0.55)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px',
+          }}
+          onClick={() => setDeleteConfirmSpot(null)}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '8px',
+              padding: '24px',
+              maxWidth: '420px',
+              width: '100%',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  background: '#fee2e2',
+                  color: '#dc3545',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '18px',
+                }}
+              >
+                <i className="fa-solid fa-trash-can"></i>
               </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Hapus Titik Temu</h3>
-                <p className="text-xs text-slate-500">Spot ini tidak akan muncul lagi di pemilih titik COD mobile.</p>
+                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#1f2937' }}>
+                  Hapus Titik Temu COD
+                </h3>
+                <span style={{ fontSize: '12px', color: '#64748b' }}>
+                  Spot tidak akan muncul lagi di pemilih COD.
+                </span>
               </div>
             </div>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Yakin ingin menghapus titik temu <strong className="text-slate-900">"{deleteConfirmSpot.name}"</strong>?
+            <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: 1.5, margin: '0 0 20px' }}>
+              Apakah Anda yakin ingin menghapus spot <b>"{deleteConfirmSpot.name}"</b>?
             </p>
 
-            <div className="flex items-center justify-end gap-2 pt-2">
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
               <button
+                type="button"
+                className="m-btn m-btn--ghost"
                 onClick={() => setDeleteConfirmSpot(null)}
-                className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
               >
                 Batal
               </button>
               <button
+                type="button"
+                className="m-btn m-btn--primary"
+                style={{ background: '#dc3545', borderColor: '#dc3545' }}
                 onClick={handleDeleteSpot}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white transition-colors cursor-pointer shadow-xs"
               >
                 Hapus Spot
               </button>
@@ -447,6 +617,6 @@ export function MeetingPointsTab() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

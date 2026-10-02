@@ -3312,21 +3312,21 @@
     "semantic_hash": "d52c7eda502cd90b8a2e7e87a1288b9d"
   },
   "src/admin/components/AdminHeader.tsx": {
-    "mtime": 1790940304.384294,
-    "seen": 1790940524.1996033,
-    "ast_hash": "2b24e65431eb25497f8035c514e21252",
+    "mtime": 1790953170.823454,
+    "seen": 1790953569.254921,
+    "ast_hash": "fd6a624d0e63a8d194ec1e784b18d911",
     "semantic_hash": ""
   },
   "src/admin/components/AdminSidebar.tsx": {
-    "mtime": 1790940323.9313781,
-    "seen": 1790940524.1996086,
-    "ast_hash": "6eeff453d6dd66520e4f1cecba8289a7",
+    "mtime": 1790953192.3056557,
+    "seen": 1790953569.254923,
+    "ast_hash": "626e9f15edd26b601d81f82c7a2334f0",
     "semantic_hash": ""
   },
   "src/admin/components/StatsCard.tsx": {
-    "mtime": 1790940741.2811673,
-    "seen": 1790941211.8774233,
-    "ast_hash": "1826717b79443ad040dcc207c1129e6f",
+    "mtime": 1790953209.0518093,
+    "seen": 1790953569.2549286,
+    "ast_hash": "7b8a49ee0a937eb5ab208079d9b86771",
     "semantic_hash": ""
   },
   "src/admin/pages/AdminDashboard.tsx": {
@@ -3342,27 +3342,27 @@
     "semantic_hash": "a856dd852317c817b78b7b9b01cb7480"
   },
   "src/admin/pages/ContentModerationTab.tsx": {
-    "mtime": 1790941137.0916474,
-    "seen": 1790941211.877479,
-    "ast_hash": "258fa368876a65a08dab9abb4010e0da",
+    "mtime": 1790953441.4137557,
+    "seen": 1790953569.2549424,
+    "ast_hash": "bdc6463a305f2102b61f5a81485b53df",
     "semantic_hash": ""
   },
   "src/admin/pages/MeetingPointsTab.tsx": {
-    "mtime": 1790941061.6473725,
-    "seen": 1790941211.8774846,
-    "ast_hash": "be30cdac388c70f3728f56dcdfd9e0d4",
+    "mtime": 1790953499.6132846,
+    "seen": 1790953569.2549431,
+    "ast_hash": "7e4feb717df464ae27ca080210171a60",
     "semantic_hash": ""
   },
   "src/admin/pages/OverviewTab.tsx": {
-    "mtime": 1790941110.6235507,
-    "seen": 1790941211.8774889,
-    "ast_hash": "93de0270f045250f85292d9c01c3e304",
+    "mtime": 1790953271.9033477,
+    "seen": 1790953569.2549443,
+    "ast_hash": "2a0e73bb55b464f18613342d11dd2878",
     "semantic_hash": ""
   },
   "src/admin/pages/UsersManagementTab.tsx": {
-    "mtime": 1790940928.0708902,
-    "seen": 1790941211.877493,
-    "ast_hash": "2bb7600489befb430155262b13468e4c",
+    "mtime": 1790953389.2092907,
+    "seen": 1790953569.254945,
+    "ast_hash": "d81eea5eba2e0882e47785dce340ddc1",
     "semantic_hash": ""
   },
   "src/admin/services/adminService.ts": {
@@ -3621,6 +3621,18 @@
     "mtime": 1790940724.6870966,
     "seen": 1790941211.8774636,
     "ast_hash": "8f0686eeea6be3e8292d873b659c07d7",
+    "semantic_hash": ""
+  },
+  "src/admin/components/PostDetailModal.tsx": {
+    "mtime": 1790953126.175017,
+    "seen": 1790953569.2549257,
+    "ast_hash": "ee5d849be4153d7c4534092ed7646e7f",
+    "semantic_hash": ""
+  },
+  "src/admin/components/UserDetailModal.tsx": {
+    "mtime": 1790953099.3017304,
+    "seen": 1790953569.2549307,
+    "ast_hash": "1d5417a3b7f7cc9f62d8efa734bfe904",
     "semantic_hash": ""
   }
 }

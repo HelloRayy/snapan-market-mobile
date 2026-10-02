@@ -1,0 +1,27 @@
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+@import "./cooladmin/bootstrap-5.3.8.min.css";
+@import "./cooladmin/hamburgers.min.css";
+@import "./cooladmin/theme.css";
+@import "./cooladmin/app.css";
+
+/* CoolAdmin Overrides and Integrations for Snapan Market */
+.cooladmin-avatar-initials {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.cooladmin-badge-role {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}

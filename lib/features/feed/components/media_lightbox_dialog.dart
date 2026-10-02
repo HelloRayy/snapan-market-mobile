@@ -192,8 +192,12 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
         bottom: false,
         child: Stack(
           children: [
-            // 1. Center Image Gallery with PageView and InteractiveViewer (Zero crop)
-            Positioned.fill(
+            // 1. Center Image Gallery with PageView and InteractiveViewer (Zero crop & safe bounds)
+            Positioned(
+              top: topPadding + 64.0,
+              bottom: bottomPadding + (widget.post != null ? 80.0 : 24.0),
+              left: 0,
+              right: 0,
               child: PageView.builder(
                 controller: _pageController,
                 itemCount: widget.images.length,
@@ -407,30 +411,32 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
               ),
             ),
 
-            // 5. Bottom Floating Glass Capsule Bar (With Social Actions)
+            // 5. Bottom Gradient Shadow Bar (Flat Action Bar)
             if (widget.post != null)
               Positioned(
-                bottom: bottomPadding + 20.0,
+                bottom: 0,
                 left: 0,
                 right: 0,
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.95),
-                      borderRadius: BorderRadius.circular(30.0),
-                      border: Border.all(
-                        color: const Color(0xFFE2E8F0),
-                        width: 1.0,
-                      ),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0x14000000),
-                          blurRadius: 16.0,
-                          offset: Offset(0, 4),
-                        ),
+                child: Container(
+                  padding: EdgeInsets.only(
+                    top: 24.0,
+                    bottom: bottomPadding > 0 ? bottomPadding + 8.0 : 16.0,
+                    left: 20.0,
+                    right: 20.0,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        Colors.white.withValues(alpha: 0.98),
+                        Colors.white.withValues(alpha: 0.85),
+                        Colors.white.withValues(alpha: 0.0),
                       ],
+                      stops: const [0.0, 0.55, 1.0],
                     ),
+                  ),
+                  child: Center(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -442,7 +448,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
                             behavior: HitTestBehavior.opaque,
                             onTap: _handleLikeToggle,
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -450,7 +456,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
                                     scale: _likeScaleAnim,
                                     child: FeedHeartIcon(
                                       isLiked: _isLiked,
-                                      size: 19.0,
+                                      size: 20.0,
                                       activeColor: const Color(0xFFE11D48),
                                       inactiveColor: const Color(0xFF334155),
                                     ),
@@ -460,7 +466,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
                                     Text(
                                       formatCompactNumber(_likesCount),
                                       style: TextStyle(
-                                        fontSize: 12.0,
+                                        fontSize: 12.5,
                                         fontWeight: _isLiked ? FontWeight.w600 : FontWeight.w400,
                                         color: _isLiked
                                             ? const Color(0xFFE11D48)
@@ -475,7 +481,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
                           ),
                         ),
 
-                        const SizedBox(width: 8.0),
+                        const SizedBox(width: 12.0),
 
                         // Comment Button
                         MouseRegion(
@@ -487,12 +493,12 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
                               widget.onPostClick?.call(widget.post!);
                             },
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   const FeedCommentIcon(
-                                    size: 18.0,
+                                    size: 19.0,
                                     color: Color(0xFF334155),
                                   ),
                                   if (widget.post!.commentsCount > 0) ...[
@@ -500,7 +506,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
                                     Text(
                                       formatCompactNumber(widget.post!.commentsCount),
                                       style: const TextStyle(
-                                        fontSize: 12.0,
+                                        fontSize: 12.5,
                                         fontWeight: FontWeight.w400,
                                         color: Color(0xFF475569),
                                         fontFeatures: [FontFeature.tabularFigures()],
@@ -513,7 +519,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
                           ),
                         ),
 
-                        const SizedBox(width: 8.0),
+                        const SizedBox(width: 12.0),
 
                         // Repost Button
                         MouseRegion(
@@ -522,7 +528,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
                             behavior: HitTestBehavior.opaque,
                             onTap: _handleRepostToggle,
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -537,7 +543,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
                                     Text(
                                       formatCompactNumber(_repostsCount),
                                       style: TextStyle(
-                                        fontSize: 12.0,
+                                        fontSize: 12.5,
                                         fontWeight: _isReposted ? FontWeight.w600 : FontWeight.w400,
                                         color: _isReposted
                                             ? const Color(0xFF10B981)
@@ -552,7 +558,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
                           ),
                         ),
 
-                        const SizedBox(width: 8.0),
+                        const SizedBox(width: 12.0),
 
                         // Share Button
                         MouseRegion(
@@ -561,9 +567,9 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
                             behavior: HitTestBehavior.opaque,
                             onTap: _handleShare,
                             child: const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
                               child: FeedShareIcon(
-                                size: 18.0,
+                                size: 19.0,
                                 color: Color(0xFF334155),
                               ),
                             ),

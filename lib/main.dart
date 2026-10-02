@@ -36,15 +36,18 @@ class SnapanMarketApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         fontFamily: 'SFPro',
+        fontFamilyFallback: const ['AppleColorEmoji'],
         textTheme: ThemeData.light().textTheme.apply(
           fontFamily: 'SFPro',
+          fontFamilyFallback: const ['AppleColorEmoji'],
         ),
         primaryTextTheme: ThemeData.light().primaryTextTheme.apply(
           fontFamily: 'SFPro',
+          fontFamilyFallback: const ['AppleColorEmoji'],
         ),
         inputDecorationTheme: const InputDecorationTheme(
-          hintStyle: TextStyle(fontFamily: 'SFPro'),
-          labelStyle: TextStyle(fontFamily: 'SFPro'),
+          hintStyle: TextStyle(fontFamily: 'SFPro', fontFamilyFallback: ['AppleColorEmoji']),
+          labelStyle: TextStyle(fontFamily: 'SFPro', fontFamilyFallback: ['AppleColorEmoji']),
         ),
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColors.primary,

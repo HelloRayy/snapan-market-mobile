@@ -237,6 +237,8 @@ class CommentReplyTile extends StatelessWidget {
     return Text.rich(
       TextSpan(
         style: const TextStyle(
+          fontFamily: 'SFPro',
+          fontFamilyFallback: ['AppleColorEmoji'],
           fontSize: 14.5,
           fontWeight: FontWeight.normal,
           color: Color(0xFF0F172A),

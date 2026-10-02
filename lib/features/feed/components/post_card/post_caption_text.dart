@@ -87,6 +87,8 @@ class PostCaptionText extends StatelessWidget {
         ],
       ),
       style: const TextStyle(
+        fontFamily: 'SFPro',
+        fontFamilyFallback: ['AppleColorEmoji'],
         fontSize: 14.5,
         height: 1.35,
         fontWeight: FontWeight.normal,

@@ -1,6 +1,8 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { UptimeServiceRow, type DayBarData } from '../components/UptimeServiceRow';
 import { LiveConnectionProbes, type ProbeResult } from '../components/LiveConnectionProbes';
+import { AdminLoginLogCard } from '../components/AdminLoginLogCard';
+import { adminSecurityService } from '../services/adminSecurityService';
 
 // Generate 90 days of realistic history data matching Image 1
 function create90DayBars(pattern: 'compute' | 'analytics' | 'gateway' | 'auth' | 'db' | 'realtime'): DayBarData[] {
@@ -100,6 +102,28 @@ export function ServerMonitorTab() {
       level: (r.status === 'healthy' ? 'ok' : r.status === 'warning' ? 'warn' : 'err') as 'ok' | 'warn' | 'err',
     }));
     setProbeLogs((prev) => [...newLogs, ...prev.slice(0, 30)]);
+  }, []);
+
+  // Ambil riwayat audit log aktivitas admin terkini untuk log terminal
+  useEffect(() => {
+    async function loadRecentAdminAuthLogs() {
+      try {
+        const authLogs = await adminSecurityService.getActivityLogs(5);
+        if (authLogs && authLogs.length > 0) {
+          const formatted = authLogs.map((l) => ({
+            id: `audit_${l.id}`,
+            time: new Date(l.created_at).toLocaleTimeString('id-ID'),
+            service: 'Auth',
+            text: `[${l.action}] ${l.admin_email} - ${l.target_info || 'Aktivitas admin'}`,
+            level: 'ok' as const,
+          }));
+          setProbeLogs((prev) => [...formatted, ...prev]);
+        }
+      } catch (err) {
+        console.warn('Could not load activity logs for terminal:', err);
+      }
+    }
+    loadRecentAdminAuthLogs();
   }, []);
 
   const filteredLogs = probeLogs.filter((l) => {
@@ -326,6 +350,9 @@ export function ServerMonitorTab() {
           ))}
         </div>
       </section>
+
+      {/* 6. Live Admin Login & Activity Audit Trail */}
+      <AdminLoginLogCard />
     </>
   );
 }

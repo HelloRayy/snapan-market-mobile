@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/components/app_dropdown_field.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/auth/models/auth_constants.dart';
 import 'package:snapan_market/features/profile/components/edit_profile_chips_editor.dart';
@@ -29,71 +30,8 @@ class FormRow extends StatelessWidget {
   }
 }
 
-class ProfileDropdownField extends StatelessWidget {
-  final String label;
-  final String? value;
-  final List<String> options;
-  final ValueChanged<String?> onChanged;
-
-  const ProfileDropdownField({
-    super.key,
-    required this.label,
-    required this.value,
-    required this.options,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButtonFormField<String>(
-      value: value,
-      isExpanded: true,
-      dropdownColor: Colors.white,
-      borderRadius: BorderRadius.circular(12.0),
-      elevation: 3,
-      menuMaxHeight: 240.0,
-      icon: const Icon(
-        Icons.keyboard_arrow_down_rounded,
-        color: AppColors.lightMuted,
-        size: 18.0,
-      ),
-      style: const TextStyle(
-        fontSize: 14.0,
-        fontWeight: FontWeight.w600,
-        color: AppColors.ink,
-      ),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(fontSize: 12.5, color: AppColors.lightMuted),
-        filled: true,
-        fillColor: const Color(0xFFF8FAFC),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
-          borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.0),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
-          borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.0),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-        ),
-      ),
-      items: options.map((opt) {
-        return DropdownMenuItem<String>(
-          value: opt,
-          child: Text(opt, style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: AppColors.ink)),
-        );
-      }).toList(),
-      onChanged: (val) {
-        HapticFeedback.selectionClick();
-        onChanged(val);
-      },
-    );
-  }
-}
+/// Backward compatibility alias pointing to shared 1:1 AppDropdownField
+typedef ProfileDropdownField = AppDropdownField;
 
 class EditProfileFormFields extends StatelessWidget {
   final TextEditingController usernameController;
@@ -109,6 +47,7 @@ class EditProfileFormFields extends StatelessWidget {
   final ValueChanged<List<String>> onTagsChanged;
   final bool showSalesStats;
   final ValueChanged<bool> onToggleSalesStats;
+  final bool showClassError;
 
   const EditProfileFormFields({
     super.key,
@@ -125,6 +64,7 @@ class EditProfileFormFields extends StatelessWidget {
     required this.onTagsChanged,
     required this.showSalesStats,
     required this.onToggleSalesStats,
+    this.showClassError = false,
   });
 
   @override
@@ -211,13 +151,53 @@ class EditProfileFormFields extends StatelessWidget {
               const SizedBox(height: 10.0),
               Row(
                 children: [
-                  Expanded(flex: 3, child: ProfileDropdownField(label: 'Kelas', value: selectedGrade, options: AuthConstants.gradeOptions, onChanged: onGradeChanged)),
+                  Expanded(
+                    flex: 3,
+                    child: AppDropdownField(
+                      label: 'Kelas',
+                      value: selectedGrade,
+                      options: AuthConstants.gradeOptions,
+                      hasError: showClassError && selectedGrade == null,
+                      onChanged: onGradeChanged,
+                    ),
+                  ),
                   const SizedBox(width: 8.0),
-                  Expanded(flex: 4, child: ProfileDropdownField(label: 'Jurusan', value: selectedMajor, options: AuthConstants.majorOptions, onChanged: onMajorChanged)),
+                  Expanded(
+                    flex: 4,
+                    child: AppDropdownField(
+                      label: 'Jurusan',
+                      value: selectedMajor,
+                      options: AuthConstants.majorOptions,
+                      hasError: showClassError && selectedMajor == null,
+                      onChanged: onMajorChanged,
+                    ),
+                  ),
                   const SizedBox(width: 8.0),
-                  Expanded(flex: 3, child: ProfileDropdownField(label: 'Ruang', value: selectedClassNum, options: AuthConstants.classNumOptions, onChanged: onClassNumChanged)),
+                  Expanded(
+                    flex: 3,
+                    child: AppDropdownField(
+                      label: 'Ruang',
+                      value: selectedClassNum,
+                      options: AuthConstants.classNumOptions,
+                      hasError: showClassError && selectedClassNum == null,
+                      onChanged: onClassNumChanged,
+                    ),
+                  ),
                 ],
               ),
+              if (showClassError && (selectedGrade == null || selectedMajor == null || selectedClassNum == null))
+                const Padding(
+                  padding: EdgeInsets.only(top: 6.0, left: 4.0),
+                  child: Text(
+                    'Lengkapi data Kelas, Jurusan, dan Ruang',
+                    style: TextStyle(
+                      fontFamily: 'SFPro',
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.error,
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

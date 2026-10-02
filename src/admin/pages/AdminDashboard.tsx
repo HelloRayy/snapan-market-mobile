@@ -168,6 +168,7 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
           onToggleMobileSidebar={() => setIsMobileSidebarOpen((prev) => !prev)}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
+          onNavigateTab={setActiveTab}
           onLogout={handleLogout}
         />
 

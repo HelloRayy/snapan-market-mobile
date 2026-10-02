@@ -5,6 +5,12 @@ export type ProfileRow = Database['public']['Tables']['profiles']['Row'];
 export type MarketPostRow = Database['public']['Tables']['market_posts']['Row'];
 export type SchoolMeetingPointRow = Database['public']['Tables']['school_meeting_points']['Row'];
 
+export interface GlobalSearchResult {
+  users: ProfileRow[];
+  posts: (MarketPostRow & { seller?: ProfileRow | null })[];
+  spots: SchoolMeetingPointRow[];
+}
+
 export interface AdminStats {
   totalUsers: number;
   totalPosts: number;
@@ -279,5 +285,44 @@ export const adminService = {
       .eq('id', id);
 
     if (error) throw error;
+  },
+
+  /**
+   * Pencarian global live lintas entitas (profiles, market_posts, school_meeting_points)
+   */
+  async searchGlobal(query: string): Promise<GlobalSearchResult> {
+    const cleanQuery = query.trim();
+    if (!cleanQuery) {
+      return { users: [], posts: [], spots: [] };
+    }
+
+    try {
+      const [usersRes, postsRes, spotsRes] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('*')
+          .or(`full_name.ilike.%${cleanQuery}%,username.ilike.%${cleanQuery}%,class_group.ilike.%${cleanQuery}%`)
+          .limit(4),
+        supabase
+          .from('market_posts')
+          .select('*, seller:seller_id(*)')
+          .or(`title.ilike.%${cleanQuery}%,caption.ilike.%${cleanQuery}%,category.ilike.%${cleanQuery}%`)
+          .limit(4),
+        supabase
+          .from('school_meeting_points')
+          .select('*')
+          .or(`name.ilike.%${cleanQuery}%,area_category.ilike.%${cleanQuery}%`)
+          .limit(4),
+      ]);
+
+      return {
+        users: (usersRes.data as ProfileRow[]) || [],
+        posts: (postsRes.data as (MarketPostRow & { seller?: ProfileRow | null })[]) || [],
+        spots: (spotsRes.data as SchoolMeetingPointRow[]) || [],
+      };
+    } catch (err) {
+      console.error('Error in searchGlobal:', err);
+      return { users: [], posts: [], spots: [] };
+    }
   },
 };

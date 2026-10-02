@@ -40,6 +40,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late List<String> _tags;
   late bool _showSalesStats;
   bool _isSaving = false;
+  bool _showClassError = false;
 
   @override
   void initState() {
@@ -49,12 +50,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _bioController = TextEditingController(text: widget.initialUser.bio);
     _linkController = TextEditingController(text: widget.initialUser.link ?? '');
 
-    final parts = widget.initialUser.classGroup.trim().split(RegExp(r'\s+'));
-    for (final p in parts) {
-      if (AuthConstants.gradeOptions.contains(p)) _selectedGrade = p;
-      if (AuthConstants.majorOptions.contains(p)) _selectedMajor = p;
-      if (AuthConstants.classNumOptions.contains(p)) _selectedClassNum = p;
-    }
+    final parsedClass = AuthConstants.parseClassGroup(widget.initialUser.classGroup);
+    _selectedGrade = parsedClass.grade;
+    _selectedMajor = parsedClass.major;
+    _selectedClassNum = parsedClass.classNum;
 
     _avatar = widget.initialUser.avatar;
     _tags = List<String>.from(widget.initialUser.tags);
@@ -68,6 +67,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _bioController.dispose();
     _linkController.dispose();
     super.dispose();
+  }
+
+  void _updateClass({String? grade, String? major, String? classNum}) {
+    setState(() {
+      if (grade != null) _selectedGrade = grade;
+      if (major != null) _selectedMajor = major;
+      if (classNum != null) _selectedClassNum = classNum;
+      if (_selectedGrade != null && _selectedMajor != null && _selectedClassNum != null) {
+        _showClassError = false;
+      }
+    });
   }
 
   String get _currentClassGroup {
@@ -104,6 +114,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> _handleSave() async {
     if (_isSaving) return;
     HapticFeedback.mediumImpact();
+
+    final hasAnyClassSelected = _selectedGrade != null || _selectedMajor != null || _selectedClassNum != null;
+    final isClassComplete = _selectedGrade != null && _selectedMajor != null && _selectedClassNum != null;
+
+    if (hasAnyClassSelected && !isClassComplete) {
+      HapticFeedback.heavyImpact();
+      setState(() => _showClassError = true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Lengkapi semua data kelas (Tingkat, Jurusan, dan Ruang)'),
+          backgroundColor: Color(0xFFEF4444),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
 
     final cleanName = _nameController.text.trim().isEmpty ? widget.initialUser.name : _nameController.text.trim();
     final cleanUsername = _usernameController.text.trim().isEmpty
@@ -243,9 +269,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       selectedGrade: _selectedGrade,
                       selectedMajor: _selectedMajor,
                       selectedClassNum: _selectedClassNum,
-                      onGradeChanged: (val) => setState(() => _selectedGrade = val),
-                      onMajorChanged: (val) => setState(() => _selectedMajor = val),
-                      onClassNumChanged: (val) => setState(() => _selectedClassNum = val),
+                      showClassError: _showClassError,
+                      onGradeChanged: (val) => _updateClass(grade: val),
+                      onMajorChanged: (val) => _updateClass(major: val),
+                      onClassNumChanged: (val) => _updateClass(classNum: val),
                       tags: _tags,
                       onTagsChanged: (t) => setState(() => _tags = t),
                       showSalesStats: _showSalesStats,

@@ -274,11 +274,17 @@ class ProfileController extends ChangeNotifier {
     final fullName = profile?['full_name'] as String? ?? (meta['full_name'] as String?)?.trim();
     final uName = profile?['username'] as String? ?? (meta['username'] as String?)?.trim() ?? fallbackUsername ?? 'siswa';
 
+    final rawClass = (profile?['class_group'] as String?)?.trim();
+    final metaClass = (meta['class_group'] as String?)?.trim();
+    final effectiveClass = (rawClass != null && rawClass.isNotEmpty)
+        ? rawClass
+        : ((metaClass != null && metaClass.isNotEmpty) ? metaClass : 'SMKN 8 Semarang');
+
     return ProfileUserModel(
       id: id,
       name: (fullName != null && fullName.isNotEmpty) ? fullName : '@$uName',
       username: uName,
-      classGroup: profile?['class_group'] as String? ?? (meta['class_group'] as String?)?.trim() ?? 'SMKN 8 Semarang',
+      classGroup: effectiveClass,
       avatar: (profile?['avatar_url'] as String?)?.isNotEmpty == true
           ? profile!['avatar_url'] as String
           : ((meta['avatar_url'] as String?)?.trim() ?? ''),

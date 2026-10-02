@@ -1,7 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { AdminTab } from './AdminSidebar';
-import type { ProfileRow } from '../services/adminService';
-import { UserAvatar } from './UserAvatar';
+import {
+  adminService,
+  type ProfileRow,
+  type GlobalSearchResult,
+  type MarketPostRow,
+  type SchoolMeetingPointRow,
+} from '../services/adminService';
+import { HeaderSearchPopover } from './HeaderSearchPopover';
+import { AdminAccountDropdown } from './AdminAccountDropdown';
 
 interface AdminHeaderProps {
   activeTab: AdminTab;
@@ -13,6 +20,7 @@ interface AdminHeaderProps {
   onToggleMobileSidebar?: () => void;
   searchQuery?: string;
   onSearchChange?: (q: string) => void;
+  onNavigateTab?: (tab: AdminTab) => void;
   onLogout?: () => void;
 }
 
@@ -25,12 +33,53 @@ export function AdminHeader({
   onToggleMobileSidebar,
   searchQuery = '',
   onSearchChange,
+  onNavigateTab,
   onLogout,
 }: AdminHeaderProps) {
-  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState<GlobalSearchResult | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
 
-  const displayName = adminProfile?.full_name || adminEmail.split('@')[0] || 'Administrator';
-  const displayUsername = adminProfile?.username ? `@${adminProfile.username}` : adminEmail;
+  useEffect(() => {
+    const q = searchQuery.trim();
+    if (q.length < 2) {
+      setSearchResults(null);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    setIsPopoverOpen(true);
+    const timer = setTimeout(async () => {
+      try {
+        const results = await adminService.searchGlobal(q);
+        setSearchResults(results);
+      } catch (err) {
+        console.error('Failed to execute search:', err);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target as Node)
+      ) {
+        setIsPopoverOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <header className="header-desktop">
@@ -60,24 +109,70 @@ export function AdminHeader({
               <i className="fa-solid fa-bars" aria-hidden="true"></i>
             </button>
 
-            {/* Quick Search Bar */}
-            <form
-              className="form-header"
-              role="search"
-              onSubmit={(e) => e.preventDefault()}
-            >
-              <i className="fa-solid fa-magnifying-glass form-header__icon" aria-hidden="true"></i>
-              <input
-                className="au-input au-input--xl"
-                type="search"
-                name="search"
-                placeholder="Cari transaksi, siswa, spot..."
-                aria-label="Search"
-                value={searchQuery}
-                onChange={(e) => onSearchChange?.(e.target.value)}
+            {/* Quick Search Bar with Live Popover */}
+            <div ref={searchContainerRef} style={{ position: 'relative' }}>
+              <form
+                className="form-header"
+                role="search"
+                onSubmit={(e) => e.preventDefault()}
+              >
+                <i className="fa-solid fa-magnifying-glass form-header__icon" aria-hidden="true"></i>
+                <input
+                  className="au-input au-input--xl"
+                  type="search"
+                  name="search"
+                  placeholder="Cari transaksi, siswa, spot..."
+                  aria-label="Search"
+                  value={searchQuery}
+                  autoComplete="off"
+                  onFocus={() => {
+                    if (searchQuery.trim().length >= 2) {
+                      setIsPopoverOpen(true);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Escape') {
+                      setIsPopoverOpen(false);
+                    }
+                  }}
+                  onChange={(e) => onSearchChange?.(e.target.value)}
+                />
+                {searchQuery.length > 0 && (
+                  <button
+                    type="button"
+                    className="form-header__clear-btn"
+                    aria-label="Hapus pencarian"
+                    title="Hapus pencarian"
+                    onClick={() => {
+                      onSearchChange?.('');
+                      setSearchResults(null);
+                      setIsPopoverOpen(false);
+                    }}
+                  >
+                    <i className="fa-solid fa-xmark" aria-hidden="true"></i>
+                  </button>
+                )}
+              </form>
+
+              <HeaderSearchPopover
+                isOpen={isPopoverOpen && searchQuery.trim().length >= 2}
+                isLoading={isSearching}
+                searchQuery={searchQuery}
+                results={searchResults}
+                onSelectUser={(_user: ProfileRow) => {
+                  setIsPopoverOpen(false);
+                  onNavigateTab?.('users');
+                }}
+                onSelectPost={(_post: MarketPostRow) => {
+                  setIsPopoverOpen(false);
+                  onNavigateTab?.('moderation');
+                }}
+                onSelectSpot={(_spot: SchoolMeetingPointRow) => {
+                  setIsPopoverOpen(false);
+                  onNavigateTab?.('meeting-points');
+                }}
               />
-              <kbd className="form-header__hint" aria-hidden="true">⌘K</kbd>
-            </form>
+            </div>
 
             {/* Action buttons & account */}
             <div className="header-button">

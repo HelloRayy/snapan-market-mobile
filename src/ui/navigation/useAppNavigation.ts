@@ -53,9 +53,9 @@ export function useAppNavigation() {
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean>(true);
 
   const [currentRoute, setCurrentRoute] = useState<string>(() => {
-    if (typeof window === 'undefined') return '/home';
+    if (typeof window === 'undefined') return '/';
     const path = window.location.pathname;
-    if (path === '/' || path === '') return '/home';
+    if (path === '/home' || path === '/' || path === '') return '/';
     return path;
   });
   const [selectedPost, setSelectedPost] = useState<MarketPostItem | null>(null);
@@ -64,15 +64,15 @@ export function useAppNavigation() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
 
   const isPostDetailActiveRef = useRef<boolean>(false);
-  const postDetailOriginRouteRef = useRef<string>('/home');
+  const postDetailOriginRouteRef = useRef<string>('/');
   const postDetailOriginScrollYRef = useRef<number>(0);
   const lastBackPressTimeRef = useRef<number>(0);
 
-  // Auto-redirect base / to /home
+  // Auto-redirect /home to root landing page /
   useEffect(() => {
-    if (typeof window !== 'undefined' && (window.location.pathname === '/' || window.location.pathname === '')) {
-      window.history.replaceState({}, '', '/home');
-      setCurrentRoute('/home');
+    if (typeof window !== 'undefined' && window.location.pathname === '/home') {
+      window.history.replaceState({}, '', '/');
+      setCurrentRoute('/');
     }
   }, []);
 
@@ -80,8 +80,8 @@ export function useAppNavigation() {
     triggerHaptic('light');
     setSelectedPost(null);
     setActiveChatThreadId(null);
-    setCurrentRoute('/home');
-    window.history.pushState({}, '', '/home');
+    setCurrentRoute('/');
+    window.history.pushState({}, '', '/');
   }, []);
 
   const navigateToSearch = useCallback(() => {
@@ -145,6 +145,12 @@ export function useAppNavigation() {
   // Listen for browser Back/Forward (popstate)
   useEffect(() => {
     const handlePopState = () => {
+      if (window.location.pathname === '/home') {
+        window.history.replaceState({}, '', '/');
+        setCurrentRoute('/');
+        return;
+      }
+
       const chatThread = getChatThreadFromLocation();
       setActiveChatThreadId(chatThread);
 
@@ -186,7 +192,7 @@ export function useAppNavigation() {
           setIsDrawerOpen(false);
           return;
         }
-        if (currentRoute !== '/home' && currentRoute !== '/download') {
+        if (currentRoute !== '/' && currentRoute !== '/download') {
           navigateToHome();
           return;
         }

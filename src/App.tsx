@@ -84,8 +84,21 @@ export function App() {
   const isProfileRoute = currentRoute.startsWith('/@') || currentRoute.startsWith('/profile');
   const isColorsRoute = currentRoute === '/colors' || (typeof window !== 'undefined' && window.location.hash === '#colors');
   const isMapRoute = currentRoute === '/map' || (typeof window !== 'undefined' && window.location.hash === '#map');
-  const isDownloadLandingRoute = currentRoute === '/download' || (typeof window !== 'undefined' && window.location.hash === '#download');
-  const isHomeRoute = currentRoute === '/home' || (!isSearchRoute && !isMessagesRoute && !isProfileRoute && !isColorsRoute && !isMapRoute && !isDownloadLandingRoute && !isAdminRoute);
+  const isLandingRoute =
+    currentRoute === '/' ||
+    currentRoute === '/download' ||
+    (typeof window !== 'undefined' &&
+      (window.location.pathname === '/' ||
+        window.location.pathname === '/home' ||
+        window.location.hash === '#download'));
+  const isHomeRoute =
+    !isLandingRoute &&
+    !isSearchRoute &&
+    !isMessagesRoute &&
+    !isProfileRoute &&
+    !isColorsRoute &&
+    !isMapRoute &&
+    !isAdminRoute;
 
   const targetProfileUsername = isProfileRoute
     ? currentRoute.replace('/@', '').replace('/profile/', '').split('/')[0]
@@ -112,6 +125,14 @@ export function App() {
       }
     }
   }, [user, isHomeRoute]);
+
+  // Auto-redirect /home to root landing page /
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.pathname === '/home') {
+      window.history.replaceState({}, '', '/');
+      setCurrentRoute('/');
+    }
+  }, [currentRoute, setCurrentRoute]);
 
   const handleCloseAuthPrompt = () => {
     setIsAuthPromptOpen(false);
@@ -174,7 +195,7 @@ export function App() {
       ) : (
         <>
           {/* 0. Staggered Entrance Splash Animation */}
-          {showSplash && hasCompletedOnboarding && !isDownloadLandingRoute && (
+          {showSplash && hasCompletedOnboarding && !isLandingRoute && (
             <AppEntranceSplash
               onComplete={() => {
                 try {
@@ -196,7 +217,7 @@ export function App() {
                 navigateToHome();
               }}
             />
-          ) : isDownloadLandingRoute ? (
+          ) : isLandingRoute ? (
             /* 2. PWA Dedicated Download & Landing Showcase */
             <PwaLandingPage onProceedToWeb={navigateToHome} />
           ) : (

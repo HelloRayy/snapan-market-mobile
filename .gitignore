@@ -57,6 +57,7 @@ jspm_packages/
 dist
 dist-ssr
 *.local
+flutter_*.png
 
 # Editor files
 .idea

@@ -282,9 +282,9 @@
     "semantic_hash": "1dd3feef6036102afc578ea56fcc0a23"
   },
   "lib/features/create_post/components/create_post_media_toolbar.dart": {
-    "mtime": 1790865977.9665263,
-    "seen": 1790866215.0082135,
-    "ast_hash": "d136a2d86656104e23a1486a15e2d8b1",
+    "mtime": 1790961590.678285,
+    "seen": 1790961614.6644957,
+    "ast_hash": "a0358276b771c0641a7a85c3d23bf005",
     "semantic_hash": ""
   },
   "lib/features/create_post/components/create_post_poll_builder.dart": {
@@ -456,9 +456,9 @@
     "semantic_hash": ""
   },
   "lib/features/feed/components/nav_glyphs/home_nav_glyph.dart": {
-    "mtime": 1790961153.186432,
-    "seen": 1790961207.0269682,
-    "ast_hash": "292da11a80d4169b1d2a29b287abd193",
+    "mtime": 1790962237.5724037,
+    "seen": 1790962254.7516363,
+    "ast_hash": "264e7e148c3d07576b151ef1370e1977",
     "semantic_hash": ""
   },
   "lib/features/feed/components/nav_glyphs/paper_plane_nav_glyph.dart": {
@@ -858,10 +858,10 @@
     "semantic_hash": "0ce18afc8a682c13932d88c1a3670a2c"
   },
   "src/App.tsx": {
-    "mtime": 1790555075.2621868,
-    "seen": 1790734761.6157446,
-    "ast_hash": "555cbbfbcfc2167b34dd6f857ce3c3f8",
-    "semantic_hash": "555cbbfbcfc2167b34dd6f857ce3c3f8"
+    "mtime": 1790962226.5563717,
+    "seen": 1790962254.7517872,
+    "ast_hash": "832a4717ef66d8ca0b9348d8f2be5064",
+    "semantic_hash": ""
   },
   "src/data/mockMarketData.ts": {
     "mtime": 1788015901.5680485,
@@ -1644,10 +1644,10 @@
     "semantic_hash": "b2720eb88258a41c326970a80f99866e"
   },
   "src/ui/navigation/useAppNavigation.ts": {
-    "mtime": 1790554995.026845,
-    "seen": 1790734761.6280718,
-    "ast_hash": "8b7e01af2c689adb8095327dbe3c9545",
-    "semantic_hash": "8b7e01af2c689adb8095327dbe3c9545"
+    "mtime": 1790962171.536211,
+    "seen": 1790962254.751997,
+    "ast_hash": "8d285ae13ebd570b6bbd110072a49d80",
+    "semantic_hash": ""
   },
   "src/ui/pages/CampusMapPage.tsx": {
     "mtime": 1788236366.07834,
@@ -3747,6 +3747,12 @@
     "mtime": 1790961183.42656,
     "seen": 1790961207.0273104,
     "ast_hash": "22b1f9ab283e8decfadef9af853ce760",
+    "semantic_hash": ""
+  },
+  "flutter_01.png": {
+    "mtime": 1790961867.2613235,
+    "seen": 1790962254.7522938,
+    "ast_hash": "031bab24e7a23d45edc80b4dc0bda796",
     "semantic_hash": ""
   }
 }

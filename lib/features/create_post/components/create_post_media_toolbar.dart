@@ -83,7 +83,7 @@ class CreatePostMediaToolbar extends StatelessWidget {
           const SizedBox(height: 8.0),
         ],
 
-        // 2. 7-Icon Media Action Bar
+        // 2. 7-Icon Media Action Bar (Minimalist Threads-style icons)
         Row(
           children: [
             // 1. Foto
@@ -92,19 +92,19 @@ class CreatePostMediaToolbar extends StatelessWidget {
               tooltip: 'Foto',
               onTap: onPickImage,
             ),
-            const SizedBox(width: 2.0),
+            const SizedBox(width: 8.0),
 
             // 2. GIF
             _MediaIconButton(
               tooltip: 'GIF',
               customWidget: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4.5, vertical: 2.0),
+                padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0),
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: const Color(0xFF64748B),
                     width: 1.4,
                   ),
-                  borderRadius: BorderRadius.circular(5.0),
+                  borderRadius: BorderRadius.circular(6.0),
                 ),
                 child: const Text(
                   'GIF',
@@ -113,13 +113,12 @@ class CreatePostMediaToolbar extends StatelessWidget {
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.3,
                     color: Color(0xFF64748B),
-                    fontFamily: 'SFPro',
                   ),
                 ),
               ),
               onTap: onPickGif,
             ),
-            const SizedBox(width: 2.0),
+            const SizedBox(width: 8.0),
 
             // 3. Emoji (Toggles Inline Emoji Scroller)
             _MediaIconButton(
@@ -128,7 +127,7 @@ class CreatePostMediaToolbar extends StatelessWidget {
               isActive: showEmojiBar,
               onTap: onToggleEmoji,
             ),
-            const SizedBox(width: 2.0),
+            const SizedBox(width: 8.0),
 
             // 4. Polling
             _MediaIconButton(
@@ -137,7 +136,7 @@ class CreatePostMediaToolbar extends StatelessWidget {
               isActive: showPollBuilder,
               onTap: onTogglePoll,
             ),
-            const SizedBox(width: 2.0),
+            const SizedBox(width: 8.0),
 
             // 5. Topik
             _MediaIconButton(
@@ -145,7 +144,7 @@ class CreatePostMediaToolbar extends StatelessWidget {
               tooltip: 'Topik',
               onTap: onPickTopic,
             ),
-            const SizedBox(width: 2.0),
+            const SizedBox(width: 8.0),
 
             // 6. Lokasi COD
             _MediaIconButton(
@@ -153,7 +152,7 @@ class CreatePostMediaToolbar extends StatelessWidget {
               tooltip: 'Lokasi COD',
               onTap: onPickLocation,
             ),
-            const SizedBox(width: 2.0),
+            const SizedBox(width: 8.0),
 
             // 7. Audio
             _MediaIconButton(
@@ -266,20 +265,20 @@ class _MediaIconButtonState extends State<_MediaIconButton> {
         duration: const Duration(milliseconds: 60),
         curve: Curves.easeOutCubic,
         child: Container(
-          width: 36.0,
-          height: 36.0,
+          width: 32.0,
+          height: 32.0,
           color: Colors.transparent,
           child: Center(
             child: widget.customWidget ??
                 (widget.icon != null
                     ? Icon(
                         widget.icon,
-                        size: 21.5,
+                        size: 21.0,
                         color: widget.isActive
                             ? AppColors.primary
                             : _isPressed
                                 ? AppColors.ink
-                                : const Color(0xFF64748B),
+                                : const Color(0xFF526071),
                       )
                     : const SizedBox.shrink()),
           ),

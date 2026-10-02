@@ -150,38 +150,8 @@ export function MeetingPointsTab() {
   }, [spots, search, floorFilter]);
 
   return (
-    <div className="p-4 md:p-8 space-y-6 max-w-7xl mx-auto">
-      {/* 1. Header Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-base font-bold text-slate-900 tracking-tight">
-            Titik Temu COD Kampus SMKN 8
-          </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Daftar spot resmi yang diakui sekolah untuk serah terima transaksi COD siswa
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2.5 self-start sm:self-auto">
-          <button
-            onClick={fetchSpots}
-            disabled={isLoading}
-            className="flex items-center gap-1.5 h-8.5 px-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 text-[#3D38F5] ${isLoading ? 'animate-spin' : ''}`} />
-            <span>Refresh</span>
-          </button>
-          <button
-            onClick={openAddModal}
-            className="flex items-center gap-1.5 h-8.5 px-3.5 rounded-xl bg-[#3D38F5] hover:bg-[#312BD9] text-xs font-semibold text-white transition-all shadow-[0_2px_8px_rgba(61,56,245,0.25)] cursor-pointer"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Tambah Spot COD</span>
-          </button>
-        </div>
-      </div>
-
-      {/* 2. Notification Toast */}
+    <div className="p-4 md:p-8 space-y-5 max-w-7xl mx-auto">
+      {/* 1. Notification Toast */}
       {feedbackMsg && (
         <div
           className={`p-3.5 rounded-xl border text-xs flex items-center justify-between transition-all ${
@@ -203,7 +173,7 @@ export function MeetingPointsTab() {
         </div>
       )}
 
-      {/* 3. Search & Floor Filter */}
+      {/* 2. Search & Floor Filter */}
       <Card className="p-4 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -216,28 +186,47 @@ export function MeetingPointsTab() {
           />
         </div>
 
-        {/* Floor Segmented Control */}
-        <div className="flex items-center gap-1 p-1 rounded-lg bg-slate-100 border border-slate-200/60 overflow-x-auto">
-          {(
-            [
-              { id: 'all', label: 'Semua Lantai' },
-              { id: 1, label: 'Lantai 1' },
-              { id: 2, label: 'Lantai 2' },
-              { id: 3, label: 'Lantai 3' },
-            ] as const
-          ).map((f) => (
-            <button
-              key={f.id}
-              onClick={() => setFloorFilter(f.id)}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
-                floorFilter === f.id
-                  ? 'bg-white text-slate-900 shadow-2xs font-semibold'
-                  : 'text-slate-500 hover:text-slate-900'
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Floor Segmented Control */}
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-slate-100 border border-slate-200/60 overflow-x-auto">
+            {(
+              [
+                { id: 'all', label: 'Semua Lantai' },
+                { id: 1, label: 'Lantai 1' },
+                { id: 2, label: 'Lantai 2' },
+                { id: 3, label: 'Lantai 3' },
+              ] as const
+            ).map((f) => (
+              <button
+                key={f.id}
+                onClick={() => setFloorFilter(f.id)}
+                className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
+                  floorFilter === f.id
+                    ? 'bg-white text-slate-900 shadow-2xs font-semibold'
+                    : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={fetchSpots}
+            disabled={isLoading}
+            className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 text-[#3D38F5] ${isLoading ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">Refresh</span>
+          </button>
+
+          <button
+            onClick={openAddModal}
+            className="flex items-center gap-1.5 h-9 px-3.5 rounded-lg bg-[#3D38F5] hover:bg-[#312BD9] text-xs font-semibold text-white transition-all shadow-xs cursor-pointer"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Tambah Spot COD</span>
+          </button>
         </div>
       </Card>
 

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:snapan_market/core/theme/app_colors.dart';
 
-/// 2. Messages Nav Glyph using CupertinoIcons (chat_bubble_2_fill / chat_bubble_2) with Azure badge
+/// 2. Messages Nav Glyph using CupertinoIcons (chat_bubble_fill / chat_bubble) with Azure badge
 class PaperPlaneNavGlyph extends StatelessWidget {
   final bool isActive;
   final bool hasBadge;
@@ -19,8 +19,8 @@ class PaperPlaneNavGlyph extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final icon = Icon(
-      isActive ? CupertinoIcons.chat_bubble_2_fill : CupertinoIcons.chat_bubble_2,
-      size: 21.0,
+      isActive ? CupertinoIcons.chat_bubble_fill : CupertinoIcons.chat_bubble,
+      size: 21.5,
       color: isActive ? AppColors.primary : const Color(0xFF64748B),
     );
 

@@ -2424,15 +2424,15 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1790840516.1372726,
-    "seen": 1790840586.064749,
-    "ast_hash": "a7775314804fb75766861c307a843c36",
+    "mtime": 1790907370.150824,
+    "seen": 1790907387.7354019,
+    "ast_hash": "d8e22565b72fdc1526645d4b0e4eb9d9",
     "semantic_hash": ""
   },
   "GEMINI.md": {
-    "mtime": 1790840534.1833527,
-    "seen": 1790840586.0647511,
-    "ast_hash": "18a7cdf24c01942ba18544786b779aab",
+    "mtime": 1790907377.746852,
+    "seen": 1790907387.7354052,
+    "ast_hash": "f13742b70d7a46262c48474eeecaab95",
     "semantic_hash": ""
   },
   "README.md": {
@@ -3540,9 +3540,9 @@
     "semantic_hash": ""
   },
   "lib/features/splash/screens/splash_screen.dart": {
-    "mtime": 1790906978.745389,
-    "seen": 1790907011.9870908,
-    "ast_hash": "0f52df8221837d9ecce493def887e5be",
+    "mtime": 1790907177.604118,
+    "seen": 1790907190.2406235,
+    "ast_hash": "b5c3547467421d76dedae9ce9161c93b",
     "semantic_hash": ""
   },
   "lib/features/feed/components/drawer/home_drawer_footer.dart": {

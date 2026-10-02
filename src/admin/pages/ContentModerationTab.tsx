@@ -1,23 +1,19 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Search,
   Trash2,
   AlertTriangle,
   RefreshCw,
-  CheckCircle2,
-  X,
   Eye,
   ChevronLeft,
   ChevronRight,
-  ShoppingBag,
-  MessageSquare,
   ImageIcon,
-  MapPin,
   Grid,
   List as ListIcon,
+  CheckCircle2,
 } from 'lucide-react';
-import { Button, Input, Badge, LayerCard } from '@cloudflare/kumo';
 import { adminService, type MarketPostRow, type ProfileRow } from '../services/adminService';
+import { PostDetailDrawer } from '../components/PostDetailDrawer';
 
 type PostWithSeller = MarketPostRow & { seller?: ProfileRow | null };
 
@@ -28,13 +24,14 @@ export function ContentModerationTab() {
   const [search, setSearch] = useState('');
   const [postTypeFilter, setPostTypeFilter] = useState('all');
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(12);
+  const pageSize = 12;
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
   // Deletion / Takedown State
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [targetPostForDelete, setTargetPostForDelete] = useState<PostWithSeller | null>(null);
   const [selectedPostPreview, setSelectedPostPreview] = useState<PostWithSeller | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const fetchPosts = useCallback(async () => {
@@ -63,9 +60,9 @@ export function ContentModerationTab() {
     return () => clearTimeout(timer);
   }, [fetchPosts]);
 
-  const handleFilterChange = (setter: () => void) => {
-    setPage(1);
-    setter();
+  const handleInspectPost = (post: PostWithSeller) => {
+    setSelectedPostPreview(post);
+    setIsDrawerOpen(true);
   };
 
   const confirmTakedown = async () => {
@@ -78,6 +75,7 @@ export function ContentModerationTab() {
       setPosts((prev) => prev.filter((p) => p.id !== postId));
       setTotalCount((prev) => Math.max(0, prev - 1));
       if (selectedPostPreview?.id === postId) {
+        setIsDrawerOpen(false);
         setSelectedPostPreview(null);
       }
       setFeedbackMsg({
@@ -94,582 +92,391 @@ export function ContentModerationTab() {
 
   const formatPrice = (price: number | null) => {
     if (price == null || price === 0) return 'Gratis / Diskusi';
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0,
-    }).format(price);
+    return `Rp ${price.toLocaleString('id-ID')}`;
   };
 
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
-  const startItem = totalCount === 0 ? 0 : (page - 1) * pageSize + 1;
-  const endItem = Math.min(totalCount, page * pageSize);
+  const totalPages = Math.ceil(totalCount / pageSize) || 1;
 
   return (
     <div className="p-4 md:p-8 space-y-6 max-w-7xl mx-auto">
-      {/* Toast Feedback */}
+      {/* 1. Header Toolbar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-base font-bold text-slate-900 tracking-tight">
+            Moderasi Konten & Feed
+          </h2>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Pantau dan tindak postingan threads atau karya marketplace yang melanggar aturan
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          {/* View Mode Switcher */}
+          <div className="flex items-center p-1 rounded-xl bg-slate-100 border border-slate-200/60">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+                viewMode === 'grid' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-900'
+              }`}
+              title="Tampilan Grid Card"
+            >
+              <Grid className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('table')}
+              className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+                viewMode === 'table' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-900'
+              }`}
+              title="Tampilan Data Tabel"
+            >
+              <ListIcon className="h-4 w-4" />
+            </button>
+          </div>
+
+          <button
+            onClick={fetchPosts}
+            disabled={isLoading}
+            className="flex items-center gap-1.5 h-8.5 px-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 text-[#3D38F5] ${isLoading ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 2. Feedback Notification Toast */}
       {feedbackMsg && (
         <div
-          className={`p-3.5 rounded-xl border flex items-center justify-between text-xs font-medium transition-all ${
+          className={`p-3.5 rounded-xl border text-xs flex items-center justify-between transition-all ${
             feedbackMsg.type === 'success'
               ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-              : 'bg-red-50 text-red-800 border-red-200'
+              : 'bg-rose-50 text-rose-800 border-rose-200'
           }`}
         >
           <div className="flex items-center gap-2">
-            {feedbackMsg.type === 'success' ? (
-              <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-            ) : (
-              <AlertTriangle className="h-4 w-4 text-red-600 shrink-0" />
-            )}
+            <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
             <span>{feedbackMsg.text}</span>
           </div>
           <button
             onClick={() => setFeedbackMsg(null)}
-            className="text-xs hover:opacity-75 cursor-pointer ml-3 font-semibold"
+            className="text-xs font-semibold hover:underline cursor-pointer"
           >
             Tutup
           </button>
         </div>
       )}
 
-      {/* Control Bar: Search & Filter Chips */}
-      <LayerCard className="p-4 border border-kumo-hairline bg-kumo-canvas rounded-xl shadow-xs space-y-3.5">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-          {/* Search Input with Instant Clear */}
-          <div className="w-full sm:w-96 relative">
-            <Input
-              placeholder="Cari caption, judul barang, atau kategori..."
-              value={search}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleFilterChange(() => setSearch(e.target.value))
-              }
-              className="w-full text-xs pr-8"
-            />
-            {search ? (
-              <button
-                onClick={() => handleFilterChange(() => setSearch(''))}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full hover:bg-kumo-control text-kumo-subtle hover:text-kumo-default cursor-pointer"
-                title="Hapus pencarian"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            ) : (
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-kumo-subtle pointer-events-none" />
-            )}
-          </div>
+      {/* 3. Search & Category Filter Controls */}
+      <div className="p-4 border border-slate-200/80 bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Cari judul postingan, caption, atau nama siswa..."
+            value={search}
+            onChange={(e) => {
+              setPage(1);
+              setSearch(e.target.value);
+            }}
+            className="w-full h-9.5 pl-10 pr-4 rounded-xl border border-slate-200 bg-slate-50/60 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#3D38F5] focus:ring-2 focus:ring-[#3D38F5]/10 outline-none transition-all"
+          />
+        </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-            {/* View Mode Toggle: Grid vs Table */}
-            <div className="flex items-center rounded-lg border border-kumo-hairline bg-kumo-control p-0.5">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded-md text-xs cursor-pointer ${
-                  viewMode === 'grid'
-                    ? 'bg-kumo-canvas text-kumo-default shadow-xs font-semibold'
-                    : 'text-kumo-subtle hover:text-kumo-default'
-                }`}
-                title="Tampilan Grid Card"
-              >
-                <Grid className="h-3.5 w-3.5" />
-              </button>
-              <button
-                onClick={() => setViewMode('table')}
-                className={`p-1.5 rounded-md text-xs cursor-pointer ${
-                  viewMode === 'table'
-                    ? 'bg-kumo-canvas text-kumo-default shadow-xs font-semibold'
-                    : 'text-kumo-subtle hover:text-kumo-default'
-                }`}
-                title="Tampilan List Tabel"
-              >
-                <ListIcon className="h-3.5 w-3.5" />
-              </button>
-            </div>
-
-            <Button
-              variant="secondary"
-              className="h-8 px-2.5 text-xs flex items-center gap-1.5"
-              onClick={fetchPosts}
-              disabled={isLoading}
+        {/* Post Type Segmented Control */}
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 border border-slate-200/60 overflow-x-auto">
+          {(
+            [
+              { id: 'all', label: 'Semua Tipe' },
+              { id: 'marketplace', label: 'Marketplace' },
+              { id: 'post', label: 'Threads Diskusi' },
+            ] as const
+          ).map((t) => (
+            <button
+              key={t.id}
+              onClick={() => {
+                setPage(1);
+                setPostTypeFilter(t.id);
+              }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                postTypeFilter === t.id
+                  ? 'bg-white text-slate-900 shadow-2xs'
+                  : 'text-slate-500 hover:text-slate-900'
+              }`}
             >
-              <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">Refresh</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* Filter Chips Bar */}
-        <div className="flex items-center gap-2 overflow-x-auto pt-1 pb-0.5 text-xs border-t border-kumo-hairline/60">
-          <span className="text-kumo-subtle text-[11px] font-semibold shrink-0">Tipe Feed:</span>
-          
-          <button
-            onClick={() => handleFilterChange(() => setPostTypeFilter('all'))}
-            className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors cursor-pointer shrink-0 ${
-              postTypeFilter === 'all'
-                ? 'bg-indigo-600 text-white shadow-xs'
-                : 'bg-kumo-control text-kumo-subtle hover:text-kumo-default'
-            }`}
-          >
-            Semua Konten
-          </button>
-          <button
-            onClick={() => handleFilterChange(() => setPostTypeFilter('product'))}
-            className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors cursor-pointer shrink-0 flex items-center gap-1 ${
-              postTypeFilter === 'product'
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : 'bg-kumo-control text-kumo-subtle hover:text-kumo-default'
-            }`}
-          >
-            <ShoppingBag className="h-3 w-3" />
-            <span>Hanya Produk Jualan</span>
-          </button>
-          <button
-            onClick={() => handleFilterChange(() => setPostTypeFilter('thread'))}
-            className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors cursor-pointer shrink-0 flex items-center gap-1 ${
-              postTypeFilter === 'thread'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'bg-kumo-control text-kumo-subtle hover:text-kumo-default'
-            }`}
-          >
-            <MessageSquare className="h-3 w-3" />
-            <span>Hanya Utas / Thread</span>
-          </button>
-        </div>
-      </LayerCard>
-
-      {/* Main Posts View: Grid or Table */}
-      {viewMode === 'grid' ? (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between text-xs text-kumo-subtle px-1">
-            <span>Menampilkan {startItem}-{endItem} dari {totalCount} postingan</span>
-            <span>Halaman {page} dari {totalPages}</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {isLoading ? (
-              Array.from({ length: 6 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="rounded-xl border border-kumo-hairline bg-kumo-control/30 p-4 space-y-3 animate-pulse"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div className="h-8 w-8 rounded-full bg-kumo-control" />
-                    <div className="space-y-1.5 flex-1">
-                      <div className="h-3 w-24 rounded bg-kumo-control" />
-                      <div className="h-2 w-16 rounded bg-kumo-control" />
-                    </div>
-                  </div>
-                  <div className="h-36 rounded-lg bg-kumo-control" />
-                  <div className="h-3 w-3/4 rounded bg-kumo-control" />
-                </div>
-              ))
-            ) : posts.length === 0 ? (
-              <div className="col-span-full py-16 text-center text-xs text-kumo-subtle space-y-2 border border-kumo-hairline rounded-xl bg-kumo-canvas">
-                <MessageSquare className="h-8 w-8 mx-auto opacity-40 text-kumo-subtle" />
-                <p className="font-medium">Tidak ada postingan yang sesuai kriteria.</p>
-              </div>
-            ) : (
-              posts.map((p) => {
-                const isProduct = p.post_type === 'product';
-                const hasImages = Array.isArray(p.images) && p.images.length > 0;
-                return (
-                  <div
-                    key={p.id}
-                    className="rounded-xl border border-kumo-hairline bg-kumo-canvas p-4 shadow-xs hover:border-kumo-hairline/80 transition-all flex flex-col justify-between group"
-                  >
-                    <div className="space-y-3">
-                      {/* Author Line */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <div className="h-7 w-7 rounded-full bg-indigo-50 border border-indigo-200 flex items-center justify-center font-bold text-xs text-indigo-700 shrink-0">
-                            {p.seller?.full_name ? p.seller.full_name.charAt(0).toUpperCase() : 'S'}
-                          </div>
-                          <div className="min-w-0">
-                            <div className="text-xs font-semibold text-kumo-default truncate flex items-center gap-1">
-                              {p.seller?.full_name || 'Siswa Snapan'}
-                              {p.seller?.is_verified && (
-                                <CheckCircle2 className="h-3 w-3 text-blue-600 shrink-0" />
-                              )}
-                            </div>
-                            <div className="text-[10px] text-kumo-subtle">
-                              @{p.seller?.username || 'user'} • {p.seller?.class_group || 'SMKN 8'}
-                            </div>
-                          </div>
-                        </div>
-
-                        <Badge
-                          variant={isProduct ? 'primary' : 'secondary'}
-                          className={`text-[9px] font-bold uppercase py-0.2 px-1.5 ${
-                            isProduct
-                              ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
-                              : 'bg-blue-100 text-blue-800 border-blue-200'
-                          }`}
-                        >
-                          {isProduct ? 'Produk' : 'Thread'}
-                        </Badge>
-                      </div>
-
-                      {/* Image Thumbnail */}
-                      {hasImages && (
-                        <div
-                          className="relative h-40 rounded-lg overflow-hidden border border-kumo-hairline bg-slate-900/5 cursor-pointer"
-                          onClick={() => setSelectedPostPreview(p)}
-                        >
-                          <img
-                            src={p.images[0]}
-                            alt={p.title || 'Feed Media'}
-                            className="h-full w-full object-cover group-hover:scale-102 transition-transform duration-200"
-                          />
-                          {p.images.length > 1 && (
-                            <span className="absolute bottom-2 right-2 rounded-md bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white backdrop-blur-xs flex items-center gap-1">
-                              <ImageIcon className="h-2.5 w-2.5" />
-                              +{p.images.length - 1}
-                            </span>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Content Preview */}
-                      <div className="space-y-1">
-                        {p.title && (
-                          <h4 className="text-xs font-bold text-kumo-default line-clamp-1">
-                            {p.title}
-                          </h4>
-                        )}
-                        <p className="text-xs text-kumo-subtle line-clamp-2 leading-relaxed">
-                          {p.caption || 'Tanpa deskripsi'}
-                        </p>
-                      </div>
-
-                      {/* Price & Location Tag */}
-                      {isProduct && (
-                        <div className="flex items-center justify-between text-xs pt-1 border-t border-kumo-hairline/60">
-                          <span className="font-bold text-indigo-600">
-                            {formatPrice(p.price)}
-                          </span>
-                          <span className="text-[10px] text-kumo-subtle flex items-center gap-1">
-                            <MapPin className="h-3 w-3" />
-                            {p.location_tag || 'SMKN 8'}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Card Actions */}
-                    <div className="flex items-center justify-between pt-3 mt-3 border-t border-kumo-hairline text-[11px]">
-                      <span className="text-kumo-subtle font-mono text-[10px]">
-                        {p.created_at
-                          ? new Date(p.created_at).toLocaleDateString('id-ID', {
-                              day: 'numeric',
-                              month: 'short',
-                            })
-                          : ''}
-                      </span>
-
-                      <div className="flex items-center gap-1.5">
-                        <Button
-                          variant="secondary"
-                          className="h-7 px-2 text-xs flex items-center gap-1 text-kumo-subtle hover:text-kumo-default"
-                          onClick={() => setSelectedPostPreview(p)}
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                          <span>Detail</span>
-                        </Button>
-
-                        <Button
-                          variant="secondary"
-                          className="h-7 px-2 text-xs flex items-center gap-1 text-red-600 hover:bg-red-50 hover:text-red-700"
-                          onClick={() => setTargetPostForDelete(p)}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                          <span>Takedown</span>
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-      ) : (
-        /* Table View */
-        <LayerCard className="border border-kumo-hairline bg-kumo-canvas rounded-xl shadow-xs overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="border-b border-kumo-hairline bg-kumo-canvas text-kumo-subtle font-semibold">
-                  <th className="py-3 px-4">Konten & Penulis</th>
-                  <th className="py-3 px-4">Tipe</th>
-                  <th className="py-3 px-4">Harga</th>
-                  <th className="py-3 px-4">Lokasi COD</th>
-                  <th className="py-3 px-4">Tanggal</th>
-                  <th className="py-3 px-4 text-right">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-kumo-hairline">
-                {isLoading ? (
-                  Array.from({ length: 6 }).map((_, i) => (
-                    <tr key={i} className="animate-pulse">
-                      <td className="py-3 px-4"><div className="h-3 w-40 rounded bg-kumo-control" /></td>
-                      <td className="py-3 px-4"><div className="h-3 w-16 rounded bg-kumo-control" /></td>
-                      <td className="py-3 px-4"><div className="h-3 w-20 rounded bg-kumo-control" /></td>
-                      <td className="py-3 px-4"><div className="h-3 w-16 rounded bg-kumo-control" /></td>
-                      <td className="py-3 px-4"><div className="h-3 w-16 rounded bg-kumo-control" /></td>
-                      <td className="py-3 px-4 text-right"><div className="h-7 w-20 rounded bg-kumo-control ml-auto" /></td>
-                    </tr>
-                  ))
-                ) : posts.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="py-12 text-center text-kumo-subtle">
-                      Tidak ada postingan yang sesuai filter.
-                    </td>
-                  </tr>
-                ) : (
-                  posts.map((p) => (
-                    <tr key={p.id} className="hover:bg-kumo-tint/50 transition-colors">
-                      <td className="py-3 px-4 max-w-xs">
-                        <div className="font-semibold text-kumo-default truncate">
-                          {p.title || p.caption || 'Tanpa Judul'}
-                        </div>
-                        <div className="text-[11px] text-kumo-subtle">
-                          Oleh @{p.seller?.username || 'user'} ({p.seller?.full_name || 'Siswa'})
-                        </div>
-                      </td>
-                      <td className="py-3 px-4">
-                        <Badge
-                          variant={p.post_type === 'product' ? 'primary' : 'secondary'}
-                          className="text-[9px] uppercase font-bold"
-                        >
-                          {p.post_type}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-4 font-semibold text-indigo-600">
-                        {p.post_type === 'product' ? formatPrice(p.price) : '-'}
-                      </td>
-                      <td className="py-3 px-4 text-kumo-subtle">
-                        {p.location_tag || 'SMKN 8'}
-                      </td>
-                      <td className="py-3 px-4 text-kumo-subtle font-mono text-[11px]">
-                        {p.created_at ? new Date(p.created_at).toLocaleDateString('id-ID') : '-'}
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <Button
-                            variant="secondary"
-                            className="h-7 px-2 text-xs"
-                            onClick={() => setSelectedPostPreview(p)}
-                          >
-                            <Eye className="h-3.5 w-3.5" />
-                          </Button>
-                          <Button
-                            variant="secondary"
-                            className="h-7 px-2 text-xs text-red-600 hover:bg-red-50 hover:text-red-700"
-                            onClick={() => setTargetPostForDelete(p)}
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </LayerCard>
-      )}
-
-      {/* Pagination Controls */}
-      <div className="flex items-center justify-between text-xs text-kumo-subtle pt-2">
-        <div>
-          Halaman <span className="font-semibold text-kumo-default">{page}</span> dari{' '}
-          <span className="font-semibold text-kumo-default">{totalPages}</span>
-        </div>
-
-        <div className="flex items-center gap-1.5">
-          <Button
-            variant="secondary"
-            className="h-7 px-2.5 text-xs flex items-center gap-1"
-            disabled={page <= 1 || isLoading}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-          >
-            <ChevronLeft className="h-3.5 w-3.5" />
-            <span>Sebelumnya</span>
-          </Button>
-
-          <Button
-            variant="secondary"
-            className="h-7 px-2.5 text-xs flex items-center gap-1"
-            disabled={page >= totalPages || isLoading}
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-          >
-            <span>Selanjutnya</span>
-            <ChevronRight className="h-3.5 w-3.5" />
-          </Button>
+              {t.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* FULL POST DETAIL PREVIEW MODAL */}
-      {selectedPostPreview && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="w-full max-w-lg bg-kumo-canvas border border-kumo-hairline rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95 duration-150">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-kumo-hairline bg-kumo-control/30">
-              <div className="flex items-center gap-2">
-                <Badge
-                  variant={selectedPostPreview.post_type === 'product' ? 'primary' : 'secondary'}
-                  className="text-[10px] font-bold uppercase py-0.5"
-                >
-                  {selectedPostPreview.post_type === 'product' ? 'Produk Jualan' : 'Utas Komunitas'}
-                </Badge>
-                <span className="text-xs text-kumo-subtle">ID: {selectedPostPreview.id.substring(0, 8)}...</span>
-              </div>
-
-              <button
-                onClick={() => setSelectedPostPreview(null)}
-                className="p-1 rounded-lg hover:bg-kumo-control text-kumo-subtle hover:text-kumo-default cursor-pointer"
+      {/* 4. Content Presentation (Grid or Table) */}
+      {isLoading ? (
+        <div className="py-20 text-center text-slate-400">
+          <RefreshCw className="h-6 w-6 animate-spin text-[#3D38F5] mx-auto mb-2" />
+          <span className="text-xs">Memuat katalog konten feed...</span>
+        </div>
+      ) : posts.length === 0 ? (
+        <div className="p-16 border border-slate-200/80 bg-white rounded-2xl text-center space-y-2">
+          <p className="font-semibold text-slate-800 text-sm">Tidak ada postingan ditemukan</p>
+          <p className="text-xs text-slate-400">Ubah filter pencarian atau pastikan feed aktif di mobile app.</p>
+        </div>
+      ) : viewMode === 'grid' ? (
+        /* GRID VIEW */
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4.5">
+          {posts.map((p) => {
+            const firstImage = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : null;
+            return (
+              <div
+                key={p.id}
+                onClick={() => handleInspectPost(p)}
+                className="border border-slate-200/80 bg-white rounded-2xl overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:border-slate-300 transition-all flex flex-col justify-between cursor-pointer group"
               >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            {/* Modal Body */}
-            <div className="p-5 overflow-y-auto space-y-4 text-xs">
-              {/* Author Bar */}
-              <div className="flex items-center gap-3 p-3 rounded-xl border border-kumo-hairline bg-kumo-control/30">
-                <div className="h-9 w-9 rounded-full bg-indigo-50 border border-indigo-200 flex items-center justify-center font-bold text-sm text-indigo-700 shrink-0">
-                  {selectedPostPreview.seller?.full_name?.charAt(0).toUpperCase() || 'S'}
-                </div>
                 <div>
-                  <div className="font-semibold text-kumo-default text-xs flex items-center gap-1.5">
-                    {selectedPostPreview.seller?.full_name || 'Penjual Siswa'}
-                    {selectedPostPreview.seller?.is_verified && (
-                      <CheckCircle2 className="h-3.5 w-3.5 text-blue-600" />
+                  {/* Thumbnail */}
+                  <div className="aspect-video w-full bg-slate-100 border-b border-slate-100 relative overflow-hidden">
+                    {firstImage ? (
+                      <img
+                        src={firstImage}
+                        alt={p.title || 'Feed'}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-50">
+                        <ImageIcon className="h-8 w-8 text-slate-300" />
+                      </div>
                     )}
+                    <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/90 backdrop-blur-xs text-slate-800 border border-slate-200/60 shadow-2xs">
+                      {p.post_type}
+                    </span>
                   </div>
-                  <div className="text-[11px] text-kumo-subtle">
-                    @{selectedPostPreview.seller?.username || 'user'} • {selectedPostPreview.seller?.class_group || 'SMKN 8 Semarang'}
+
+                  {/* Body Content */}
+                  <div className="p-4 space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-[#3D38F5] tabular-nums">
+                        {formatPrice(p.price)}
+                      </span>
+                      <span className="text-[10.5px] text-slate-400">
+                        {new Date(p.created_at).toLocaleDateString('id-ID', {
+                          day: 'numeric',
+                          month: 'short',
+                        })}
+                      </span>
+                    </div>
+
+                    <h3 className="text-sm font-bold text-slate-900 line-clamp-1 group-hover:text-[#3D38F5] transition-colors">
+                      {p.title || p.caption || 'Postingan Tanpa Judul'}
+                    </h3>
+
+                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                      {p.caption || p.description || 'Tidak ada deskripsi.'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Author Footer & Takedown Action */}
+                <div
+                  className="p-3 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between gap-2"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center gap-2 truncate">
+                    <div className="h-6 w-6 rounded-full bg-[#EEF0FF] text-[#3D38F5] font-bold text-[10px] flex items-center justify-center shrink-0">
+                      {p.seller?.full_name ? p.seller.full_name[0].toUpperCase() : 'S'}
+                    </div>
+                    <span className="text-xs text-slate-600 font-medium truncate">
+                      {p.seller?.full_name || 'Siswa'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={() => handleInspectPost(p)}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors cursor-pointer"
+                      title="Lihat Detail"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => setTargetPostForDelete(p)}
+                      className="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 transition-colors cursor-pointer"
+                      title="Takedown Postingan"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
               </div>
+            );
+          })}
+        </div>
+      ) : (
+        /* TABLE VIEW */
+        <div className="border border-slate-200/80 bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-slate-100 bg-slate-50/60 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                  <th className="py-3.5 px-4 pl-6">Konten & Thumbnail</th>
+                  <th className="py-3.5 px-4">Tipe & Kategori</th>
+                  <th className="py-3.5 px-4">Penulis / Siswa</th>
+                  <th className="py-3.5 px-4">Harga</th>
+                  <th className="py-3.5 px-4">Tanggal</th>
+                  <th className="py-3.5 px-4 pr-6 text-right">Moderasi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-xs">
+                {posts.map((p) => {
+                  const firstImage = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : null;
+                  return (
+                    <tr
+                      key={p.id}
+                      onClick={() => handleInspectPost(p)}
+                      className="hover:bg-slate-50/70 transition-colors cursor-pointer group"
+                    >
+                      <td className="py-3.5 px-4 pl-6">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-14 rounded-lg bg-slate-100 border border-slate-200/80 overflow-hidden shrink-0 flex items-center justify-center">
+                            {firstImage ? (
+                              <img src={firstImage} alt="" className="h-full w-full object-cover" />
+                            ) : (
+                              <ImageIcon className="h-4 w-4 text-slate-400" />
+                            )}
+                          </div>
+                          <div className="truncate max-w-[220px]">
+                            <div className="font-semibold text-slate-900 group-hover:text-[#3D38F5] transition-colors truncate">
+                              {p.title || p.caption || 'Tanpa Judul'}
+                            </div>
+                            <div className="text-[11px] text-slate-400 truncate">
+                              ID: {p.id.slice(0, 8)}...
+                            </div>
+                          </div>
+                        </div>
+                      </td>
 
-              {/* Photos Carousel/Grid */}
-              {Array.isArray(selectedPostPreview.images) && selectedPostPreview.images.length > 0 && (
-                <div className="space-y-2">
-                  <div className="text-[11px] font-semibold text-kumo-subtle">Foto Lampiran ({selectedPostPreview.images.length})</div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {selectedPostPreview.images.map((img, i) => (
-                      <a
-                        key={i}
-                        href={img}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="block rounded-lg overflow-hidden border border-kumo-hairline bg-slate-900/5 aspect-4/3 group"
-                      >
-                        <img
-                          src={img}
-                          alt="Media attachment"
-                          className="h-full w-full object-cover group-hover:scale-105 transition-transform"
-                        />
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
+                      <td className="py-3.5 px-4">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">
+                          {p.post_type}
+                        </span>
+                      </td>
 
-              {/* Text content */}
-              <div className="space-y-1.5">
-                {selectedPostPreview.title && (
-                  <h3 className="text-sm font-bold text-kumo-default">
-                    {selectedPostPreview.title}
-                  </h3>
-                )}
-                <p className="text-xs text-kumo-default whitespace-pre-wrap leading-relaxed bg-kumo-control/20 p-3 rounded-lg border border-kumo-hairline/60">
-                  {selectedPostPreview.caption}
-                </p>
-              </div>
+                      <td className="py-3.5 px-4">
+                        <div className="font-medium text-slate-800">
+                          {p.seller?.full_name || 'Siswa'}
+                        </div>
+                        <div className="text-[11px] text-slate-400">
+                          @{p.seller?.username || 'user'}
+                        </div>
+                      </td>
 
-              {/* Product Meta */}
-              {selectedPostPreview.post_type === 'product' && (
-                <div className="grid grid-cols-2 gap-2 p-3 rounded-xl border border-kumo-hairline bg-kumo-control/30 text-xs">
-                  <div>
-                    <span className="text-kumo-subtle text-[11px] block">Harga:</span>
-                    <span className="font-bold text-indigo-600 text-sm">
-                      {formatPrice(selectedPostPreview.price)}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-kumo-subtle text-[11px] block">Titik Temu COD:</span>
-                    <span className="font-medium text-kumo-default">
-                      {selectedPostPreview.location_tag || 'SMKN 8'}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
+                      <td className="py-3.5 px-4 font-bold text-slate-900 tabular-nums">
+                        {formatPrice(p.price)}
+                      </td>
 
-            {/* Modal Footer */}
-            <div className="p-4 border-t border-kumo-hairline flex items-center justify-between bg-kumo-canvas">
-              <Button
-                variant="secondary"
-                className="text-xs h-8 px-3"
-                onClick={() => setSelectedPostPreview(null)}
-              >
-                Tutup
-              </Button>
+                      <td className="py-3.5 px-4 text-[11px] text-slate-500 tabular-nums">
+                        {new Date(p.created_at).toLocaleDateString('id-ID')}
+                      </td>
 
-              <Button
-                variant="primary"
-                className="text-xs h-8 px-3 bg-red-600 hover:bg-red-700 text-white font-semibold flex items-center gap-1.5"
-                onClick={() => {
-                  setTargetPostForDelete(selectedPostPreview);
-                }}
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-                <span>Takedown Postingan Ini</span>
-              </Button>
-            </div>
+                      <td className="py-3.5 px-4 pr-6 text-right" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => handleInspectPost(p)}
+                            className="h-8 px-2.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 font-medium flex items-center gap-1 transition-colors cursor-pointer"
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                            <span>Detail</span>
+                          </button>
+                          <button
+                            onClick={() => setTargetPostForDelete(p)}
+                            className="h-8 px-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 font-medium flex items-center gap-1 transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            <span>Takedown</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
 
-      {/* CONFIRM TAKEDOWN MODAL */}
+      {/* 5. Pagination Bar */}
+      <div className="p-4 border border-slate-200/80 bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+        <div>
+          Menampilkan <span className="font-semibold text-slate-900">{posts.length}</span> dari{' '}
+          <span className="font-semibold text-slate-900">{totalCount}</span> postingan (Halaman {page} dari {totalPages})
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <button
+            disabled={page <= 1 || isLoading}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            className="h-8 px-3 rounded-lg border border-slate-200 bg-white font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-2xs flex items-center gap-1"
+          >
+            <ChevronLeft className="h-3.5 w-3.5" />
+            <span>Sebelumnya</span>
+          </button>
+          <button
+            disabled={page >= totalPages || isLoading}
+            onClick={() => setPage((p) => p + 1)}
+            className="h-8 px-3 rounded-lg border border-slate-200 bg-white font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-2xs flex items-center gap-1"
+          >
+            <span>Berikutnya</span>
+            <ChevronRight className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+
+      {/* 6. Post Detail Flyout Inspector Drawer */}
+      <PostDetailDrawer
+        post={selectedPostPreview}
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        onRequestTakedown={(post) => {
+          setTargetPostForDelete(post);
+        }}
+      />
+
+      {/* 7. Modal Confirmation for Post Takedown */}
       {targetPostForDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/55 backdrop-blur-xs">
-          <div className="w-full max-w-sm bg-kumo-canvas border border-kumo-hairline rounded-2xl shadow-2xl p-5 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 shrink-0">
+              <div className="h-10 w-10 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
                 <AlertTriangle className="h-5 w-5" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-kumo-default">Takedown Konten</h4>
-                <p className="text-xs text-kumo-subtle">Penghapusan permanen dari server</p>
+                <h3 className="text-sm font-bold text-slate-900">Takedown Postingan</h3>
+                <p className="text-xs text-slate-500">Tindakan ini permanen dan menghapus konten dari feed.</p>
               </div>
             </div>
 
-            <p className="text-xs text-kumo-default leading-relaxed">
-              Apakah Anda yakin ingin menghapus postingan ini dari feed sekolah?
-              Postingan dan seluruh komentar terkait akan dihapus secara permanen dari Supabase.
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Apakah Anda yakin ingin menghapus postingan{' '}
+              <strong className="text-slate-900">
+                "{targetPostForDelete.title || targetPostForDelete.caption || 'Tanpa Judul'}"
+              </strong>{' '}
+              karya siswa <strong className="text-slate-900">@{targetPostForDelete.seller?.username || 'user'}</strong>?
             </p>
 
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-kumo-hairline">
-              <Button
-                variant="secondary"
-                className="text-xs h-8 px-3"
-                disabled={deletingId !== null}
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                disabled={deletingId === targetPostForDelete.id}
                 onClick={() => setTargetPostForDelete(null)}
+                className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
               >
                 Batal
-              </Button>
-              <Button
-                variant="primary"
-                className="text-xs h-8 px-3 bg-red-600 hover:bg-red-700 text-white font-semibold"
-                disabled={deletingId !== null}
+              </button>
+              <button
+                disabled={deletingId === targetPostForDelete.id}
                 onClick={confirmTakedown}
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white transition-colors cursor-pointer shadow-xs disabled:opacity-50"
               >
-                {deletingId ? 'Menghapus...' : 'Ya, Hapus Postingan'}
-              </Button>
+                {deletingId === targetPostForDelete.id ? 'Menghapus...' : 'Konfirmasi Takedown'}
+              </button>
             </div>
           </div>
         </div>

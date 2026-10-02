@@ -94,18 +94,17 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
 
   if (isCheckingAuth) {
     return (
-      <div className="min-h-screen bg-kumo-canvas flex flex-col items-center justify-center space-y-3">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-        <span className="text-xs text-kumo-subtle font-medium">
-          Memverifikasi kredensial admin...
+      <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center space-y-3">
+        <Loader2 className="h-8 w-8 animate-spin text-[#3D38F5]" />
+        <span className="text-xs text-slate-500 font-medium">
+          Memverifikasi kredensial admin ekosistem...
         </span>
       </div>
     );
   }
 
-
   return (
-    <div className="min-h-screen bg-kumo-canvas text-kumo-default flex selection:bg-indigo-600 selection:text-white">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex selection:bg-[#3D38F5] selection:text-white font-sans antialiased">
       {/* Sidebar (Responsive drawer on mobile, fixed on desktop) */}
       <AdminSidebar
         activeTab={activeTab}
@@ -130,7 +129,7 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
           onToggleMobileSidebar={() => setIsMobileSidebarOpen((prev) => !prev)}
         />
 
-        {/* Tab Views with Zero-Lag State Caching (Never re-fetches unnecessarily when switching tabs) */}
+        {/* Tab Views with Zero-Lag State Caching */}
         <main className="flex-1 overflow-y-auto">
           <div className={activeTab === 'overview' ? 'block' : 'hidden'}>
             <OverviewTab

@@ -78,9 +78,10 @@ class PostPollSection extends StatelessWidget {
     final showResults = poll.hasVoted || poll.isExpired;
 
     return Container(
+      width: double.infinity,
       margin: const EdgeInsets.symmetric(vertical: 4.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           ...poll.options.map((opt) {
             return PostPollOptionTile(
@@ -104,9 +105,10 @@ class PostPollSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 4.0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Expanded(
+          Flexible(
             child: Text(
               '${poll.totalVotes} suara • ${poll.remainingTimeLabel}',
               maxLines: 1,

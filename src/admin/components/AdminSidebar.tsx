@@ -1,3 +1,5 @@
+import type { ProfileRow, AdminStats } from '../services/adminService';
+
 export type AdminTab = 'overview' | 'users' | 'moderation' | 'meeting-points';
 
 interface AdminSidebarProps {
@@ -6,6 +8,9 @@ interface AdminSidebarProps {
   onLogout: () => void;
   isOpenMobile?: boolean;
   onCloseMobile?: () => void;
+  adminProfile?: ProfileRow | null;
+  adminEmail?: string;
+  stats?: AdminStats | null;
 }
 
 export function AdminSidebar({
@@ -13,7 +18,14 @@ export function AdminSidebar({
   onTabChange,
   onLogout,
   onCloseMobile,
+  adminProfile,
+  adminEmail = 'admin@snapan.id',
+  stats,
 }: AdminSidebarProps) {
+  const displayName = adminProfile?.full_name || adminEmail.split('@')[0] || 'Administrator';
+  const displayUsername = adminProfile?.username ? `@${adminProfile.username}` : adminEmail;
+  const initial = displayName ? displayName[0].toUpperCase() : 'A';
+
   return (
     <aside className="menu-sidebar" id="main-sidebar">
       {/* Brand Header */}
@@ -29,8 +41,8 @@ export function AdminSidebar({
         >
           <div
             style={{
-              width: '32px',
-              height: '32px',
+              width: '34px',
+              height: '34px',
               borderRadius: '8px',
               background: '#4272d7',
               color: '#ffffff',
@@ -38,8 +50,8 @@ export function AdminSidebar({
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: 800,
-              fontSize: '15px',
-              boxShadow: '0 2px 6px rgba(66, 114, 215, 0.4)',
+              fontSize: '16px',
+              boxShadow: '0 2px 8px rgba(66, 114, 215, 0.45)',
             }}
           >
             8
@@ -89,9 +101,17 @@ export function AdminSidebar({
         )}
       </div>
 
-      {/* Navigation List */}
-      <div className="menu-sidebar__content">
-        <nav className="navbar-sidebar">
+      {/* Navigation List & Admin Profile */}
+      <div
+        className="menu-sidebar__content"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          minHeight: 'calc(100vh - 64px)',
+        }}
+      >
+        <nav className="navbar-sidebar" style={{ flex: 1 }}>
           <ul className="list-unstyled navbar__list">
             <div className="nav-group-label">Main Dashboard</div>
             <li className={activeTab === 'overview' ? 'active' : ''}>
@@ -104,7 +124,7 @@ export function AdminSidebar({
                 }}
               >
                 <i className="fa-solid fa-gauge-high"></i>
-                Overview Ekosistem
+                <span style={{ flex: 1 }}>Overview Ekosistem</span>
               </a>
             </li>
 
@@ -119,7 +139,22 @@ export function AdminSidebar({
                 }}
               >
                 <i className="fa-solid fa-users"></i>
-                Direktori Siswa
+                <span style={{ flex: 1 }}>Direktori Siswa</span>
+                {stats?.totalUsers != null && stats.totalUsers > 0 && (
+                  <span
+                    style={{
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      padding: '2px 7px',
+                      borderRadius: '10px',
+                      background: activeTab === 'users' ? '#ffffff' : 'rgba(255, 255, 255, 0.12)',
+                      color: activeTab === 'users' ? '#4272d7' : '#94a3b8',
+                      fontVariantNumeric: 'tabular-nums',
+                    }}
+                  >
+                    {stats.totalUsers}
+                  </span>
+                )}
               </a>
             </li>
 
@@ -133,7 +168,22 @@ export function AdminSidebar({
                 }}
               >
                 <i className="fa-solid fa-shield-halved"></i>
-                Moderasi Konten
+                <span style={{ flex: 1 }}>Moderasi Konten</span>
+                {stats?.totalPosts != null && stats.totalPosts > 0 && (
+                  <span
+                    style={{
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      padding: '2px 7px',
+                      borderRadius: '10px',
+                      background: activeTab === 'moderation' ? '#ffffff' : 'rgba(255, 255, 255, 0.12)',
+                      color: activeTab === 'moderation' ? '#4272d7' : '#94a3b8',
+                      fontVariantNumeric: 'tabular-nums',
+                    }}
+                  >
+                    {stats.totalPosts}
+                  </span>
+                )}
               </a>
             </li>
 
@@ -148,67 +198,166 @@ export function AdminSidebar({
                 }}
               >
                 <i className="fa-solid fa-map-location-dot"></i>
-                Titik Temu COD
+                <span style={{ flex: 1 }}>Titik Temu COD</span>
+                {stats?.totalMeetingPoints != null && stats.totalMeetingPoints > 0 && (
+                  <span
+                    style={{
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      padding: '2px 7px',
+                      borderRadius: '10px',
+                      background: activeTab === 'meeting-points' ? '#ffffff' : 'rgba(255, 255, 255, 0.12)',
+                      color: activeTab === 'meeting-points' ? '#4272d7' : '#94a3b8',
+                      fontVariantNumeric: 'tabular-nums',
+                    }}
+                  >
+                    {stats.totalMeetingPoints}
+                  </span>
+                )}
               </a>
             </li>
           </ul>
         </nav>
 
-        {/* Footer info & logout in sidebar */}
-        <div style={{ padding: '20px 14px', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+        {/* Bottom Section: Connected Profile Card, Live DB, Logout */}
+        <div style={{ padding: '16px 14px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          {/* Connected Admin Profile Card */}
           <div
             style={{
-              padding: '12px',
-              borderRadius: '6px',
-              background: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
-              marginBottom: '12px',
+              padding: '10px 12px',
+              borderRadius: '8px',
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              marginBottom: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
             }}
           >
-            <div className="d-flex align-items-center justify-content-between">
-              <span style={{ fontSize: '11px', color: '#cbd5e1', fontWeight: 600 }}>
-                Status Database
-              </span>
-              <span
+            <div
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '8px',
+                background: '#4272d7',
+                color: '#ffffff',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 700,
+                fontSize: '14px',
+                flexShrink: 0,
+                overflow: 'hidden',
+              }}
+            >
+              {adminProfile?.avatar_url ? (
+                <img
+                  src={adminProfile.avatar_url}
+                  alt={displayName}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              ) : (
+                initial
+              )}
+            </div>
+
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div
                 style={{
-                  fontSize: '10px',
-                  color: '#10b981',
-                  fontWeight: 700,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '5px',
+                  fontSize: '12.5px',
+                  fontWeight: 600,
+                  color: '#ffffff',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  lineHeight: 1.2,
                 }}
               >
-                <i className="fa-solid fa-circle" style={{ fontSize: '7px' }}></i>
-                LIVE
-              </span>
+                {displayName}
+              </div>
+              <div
+                style={{
+                  fontSize: '10.5px',
+                  color: '#94a3b8',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {displayUsername}
+              </div>
             </div>
-            <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
-              Supabase PostgreSQL
-            </div>
+
+            <span
+              style={{
+                fontSize: '9.5px',
+                fontWeight: 700,
+                padding: '2px 6px',
+                borderRadius: '4px',
+                background: 'rgba(66, 114, 215, 0.3)',
+                color: '#93b4ec',
+                border: '1px solid rgba(66, 114, 215, 0.4)',
+                textTransform: 'uppercase',
+              }}
+            >
+              Admin
+            </span>
           </div>
 
+          {/* Database Live Ping */}
+          <div
+            style={{
+              padding: '8px 12px',
+              borderRadius: '6px',
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              marginBottom: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <span style={{ fontSize: '11px', color: '#94a3b8' }}>
+              Database PostgreSQL
+            </span>
+            <span
+              style={{
+                fontSize: '10px',
+                color: '#10b981',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+              }}
+            >
+              <i className="fa-solid fa-circle" style={{ fontSize: '6px' }}></i>
+              LIVE
+            </span>
+          </div>
+
+          {/* Logout Button */}
           <button
             type="button"
             onClick={onLogout}
             className="w-100 text-start"
             style={{
-              background: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.2)',
+              background: 'rgba(239, 68, 68, 0.12)',
+              border: '1px solid rgba(239, 68, 68, 0.25)',
               color: '#f87171',
               borderRadius: '6px',
               padding: '9px 12px',
-              fontSize: '13px',
+              fontSize: '12.5px',
               fontWeight: 600,
               display: 'flex',
               alignItems: 'center',
               gap: '10px',
               cursor: 'pointer',
-              transition: 'background 120ms ease',
+              transition: 'all 120ms ease',
             }}
           >
             <i className="fa-solid fa-arrow-right-from-bracket"></i>
-            Keluar dari Admin
+            <span>Keluar dari Admin</span>
           </button>
         </div>
       </div>

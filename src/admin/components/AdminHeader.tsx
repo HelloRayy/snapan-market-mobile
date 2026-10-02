@@ -1,26 +1,36 @@
+import { useState } from 'react';
 import type { AdminTab } from './AdminSidebar';
+import type { ProfileRow } from '../services/adminService';
 
 interface AdminHeaderProps {
   activeTab: AdminTab;
   adminEmail: string;
   adminRole: string;
+  adminProfile?: ProfileRow | null;
   onRefresh?: () => void;
   isRefreshing?: boolean;
   onToggleMobileSidebar?: () => void;
   searchQuery?: string;
   onSearchChange?: (q: string) => void;
+  onLogout?: () => void;
 }
 
 export function AdminHeader({
   adminEmail,
+  adminRole,
+  adminProfile,
   onRefresh,
   isRefreshing,
   onToggleMobileSidebar,
   searchQuery = '',
   onSearchChange,
+  onLogout,
 }: AdminHeaderProps) {
-  const initial = adminEmail ? adminEmail[0].toUpperCase() : 'A';
-  const username = adminEmail ? adminEmail.split('@')[0] : 'admin';
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+
+  const displayName = adminProfile?.full_name || adminEmail.split('@')[0] || 'Administrator';
+  const displayUsername = adminProfile?.username ? `@${adminProfile.username}` : adminEmail;
+  const initial = displayName ? displayName[0].toUpperCase() : 'A';
 
   return (
     <header className="header-desktop">
@@ -116,25 +126,28 @@ export function AdminHeader({
                 </div>
               </div>
 
-              {/* Account pill */}
-              <div className="account-wrap">
+              {/* Account pill with connected DB profile & dropdown */}
+              <div className="account-wrap" style={{ position: 'relative' }}>
                 <div
                   className="account-item clearfix"
                   role="button"
                   tabIndex={0}
+                  onClick={() => setIsAccountMenuOpen((prev) => !prev)}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: '10px',
                     padding: '4px 8px',
                     borderRadius: '6px',
-                    cursor: 'default',
+                    cursor: 'pointer',
+                    background: isAccountMenuOpen ? '#f1f5f9' : 'transparent',
+                    transition: 'background 120ms ease',
                   }}
                 >
                   <div
                     style={{
-                      width: '34px',
-                      height: '34px',
+                      width: '36px',
+                      height: '36px',
                       borderRadius: '50%',
                       background: '#eaf0fc',
                       color: '#4272d7',
@@ -142,36 +155,133 @@ export function AdminHeader({
                       alignItems: 'center',
                       justifyContent: 'center',
                       fontWeight: 700,
-                      fontSize: '13px',
-                      border: '1px solid #d4e2fa',
+                      fontSize: '14px',
+                      border: '1.5px solid #d4e2fa',
+                      overflow: 'hidden',
+                      flexShrink: 0,
                     }}
                   >
-                    {initial}
+                    {adminProfile?.avatar_url ? (
+                      <img
+                        src={adminProfile.avatar_url}
+                        alt={displayName}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      initial
+                    )}
                   </div>
-                  <div className="content d-none d-sm-block">
+                  <div className="content d-none d-sm-block text-start">
                     <span
                       style={{
-                        fontSize: '13.5px',
+                        fontSize: '13px',
                         fontWeight: 600,
                         color: '#1f2937',
                         display: 'block',
                         lineHeight: 1.2,
+                        maxWidth: '120px',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
                       }}
                     >
-                      {username}
+                      {displayName}
                     </span>
                     <span
                       style={{
-                        fontSize: '11px',
-                        color: '#475569',
-                        fontWeight: 500,
+                        fontSize: '10.5px',
+                        color: '#4272d7',
+                        fontWeight: 600,
                         display: 'block',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.04em',
                       }}
                     >
-                      Administrator
+                      {adminRole}
                     </span>
                   </div>
+                  <i
+                    className="fa-solid fa-chevron-down d-none d-sm-inline-block"
+                    style={{ fontSize: '10px', color: '#94a3b8', marginLeft: '4px' }}
+                  ></i>
                 </div>
+
+                {/* Account dropdown menu */}
+                {isAccountMenuOpen && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      right: 0,
+                      top: '110%',
+                      width: '220px',
+                      background: '#ffffff',
+                      borderRadius: '8px',
+                      border: '1px solid #e4e7ec',
+                      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+                      zIndex: 1000,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <div style={{ padding: '12px 14px', borderBottom: '1px solid #f1f3f5' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#1f2937' }}>
+                        {displayName}
+                      </div>
+                      <div style={{ fontSize: '11.5px', color: '#64748b', marginTop: '2px' }}>
+                        {displayUsername}
+                      </div>
+                    </div>
+                    <div style={{ padding: '6px' }}>
+                      <a
+                        href="/@radityarayhannnn"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          padding: '8px 10px',
+                          fontSize: '12.5px',
+                          color: '#475569',
+                          textDecoration: 'none',
+                          borderRadius: '4px',
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                      >
+                        <i className="fa-solid fa-user" style={{ width: '14px', color: '#94a3b8' }}></i>
+                        Lihat Profil Publik
+                      </a>
+                    </div>
+                    {onLogout && (
+                      <div style={{ padding: '6px', borderTop: '1px solid #f1f3f5' }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsAccountMenuOpen(false);
+                            onLogout();
+                          }}
+                          style={{
+                            width: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            padding: '8px 10px',
+                            fontSize: '12.5px',
+                            color: '#dc3545',
+                            background: 'transparent',
+                            border: 0,
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            textAlign: 'left',
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.background = '#fef2f2')}
+                          onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                        >
+                          <i className="fa-solid fa-arrow-right-from-bracket" style={{ width: '14px' }}></i>
+                          Keluar dari Akun
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

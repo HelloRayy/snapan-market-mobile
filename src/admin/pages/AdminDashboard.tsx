@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/services/api/supabase';
-import { adminService, type AdminStats } from '../services/adminService';
+import { adminService, type AdminStats, type ProfileRow } from '../services/adminService';
 import { AdminSidebar, type AdminTab } from '../components/AdminSidebar';
 import { AdminHeader } from '../components/AdminHeader';
 import { OverviewTab } from './OverviewTab';
@@ -23,6 +23,8 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [adminEmail, setAdminEmail] = useState<string>('admin@snapan.id');
   const [adminRole, setAdminRole] = useState<string>('admin');
+  const [adminProfile, setAdminProfile] = useState<ProfileRow | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Apply body.app for CoolAdmin stylesheet scoping
@@ -43,7 +45,7 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
     }
   }, [isMobileSidebarOpen]);
 
-  // Verify auth on mount
+  // Verify auth on mount & connect logged-in profile from Supabase DB
   useEffect(() => {
     let isMounted = true;
 
@@ -65,9 +67,22 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
           return;
         }
 
+        // Fetch connected profile from Supabase database
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
         if (isMounted) {
-          setAdminEmail(session.user.email || 'admin@snapan.id');
-          setAdminRole('admin');
+          if (profile) {
+            setAdminProfile(profile);
+            setAdminEmail(session.user.email || profile.username || 'admin@snapan.id');
+            setAdminRole(profile.role || 'admin');
+          } else {
+            setAdminEmail(session.user.email || 'admin@snapan.id');
+            setAdminRole('admin');
+          }
           setIsCheckingAuth(false);
         }
       } catch (err) {
@@ -134,6 +149,9 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
         onLogout={handleLogout}
         isOpenMobile={isMobileSidebarOpen}
         onCloseMobile={() => setIsMobileSidebarOpen(false)}
+        adminProfile={adminProfile}
+        adminEmail={adminEmail}
+        stats={stats}
       />
 
       {/* CoolAdmin Page Container */}
@@ -143,9 +161,13 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
           activeTab={activeTab}
           adminEmail={adminEmail}
           adminRole={adminRole}
+          adminProfile={adminProfile}
           onRefresh={loadStats}
           isRefreshing={isRefreshing}
           onToggleMobileSidebar={() => setIsMobileSidebarOpen((prev) => !prev)}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onLogout={handleLogout}
         />
 
         {/* CoolAdmin Main Content */}

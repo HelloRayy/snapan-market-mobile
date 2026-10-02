@@ -64,7 +64,8 @@ class HomeNavDrawer extends StatelessWidget {
 
     return Drawer(
       width: 285.0,
-      elevation: 0.0,
+      elevation: 1.5,
+      shadowColor: Colors.black.withValues(alpha: 0.12),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.zero,
       ),

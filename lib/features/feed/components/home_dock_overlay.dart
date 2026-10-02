@@ -5,12 +5,10 @@ import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart'
 export 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart' show HomeNavTab, HomeBottomNavBar;
 import 'package:snapan_market/features/feed/components/home_feed_fab_group.dart';
 import 'package:snapan_market/features/feed/components/home_nav_tab_switcher.dart';
-import 'package:snapan_market/features/feed/components/home_push_drawer_layout.dart';
 import 'package:snapan_market/features/search/screens/search_screen.dart';
 
-/// Overlay widget combining FAB Group and HomeBottomNavBar with animated fade-out (<100 lines).
+/// Overlay widget combining FAB Group and HomeBottomNavBar (<60 lines).
 class HomeDockOverlay extends StatelessWidget {
-  final HomePushDrawerController? drawerController;
   final HomeNavTab currentNavTab;
   final AnimationController fabAnimationController;
   final Animation<double>? fabAnimation;
@@ -21,7 +19,6 @@ class HomeDockOverlay extends StatelessWidget {
 
   const HomeDockOverlay({
     super.key,
-    this.drawerController,
     required this.currentNavTab,
     required this.fabAnimationController,
     required this.fabAnimation,
@@ -33,7 +30,7 @@ class HomeDockOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget content = Stack(
+    return Stack(
       children: [
         HomeFeedFabGroup(
           currentNavTab: currentNavTab,
@@ -62,26 +59,6 @@ class HomeDockOverlay extends StatelessWidget {
           ),
         ),
       ],
-    );
-
-    if (drawerController == null) {
-      return content;
-    }
-
-    return AnimatedBuilder(
-      animation: drawerController!,
-      builder: (context, _) {
-        final double dockOpacity = (1.0 - (drawerController!.progress * 2.5)).clamp(0.0, 1.0);
-        if (dockOpacity <= 0.0) return const SizedBox.shrink();
-
-        return Opacity(
-          opacity: dockOpacity,
-          child: IgnorePointer(
-            ignoring: dockOpacity < 0.9,
-            child: content,
-          ),
-        );
-      },
     );
   }
 }

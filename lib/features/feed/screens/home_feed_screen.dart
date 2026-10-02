@@ -18,7 +18,6 @@ import 'package:snapan_market/features/feed/components/home_feed_tab_switch.dart
 import 'package:snapan_market/features/feed/components/home_menu_popover.dart';
 import 'package:snapan_market/features/feed/components/home_nav_drawer.dart';
 import 'package:snapan_market/features/feed/components/home_nav_tab_switcher.dart';
-import 'package:snapan_market/features/feed/components/home_push_drawer_layout.dart';
 import 'package:snapan_market/features/feed/components/media_lightbox_dialog.dart';
 import 'package:snapan_market/features/feed/controllers/home_feed_controller.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
@@ -39,11 +38,10 @@ class HomeFeedScreen extends StatefulWidget {
 
 class _HomeFeedScreenState extends State<HomeFeedScreen>
     with TickerProviderStateMixin {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ProfileScreenState> _profileKey = GlobalKey<ProfileScreenState>();
   final ScrollController _scrollController = ScrollController();
   final HomeFeedController _feedController = HomeFeedController();
-  HomePushDrawerController? _drawerController;
-  HomePushDrawerController get _effectiveDrawerController => _drawerController ??= HomePushDrawerController();
 
   AnimationController? _fabAnimationController;
   Animation<double>? _fabAnimation;
@@ -191,8 +189,26 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     final bool isUnauthenticated = SupabaseService.instance.currentUser == null;
 
     final scaffold = Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Colors.white,
       extendBody: true,
+      drawerScrimColor: Colors.black.withValues(alpha: 0.35),
+      drawerEdgeDragWidth: 28.0,
+      drawer: HomeNavDrawer(
+        userProfile: _feedController.userProfile,
+        onAppearanceTap: () {},
+        onSettingsTap: () {},
+        onLikedTap: () {
+          Navigator.of(context).maybePop();
+          setState(() => _currentNavTab = HomeNavTab.activity);
+        },
+        onArchiveTap: () {},
+        onReportTap: () {},
+        onCheckUpdateTap: _handleManualCheckUpdate,
+        onAuthTap: _handleOpenAuth,
+        onLogout: widget.onLogout,
+        onClose: () => Navigator.of(context).maybePop(),
+      ),
       appBar: HomeFeedHeader(
         isDark: false,
         title: switch (_currentNavTab) {
@@ -203,7 +219,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
         },
         onMenuTap: () {
           HapticFeedback.lightImpact();
-          _effectiveDrawerController.open();
+          _scaffoldKey.currentState?.openDrawer();
         },
         onBackTap: _currentNavTab != HomeNavTab.home ? () => setState(() => _currentNavTab = HomeNavTab.home) : null,
         onTitleTap: () => _currentNavTab == HomeNavTab.home ? _scrollToTop() : null,
@@ -238,10 +254,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
             ),
             messagesTab: const DirectMessagesScreen(showBackButton: false, showAppBar: false),
             activityTab: const ActivityScreen(showAppBar: false),
-            profileTab: ProfileScreen(key: _profileKey, showAppBar: false, onOpenMenu: () => _effectiveDrawerController.open()),
+            profileTab: ProfileScreen(key: _profileKey, showAppBar: false, onOpenMenu: () => _scaffoldKey.currentState?.openDrawer()),
           ),
           HomeDockOverlay(
-            drawerController: _effectiveDrawerController,
             currentNavTab: _currentNavTab,
             fabAnimationController: _fabAnimationController!,
             fabAnimation: _fabAnimation,
@@ -259,40 +274,15 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       ),
     );
 
-    final pushLayout = HomePushDrawerLayout(
-      controller: _effectiveDrawerController,
-      drawerWidth: 285.0,
-      pushDistance: 285.0,
-      scale: 1.0,
-      borderRadius: 0.0,
-      scrimOpacity: 0.05,
-      drawer: HomeNavDrawer(
-        userProfile: _feedController.userProfile,
-        onAppearanceTap: () {},
-        onSettingsTap: () {},
-        onLikedTap: () {
-          _effectiveDrawerController.close();
-          setState(() => _currentNavTab = HomeNavTab.activity);
-        },
-        onArchiveTap: () {},
-        onReportTap: () {},
-        onCheckUpdateTap: _handleManualCheckUpdate,
-        onAuthTap: _handleOpenAuth,
-        onLogout: widget.onLogout,
-        onClose: () => _effectiveDrawerController.close(),
-      ),
-      content: scaffold,
-    );
-
     if (isUnauthenticated) {
       return Stack(
         fit: StackFit.expand,
         children: [
-          pushLayout,
+          scaffold,
           Positioned.fill(child: AuthPromptOverlay(onNavigateToAuth: _handleOpenAuth)),
         ],
       );
     }
-    return pushLayout;
+    return scaffold;
   }
 }

@@ -3312,28 +3312,28 @@
     "semantic_hash": "d52c7eda502cd90b8a2e7e87a1288b9d"
   },
   "src/admin/components/AdminHeader.tsx": {
-    "mtime": 1790728927.940753,
-    "seen": 1790734761.615747,
-    "ast_hash": "dca85e22bd38d2f7ba7f0d8ce6a4838d",
-    "semantic_hash": "dca85e22bd38d2f7ba7f0d8ce6a4838d"
+    "mtime": 1790940304.384294,
+    "seen": 1790940524.1996033,
+    "ast_hash": "2b24e65431eb25497f8035c514e21252",
+    "semantic_hash": ""
   },
   "src/admin/components/AdminSidebar.tsx": {
-    "mtime": 1790728933.5647776,
-    "seen": 1790734761.6157494,
-    "ast_hash": "4930adbef3c3f26741ad3e827b2bec08",
-    "semantic_hash": "4930adbef3c3f26741ad3e827b2bec08"
+    "mtime": 1790940323.9313781,
+    "seen": 1790940524.1996086,
+    "ast_hash": "6eeff453d6dd66520e4f1cecba8289a7",
+    "semantic_hash": ""
   },
   "src/admin/components/StatsCard.tsx": {
-    "mtime": 1790553842.1842332,
-    "seen": 1790734761.615752,
-    "ast_hash": "6e98cb73e89a9843bebff3e9fde11a82",
-    "semantic_hash": "6e98cb73e89a9843bebff3e9fde11a82"
+    "mtime": 1790939949.7330203,
+    "seen": 1790940524.1996224,
+    "ast_hash": "b9e6ee77401280031f49b7f25556a0a5",
+    "semantic_hash": ""
   },
   "src/admin/pages/AdminDashboard.tsx": {
-    "mtime": 1790557447.794651,
-    "seen": 1790734761.615755,
-    "ast_hash": "7b5c8e0c884b3a55724fac95dbde5de5",
-    "semantic_hash": "7b5c8e0c884b3a55724fac95dbde5de5"
+    "mtime": 1790940242.1400702,
+    "seen": 1790940524.199629,
+    "ast_hash": "17468ae49cb7ed448f16e539ebe044ff",
+    "semantic_hash": ""
   },
   "src/admin/pages/AdminLoginPage.tsx": {
     "mtime": 1790728947.6757905,
@@ -3342,28 +3342,28 @@
     "semantic_hash": "a856dd852317c817b78b7b9b01cb7480"
   },
   "src/admin/pages/ContentModerationTab.tsx": {
-    "mtime": 1790728952.4007945,
-    "seen": 1790734761.6157598,
-    "ast_hash": "9d94a38d8bb1c5c11758277f56d55570",
-    "semantic_hash": "9d94a38d8bb1c5c11758277f56d55570"
+    "mtime": 1790940392.308672,
+    "seen": 1790940524.1996357,
+    "ast_hash": "0e488745f7dc3909a95ddaa30218cc40",
+    "semantic_hash": ""
   },
   "src/admin/pages/MeetingPointsTab.tsx": {
-    "mtime": 1790557286.273019,
-    "seen": 1790734761.6157618,
-    "ast_hash": "c8b44904326de8c384713240b73b6bb4",
-    "semantic_hash": "c8b44904326de8c384713240b73b6bb4"
+    "mtime": 1790940403.4457197,
+    "seen": 1790940524.1996384,
+    "ast_hash": "066339940dd33c7a2141248eea9a6a9e",
+    "semantic_hash": ""
   },
   "src/admin/pages/OverviewTab.tsx": {
-    "mtime": 1790557297.0160613,
-    "seen": 1790734761.6157634,
-    "ast_hash": "8a1c7f3f3677508634c7c3909930cb7b",
-    "semantic_hash": "8a1c7f3f3677508634c7c3909930cb7b"
+    "mtime": 1790940413.4167626,
+    "seen": 1790940524.1996408,
+    "ast_hash": "27be4787b5a16ef5ffe7ed95c9db7dc0",
+    "semantic_hash": ""
   },
   "src/admin/pages/UsersManagementTab.tsx": {
-    "mtime": 1790557304.558091,
-    "seen": 1790734761.615766,
-    "ast_hash": "2f61597d24f7dd024e99fe8dedca6c2f",
-    "semantic_hash": "2f61597d24f7dd024e99fe8dedca6c2f"
+    "mtime": 1790940449.0849166,
+    "seen": 1790940524.1996431,
+    "ast_hash": "b3a6064fde4081bf37a78be85475f301",
+    "semantic_hash": ""
   },
   "src/admin/services/adminService.ts": {
     "mtime": 1790557268.990951,
@@ -3567,6 +3567,24 @@
     "mtime": 1790866999.0713558,
     "seen": 1790867049.0885448,
     "ast_hash": "147b3c2089a847936487f071fd88cf7a",
+    "semantic_hash": ""
+  },
+  "src/admin/components/PostDetailDrawer.tsx": {
+    "mtime": 1790940348.0564818,
+    "seen": 1790940524.1996145,
+    "ast_hash": "a85d15aa7b27a18e4f8c0a66a8a76469",
+    "semantic_hash": ""
+  },
+  "src/admin/components/SlideOverDrawer.tsx": {
+    "mtime": 1790939936.9969742,
+    "seen": 1790940524.1996186,
+    "ast_hash": "b5c93a1ebf4925ecb1fda0b92e975f9c",
+    "semantic_hash": ""
+  },
+  "src/admin/components/UserDetailDrawer.tsx": {
+    "mtime": 1790940379.0196147,
+    "seen": 1790940524.199626,
+    "ast_hash": "a5fb31196b01817c42a030f120fa4966",
     "semantic_hash": ""
   }
 }

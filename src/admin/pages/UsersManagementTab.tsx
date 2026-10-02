@@ -13,6 +13,16 @@ import {
 } from 'lucide-react';
 import { adminService, type ProfileRow } from '../services/adminService';
 import { UserDetailDrawer } from '../components/UserDetailDrawer';
+import {
+  Card,
+  Badge,
+  Table,
+  TableHead,
+  TableHeaderCell,
+  TableBody,
+  TableRow,
+  TableCell,
+} from '../components/tremor';
 
 export function UsersManagementTab() {
   const [users, setUsers] = useState<ProfileRow[]>([]);
@@ -174,7 +184,7 @@ export function UsersManagementTab() {
       )}
 
       {/* 3. Search & Filter Bar */}
-      <div className="p-4 border border-slate-200/80 bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.03)] space-y-3">
+      <Card className="p-4 space-y-3">
         <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
           {/* Search Box */}
           <div className="relative flex-1 max-w-md">
@@ -187,12 +197,12 @@ export function UsersManagementTab() {
                 setPage(1);
                 setSearch(e.target.value);
               }}
-              className="w-full h-9.5 pl-10 pr-4 rounded-xl border border-slate-200 bg-slate-50/60 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#3D38F5] focus:ring-2 focus:ring-[#3D38F5]/10 outline-none transition-all"
+              className="w-full h-9 pl-9 pr-4 rounded-lg border border-slate-200 bg-slate-50/50 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#3D38F5] focus:ring-2 focus:ring-[#3D38F5]/10 outline-none transition-all"
             />
           </div>
 
           {/* Verification Pill Segmented Control */}
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 border border-slate-200/60 overflow-x-auto">
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-slate-100 border border-slate-200/60 overflow-x-auto">
             {(
               [
                 { id: 'all', label: 'Semua Status' },
@@ -206,9 +216,9 @@ export function UsersManagementTab() {
                   setPage(1);
                   setVerifFilter(f.id);
                 }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                   verifFilter === f.id
-                    ? 'bg-white text-slate-900 shadow-2xs'
+                    ? 'bg-white text-slate-900 shadow-2xs font-semibold'
                     : 'text-slate-500 hover:text-slate-900'
                 }`}
               >
@@ -226,7 +236,7 @@ export function UsersManagementTab() {
                 setRoleFilter(e.target.value);
               }}
               aria-label="Filter role akun siswa"
-              className="h-9.5 px-3 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-700 outline-none cursor-pointer focus:border-[#3D38F5]"
+              className="h-9 px-3 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 outline-none cursor-pointer focus:border-[#3D38F5]"
             >
               <option value="all">Semua Role</option>
               <option value="buyer">Buyer (Siswa)</option>
@@ -235,159 +245,152 @@ export function UsersManagementTab() {
             </select>
           </div>
         </div>
-      </div>
+      </Card>
 
-      {/* 4. Linear-Style Student Data Table */}
-      <div className="border border-slate-200/80 bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/60 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                <th className="py-3.5 px-4 pl-6">Siswa & Identitas</th>
-                <th className="py-3.5 px-4">Kelas & Jurusan</th>
-                <th className="py-3.5 px-4">Role Akun</th>
-                <th className="py-3.5 px-4">Status Verifikasi</th>
-                <th className="py-3.5 px-4">Bergabung</th>
-                <th className="py-3.5 px-4 pr-6 text-right">Aksi Cepat</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-xs">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={6} className="py-16 text-center text-slate-400">
-                    <div className="flex flex-col items-center justify-center gap-2">
-                      <RefreshCw className="h-5 w-5 animate-spin text-[#3D38F5]" />
-                      <span>Memuat data siswa dari Supabase...</span>
-                    </div>
-                  </td>
-                </tr>
-              ) : users.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-16 text-center text-slate-400">
-                    <div className="flex flex-col items-center justify-center gap-1.5">
-                      <p className="font-semibold text-slate-700 text-sm">Tidak ada siswa ditemukan</p>
-                      <p className="text-xs text-slate-400">Coba ubah kata kunci pencarian atau reset filter.</p>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                users.map((u) => (
-                  <tr
-                    key={u.id}
-                    onClick={() => handleRowClick(u)}
-                    className="hover:bg-slate-50/70 transition-colors cursor-pointer group"
-                  >
-                    {/* Siswa Hero Column */}
-                    <td className="py-3.5 px-4 pl-6">
-                      <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-xl bg-[#EEF0FF] border border-[#D8DBFE] flex items-center justify-center font-bold text-xs text-[#3D38F5] shrink-0 shadow-2xs overflow-hidden">
-                          {u.avatar_url ? (
-                            <img
-                              src={u.avatar_url}
-                              alt={u.full_name || ''}
-                              className="h-full w-full object-cover"
-                            />
-                          ) : u.full_name ? (
-                            u.full_name.charAt(0).toUpperCase()
-                          ) : (
-                            'S'
+      {/* 4. Tremor Raw Student Data Table */}
+      <Card className="p-0 overflow-hidden">
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableHeaderCell className="pl-6">Siswa & Identitas</TableHeaderCell>
+              <TableHeaderCell>Kelas & Jurusan</TableHeaderCell>
+              <TableHeaderCell>Role Akun</TableHeaderCell>
+              <TableHeaderCell>Status Verifikasi</TableHeaderCell>
+              <TableHeaderCell>Bergabung</TableHeaderCell>
+              <TableHeaderCell className="pr-6 text-right">Aksi Cepat</TableHeaderCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={6} className="py-16 text-center text-slate-400">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <RefreshCw className="h-5 w-5 animate-spin text-[#3D38F5]" />
+                    <span>Memuat data siswa dari Supabase...</span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : users.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="py-16 text-center text-slate-400">
+                  <div className="flex flex-col items-center justify-center gap-1.5">
+                    <p className="font-semibold text-slate-700 text-sm">Tidak ada siswa ditemukan</p>
+                    <p className="text-xs text-slate-400">Coba ubah kata kunci pencarian atau reset filter.</p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
+              users.map((u) => (
+                <TableRow
+                  key={u.id}
+                  onClick={() => handleRowClick(u)}
+                  className="cursor-pointer group"
+                >
+                  {/* Siswa Hero Column */}
+                  <TableCell className="pl-6">
+                    <div className="flex items-center gap-3">
+                      <div className="h-9 w-9 rounded-lg bg-[#EEF0FF] border border-[#D8DBFE] flex items-center justify-center font-bold text-xs text-[#3D38F5] shrink-0 shadow-2xs overflow-hidden">
+                        {u.avatar_url ? (
+                          <img
+                            src={u.avatar_url}
+                            alt={u.full_name || ''}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : u.full_name ? (
+                          u.full_name.charAt(0).toUpperCase()
+                        ) : (
+                          'S'
+                        )}
+                      </div>
+                      <div>
+                        <div className="font-semibold text-slate-900 group-hover:text-[#3D38F5] transition-colors flex items-center gap-1.5">
+                          <span>{u.full_name || 'Tanpa Nama'}</span>
+                          {u.is_verified && (
+                            <CheckCircle2 className="h-3.5 w-3.5 text-blue-600 fill-blue-50" />
                           )}
                         </div>
-                        <div>
-                          <div className="font-semibold text-slate-900 group-hover:text-[#3D38F5] transition-colors flex items-center gap-1.5">
-                            <span>{u.full_name || 'Tanpa Nama'}</span>
-                            {u.is_verified && (
-                              <CheckCircle2 className="h-3.5 w-3.5 text-blue-600 fill-blue-50" />
-                            )}
-                          </div>
-                          <div className="text-[11px] text-slate-400">
-                            @{u.username || 'user'}
-                          </div>
+                        <div className="text-[11px] text-slate-400">
+                          @{u.username || 'user'}
                         </div>
                       </div>
-                    </td>
+                    </div>
+                  </TableCell>
 
-                    {/* Kelas & Jurusan */}
-                    <td className="py-3.5 px-4">
-                      <div className="flex items-center gap-1.5 font-medium text-slate-700">
-                        <GraduationCap className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                        <span>{u.class_group || 'Umum'}</span>
-                      </div>
-                    </td>
+                  {/* Kelas & Jurusan */}
+                  <TableCell>
+                    <div className="flex items-center gap-1.5 font-medium text-slate-700">
+                      <GraduationCap className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                      <span>{u.class_group || 'Umum'}</span>
+                    </div>
+                  </TableCell>
 
-                    {/* Role Pill */}
-                    <td className="py-3.5 px-4">
+                  {/* Role Pill */}
+                  <TableCell>
+                    <Badge
+                      variant={
+                        u.role === 'admin'
+                          ? 'purple'
+                          : u.role === 'seller'
+                          ? 'indigo'
+                          : 'slate'
+                      }
+                      className="uppercase font-semibold text-[10px]"
+                    >
+                      {u.role || 'buyer'}
+                    </Badge>
+                  </TableCell>
+
+                  {/* Verification Status */}
+                  <TableCell>
+                    <Badge variant={u.is_verified ? 'emerald' : 'amber'}>
                       <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
-                          u.role === 'admin'
-                            ? 'bg-purple-50 text-purple-700 border-purple-200'
-                            : u.role === 'seller'
-                            ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
-                            : 'bg-slate-100 text-slate-600 border-slate-200'
+                        className={`h-1.5 w-1.5 rounded-full ${
+                          u.is_verified ? 'bg-emerald-500' : 'bg-amber-500'
                         }`}
-                      >
-                        {u.role || 'buyer'}
-                      </span>
-                    </td>
+                      />
+                      {u.is_verified ? 'Terverifikasi' : 'Pending'}
+                    </Badge>
+                  </TableCell>
 
-                    {/* Verification Status */}
-                    <td className="py-3.5 px-4">
-                      <span
-                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold border ${
+                  {/* Created Date */}
+                  <TableCell className="text-[11.5px] text-slate-500 tabular-nums">
+                    {new Date(u.created_at).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                  </TableCell>
+
+                  {/* Quick Actions */}
+                  <TableCell className="pr-6 text-right" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        onClick={() => handleRowClick(u)}
+                        className="h-7.5 px-2.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 font-medium flex items-center gap-1 transition-colors cursor-pointer text-xs"
+                        title="Inspeksi Detail Siswa"
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">Detail</span>
+                      </button>
+
+                      <button
+                        disabled={updatingId === u.id}
+                        onClick={() => handleToggleVerify(u.id, u.is_verified)}
+                        className={`h-7.5 px-2.5 rounded-lg font-medium border flex items-center gap-1 transition-colors cursor-pointer text-xs ${
                           u.is_verified
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                            : 'bg-amber-50 text-amber-700 border-amber-200'
+                            ? 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100'
+                            : 'border-[#D8DBFE] bg-[#EEF0FF] text-[#3D38F5] hover:bg-indigo-100'
                         }`}
                       >
-                        <span
-                          className={`h-1.5 w-1.5 rounded-full ${
-                            u.is_verified ? 'bg-emerald-500' : 'bg-amber-500'
-                          }`}
-                        />
-                        {u.is_verified ? 'Terverifikasi' : 'Pending'}
-                      </span>
-                    </td>
-
-                    {/* Created Date */}
-                    <td className="py-3.5 px-4 text-[11.5px] text-slate-500 tabular-nums">
-                      {new Date(u.created_at).toLocaleDateString('id-ID', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                    </td>
-
-                    {/* Quick Actions */}
-                    <td className="py-3.5 px-4 pr-6 text-right" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          onClick={() => handleRowClick(u)}
-                          className="h-8 px-2.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 font-medium flex items-center gap-1 transition-colors cursor-pointer"
-                          title="Inspeksi Detail Siswa"
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                          <span className="hidden sm:inline">Detail</span>
-                        </button>
-
-                        <button
-                          disabled={updatingId === u.id}
-                          onClick={() => handleToggleVerify(u.id, u.is_verified)}
-                          className={`h-8 px-2.5 rounded-lg font-medium border flex items-center gap-1 transition-colors cursor-pointer ${
-                            u.is_verified
-                              ? 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100'
-                              : 'border-[#D8DBFE] bg-[#EEF0FF] text-[#3D38F5] hover:bg-indigo-100'
-                          }`}
-                        >
-                          {u.is_verified ? 'Cabut' : 'Verifikasi'}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                        {u.is_verified ? 'Cabut' : 'Verifikasi'}
+                      </button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
 
         {/* 5. Pagination Bar */}
         <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
@@ -415,7 +418,7 @@ export function UsersManagementTab() {
             </button>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* 6. Right-Side Slide-Over Inspector Drawer */}
       <UserDetailDrawer

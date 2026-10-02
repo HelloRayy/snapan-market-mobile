@@ -14,6 +14,16 @@ import {
 } from 'lucide-react';
 import { adminService, type MarketPostRow, type ProfileRow } from '../services/adminService';
 import { PostDetailDrawer } from '../components/PostDetailDrawer';
+import {
+  Card,
+  Badge,
+  Table,
+  TableHead,
+  TableHeaderCell,
+  TableBody,
+  TableRow,
+  TableCell,
+} from '../components/tremor';
 
 type PostWithSeller = MarketPostRow & { seller?: ProfileRow | null };
 
@@ -167,7 +177,7 @@ export function ContentModerationTab() {
       )}
 
       {/* 3. Search & Category Filter Controls */}
-      <div className="p-4 border border-slate-200/80 bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+      <Card className="p-4 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <input
@@ -178,17 +188,17 @@ export function ContentModerationTab() {
               setPage(1);
               setSearch(e.target.value);
             }}
-            className="w-full h-9.5 pl-10 pr-4 rounded-xl border border-slate-200 bg-slate-50/60 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#3D38F5] focus:ring-2 focus:ring-[#3D38F5]/10 outline-none transition-all"
+            className="w-full h-9 pl-9 pr-4 rounded-lg border border-slate-200 bg-slate-50/50 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#3D38F5] focus:ring-2 focus:ring-[#3D38F5]/10 outline-none transition-all"
           />
         </div>
 
         {/* Post Type Segmented Control */}
-        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 border border-slate-200/60 overflow-x-auto">
+        <div className="flex items-center gap-1 p-1 rounded-lg bg-slate-100 border border-slate-200/60 overflow-x-auto">
           {(
             [
               { id: 'all', label: 'Semua Tipe' },
-              { id: 'marketplace', label: 'Marketplace' },
-              { id: 'post', label: 'Threads Diskusi' },
+              { id: 'product', label: 'Marketplace' },
+              { id: 'thread', label: 'Threads Diskusi' },
             ] as const
           ).map((t) => (
             <button
@@ -197,9 +207,9 @@ export function ContentModerationTab() {
                 setPage(1);
                 setPostTypeFilter(t.id);
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                 postTypeFilter === t.id
-                  ? 'bg-white text-slate-900 shadow-2xs'
+                  ? 'bg-white text-slate-900 shadow-2xs font-semibold'
                   : 'text-slate-500 hover:text-slate-900'
               }`}
             >
@@ -207,7 +217,7 @@ export function ContentModerationTab() {
             </button>
           ))}
         </div>
-      </div>
+      </Card>
 
       {/* 4. Content Presentation (Grid or Table) */}
       {isLoading ? (
@@ -216,20 +226,20 @@ export function ContentModerationTab() {
           <span className="text-xs">Memuat katalog konten feed...</span>
         </div>
       ) : posts.length === 0 ? (
-        <div className="p-16 border border-slate-200/80 bg-white rounded-2xl text-center space-y-2">
+        <Card className="p-16 text-center space-y-2">
           <p className="font-semibold text-slate-800 text-sm">Tidak ada postingan ditemukan</p>
           <p className="text-xs text-slate-400">Ubah filter pencarian atau pastikan feed aktif di mobile app.</p>
-        </div>
+        </Card>
       ) : viewMode === 'grid' ? (
         /* GRID VIEW */
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4.5">
           {posts.map((p) => {
             const firstImage = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : null;
             return (
-              <div
+              <Card
                 key={p.id}
                 onClick={() => handleInspectPost(p)}
-                className="border border-slate-200/80 bg-white rounded-2xl overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:border-slate-300 transition-all flex flex-col justify-between cursor-pointer group"
+                className="p-0 overflow-hidden hover:ring-slate-300 transition-all flex flex-col justify-between cursor-pointer group"
               >
                 <div>
                   {/* Thumbnail */}
@@ -245,9 +255,11 @@ export function ContentModerationTab() {
                         <ImageIcon className="h-8 w-8 text-slate-300" />
                       </div>
                     )}
-                    <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/90 backdrop-blur-xs text-slate-800 border border-slate-200/60 shadow-2xs">
-                      {p.post_type}
-                    </span>
+                    <div className="absolute top-2.5 left-2.5">
+                      <Badge variant={p.post_type === 'product' ? 'indigo' : 'slate'} className="bg-white/95 backdrop-blur-xs">
+                        {p.post_type}
+                      </Badge>
+                    </div>
                   </div>
 
                   {/* Body Content */}
@@ -305,106 +317,104 @@ export function ContentModerationTab() {
                     </button>
                   </div>
                 </div>
-              </div>
+              </Card>
             );
           })}
         </div>
       ) : (
         /* TABLE VIEW */
-        <div className="border border-slate-200/80 bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/60 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                  <th className="py-3.5 px-4 pl-6">Konten & Thumbnail</th>
-                  <th className="py-3.5 px-4">Tipe & Kategori</th>
-                  <th className="py-3.5 px-4">Penulis / Siswa</th>
-                  <th className="py-3.5 px-4">Harga</th>
-                  <th className="py-3.5 px-4">Tanggal</th>
-                  <th className="py-3.5 px-4 pr-6 text-right">Moderasi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-xs">
-                {posts.map((p) => {
-                  const firstImage = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : null;
-                  return (
-                    <tr
-                      key={p.id}
-                      onClick={() => handleInspectPost(p)}
-                      className="hover:bg-slate-50/70 transition-colors cursor-pointer group"
-                    >
-                      <td className="py-3.5 px-4 pl-6">
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-14 rounded-lg bg-slate-100 border border-slate-200/80 overflow-hidden shrink-0 flex items-center justify-center">
-                            {firstImage ? (
-                              <img src={firstImage} alt="" className="h-full w-full object-cover" />
-                            ) : (
-                              <ImageIcon className="h-4 w-4 text-slate-400" />
-                            )}
+        <Card className="p-0 overflow-hidden">
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeaderCell className="pl-6">Konten & Thumbnail</TableHeaderCell>
+                <TableHeaderCell>Tipe & Kategori</TableHeaderCell>
+                <TableHeaderCell>Penulis / Siswa</TableHeaderCell>
+                <TableHeaderCell>Harga</TableHeaderCell>
+                <TableHeaderCell>Tanggal</TableHeaderCell>
+                <TableHeaderCell className="pr-6 text-right">Moderasi</TableHeaderCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {posts.map((p) => {
+                const firstImage = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : null;
+                return (
+                  <TableRow
+                    key={p.id}
+                    onClick={() => handleInspectPost(p)}
+                    className="cursor-pointer group"
+                  >
+                    <TableCell className="pl-6">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-14 rounded-lg bg-slate-100 border border-slate-200/80 overflow-hidden shrink-0 flex items-center justify-center">
+                          {firstImage ? (
+                            <img src={firstImage} alt="" className="h-full w-full object-cover" />
+                          ) : (
+                            <ImageIcon className="h-4 w-4 text-slate-400" />
+                          )}
+                        </div>
+                        <div className="truncate max-w-[220px]">
+                          <div className="font-semibold text-slate-900 group-hover:text-[#3D38F5] transition-colors truncate">
+                            {p.title || p.caption || 'Tanpa Judul'}
                           </div>
-                          <div className="truncate max-w-[220px]">
-                            <div className="font-semibold text-slate-900 group-hover:text-[#3D38F5] transition-colors truncate">
-                              {p.title || p.caption || 'Tanpa Judul'}
-                            </div>
-                            <div className="text-[11px] text-slate-400 truncate">
-                              ID: {p.id.slice(0, 8)}...
-                            </div>
+                          <div className="text-[11px] text-slate-400 truncate">
+                            ID: {p.id.slice(0, 8)}...
                           </div>
                         </div>
-                      </td>
+                      </div>
+                    </TableCell>
 
-                      <td className="py-3.5 px-4">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">
-                          {p.post_type}
-                        </span>
-                      </td>
+                    <TableCell>
+                      <Badge variant={p.post_type === 'product' ? 'indigo' : 'slate'} className="uppercase font-semibold text-[10px]">
+                        {p.post_type}
+                      </Badge>
+                    </TableCell>
 
-                      <td className="py-3.5 px-4">
-                        <div className="font-medium text-slate-800">
-                          {p.seller?.full_name || 'Siswa'}
-                        </div>
-                        <div className="text-[11px] text-slate-400">
-                          @{p.seller?.username || 'user'}
-                        </div>
-                      </td>
+                    <TableCell>
+                      <div className="font-medium text-slate-800">
+                        {p.seller?.full_name || 'Siswa'}
+                      </div>
+                      <div className="text-[11px] text-slate-400">
+                        @{p.seller?.username || 'user'}
+                      </div>
+                    </TableCell>
 
-                      <td className="py-3.5 px-4 font-bold text-slate-900 tabular-nums">
-                        {formatPrice(p.price)}
-                      </td>
+                    <TableCell className="font-bold text-slate-900 tabular-nums">
+                      {formatPrice(p.price)}
+                    </TableCell>
 
-                      <td className="py-3.5 px-4 text-[11px] text-slate-500 tabular-nums">
-                        {new Date(p.created_at).toLocaleDateString('id-ID')}
-                      </td>
+                    <TableCell className="text-[11px] text-slate-500 tabular-nums">
+                      {new Date(p.created_at).toLocaleDateString('id-ID')}
+                    </TableCell>
 
-                      <td className="py-3.5 px-4 pr-6 text-right" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            onClick={() => handleInspectPost(p)}
-                            className="h-8 px-2.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 font-medium flex items-center gap-1 transition-colors cursor-pointer"
-                          >
-                            <Eye className="h-3.5 w-3.5" />
-                            <span>Detail</span>
-                          </button>
-                          <button
-                            onClick={() => setTargetPostForDelete(p)}
-                            className="h-8 px-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 font-medium flex items-center gap-1 transition-colors cursor-pointer"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                            <span>Takedown</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                    <TableCell className="pr-6 text-right" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => handleInspectPost(p)}
+                          className="h-7.5 px-2.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 font-medium flex items-center gap-1 transition-colors cursor-pointer text-xs"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          <span>Detail</span>
+                        </button>
+                        <button
+                          onClick={() => setTargetPostForDelete(p)}
+                          className="h-7.5 px-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 font-medium flex items-center gap-1 transition-colors cursor-pointer text-xs"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          <span>Takedown</span>
+                        </button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </Card>
       )}
 
       {/* 5. Pagination Bar */}
-      <div className="p-4 border border-slate-200/80 bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+      <Card className="p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
         <div>
           Menampilkan <span className="font-semibold text-slate-900">{posts.length}</span> dari{' '}
           <span className="font-semibold text-slate-900">{totalCount}</span> postingan (Halaman {page} dari {totalPages})
@@ -428,7 +438,7 @@ export function ContentModerationTab() {
             <ChevronRight className="h-3.5 w-3.5" />
           </button>
         </div>
-      </div>
+      </Card>
 
       {/* 6. Post Detail Flyout Inspector Drawer */}
       <PostDetailDrawer

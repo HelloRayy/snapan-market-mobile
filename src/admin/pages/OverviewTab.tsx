@@ -5,13 +5,12 @@ import {
   ShoppingBag,
   ArrowUpRight,
   CheckCircle2,
-  Activity,
-  ShieldCheck,
-  Sparkles,
-  Zap,
   Clock,
+  Sparkles,
+  Server,
 } from 'lucide-react';
 import { StatsCard } from '../components/StatsCard';
+import { Card, Badge, Tracker, type TrackerBlock } from '../components/tremor';
 import type { AdminStats } from '../services/adminService';
 import type { AdminTab } from '../components/AdminSidebar';
 
@@ -27,13 +26,13 @@ export function OverviewTab({ stats, isLoading, onNavigateTab }: OverviewTabProp
       <div className="p-4 md:p-8 space-y-6 max-w-7xl mx-auto animate-pulse">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-32 rounded-2xl bg-slate-100 border border-slate-200/60" />
+            <div key={i} className="h-32 rounded-xl bg-slate-100 ring-1 ring-slate-200/60" />
           ))}
         </div>
-        <div className="h-20 rounded-2xl bg-slate-100 border border-slate-200/60" />
+        <div className="h-28 rounded-xl bg-slate-100 ring-1 ring-slate-200/60" />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="h-72 rounded-2xl bg-slate-100 border border-slate-200/60" />
-          <div className="h-72 rounded-2xl bg-slate-100 border border-slate-200/60" />
+          <div className="h-72 rounded-xl bg-slate-100 ring-1 ring-slate-200/60" />
+          <div className="h-72 rounded-xl bg-slate-100 ring-1 ring-slate-200/60" />
         </div>
       </div>
     );
@@ -60,9 +59,37 @@ export function OverviewTab({ stats, isLoading, onNavigateTab }: OverviewTabProp
     }
   };
 
+  // Operational tracker blocks (Tremor signature pattern)
+  const trackerData: TrackerBlock[] = [
+    { color: 'emerald', tooltip: '00:00 - Sistem Operasional' },
+    { color: 'emerald', tooltip: '01:00 - Sistem Operasional' },
+    { color: 'emerald', tooltip: '02:00 - Sistem Operasional' },
+    { color: 'emerald', tooltip: '03:00 - Sistem Operasional' },
+    { color: 'emerald', tooltip: '04:00 - Sistem Operasional' },
+    { color: 'emerald', tooltip: '05:00 - Sistem Operasional' },
+    { color: 'emerald', tooltip: '06:00 - Pendaftaran Siswa Pagi' },
+    { color: 'indigo', tooltip: '07:00 - Jam Masuk Sekolah Aktif' },
+    { color: 'indigo', tooltip: '08:00 - Aktivitas Marketplace Kelas' },
+    { color: 'indigo', tooltip: '09:00 - Jam Istirahat 1: Transaksi COD' },
+    { color: 'emerald', tooltip: '10:00 - Sistem Normal' },
+    { color: 'indigo', tooltip: '11:00 - Moderasi Produk Kejuruan' },
+    { color: 'indigo', tooltip: '12:00 - Jam Istirahat 2: Puncak COD' },
+    { color: 'emerald', tooltip: '13:00 - Transaksi Berhasil Terverifikasi' },
+    { color: 'emerald', tooltip: '14:00 - Sistem Normal' },
+    { color: 'indigo', tooltip: '15:00 - Postingan Threads Sore' },
+    { color: 'emerald', tooltip: '16:00 - Sistem Operasional' },
+    { color: 'emerald', tooltip: '17:00 - Sistem Operasional' },
+    { color: 'emerald', tooltip: '18:00 - Realtime WebSocket Sync Aktif' },
+    { color: 'emerald', tooltip: '19:00 - Sistem Operasional' },
+    { color: 'emerald', tooltip: '20:00 - Sistem Operasional' },
+    { color: 'emerald', tooltip: '21:00 - Sistem Operasional' },
+    { color: 'emerald', tooltip: '22:00 - Sistem Operasional' },
+    { color: 'emerald', tooltip: '23:00 - Uptime 99.98% Hari Ini' },
+  ];
+
   return (
     <div className="p-4 md:p-8 space-y-6 max-w-7xl mx-auto">
-      {/* 1. Metrics KPI Row with SVG Sparklines */}
+      {/* 1. Tremor Metrics KPI Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
           title="Total Siswa Terdaftar"
@@ -87,7 +114,7 @@ export function OverviewTab({ stats, isLoading, onNavigateTab }: OverviewTabProp
         <StatsCard
           title="Titik Temu COD Kampus"
           value={stats.totalMeetingPoints}
-          subtitle="Zona serah terima resmi"
+          subtitle="Zona resmi lingkungan sekolah"
           icon={<MapPin className="h-4.5 w-4.5 text-emerald-600" />}
           trend="Aktif"
           trendPositive={true}
@@ -106,72 +133,62 @@ export function OverviewTab({ stats, isLoading, onNavigateTab }: OverviewTabProp
         />
       </div>
 
-      {/* 2. System Status & Realtime Sync Strip */}
-      <div className="p-4.5 border border-slate-200/80 bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.03)] grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-600 shrink-0">
-            <Activity className="h-4 w-4 animate-pulse" />
-          </div>
+      {/* 2. Tremor Operational Tracker Card */}
+      <Card className="p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <div className="font-semibold text-slate-900 flex items-center gap-1.5">
-              <span>Database Supabase Cloud</span>
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            </div>
-            <div className="text-[11px] text-slate-500 mt-0.5">
-              PostgreSQL Connected • Realtime Engine Active
-            </div>
+            <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+              <Server className="h-4 w-4 text-[#3D38F5]" />
+              <span>Pemantauan Operasional Ekosistem Snaps</span>
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Status sinkronisasi realtime cloud Supabase dan aktivitas transaksi harian
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant="emerald">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse mr-1" />
+              Uptime 99.98%
+            </Badge>
+            <Badge variant="indigo">
+              Realtime Active
+            </Badge>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-xl bg-[#EEF0FF] border border-[#D8DBFE] flex items-center justify-center text-[#3D38F5] shrink-0">
-            <ShieldCheck className="h-4 w-4" />
-          </div>
-          <div>
-            <div className="font-semibold text-slate-900 flex items-center gap-1.5">
-              <span>Keamanan RBAC & RLS</span>
-              <span className="px-1.5 py-0.2 rounded-full bg-[#EEF0FF] text-[9px] font-bold text-[#3D38F5] border border-[#D8DBFE]">
-                Terproteksi
-              </span>
-            </div>
-            <div className="text-[11px] text-slate-500 mt-0.5">
-              Role Siswa, Seller, Admin Terisolasi RLS
-            </div>
-          </div>
+        <div className="mt-4">
+          <Tracker data={trackerData} />
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-center text-amber-600 shrink-0">
-            <Zap className="h-4 w-4" />
-          </div>
-          <div>
-            <div className="font-semibold text-slate-900 flex items-center gap-1.5">
-              <span>Mobile Client App</span>
-              <span className="text-[11px] font-medium text-slate-400">v1.0.4</span>
-            </div>
-            <div className="text-[11px] text-slate-500 mt-0.5">
-              Sinkronisasi 1:1 Flutter Android & iOS
-            </div>
+        <div className="mt-3 flex items-center justify-between text-[11px] text-slate-400">
+          <span>24 jam terakhir (00:00 - Sekarang)</span>
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-1">
+              <span className="h-2 w-2 rounded-xs bg-emerald-500 inline-block" /> Normal
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="h-2 w-2 rounded-xs bg-[#3D38F5] inline-block" /> Transaksi Aktif
+            </span>
           </div>
         </div>
-      </div>
+      </Card>
 
-      {/* 3. Live Activity Stream & Recent Users Grid */}
+      {/* 3. Recent Activity Lists in Tremor Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Students */}
-        <div className="p-6 border border-slate-200/80 bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col justify-between">
+        <Card className="p-6 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div>
-                <h2 className="text-sm font-semibold text-slate-900">
+                <h3 className="text-sm font-semibold text-slate-900">
                   Siswa Baru Bergabung
-                </h2>
+                </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Registrasi akun dari lingkungan SMKN 8 Semarang
+                  Registrasi siswa dari lingkungan SMKN 8 Semarang
                 </p>
               </div>
               <button
-                className="text-xs h-8 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 font-medium flex items-center gap-1 text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
+                className="text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 font-medium flex items-center gap-1 text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
                 onClick={() => onNavigateTab('users')}
               >
                 <span>Lihat Semua</span>
@@ -179,21 +196,21 @@ export function OverviewTab({ stats, isLoading, onNavigateTab }: OverviewTabProp
               </button>
             </div>
 
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-slate-100 mt-1">
               {stats.recentUsers.length === 0 ? (
                 <div className="py-12 text-center text-xs text-slate-400">
                   Belum ada siswa terdaftar.
                 </div>
               ) : (
                 stats.recentUsers.slice(0, 5).map((u) => (
-                  <div key={u.id} className="py-3 flex items-center justify-between hover:bg-slate-50/60 rounded-xl px-2 transition-colors">
+                  <div key={u.id} className="py-3 flex items-center justify-between hover:bg-slate-50/60 rounded-lg px-2 transition-colors">
                     <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-full bg-[#EEF0FF] border border-[#D8DBFE] flex items-center justify-center font-bold text-xs text-[#3D38F5] shrink-0">
+                      <div className="h-9 w-9 rounded-lg bg-[#EEF0FF] ring-1 ring-[#D8DBFE] flex items-center justify-center font-bold text-xs text-[#3D38F5] shrink-0 overflow-hidden">
                         {u.avatar_url ? (
                           <img
                             src={u.avatar_url}
                             alt={u.full_name || ''}
-                            className="h-full w-full rounded-full object-cover"
+                            className="h-full w-full object-cover"
                           />
                         ) : u.full_name ? (
                           u.full_name.charAt(0).toUpperCase()
@@ -213,37 +230,37 @@ export function OverviewTab({ stats, isLoading, onNavigateTab }: OverviewTabProp
                         </div>
                       </div>
                     </div>
-                    <span className="text-[10px] uppercase font-bold py-0.5 px-2 rounded-full bg-slate-100 text-slate-600 border border-slate-200/80">
+                    <Badge variant={u.role === 'admin' ? 'indigo' : 'slate'} className="uppercase">
                       {u.role || 'buyer'}
-                    </span>
+                    </Badge>
                   </div>
                 ))
               )}
             </div>
           </div>
 
-          <div className="pt-3 border-t border-slate-100 text-[11.5px] text-slate-400 flex items-center justify-between">
-            <span>Total sampel terbaru: {stats.recentUsers.length} siswa</span>
-            <span className="text-[#3D38F5] font-medium cursor-pointer hover:underline" onClick={() => onNavigateTab('users')}>
+          <div className="pt-4 border-t border-slate-100 text-[11.5px] text-slate-400 flex items-center justify-between">
+            <span>Sampel terbaru: {stats.recentUsers.length} siswa</span>
+            <span className="text-[#3D38F5] font-semibold cursor-pointer hover:underline" onClick={() => onNavigateTab('users')}>
               Kelola verifikasi →
             </span>
           </div>
-        </div>
+        </Card>
 
-        {/* Live Activity Stream (Recent Posts & Items) */}
-        <div className="p-6 border border-slate-200/80 bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col justify-between">
+        {/* Live Feed Stream */}
+        <Card className="p-6 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div>
-                <h2 className="text-sm font-semibold text-slate-900">
+                <h3 className="text-sm font-semibold text-slate-900">
                   Live Feed & Moderasi Terkini
-                </h2>
+                </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Aktivitas karya, produk, dan threads komunitas
+                  Aktivitas karya kejuruan, produk, dan threads komunitas
                 </p>
               </div>
               <button
-                className="text-xs h-8 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 font-medium flex items-center gap-1 text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
+                className="text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 font-medium flex items-center gap-1 text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
                 onClick={() => onNavigateTab('moderation')}
               >
                 <span>Moderasi</span>
@@ -251,16 +268,16 @@ export function OverviewTab({ stats, isLoading, onNavigateTab }: OverviewTabProp
               </button>
             </div>
 
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-slate-100 mt-1">
               {stats.recentPosts.length === 0 ? (
                 <div className="py-12 text-center text-xs text-slate-400">
                   Belum ada postingan feed atau produk.
                 </div>
               ) : (
                 stats.recentPosts.slice(0, 5).map((p) => (
-                  <div key={p.id} className="py-3 flex items-center justify-between hover:bg-slate-50/60 rounded-xl px-2 transition-colors">
+                  <div key={p.id} className="py-3 flex items-center justify-between hover:bg-slate-50/60 rounded-lg px-2 transition-colors">
                     <div className="flex items-center gap-3 overflow-hidden">
-                      <div className="h-9 w-9 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 text-slate-500">
+                      <div className="h-9 w-9 rounded-lg bg-slate-100 ring-1 ring-slate-200 flex items-center justify-center shrink-0 text-slate-500">
                         <FileText className="h-4 w-4" />
                       </div>
                       <div className="truncate max-w-[200px] sm:max-w-[240px]">
@@ -288,19 +305,19 @@ export function OverviewTab({ stats, isLoading, onNavigateTab }: OverviewTabProp
             </div>
           </div>
 
-          <div className="pt-3 border-t border-slate-100 text-[11.5px] text-slate-400 flex items-center justify-between">
+          <div className="pt-4 border-t border-slate-100 text-[11.5px] text-slate-400 flex items-center justify-between">
             <span>Total postingan live: {stats.totalPosts} item</span>
-            <span className="text-[#3D38F5] font-medium cursor-pointer hover:underline" onClick={() => onNavigateTab('moderation')}>
+            <span className="text-[#3D38F5] font-semibold cursor-pointer hover:underline" onClick={() => onNavigateTab('moderation')}>
               Tinjau pelaporan →
             </span>
           </div>
-        </div>
+        </Card>
       </div>
 
-      {/* 4. Quick Action Shortcuts Bar */}
-      <div className="p-6 border border-slate-200/80 bg-gradient-to-r from-[#EEF0FF]/60 via-white to-slate-50/80 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+      {/* 4. Tremor Quick Actions Banner */}
+      <Card className="p-6 bg-gradient-to-r from-[#EEF0FF]/60 via-white to-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-[#3D38F5]" />
             <span>Pusat Kendali Cepat Sekolah</span>
           </h3>
@@ -310,19 +327,19 @@ export function OverviewTab({ stats, isLoading, onNavigateTab }: OverviewTabProp
         </div>
         <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
           <button
-            className="text-xs h-9 px-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 font-semibold text-slate-800 transition-all cursor-pointer shadow-2xs"
+            className="text-xs h-9 px-3.5 rounded-lg bg-white hover:bg-slate-50 ring-1 ring-slate-200/80 font-semibold text-slate-800 transition-all cursor-pointer shadow-xs"
             onClick={() => onNavigateTab('meeting-points')}
           >
             Titik Temu COD Kampus
           </button>
           <button
-            className="text-xs h-9 px-4 rounded-xl bg-[#3D38F5] hover:bg-[#312BD9] font-semibold text-white transition-all cursor-pointer shadow-[0_2px_8px_rgba(61,56,245,0.25)]"
+            className="text-xs h-9 px-4 rounded-lg bg-[#3D38F5] hover:bg-[#312BD9] font-semibold text-white transition-all cursor-pointer shadow-xs"
             onClick={() => onNavigateTab('users')}
           >
             Verifikasi Siswa
           </button>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

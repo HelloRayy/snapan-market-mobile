@@ -35,7 +35,7 @@ export function PostDetailModal({
       <div
         style={{
           width: '100%',
-          maxWidth: '560px',
+          maxWidth: '740px',
           background: '#ffffff',
           borderRadius: '10px',
           border: '1px solid #e4e7ec',

@@ -54,7 +54,18 @@ export function AdminModalPortal({
       }}
       onClick={onClose}
     >
-      <div onClick={(e) => e.stopPropagation()}>{children}</div>
+      <div
+        className="admin-modal-dialog-wrapper"
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        {children}
+      </div>
     </div>,
     document.body
   );

@@ -432,9 +432,9 @@
     "semantic_hash": "d750f263eb7781be3075b9d8d8c3fdb9"
   },
   "lib/features/feed/components/media_lightbox_dialog.dart": {
-    "mtime": 1790904002.4952278,
-    "seen": 1790904026.2800174,
-    "ast_hash": "554ad084217191e2c646723f0b28320f",
+    "mtime": 1790960914.2184196,
+    "seen": 1790960935.5544238,
+    "ast_hash": "cba5d320e8fd613fd1e9afdd1bd34674",
     "semantic_hash": ""
   },
   "lib/features/feed/components/nav_glyphs/custom_nav_tab_item.dart": {
@@ -3717,6 +3717,30 @@
     "mtime": 1790959875.4950178,
     "seen": 1790959971.0146644,
     "ast_hash": "a2e9bf5b6d9e0304800b36e433a75b5b",
+    "semantic_hash": ""
+  },
+  "lib/features/feed/components/lightbox/lightbox_action_bar.dart": {
+    "mtime": 1790960874.868253,
+    "seen": 1790960935.5544062,
+    "ast_hash": "73e2679d4400627ea95882f7ee1e6dc0",
+    "semantic_hash": ""
+  },
+  "lib/features/feed/components/lightbox/lightbox_image_viewer.dart": {
+    "mtime": 1790960904.7043793,
+    "seen": 1790960935.5544088,
+    "ast_hash": "2bf138758824666b7a9f0987a2ac02ef",
+    "semantic_hash": ""
+  },
+  "lib/features/feed/components/lightbox/lightbox_nav_arrows.dart": {
+    "mtime": 1790960864.0862074,
+    "seen": 1790960935.5544102,
+    "ast_hash": "40ce3c4b82ee4594b48bec7159fe1b33",
+    "semantic_hash": ""
+  },
+  "lib/features/feed/components/lightbox/lightbox_top_header.dart": {
+    "mtime": 1790960859.7941892,
+    "seen": 1790960935.5544193,
+    "ast_hash": "a39014b93588d3a3800b75d4aa8996ba",
     "semantic_hash": ""
   }
 }

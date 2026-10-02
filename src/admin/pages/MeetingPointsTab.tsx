@@ -388,7 +388,7 @@ export function MeetingPointsTab() {
             background: '#ffffff',
             borderRadius: '8px',
             padding: '24px',
-            maxWidth: '480px',
+            maxWidth: '620px',
             width: '100%',
             boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
           }}
@@ -538,7 +538,7 @@ export function MeetingPointsTab() {
               background: '#ffffff',
               borderRadius: '8px',
               padding: '24px',
-              maxWidth: '420px',
+              maxWidth: '480px',
               width: '100%',
               boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
             }}

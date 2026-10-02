@@ -35,7 +35,7 @@ export function UserDetailModal({
       <div
         style={{
           width: '100%',
-          maxWidth: '560px',
+          maxWidth: '720px',
           background: '#ffffff',
           borderRadius: '10px',
           border: '1px solid #e4e7ec',

@@ -1,26 +1,26 @@
 # Graph Report - snapan-market-mobile  (2026-10-03)
 
 ## Corpus Check
-- 552 files · ~677,480 words
+- 556 files · ~677,648 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 43 file(s) not represented in the graph (top: .xml 11, (none) 7, .css 7)
 
 ## Summary
-- 5029 nodes · 7257 edges · 382 communities (282 shown, 100 thin omitted)
+- 5067 nodes · 7306 edges · 362 communities (261 shown, 101 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 45 edges (avg confidence: 0.93)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f630d0c0`
+- Built from commit: `b73c745e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - search_controller.dart
 - widget_test.dart
-- VoidCallback
+- checkout_location_card.dart
 - supabase_service.dart
-- activity_notification_model.dart
+- MarketPostItem
 - market_post_model.dart
 - double get
 - profile_screen.dart
@@ -30,7 +30,7 @@
 - app_colors.dart
 - auth_register_tab.dart
 - auth_text_field.dart
-- react
+- CreatePostModal.tsx
 - StatelessWidget
 - cn
 - glass_toolbar_top.dart
@@ -41,8 +41,8 @@
 - Core Principles
 - app_update_service.dart
 - update_info_bottom_sheet.dart
-- profile_action_buttons.dart
-- List
+- buy_bottom_sheet.dart
+- checkout_models.dart
 - Components
 - create_post_main_input_block.dart
 - chat_conversation_screen.dart
@@ -51,13 +51,13 @@
 - home_feed_screen.dart
 - types/supabase.ts
 - edit_profile_avatar_section.dart
-- package:flutter/services.dart
+- ValueChanged
 - gatekeep-secret/README.md
 - market_post_card.dart
 - .agent-context/README.md
 - home_bottom_nav_bar.dart
 - HomePage.tsx
-- MarketPostItem
+- haptics.ts
 - sticky_buy_bar.dart
 - search_screen.dart
 - post_submenu_item.dart
@@ -70,7 +70,7 @@
 - media_lightbox_dialog.dart
 - Campus2DMap.tsx
 - State & Feedback Patterns
-- PwaLandingPage.tsx
+- conversation_list_item.dart
 - create_post_media_toolbar.dart
 - snaps_shimmer.dart
 - post_comment_item.dart
@@ -89,9 +89,9 @@
 - Core Principles
 - direct_messages_service.dart
 - 🗄️ SPESIFIKASI LENGKAP BACKEND & DATABASE: IN-APP ORDERS, SCHOOL MAP, & SALES STATS
-- chat_product_card.dart
+- package:flutter/services.dart
 - profile_reply_thread_card.dart
-- home_feed_tab_switch.dart
+- profile_info_header.dart
 - create_post_types.dart
 - home_dock_overlay.dart
 - home_nav_drawer.dart
@@ -99,7 +99,7 @@
 - Core Principles
 - post_poll_model.dart
 - create_post_product_fields.dart
-- App.tsx
+- AppSlidePageRoute
 - search_bar_header.dart
 - ProductCard.tsx
 - Common Recipes
@@ -108,7 +108,7 @@
 - 5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT
 - post_detail_bottom_bar.dart
 - create_post_poll_builder.dart
-- create_post_media_preview.dart
+- Color?
 - campus_locations_picker_screen.dart
 - profile_user_model.dart
 - Supabase
@@ -116,10 +116,10 @@
 - app_dropdown_field.dart
 - triggerHaptic
 - activity_screen.dart
-- auth_class_picker.dart
-- OnboardingScreen.tsx
+- post_poll_section.dart
+- home_nav_tab_switcher.dart
 - campus_location_spot.dart
-- package:snapan_market/features/feed/models/market_post_model.dart
+- onboarding_dot_indicators.dart
 - Core Principles
 - Choreography
 - Writing Guidelines for Postgres References
@@ -127,14 +127,14 @@
 - 3. 🎯 RINCIAN 8 EPIC TUGAS BACKEND (LAPTOP B)
 - 🎨 GOOGLE STITCH MCP & VISUAL IDEATION GUIDE
 - follow_service.dart
-- floating_kumo_fab.dart
+- State
 - comment_action_bar.dart
 - campus_map_screen.dart
 - Android Motion & Animations 🎭✨
 - Core Principles
 - tasteskill: Anti-Slop Frontend Skill
 - Appendix B - Canonical Sources (read these before reinventing)
-- location_spot_filter_chips.dart
+- 📋 Feature Specification — Post Detail & Threads-Style Threaded Comments (`PostDetailPage.tsx`)
 - poll_sync_service.dart
 - comment_reply_tile.dart
 - OverviewTab.tsx
@@ -148,11 +148,11 @@
 - app_slide_page_route.dart
 - post_submenu_popover.dart
 - package:supabase_flutter/supabase_flutter.dart
-- ButtonPrimary.tsx
+- react
 - onboarding_screen.dart
 - supabase_feed_service.dart
 - dependencies
-- test-backend.ts
+- realtimeService.ts
 - Repository Guidelines
 - Ambient & Continuous Patterns
 - Timing & Easing Tables
@@ -184,9 +184,9 @@
 - ProfileRow
 - splash_screen.dart
 - thread_branch_painter.dart
-- create_post_author_line.dart
+- List
 - chat_message_model.dart
-- snaps_logo.dart
+- test-e2e-flow.ts
 - scripts
 - searchService.ts
 - OKLCH Colors
@@ -223,11 +223,11 @@
 - MainActivity.kt
 - campus_2d_blueprint_painter.dart
 - adminService.ts
-- edit_profile_bottom_bar.dart
+- commentService.ts
 - snaps_skeleton.dart
 - supabase_constants.dart
-- ContentModerationTab.tsx
-- post_card_header.dart
+- AdminDashboard.tsx
+- package:snapan_market/features/feed/models/market_post_model.dart
 - Motion and Zoom
 - Semantics and ARIA
 - Accessibility & Contrast
@@ -238,11 +238,11 @@
 - 11. REDESIGN PROTOCOL
 - 3. DEFAULT ARCHITECTURE & CONVENTIONS
 - 6. PERFORMANCE & ACCESSIBILITY GUARDRAILS
-- post_action_bar.dart
+- CreatePostModal
 - 🏛️ Panduan Arsitektur Clean Code & Long-Term Maintainability
 - Multi-Laptop Workstation Setup Guide (Laptop A Frontend & Laptop B Backend)
 - search_models.dart
-- haptics.ts
+- lucide-react
 - supabase_social_service.dart
 - String?
 - Forms
@@ -250,12 +250,10 @@
 - Color Usage
 - Supabase Postgres Best Practices
 - string_utils.dart
-- checkout_seller_card.dart
+- VoidCallback
 - post_card.dart
-- supabase_poll_service.dart
 - generate-snaps-icons.py
 - download-pop-assets.js
-- campus_map_header.dart
 - Scale on Press
 - Image Outlines
 - 12. THE BLOCK LIBRARY (Contract - Implementations Land Here Iteratively)
@@ -278,7 +276,6 @@
 - codegraph
 - codegraph
 - snapan_market
-- onboarding_slide_view.dart
 - advanced-full-text-search.md
 - advanced-jsonb-indexing.md
 - conn-idle-timeout.md
@@ -319,7 +316,6 @@
 - auto_release.sh
 - release.sh
 - vercel.json
-- buy_bottom_sheet.dart
 - post_poll_option_tile.dart
 - CreatePostModal
 - package:google_fonts/google_fonts.dart
@@ -335,7 +331,6 @@
 - package:snapan_market/features/feed/components/post_card/post_card.dart
 - package:snapan_market/features/messages/models/mock_messages_data.dart
 - package:snapan_market/features/feed/components/drawer/home_nav_channels_card.dart
-- productsService.ts
 - package:snapan_market/features/feed/components/floating_marketplace_squircle_button.dart
 - Badge
 - Banner
@@ -348,14 +343,12 @@
 - Loader
 - home_feed_header.dart
 - custom_nav_tab_item.dart
-- State
 - Snapan Market Mobile — Architecture & Codebase Guide
 - package:snapan_market/features/feed/components/drawer/home_nav_footer.dart
 - package:snapan_market/features/feed/components/drawer/home_nav_header.dart
 - ChangeNotifier
 - package:snapan_market/features/feed/components/drawer/home_nav_preferences_card.dart
 - package:snapan_market/features/feed/components/drawer/home_nav_quick_pills.dart
-- social_auth_row.dart
 - src_admin_components_tremor_index_badge
 - src_admin_components_tremor_index_card
 - src_admin_components_tremor_index_table
@@ -370,24 +363,11 @@
 - kumo.d.ts
 - src_admin_components_tremor_index_tracker
 - src_admin_components_tremor_index_trackerblock
-- chat-bubble.tsx
-- create_post_header_bar.dart
-- profile_tab_bar.dart
 - @immutable
 - post_media_section.dart
-- campus_map_room_card.dart
-- AdminDashboard.tsx
 - SearchPage.tsx
-- comment_replies_expand_row.dart
-- floating_plus_squircle_button.dart
-- chat_options_sheet.dart
-- onboarding_slide.dart
 - PostDetailController
-- trending_tag_tile.dart
-- Coding Standards & Best Practices
 - google_logo.dart
-- AdminLoginPage.tsx
-- CustomPainter
 - package:snapan_market/core/services/supabase_service.dart
 - TextEditingController
 - _MockHttpClientResponse
@@ -407,19 +387,19 @@
 ## Surprising Connections (you probably didn't know these)
 - `3. Response Data Model yang Digunakan Komponen FE (`MarketPostItem`):` --references--> `MarketPostItem`  [INFERRED]
   docs/fe-to-be-data-contract.md → src/types/marketFeed.ts
-- `5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT` --references--> `subscribeToOrderNotifications()`  [INFERRED]
-  docs/backend-task-backlog.md → src/services/api/realtimeService.ts
 - `1. Aksi User:` --references--> `CreatePostModal()`  [INFERRED]
   docs/fe-to-be-data-contract.md → src/ui/components/marketplace/CreatePostModal.tsx
-- `🟢 2. Component Design & React Patterns` --references--> `cn()`  [INFERRED]
-  docs/coding-standards.md → src/utils/cn.ts
+- `5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT` --references--> `getMeetingPointById()`  [INFERRED]
+  docs/backend-task-backlog.md → src/services/api/meetingPointService.ts
+- `5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT` --references--> `subscribeToOrderNotifications()`  [INFERRED]
+  docs/backend-task-backlog.md → src/services/api/realtimeService.ts
 - `C. Autentikasi & Autorisasi (Auth Guardrails)` --references--> `signOut()`  [INFERRED]
   .agents/skills/security/SKILL.md → src/services/api/authService.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (382 total, 100 thin omitted)
+## Communities (362 total, 101 thin omitted)
 
 ### Community 0 - "search_controller.dart"
 Cohesion: 0.08
@@ -429,17 +409,17 @@ Nodes (24): accounts, activeTab, dispose, handleClearSearch, handleExecuteSearch
 Cohesion: 0.02
 Nodes (86): Container, ContentType?, dart:convert, Encoding, FeedHeartIcon, FeedRepostIcon, Future, HttpClientResponseCompressionState get (+78 more)
 
-### Community 2 - "VoidCallback"
-Cohesion: 0.05
-Nodes (35): AuthFooterSwitcher, build, isLogin, onSwitch, AuthHeader, build, onBack, title (+27 more)
+### Community 2 - "checkout_location_card.dart"
+Cohesion: 0.10
+Nodes (18): build, CheckoutLocationCard, onSelectMapTap, onSelectSpotTap, selectedSpot, build, isSelected, LocationSpotCard (+10 more)
 
 ### Community 3 - "supabase_service.dart"
 Cohesion: 0.03
 Nodes (70): dart:typed_data, addComment, auth, chat, client, closePoll, createPost, currentUser (+62 more)
 
-### Community 4 - "activity_notification_model.dart"
-Cohesion: 0.12
-Nodes (15): ActivityNotification, ActivityType, actorAvatar, actorName, actorUsername, copyWith, fromJson, id (+7 more)
+### Community 4 - "MarketPostItem"
+Cohesion: 0.10
+Nodes (27): MarketPostItem, CheckoutHeroImage(), CheckoutHeroImageProps, CheckoutProductHeader(), CheckoutProductHeaderProps, CheckoutSellerCard(), CheckoutSellerCardProps, src_ui_components_icons_index_threadstopicicon (+19 more)
 
 ### Community 5 - "market_post_model.dart"
 Cohesion: 0.04
@@ -451,15 +431,15 @@ Nodes (27): _activeTab, build, _controller, createState, dispose, _handleEditPro
 
 ### Community 8 - "create_post_modal.dart"
 Cohesion: 0.04
-Nodes (48): _audiencePrivacy, build, _captionController, _checkSellingIntent, CreatePostModal, _CreatePostModalState, createState, currentUserAvatar (+40 more)
+Nodes (46): _audiencePrivacy, build, _captionController, _checkSellingIntent, createState, currentUserAvatar, currentUserName, _descController (+38 more)
 
 ### Community 9 - "formatters.dart"
 Cohesion: 0.04
 Nodes (47): AppFormatters, buffer, clean, currentYear, day, diff, diffDays, diffHours (+39 more)
 
 ### Community 10 - "home_feed_scrollable_list.dart"
-Cohesion: 0.08
-Nodes (25): activeTab, build, _buildEmptyState, _buildErrorState, _buildFooter, errorMessage, hasError, HomeFeedScrollableList (+17 more)
+Cohesion: 0.05
+Nodes (42): forYou,, activeTab, build, _buildEmptyState, _buildErrorState, _buildFooter, errorMessage, hasError (+34 more)
 
 ### Community 11 - "app_colors.dart"
 Cohesion: 0.05
@@ -473,21 +453,21 @@ Nodes (24): agreedTerms, AuthRegisterTab, build, _buildRegisterTermsRow, classEr
 Cohesion: 0.08
 Nodes (26): AuthInputField, _AuthInputFieldState, build, controller, createState, dispose, errorText, _focusNode (+18 more)
 
-### Community 14 - "react"
-Cohesion: 0.07
-Nodes (39): react, CreatePostModal, Agentation, AgentationProps, ThreadsTopicIcon(), CreatePostDraftsSheet(), CreatePostDraftsSheetProps, SavedDraftData (+31 more)
+### Community 14 - "CreatePostModal.tsx"
+Cohesion: 0.08
+Nodes (31): CreatePostModal, ThreadsTopicIcon(), CreatePostDraftsSheet(), CreatePostDraftsSheetProps, SavedDraftData, CreatePostFooter(), CreatePostFooterProps, CreatePostHeader() (+23 more)
 
 ### Community 15 - "StatelessWidget"
-Cohesion: 0.06
-Nodes (43): GlassToolbarTop, ActivityItemSkeleton, ActivityListSkeleton, build, itemCount, build, CommentItemSkeleton, CommentListSkeleton (+35 more)
+Cohesion: 0.04
+Nodes (64): GlassToolbarTop, ActivityItemSkeleton, ActivityListSkeleton, build, itemCount, build, CommentItemSkeleton, CommentListSkeleton (+56 more)
 
 ### Community 16 - "cn"
-Cohesion: 0.12
-Nodes (24): Badge(), BadgeProps, badgeVariants, Card, CardProps, Divider(), DividerProps, Table() (+16 more)
+Cohesion: 0.08
+Nodes (37): 🔵 1. TypeScript & Type Safety, 🟢 2. Component Design & React Patterns, 🟡 3. Tailwind CSS v4 Guidelines, 🔴 4. State Management (Zustand & React State), Coding Standards & Best Practices, class-variance-authority, Badge(), BadgeProps (+29 more)
 
 ### Community 17 - "glass_toolbar_top.dart"
 Cohesion: 0.05
-Nodes (40): action, actions, backgroundColor, badgeCount, build, _buildCenterTitle, _buildDefaultLeading, _buildDefaultTrailing (+32 more)
+Nodes (36): action, actions, backgroundColor, badgeCount, build, _buildCenterTitle, _buildDefaultLeading, _buildDefaultTrailing (+28 more)
 
 ### Community 18 - "auth_screen.dart"
 Cohesion: 0.05
@@ -503,7 +483,7 @@ Nodes (37): 1. Header Profil Personal, 1. Input Pencarian & Live Tokenized Scori
 
 ### Community 21 - "api/supabase.ts"
 Cohesion: 0.10
-Nodes (5): getMeetingPointById(), subscribeToOrderNotifications(), uploadMarketMedia(), uploadMultipleMarketMedia(), supabase
+Nodes (6): getMeetingPointById(), uploadMarketMedia(), uploadMultipleMarketMedia(), supabase, Category, MarketPostWithSeller
 
 ### Community 22 - "Core Principles"
 Cohesion: 0.05
@@ -517,29 +497,29 @@ Nodes (19): AppVersionModel? get, AppUpdateService, _cachedLatestUpdate, _cached
 Cohesion: 0.12
 Nodes (17): AppVersionModel, build, createState, currentVersionName, _downloadProgress, _errorMessage, _isDownloading, _isInstalling (+9 more)
 
-### Community 25 - "profile_action_buttons.dart"
-Cohesion: 0.10
-Nodes (19): audiencePrivacy, build, canSubmit, CreatePostFooterBar, isSubmitting, onPrivacyTap, onSubmit, build (+11 more)
+### Community 25 - "buy_bottom_sheet.dart"
+Cohesion: 0.06
+Nodes (32): int get, audiencePrivacy, build, canSubmit, CreatePostFooterBar, isSubmitting, onPrivacyTap, onSubmit (+24 more)
 
-### Community 26 - "List"
-Cohesion: 0.15
-Nodes (11): building, categoryLabel, CheckoutSpot, floor, hint, id, kDefaultCampusSpots, name (+3 more)
+### Community 26 - "checkout_models.dart"
+Cohesion: 0.22
+Nodes (8): building, categoryLabel, CheckoutSpot, floor, hint, id, kDefaultCampusSpots, name
 
 ### Community 27 - "Components"
 Cohesion: 0.06
 Nodes (35): Agent Prompt Guide, Border Radius, Circular Avatar, Components, Compose Button, CSS Custom Properties, Do, Do's and Don'ts (+27 more)
 
 ### Community 28 - "create_post_main_input_block.dart"
-Cohesion: 0.06
-Nodes (35): build, captionController, CreatePostMainInputBlock, currentUserAvatar, currentUserName, images, onAddPollOption, onDismissPoll (+27 more)
+Cohesion: 0.04
+Nodes (44): GlobalKey, authorName, build, CreatePostAuthorLine, onTopicClear, onTopicTriggerTap, selectedTopic, topicTriggerKey (+36 more)
 
 ### Community 29 - "chat_conversation_screen.dart"
-Cohesion: 0.07
-Nodes (29): ChatMessageModel, build, ChatMessageBubble, message, kInitialDimasMessages, kInitialSarahMessages, kMockConversations, ChatConversationScreen (+21 more)
+Cohesion: 0.10
+Nodes (21): ChatConversationScreen, _ChatConversationScreenState, conversation, createState, dispose, _handleClearChat, _handleReportUser, _handleSendMessage (+13 more)
 
 ### Community 30 - "useAuth"
-Cohesion: 0.10
-Nodes (28): framer-motion, src_assets_new_market_asset_otp_hero, getCurrentProfile(), getCurrentUser(), onAuthStateChange(), signInWithEmail(), signInWithGoogle(), signOut() (+20 more)
+Cohesion: 0.12
+Nodes (24): framer-motion, getCurrentProfile(), getCurrentUser(), onAuthStateChange(), signInWithEmail(), signInWithGoogle(), signOut(), signUpWithEmail() (+16 more)
 
 ### Community 31 - "2. 📋 SPESIFIKASI PAYLOAD & RESPONSE PER FITUR UI"
 Cohesion: 0.06
@@ -547,7 +527,7 @@ Nodes (33): 1. Aksi User:, 1. Aksi User:, 1. Aksi User:, 1. Aksi User:, 1. Aksi 
 
 ### Community 32 - "home_feed_screen.dart"
 Cohesion: 0.06
-Nodes (34): FeedTab, HomeFeedController, _activeTab, _checkForAppUpdate, createState, _currentNavTab, _displayedPosts, dispose (+26 more)
+Nodes (36): FeedTab, HomeFeedController, _activeTab, _checkForAppUpdate, createState, _currentNavTab, _displayedPosts, dispose (+28 more)
 
 ### Community 33 - "types/supabase.ts"
 Cohesion: 0.10
@@ -557,9 +537,9 @@ Nodes (29): Seller, CartItem, CartItemWithPost, CommentLike, CreateInAppOrderRes
 Cohesion: 0.12
 Nodes (18): dart:io, ImageSource, CreatePostImageHelper, pickImages, uploadAllImages, build, createState, currentAvatar (+10 more)
 
-### Community 35 - "package:flutter/services.dart"
-Cohesion: 0.07
-Nodes (28): formatEditUpdate, PhoneNumberFormatter, formatEditUpdate, includePrefix, parsePrice, RupiahInputFormatter, build, _buildSortMenuItem (+20 more)
+### Community 35 - "ValueChanged"
+Cohesion: 0.05
+Nodes (34): build, _buildSortMenuItem, CommentSortOrder, isProductMode, onSortChanged, PostDetailCommentsHeader, selectedSort, totalCount (+26 more)
 
 ### Community 36 - "gatekeep-secret/README.md"
 Cohesion: 0.06
@@ -567,7 +547,7 @@ Nodes (24): 🏛️ 01. Architecture & Core Concepts, 1. Problem Statement: Why 
 
 ### Community 37 - "market_post_card.dart"
 Cohesion: 0.06
-Nodes (31): build, _buildRowWithAvatar, createState, didUpdateWidget, dispose, _handleFollowToggle, _handleLikeToggle, _handleRepostToggle (+23 more)
+Nodes (34): build, _buildRowWithAvatar, createState, didUpdateWidget, dispose, _handleFollowToggle, _handleLikeToggle, _handleRepostToggle (+26 more)
 
 ### Community 38 - ".agent-context/README.md"
 Cohesion: 0.06
@@ -580,52 +560,52 @@ Nodes (28): home,
   activity,, build, create, createState, currentTab, _DockTabItem, _DockTabItemState, glyph (+20 more)
 
 ### Community 40 - "HomePage.tsx"
-Cohesion: 0.09
-Nodes (25): Spesifikasi Desain Dialog:, MOCK_MARKET_POSTS, MOCK_USER_REPLIES, createMarketPost(), getMarketPosts(), mapSupabasePostToFeedItem(), loadFeedCache(), saveFeedCache() (+17 more)
+Cohesion: 0.13
+Nodes (17): 💎 5. PRINSIP CLEAN CODE YANG DITERAPKAN DI CODEBASE, MOCK_MARKET_POSTS, MOCK_USER_REPLIES, createMarketPost(), getMarketPosts(), mapSupabasePostToFeedItem(), loadFeedCache(), saveFeedCache() (+9 more)
 
-### Community 41 - "MarketPostItem"
-Cohesion: 0.07
-Nodes (45): MarketPostItem, PostComment, SellerProfile, ThreadChainItem, CheckoutDescription(), CheckoutDescriptionProps, CheckoutHeroImage(), CheckoutHeroImageProps (+37 more)
+### Community 41 - "haptics.ts"
+Cohesion: 0.08
+Nodes (42): togglePostBookmark(), PostComment, SellerProfile, ThreadChainItem, UserReplyThread, src_ui_components_icons_index_smoothcommenticon, SmoothCommentIcon(), CommentActionBar() (+34 more)
 
 ### Community 42 - "sticky_buy_bar.dart"
-Cohesion: 0.14
-Nodes (13): int?, build, CheckoutPriceBreakdown, originalPrice, price, build, onBuyClick, onChatClick (+5 more)
+Cohesion: 0.11
+Nodes (16): int?, build, CheckoutPriceBreakdown, originalPrice, price, build, CheckoutProductHeader, post (+8 more)
 
 ### Community 43 - "search_screen.dart"
-Cohesion: 0.07
-Nodes (29): AppSearchController, AppSlidePageRoute, build, _handleOpenAuth, _handlePostClick, _open2DMap, build, _handleViewProfile (+21 more)
+Cohesion: 0.11
+Nodes (18): AppSearchController, build, _controller, createState, dispose, _handleClearSearch, initState, onBack (+10 more)
 
 ### Community 44 - "post_submenu_item.dart"
 Cohesion: 0.18
 Nodes (11): IconData, build, createState, icon, iconColor, _isPressed, label, onTap (+3 more)
 
 ### Community 45 - "conversation_model.dart"
-Cohesion: 0.09
-Nodes (22): avatar, classGroup, ConversationModel, ConversationUser, copyWith, fromJson, id, image (+14 more)
+Cohesion: 0.05
+Nodes (37): ActivityNotification, ActivityType, actorAvatar, actorName, actorUsername, copyWith, fromJson, id (+29 more)
 
 ### Community 46 - "profile_content_tabs.dart"
-Cohesion: 0.11
-Nodes (17): activeTab, build, displayPosts, displayReplies, isLoading, mediaItems, onBookmarkToggle, onDeletePost (+9 more)
+Cohesion: 0.09
+Nodes (20): activeTab, build, displayPosts, displayReplies, isLoading, mediaItems, onBookmarkToggle, onDeletePost (+12 more)
 
 ### Community 47 - "post_card_content_column.dart"
 Cohesion: 0.08
 Nodes (25): build, isDetail, isFollowed, isLiked, isReposted, item, likeScaleAnim, likesCount (+17 more)
 
 ### Community 48 - "edit_profile_form_fields.dart"
-Cohesion: 0.08
-Nodes (24): AppDropdownField, bioController, build, child, EditProfileFormFields, FormRow, linkController, onClassNumChanged (+16 more)
+Cohesion: 0.05
+Nodes (41): AppDropdownField, PhoneNumberFormatter, formatEditUpdate, includePrefix, parsePrice, RupiahInputFormatter, AuthClassPicker, build (+33 more)
 
 ### Community 49 - "edit_profile_screen.dart"
 Cohesion: 0.07
 Nodes (27): _avatar, _bioController, build, createState, dispose, EditProfileScreen, _EditProfileScreenState, _handleAttemptExit (+19 more)
 
 ### Community 50 - "post_detail_screen.dart"
-Cohesion: 0.09
-Nodes (22): CommentSortOrder, build, _controller, createState, dispose, _handleBuySheet, _handleImageClick, initState (+14 more)
+Cohesion: 0.08
+Nodes (24): CommentSortOrder, build, _controller, createState, dispose, _handleBuySheet, _handleImageClick, initState (+16 more)
 
 ### Community 51 - "media_lightbox_dialog.dart"
-Cohesion: 0.09
-Nodes (22): build, createState, _currentIndex, dispose, _handleLikeToggle, _handleRepostToggle, _handleShare, images (+14 more)
+Cohesion: 0.07
+Nodes (28): build, createState, _currentIndex, dispose, _handleLikeToggle, _handleRepostToggle, _handleShare, images (+20 more)
 
 ### Community 52 - "Campus2DMap.tsx"
 Cohesion: 0.17
@@ -635,25 +615,25 @@ Nodes (15): CampusMapPage, BuildingOutline, FloorData, RoomZone, SCHOOL_BUILDING
 Cohesion: 0.08
 Nodes (23): Button Press, Checkmark Success, Confirmation Badge, Corporate, Disabled / Enabled, Error Shake, Error State, Focus States (+15 more)
 
-### Community 54 - "PwaLandingPage.tsx"
-Cohesion: 0.15
-Nodes (13): PwaLandingPage, CustomPwaInstallModal(), CustomPwaInstallModalProps, InstallBanner(), popSiteHtml, popSiteMobileHtml, src_ui_components_pwa_pwalanding, PwaLandingPage() (+5 more)
+### Community 54 - "conversation_list_item.dart"
+Cohesion: 0.12
+Nodes (14): ChatMessageModel, ConversationModel, build, ChatMessageBubble, message, build, conversation, ConversationListItem (+6 more)
 
 ### Community 55 - "create_post_media_toolbar.dart"
 Cohesion: 0.09
 Nodes (24): build, CreatePostMediaToolbar, createState, customWidget, emoji, icon, isActive, _isPressed (+16 more)
 
 ### Community 56 - "snaps_shimmer.dart"
-Cohesion: 0.10
-Nodes (20): EdgeInsetsGeometry?, GradientTransform, baseColor, borderRadius, build, child, circle, _controller (+12 more)
+Cohesion: 0.09
+Nodes (23): EdgeInsetsGeometry?, GradientTransform, baseColor, borderRadius, build, child, circle, _controller (+15 more)
 
 ### Community 57 - "post_comment_item.dart"
-Cohesion: 0.09
-Nodes (22): build, _buildContentText, _buildHeaderRow, comment, _copyToClipboard, createState, didUpdateWidget, _handleLikeToggle (+14 more)
+Cohesion: 0.08
+Nodes (24): build, _buildContentText, _buildHeaderRow, comment, _copyToClipboard, createState, didUpdateWidget, _handleLikeToggle (+16 more)
 
 ### Community 58 - "direct_messages_screen.dart"
-Cohesion: 0.09
-Nodes (22): _activeFilter, build, createState, DirectMessagesScreen, _DirectMessagesScreenState, dispose, _handleNewChat, _inboxSubscription (+14 more)
+Cohesion: 0.10
+Nodes (21): _activeFilter, build, createState, DirectMessagesScreen, _DirectMessagesScreenState, dispose, _handleNewChat, _inboxSubscription (+13 more)
 
 ### Community 59 - "ref_fs"
 Cohesion: 0.12
@@ -672,16 +652,16 @@ Cohesion: 0.12
 Nodes (16): activeTab, build, _buildEmptyState, isSubmitted, matchingAccounts, matchingPosts, onBookmarkToggle, onExecuteSearch (+8 more)
 
 ### Community 63 - "package:flutter/material.dart"
-Cohesion: 0.05
-Nodes (29): getBottomMargin, show, SnapsToast, AuthBrandHeader, build, onBack, subtitle, title (+21 more)
+Cohesion: 0.06
+Nodes (25): getBottomMargin, show, SnapsToast, build, CommentAuthorBadge, HomeDrawerLogoutDialog, show, build (+17 more)
 
 ### Community 64 - "home_drawer_item.dart"
-Cohesion: 0.06
-Nodes (31): Color?, build, CheckoutBottomBar, isOrdering, onOrderSubmit, price, borderColor, build (+23 more)
+Cohesion: 0.13
+Nodes (14): build, hasChevron, HomeDrawerItem, hoverColor, icon, iconColor, inkColor, isDestructive (+6 more)
 
 ### Community 65 - "profile_controller.dart"
-Cohesion: 0.06
-Nodes (32): build, _buildInitials, _buildMiniAvatar, isOwnProfile, onAvatarTap, onEditInterests, ProfileInfoHeader, user (+24 more)
+Cohesion: 0.09
+Nodes (22): allUserPosts, allUserReplies, _buildUserModel, dispose, disposeSubscriptions, _enrichPosts, _followRealtimeSubscription, _handlePollSyncUpdate (+14 more)
 
 ### Community 66 - "Motion Design Skill"
 Cohesion: 0.10
@@ -711,25 +691,25 @@ Nodes (12): bool get, addMessage, addOrUpdateConversation, _conversationMessages
 Cohesion: 0.10
 Nodes (19): 1. Overview Arsitektur Backend & Domain Model, 2.1. Tabel `orders` (Manajemen Pesanan In-App), 2.2. Tabel `school_meeting_points` (Denah Hotspot SMKN 8), 2.3. Tabel `order_notifications` (Log Notifikasi Realtime), 2.4. Pembaruan Tabel `market_posts` & `profiles`, 2. Skema Entitas Database (PostgreSQL Tables), 3. Alur State Machine & Siklus Hidup Pesanan (Order Lifecycle), 4.1. Trigger Pengurangan Stok & Status Habis Otomatis (+11 more)
 
-### Community 73 - "chat_product_card.dart"
-Cohesion: 0.18
-Nodes (10): build, ChatProductCard, ChatProductCardShape, _getBorderRadius, location, onCheckLocation, onViewProduct, product (+2 more)
+### Community 73 - "package:flutter/services.dart"
+Cohesion: 0.06
+Nodes (26): formatEditUpdate, AuthFooterSwitcher, build, isLogin, onSwitch, build, CreatePostHeaderBar, onCancel (+18 more)
 
 ### Community 74 - "profile_reply_thread_card.dart"
 Cohesion: 0.13
 Nodes (15): build, _buildAvatar, createState, initState, onPostClick, _parentLiked, _parentLikesCount, ProfileReplyThreadCard (+7 more)
 
-### Community 75 - "home_feed_tab_switch.dart"
-Cohesion: 0.12
-Nodes (17): forYou,, activeTab, build, createState, FeedTab, _handleTapCancel, _handleTapDown, _handleTapUp (+9 more)
+### Community 75 - "profile_info_header.dart"
+Cohesion: 0.13
+Nodes (13): build, _buildInitials, _buildMiniAvatar, isOwnProfile, onAvatarTap, onEditInterests, ProfileInfoHeader, user (+5 more)
 
 ### Community 76 - "create_post_types.dart"
 Cohesion: 0.10
 Nodes (20): caption, distance, iconType, id, images, isOfficial, kPresetEmojis, kPresetGifs (+12 more)
 
 ### Community 77 - "home_dock_overlay.dart"
-Cohesion: 0.06
-Nodes (31): Animation, HomeNavTab, HomeNavTab, build, currentNavTab, fabAnimation, fabAnimationController, fabBottom (+23 more)
+Cohesion: 0.09
+Nodes (22): Animation, AnimationController, HomeNavTab, build, currentNavTab, fabAnimation, fabAnimationController, fabBottom (+14 more)
 
 ### Community 78 - "home_nav_drawer.dart"
 Cohesion: 0.12
@@ -751,9 +731,9 @@ Nodes (18): DateTime?, allowChangeVote, copyWith, expiresAt, fromJson, getPercen
 Cohesion: 0.10
 Nodes (19): build, _buildCleanInputDecoration, _buildFieldLabel, _codPresets, CreatePostProductFields, descController, descFocusNode, descKey (+11 more)
 
-### Community 83 - "App.tsx"
-Cohesion: 0.11
-Nodes (17): react-dom, App(), ColorShowcasePage, PostDetailPage, src_index, MarketBottomNav(), MarketBottomNavProps, useSmoothScroll() (+9 more)
+### Community 83 - "AppSlidePageRoute"
+Cohesion: 0.15
+Nodes (13): AppSlidePageRoute, build, _handleOpenAuth, _handlePostClick, _open2DMap, build, _handleViewProfile, _handleOpenChat (+5 more)
 
 ### Community 84 - "search_bar_header.dart"
 Cohesion: 0.11
@@ -776,20 +756,20 @@ Cohesion: 0.11
 Nodes (17): aliases, components, hooks, lib, ui, utils, iconLibrary, rsc (+9 more)
 
 ### Community 89 - "5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT"
-Cohesion: 0.12
-Nodes (8): 5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT, toggleCommentLike(), deleteMarketPost(), getUserNotifications(), markNotificationAsRead(), getOrderNotifications(), getUnreadOrderNotificationCount(), InAppOrder
+Cohesion: 0.16
+Nodes (7): 5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT, deleteMarketPost(), getUserNotifications(), markNotificationAsRead(), getOrderNotifications(), getUnreadOrderNotificationCount(), InAppOrder
 
 ### Community 90 - "post_detail_bottom_bar.dart"
-Cohesion: 0.07
-Nodes (28): CheckoutSuccessModal, post, selectedSpot, show, build, _buildFooter, _handleOptionTap, _poll (+20 more)
+Cohesion: 0.12
+Nodes (17): CheckoutSuccessModal, post, selectedSpot, show, isCommentingActive, isProductMode, onBuyClick, onCancelReply (+9 more)
 
 ### Community 91 - "create_post_poll_builder.dart"
-Cohesion: 0.14
-Nodes (13): Duration, allowChangeVote, build, controllers, CreatePostPollBuilder, deadlineDuration, _durations, _formatDuration (+5 more)
+Cohesion: 0.07
+Nodes (24): Duration, AuthConstants, classNumOptions, gradeOptions, majorOptions, parseClassGroup, allowChangeVote, build (+16 more)
 
-### Community 92 - "create_post_media_preview.dart"
+### Community 92 - "Color?"
 Cohesion: 0.15
-Nodes (12): build, CreatePostGifPreview, CreatePostImagesPreview, CreatePostSellingIntentBanner, _errorPlaceholder, gif, images, onAddImage (+4 more)
+Nodes (11): Color?, build, CheckoutBottomBar, isOrdering, onOrderSubmit, price, borderColor, build (+3 more)
 
 ### Community 93 - "campus_locations_picker_screen.dart"
 Cohesion: 0.12
@@ -812,28 +792,28 @@ Cohesion: 0.17
 Nodes (12): dart:math, AppDropdownField, _AppDropdownFieldState, build, createState, _handleTap, hasError, _isOpen (+4 more)
 
 ### Community 98 - "triggerHaptic"
-Cohesion: 0.06
-Nodes (35): lucide-react, ActiveChatOverlay, ActiveChatOverlayProps, ChatComposerBar(), ChatComposerBarProps, ChatProductCard(), ChatProductCardProps, ChatProductContext (+27 more)
+Cohesion: 0.05
+Nodes (44): ActiveChatOverlay, App(), ColorShowcasePage, PostDetailPage, src_index, ActiveChatOverlayProps, ChatComposerBar(), ChatComposerBarProps (+36 more)
 
 ### Community 99 - "activity_screen.dart"
-Cohesion: 0.07
-Nodes (27): ActivityNotification, ActivityItemTile, build, _getBadgeColor, _getBadgeIcon, notification, onTap, _activeTabIndex (+19 more)
+Cohesion: 0.12
+Nodes (16): _activeTabIndex, ActivityScreen, _ActivityScreenState, build, createState, _FilterChip, initState, isActive (+8 more)
 
-### Community 100 - "auth_class_picker.dart"
+### Community 100 - "post_poll_section.dart"
 Cohesion: 0.17
-Nodes (11): AuthClassPicker, build, classError, onClassNumChanged, onGradeChanged, onMajorChanged, selectedClassNum, selectedGrade (+3 more)
+Nodes (11): build, _buildFooter, _handleOptionTap, _poll, post, PostPollSection, _promptLogin, _submitVote (+3 more)
 
-### Community 101 - "OnboardingScreen.tsx"
-Cohesion: 0.16
-Nodes (10): OnboardingScreen, src_assets_new_market_asset_market_1_1, src_assets_new_market_asset_market_2_1, src_assets_new_market_asset_market_3_1, src_assets_new_market_asset_person_login_bg, OnboardingScreenProps, Slide1Visual(), Slide2Visual() (+2 more)
+### Community 101 - "home_nav_tab_switcher.dart"
+Cohesion: 0.18
+Nodes (10): HomeNavTab, activityTab, build, _buildNavTabScreen, currentNavTab, feedTab, HomeNavTabSwitcher, messagesTab (+2 more)
 
 ### Community 102 - "campus_location_spot.dart"
 Cohesion: 0.12
 Nodes (16): bestTime, buildingName, category, categoryLabel, code, codSafetyHint, description, floor (+8 more)
 
-### Community 103 - "package:snapan_market/features/feed/models/market_post_model.dart"
-Cohesion: 0.11
-Nodes (17): build, _buildFormattedSpans, item, PostCaptionText, build, comments, isLoadingComments, isProductMode (+9 more)
+### Community 103 - "onboarding_dot_indicators.dart"
+Cohesion: 0.29
+Nodes (6): activeColor, activeIndex, build, count, inactiveColor, OnboardingDotIndicators
 
 ### Community 104 - "Core Principles"
 Cohesion: 0.12
@@ -863,17 +843,17 @@ Nodes (15): 📌 1. FILOSOFI & TUJUAN PENGGUNAAN GOOGLE STITCH, 1. Format Prompt
 Cohesion: 0.12
 Nodes (15): _followerCounts, _followingIds, _followingUsernames, getFollowerCount, instance, isCurrentUser, isFollowing, _isLoaded (+7 more)
 
-### Community 111 - "floating_kumo_fab.dart"
-Cohesion: 0.33
-Nodes (6): build, createState, FloatingKumoFabButton, _FloatingKumoFabButtonState, _isPressed, onTap
+### Community 111 - "State"
+Cohesion: 0.12
+Nodes (19): _GlassActionButtonItem, _GlassActionButtonItemState, _GlassCapsuleButton, _GlassCapsuleButtonState, build, createState, FloatingPlusSquircleButton, _FloatingPlusSquircleButtonState (+11 more)
 
 ### Community 112 - "comment_action_bar.dart"
 Cohesion: 0.13
-Nodes (14): AnimationController, build, createState, didUpdateWidget, dispose, initState, isLiked, _likeAnimController (+6 more)
+Nodes (15): build, CommentActionBar, _CommentActionBarState, createState, didUpdateWidget, dispose, initState, isLiked (+7 more)
 
 ### Community 113 - "campus_map_screen.dart"
-Cohesion: 0.17
-Nodes (12): build, CampusMapScreen, _CampusMapScreenState, createState, _currentFloor, initState, onBack, _selectedCategory (+4 more)
+Cohesion: 0.11
+Nodes (18): CampusRoom, build, CampusMapRoomCard, onSelectLocation, room, build, CampusMapScreen, _CampusMapScreenState (+10 more)
 
 ### Community 114 - "Android Motion & Animations 🎭✨"
 Cohesion: 0.12
@@ -891,33 +871,33 @@ Nodes (15): 0.A Read these signals first, 0.B Output a one-line "Design Read" be
 Cohesion: 0.13
 Nodes (15): Appendix B - Canonical Sources (read these before reinventing), Apple Liquid Glass (Apple platforms only), Atlassian, Bootstrap, Carbon, Fluent UI, GOV.UK, Material Web (+7 more)
 
-### Community 118 - "location_spot_filter_chips.dart"
-Cohesion: 0.15
-Nodes (11): AuthConstants, classNumOptions, gradeOptions, majorOptions, parseClassGroup, activeFilter, build, _filters (+3 more)
+### Community 118 - "📋 Feature Specification — Post Detail & Threads-Style Threaded Comments (`PostDetailPage.tsx`)"
+Cohesion: 0.33
+Nodes (5): 🎯 1. Objective & Target User Experience, 🗄️ 3. Data Schema & Contracts (`ThreadComment` Interface), 🎨 4. Design Guidelines (Kumo UI & Threads Compliance), 🧪 5. Testing & Verification Plan, 📋 Feature Specification — Post Detail & Threads-Style Threaded Comments (`PostDetailPage.tsx`)
 
 ### Community 119 - "poll_sync_service.dart"
 Cohesion: 0.13
 Nodes (14): clear, getUserVotesForPost, hasUserVoted, hydrateAndSyncPosts, instance, _isInitialized, _pollCache, registerPollModel (+6 more)
 
 ### Community 120 - "comment_reply_tile.dart"
-Cohesion: 0.10
-Nodes (20): build, _buildContentText, _buildHeaderRow, CommentReplyTile, isFirst, isLast, onDeleteComment, onLikeToggle (+12 more)
+Cohesion: 0.07
+Nodes (26): build, CommentRepliesExpandRow, isExpanded, onToggle, replies, build, _buildContentText, _buildHeaderRow (+18 more)
 
 ### Community 121 - "OverviewTab.tsx"
-Cohesion: 0.15
-Nodes (12): LogEntry, ServerStatusCard(), ServerStatusCardProps, ServerStatusGaugeCard(), ServerStatusGaugeCardProps, colorMap, defaultSparklines, StatsCard() (+4 more)
+Cohesion: 0.12
+Nodes (16): AdminSidebar(), AdminSidebarProps, LogEntry, ServerStatusCard(), ServerStatusCardProps, ServerStatusGaugeCard(), ServerStatusGaugeCardProps, colorMap (+8 more)
 
 ### Community 122 - "edit_profile_chips_editor.dart"
-Cohesion: 0.15
-Nodes (13): FocusNode, build, createState, dispose, EditProfileChipsEditor, _EditProfileChipsEditorState, _focusNode, _handleAddTag (+5 more)
+Cohesion: 0.17
+Nodes (12): FocusNode, build, createState, dispose, EditProfileChipsEditor, _EditProfileChipsEditorState, _focusNode, _handleAddTag (+4 more)
 
 ### Community 123 - "chat_composer_bar.dart"
 Cohesion: 0.14
 Nodes (14): build, _canSend, ChatComposerBar, _ChatComposerBarState, _controller, createState, dispose, _handleSend (+6 more)
 
 ### Community 124 - "dynamic_feed_image.dart"
-Cohesion: 0.11
-Nodes (19): ImageStream?, ImageStreamListener?, build, createState, didUpdateWidget, dispose, DynamicFeedImage, _DynamicFeedImageState (+11 more)
+Cohesion: 0.05
+Nodes (38): BoxFit, double?, ImageStream?, ImageStreamListener?, build, fit, height, SnapsLogo (+30 more)
 
 ### Community 125 - "Shadows Instead of Borders"
 Cohesion: 0.14
@@ -940,20 +920,20 @@ Cohesion: 0.14
 Nodes (13): Duration get, buildContent, builder, buildTransitions, _duration, fullscreenDialog, maintainState, _reverseDuration (+5 more)
 
 ### Community 130 - "post_submenu_popover.dart"
-Cohesion: 0.12
-Nodes (16): build, createState, initState, isAdmin, isOwner, isSaved, onClosePoll, onDeletePost (+8 more)
+Cohesion: 0.06
+Nodes (32): build, isLiked, isReposted, item, likeScaleAnim, likesCount, onLikeToggle, onPostClick (+24 more)
 
 ### Community 131 - "package:supabase_flutter/supabase_flutter.dart"
-Cohesion: 0.13
-Nodes (15): _client, fetchSuggestedProfiles, getProfile, getProfileByUsername, isUsernameTaken, searchProfiles, subscribeToProfile, SupabaseProfileService (+7 more)
+Cohesion: 0.09
+Nodes (23): _client, closePoll, _currentUser, fetchUserPollVotes, SupabasePollService, votePoll, _client, fetchSuggestedProfiles (+15 more)
 
-### Community 132 - "ButtonPrimary.tsx"
-Cohesion: 0.13
-Nodes (17): AuthLoginForm(), AuthLoginFormProps, AuthOtpVerificationSheetProps, AuthRegisterForm(), AuthRegisterFormProps, Button, ButtonPrimary, ButtonPrimaryProps (+9 more)
+### Community 132 - "react"
+Cohesion: 0.05
+Nodes (49): react, OnboardingScreen, PwaLandingPage, src_assets_new_market_asset_market_1_1, src_assets_new_market_asset_market_2_1, src_assets_new_market_asset_market_3_1, src_assets_new_market_asset_otp_hero, src_assets_new_market_asset_person_login_bg (+41 more)
 
 ### Community 133 - "onboarding_screen.dart"
-Cohesion: 0.12
-Nodes (15): build, createState, _currentPage, didChangeDependencies, dispose, _goToPage, _nextPage, OnboardingScreen (+7 more)
+Cohesion: 0.13
+Nodes (14): build, createState, _currentPage, didChangeDependencies, dispose, _goToPage, _nextPage, _OnboardingScreenState (+6 more)
 
 ### Community 134 - "supabase_feed_service.dart"
 Cohesion: 0.12
@@ -963,9 +943,9 @@ Nodes (15): addComment, _client, createPost, _currentUser, deleteComment, delete
 Cohesion: 0.13
 Nodes (15): dependencies, class-variance-authority, @cloudflare/kumo, clsx, @fortawesome/fontawesome-free, framer-motion, lucide-react, @mappedin/mappedin-js (+7 more)
 
-### Community 136 - "test-backend.ts"
-Cohesion: 0.14
-Nodes (10): @supabase/supabase-js, env, envContent, envPath, runTests(), supabase, env, envContent (+2 more)
+### Community 136 - "realtimeService.ts"
+Cohesion: 0.15
+Nodes (7): @supabase/supabase-js, subscribeToOrderNotifications(), env, envContent, envPath, runTests(), supabase
 
 ### Community 137 - "Repository Guidelines"
 Cohesion: 0.15
@@ -985,11 +965,11 @@ Nodes (12): AuthSocialSection, build, _buildDivider, createState, dividerText, i
 
 ### Community 141 - "package:snapan_market/core/theme/app_colors.dart"
 Cohesion: 0.06
-Nodes (31): ConversationModel, build, CreatePostSellingToggle, isProductMode, onToggle, CommentOptionsSheet, show, _showDeleteConfirmation (+23 more)
+Nodes (34): ActivityNotification, ActivityItemTile, build, _getBadgeColor, _getBadgeIcon, notification, onTap, build (+26 more)
 
 ### Community 142 - "comment_input_bar.dart"
 Cohesion: 0.10
-Nodes (19): build, createState, didUpdateWidget, dispose, _focusNode, _handleSubmit, _hasText, initState (+11 more)
+Nodes (21): build, CommentInputBar, _CommentInputBarState, createState, didUpdateWidget, dispose, _focusNode, _handleSubmit (+13 more)
 
 ### Community 143 - "kumo_floating_field.dart"
 Cohesion: 0.13
@@ -1045,7 +1025,7 @@ Nodes (6): ConversationUser, build, ChatAppBarTitle, onTapProfile, user, package
 
 ### Community 156 - "PostDetailDrawer.tsx"
 Cohesion: 0.22
-Nodes (5): PostDetailDrawerProps, PostWithSeller, SlideOverDrawer(), SlideOverDrawerProps, UserDetailDrawerProps
+Nodes (4): PostDetailDrawerProps, PostWithSeller, SlideOverDrawer(), UserDetailDrawerProps
 
 ### Community 157 - "Accessibility that comes with the craft"
 Cohesion: 0.18
@@ -1080,36 +1060,36 @@ Cohesion: 0.18
 Nodes (10): AppVersionModel, changelog, downloadUrl, fromJson, id, isActive, isMandatory, title (+2 more)
 
 ### Community 165 - "ProfileRow"
-Cohesion: 0.40
-Nodes (6): AdminAccountDropdownProps, UserAvatar(), UserAvatarProps, UserDetailModal(), UserDetailModalProps, ProfileRow
+Cohesion: 0.35
+Nodes (7): AdminAccountDropdownProps, UserAvatar(), UserAvatarProps, UserDetailModal(), UserDetailModalProps, UsersManagementTab(), ProfileRow
 
 ### Community 166 - "splash_screen.dart"
-Cohesion: 0.12
-Nodes (16): build, _controller, createState, dispose, _entranceMs, _eraserAnim, _fadeAnim, _holdMs (+8 more)
+Cohesion: 0.11
+Nodes (18): build, _controller, createState, dispose, _entranceMs, _eraserAnim, _fadeAnim, _holdMs (+10 more)
 
 ### Community 167 - "thread_branch_painter.dart"
-Cohesion: 0.15
-Nodes (12): avatarCenterX, color, curveRadius, paint, radius, shouldRepaint, startX, strokeWidth (+4 more)
+Cohesion: 0.12
+Nodes (17): CustomPainter, _GoogleLogoPainter, avatarCenterX, color, curveRadius, paint, radius, ReplyLBranchPainter (+9 more)
 
-### Community 168 - "create_post_author_line.dart"
-Cohesion: 0.08
-Nodes (23): GlobalKey, authorName, build, CreatePostAuthorLine, onTopicClear, onTopicTriggerTap, selectedTopic, topicTriggerKey (+15 more)
+### Community 168 - "List"
+Cohesion: 0.06
+Nodes (30): _, CreatePostBottomSheets, showEmojiPickerBottomSheet, showGifPickerBottomSheet, showLocationPickerBottomSheet, showPrivacyPickerBottomSheet, showTopicPickerPopup, build (+22 more)
 
 ### Community 169 - "chat_message_model.dart"
 Cohesion: 0.18
 Nodes (10): ChatMessageModel, copyWith, fromJson, id, isMe, MessageStatus, senderId, status (+2 more)
 
-### Community 170 - "snaps_logo.dart"
-Cohesion: 0.25
-Nodes (7): BoxFit, double?, build, fit, height, SnapsLogo, width
+### Community 170 - "test-e2e-flow.ts"
+Cohesion: 0.33
+Nodes (4): env, envContent, envPath, supabase
 
 ### Community 171 - "scripts"
 Cohesion: 0.18
 Nodes (11): scripts, analyze:diff, build, capture:target, dev, dev:host, extract:computed, lint (+3 more)
 
 ### Community 172 - "searchService.ts"
-Cohesion: 0.21
-Nodes (8): searchAll(), searchPosts(), searchProfiles(), SearchResults, SearchTab, TrendingTopic, MarketPostWithSeller, ProfileWithFollowStats
+Cohesion: 0.18
+Nodes (7): searchAll(), searchPosts(), searchProfiles(), SearchResults, SearchTab, TrendingTopic, ProfileWithFollowStats
 
 ### Community 173 - "OKLCH Colors"
 Cohesion: 0.20
@@ -1193,15 +1173,15 @@ Nodes (8): comment_action_bar.dart, comment_author_badge.dart, comment_avatar.da
 
 ### Community 193 - "auth_prompt_overlay.dart"
 Cohesion: 0.12
-Nodes (15): dart:ui, AuthPromptOverlay, build, createState, _isPressed, onNavigateToAuth, onTap, build (+7 more)
+Nodes (15): AuthPromptOverlay, build, createState, _isPressed, onNavigateToAuth, onTap, _ThreadsActionCapsule, _ThreadsActionCapsuleState (+7 more)
 
 ### Community 194 - "checkout_hero_image.dart"
 Cohesion: 0.20
 Nodes (10): build, CheckoutHeroImage, _CheckoutHeroImageState, createState, _currentPage, dispose, images, _pageController (+2 more)
 
 ### Community 195 - "ServerMonitorTab.tsx"
-Cohesion: 0.20
-Nodes (10): AdminLoginLogCard(), LiveConnectionProbes(), LiveConnectionProbesProps, ProbeResult, DayBarData, UptimeServiceRow(), UptimeServiceRowProps, UptimeStatus (+2 more)
+Cohesion: 0.11
+Nodes (17): @cloudflare/kumo, AdminLoginLogCard(), LiveConnectionProbes(), LiveConnectionProbesProps, ProbeResult, DayBarData, UptimeServiceRow(), UptimeServiceRowProps (+9 more)
 
 ### Community 196 - "supabase_auth_service.dart"
 Cohesion: 0.17
@@ -1240,12 +1220,8 @@ Cohesion: 0.29
 Nodes (6): floor, paint, rooms, selectedRoom, shouldRepaint, CampusRoom
 
 ### Community 206 - "adminService.ts"
-Cohesion: 0.27
-Nodes (12): AdminAccountDropdown(), AdminHeaderProps, AdminSidebar(), AdminSidebarProps, AdminTab, HeaderSearchPopover(), HeaderSearchPopoverProps, OverviewTabProps (+4 more)
-
-### Community 207 - "edit_profile_bottom_bar.dart"
-Cohesion: 0.33
-Nodes (5): build, EditProfileBottomBar, isSaving, onDiscard, onSave
+Cohesion: 0.31
+Nodes (9): AdminAccountDropdown(), AdminHeader(), AdminHeaderProps, AdminTab, HeaderSearchPopover(), HeaderSearchPopoverProps, GlobalSearchResult, MarketPostRow (+1 more)
 
 ### Community 208 - "snaps_skeleton.dart"
 Cohesion: 0.25
@@ -1255,13 +1231,13 @@ Nodes (7): snaps_skeleton, library, skeleton/activity_skeleton.dart, skeleton/co
 Cohesion: 0.25
 Nodes (7): authCallbackUrlScheme, storageBucketAvatars, storageBucketMedia, supabaseAnonKey, SupabaseConstants, supabaseUrl, static const String
 
-### Community 210 - "ContentModerationTab.tsx"
-Cohesion: 0.24
-Nodes (8): AdminModalPortal(), AdminModalPortalProps, PostDetailModal(), PostDetailModalProps, PostWithSeller, ContentModerationTab(), PostWithSeller, MeetingPointsTab()
+### Community 210 - "AdminDashboard.tsx"
+Cohesion: 0.15
+Nodes (14): AdminModalPortal(), AdminModalPortalProps, PostDetailModal(), PostDetailModalProps, PostWithSeller, useAdminSecurity(), AdminDashboard(), AdminDashboardProps (+6 more)
 
-### Community 211 - "post_card_header.dart"
-Cohesion: 0.07
-Nodes (28): build, isDetail, isFollowed, item, onDeletePost, onFollowToggle, onMoreOptionsClick, onPostClick (+20 more)
+### Community 211 - "package:snapan_market/features/feed/models/market_post_model.dart"
+Cohesion: 0.03
+Nodes (63): dart:ui, bottomPadding, build, isLiked, isReposted, LightboxActionBar, likeScaleAnim, likesCount (+55 more)
 
 ### Community 212 - "Motion and Zoom"
 Cohesion: 0.29
@@ -1303,10 +1279,6 @@ Nodes (7): 3.A Stack, 3.B State, 3.C Icons, 3.D Emoji Policy, 3. DEFAULT ARCHITE
 Cohesion: 0.29
 Nodes (7): 6.A Hardware Acceleration, 6.B Reduced Motion (mandatory), 6.C Dark Mode (mandatory for any consumer-facing page), 6.D Core Web Vitals Targets, 6.E DOM Cost, 6.F Z-Index Restraint, 6. PERFORMANCE & ACCESSIBILITY GUARDRAILS
 
-### Community 222 - "post_action_bar.dart"
-Cohesion: 0.13
-Nodes (14): build, isLiked, isReposted, item, likeScaleAnim, likesCount, onLikeToggle, onPostClick (+6 more)
-
 ### Community 223 - "🏛️ Panduan Arsitektur Clean Code & Long-Term Maintainability"
 Cohesion: 0.29
 Nodes (6): 📑 1. RINGKASAN EKSEKUTIF (*Executive Summary*), 📂 2. PETA STRUKTUR LAYER APLIKASI (*Directory & Layer Breakdown*), 🔒 3. ATURAN KETERGANTUNGAN (*Dependency Flow Rules*), 🤖 4. MENGAPA STRUKTUR INI SANGAT RAMAH UNTUK AI AGENT?, 🚀 6. PROTOKOL KOLABORASI MULTI-LAPTOP (LAPTOP A vs LAPTOP B), 🏛️ Panduan Arsitektur Clean Code & Long-Term Maintainability
@@ -1319,17 +1291,17 @@ Nodes (6): 🔄 Alur Kolaborasi & Sinkronisasi Git (Aturan Wajib Multi-Workstati
 Cohesion: 0.12
 Nodes (16): avatar, bio, copyWith, followersCount, fullName, id, isFollowing, isVerified (+8 more)
 
-### Community 227 - "haptics.ts"
-Cohesion: 0.08
-Nodes (32): 💎 5. PRINSIP CLEAN CODE YANG DITERAPKAN DI CODEBASE, togglePostBookmark(), UserReplyThread, CommentInputBar(), CommentInputBarProps, MarketHeader(), MarketHeaderProps, SnapanBrandMark (+24 more)
+### Community 227 - "lucide-react"
+Cohesion: 0.07
+Nodes (28): Spesifikasi Desain Dialog:, lucide-react, react-dom, SlideOverDrawerProps, ChatTopBarParticipant, ChatTopBarProps, CreateOptionBottomSheetProps, PostSubmenuDropdownProps (+20 more)
 
 ### Community 228 - "supabase_social_service.dart"
 Cohesion: 0.17
 Nodes (11): _client, _currentUser, fetchFollowings, fetchNotifications, followUser, getFollowersCount, getFollowingCount, markNotificationsAsRead (+3 more)
 
 ### Community 229 - "String?"
-Cohesion: 0.12
-Nodes (14): build, DropdownColumnBox, hasError, label, onSelected, options, placeholder, selectedValue (+6 more)
+Cohesion: 0.08
+Nodes (21): build, DropdownColumnBox, hasError, label, onSelected, options, placeholder, selectedValue (+13 more)
 
 ### Community 230 - "Forms"
 Cohesion: 0.33
@@ -1351,17 +1323,13 @@ Nodes (5): How to Use, References, Rule Categories by Priority, Supabase Postgre
 Cohesion: 0.33
 Nodes (5): cleanTag, _emojiRegex, StringUtils, stripEmojis, static final RegExp
 
-### Community 235 - "checkout_seller_card.dart"
-Cohesion: 0.11
-Nodes (15): build, CheckoutSellerCard, department, onChatTap, onProfileTap, sellerAvatar, sellerName, sellerUsername (+7 more)
+### Community 235 - "VoidCallback"
+Cohesion: 0.04
+Nodes (39): AuthBrandHeader, build, onBack, subtitle, title, AuthHeader, build, onBack (+31 more)
 
 ### Community 236 - "post_card.dart"
 Cohesion: 0.33
 Nodes (5): post_action_bar.dart, post_author_avatar.dart, post_caption_text.dart, post_card_header.dart, post_media_section.dart
-
-### Community 237 - "supabase_poll_service.dart"
-Cohesion: 0.22
-Nodes (8): _client, closePoll, _currentUser, fetchUserPollVotes, SupabasePollService, votePoll, package:snapan_market/core/services/poll_sync_service.dart, package:snapan_market/features/feed/models/post_poll_model.dart
 
 ### Community 238 - "generate-snaps-icons.py"
 Cohesion: 0.33
@@ -1370,10 +1338,6 @@ Nodes (4): os, pil, generate_icons(), Generate Snaps PWA and Android Launcher Ic
 ### Community 239 - "download-pop-assets.js"
 Cohesion: 0.40
 Nodes (5): ref_https, downloadFile(), FONTS, IMAGES, run()
-
-### Community 240 - "campus_map_header.dart"
-Cohesion: 0.15
-Nodes (12): build, CampusMapHeader, _CategoryChip, currentFloor, _FloorButton, isActive, label, onBack (+4 more)
 
 ### Community 242 - "Scale on Press"
 Cohesion: 0.40
@@ -1431,29 +1395,17 @@ Nodes (4): 7. DIAL DEFINITIONS (Technical Reference), DESIGN_VARIANCE (Level 1-1
 Cohesion: 0.50
 Nodes (3): package:flutter_test/flutter_test.dart, package:snapan_market/main.dart, main
 
-### Community 265 - "onboarding_slide_view.dart"
-Cohesion: 0.29
-Nodes (6): build, OnboardingSlideView, slide, OnboardingSlide, package:flutter_svg/flutter_svg.dart, package:snapan_market/features/onboarding/models/onboarding_slide.dart
-
-### Community 309 - "buy_bottom_sheet.dart"
-Cohesion: 0.17
-Nodes (11): int get, build, createState, _maxStock, onChatSeller, onConfirmOrder, post, _quantity (+3 more)
-
 ### Community 310 - "post_poll_option_tile.dart"
 Cohesion: 0.17
 Nodes (11): build, _buildResultBar, _buildVoteButton, isSelected, onTap, option, poll, PostPollOptionTile (+3 more)
 
 ### Community 336 - "home_feed_header.dart"
 Cohesion: 0.12
-Nodes (14): build, isDark, onBackTap, onMenuTap, onSearchTap, onTitleTap, preferredSize, title (+6 more)
+Nodes (15): build, isDark, onBackTap, onMenuTap, onSearchTap, onTitleTap, preferredSize, title (+7 more)
 
 ### Community 338 - "custom_nav_tab_item.dart"
 Cohesion: 0.20
 Nodes (10): build, child, createState, CustomNavTabItem, _CustomNavTabItemState, isActive, _isPressed, onTap (+2 more)
-
-### Community 339 - "State"
-Cohesion: 0.10
-Nodes (30): SnapsShimmer, _SnapsShimmerState, _ThreadsActionCapsule, _ThreadsActionCapsuleState, BuyBottomSheet, _BuyBottomSheetState, CommentActionBar, _CommentActionBarState (+22 more)
 
 ### Community 340 - "Snapan Market Mobile — Architecture & Codebase Guide"
 Cohesion: 0.25
@@ -1463,25 +1415,9 @@ Nodes (7): 🏛️ 1. High-Level Architecture Overview, 📁 2. Struktur Folder 
 Cohesion: 0.25
 Nodes (8): ChangeNotifier, FollowService, PollSyncService, HomeFeedController, PostDetailController, DirectMessagesService, ProfileController, AppSearchController
 
-### Community 346 - "social_auth_row.dart"
-Cohesion: 0.20
-Nodes (9): build, icon, label, onAppleTap, onGoogleTap, onTap, SocialAuthRow, _SocialButton (+1 more)
-
 ### Community 358 - "kumo.d.ts"
 Cohesion: 0.29
 Nodes (6): BadgeProps, ButtonProps, @cloudflare/kumo, InputProps, LayerCardComponent, LayerCardProps
-
-### Community 361 - "chat-bubble.tsx"
-Cohesion: 0.25
-Nodes (8): class-variance-authority, ChatBubble, ChatBubbleAvatar, ChatBubbleMessage, ChatBubbleProps, ChatBubbleTimestamp, ChatBubbleTimestampProps, chatBubbleVariants
-
-### Community 362 - "create_post_header_bar.dart"
-Cohesion: 0.25
-Nodes (7): build, CreatePostHeaderBar, onCancel, onDraftsTap, onMoreOptionsTap, postMode, PostMode
-
-### Community 363 - "profile_tab_bar.dart"
-Cohesion: 0.25
-Nodes (7): activeTab, build, _buildTabItem, onTabChanged, preferredSize, ProfileTab, Size get
 
 ### Community 364 - "@immutable"
 Cohesion: 0.29
@@ -1491,53 +1427,13 @@ Nodes (7): @immutable, CommentUserModel, PostCommentModel, SellerModel, ThreadCh
 Cohesion: 0.25
 Nodes (7): build, isDetail, item, PostMediaSection, MarketPost, MarketPostModel, package:snapan_market/features/feed/components/post_card/dynamic_feed_image.dart
 
-### Community 366 - "campus_map_room_card.dart"
-Cohesion: 0.29
-Nodes (6): CampusRoom, build, CampusMapRoomCard, onSelectLocation, room, package:snapan-market/features/map/models/campus_map_models.dart
-
-### Community 367 - "AdminDashboard.tsx"
-Cohesion: 0.16
-Nodes (11): AdminHeader(), useAdminSecurity(), UseAdminSecurityProps, AdminDashboard(), AdminDashboardProps, UsersManagementTab(), ADMIN_SESSION_STORAGE_KEY, AdminActivityLogRow (+3 more)
-
 ### Community 368 - "SearchPage.tsx"
-Cohesion: 0.09
-Nodes (23): 🎯 1. Objective & Target User Experience, 🏗️ 2. Architectural Design & Component Boundaries, 🗄️ 3. Data Schema & Contracts (`ThreadComment` Interface), 🎨 4. Design Guidelines (Kumo UI & Threads Compliance), 🧪 5. Testing & Verification Plan, 📋 Feature Specification — Post Detail & Threads-Style Threaded Comments (`PostDetailPage.tsx`), File Structure Changes:x, MobileSearchBar (+15 more)
-
-### Community 369 - "comment_replies_expand_row.dart"
-Cohesion: 0.29
-Nodes (6): build, CommentRepliesExpandRow, isExpanded, onToggle, replies, package:snapan_market/features/feed/components/comment/thread_branch_painter.dart
-
-### Community 370 - "floating_plus_squircle_button.dart"
-Cohesion: 0.33
-Nodes (6): build, createState, FloatingPlusSquircleButton, _FloatingPlusSquircleButtonState, _isPressed, onTap
-
-### Community 371 - "chat_options_sheet.dart"
-Cohesion: 0.29
-Nodes (6): build, ChatOptionsSheet, onClearChat, onReportUser, onViewProfile, show
-
-### Community 372 - "onboarding_slide.dart"
-Cohesion: 0.29
-Nodes (6): assetPath, description, id, isSvg, onboardingSlides, title
-
-### Community 374 - "trending_tag_tile.dart"
-Cohesion: 0.29
-Nodes (6): build, onTap, postCount, rank, tag, TrendingTagTile
-
-### Community 375 - "Coding Standards & Best Practices"
-Cohesion: 0.33
-Nodes (5): 🔵 1. TypeScript & Type Safety, 🟢 2. Component Design & React Patterns, 🟡 3. Tailwind CSS v4 Guidelines, 🔴 4. State Management (Zustand & React State), Coding Standards & Best Practices
+Cohesion: 0.12
+Nodes (18): 🏗️ 2. Architectural Design & Component Boundaries, File Structure Changes:x, MobileSearchBar, MobileSearchBarProps, MobileSearchBarRef, PostDetailPage(), calculateTokenScore(), extractTokens() (+10 more)
 
 ### Community 376 - "google_logo.dart"
 Cohesion: 0.33
 Nodes (5): build, GoogleLogo, paint, shouldRepaint, size
-
-### Community 377 - "AdminLoginPage.tsx"
-Cohesion: 0.33
-Nodes (4): @cloudflare/kumo, AdminLoginPageProps, adminService, AdminLoginPage
-
-### Community 378 - "CustomPainter"
-Cohesion: 0.40
-Nodes (5): CustomPainter, _GoogleLogoPainter, ReplyLBranchPainter, ThreadBranchPainter, Campus2DBlueprintPainter
 
 ### Community 379 - "package:snapan_market/core/services/supabase_service.dart"
 Cohesion: 0.40
@@ -1552,24 +1448,24 @@ Cohesion: 0.67
 Nodes (3): HttpClientResponse, Stream, _MockHttpClientResponse
 
 ## Knowledge Gaps
-- **3120 isolated node(s):** `isLiked`, `size`, `activeColor`, `inactiveColor`, `strokeWidth` (+3115 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 3556 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **100 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **3146 isolated node(s):** `post`, `bottomPadding`, `isLiked`, `likesCount`, `isReposted` (+3141 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 3586 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **101 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `react` connect `react` to `ButtonPrimary.tsx`, `cn`, `PostDetailDrawer.tsx`, `useAuth`, `ProfileRow`, `HomePage.tsx`, `MarketPostItem`, `Campus2DMap.tsx`, `PwaLandingPage.tsx`, `ServerMonitorTab.tsx`, `adminService.ts`, `package.json`, `ContentModerationTab.tsx`, `App.tsx`, `ProductCard.tsx`, `OverviewTab.tsx`, `triggerHaptic`, `haptics.ts`, `OnboardingScreen.tsx`, `kumo.d.ts`, `chat-bubble.tsx`, `AdminDashboard.tsx`, `SearchPage.tsx`, `AdminLoginPage.tsx`?**
+- **Why does `react` connect `react` to `MarketPostItem`, `CreatePostModal.tsx`, `cn`, `PostDetailDrawer.tsx`, `useAuth`, `ProfileRow`, `HomePage.tsx`, `haptics.ts`, `Campus2DMap.tsx`, `ServerMonitorTab.tsx`, `adminService.ts`, `package.json`, `AdminDashboard.tsx`, `ProductCard.tsx`, `triggerHaptic`, `lucide-react`, `kumo.d.ts`, `SearchPage.tsx`, `OverviewTab.tsx`?**
   _High betweenness centrality (0.016) - this node is a cross-community bridge._
-- **Why does `_` connect `create_post_author_line.dart` to `package:flutter/services.dart`, `package:snapan_market/core/theme/app_colors.dart`, `package:flutter/material.dart`?**
-  _High betweenness centrality (0.006) - this node is a cross-community bridge._
-- **Why does `AppSlidePageRoute` connect `checkout_screen.dart` to `app_slide_page_route.dart`?**
-  _High betweenness centrality (0.006) - this node is a cross-community bridge._
-- **What connects `isLiked`, `size`, `activeColor` to the rest of the system?**
-  _3120 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Why does `lucide-react` connect `lucide-react` to `triggerHaptic`, `ServerMonitorTab.tsx`, `MarketPostItem`, `react`, `HomePage.tsx`, `haptics.ts`, `CreatePostModal.tsx`, `package.json`, `SearchPage.tsx`, `AdminDashboard.tsx`, `Campus2DMap.tsx`, `ProductCard.tsx`, `PostDetailDrawer.tsx`, `useAuth`?**
+  _High betweenness centrality (0.004) - this node is a cross-community bridge._
+- **What connects `post`, `bottomPadding`, `isLiked` to the rest of the system?**
+  _3146 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `search_controller.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.08 - nodes in this community are weakly interconnected._
 - **Should `widget_test.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.022988505747126436 - nodes in this community are weakly interconnected._
-- **Should `VoidCallback` be split into smaller, more focused modules?**
-  _Cohesion score 0.05226480836236934 - nodes in this community are weakly interconnected._
+- **Should `checkout_location_card.dart` be split into smaller, more focused modules?**
+  _Cohesion score 0.10476190476190476 - nodes in this community are weakly interconnected._
+- **Should `supabase_service.dart` be split into smaller, more focused modules?**
+  _Cohesion score 0.028169014084507043 - nodes in this community are weakly interconnected._

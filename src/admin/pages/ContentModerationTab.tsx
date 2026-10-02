@@ -516,7 +516,7 @@ export function ContentModerationTab() {
               background: '#ffffff',
               borderRadius: '8px',
               padding: '24px',
-              maxWidth: '440px',
+              maxWidth: '500px',
               width: '100%',
               boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
             }}

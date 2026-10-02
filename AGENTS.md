@@ -90,9 +90,25 @@
     - Status transitions and ticket management on Plane.so are the exclusive prerogative of the user.
 
 11. **Mandatory Standard Response Format for Build APK Release & In-App Update**:
-    - Whenever the user asks to build an APK release, prepare a release, or requests the release procedure, the agent MUST ALWAYS provide the exact 4-step manual guide format with dynamic version calculation:
+    - Whenever the user asks to build an APK release, prepare a release, or requests the release procedure, the agent MUST ALWAYS provide both options (Script Otomatis & Langkah Manual) with dynamic version calculation:
       ```markdown
-      ### Cara Manual Langkah demi Langkah
+      ### Cara 1: Otomatis Penuh via Script (Rekomendasi)
+
+      Jalankan satu perintah di terminal:
+      ```bash
+      ./scripts/auto_release.sh <new_version_name> <new_version_code> "<changelog>"
+      ```
+
+      **Urutan proses yang dieksekusi script secara otomatis**:
+      1. Memperbarui versi di `pubspec.yaml` ke `version: <new_version_name>+<new_version_code>`.
+      2. Menjalankan `flutter build apk --release --no-pub`.
+      3. Commit Git, membuat Git Tag `v<new_version_name>`, dan push ke remote (`main` & tag).
+      4. Membuat GitHub Release via API dan mengunggah file `app-release.apk` sebagai release asset.
+      5. Menyuntikkan rilis baru ke tabel Supabase `public.app_versions` via REST API (otomatis memicu OTA popup di HP siswa).
+
+      ---
+
+      ### Cara 2: Manual Langkah demi Langkah
 
       1. **Naikkan Versi**:
          Buka `pubspec.yaml`, ubah nomor versi (angka setelah `+` harus lebih besar dari versi terpasang):

@@ -2424,15 +2424,15 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1790907370.150824,
-    "seen": 1790907387.7354019,
-    "ast_hash": "d8e22565b72fdc1526645d4b0e4eb9d9",
+    "mtime": 1790962697.696746,
+    "seen": 1790962731.264748,
+    "ast_hash": "52ae31e0594ee4c4529e665bc8f82aa9",
     "semantic_hash": ""
   },
   "GEMINI.md": {
-    "mtime": 1790907377.746852,
-    "seen": 1790907387.7354052,
-    "ast_hash": "f13742b70d7a46262c48474eeecaab95",
+    "mtime": 1790962707.249774,
+    "seen": 1790962731.2647521,
+    "ast_hash": "a0b8f347f0913a0bd630f64f17df8994",
     "semantic_hash": ""
   },
   "README.md": {
@@ -2454,9 +2454,9 @@
     "semantic_hash": ""
   },
   "analysis_options.yaml": {
-    "mtime": 1790958178.0987227,
-    "seen": 1790958196.0923002,
-    "ast_hash": "8be96e0bb3e4c336c02efe7e0ea83860",
+    "mtime": 1790962319.5626428,
+    "seen": 1790962731.2647684,
+    "ast_hash": "05fcec9ace1d5869ca7e04c371ae78e2",
     "semantic_hash": ""
   },
   "docs/agent-frontend-slicing-sop.md": {
@@ -2628,8 +2628,8 @@
     "semantic_hash": ""
   },
   "pubspec.yaml": {
-    "mtime": 1790903957.0060172,
-    "seen": 1790904026.2804694,
+    "mtime": 1790962631.899554,
+    "seen": 1790962731.2648716,
     "ast_hash": "9c113a361fe6c1f16feccbfbfd297133",
     "semantic_hash": ""
   },
@@ -3749,10 +3749,52 @@
     "ast_hash": "22b1f9ab283e8decfadef9af853ce760",
     "semantic_hash": ""
   },
-  "flutter_01.png": {
-    "mtime": 1790961867.2613235,
-    "seen": 1790962254.7522938,
-    "ast_hash": "031bab24e7a23d45edc80b4dc0bda796",
+  "linux/flutter/generated_plugin_registrant.cc": {
+    "mtime": 1790962319.918644,
+    "seen": 1790962731.2636998,
+    "ast_hash": "e478dcce2f834802b966b89109eec70e",
+    "semantic_hash": ""
+  },
+  "linux/flutter/generated_plugin_registrant.h": {
+    "mtime": 1790962319.9136438,
+    "seen": 1790962731.2637095,
+    "ast_hash": "d295462c9da9f7fef22dc86c34492318",
+    "semantic_hash": ""
+  },
+  "linux/runner/main.cc": {
+    "mtime": 1790962318.4586318,
+    "seen": 1790962731.2637131,
+    "ast_hash": "0643b8609698e96b3abd63c210361a87",
+    "semantic_hash": ""
+  },
+  "linux/runner/my_application.cc": {
+    "mtime": 1790962318.4606397,
+    "seen": 1790962731.2637157,
+    "ast_hash": "5cd71a22242607885f538b029efc3d11",
+    "semantic_hash": ""
+  },
+  "linux/runner/my_application.h": {
+    "mtime": 1790962318.4616396,
+    "seen": 1790962731.2637181,
+    "ast_hash": "326a85d68857137fdfe8698a0c071baf",
+    "semantic_hash": ""
+  },
+  "linux/CMakeLists.txt": {
+    "mtime": 1790962318.4546397,
+    "seen": 1790962731.2648628,
+    "ast_hash": "ee12c8f1c4497eeeb9fa2cfc5d1ecba4",
+    "semantic_hash": ""
+  },
+  "linux/flutter/CMakeLists.txt": {
+    "mtime": 1790962318.4578936,
+    "seen": 1790962731.2648659,
+    "ast_hash": "46690fb8ffaf7d227d8bc4713f31140d",
+    "semantic_hash": ""
+  },
+  "linux/runner/CMakeLists.txt": {
+    "mtime": 1790962318.458347,
+    "seen": 1790962731.2648678,
+    "ast_hash": "6d75431dc21756981b53a7494c836311",
     "semantic_hash": ""
   }
 }

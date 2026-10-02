@@ -41,11 +41,9 @@
    - State changes and ticket transitions are strictly managed manually by the user.
 
 10. **Mandatory Build APK Release & In-App Update Response Format**:
-    - Whenever the user asks to build an APK release or prepare a release, always output the 4-step manual guide format:
-      1. Naikkan Versi di `pubspec.yaml`
-      2. `flutter build apk --release`
-      3. Upload File APK ke GitHub Release
-      4. Query SQL `INSERT INTO public.app_versions` di Supabase Dashboard.
+    - Whenever the user asks to build an APK release or prepare a release, always output both options:
+      - **Cara 1: Otomatis via Script**: `./scripts/auto_release.sh <new_version_name> <new_version_code> "<changelog>"` (1. Bump pubspec, 2. Build APK, 3. Tag & push git, 4. Upload GitHub Release, 5. Inject Supabase `app_versions`).
+      - **Cara 2: Manual Langkah demi Langkah**: (1) Naikkan Versi di `pubspec.yaml`, (2) `flutter build apk --release`, (3) Upload File APK ke GitHub Release, (4) Query SQL `INSERT INTO public.app_versions` di Supabase Dashboard.
 
 
 

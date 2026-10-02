@@ -15700,7 +15700,7 @@
       "node_kind": "heading",
       "norm_label": "1. color tokens (`lib/core/theme/app_colors.dart`)",
       "source_file": "AGENTS.md",
-      "source_location": "L126"
+      "source_location": "L173"
     },
     {
       "id": "agents_2_typography_icons",
@@ -15712,7 +15712,7 @@
       "node_kind": "heading",
       "norm_label": "2. typography & icons",
       "source_file": "AGENTS.md",
-      "source_location": "L131"
+      "source_location": "L178"
     },
     {
       "id": "agents_3_haptics_micro_interactions",
@@ -15724,7 +15724,7 @@
       "node_kind": "heading",
       "norm_label": "3. haptics & micro-interactions",
       "source_file": "AGENTS.md",
-      "source_location": "L136"
+      "source_location": "L183"
     },
     {
       "id": "agents_4_widget_best_practices",
@@ -15736,7 +15736,7 @@
       "node_kind": "heading",
       "norm_label": "4. widget best practices",
       "source_file": "AGENTS.md",
-      "source_location": "L142"
+      "source_location": "L189"
     },
     {
       "id": "agents_daily_flutter_development_commands",
@@ -15748,7 +15748,7 @@
       "node_kind": "heading",
       "norm_label": "daily flutter development commands",
       "source_file": "AGENTS.md",
-      "source_location": "L149"
+      "source_location": "L196"
     },
     {
       "id": "agents_design_system_flutter_conventions",
@@ -15760,7 +15760,7 @@
       "node_kind": "heading",
       "norm_label": "design system & flutter conventions",
       "source_file": "AGENTS.md",
-      "source_location": "L124"
+      "source_location": "L171"
     },
     {
       "id": "agents_flutter_architecture_modular_structure_lib",
@@ -15772,7 +15772,7 @@
       "node_kind": "heading",
       "norm_label": "flutter architecture & modular structure (`lib/`)",
       "source_file": "AGENTS.md",
-      "source_location": "L94"
+      "source_location": "L141"
     },
     {
       "id": "agents_multi_workstation_git_workflow",
@@ -15784,7 +15784,7 @@
       "node_kind": "heading",
       "norm_label": "multi-workstation git workflow",
       "source_file": "AGENTS.md",
-      "source_location": "L167"
+      "source_location": "L214"
     },
     {
       "id": "agents_primary_agent_mandate_exclusive_flutter_mobile_focus",
@@ -58426,7 +58426,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L135",
+      "source_location": "L156",
       "weight": 1.0
     },
     {
@@ -58438,7 +58438,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L324",
+      "source_location": "L345",
       "weight": 1.0
     },
     {
@@ -59434,7 +59434,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/ui/navigation/useAppNavigation.ts",
-      "source_location": "L151",
+      "source_location": "L157",
       "weight": 1.0
     },
     {
@@ -81938,7 +81938,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
-      "source_location": "L126",
+      "source_location": "L173",
       "weight": 1.0
     },
     {
@@ -81949,7 +81949,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
-      "source_location": "L131",
+      "source_location": "L178",
       "weight": 1.0
     },
     {
@@ -81960,7 +81960,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
-      "source_location": "L136",
+      "source_location": "L183",
       "weight": 1.0
     },
     {
@@ -81971,7 +81971,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
-      "source_location": "L142",
+      "source_location": "L189",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_repository_guidelines",
+      "target": "agents_flutter_architecture_modular_structure_lib",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "AGENTS.md",
+      "source_location": "L141",
       "weight": 1.0
     },
     {
@@ -81982,7 +81993,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
-      "source_location": "L124",
+      "source_location": "L171",
       "weight": 1.0
     },
     {
@@ -81993,18 +82004,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
-      "source_location": "L149",
-      "weight": 1.0
-    },
-    {
-      "source": "agents_repository_guidelines",
-      "target": "agents_multi_workstation_git_workflow",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "AGENTS.md",
-      "source_location": "L167",
+      "source_location": "L196",
       "weight": 1.0
     },
     {
@@ -82016,6 +82016,17 @@
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
       "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_repository_guidelines",
+      "target": "agents_multi_workstation_git_workflow",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "AGENTS.md",
+      "source_location": "L214",
       "weight": 1.0
     },
     {
@@ -82038,17 +82049,6 @@
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
       "source_location": "L8",
-      "weight": 1.0
-    },
-    {
-      "source": "agents_repository_guidelines",
-      "target": "agents_flutter_architecture_modular_structure_lib",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "AGENTS.md",
-      "source_location": "L94",
       "weight": 1.0
     },
     {
@@ -140772,5 +140772,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "992a361ab7ca085a297daa9298da35fecd47e26c"
+  "built_at_commit": "a90c719debcd73d530a46052efca531bc033f2a6"
 }

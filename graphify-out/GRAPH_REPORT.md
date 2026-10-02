@@ -1,9 +1,9 @@
 # Graph Report - snapan-market-mobile  (2026-10-03)
 
 ## Corpus Check
-- 557 files · ~726,920 words
+- 562 files · ~680,231 words
 - Verdict: corpus is large enough that graph structure adds value.
-- Unclassified: 43 file(s) not represented in the graph (top: .xml 11, (none) 7, .css 7)
+- Unclassified: 45 file(s) not represented in the graph (top: .xml 11, (none) 8, .css 7)
 
 ## Summary
 - 5078 nodes · 7323 edges · 367 communities (269 shown, 98 thin omitted)
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `992a361a`
+- Built from commit: `a90c719d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1486,7 +1486,7 @@ Cohesion: 0.40
 Nodes (4): build, CheckoutBuyerNoteCard, controller, TextEditingController
 
 ## Knowledge Gaps
-- **3153 isolated node(s):** `isActive`, `size`, `color`, `isFilled`, `build` (+3148 more)
+- **3153 isolated node(s):** `Project Overview`, `🎯 Primary Agent Mandate: Exclusive Flutter Mobile Focus`, `⚠️ Strict Agent Execution Directives (Prohibited Commands)`, `Flutter Architecture & Modular Structure (`lib/`)`, `1. Color Tokens (`lib/core/theme/app_colors.dart`)` (+3148 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 3593 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **98 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -1494,12 +1494,12 @@ Nodes (4): build, CheckoutBuyerNoteCard, controller, TextEditingController
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `react` connect `react` to `triggerHaptic`, `ServerMonitorTab.tsx`, `kumo.d.ts`, `lucide-react`, `MarketPostItem`, `AdminDashboard.tsx`, `package.json`, `cn`, `CreatePostModal.tsx`, `HomePage.tsx`, `SearchPage.tsx`, `App.tsx`, `api/supabase.ts`, `DesignSystemPage.tsx`, `OverviewTab.tsx`, `useAuth`?**
-  _High betweenness centrality (0.020) - this node is a cross-community bridge._
+  _High betweenness centrality (0.016) - this node is a cross-community bridge._
 - **Why does `@supabase/supabase-js` connect `test-backend.ts` to `chatService.ts`, `api/supabase.ts`, `useAuth`, `package.json`?**
-  _High betweenness centrality (0.005) - this node is a cross-community bridge._
-- **Why does `dependencies` connect `dependencies` to `package.json`?**
-  _High betweenness centrality (0.004) - this node is a cross-community bridge._
-- **What connects `isActive`, `size`, `color` to the rest of the system?**
+  _High betweenness centrality (0.006) - this node is a cross-community bridge._
+- **Why does `AppSlidePageRoute` connect `checkout_screen.dart` to `app_slide_page_route.dart`?**
+  _High betweenness centrality (0.006) - this node is a cross-community bridge._
+- **What connects `Project Overview`, `🎯 Primary Agent Mandate: Exclusive Flutter Mobile Focus`, `⚠️ Strict Agent Execution Directives (Prohibited Commands)` to the rest of the system?**
   _3153 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `search_controller.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.08 - nodes in this community are weakly interconnected._

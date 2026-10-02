@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { adminService, type MarketPostRow, type ProfileRow } from '../services/adminService';
 import { PostDetailModal } from '../components/PostDetailModal';
 import { UserAvatar } from '../components/UserAvatar';
+import { AdminModalPortal } from '../components/AdminModalPortal';
 
 type PostWithSeller = MarketPostRow & { seller?: ProfileRow | null };
 
@@ -505,20 +506,11 @@ export function ContentModerationTab() {
       />
 
       {/* Confirmation Modal for Takedown */}
-      {targetPostForDelete && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 9999,
-            background: 'rgba(15, 23, 42, 0.55)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '16px',
-          }}
-          onClick={() => setTargetPostForDelete(null)}
-        >
+      <AdminModalPortal
+        isOpen={!!targetPostForDelete}
+        onClose={() => setTargetPostForDelete(null)}
+      >
+        {targetPostForDelete && (
           <div
             style={{
               background: '#ffffff',
@@ -528,7 +520,6 @@ export function ContentModerationTab() {
               width: '100%',
               boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
             }}
-            onClick={(e) => e.stopPropagation()}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
               <div
@@ -579,8 +570,8 @@ export function ContentModerationTab() {
               </button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </AdminModalPortal>
     </>
   );
 }

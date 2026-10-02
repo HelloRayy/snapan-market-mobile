@@ -1,5 +1,6 @@
 import type { MarketPostRow, ProfileRow } from '../services/adminService';
 import { UserAvatar } from './UserAvatar';
+import { AdminModalPortal } from './AdminModalPortal';
 
 type PostWithSeller = MarketPostRow & { seller?: ProfileRow | null };
 

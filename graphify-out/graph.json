@@ -4,6 +4,45 @@
   "graph": {},
   "nodes": [
     {
+      "id": "src_admin_components_adminheader_adminheaderprops",
+      "label": "AdminHeaderProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 121,
+      "community_name": "OverviewTab.tsx",
+      "file_type": "code",
+      "norm_label": "adminheaderprops",
+      "source_file": "src/admin/components/AdminHeader.tsx",
+      "source_location": "L13"
+    },
+    {
+      "id": "src_admin_components_adminsidebar_adminsidebarprops",
+      "label": "AdminSidebarProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 121,
+      "community_name": "OverviewTab.tsx",
+      "file_type": "code",
+      "norm_label": "adminsidebarprops",
+      "source_file": "src/admin/components/AdminSidebar.tsx",
+      "source_location": "L6"
+    },
+    {
+      "id": "src_admin_components_adminsidebar_admintab",
+      "label": "AdminTab",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 121,
+      "community_name": "OverviewTab.tsx",
+      "file_type": "code",
+      "norm_label": "admintab",
+      "source_file": "src/admin/components/AdminSidebar.tsx",
+      "source_location": "L4"
+    },
+    {
       "id": "src_admin_components_serverstatuscard_logentry",
       "label": "LogEntry",
       "_callable": true,
@@ -80,6 +119,32 @@
       "norm_label": "daterange",
       "source_file": "src/admin/pages/OverviewTab.tsx",
       "source_location": "L9"
+    },
+    {
+      "id": "src_admin_pages_overviewtab_overviewtabprops",
+      "label": "OverviewTabProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 121,
+      "community_name": "OverviewTab.tsx",
+      "file_type": "code",
+      "norm_label": "overviewtabprops",
+      "source_file": "src/admin/pages/OverviewTab.tsx",
+      "source_location": "L11"
+    },
+    {
+      "id": "src_admin_services_adminservice_adminstats",
+      "label": "AdminStats",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 121,
+      "community_name": "OverviewTab.tsx",
+      "file_type": "code",
+      "norm_label": "adminstats",
+      "source_file": "src/admin/services/adminService.ts",
+      "source_location": "L14"
     },
     {
       "id": "src_ui_components_auth_protectedroute_protectedrouteprops",
@@ -511,58 +576,6 @@
       "source_location": "L890"
     },
     {
-      "id": "src_admin_components_adminmodalportal_adminmodalportalprops",
-      "label": "AdminModalPortalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 146,
-      "community_name": "ContentModerationTab.tsx",
-      "file_type": "code",
-      "norm_label": "adminmodalportalprops",
-      "source_file": "src/admin/components/AdminModalPortal.tsx",
-      "source_location": "L4"
-    },
-    {
-      "id": "src_admin_components_postdetailmodal_postdetailmodalprops",
-      "label": "PostDetailModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 146,
-      "community_name": "ContentModerationTab.tsx",
-      "file_type": "code",
-      "norm_label": "postdetailmodalprops",
-      "source_file": "src/admin/components/PostDetailModal.tsx",
-      "source_location": "L7"
-    },
-    {
-      "id": "src_admin_components_postdetailmodal_postwithseller",
-      "label": "PostWithSeller",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 146,
-      "community_name": "ContentModerationTab.tsx",
-      "file_type": "code",
-      "norm_label": "postwithseller",
-      "source_file": "src/admin/components/PostDetailModal.tsx",
-      "source_location": "L5"
-    },
-    {
-      "id": "src_admin_pages_contentmoderationtab_postwithseller",
-      "label": "PostWithSeller",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 146,
-      "community_name": "ContentModerationTab.tsx",
-      "file_type": "code",
-      "norm_label": "postwithseller",
-      "source_file": "src/admin/pages/ContentModerationTab.tsx",
-      "source_location": "L7"
-    },
-    {
       "id": "src_admin_components_tremor_badge_badgeprops",
       "label": "BadgeProps",
       "_callable": true,
@@ -992,82 +1005,17 @@
       "source_location": "L6"
     },
     {
-      "id": "src_admin_components_adminheader_adminheaderprops",
-      "label": "AdminHeaderProps",
+      "id": "src_types_supabase_category",
+      "label": "Category",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 207,
-      "community_name": "AdminDashboard.tsx",
+      "community": 21,
+      "community_name": "api/supabase.ts",
       "file_type": "code",
-      "norm_label": "adminheaderprops",
-      "source_file": "src/admin/components/AdminHeader.tsx",
-      "source_location": "L13"
-    },
-    {
-      "id": "src_admin_components_adminsidebar_adminsidebarprops",
-      "label": "AdminSidebarProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 207,
-      "community_name": "AdminDashboard.tsx",
-      "file_type": "code",
-      "norm_label": "adminsidebarprops",
-      "source_file": "src/admin/components/AdminSidebar.tsx",
-      "source_location": "L6"
-    },
-    {
-      "id": "src_admin_components_adminsidebar_admintab",
-      "label": "AdminTab",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 207,
-      "community_name": "AdminDashboard.tsx",
-      "file_type": "code",
-      "norm_label": "admintab",
-      "source_file": "src/admin/components/AdminSidebar.tsx",
-      "source_location": "L4"
-    },
-    {
-      "id": "src_admin_pages_admindashboard_admindashboardprops",
-      "label": "AdminDashboardProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 207,
-      "community_name": "AdminDashboard.tsx",
-      "file_type": "code",
-      "norm_label": "admindashboardprops",
-      "source_file": "src/admin/pages/AdminDashboard.tsx",
-      "source_location": "L14"
-    },
-    {
-      "id": "src_admin_pages_overviewtab_overviewtabprops",
-      "label": "OverviewTabProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 207,
-      "community_name": "AdminDashboard.tsx",
-      "file_type": "code",
-      "norm_label": "overviewtabprops",
-      "source_file": "src/admin/pages/OverviewTab.tsx",
-      "source_location": "L11"
-    },
-    {
-      "id": "src_admin_services_adminservice_adminstats",
-      "label": "AdminStats",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 207,
-      "community_name": "AdminDashboard.tsx",
-      "file_type": "code",
-      "norm_label": "adminstats",
-      "source_file": "src/admin/services/adminService.ts",
-      "source_location": "L14"
+      "norm_label": "category",
+      "source_file": "src/types/supabase.ts",
+      "source_location": "L879"
     },
     {
       "id": "src_admin_components_adminaccountdropdown_adminaccountdropdownprops",
@@ -1080,6 +1028,45 @@
       "file_type": "code",
       "norm_label": "adminaccountdropdownprops",
       "source_file": "src/admin/components/AdminAccountDropdown.tsx",
+      "source_location": "L5"
+    },
+    {
+      "id": "src_admin_components_adminmodalportal_adminmodalportalprops",
+      "label": "AdminModalPortalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 210,
+      "community_name": "ProfileRow",
+      "file_type": "code",
+      "norm_label": "adminmodalportalprops",
+      "source_file": "src/admin/components/AdminModalPortal.tsx",
+      "source_location": "L4"
+    },
+    {
+      "id": "src_admin_components_postdetailmodal_postdetailmodalprops",
+      "label": "PostDetailModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 210,
+      "community_name": "ProfileRow",
+      "file_type": "code",
+      "norm_label": "postdetailmodalprops",
+      "source_file": "src/admin/components/PostDetailModal.tsx",
+      "source_location": "L7"
+    },
+    {
+      "id": "src_admin_components_postdetailmodal_postwithseller",
+      "label": "PostWithSeller",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 210,
+      "community_name": "ProfileRow",
+      "file_type": "code",
+      "norm_label": "postwithseller",
+      "source_file": "src/admin/components/PostDetailModal.tsx",
       "source_location": "L5"
     },
     {
@@ -1120,6 +1107,19 @@
       "norm_label": "userdetailmodalprops",
       "source_file": "src/admin/components/UserDetailModal.tsx",
       "source_location": "L6"
+    },
+    {
+      "id": "src_admin_pages_contentmoderationtab_postwithseller",
+      "label": "PostWithSeller",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 210,
+      "community_name": "ProfileRow",
+      "file_type": "code",
+      "norm_label": "postwithseller",
+      "source_file": "src/admin/pages/ContentModerationTab.tsx",
+      "source_location": "L7"
     },
     {
       "id": "src_admin_services_adminservice_profilerow",
@@ -1863,19 +1863,6 @@
       "source_location": "L34"
     },
     {
-      "id": "src_admin_pages_adminloginpage_adminloginpageprops",
-      "label": "AdminLoginPageProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 362,
-      "community_name": "AdminLoginPage.tsx",
-      "file_type": "code",
-      "norm_label": "adminloginpageprops",
-      "source_file": "src/admin/pages/AdminLoginPage.tsx",
-      "source_location": "L7"
-    },
-    {
       "id": "src_ui_components_marketplace_marketbottomnav_marketbottomnavprops",
       "label": "MarketBottomNavProps",
       "_callable": true,
@@ -1908,11 +1895,37 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 367,
-      "community_name": "adminSecurityService.ts",
+      "community_name": "AdminDashboard.tsx",
       "file_type": "code",
       "norm_label": "useadminsecurityprops",
       "source_file": "src/admin/hooks/useAdminSecurity.ts",
       "source_location": "L4"
+    },
+    {
+      "id": "src_admin_pages_admindashboard_admindashboardprops",
+      "label": "AdminDashboardProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 367,
+      "community_name": "AdminDashboard.tsx",
+      "file_type": "code",
+      "norm_label": "admindashboardprops",
+      "source_file": "src/admin/pages/AdminDashboard.tsx",
+      "source_location": "L16"
+    },
+    {
+      "id": "src_admin_pages_adminloginpage_adminloginpageprops",
+      "label": "AdminLoginPageProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 367,
+      "community_name": "AdminDashboard.tsx",
+      "file_type": "code",
+      "norm_label": "adminloginpageprops",
+      "source_file": "src/admin/pages/AdminLoginPage.tsx",
+      "source_location": "L8"
     },
     {
       "id": "src_admin_services_adminsecurityservice_adminactivitylogrow",
@@ -1921,24 +1934,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 367,
-      "community_name": "adminSecurityService.ts",
+      "community_name": "AdminDashboard.tsx",
       "file_type": "code",
       "norm_label": "adminactivitylogrow",
       "source_file": "src/admin/services/adminSecurityService.ts",
       "source_location": "L3"
-    },
-    {
-      "id": "src_types_supabase_category",
-      "label": "Category",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 375,
-      "community_name": "productsService.ts",
-      "file_type": "code",
-      "norm_label": "category",
-      "source_file": "src/types/supabase.ts",
-      "source_location": "L879"
     },
     {
       "id": "src_types_marketfeed_marketpostitem",
@@ -2864,6 +2864,18 @@
       "source_location": "L22"
     },
     {
+      "id": "src_admin_components_adminsidebar_adminsidebar",
+      "label": "AdminSidebar()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 121,
+      "community_name": "OverviewTab.tsx",
+      "file_type": "code",
+      "norm_label": "adminsidebar()",
+      "source_file": "src/admin/components/AdminSidebar.tsx",
+      "source_location": "L17"
+    },
+    {
       "id": "src_admin_components_serverstatuscard_serverstatuscard",
       "label": "ServerStatusCard()",
       "_callable": true,
@@ -3332,54 +3344,6 @@
       "source_location": "L290"
     },
     {
-      "id": "src_admin_components_adminmodalportal_adminmodalportal",
-      "label": "AdminModalPortal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 146,
-      "community_name": "ContentModerationTab.tsx",
-      "file_type": "code",
-      "norm_label": "adminmodalportal()",
-      "source_file": "src/admin/components/AdminModalPortal.tsx",
-      "source_location": "L11"
-    },
-    {
-      "id": "src_admin_components_postdetailmodal_postdetailmodal",
-      "label": "PostDetailModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 146,
-      "community_name": "ContentModerationTab.tsx",
-      "file_type": "code",
-      "norm_label": "postdetailmodal()",
-      "source_file": "src/admin/components/PostDetailModal.tsx",
-      "source_location": "L14"
-    },
-    {
-      "id": "src_admin_pages_contentmoderationtab_contentmoderationtab",
-      "label": "ContentModerationTab()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 146,
-      "community_name": "ContentModerationTab.tsx",
-      "file_type": "code",
-      "norm_label": "contentmoderationtab()",
-      "source_file": "src/admin/pages/ContentModerationTab.tsx",
-      "source_location": "L9"
-    },
-    {
-      "id": "src_admin_pages_meetingpointstab_meetingpointstab",
-      "label": "MeetingPointsTab()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 146,
-      "community_name": "ContentModerationTab.tsx",
-      "file_type": "code",
-      "norm_label": "meetingpointstab()",
-      "source_file": "src/admin/pages/MeetingPointsTab.tsx",
-      "source_location": "L5"
-    },
-    {
       "id": "src_admin_components_tremor_badge_badge",
       "label": "Badge()",
       "_callable": true,
@@ -3788,6 +3752,30 @@
       "source_location": "L12"
     },
     {
+      "id": "src_admin_components_adminheader_adminheader",
+      "label": "AdminHeader()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 206,
+      "community_name": "adminService.ts",
+      "file_type": "code",
+      "norm_label": "adminheader()",
+      "source_file": "src/admin/components/AdminHeader.tsx",
+      "source_location": "L27"
+    },
+    {
+      "id": "src_admin_components_adminheader_adminheader_handleclickoutside",
+      "label": "handleClickOutside()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 206,
+      "community_name": "adminService.ts",
+      "file_type": "code",
+      "norm_label": "handleclickoutside()",
+      "source_file": "src/admin/components/AdminHeader.tsx",
+      "source_location": "L69"
+    },
+    {
       "id": "src_admin_components_headersearchpopover_headersearchpopover",
       "label": "HeaderSearchPopover()",
       "_callable": true,
@@ -3810,78 +3798,6 @@
       "norm_label": "postdetaildrawer()",
       "source_file": "src/admin/components/PostDetailDrawer.tsx",
       "source_location": "L14"
-    },
-    {
-      "id": "src_admin_components_adminheader_adminheader",
-      "label": "AdminHeader()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 207,
-      "community_name": "AdminDashboard.tsx",
-      "file_type": "code",
-      "norm_label": "adminheader()",
-      "source_file": "src/admin/components/AdminHeader.tsx",
-      "source_location": "L27"
-    },
-    {
-      "id": "src_admin_components_adminheader_adminheader_handleclickoutside",
-      "label": "handleClickOutside()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 207,
-      "community_name": "AdminDashboard.tsx",
-      "file_type": "code",
-      "norm_label": "handleclickoutside()",
-      "source_file": "src/admin/components/AdminHeader.tsx",
-      "source_location": "L69"
-    },
-    {
-      "id": "src_admin_components_adminsidebar_adminsidebar",
-      "label": "AdminSidebar()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 207,
-      "community_name": "AdminDashboard.tsx",
-      "file_type": "code",
-      "norm_label": "adminsidebar()",
-      "source_file": "src/admin/components/AdminSidebar.tsx",
-      "source_location": "L17"
-    },
-    {
-      "id": "src_admin_pages_admindashboard_admindashboard",
-      "label": "AdminDashboard()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 207,
-      "community_name": "AdminDashboard.tsx",
-      "file_type": "code",
-      "norm_label": "admindashboard()",
-      "source_file": "src/admin/pages/AdminDashboard.tsx",
-      "source_location": "L19"
-    },
-    {
-      "id": "src_admin_pages_admindashboard_admindashboard_verifyadminauth",
-      "label": "verifyAdminAuth()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 207,
-      "community_name": "AdminDashboard.tsx",
-      "file_type": "code",
-      "norm_label": "verifyadminauth()",
-      "source_file": "src/admin/pages/AdminDashboard.tsx",
-      "source_location": "L53"
-    },
-    {
-      "id": "src_admin_pages_usersmanagementtab_usersmanagementtab",
-      "label": "UsersManagementTab()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 207,
-      "community_name": "AdminDashboard.tsx",
-      "file_type": "code",
-      "norm_label": "usersmanagementtab()",
-      "source_file": "src/admin/pages/UsersManagementTab.tsx",
-      "source_location": "L6"
     },
     {
       "id": "src_services_api_bookmarkservice_getuserbookmarks",
@@ -4004,52 +3920,52 @@
       "source_location": "L117"
     },
     {
-      "id": "src_services_api_meetingpointservice_getallmeetingpoints",
-      "label": "getAllMeetingPoints()",
+      "id": "src_services_api_productsservice_getactiveproducts",
+      "label": "getActiveProducts()",
       "_callable": true,
       "_origin": "ast",
       "community": 21,
       "community_name": "api/supabase.ts",
       "file_type": "code",
-      "norm_label": "getallmeetingpoints()",
-      "source_file": "src/services/api/meetingPointService.ts",
+      "norm_label": "getactiveproducts()",
+      "source_file": "src/services/api/productsService.ts",
       "source_location": "L7"
     },
     {
-      "id": "src_services_api_meetingpointservice_getmeetingpointbyid",
-      "label": "getMeetingPointById()",
+      "id": "src_services_api_productsservice_getcategories",
+      "label": "getCategories()",
       "_callable": true,
       "_origin": "ast",
       "community": 21,
       "community_name": "api/supabase.ts",
       "file_type": "code",
-      "norm_label": "getmeetingpointbyid()",
-      "source_file": "src/services/api/meetingPointService.ts",
-      "source_location": "L45"
+      "norm_label": "getcategories()",
+      "source_file": "src/services/api/productsService.ts",
+      "source_location": "L59"
     },
     {
-      "id": "src_services_api_meetingpointservice_getmeetingpointsbycategory",
-      "label": "getMeetingPointsByCategory()",
+      "id": "src_services_api_productsservice_getproductbyid",
+      "label": "getProductById()",
       "_callable": true,
       "_origin": "ast",
       "community": 21,
       "community_name": "api/supabase.ts",
       "file_type": "code",
-      "norm_label": "getmeetingpointsbycategory()",
-      "source_file": "src/services/api/meetingPointService.ts",
-      "source_location": "L63"
+      "norm_label": "getproductbyid()",
+      "source_file": "src/services/api/productsService.ts",
+      "source_location": "L24"
     },
     {
-      "id": "src_services_api_meetingpointservice_getmeetingpointsbyfloor",
-      "label": "getMeetingPointsByFloor()",
+      "id": "src_services_api_productsservice_getproductsbycategory",
+      "label": "getProductsByCategory()",
       "_callable": true,
       "_origin": "ast",
       "community": 21,
       "community_name": "api/supabase.ts",
       "file_type": "code",
-      "norm_label": "getmeetingpointsbyfloor()",
-      "source_file": "src/services/api/meetingPointService.ts",
-      "source_location": "L26"
+      "norm_label": "getproductsbycategory()",
+      "source_file": "src/services/api/productsService.ts",
+      "source_location": "L41"
     },
     {
       "id": "src_services_api_profileservice_getprofilebyid",
@@ -4220,6 +4136,30 @@
       "source_location": "L12"
     },
     {
+      "id": "src_admin_components_adminmodalportal_adminmodalportal",
+      "label": "AdminModalPortal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 210,
+      "community_name": "ProfileRow",
+      "file_type": "code",
+      "norm_label": "adminmodalportal()",
+      "source_file": "src/admin/components/AdminModalPortal.tsx",
+      "source_location": "L11"
+    },
+    {
+      "id": "src_admin_components_postdetailmodal_postdetailmodal",
+      "label": "PostDetailModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 210,
+      "community_name": "ProfileRow",
+      "file_type": "code",
+      "norm_label": "postdetailmodal()",
+      "source_file": "src/admin/components/PostDetailModal.tsx",
+      "source_location": "L14"
+    },
+    {
       "id": "src_admin_components_useravatar_useravatar",
       "label": "UserAvatar()",
       "_callable": true,
@@ -4242,6 +4182,30 @@
       "norm_label": "userdetailmodal()",
       "source_file": "src/admin/components/UserDetailModal.tsx",
       "source_location": "L15"
+    },
+    {
+      "id": "src_admin_pages_contentmoderationtab_contentmoderationtab",
+      "label": "ContentModerationTab()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 210,
+      "community_name": "ProfileRow",
+      "file_type": "code",
+      "norm_label": "contentmoderationtab()",
+      "source_file": "src/admin/pages/ContentModerationTab.tsx",
+      "source_location": "L9"
+    },
+    {
+      "id": "src_admin_pages_usersmanagementtab_usersmanagementtab",
+      "label": "UsersManagementTab()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 210,
+      "community_name": "ProfileRow",
+      "file_type": "code",
+      "norm_label": "usersmanagementtab()",
+      "source_file": "src/admin/pages/UsersManagementTab.tsx",
+      "source_location": "L6"
     },
     {
       "id": "src_ui_components_marketplace_postsubmenudropdown_postsubmenudropdowncomponent",
@@ -4604,18 +4568,6 @@
       "source_location": "L23"
     },
     {
-      "id": "src_admin_pages_adminloginpage_adminloginpage",
-      "label": "AdminLoginPage()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 362,
-      "community_name": "AdminLoginPage.tsx",
-      "file_type": "code",
-      "norm_label": "adminloginpage()",
-      "source_file": "src/admin/pages/AdminLoginPage.tsx",
-      "source_location": "L12"
-    },
-    {
       "id": "src_ui_components_marketplace_marketbottomnav_marketbottomnav",
       "label": "MarketBottomNav()",
       "_callable": true,
@@ -4657,7 +4609,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 367,
-      "community_name": "adminSecurityService.ts",
+      "community_name": "AdminDashboard.tsx",
       "file_type": "code",
       "norm_label": "useadminsecurity()",
       "source_file": "src/admin/hooks/useAdminSecurity.ts",
@@ -4669,11 +4621,59 @@
       "_callable": true,
       "_origin": "ast",
       "community": 367,
-      "community_name": "adminSecurityService.ts",
+      "community_name": "AdminDashboard.tsx",
       "file_type": "code",
       "norm_label": "checkconcurrentsession()",
       "source_file": "src/admin/hooks/useAdminSecurity.ts",
       "source_location": "L49"
+    },
+    {
+      "id": "src_admin_pages_admindashboard_admindashboard",
+      "label": "AdminDashboard()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 367,
+      "community_name": "AdminDashboard.tsx",
+      "file_type": "code",
+      "norm_label": "admindashboard()",
+      "source_file": "src/admin/pages/AdminDashboard.tsx",
+      "source_location": "L21"
+    },
+    {
+      "id": "src_admin_pages_admindashboard_admindashboard_verifyadminauth",
+      "label": "verifyAdminAuth()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 367,
+      "community_name": "AdminDashboard.tsx",
+      "file_type": "code",
+      "norm_label": "verifyadminauth()",
+      "source_file": "src/admin/pages/AdminDashboard.tsx",
+      "source_location": "L55"
+    },
+    {
+      "id": "src_admin_pages_adminloginpage_adminloginpage",
+      "label": "AdminLoginPage()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 367,
+      "community_name": "AdminDashboard.tsx",
+      "file_type": "code",
+      "norm_label": "adminloginpage()",
+      "source_file": "src/admin/pages/AdminLoginPage.tsx",
+      "source_location": "L13"
+    },
+    {
+      "id": "src_admin_pages_meetingpointstab_meetingpointstab",
+      "label": "MeetingPointsTab()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 367,
+      "community_name": "AdminDashboard.tsx",
+      "file_type": "code",
+      "norm_label": "meetingpointstab()",
+      "source_file": "src/admin/pages/MeetingPointsTab.tsx",
+      "source_location": "L5"
     },
     {
       "id": "test_e2e_flow_rune2eflowtest",
@@ -4686,54 +4686,6 @@
       "norm_label": "rune2eflowtest()",
       "source_file": "test-e2e-flow.ts",
       "source_location": "L24"
-    },
-    {
-      "id": "src_services_api_productsservice_getactiveproducts",
-      "label": "getActiveProducts()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 375,
-      "community_name": "productsService.ts",
-      "file_type": "code",
-      "norm_label": "getactiveproducts()",
-      "source_file": "src/services/api/productsService.ts",
-      "source_location": "L7"
-    },
-    {
-      "id": "src_services_api_productsservice_getcategories",
-      "label": "getCategories()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 375,
-      "community_name": "productsService.ts",
-      "file_type": "code",
-      "norm_label": "getcategories()",
-      "source_file": "src/services/api/productsService.ts",
-      "source_location": "L59"
-    },
-    {
-      "id": "src_services_api_productsservice_getproductbyid",
-      "label": "getProductById()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 375,
-      "community_name": "productsService.ts",
-      "file_type": "code",
-      "norm_label": "getproductbyid()",
-      "source_file": "src/services/api/productsService.ts",
-      "source_location": "L24"
-    },
-    {
-      "id": "src_services_api_productsservice_getproductsbycategory",
-      "label": "getProductsByCategory()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 375,
-      "community_name": "productsService.ts",
-      "file_type": "code",
-      "norm_label": "getproductsbycategory()",
-      "source_file": "src/services/api/productsService.ts",
-      "source_location": "L41"
     },
     {
       "id": "src_services_api_bookmarkservice_togglepostbookmark",
@@ -5742,6 +5694,54 @@
       "norm_label": "deletemarketpost()",
       "source_file": "src/services/api/marketPostsService.ts",
       "source_location": "L416"
+    },
+    {
+      "id": "src_services_api_meetingpointservice_getallmeetingpoints",
+      "label": "getAllMeetingPoints()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 89,
+      "community_name": "5. \ud83d\udd0c DAFTAR SERVICE API & TYPE CONTRACT",
+      "file_type": "code",
+      "norm_label": "getallmeetingpoints()",
+      "source_file": "src/services/api/meetingPointService.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "src_services_api_meetingpointservice_getmeetingpointbyid",
+      "label": "getMeetingPointById()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 89,
+      "community_name": "5. \ud83d\udd0c DAFTAR SERVICE API & TYPE CONTRACT",
+      "file_type": "code",
+      "norm_label": "getmeetingpointbyid()",
+      "source_file": "src/services/api/meetingPointService.ts",
+      "source_location": "L45"
+    },
+    {
+      "id": "src_services_api_meetingpointservice_getmeetingpointsbycategory",
+      "label": "getMeetingPointsByCategory()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 89,
+      "community_name": "5. \ud83d\udd0c DAFTAR SERVICE API & TYPE CONTRACT",
+      "file_type": "code",
+      "norm_label": "getmeetingpointsbycategory()",
+      "source_file": "src/services/api/meetingPointService.ts",
+      "source_location": "L63"
+    },
+    {
+      "id": "src_services_api_meetingpointservice_getmeetingpointsbyfloor",
+      "label": "getMeetingPointsByFloor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 89,
+      "community_name": "5. \ud83d\udd0c DAFTAR SERVICE API & TYPE CONTRACT",
+      "file_type": "code",
+      "norm_label": "getmeetingpointsbyfloor()",
+      "source_file": "src/services/api/meetingPointService.ts",
+      "source_location": "L26"
     },
     {
       "id": "src_services_api_notificationservice_createnotification",
@@ -12626,6 +12626,17 @@
       "source_location": null
     },
     {
+      "id": "src_admin_components_adminsidebar",
+      "label": "AdminSidebar.tsx",
+      "_origin": "ast",
+      "community": 121,
+      "community_name": "OverviewTab.tsx",
+      "file_type": "code",
+      "norm_label": "adminsidebar.tsx",
+      "source_file": "src/admin/components/AdminSidebar.tsx",
+      "source_location": "L1"
+    },
+    {
       "id": "src_admin_components_serverstatuscard",
       "label": "ServerStatusCard.tsx",
       "_origin": "ast",
@@ -17327,50 +17338,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_admin_components_adminmodalportal",
-      "label": "AdminModalPortal.tsx",
-      "_origin": "ast",
-      "community": 146,
-      "community_name": "ContentModerationTab.tsx",
-      "file_type": "code",
-      "norm_label": "adminmodalportal.tsx",
-      "source_file": "src/admin/components/AdminModalPortal.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_admin_components_postdetailmodal",
-      "label": "PostDetailModal.tsx",
-      "_origin": "ast",
-      "community": 146,
-      "community_name": "ContentModerationTab.tsx",
-      "file_type": "code",
-      "norm_label": "postdetailmodal.tsx",
-      "source_file": "src/admin/components/PostDetailModal.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_admin_pages_contentmoderationtab",
-      "label": "ContentModerationTab.tsx",
-      "_origin": "ast",
-      "community": 146,
-      "community_name": "ContentModerationTab.tsx",
-      "file_type": "code",
-      "norm_label": "contentmoderationtab.tsx",
-      "source_file": "src/admin/pages/ContentModerationTab.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_admin_pages_meetingpointstab",
-      "label": "MeetingPointsTab.tsx",
-      "_origin": "ast",
-      "community": 146,
-      "community_name": "ContentModerationTab.tsx",
-      "file_type": "code",
-      "norm_label": "meetingpointstab.tsx",
-      "source_file": "src/admin/pages/MeetingPointsTab.tsx",
-      "source_location": "L1"
-    },
-    {
       "id": "agents_skills_better_ui_animations_animations",
       "label": "Animations",
       "_origin": "ast",
@@ -18770,7 +18737,7 @@
       "file_type": "code",
       "norm_label": "_buildfooter",
       "source_file": "lib/features/feed/components/post_card/post_poll_section.dart",
-      "source_location": "L101"
+      "source_location": "L102"
     },
     {
       "id": "lib_features_feed_components_post_card_post_poll_section_handleoptiontap",
@@ -27849,39 +27816,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_admin_components_adminsidebar",
-      "label": "AdminSidebar.tsx",
-      "_origin": "ast",
-      "community": 207,
-      "community_name": "AdminDashboard.tsx",
-      "file_type": "code",
-      "norm_label": "adminsidebar.tsx",
-      "source_file": "src/admin/components/AdminSidebar.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_admin_pages_admindashboard",
-      "label": "AdminDashboard.tsx",
-      "_origin": "ast",
-      "community": 207,
-      "community_name": "AdminDashboard.tsx",
-      "file_type": "code",
-      "norm_label": "admindashboard.tsx",
-      "source_file": "src/admin/pages/AdminDashboard.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_app_admindashboard",
-      "label": "AdminDashboard",
-      "_origin": "ast",
-      "community": 207,
-      "community_name": "AdminDashboard.tsx",
-      "file_type": "code",
-      "norm_label": "admindashboard",
-      "source_file": "src/App.tsx",
-      "source_location": "L36"
-    },
-    {
       "id": "lib_core_components_snaps_skeleton",
       "label": "snaps_skeleton.dart",
       "_origin": "ast",
@@ -28102,14 +28036,14 @@
       "source_location": "L1"
     },
     {
-      "id": "src_services_api_meetingpointservice",
-      "label": "meetingPointService.ts",
+      "id": "src_services_api_productsservice",
+      "label": "productsService.ts",
       "_origin": "ast",
       "community": 21,
       "community_name": "api/supabase.ts",
       "file_type": "code",
-      "norm_label": "meetingpointservice.ts",
-      "source_file": "src/services/api/meetingPointService.ts",
+      "norm_label": "productsservice.ts",
+      "source_file": "src/services/api/productsService.ts",
       "source_location": "L1"
     },
     {
@@ -28190,6 +28124,28 @@
       "source_location": "L1"
     },
     {
+      "id": "src_admin_components_adminmodalportal",
+      "label": "AdminModalPortal.tsx",
+      "_origin": "ast",
+      "community": 210,
+      "community_name": "ProfileRow",
+      "file_type": "code",
+      "norm_label": "adminmodalportal.tsx",
+      "source_file": "src/admin/components/AdminModalPortal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_admin_components_postdetailmodal",
+      "label": "PostDetailModal.tsx",
+      "_origin": "ast",
+      "community": 210,
+      "community_name": "ProfileRow",
+      "file_type": "code",
+      "norm_label": "postdetailmodal.tsx",
+      "source_file": "src/admin/components/PostDetailModal.tsx",
+      "source_location": "L1"
+    },
+    {
       "id": "src_admin_components_useravatar",
       "label": "UserAvatar.tsx",
       "_origin": "ast",
@@ -28209,6 +28165,17 @@
       "file_type": "code",
       "norm_label": "userdetailmodal.tsx",
       "source_file": "src/admin/components/UserDetailModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_admin_pages_contentmoderationtab",
+      "label": "ContentModerationTab.tsx",
+      "_origin": "ast",
+      "community": 210,
+      "community_name": "ProfileRow",
+      "file_type": "code",
+      "norm_label": "contentmoderationtab.tsx",
+      "source_file": "src/admin/pages/ContentModerationTab.tsx",
       "source_location": "L1"
     },
     {
@@ -40580,50 +40547,6 @@
       "source_location": null
     },
     {
-      "id": "src_admin_pages_adminloginpage",
-      "label": "AdminLoginPage.tsx",
-      "_origin": "ast",
-      "community": 362,
-      "community_name": "AdminLoginPage.tsx",
-      "file_type": "code",
-      "norm_label": "adminloginpage.tsx",
-      "source_file": "src/admin/pages/AdminLoginPage.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_admin_services_adminservice_adminservice",
-      "label": "adminService",
-      "_origin": "ast",
-      "community": 362,
-      "community_name": "AdminLoginPage.tsx",
-      "file_type": "code",
-      "norm_label": "adminservice",
-      "source_file": "src/admin/services/adminService.ts",
-      "source_location": "L23"
-    },
-    {
-      "id": "src_app_adminloginpage",
-      "label": "AdminLoginPage",
-      "_origin": "ast",
-      "community": 362,
-      "community_name": "AdminLoginPage.tsx",
-      "file_type": "code",
-      "norm_label": "adminloginpage",
-      "source_file": "src/App.tsx",
-      "source_location": "L39"
-    },
-    {
-      "id": "ref_cloudflare_kumo",
-      "label": "@cloudflare/kumo",
-      "_origin": "ast",
-      "community": 362,
-      "community_name": "AdminLoginPage.tsx",
-      "file_type": "concept",
-      "norm_label": "@cloudflare/kumo",
-      "source_file": "package.json",
-      "source_location": "L19"
-    },
-    {
       "id": "lib_core_services_supabase_supabase_poll_service",
       "label": "supabase_poll_service.dart",
       "_origin": "ast",
@@ -40914,10 +40837,43 @@
       "label": "useAdminSecurity.ts",
       "_origin": "ast",
       "community": 367,
-      "community_name": "adminSecurityService.ts",
+      "community_name": "AdminDashboard.tsx",
       "file_type": "code",
       "norm_label": "useadminsecurity.ts",
       "source_file": "src/admin/hooks/useAdminSecurity.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_admin_pages_admindashboard",
+      "label": "AdminDashboard.tsx",
+      "_origin": "ast",
+      "community": 367,
+      "community_name": "AdminDashboard.tsx",
+      "file_type": "code",
+      "norm_label": "admindashboard.tsx",
+      "source_file": "src/admin/pages/AdminDashboard.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_admin_pages_adminloginpage",
+      "label": "AdminLoginPage.tsx",
+      "_origin": "ast",
+      "community": 367,
+      "community_name": "AdminDashboard.tsx",
+      "file_type": "code",
+      "norm_label": "adminloginpage.tsx",
+      "source_file": "src/admin/pages/AdminLoginPage.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_admin_pages_meetingpointstab",
+      "label": "MeetingPointsTab.tsx",
+      "_origin": "ast",
+      "community": 367,
+      "community_name": "AdminDashboard.tsx",
+      "file_type": "code",
+      "norm_label": "meetingpointstab.tsx",
+      "source_file": "src/admin/pages/MeetingPointsTab.tsx",
       "source_location": "L1"
     },
     {
@@ -40925,7 +40881,7 @@
       "label": "adminSecurityService.ts",
       "_origin": "ast",
       "community": 367,
-      "community_name": "adminSecurityService.ts",
+      "community_name": "AdminDashboard.tsx",
       "file_type": "code",
       "norm_label": "adminsecurityservice.ts",
       "source_file": "src/admin/services/adminSecurityService.ts",
@@ -40936,7 +40892,7 @@
       "label": "ADMIN_SESSION_STORAGE_KEY",
       "_origin": "ast",
       "community": 367,
-      "community_name": "adminSecurityService.ts",
+      "community_name": "AdminDashboard.tsx",
       "file_type": "code",
       "norm_label": "admin_session_storage_key",
       "source_file": "src/admin/services/adminSecurityService.ts",
@@ -40947,11 +40903,55 @@
       "label": "adminSecurityService",
       "_origin": "ast",
       "community": 367,
-      "community_name": "adminSecurityService.ts",
+      "community_name": "AdminDashboard.tsx",
       "file_type": "code",
       "norm_label": "adminsecurityservice",
       "source_file": "src/admin/services/adminSecurityService.ts",
       "source_location": "L15"
+    },
+    {
+      "id": "src_admin_services_adminservice_adminservice",
+      "label": "adminService",
+      "_origin": "ast",
+      "community": 367,
+      "community_name": "AdminDashboard.tsx",
+      "file_type": "code",
+      "norm_label": "adminservice",
+      "source_file": "src/admin/services/adminService.ts",
+      "source_location": "L23"
+    },
+    {
+      "id": "src_app_admindashboard",
+      "label": "AdminDashboard",
+      "_origin": "ast",
+      "community": 367,
+      "community_name": "AdminDashboard.tsx",
+      "file_type": "code",
+      "norm_label": "admindashboard",
+      "source_file": "src/App.tsx",
+      "source_location": "L36"
+    },
+    {
+      "id": "src_app_adminloginpage",
+      "label": "AdminLoginPage",
+      "_origin": "ast",
+      "community": 367,
+      "community_name": "AdminDashboard.tsx",
+      "file_type": "code",
+      "norm_label": "adminloginpage",
+      "source_file": "src/App.tsx",
+      "source_location": "L39"
+    },
+    {
+      "id": "ref_cloudflare_kumo",
+      "label": "@cloudflare/kumo",
+      "_origin": "ast",
+      "community": 367,
+      "community_name": "AdminDashboard.tsx",
+      "file_type": "concept",
+      "norm_label": "@cloudflare/kumo",
+      "source_file": "package.json",
+      "source_location": "L19"
     },
     {
       "id": "spec",
@@ -41740,17 +41740,6 @@
       "norm_label": "package:snapan_market/core/components/snaps_logo.dart",
       "source_file": null,
       "source_location": null
-    },
-    {
-      "id": "src_services_api_productsservice",
-      "label": "productsService.ts",
-      "_origin": "ast",
-      "community": 375,
-      "community_name": "productsService.ts",
-      "file_type": "code",
-      "norm_label": "productsservice.ts",
-      "source_file": "src/services/api/productsService.ts",
-      "source_location": "L1"
     },
     {
       "id": "lib_features_create_post_screens_create_post_modal_createpostmodal",
@@ -54745,6 +54734,17 @@
       "source_location": "L5"
     },
     {
+      "id": "src_services_api_meetingpointservice",
+      "label": "meetingPointService.ts",
+      "_origin": "ast",
+      "community": 89,
+      "community_name": "5. \ud83d\udd0c DAFTAR SERVICE API & TYPE CONTRACT",
+      "file_type": "code",
+      "norm_label": "meetingpointservice.ts",
+      "source_file": "src/services/api/meetingPointService.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "src_services_api_notificationservice",
       "label": "notificationService.ts",
       "_origin": "ast",
@@ -57399,18 +57399,6 @@
       "type": "external"
     },
     {
-      "id": "src_admin_styles_cooladmin",
-      "label": "src_admin_styles_cooladmin",
-      "_origin": "semantic",
-      "community": 207,
-      "community_name": "AdminDashboard.tsx",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "src_admin_styles_cooladmin",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "os",
       "label": "os",
       "_origin": "semantic",
@@ -57575,6 +57563,18 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "src_admin_components_tremor_index_trackerblock",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "src_admin_styles_cooladmin",
+      "label": "src_admin_styles_cooladmin",
+      "_origin": "semantic",
+      "community": 367,
+      "community_name": "AdminDashboard.tsx",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "src_admin_styles_cooladmin",
       "source_file": "",
       "type": "external"
     },
@@ -57878,6 +57878,18 @@
       "context": "call",
       "source_file": "src/admin/components/tremor/Tracker.tsx",
       "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "src_admin_pages_admindashboard_admindashboard",
+      "target": "src_admin_hooks_useadminsecurity_useadminsecurity",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/admin/pages/AdminDashboard.tsx",
+      "source_location": "L153",
       "weight": 1.0
     },
     {
@@ -59233,7 +59245,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/admin/pages/AdminDashboard.tsx",
-      "source_location": "L53",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -61282,6 +61294,42 @@
     },
     {
       "source": "src_admin_pages_admindashboard",
+      "target": "src_admin_hooks_useadminsecurity_useadminsecurity",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/admin/pages/AdminDashboard.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "src_admin_pages_admindashboard",
+      "target": "src_admin_services_adminsecurityservice_admin_session_storage_key",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/admin/pages/AdminDashboard.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "src_admin_pages_admindashboard",
+      "target": "src_admin_services_adminsecurityservice_adminsecurityservice",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/admin/pages/AdminDashboard.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "src_admin_pages_admindashboard",
       "target": "src_services_api_supabase_supabase",
       "relation": "imports",
       "_origin": "ast",
@@ -61434,6 +61482,18 @@
       "context": "import",
       "source_file": "src/admin/pages/AdminLoginPage.tsx",
       "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_admin_pages_adminloginpage",
+      "target": "src_admin_services_adminsecurityservice_adminsecurityservice",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/admin/pages/AdminLoginPage.tsx",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -66930,7 +66990,7 @@
     },
     {
       "source": "src_admin_pages_admindashboard",
-      "target": "ref_lucide_react",
+      "target": "src_admin_hooks_useadminsecurity",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -66942,7 +67002,7 @@
     },
     {
       "source": "src_admin_pages_admindashboard",
-      "target": "src_admin_styles_cooladmin",
+      "target": "src_admin_services_adminsecurityservice",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -66950,6 +67010,30 @@
       "context": "import",
       "source_file": "src/admin/pages/AdminDashboard.tsx",
       "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "src_admin_pages_admindashboard",
+      "target": "ref_lucide_react",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/admin/pages/AdminDashboard.tsx",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "src_admin_pages_admindashboard",
+      "target": "src_admin_styles_cooladmin",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/admin/pages/AdminDashboard.tsx",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -67106,6 +67190,18 @@
       "context": "import",
       "source_file": "src/admin/pages/AdminLoginPage.tsx",
       "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_admin_pages_adminloginpage",
+      "target": "src_admin_services_adminsecurityservice",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/admin/pages/AdminLoginPage.tsx",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -94299,7 +94395,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/admin/pages/AdminDashboard.tsx",
-      "source_location": "L14",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -94310,7 +94406,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/admin/pages/AdminDashboard.tsx",
-      "source_location": "L19",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -94321,7 +94417,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/admin/pages/AdminLoginPage.tsx",
-      "source_location": "L12",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -94332,7 +94428,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/admin/pages/AdminLoginPage.tsx",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -114935,7 +115031,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/features/feed/components/post_card/post_poll_section.dart",
-      "source_location": "L101",
+      "source_location": "L102",
       "weight": 1.0
     },
     {
@@ -139405,5 +139501,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "a9b6171426d11571d077dcf13b4edf0cba42d86f"
+  "built_at_commit": "aa782e84c382e38d96f045563a57b6e2f3fb33ef"
 }

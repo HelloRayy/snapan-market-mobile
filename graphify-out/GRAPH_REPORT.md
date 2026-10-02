@@ -1,17 +1,17 @@
 # Graph Report - snapan-market-mobile  (2026-10-02)
 
 ## Corpus Check
-- 551 files · ~677,715 words
+- 551 files · ~678,023 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 43 file(s) not represented in the graph (top: .xml 11, (none) 7, .css 7)
 
 ## Summary
-- 5032 nodes · 7248 edges · 377 communities (277 shown, 100 thin omitted)
+- 5032 nodes · 7256 edges · 373 communities (274 shown, 99 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 45 edges (avg confidence: 0.93)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a9b61714`
+- Built from commit: `aa782e84`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -162,7 +162,6 @@
 - kumo_floating_field.dart
 - devDependencies
 - chatService.ts
-- ContentModerationTab.tsx
 - Animations
 - 4. DESIGN ENGINEERING DIRECTIVES (Bias Correction)
 - 4-Level Decision Hierarchy
@@ -223,7 +222,6 @@
 - MainActivity.kt
 - campus_map_header.dart
 - adminService.ts
-- AdminDashboard.tsx
 - snaps_skeleton.dart
 - supabase_constants.dart
 - ProfileRow
@@ -372,12 +370,11 @@
 - src_admin_components_tremor_index_tracker
 - src_admin_components_tremor_index_trackerblock
 - AppSlidePageRoute
-- AdminLoginPage.tsx
 - supabase_poll_service.dart
 - @immutable
 - post_media_section.dart
 - MarketBottomNav.tsx
-- adminSecurityService.ts
+- AdminDashboard.tsx
 - 📋 Feature Specification — Post Detail & Threads-Style Threaded Comments (`PostDetailPage.tsx`)
 - floating_kumo_fab.dart
 - onboarding_dot_indicators.dart
@@ -385,7 +382,6 @@
 - package:snapan_market/core/services/supabase_service.dart
 - PostDetailController
 - eraser_logo.dart
-- productsService.ts
 - CreatePostModal
 
 ## God Nodes (most connected - your core abstractions)
@@ -415,7 +411,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (377 total, 100 thin omitted)
+## Communities (373 total, 99 thin omitted)
 
 ### Community 0 - "search_controller.dart"
 Cohesion: 0.08
@@ -499,7 +495,7 @@ Nodes (37): 1. Header Profil Personal, 1. Input Pencarian & Live Tokenized Scori
 
 ### Community 21 - "api/supabase.ts"
 Cohesion: 0.08
-Nodes (5): toggleCommentLike(), getMeetingPointById(), uploadMarketMedia(), uploadMultipleMarketMedia(), supabase
+Nodes (5): toggleCommentLike(), uploadMarketMedia(), uploadMultipleMarketMedia(), supabase, Category
 
 ### Community 22 - "Core Principles"
 Cohesion: 0.05
@@ -772,8 +768,8 @@ Cohesion: 0.11
 Nodes (17): aliases, components, hooks, lib, ui, utils, iconLibrary, rsc (+9 more)
 
 ### Community 89 - "5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT"
-Cohesion: 0.18
-Nodes (6): 5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT, deleteMarketPost(), getUserNotifications(), markNotificationAsRead(), getOrderNotifications(), getUnreadOrderNotificationCount()
+Cohesion: 0.12
+Nodes (7): 5. 🔌 DAFTAR SERVICE API & TYPE CONTRACT, deleteMarketPost(), getMeetingPointById(), getUserNotifications(), markNotificationAsRead(), getOrderNotifications(), getUnreadOrderNotificationCount()
 
 ### Community 90 - "post_detail_bottom_bar.dart"
 Cohesion: 0.09
@@ -900,8 +896,8 @@ Cohesion: 0.10
 Nodes (20): build, _buildContentText, _buildHeaderRow, CommentReplyTile, isFirst, isLast, onDeleteComment, onLikeToggle (+12 more)
 
 ### Community 121 - "OverviewTab.tsx"
-Cohesion: 0.15
-Nodes (12): LogEntry, ServerStatusCard(), ServerStatusCardProps, ServerStatusGaugeCard(), ServerStatusGaugeCardProps, colorMap, defaultSparklines, StatsCard() (+4 more)
+Cohesion: 0.12
+Nodes (18): AdminHeaderProps, AdminSidebar(), AdminSidebarProps, AdminTab, LogEntry, ServerStatusCard(), ServerStatusCardProps, ServerStatusGaugeCard() (+10 more)
 
 ### Community 122 - "edit_profile_chips_editor.dart"
 Cohesion: 0.17
@@ -998,10 +994,6 @@ Nodes (13): devDependencies, esbuild, @playwright/test, pngjs, tailwindcss, @tai
 ### Community 145 - "chatService.ts"
 Cohesion: 0.20
 Nodes (4): ConversationWithParticipant, DirectMessageWithSender, Conversation, DirectMessage
-
-### Community 146 - "ContentModerationTab.tsx"
-Cohesion: 0.24
-Nodes (8): AdminModalPortal(), AdminModalPortalProps, PostDetailModal(), PostDetailModalProps, PostWithSeller, ContentModerationTab(), PostWithSeller, MeetingPointsTab()
 
 ### Community 147 - "Animations"
 Cohesion: 0.17
@@ -1236,12 +1228,8 @@ Cohesion: 0.15
 Nodes (12): build, CampusMapHeader, _CategoryChip, currentFloor, _FloorButton, isActive, label, onBack (+4 more)
 
 ### Community 206 - "adminService.ts"
-Cohesion: 0.35
-Nodes (7): HeaderSearchPopover(), HeaderSearchPopoverProps, PostDetailDrawerProps, PostWithSeller, GlobalSearchResult, MarketPostRow, SchoolMeetingPointRow
-
-### Community 207 - "AdminDashboard.tsx"
-Cohesion: 0.17
-Nodes (12): AdminHeader(), AdminHeaderProps, AdminSidebar(), AdminSidebarProps, AdminTab, AdminDashboard(), AdminDashboardProps, OverviewTabProps (+4 more)
+Cohesion: 0.27
+Nodes (8): AdminHeader(), HeaderSearchPopover(), HeaderSearchPopoverProps, PostDetailDrawerProps, PostWithSeller, GlobalSearchResult, MarketPostRow, SchoolMeetingPointRow
 
 ### Community 208 - "snaps_skeleton.dart"
 Cohesion: 0.25
@@ -1252,8 +1240,8 @@ Cohesion: 0.25
 Nodes (7): authCallbackUrlScheme, storageBucketAvatars, storageBucketMedia, supabaseAnonKey, SupabaseConstants, supabaseUrl, static const String
 
 ### Community 210 - "ProfileRow"
-Cohesion: 0.30
-Nodes (8): AdminAccountDropdown(), AdminAccountDropdownProps, UserAvatar(), UserAvatarProps, UserDetailDrawerProps, UserDetailModal(), UserDetailModalProps, ProfileRow
+Cohesion: 0.17
+Nodes (16): AdminAccountDropdown(), AdminAccountDropdownProps, AdminModalPortal(), AdminModalPortalProps, PostDetailModal(), PostDetailModalProps, PostWithSeller, UserAvatar() (+8 more)
 
 ### Community 211 - "post_detail_controller.dart"
 Cohesion: 0.12
@@ -1479,10 +1467,6 @@ Nodes (6): BadgeProps, ButtonProps, @cloudflare/kumo, InputProps, LayerCardCompo
 Cohesion: 0.20
 Nodes (10): CupertinoRouteTransitionMixin, AppSlidePageRoute, build, build, _handleOpenChat, _openLocationPicker, _openMapPicker, build (+2 more)
 
-### Community 362 - "AdminLoginPage.tsx"
-Cohesion: 0.33
-Nodes (4): @cloudflare/kumo, AdminLoginPageProps, adminService, AdminLoginPage
-
 ### Community 363 - "supabase_poll_service.dart"
 Cohesion: 0.22
 Nodes (8): _client, closePoll, _currentUser, fetchUserPollVotes, SupabasePollService, votePoll, package:snapan_market/core/services/poll_sync_service.dart, package:snapan_market/features/feed/models/post_poll_model.dart
@@ -1499,9 +1483,9 @@ Nodes (7): build, isDetail, item, PostMediaSection, MarketPost, MarketPostModel,
 Cohesion: 0.43
 Nodes (5): MarketBottomNav(), MarketBottomNavProps, isEditableElement(), useVirtualKeyboard(), VirtualKeyboardState
 
-### Community 367 - "adminSecurityService.ts"
-Cohesion: 0.29
-Nodes (5): useAdminSecurity(), UseAdminSecurityProps, ADMIN_SESSION_STORAGE_KEY, AdminActivityLogRow, adminSecurityService
+### Community 367 - "AdminDashboard.tsx"
+Cohesion: 0.13
+Nodes (14): @cloudflare/kumo, useAdminSecurity(), UseAdminSecurityProps, AdminDashboard(), AdminDashboardProps, AdminLoginPageProps, MeetingPointsTab(), ADMIN_SESSION_STORAGE_KEY (+6 more)
 
 ### Community 368 - "📋 Feature Specification — Post Detail & Threads-Style Threaded Comments (`PostDetailPage.tsx`)"
 Cohesion: 0.29
@@ -1528,21 +1512,21 @@ Cohesion: 0.29
 Nodes (6): build, EraserLogo, feather, height, progress, package:snapan_market/core/components/snaps_logo.dart
 
 ## Knowledge Gaps
-- **3123 isolated node(s):** `item`, `isDetail`, `isFollowed`, `onFollowToggle`, `onUserClick` (+3118 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 3558 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **100 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **3122 isolated node(s):** `post`, `_poll`, `_handleOptionTap`, `_submitVote`, `build` (+3117 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 3557 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **99 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `react` connect `react` to `ButtonPrimary.tsx`, `PwaLandingPage.tsx`, `cn`, `ContentModerationTab.tsx`, `useAuth.ts`, `MarketPostItem`, `PostDetailPage.tsx`, `OnboardingScreen.tsx`, `App.tsx`, `DesignSystemPage.tsx`, `ServerMonitorTab.tsx`, `SearchPage.tsx`, `adminService.ts`, `package.json`, `AdminDashboard.tsx`, `ProfileRow`, `triggerHaptic`, `ProductCard.tsx`, `lucide-react`, `framer-motion`, `kumo.d.ts`, `AdminLoginPage.tsx`, `MarketBottomNav.tsx`, `adminSecurityService.ts`, `OverviewTab.tsx`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
+- **Why does `react` connect `react` to `ButtonPrimary.tsx`, `PwaLandingPage.tsx`, `cn`, `useAuth.ts`, `MarketPostItem`, `PostDetailPage.tsx`, `OnboardingScreen.tsx`, `App.tsx`, `DesignSystemPage.tsx`, `ServerMonitorTab.tsx`, `SearchPage.tsx`, `adminService.ts`, `package.json`, `ProfileRow`, `triggerHaptic`, `ProductCard.tsx`, `lucide-react`, `framer-motion`, `kumo.d.ts`, `MarketBottomNav.tsx`, `AdminDashboard.tsx`, `OverviewTab.tsx`?**
+  _High betweenness centrality (0.016) - this node is a cross-community bridge._
 - **Why does `_` connect `package:flutter/services.dart` to `package:snapan_market/core/theme/app_colors.dart`, `package:flutter/material.dart`?**
   _High betweenness centrality (0.006) - this node is a cross-community bridge._
-- **Why does `@supabase/supabase-js` connect `realtimeService.ts` to `package.json`, `chatService.ts`, `test-e2e-flow.ts`, `api/supabase.ts`, `useAuth.ts`?**
-  _High betweenness centrality (0.004) - this node is a cross-community bridge._
-- **What connects `item`, `isDetail`, `isFollowed` to the rest of the system?**
-  _3123 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Why does `triggerHaptic()` connect `triggerHaptic` to `DesignSystemPage.tsx`, `lucide-react`, `framer-motion`, `MarketPostItem`, `PostDetailPage.tsx`, `SearchPage.tsx`, `react`, `MarketBottomNav.tsx`, `PwaLandingPage.tsx`, `App.tsx`?**
+  _High betweenness centrality (0.005) - this node is a cross-community bridge._
+- **What connects `post`, `_poll`, `_handleOptionTap` to the rest of the system?**
+  _3122 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `search_controller.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.08 - nodes in this community are weakly interconnected._
 - **Should `widget_test.dart` be split into smaller, more focused modules?**

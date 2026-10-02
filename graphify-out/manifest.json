@@ -3330,16 +3330,16 @@
     "semantic_hash": ""
   },
   "src/admin/pages/AdminDashboard.tsx": {
-    "mtime": 1790957250.3953643,
-    "seen": 1790957357.416637,
-    "ast_hash": "73aa29447409a303a26ec58845e5b9cc",
+    "mtime": 1790959504.0974615,
+    "seen": 1790959591.0544472,
+    "ast_hash": "ec6a39bb68adabc88183039db8832bf4",
     "semantic_hash": ""
   },
   "src/admin/pages/AdminLoginPage.tsx": {
-    "mtime": 1790728947.6757905,
-    "seen": 1790734761.615757,
-    "ast_hash": "a856dd852317c817b78b7b9b01cb7480",
-    "semantic_hash": "a856dd852317c817b78b7b9b01cb7480"
+    "mtime": 1790959484.638381,
+    "seen": 1790959591.054449,
+    "ast_hash": "1ef889bdb1566cfc4d9857291a8fdede",
+    "semantic_hash": ""
   },
   "src/admin/pages/ContentModerationTab.tsx": {
     "mtime": 1790958355.942554,
@@ -3426,9 +3426,9 @@
     "semantic_hash": ""
   },
   "lib/features/feed/components/post_card/post_poll_section.dart": {
-    "mtime": 1790959444.3372142,
-    "seen": 1790959467.3318894,
-    "ast_hash": "7f998e4df8264f6550f4aa49806e3dd0",
+    "mtime": 1790959678.1171818,
+    "seen": 1790959695.4589283,
+    "ast_hash": "55c0308638b769781f60506e2204b4c4",
     "semantic_hash": ""
   },
   "lib/features/feed/components/post_submenu_item.dart": {
@@ -3705,6 +3705,12 @@
     "mtime": 1790959350.3268251,
     "seen": 1790959467.33429,
     "ast_hash": "09ad9dcb350b2c916b6385aad89aa60d",
+    "semantic_hash": ""
+  },
+  "supabase_admin_security_hardening.sql": {
+    "mtime": 1790959337.4107716,
+    "seen": 1790959591.0545802,
+    "ast_hash": "d14fd17096ac00c1f1c341951010467d",
     "semantic_hash": ""
   }
 }

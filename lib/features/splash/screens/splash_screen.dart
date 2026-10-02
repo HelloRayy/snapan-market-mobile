@@ -22,11 +22,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   late final AnimationController _controller;
   late final Animation<double> _fadeAnim;
   late final Animation<double> _scaleAnim;
+  late final Animation<double> _slideAnim;
   late final Animation<double> _eraserAnim;
 
   // Timeline durations (Polished smooth motion)
-  static const int _entranceMs = 400;
-  static const int _holdMs = 700;
+  static const int _entranceMs = 450;
+  static const int _holdMs = 650;
   static const int _wipeMs = 600;
   static const int _totalMs = _entranceMs + _holdMs + _wipeMs; // 1700ms
 
@@ -46,22 +47,28 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       duration: const Duration(milliseconds: _totalMs),
     );
 
-    // 1. Entrance Fade & Scale: 0 -> 400ms (smooth deceleration)
-    final entranceEnd = _entranceMs / _totalMs; // ~0.2353
+    // 1. Entrance Motion (Fade + Scale + Subtle Upward Drift): 0 -> 450ms
+    final entranceEnd = _entranceMs / _totalMs; // ~0.2647
     _fadeAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Interval(0.0, entranceEnd, curve: Curves.easeOutQuart),
+        curve: Interval(0.0, entranceEnd, curve: Curves.easeOutCubic),
       ),
     );
-    _scaleAnim = Tween<double>(begin: 0.92, end: 1.0).animate(
+    _scaleAnim = Tween<double>(begin: 0.90, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Interval(0.0, entranceEnd, curve: Curves.easeOutQuart),
+        curve: Interval(0.0, entranceEnd, curve: Curves.easeOutCubic),
+      ),
+    );
+    _slideAnim = Tween<double>(begin: 14.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Interval(0.0, entranceEnd, curve: Curves.easeOutCubic),
       ),
     );
 
-    // 2. Eraser wipe begins after entrance (400ms) + static hold (700ms) = 1100ms
+    // 2. Eraser wipe begins after entrance (450ms) + static hold (650ms) = 1100ms
     final wipeStart = (_entranceMs + _holdMs) / _totalMs; // ~0.6470
     _eraserAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
@@ -76,7 +83,14 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       }
     });
 
-    _controller.forward();
+    // Pause until Android OS splash window dismiss is fully settled on device
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 160), () {
+        if (mounted) {
+          _controller.forward();
+        }
+      });
+    });
   }
 
   @override
@@ -95,12 +109,15 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           builder: (context, _) {
             return Opacity(
               opacity: _fadeAnim.value,
-              child: Transform.scale(
-                scale: _scaleAnim.value,
-                child: EraserLogo(
-                  progress: _eraserAnim.value,
-                  height: 64.0,
-                  feather: 0.20,
+              child: Transform.translate(
+                offset: Offset(0, _slideAnim.value),
+                child: Transform.scale(
+                  scale: _scaleAnim.value,
+                  child: EraserLogo(
+                    progress: _eraserAnim.value,
+                    height: 64.0,
+                    feather: 0.22,
+                  ),
                 ),
               ),
             );

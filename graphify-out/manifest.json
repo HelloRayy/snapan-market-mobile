@@ -774,9 +774,9 @@
     "semantic_hash": ""
   },
   "lib/main.dart": {
-    "mtime": 1790906650.0912478,
-    "seen": 1790906712.3442776,
-    "ast_hash": "f137282a78ff2c50cb8485113e567252",
+    "mtime": 1790906997.2044566,
+    "seen": 1790907011.9870996,
+    "ast_hash": "dd69ce379618b355edcc213ab5a8ec0d",
     "semantic_hash": ""
   },
   "package.json": {
@@ -3540,9 +3540,9 @@
     "semantic_hash": ""
   },
   "lib/features/splash/screens/splash_screen.dart": {
-    "mtime": 1790906683.8993542,
-    "seen": 1790906712.3442757,
-    "ast_hash": "d5d9c0aa7ffe230230649b0e749dfdd7",
+    "mtime": 1790906978.745389,
+    "seen": 1790907011.9870908,
+    "ast_hash": "0f52df8221837d9ecce493def887e5be",
     "semantic_hash": ""
   },
   "lib/features/feed/components/drawer/home_drawer_footer.dart": {

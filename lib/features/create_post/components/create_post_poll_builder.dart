@@ -67,6 +67,7 @@ class CreatePostPollBuilder extends StatelessWidget {
                   child: TextField(
                     controller: controllers[i],
                     style: const TextStyle(
+                      fontFamily: 'SFPro',
                       fontSize: 14.5,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF0F172A),
@@ -74,6 +75,7 @@ class CreatePostPollBuilder extends StatelessWidget {
                     decoration: InputDecoration(
                       hintText: 'Opsi ${i + 1}...',
                       hintStyle: const TextStyle(
+                        fontFamily: 'SFPro',
                         fontSize: 14.5,
                         fontWeight: FontWeight.w600,
                         color: Color(0xFF94A3B8),

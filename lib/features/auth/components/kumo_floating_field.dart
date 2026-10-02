@@ -37,6 +37,7 @@ class KumoFloatingField extends StatelessWidget {
       inputFormatters: inputFormatters,
       onSubmitted: onSubmitted,
       style: const TextStyle(
+        fontFamily: 'SFPro',
         fontSize: 15,
         fontWeight: FontWeight.w600,
         color: Color(0xFF0F172A),
@@ -48,12 +49,14 @@ class KumoFloatingField extends StatelessWidget {
         errorText: errorText,
         errorMaxLines: 2,
         errorStyle: const TextStyle(
+          fontFamily: 'SFPro',
           fontSize: 11.5,
           fontWeight: FontWeight.w600,
           color: Color(0xFFEF4444),
           letterSpacing: -0.2,
         ),
         labelStyle: const TextStyle(
+          fontFamily: 'SFPro',
           fontSize: 14.5,
           fontWeight: FontWeight.w400,
           color: Color(0xFF94A3B8),
@@ -62,6 +65,7 @@ class KumoFloatingField extends StatelessWidget {
         floatingLabelStyle: WidgetStateTextStyle.resolveWith((states) {
           if (states.contains(WidgetState.error)) {
             return const TextStyle(
+              fontFamily: 'SFPro',
               fontSize: 12,
               fontWeight: FontWeight.w700,
               color: Color(0xFFEF4444),
@@ -70,6 +74,7 @@ class KumoFloatingField extends StatelessWidget {
           }
           if (states.contains(WidgetState.focused)) {
             return const TextStyle(
+              fontFamily: 'SFPro',
               fontSize: 12,
               fontWeight: FontWeight.w700,
               color: Color(0xFF1D64EC), // Kumo Blue Focus
@@ -77,6 +82,7 @@ class KumoFloatingField extends StatelessWidget {
             );
           }
           return const TextStyle(
+            fontFamily: 'SFPro',
             fontSize: 12,
             fontWeight: FontWeight.w600,
             color: Color(0xFF475569), // Dark slate when filled & unfocused

@@ -540,9 +540,9 @@
     "semantic_hash": "8239099c42899cb400451744d7ba567e"
   },
   "lib/features/feed/screens/home_feed_screen.dart": {
-    "mtime": 1790866179.8074281,
-    "seen": 1790866215.0082881,
-    "ast_hash": "03f82e40fd11163e799c0f614fdc95f4",
+    "mtime": 1790866987.5932963,
+    "seen": 1790867049.0886219,
+    "ast_hash": "61090edc0f1fc1a53013a4f06a568c60",
     "semantic_hash": ""
   },
   "lib/features/feed/screens/post_detail_screen.dart": {
@@ -3144,9 +3144,9 @@
     "semantic_hash": "f8dffaee4523b0e9fc429b4941eed961"
   },
   "lib/features/feed/components/home_nav_drawer.dart": {
-    "mtime": 1790866016.1066966,
-    "seen": 1790866215.0082512,
-    "ast_hash": "c99e8b5adcca1a47f7e40e76f38ac07d",
+    "mtime": 1790867013.5714312,
+    "seen": 1790867049.0885623,
+    "ast_hash": "33ea6097880ba6858bc466dc8bfdfd13",
     "semantic_hash": ""
   },
   "lib/features/feed/components/home_nav_tab_switcher.dart": {
@@ -3551,34 +3551,28 @@
     "ast_hash": "026578f3cd0faf680380a868b275696e",
     "semantic_hash": ""
   },
-  "lib/features/feed/components/drawer/home_nav_channels_card.dart": {
-    "mtime": 1790866619.7853937,
-    "seen": 1790866637.0985084,
-    "ast_hash": "e0c2f07ab9a825a3f5f718e56a888882",
+  "lib/features/feed/components/drawer/home_drawer_footer.dart": {
+    "mtime": 1790867005.7023902,
+    "seen": 1790867049.0885363,
+    "ast_hash": "2676e162e9255f94f4ffdacf07be26c0",
     "semantic_hash": ""
   },
-  "lib/features/feed/components/drawer/home_nav_footer.dart": {
-    "mtime": 1790866002.2646348,
-    "seen": 1790866215.0082371,
-    "ast_hash": "f07c6b578149a45c8ba46b6f244b2835",
+  "lib/features/feed/components/drawer/home_drawer_item.dart": {
+    "mtime": 1790866963.2041695,
+    "seen": 1790867049.08854,
+    "ast_hash": "a6fdc32c687ae554dfcf879687dcddf3",
     "semantic_hash": ""
   },
-  "lib/features/feed/components/drawer/home_nav_header.dart": {
-    "mtime": 1790865965.2734697,
-    "seen": 1790866215.0082386,
-    "ast_hash": "7ebeb612b078fc1338df73dbc372913d",
+  "lib/features/feed/components/drawer/home_drawer_logout_dialog.dart": {
+    "mtime": 1790866966.1048725,
+    "seen": 1790867049.0885425,
+    "ast_hash": "933d7ab623474cd9d62131fa767a12b5",
     "semantic_hash": ""
   },
-  "lib/features/feed/components/drawer/home_nav_preferences_card.dart": {
-    "mtime": 1790866623.209409,
-    "seen": 1790866637.0985153,
-    "ast_hash": "c3e1579c8d825f04aa71e96400af5b2e",
-    "semantic_hash": ""
-  },
-  "lib/features/feed/components/drawer/home_nav_quick_pills.dart": {
-    "mtime": 1790865971.2014961,
-    "seen": 1790866215.0082412,
-    "ast_hash": "1b76348600fd0890b42e6b200e7a3e1b",
+  "lib/features/feed/components/drawer/home_drawer_profile_header.dart": {
+    "mtime": 1790866999.0713558,
+    "seen": 1790867049.0885448,
+    "ast_hash": "147b3c2089a847936487f071fd88cf7a",
     "semantic_hash": ""
   }
 }

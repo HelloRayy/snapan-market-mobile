@@ -201,6 +201,7 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                             minLines: 1,
                             maxLines: 4,
                             style: const TextStyle(
+                              fontFamily: 'SFPro',
                               fontSize: 15.5,
                               color: Color(0xFF000000),
                               letterSpacing: -0.3,
@@ -209,6 +210,7 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
                             decoration: InputDecoration(
                               hintText: widget.placeholder,
                               hintStyle: const TextStyle(
+                                fontFamily: 'SFPro',
                                 fontSize: 15.5,
                                 color: Color(0xFF999999), // pen.dev #999999
                                 letterSpacing: -0.3,

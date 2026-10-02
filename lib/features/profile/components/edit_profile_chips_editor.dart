@@ -144,12 +144,14 @@ class _EditProfileChipsEditorState extends State<EditProfileChipsEditor> {
                   controller: _inputController,
                   focusNode: _focusNode,
                   style: const TextStyle(
+                    fontFamily: 'SFPro',
                     fontSize: 13.5,
                     color: Color(0xFF0F172A),
                   ),
                   decoration: const InputDecoration(
                     hintText: '+ Tambah minat...',
                     hintStyle: TextStyle(
+                      fontFamily: 'SFPro',
                       fontSize: 13.5,
                       color: Color(0xFF94A3B8),
                     ),

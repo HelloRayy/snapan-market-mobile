@@ -39,10 +39,18 @@ class CheckoutBuyerNoteCard extends StatelessWidget {
           TextField(
             controller: controller,
             maxLines: 2,
-            style: const TextStyle(fontSize: 13.0, color: Color(0xFF0F172A)),
+            style: const TextStyle(
+              fontFamily: 'SFPro',
+              fontSize: 13.0,
+              color: Color(0xFF0F172A),
+            ),
             decoration: InputDecoration(
               hintText: "Misal: Aku pakai jaket hoodie abu-abu di meja pojok...",
-              hintStyle: const TextStyle(fontSize: 12.5, color: Color(0xFF94A3B8)),
+              hintStyle: const TextStyle(
+                fontFamily: 'SFPro',
+                fontSize: 12.5,
+                color: Color(0xFF94A3B8),
+              ),
               filled: true,
               fillColor: const Color(0xFFF8FAFC),
               border: OutlineInputBorder(

@@ -144,6 +144,7 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                       controller: widget.nameController,
                       maxLength: 50,
                       style: const TextStyle(
+                        fontFamily: 'SFPro',
                         fontSize: 15.5,
                         fontWeight: FontWeight.normal,
                         color: Color(0xFF0F172A),
@@ -151,6 +152,7 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                       decoration: const InputDecoration(
                         hintText: 'Nama lengkap Anda',
                         hintStyle: TextStyle(
+                          fontFamily: 'SFPro',
                           fontSize: 15.5,
                           color: Color(0xFF94A3B8),
                           fontWeight: FontWeight.normal,

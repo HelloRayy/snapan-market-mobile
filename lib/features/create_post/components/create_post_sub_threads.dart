@@ -85,6 +85,7 @@ class CreatePostSubThreads extends StatelessWidget {
                         minLines: 1,
                         maxLines: null,
                         style: const TextStyle(
+                          fontFamily: 'SFPro',
                           fontSize: 14.5,
                           color: AppColors.ink,
                           height: 1.35,
@@ -92,6 +93,7 @@ class CreatePostSubThreads extends StatelessWidget {
                         decoration: const InputDecoration(
                           hintText: 'Lanjutan utas...',
                           hintStyle: TextStyle(
+                            fontFamily: 'SFPro',
                             fontSize: 14.0,
                             color: Color(0xFF94A3B8),
                           ),

@@ -126,6 +126,7 @@ class SearchBarHeader extends StatelessWidget {
                         onSubmitted: (_) => onSubmitted(),
                         textInputAction: TextInputAction.search,
                         style: const TextStyle(
+                          fontFamily: 'SFPro',
                           fontSize: 14.5,
                           fontWeight: FontWeight.w500,
                           color: Color(0xFF0F172A),
@@ -134,6 +135,7 @@ class SearchBarHeader extends StatelessWidget {
                         decoration: const InputDecoration(
                           hintText: "Cari",
                           hintStyle: TextStyle(
+                            fontFamily: 'SFPro',
                             fontSize: 14.5,
                             fontWeight: FontWeight.w400,
                             color: Color(0xFF94A3B8),

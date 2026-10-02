@@ -63,6 +63,7 @@ class CreatePostProductFields extends StatelessWidget {
           controller: productTitleController,
           cursorColor: AppColors.primary,
           style: const TextStyle(
+            fontFamily: 'SFPro',
             fontSize: 14.5,
             fontWeight: FontWeight.w500,
             color: Color(0xFF0F172A),
@@ -86,6 +87,7 @@ class CreatePostProductFields extends StatelessWidget {
             RupiahInputFormatter(),
           ],
           style: const TextStyle(
+            fontFamily: 'SFPro',
             fontSize: 15.0,
             fontWeight: FontWeight.w700,
             color: Color(0xFF0F172A),
@@ -97,6 +99,7 @@ class CreatePostProductFields extends StatelessWidget {
               child: Text(
                 'Rp ',
                 style: TextStyle(
+                  fontFamily: 'SFPro',
                   fontSize: 15.0,
                   fontWeight: priceController.text.isNotEmpty
                       ? FontWeight.w700
@@ -122,6 +125,7 @@ class CreatePostProductFields extends StatelessWidget {
           maxLines: 4,
           cursorColor: AppColors.primary,
           style: const TextStyle(
+            fontFamily: 'SFPro',
             fontSize: 14.5,
             fontWeight: FontWeight.w500,
             color: Color(0xFF0F172A),
@@ -139,6 +143,7 @@ class CreatePostProductFields extends StatelessWidget {
           readOnly: true,
           onTap: onPickLocation,
           style: const TextStyle(
+            fontFamily: 'SFPro',
             fontSize: 14.0,
             fontWeight: FontWeight.w600,
             color: Color(0xFF0F172A),
@@ -148,6 +153,7 @@ class CreatePostProductFields extends StatelessWidget {
                 ? selectedLocation!.name
                 : 'Ketik titik temu COD (Kantin, Lab, dll)...',
             hintStyle: TextStyle(
+              fontFamily: 'SFPro',
               fontSize: 13.5,
               color: selectedLocation != null
                   ? const Color(0xFF0F172A)
@@ -245,6 +251,7 @@ class CreatePostProductFields extends StatelessWidget {
       text: TextSpan(
         text: text,
         style: const TextStyle(
+          fontFamily: 'SFPro',
           fontSize: 13.5,
           fontWeight: FontWeight.w700,
           color: Color(0xFF1E293B),
@@ -254,6 +261,7 @@ class CreatePostProductFields extends StatelessWidget {
             const TextSpan(
               text: ' *',
               style: TextStyle(
+                fontFamily: 'SFPro',
                 color: Color(0xFFEF4444),
                 fontWeight: FontWeight.w700,
               ),
@@ -270,6 +278,7 @@ class CreatePostProductFields extends StatelessWidget {
     return InputDecoration(
       hintText: hint,
       hintStyle: const TextStyle(
+        fontFamily: 'SFPro',
         fontSize: 13.5,
         fontWeight: FontWeight.w400,
         color: Color(0xFF94A3B8),

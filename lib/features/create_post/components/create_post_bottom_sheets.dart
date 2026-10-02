@@ -153,13 +153,18 @@ class CreatePostBottomSheets {
                                   controller: customTopicController,
                                   maxLength: 20,
                                   style: const TextStyle(
+                                    fontFamily: 'SFPro',
                                     fontSize: 12.5,
                                     color: AppColors.ink,
                                     fontWeight: FontWeight.w500,
                                   ),
                                   decoration: const InputDecoration(
                                     hintText: 'Ketik topik baru...',
-                                    hintStyle: TextStyle(fontSize: 12.0, color: Color(0xFF94A3B8)),
+                                    hintStyle: TextStyle(
+                                      fontFamily: 'SFPro',
+                                      fontSize: 12.0,
+                                      color: Color(0xFF94A3B8),
+                                    ),
                                     counterText: '',
                                     border: InputBorder.none,
                                     isDense: true,

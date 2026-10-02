@@ -36,10 +36,18 @@ class ProfileSearchBar extends StatelessWidget {
                 controller: TextEditingController(text: searchQuery)
                   ..selection = TextSelection.fromPosition(TextPosition(offset: searchQuery.length)),
                 onChanged: onChanged,
-                style: const TextStyle(fontSize: 13.5, color: Color(0xFF0F172A)),
+                style: const TextStyle(
+                  fontFamily: 'SFPro',
+                  fontSize: 13.5,
+                  color: Color(0xFF0F172A),
+                ),
                 decoration: const InputDecoration(
                   hintText: 'Cari utas atau media di profil...',
-                  hintStyle: TextStyle(fontSize: 13.5, color: Color(0xFF94A3B8)),
+                  hintStyle: TextStyle(
+                    fontFamily: 'SFPro',
+                    fontSize: 13.5,
+                    color: Color(0xFF94A3B8),
+                  ),
                   border: InputBorder.none,
                   isDense: true,
                   contentPadding: EdgeInsets.symmetric(vertical: 8.0),

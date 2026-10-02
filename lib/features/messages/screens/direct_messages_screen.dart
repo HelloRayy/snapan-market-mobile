@@ -202,10 +202,18 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
                         Expanded(
                           child: TextField(
                             controller: _searchController,
-                            style: const TextStyle(fontSize: 13.5, color: AppColors.ink),
+                            style: const TextStyle(
+                              fontFamily: 'SFPro',
+                              fontSize: 13.5,
+                              color: AppColors.ink,
+                            ),
                             decoration: const InputDecoration(
                               hintText: 'Cari pesan...',
-                              hintStyle: TextStyle(fontSize: 13.5, color: Color(0xFF94A3B8)),
+                              hintStyle: TextStyle(
+                                fontFamily: 'SFPro',
+                                fontSize: 13.5,
+                                color: Color(0xFF94A3B8),
+                              ),
                               border: InputBorder.none,
                               isDense: true,
                               contentPadding: EdgeInsets.zero,

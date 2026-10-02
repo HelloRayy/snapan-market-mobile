@@ -138,10 +138,19 @@ class CreatePostMainInputBlock extends StatelessWidget {
                     minLines: 1,
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
-                    style: const TextStyle(fontSize: 15.0, color: AppColors.ink, height: 1.35),
+                    style: const TextStyle(
+                      fontFamily: 'SFPro',
+                      fontSize: 15.0,
+                      color: AppColors.ink,
+                      height: 1.35,
+                    ),
                     decoration: InputDecoration(
                       hintText: postMode == PostMode.thread ? 'Apa yang baru?' : 'Ceritakan tentang produk jualanmu...',
-                      hintStyle: const TextStyle(fontSize: 15.0, color: Color(0xFF94A3B8)),
+                      hintStyle: const TextStyle(
+                        fontFamily: 'SFPro',
+                        fontSize: 15.0,
+                        color: Color(0xFF94A3B8),
+                      ),
                       border: InputBorder.none,
                       isDense: true,
                       contentPadding: EdgeInsets.zero,

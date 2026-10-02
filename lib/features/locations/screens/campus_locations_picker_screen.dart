@@ -193,10 +193,18 @@ class _CampusLocationsPickerScreenState extends State<CampusLocationsPickerScree
                   child: TextField(
                     controller: _searchController,
                     onChanged: (_) => setState(() {}),
-                    style: const TextStyle(fontSize: 13.5, color: Color(0xFF0F172A)),
+                    style: const TextStyle(
+                      fontFamily: 'SFPro',
+                      fontSize: 13.5,
+                      color: Color(0xFF0F172A),
+                    ),
                     decoration: InputDecoration(
                       hintText: "Cari nama spot, gedung, atau lantai...",
-                      hintStyle: const TextStyle(fontSize: 13.0, color: Color(0xFF94A3B8)),
+                      hintStyle: const TextStyle(
+                        fontFamily: 'SFPro',
+                        fontSize: 13.0,
+                        color: Color(0xFF94A3B8),
+                      ),
                       prefixIcon: const Icon(Icons.search, size: 18.0, color: Color(0xFF64748B)),
                       suffixIcon: _searchController.text.isNotEmpty
                           ? IconButton(

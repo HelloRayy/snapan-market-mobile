@@ -70,6 +70,7 @@ class _AuthInputFieldState extends State<AuthInputField> {
       inputFormatters: widget.inputFormatters,
       cursorColor: AppColors.primary,
       style: const TextStyle(
+        fontFamily: 'SFPro',
         fontSize: 14.5,
         fontWeight: FontWeight.w500,
         color: Color(0xFF0F172A),
@@ -78,11 +79,13 @@ class _AuthInputFieldState extends State<AuthInputField> {
         labelText: widget.label,
         floatingLabelBehavior: FloatingLabelBehavior.auto,
         labelStyle: const TextStyle(
+          fontFamily: 'SFPro',
           fontSize: 14.0,
           color: Color(0xFF64748B),
           fontWeight: FontWeight.w400,
         ),
         floatingLabelStyle: TextStyle(
+          fontFamily: 'SFPro',
           fontSize: 13.0,
           fontWeight: FontWeight.w600,
           color: hasError
@@ -93,6 +96,7 @@ class _AuthInputFieldState extends State<AuthInputField> {
         ),
         hintText: widget.hint,
         hintStyle: const TextStyle(
+          fontFamily: 'SFPro',
           fontSize: 13.5,
           color: Color(0xFF94A3B8),
           fontWeight: FontWeight.w400,

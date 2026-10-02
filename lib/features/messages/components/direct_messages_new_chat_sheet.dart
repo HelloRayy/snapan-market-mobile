@@ -102,10 +102,18 @@ class _DirectMessagesNewChatSheetState extends State<DirectMessagesNewChatSheet>
                       controller: _controller,
                       autofocus: true,
                       onChanged: _search,
-                      style: const TextStyle(fontSize: 14.0, color: Color(0xFF0F172A)),
+                      style: const TextStyle(
+                        fontFamily: 'SFPro',
+                        fontSize: 14.0,
+                        color: Color(0xFF0F172A),
+                      ),
                       decoration: const InputDecoration(
                         hintText: 'Cari nama atau username siswa SMKN 8...',
-                        hintStyle: TextStyle(fontSize: 13.5, color: Color(0xFF94A3B8)),
+                        hintStyle: TextStyle(
+                          fontFamily: 'SFPro',
+                          fontSize: 13.5,
+                          color: Color(0xFF94A3B8),
+                        ),
                         border: InputBorder.none,
                         isDense: true,
                       ),

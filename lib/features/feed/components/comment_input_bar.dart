@@ -364,6 +364,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                           textInputAction: TextInputAction.send,
                           onSubmitted: (_) => _handleSubmit(),
                           style: const TextStyle(
+                            fontFamily: 'SFPro',
                             fontSize: 15.5,
                             color: Color(0xFF000000),
                             letterSpacing: -0.3,
@@ -372,6 +373,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                           decoration: InputDecoration(
                             hintText: placeholder,
                             hintStyle: const TextStyle(
+                              fontFamily: 'SFPro',
                               fontSize: 15.5,
                               color: Color(0xFF999999), // pen.dev #999999
                               letterSpacing: -0.3,

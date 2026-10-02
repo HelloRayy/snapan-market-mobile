@@ -36,6 +36,7 @@ class SupabaseService {
 
   // --- AUTH DELEGATIONS ---
   User? get currentUser => auth.currentUser;
+  String? get currentUserId => auth.currentUser?.id;
   bool get isAuthenticated => auth.isAuthenticated;
   Stream<AuthState> get onAuthStateChange => auth.onAuthStateChange;
   Future<bool> signInWithGoogle() => auth.signInWithGoogle();

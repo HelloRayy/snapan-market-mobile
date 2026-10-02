@@ -16,7 +16,7 @@ class CommentOptionsSheet {
     void Function(String username, String commentId)? onReplyToComment,
     ValueChanged<String>? onDeleteComment,
   }) {
-    final currentUserId = SupabaseService.instance.currentUserId;
+    final currentUserId = SupabaseService.instance.currentUser?.id;
     final bool isCommentAuthor = currentUserId != null && comment.user.id == currentUserId;
     final bool isPostAuthor = currentUserId != null && postAuthorId != null && postAuthorId == currentUserId;
     final bool canDelete = (isCommentAuthor || isPostAuthor) && onDeleteComment != null;

@@ -120,10 +120,10 @@
     "semantic_hash": "b6e76239bcc891871113a9f4a0f17889"
   },
   "lib/core/services/supabase_service.dart": {
-    "mtime": 1790836598.642785,
-    "seen": 1790840491.4043605,
-    "ast_hash": "57e8686f82ed94ca8ff5e876f2f4b60d",
-    "semantic_hash": "57e8686f82ed94ca8ff5e876f2f4b60d"
+    "mtime": 1790958780.3914664,
+    "seen": 1790958924.4177976,
+    "ast_hash": "0dcdf1daf78428a227c04fd11aee91b7",
+    "semantic_hash": ""
   },
   "lib/core/theme/app_colors.dart": {
     "mtime": 1790840252.086098,
@@ -360,10 +360,10 @@
     "semantic_hash": "7872ec15e9cfcc6662093729efb720df"
   },
   "lib/features/feed/components/comment/comment_options_sheet.dart": {
-    "mtime": 1789700718.6287477,
-    "seen": 1790510031.17301,
-    "ast_hash": "dfec3bfb735665f5b8cd2a44cf75d577",
-    "semantic_hash": "dfec3bfb735665f5b8cd2a44cf75d577"
+    "mtime": 1790958805.217569,
+    "seen": 1790958924.4178557,
+    "ast_hash": "6b7bc1c0c4b8e99065c6dcc1c525307f",
+    "semantic_hash": ""
   },
   "lib/features/feed/components/comment/comment_replies_expand_row.dart": {
     "mtime": 1789699433.8742585,
@@ -372,9 +372,9 @@
     "semantic_hash": "4135b34b3b7b867d7dc5221e2d6e9320"
   },
   "lib/features/feed/components/comment/comment_reply_tile.dart": {
-    "mtime": 1790904011.3182688,
-    "seen": 1790904026.2799737,
-    "ast_hash": "c34f4d53b40418001d7ef29456431411",
+    "mtime": 1790958833.2816854,
+    "seen": 1790958924.4178576,
+    "ast_hash": "8a96765fd60dee4a699ab949f25d4a84",
     "semantic_hash": ""
   },
   "lib/features/feed/components/comment/thread_branch_painter.dart": {
@@ -510,9 +510,9 @@
     "semantic_hash": "caa29a08b4542bcb1df66ce25c87d4f5"
   },
   "lib/features/feed/components/post_comment_item.dart": {
-    "mtime": 1790904003.2952316,
-    "seen": 1790904026.2800424,
-    "ast_hash": "ab119e5ee9555858253e192f0e9fba5f",
+    "mtime": 1790958875.1398585,
+    "seen": 1790958924.4178953,
+    "ast_hash": "d3736c1a16992500072f886b01ebbe24",
     "semantic_hash": ""
   },
   "lib/features/feed/components/post_submenu_popover.dart": {
@@ -546,9 +546,9 @@
     "semantic_hash": ""
   },
   "lib/features/feed/screens/post_detail_screen.dart": {
-    "mtime": 1790862427.114324,
-    "seen": 1790862619.5321364,
-    "ast_hash": "15019e82ae38948e43d4df2ea30be08b",
+    "mtime": 1790958909.4540005,
+    "seen": 1790958924.4179082,
+    "ast_hash": "bb0100968b0324c02bef90face969538",
     "semantic_hash": ""
   },
   "lib/features/locations/components/location_spot_card.dart": {
@@ -3018,9 +3018,9 @@
     "semantic_hash": "aa59f8db7c4deb5721d81a6f052cd4be"
   },
   "lib/core/services/supabase/supabase_feed_service.dart": {
-    "mtime": 1790841011.5174758,
-    "seen": 1790841040.3266575,
-    "ast_hash": "d7b79fc4c9d1058ae06926620b17e208",
+    "mtime": 1790958771.1804283,
+    "seen": 1790958924.4177916,
+    "ast_hash": "516d64f82381b881080e0a7773805445",
     "semantic_hash": ""
   },
   "lib/core/services/supabase/supabase_profile_service.dart": {
@@ -3180,10 +3180,10 @@
     "semantic_hash": "a2b6c2fe4da7d3aedc16bce6d967fda2"
   },
   "lib/features/feed/components/post_detail_comments_list.dart": {
-    "mtime": 1790780863.995419,
-    "seen": 1790840491.4075282,
-    "ast_hash": "b6a245791f60cc2c978f52c88c0e398a",
-    "semantic_hash": "b6a245791f60cc2c978f52c88c0e398a"
+    "mtime": 1790958901.340967,
+    "seen": 1790958924.4178982,
+    "ast_hash": "8aac9766f51f5e50790cd9f786a07744",
+    "semantic_hash": ""
   },
   "lib/features/feed/components/post_detail_empty_comments.dart": {
     "mtime": 1790734541.134282,
@@ -3198,10 +3198,10 @@
     "semantic_hash": "1b01bbb243c91228cca7de48a1f0a389"
   },
   "lib/features/feed/controllers/post_detail_controller.dart": {
-    "mtime": 1790837019.1725585,
-    "seen": 1790840491.40763,
-    "ast_hash": "2140eecfe6411146fa6eb1c62b0926d8",
-    "semantic_hash": "2140eecfe6411146fa6eb1c62b0926d8"
+    "mtime": 1790958792.9045184,
+    "seen": 1790958924.417904,
+    "ast_hash": "00de7c629eec1c770efe1f56cf4bdaef",
+    "semantic_hash": ""
   },
   "lib/features/map/components/campus_map_header.dart": {
     "mtime": 1790734699.3979068,

@@ -8,6 +8,8 @@ import { UsersManagementTab } from './UsersManagementTab';
 import { ContentModerationTab } from './ContentModerationTab';
 import { MeetingPointsTab } from './MeetingPointsTab';
 import { ServerMonitorTab } from './ServerMonitorTab';
+import { useAdminSecurity } from '../hooks/useAdminSecurity';
+import { adminSecurityService, ADMIN_SESSION_STORAGE_KEY } from '../services/adminSecurityService';
 import { Loader2 } from 'lucide-react';
 import '../styles/cooladmin.css';
 
@@ -84,6 +86,18 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
             setAdminEmail(session.user.email || 'admin@snapan.id');
             setAdminRole('admin');
           }
+
+          // Inisialisasi token sesi aktif tunggal jika belum ada di browser ini
+          const currentToken = localStorage.getItem(ADMIN_SESSION_STORAGE_KEY);
+          if (!currentToken) {
+            await adminSecurityService.registerNewSessionToken(session.user.id);
+            await adminSecurityService.logActivity({
+              adminEmail: session.user.email || profile?.username || 'admin@snapan.id',
+              action: 'LOGIN_SESSION_INIT',
+              targetInfo: 'Sesi aktif didaftarkan via browser',
+            });
+          }
+
           setIsCheckingAuth(false);
         }
       } catch (err) {
@@ -119,13 +133,28 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
     }
   }, [isCheckingAuth, loadStats]);
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     try {
+      if (adminProfile?.id) {
+        await adminSecurityService.logActivity({
+          adminEmail: adminEmail,
+          action: 'LOGOUT',
+          targetInfo: 'Sesi ditutup manual oleh administrator',
+        });
+      }
+      adminSecurityService.clearLocalSessionToken();
       await supabase.auth.signOut();
     } finally {
       onLogout();
     }
-  };
+  }, [adminProfile?.id, adminEmail, onLogout]);
+
+  // Hook Keamanan: Inactivity Auto-Lock (20 min) & Single Active Device check
+  useAdminSecurity({
+    userId: adminProfile?.id,
+    onLogout: handleLogout,
+    idleTimeoutMinutes: 20,
+  });
 
   if (isCheckingAuth) {
     return (

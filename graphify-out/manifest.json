@@ -3156,10 +3156,10 @@
     "semantic_hash": "9c854fc12a1e59dcbb6632fcda1402c3"
   },
   "lib/features/feed/components/post_card/post_card_content_column.dart": {
-    "mtime": 1790836843.059741,
-    "seen": 1790840491.4073794,
-    "ast_hash": "332167214764157538f8f152890917e6",
-    "semantic_hash": "332167214764157538f8f152890917e6"
+    "mtime": 1790959454.1302547,
+    "seen": 1790959467.3318229,
+    "ast_hash": "d035158bbc35a89fac46f4d9f00b8841",
+    "semantic_hash": ""
   },
   "lib/features/feed/components/post_card/post_thread_chain_section.dart": {
     "mtime": 1790957103.0426664,
@@ -3426,10 +3426,10 @@
     "semantic_hash": ""
   },
   "lib/features/feed/components/post_card/post_poll_section.dart": {
-    "mtime": 1790839594.0941713,
-    "seen": 1790840491.407388,
-    "ast_hash": "23e66902a778cdb077d4144dd8069040",
-    "semantic_hash": "23e66902a778cdb077d4144dd8069040"
+    "mtime": 1790959444.3372142,
+    "seen": 1790959467.3318894,
+    "ast_hash": "7f998e4df8264f6550f4aa49806e3dd0",
+    "semantic_hash": ""
   },
   "lib/features/feed/components/post_submenu_item.dart": {
     "mtime": 1790837035.7576358,
@@ -3693,6 +3693,18 @@
     "mtime": 1790958294.2612655,
     "seen": 1790958377.2660968,
     "ast_hash": "69d540c1328303c924e06852dcbb8aa3",
+    "semantic_hash": ""
+  },
+  "src/admin/hooks/useAdminSecurity.ts": {
+    "mtime": 1790959367.1718948,
+    "seen": 1790959467.3341055,
+    "ast_hash": "938d42fd95a884e3399ef8d366c8b03f",
+    "semantic_hash": ""
+  },
+  "src/admin/services/adminSecurityService.ts": {
+    "mtime": 1790959350.3268251,
+    "seen": 1790959467.33429,
+    "ast_hash": "09ad9dcb350b2c916b6385aad89aa60d",
     "semantic_hash": ""
   }
 }

@@ -104,8 +104,8 @@ class HomeNavDrawer extends StatelessWidget {
                     onClose: onClose,
                   ),
                   HomeDrawerItem(
-                    icon: CupertinoIcons.gear_alt,
-                    label: 'Pengaturan',
+                    icon: CupertinoIcons.bell,
+                    label: 'Panduan Notifikasi HP',
                     inkColor: inkColor,
                     mutedColor: mutedColor,
                     hoverColor: tileHoverColor,

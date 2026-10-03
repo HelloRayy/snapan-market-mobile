@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/services/global_notification_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/auth/components/auth_brand_header.dart';
 import 'package:snapan_market/features/auth/components/auth_login_tab.dart';
@@ -168,6 +170,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
     if (error == null) {
       setState(() => _suspensionInfo = null);
+      unawaited(GlobalNotificationService.instance.syncFcmTokenNow());
       widget.onSuccess();
     } else if (error.startsWith('ACCOUNT_SUSPENDED::')) {
       final parts = error.split('::');
@@ -236,6 +239,7 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(() => _isSubmitting = false);
 
     if (error == null) {
+      unawaited(GlobalNotificationService.instance.syncFcmTokenNow());
       widget.onSuccess();
     } else {
       setState(() => _regPasswordError = error);

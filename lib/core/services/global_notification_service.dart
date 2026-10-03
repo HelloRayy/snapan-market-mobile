@@ -78,10 +78,25 @@ class GlobalNotificationService {
 
   /// Initialize global realtime notification listener, FCM, & OS notification channel
   Future<void> init() async {
-    await _initLocalNotifications();
-    await _initFirebaseMessaging();
+    // Jalankan local notification & Firebase FCM secara paralel agar tidak saling memblokir jika permission ditunggu
+    unawaited(_initLocalNotifications());
+    unawaited(_initFirebaseMessaging());
     _fetchInitialUnreadStatus();
     _subscribeRealtime();
+  }
+
+  /// Memaksa pengambilan token FCM dan pendaftaran ke Supabase secara langsung
+  Future<void> syncFcmTokenNow() async {
+    try {
+      final fcm = FirebaseMessaging.instance;
+      final token = await fcm.getToken();
+      if (token != null && token.isNotEmpty) {
+        debugPrint('[FCM] syncFcmTokenNow token: $token');
+        await SupabaseService.instance.saveFcmToken(token);
+      }
+    } catch (e) {
+      debugPrint('[FCM] syncFcmTokenNow error: $e');
+    }
   }
 
   Future<void> _initFirebaseMessaging() async {
@@ -90,18 +105,23 @@ class GlobalNotificationService {
       FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
       final fcm = FirebaseMessaging.instance;
-      await fcm.requestPermission(
+
+      // Ambil token sesegera mungkin di background
+      fcm.getToken().then((token) async {
+        if (token != null && token.isNotEmpty) {
+          debugPrint('[FCM] Device FCM Token generated: $token');
+          await SupabaseService.instance.saveFcmToken(token);
+        }
+      }).catchError((e) {
+        debugPrint('[FCM] getToken error: $e');
+      });
+
+      // Request runtime notification permission (non-blocking)
+      unawaited(fcm.requestPermission(
         alert: true,
         badge: true,
         sound: true,
-      );
-
-      // Get FCM Token and save to Supabase
-      final token = await fcm.getToken();
-      if (token != null) {
-        debugPrint('[FCM] Device FCM Token generated: $token');
-        await SupabaseService.instance.saveFcmToken(token);
-      }
+      ));
 
       // Listen for token refresh
       fcm.onTokenRefresh.listen((newToken) {

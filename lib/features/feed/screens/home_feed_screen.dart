@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/components/notification_guide_bottom_sheet.dart';
 import 'package:snapan_market/core/components/update_info_bottom_sheet.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/services/app_update_service.dart';
@@ -199,7 +200,10 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       drawer: HomeNavDrawer(
         userProfile: _feedController.userProfile,
         onAppearanceTap: () {},
-        onSettingsTap: () {},
+        onSettingsTap: () {
+          Navigator.of(context).maybePop();
+          NotificationGuideBottomSheet.show(context);
+        },
         onLikedTap: () {
           Navigator.of(context).maybePop();
           setState(() => _currentNavTab = HomeNavTab.activity);

@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
 import 'package:snapan_market/core/constants/supabase_constants.dart';
 import 'package:snapan_market/core/navigation/navigation_service.dart';
+import 'package:snapan_market/core/services/global_notification_service.dart';
 import 'package:snapan_market/core/services/suspension_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/screens/home_feed_screen.dart';
@@ -40,6 +41,9 @@ Future<void> main() async {
   if (Supabase.instance.client.auth.currentUser != null) {
     FollowService.instance.loadFollowings();
   }
+
+  // Initialize global notification service & FCM token immediately
+  unawaited(GlobalNotificationService.instance.init());
 
   // Initialize background suspension listeners (SNAPS-16)
   SuspensionService.instance.init();

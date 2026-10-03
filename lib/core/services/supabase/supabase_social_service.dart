@@ -38,6 +38,24 @@ class SupabaseSocialService {
     }
   }
 
+  /// Count unread notifications for current user
+  Future<int> getUnreadNotificationsCount() async {
+    final user = _currentUser;
+    if (user == null) return 0;
+
+    try {
+      final res = await _client
+          .from('notifications')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('is_read', false);
+      return (res as List).length;
+    } catch (e) {
+      debugPrint('Error getUnreadNotificationsCount: $e');
+      return 0;
+    }
+  }
+
   /// Mark all notifications as read for current user
   Future<void> markNotificationsAsRead() async {
     final user = _currentUser;

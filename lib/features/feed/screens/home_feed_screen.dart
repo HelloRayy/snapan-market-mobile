@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/update_info_bottom_sheet.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/services/app_update_service.dart';
+import 'package:snapan_market/core/services/global_notification_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/features/activity/screens/activity_screen.dart';
@@ -10,7 +11,6 @@ import 'package:snapan_market/features/auth/components/auth_prompt_overlay.dart'
 import 'package:snapan_market/features/auth/screens/auth_screen.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
 import 'package:snapan_market/features/create_post/screens/create_post_modal.dart';
-import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart';
 import 'package:snapan_market/features/feed/components/home_dock_overlay.dart';
 import 'package:snapan_market/features/feed/components/home_feed_header.dart';
 import 'package:snapan_market/features/feed/components/home_feed_scrollable_list.dart';
@@ -57,6 +57,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     _feedController.addListener(() {
       if (mounted) setState(() {});
     });
+
+    // Initialize global realtime notification banner & badge listener
+    GlobalNotificationService.instance.init();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkForAppUpdate();
@@ -255,19 +258,28 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
             activityTab: const ActivityScreen(showAppBar: false),
             profileTab: ProfileScreen(key: _profileKey, showAppBar: false, onOpenMenu: () => _scaffoldKey.currentState?.openDrawer()),
           ),
-          HomeDockOverlay(
-            currentNavTab: _currentNavTab,
-            fabAnimationController: _fabAnimationController!,
-            fabAnimation: _fabAnimation,
-            fabBottom: fabBottom,
-            onCreatePost: _handleCreatePost,
-            onTabSelected: (tab) {
-              setState(() => _currentNavTab = tab);
-              _showFab();
-              if (tab == HomeNavTab.profile) _profileKey.currentState?.reloadProfile();
+          ValueListenableBuilder<bool>(
+            valueListenable: GlobalNotificationService.instance.hasUnreadActivity,
+            builder: (context, hasUnread, _) {
+              return HomeDockOverlay(
+                currentNavTab: _currentNavTab,
+                fabAnimationController: _fabAnimationController!,
+                fabAnimation: _fabAnimation,
+                fabBottom: fabBottom,
+                hasUnreadActivity: hasUnread,
+                onCreatePost: _handleCreatePost,
+                onTabSelected: (tab) {
+                  setState(() => _currentNavTab = tab);
+                  _showFab();
+                  if (tab == HomeNavTab.activity) {
+                    GlobalNotificationService.instance.markAllRead();
+                  }
+                  if (tab == HomeNavTab.profile) _profileKey.currentState?.reloadProfile();
+                },
+                userAvatar: _feedController.userProfile?['avatar_url'] as String? ??
+                    (SupabaseService.instance.currentUser?.userMetadata?['avatar_url'] as String?),
+              );
             },
-            userAvatar: _feedController.userProfile?['avatar_url'] as String? ??
-                (SupabaseService.instance.currentUser?.userMetadata?['avatar_url'] as String?),
           ),
         ],
       ),

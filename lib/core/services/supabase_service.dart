@@ -236,6 +236,9 @@ class SupabaseService {
   Future<void> markNotificationsAsRead() =>
       social.markNotificationsAsRead();
 
+  Future<int> getUnreadNotificationsCount() =>
+      social.getUnreadNotificationsCount();
+
   RealtimeChannel subscribeToNotifications(void Function(Map<String, dynamic> record) onNewNotification) =>
       social.subscribeToNotifications(onNewNotification);
 

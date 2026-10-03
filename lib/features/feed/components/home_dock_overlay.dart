@@ -4,7 +4,6 @@ import 'package:snapan_market/features/create_post/models/create_post_types.dart
 import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart';
 export 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart' show HomeNavTab, HomeBottomNavBar;
 import 'package:snapan_market/features/feed/components/home_feed_fab_group.dart';
-import 'package:snapan_market/features/feed/components/home_nav_tab_switcher.dart';
 import 'package:snapan_market/features/search/screens/search_screen.dart';
 
 /// Overlay widget combining FAB Group and HomeBottomNavBar (<60 lines).
@@ -16,6 +15,7 @@ class HomeDockOverlay extends StatelessWidget {
   final void Function([PostMode mode]) onCreatePost;
   final ValueChanged<HomeNavTab> onTabSelected;
   final String? userAvatar;
+  final bool hasUnreadActivity;
 
   const HomeDockOverlay({
     super.key,
@@ -26,6 +26,7 @@ class HomeDockOverlay extends StatelessWidget {
     required this.onCreatePost,
     required this.onTabSelected,
     this.userAvatar,
+    this.hasUnreadActivity = false,
   });
 
   @override
@@ -48,6 +49,7 @@ class HomeDockOverlay extends StatelessWidget {
               currentTab: currentNavTab,
               hasUnreadMessages: true,
               unreadMessagesCount: 20,
+              hasUnreadActivity: hasUnreadActivity,
               userAvatar: userAvatar,
               onSearchTap: () => Navigator.push(
                 context,

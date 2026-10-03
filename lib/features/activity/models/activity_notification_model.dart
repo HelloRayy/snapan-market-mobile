@@ -44,7 +44,8 @@ class ActivityNotification {
 
     final actor = json['actor'] as Map<String, dynamic>?;
     final actorUsername = actor?['username']?.toString() ?? '';
-    final actorName = actor?['full_name']?.toString() ?? (actorUsername.isNotEmpty ? '@$actorUsername' : 'Pengguna');
+    final defaultActorName = notifType == ActivityType.system ? (json['title']?.toString() ?? 'Pengumuman Resmi') : (actorUsername.isNotEmpty ? '@$actorUsername' : 'Pengguna');
+    final actorName = actor?['full_name']?.toString() ?? defaultActorName;
     final actorAvatar = actor?['avatar_url']?.toString() ?? '';
 
     return ActivityNotification(

@@ -236,6 +236,9 @@ class SupabaseService {
   Future<void> markNotificationsAsRead() =>
       social.markNotificationsAsRead();
 
+  RealtimeChannel subscribeToNotifications(void Function(Map<String, dynamic> record) onNewNotification) =>
+      social.subscribeToNotifications(onNewNotification);
+
   Future<List<Map<String, dynamic>>> fetchFollowings() =>
       social.fetchFollowings();
 

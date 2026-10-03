@@ -13,14 +13,25 @@ class SupabaseSocialService {
     if (user == null) return [];
 
     try {
-      final response = await _client
-          .from('notifications')
-          .select('*, actor:profiles!notifications_actor_id_fkey(*)')
-          .eq('user_id', user.id)
-          .order('created_at', ascending: false)
-          .limit(40);
-
-      return (response as List<dynamic>).whereType<Map<String, dynamic>>().toList();
+      // Coba fetch dengan left outer join actor profile
+      try {
+        final response = await _client
+            .from('notifications')
+            .select('*, actor:profiles!actor_id(*)')
+            .eq('user_id', user.id)
+            .order('created_at', ascending: false)
+            .limit(40);
+        return (response as List<dynamic>).whereType<Map<String, dynamic>>().toList();
+      } catch (_) {
+        // Fallback jika foreign key join ketat gagal karena actor_id bernilai null (pengumuman sistem)
+        final response = await _client
+            .from('notifications')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('created_at', ascending: false)
+            .limit(40);
+        return (response as List<dynamic>).whereType<Map<String, dynamic>>().toList();
+      }
     } catch (e) {
       debugPrint('Error fetchNotifications: $e');
       return [];
@@ -40,6 +51,33 @@ class SupabaseSocialService {
     } catch (e) {
       debugPrint('Error markNotificationsAsRead: $e');
     }
+  }
+
+  /// Realtime channel subscription for user's notifications
+  RealtimeChannel subscribeToNotifications(void Function(Map<String, dynamic> record) onNewNotification) {
+    final user = _currentUser;
+    final userId = user?.id ?? '';
+    final channelName = 'public:notifications:$userId';
+
+    return _client
+        .channel(channelName)
+        .onPostgresChanges(
+          event: PostgresChangeEvent.insert,
+          schema: 'public',
+          table: 'notifications',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'user_id',
+            value: userId,
+          ),
+          callback: (payload) {
+            final newRecord = payload.newRecord;
+            if (newRecord.isNotEmpty) {
+              onNewNotification(newRecord);
+            }
+          },
+        )
+        .subscribe();
   }
 
   /// Fetch all followings for the authenticated user

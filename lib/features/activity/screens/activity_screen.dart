@@ -16,12 +16,36 @@ class _ActivityScreenState extends State<ActivityScreen> {
   int _activeTabIndex = 0; // 0: Semua, 1: Pesanan, 2: Interaksi
   late List<ActivityNotification> _notifications;
   bool _isLoading = true;
+  dynamic _realtimeChannel;
 
   @override
   void initState() {
     super.initState();
     _notifications = [];
     _loadLiveNotifications();
+    _setupRealtimeNotifications();
+  }
+
+  @override
+  void dispose() {
+    _realtimeChannel?.unsubscribe();
+    super.dispose();
+  }
+
+  void _setupRealtimeNotifications() {
+    try {
+      _realtimeChannel = SupabaseService.instance.subscribeToNotifications((newRecord) {
+        if (!mounted) return;
+        final newNotif = ActivityNotification.fromJson(newRecord);
+        setState(() {
+          // Tambahkan ke paling atas jika belum ada di list
+          _notifications.removeWhere((n) => n.id == newNotif.id);
+          _notifications.insert(0, newNotif);
+        });
+      });
+    } catch (e) {
+      debugPrint('Realtime notification sub error: $e');
+    }
   }
 
   Future<void> _loadLiveNotifications() async {
@@ -132,68 +156,78 @@ class _ActivityScreenState extends State<ActivityScreen> {
                   ? const SingleChildScrollView(
                       child: ActivityListSkeleton(itemCount: 6),
                     )
-                  : _filteredNotifications.isEmpty
-                      ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 64.0,
-                            height: 64.0,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF8FAFC),
-                              shape: BoxShape.circle,
-                              border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
+                  : RefreshIndicator(
+                      onRefresh: _loadLiveNotifications,
+                      color: const Color(0xFF3D38F5),
+                      child: _filteredNotifications.isEmpty
+                          ? ListView(
+                              children: [
+                                SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+                                Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 64.0,
+                                        height: 64.0,
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFF8FAFC),
+                                          shape: BoxShape.circle,
+                                          border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
+                                        ),
+                                        child: const Icon(
+                                          Icons.notifications_none_rounded,
+                                          size: 28.0,
+                                          color: Color(0xFF94A3B8),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12.0),
+                                      const Text(
+                                        "Belum ada aktivitas baru",
+                                        style: TextStyle(
+                                          color: Color(0xFF0F172A),
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 14.5,
+                                          letterSpacing: -0.2,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4.0),
+                                      const Text(
+                                        "Notifikasi pesanan dan interaksi akan muncul di sini.",
+                                        style: TextStyle(
+                                          color: Color(0xFF94A3B8),
+                                          fontSize: 12.5,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            )
+                          : ListView.separated(
+                              padding: const EdgeInsets.only(top: 4.0, bottom: 120.0),
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              itemCount: _filteredNotifications.length,
+                              separatorBuilder: (_, _) => const Divider(
+                                color: Color(0xFFF1F5F9),
+                                height: 1.0,
+                                thickness: 0.5,
+                              ),
+                              itemBuilder: (_, idx) {
+                                final notif = _filteredNotifications[idx];
+                                return ActivityItemTile(
+                                  notification: notif,
+                                  onTap: () {
+                                    setState(() {
+                                      final i = _notifications.indexWhere((n) => n.id == notif.id);
+                                      if (i != -1) {
+                                        _notifications[i] = _notifications[i].copyWith(isRead: true);
+                                      }
+                                    });
+                                  },
+                                );
+                              },
                             ),
-                            child: const Icon(
-                              Icons.notifications_none_rounded,
-                              size: 28.0,
-                              color: Color(0xFF94A3B8),
-                            ),
-                          ),
-                          const SizedBox(height: 12.0),
-                          const Text(
-                            "Belum ada aktivitas baru",
-                            style: TextStyle(
-                              color: Color(0xFF0F172A),
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14.5,
-                              letterSpacing: -0.2,
-                            ),
-                          ),
-                          const SizedBox(height: 4.0),
-                          const Text(
-                            "Notifikasi pesanan dan interaksi akan muncul di sini.",
-                            style: TextStyle(
-                              color: Color(0xFF94A3B8),
-                              fontSize: 12.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : ListView.separated(
-                      padding: const EdgeInsets.only(top: 4.0, bottom: 120.0),
-                      itemCount: _filteredNotifications.length,
-                      separatorBuilder: (_, __) => const Divider(
-                        color: Color(0xFFF1F5F9),
-                        height: 1.0,
-                        thickness: 0.5,
-                      ),
-                      itemBuilder: (_, idx) {
-                        final notif = _filteredNotifications[idx];
-                        return ActivityItemTile(
-                          notification: notif,
-                          onTap: () {
-                            setState(() {
-                              final i = _notifications.indexWhere((n) => n.id == notif.id);
-                              if (i != -1) {
-                                _notifications[i] = _notifications[i].copyWith(isRead: true);
-                              }
-                            });
-                          },
-                        );
-                      },
                     ),
             ),
           ],

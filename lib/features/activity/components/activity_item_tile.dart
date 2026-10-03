@@ -30,18 +30,38 @@ class ActivityItemTile extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(22.0),
-                  child: Image.network(
-                    notification.actorAvatar,
-                    width: 44.0,
-                    height: 44.0,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      width: 44.0,
-                      height: 44.0,
-                      color: const Color(0xFFE2E8F0),
-                      child: const Icon(CupertinoIcons.person_fill, color: Color(0xFF94A3B8)),
-                    ),
-                  ),
+                  child: notification.type == ActivityType.system
+                      ? Container(
+                          width: 44.0,
+                          height: 44.0,
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Color(0xFF3D38F5), Color(0xFF6366F1)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                          ),
+                          child: const Icon(CupertinoIcons.speaker_2_fill, color: Colors.white, size: 22.0),
+                        )
+                      : (notification.actorAvatar.isNotEmpty
+                          ? Image.network(
+                              notification.actorAvatar,
+                              width: 44.0,
+                              height: 44.0,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, _, _) => Container(
+                                width: 44.0,
+                                height: 44.0,
+                                color: const Color(0xFFE2E8F0),
+                                child: const Icon(CupertinoIcons.person_fill, color: Color(0xFF94A3B8)),
+                              ),
+                            )
+                          : Container(
+                              width: 44.0,
+                              height: 44.0,
+                              color: const Color(0xFFE2E8F0),
+                              child: const Icon(CupertinoIcons.person_fill, color: Color(0xFF94A3B8)),
+                            )),
                 ),
 
                 Positioned(
@@ -132,7 +152,7 @@ class ActivityItemTile extends StatelessWidget {
                   width: 44.0,
                   height: 44.0,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                  errorBuilder: (_, _, _) => const SizedBox.shrink(),
                 ),
               ),
             ] else if (!notification.isRead) ...[

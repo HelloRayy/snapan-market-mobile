@@ -652,6 +652,35 @@ export const adminService = {
         }
       }
 
+      // 3. Ambil Device Token FCM siswa dan kirimkan push ke Google Firebase Gateway
+      try {
+        const userIds = users.map((u) => u.id);
+        const { data: fcmRows } = await (supabase as any)
+          .from('user_fcm_tokens')
+          .select('fcm_token')
+          .in('user_id', userIds);
+
+        if (fcmRows && fcmRows.length > 0) {
+          const tokens = fcmRows
+            .map((r: any) => r.fcm_token)
+            .filter((t: any) => typeof t === 'string' && t.trim().length > 10);
+
+          if (tokens.length > 0) {
+            // Import dinamis agar tidak memblokir jika offline
+            const { adminFcmService } = await import('./adminFcmService');
+            await adminFcmService.sendPushNotificationToTokens({
+              tokens,
+              title: payload.title,
+              message: payload.message,
+              actionType: payload.actionType,
+              actionUrl: payload.actionUrl,
+            });
+          }
+        }
+      } catch (fcmErr) {
+        console.warn('FCM dispatch warning (notifikasi database tetap berhasil):', fcmErr);
+      }
+
       return { successCount: totalInserted, targetCount: users.length };
     } catch (err: any) {
       console.error('sendBroadcastNotification failed:', err);

@@ -15,7 +15,45 @@ import 'package:snapan_market/features/activity/models/activity_notification_mod
 /// Top-level background message handler for FCM
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // Handled by Google Play Services automatically in Android notification tray
+  try {
+    final title = message.notification?.title ?? message.data['title'] ?? 'Pengumuman Resmi';
+    final body = message.notification?.body ?? message.data['message'] ?? '';
+
+    final localNotifs = FlutterLocalNotificationsPlugin();
+    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const initSettings = InitializationSettings(android: androidInit);
+    await localNotifs.initialize(settings: initSettings);
+
+    final bigTextStyle = BigTextStyleInformation(
+      body,
+      contentTitle: title,
+      summaryText: 'SMKN 8 Semarang',
+      htmlFormatContent: false,
+      htmlFormatContentTitle: false,
+    );
+
+    final androidDetails = AndroidNotificationDetails(
+      'snaps_announcements',
+      'Pengumuman & Notifikasi Snaps',
+      channelDescription: 'Notifikasi broadcast pengumuman resmi dan aktivitas interaksi Snaps.',
+      importance: Importance.max,
+      priority: Priority.high,
+      styleInformation: bigTextStyle,
+      enableVibration: true,
+      playSound: true,
+      icon: '@mipmap/ic_launcher',
+    );
+
+    await localNotifs.show(
+      id: (DateTime.now().millisecondsSinceEpoch ~/ 1000) % 100000,
+      title: title,
+      body: body,
+      notificationDetails: NotificationDetails(android: androidDetails),
+      payload: jsonEncode(message.data),
+    );
+  } catch (e) {
+    debugPrint('Background message handler notification error: $e');
+  }
 }
 
 /// Global Notification Service (OS Status Bar, In-App Dynamic Banner & FCM Background Push)

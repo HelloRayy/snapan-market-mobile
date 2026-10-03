@@ -10,6 +10,9 @@ class ActivityNotification {
   final String message;
   final String timeAgo;
   final String? postThumbnail;
+  final String? actionUrl;
+  final String? actionType;
+  final String? postId;
   final bool isRead;
 
   const ActivityNotification({
@@ -22,6 +25,9 @@ class ActivityNotification {
     required this.message,
     required this.timeAgo,
     this.postThumbnail,
+    this.actionUrl,
+    this.actionType,
+    this.postId,
     this.isRead = false,
   });
 
@@ -57,6 +63,9 @@ class ActivityNotification {
       title: json['title']?.toString() ?? 'Notifikasi baru',
       message: json['message']?.toString() ?? '',
       timeAgo: 'Baru saja',
+      actionUrl: json['action_url']?.toString(),
+      actionType: json['action_type']?.toString(),
+      postId: json['post_id']?.toString(),
       isRead: json['is_read'] == true,
     );
   }
@@ -71,6 +80,9 @@ class ActivityNotification {
     String? message,
     String? timeAgo,
     String? postThumbnail,
+    String? actionUrl,
+    String? actionType,
+    String? postId,
     bool? isRead,
   }) {
     return ActivityNotification(
@@ -83,6 +95,9 @@ class ActivityNotification {
       message: message ?? this.message,
       timeAgo: timeAgo ?? this.timeAgo,
       postThumbnail: postThumbnail ?? this.postThumbnail,
+      actionUrl: actionUrl ?? this.actionUrl,
+      actionType: actionType ?? this.actionType,
+      postId: postId ?? this.postId,
       isRead: isRead ?? this.isRead,
     );
   }

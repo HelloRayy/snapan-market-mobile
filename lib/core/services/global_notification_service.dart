@@ -6,6 +6,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:snapan_market/core/navigation/navigation_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/features/activity/components/broadcast_detail_modal.dart';
+import 'package:snapan_market/features/activity/models/activity_notification_model.dart';
 
 /// Global Notification Service (OS Status Bar & In-App Dynamic Banner)
 /// - Registers Android High Importance Notification Channel (Unlocks OS Toggle)
@@ -102,8 +104,19 @@ class GlobalNotificationService {
         // 1. Post notification to Android OS Status Bar
         _showOsNotification(title: title, message: message);
 
-        // 2. Show floating in-app banner
-        showTopBanner(title: title, message: message, type: type);
+        // 2. Show floating in-app banner with tap action
+        showTopBanner(
+          title: title,
+          message: message,
+          type: type,
+          onTap: () {
+            final ctx = NavigationService.currentContext;
+            if (ctx != null) {
+              final notif = ActivityNotification.fromJson(record);
+              BroadcastDetailModal.show(ctx, notif);
+            }
+          },
+        );
       });
     } catch (e) {
       debugPrint('Error subscribing to global notifications: $e');

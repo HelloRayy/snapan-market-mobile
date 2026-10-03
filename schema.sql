@@ -152,13 +152,18 @@ create table if not exists public.notifications (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references public.profiles(id) on delete cascade not null,
   actor_id uuid references public.profiles(id) on delete cascade,
-  type text not null check (type in ('like', 'comment', 'reply', 'order', 'system')),
+  type text not null check (type in ('like', 'comment', 'reply', 'order', 'system', 'mention', 'follow')),
   title text not null,
   message text not null,
   post_id uuid references public.market_posts(id) on delete cascade,
+  action_url text,
+  action_type text default 'none',
   is_read boolean default false,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+alter table public.notifications add column if not exists action_url text;
+alter table public.notifications add column if not exists action_type text default 'none';
 
 -- 9. TABEL CONTENT REPORTS (Laporan Konten & Pelanggaran Siswa)
 create table if not exists public.content_reports (

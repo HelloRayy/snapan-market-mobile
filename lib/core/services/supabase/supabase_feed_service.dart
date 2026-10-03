@@ -179,6 +179,28 @@ class SupabaseFeedService {
     }
   }
 
+  /// Fetch single post by ID
+  Future<MarketPostModel?> fetchPostById(String postId) async {
+    try {
+      final response = await _client
+          .from('market_posts')
+          .select('*, seller:profiles!market_posts_seller_id_fkey(*)')
+          .eq('id', postId)
+          .maybeSingle();
+
+      if (response == null) return null;
+      final post = MarketPostModel.fromJson(response);
+      final hydrated = await PollSyncService.instance.hydrateAndSyncPosts(
+        client: _client,
+        posts: [post],
+      );
+      return hydrated.isNotEmpty ? hydrated.first : post;
+    } catch (e) {
+      debugPrint('Error fetchPostById: $e');
+      return null;
+    }
+  }
+
   /// Fetch set of post IDs bookmarked by current user
   Future<Set<String>> fetchBookmarkedPostIds() async {
     final user = _currentUser;

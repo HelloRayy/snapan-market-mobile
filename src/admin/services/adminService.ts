@@ -610,6 +610,8 @@ export const adminService = {
     targetUserId?: string;
     soundUrl?: string; // Mock custom sound url / name
     adminId?: string;
+    actionUrl?: string;
+    actionType?: 'none' | 'update_app' | 'external_url' | 'post_link';
   }): Promise<{ successCount: number; targetCount: number }> {
     try {
       // 1. Ambil target user ID
@@ -631,6 +633,8 @@ export const adminService = {
         type: 'system',
         title: payload.title,
         message: payload.message,
+        action_url: payload.actionUrl || null,
+        action_type: payload.actionType || 'none',
         is_read: false,
       }));
 

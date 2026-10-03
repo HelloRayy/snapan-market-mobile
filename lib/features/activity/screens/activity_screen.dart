@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:snapan_market/core/components/snaps_skeleton.dart";
 import "package:snapan_market/core/services/supabase_service.dart";
 import "package:snapan_market/features/activity/components/activity_item_tile.dart";
+import "package:snapan_market/features/activity/components/broadcast_detail_modal.dart";
 import "package:snapan_market/features/activity/models/activity_notification_model.dart";
 
 class ActivityScreen extends StatefulWidget {
@@ -224,6 +225,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                         _notifications[i] = _notifications[i].copyWith(isRead: true);
                                       }
                                     });
+
+                                    // Full Open Broadcast Modal
+                                    if (notif.type == ActivityType.system) {
+                                      BroadcastDetailModal.show(context, notif);
+                                    }
                                   },
                                 );
                               },

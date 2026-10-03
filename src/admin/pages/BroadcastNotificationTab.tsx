@@ -20,6 +20,10 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
   const [customSoundUrl, setCustomSoundUrl] = useState<string>('');
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
+  // Action Link / Target Action Field
+  const [actionType, setActionType] = useState<'none' | 'update_app' | 'external_url' | 'post_link'>('none');
+  const [actionUrl, setActionUrl] = useState<string>('');
+
   // Status & History State
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -134,6 +138,8 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
         targetRole: targetType === 'specific_role' ? targetRole : undefined,
         targetUserId: targetType === 'single_user' ? selectedUser?.id : undefined,
         soundUrl: soundChoice === 'custom' ? customSoundUrl : soundChoice,
+        actionType,
+        actionUrl: actionType !== 'none' ? actionUrl.trim() : undefined,
         adminId: adminProfile?.id,
       });
 
@@ -147,6 +153,8 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
       setMessage('');
       setSelectedUser(null);
       setTargetUsername('');
+      setActionType('none');
+      setActionUrl('');
 
       fetchHistory();
     } catch (err: any) {
@@ -429,7 +437,7 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
                     </select>
                   </div>
 
-                  {soundChoice === 'custom' && (
+                      {soundChoice === 'custom' && (
                     <div className="col-sm-6">
                       <input
                         type="url"
@@ -439,6 +447,73 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
                         onChange={(e) => setCustomSoundUrl(e.target.value)}
                         style={{ borderRadius: '6px', fontSize: '12px' }}
                       />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 5. Action Link / Aksi Tombol (Full Open & Direct Action) */}
+              <div
+                className="mb-4 p-3 rounded-3"
+                style={{ background: '#f8fafc', border: '1px solid #e2e8f0' }}
+              >
+                <label className="form-label fw-bold mb-1" style={{ fontSize: '13px', color: '#1e293b' }}>
+                  <i className="fa-solid fa-link me-1.5 text-primary"></i>
+                  Aksi Tombol / Tautan Lampiran (Opsional)
+                </label>
+                <p className="text-muted mb-2" style={{ fontSize: '12px' }}>
+                  Sematkan tombol aksi di dalam pop-up modal pengumuman (misal: tombol update app atau buka link web).
+                </p>
+
+                <div className="row g-2">
+                  <div className="col-sm-5">
+                    <select
+                      className="form-select form-select-sm"
+                      value={actionType}
+                      onChange={(e: any) => setActionType(e.target.value)}
+                      style={{ borderRadius: '6px', fontSize: '12.5px' }}
+                    >
+                      <option value="none">Tanpa Tombol (Hanya Teks Pengumuman)</option>
+                      <option value="update_app">🚀 Tombol Pembaruan Aplikasi (In-App Update)</option>
+                      <option value="external_url">🌐 Buka URL Web / Link Eksternal</option>
+                      <option value="post_link">📌 Buka Postingan Tertentu (UUID)</option>
+                    </select>
+                  </div>
+
+                  {actionType === 'external_url' && (
+                    <div className="col-sm-7">
+                      <input
+                        type="url"
+                        className="form-control form-control-sm"
+                        placeholder="https://smkn8semarang.sch.id / https://forms.gle/..."
+                        value={actionUrl}
+                        onChange={(e) => setActionUrl(e.target.value)}
+                        required
+                        style={{ borderRadius: '6px', fontSize: '12px' }}
+                      />
+                    </div>
+                  )}
+
+                  {actionType === 'post_link' && (
+                    <div className="col-sm-7">
+                      <input
+                        type="text"
+                        className="form-control form-control-sm"
+                        placeholder="ID Postingan (UUID post misal: 123e4567-...)"
+                        value={actionUrl}
+                        onChange={(e) => setActionUrl(e.target.value)}
+                        required
+                        style={{ borderRadius: '6px', fontSize: '12px' }}
+                      />
+                    </div>
+                  )}
+
+                  {actionType === 'update_app' && (
+                    <div className="col-sm-7">
+                      <div className="p-1.5 px-2 bg-white rounded border small text-primary" style={{ fontSize: '12px' }}>
+                        <i className="fa-solid fa-circle-check me-1"></i>
+                        Akan otomatis memicu pop-up in-app update langsung di HP siswa.
+                      </div>
                     </div>
                   )}
                 </div>

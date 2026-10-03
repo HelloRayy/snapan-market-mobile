@@ -238,7 +238,12 @@ class SupabaseSocialService {
   /// Save FCM Device Token for Push Notifications
   Future<void> saveFcmToken(String token) async {
     final user = _currentUser;
-    if (user == null || token.isEmpty) return;
+    if (user == null) {
+      debugPrint('[FCM] saveFcmToken ditunda: Pengguna belum login (currentUser null)');
+      return;
+    }
+    if (token.isEmpty) return;
+
     try {
       await _client.from('user_fcm_tokens').upsert({
         'user_id': user.id,
@@ -246,8 +251,9 @@ class SupabaseSocialService {
         'device_info': 'Android',
         'updated_at': DateTime.now().toIso8601String(),
       });
+      debugPrint('[FCM] ✅ Berhasil mendaftarkan FCM Token untuk user ${user.id} ke tabel user_fcm_tokens');
     } catch (e) {
-      debugPrint('Error saving FCM Token: $e');
+      debugPrint('[FCM] ❌ Gagal menyimpan FCM Token ke tabel user_fcm_tokens: $e');
     }
   }
 }

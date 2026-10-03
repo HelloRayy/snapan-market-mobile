@@ -11,6 +11,7 @@ import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/activity/components/broadcast_detail_modal.dart';
 import 'package:snapan_market/features/activity/models/activity_notification_model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Top-level background message handler for FCM
 @pragma('vm:entry-point')
@@ -98,12 +99,25 @@ class GlobalNotificationService {
       // Get FCM Token and save to Supabase
       final token = await fcm.getToken();
       if (token != null) {
+        debugPrint('[FCM] Device FCM Token generated: $token');
         await SupabaseService.instance.saveFcmToken(token);
       }
 
       // Listen for token refresh
       fcm.onTokenRefresh.listen((newToken) {
+        debugPrint('[FCM] Token refreshed: $newToken');
         SupabaseService.instance.saveFcmToken(newToken);
+      });
+
+      // Listen for Supabase Auth state changes to immediately associate token after login
+      Supabase.instance.client.auth.onAuthStateChange.listen((data) async {
+        if (data.session?.user != null) {
+          final currentToken = await fcm.getToken();
+          if (currentToken != null) {
+            debugPrint('[FCM] Auth state changed, re-saving token for user: ${data.session!.user.id}');
+            await SupabaseService.instance.saveFcmToken(currentToken);
+          }
+        }
       });
 
       // When app is in foreground and FCM receives a message

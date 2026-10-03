@@ -131,7 +131,7 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
     setFeedbackMsg(null);
 
     try {
-      const res = await adminService.sendBroadcastNotification({
+      const res: any = await adminService.sendBroadcastNotification({
         title: title.trim(),
         message: message.trim(),
         targetType,
@@ -143,9 +143,14 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
         adminId: adminProfile?.id,
       });
 
+      const fcmInfo =
+        res.totalTokensFound > 0
+          ? ` (Push Google FCM terkirim ke ${res.fcmSentCount} perangkat)`
+          : ` (Perhatian: Belum ada token HP di user_fcm_tokens, pastikan siswa sudah login di v1.0.12)`;
+
       setFeedbackMsg({
         type: 'success',
-        text: `Berhasil mengirim notifikasi broadcast ke ${res.successCount} pengguna! Notifikasi langsung muncul di aplikasi secara realtime.`,
+        text: `Berhasil mengirim broadcast ke ${res.successCount} pengguna!${fcmInfo}`,
       });
 
       // Reset Form

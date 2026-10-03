@@ -612,7 +612,13 @@ export const adminService = {
     adminId?: string;
     actionUrl?: string;
     actionType?: 'none' | 'update_app' | 'external_url' | 'post_link';
-  }): Promise<{ successCount: number; targetCount: number }> {
+  }): Promise<{
+    successCount: number;
+    targetCount: number;
+    fcmSentCount: number;
+    fcmFailedCount: number;
+    totalTokensFound: number;
+  }> {
     try {
       // 1. Ambil target user ID
       let query = supabase.from('profiles').select('id');
@@ -624,7 +630,15 @@ export const adminService = {
 
       const { data: users, error: userError } = await query;
       if (userError) throw userError;
-      if (!users || users.length === 0) return { successCount: 0, targetCount: 0 };
+      if (!users || users.length === 0) {
+        return {
+          successCount: 0,
+          targetCount: 0,
+          fcmSentCount: 0,
+          fcmFailedCount: 0,
+          totalTokensFound: 0,
+        };
+      }
 
       // 2. Siapkan records notifikasi untuk diinsert secara batch
       const rows = users.map((u) => ({
@@ -653,35 +667,50 @@ export const adminService = {
       }
 
       // 3. Ambil Device Token FCM siswa dan kirimkan push ke Google Firebase Gateway
+      let fcmSentCount = 0;
+      let fcmFailedCount = 0;
+      let totalTokensFound = 0;
       try {
         const userIds = users.map((u) => u.id);
-        const { data: fcmRows } = await (supabase as any)
+        const { data: fcmRows, error: tokenFetchError } = await (supabase as any)
           .from('user_fcm_tokens')
           .select('fcm_token')
           .in('user_id', userIds);
+
+        if (tokenFetchError) {
+          console.warn('Gagal membaca tabel user_fcm_tokens:', tokenFetchError);
+        }
 
         if (fcmRows && fcmRows.length > 0) {
           const tokens = fcmRows
             .map((r: any) => r.fcm_token)
             .filter((t: any) => typeof t === 'string' && t.trim().length > 10);
 
+          totalTokensFound = tokens.length;
           if (tokens.length > 0) {
-            // Import dinamis agar tidak memblokir jika offline
             const { adminFcmService } = await import('./adminFcmService');
-            await adminFcmService.sendPushNotificationToTokens({
+            const fcmRes = await adminFcmService.sendPushNotificationToTokens({
               tokens,
               title: payload.title,
               message: payload.message,
               actionType: payload.actionType,
               actionUrl: payload.actionUrl,
             });
+            fcmSentCount = fcmRes.success;
+            fcmFailedCount = fcmRes.failed;
           }
         }
       } catch (fcmErr) {
         console.warn('FCM dispatch warning (notifikasi database tetap berhasil):', fcmErr);
       }
 
-      return { successCount: totalInserted, targetCount: users.length };
+      return {
+        successCount: totalInserted,
+        targetCount: users.length,
+        fcmSentCount,
+        fcmFailedCount,
+        totalTokensFound,
+      };
     } catch (err: any) {
       console.error('sendBroadcastNotification failed:', err);
       throw new Error(err?.message || 'Gagal mengirim notifikasi broadcast');

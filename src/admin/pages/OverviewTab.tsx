@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { BadgeCheck } from 'lucide-react';
 import { StatsCard } from '../components/StatsCard';
 import { ServerStatusCard } from '../components/ServerStatusCard';
 import { ServerStatusGaugeCard } from '../components/ServerStatusGaugeCard';
@@ -426,8 +427,11 @@ export function OverviewTab({
                               style={{ marginRight: '10px' }}
                             />
                             <div>
-                              <div style={{ fontWeight: 600, color: '#1f2937' }}>
-                                {u.full_name || 'Siswa SMKN 8'}
+                              <div style={{ fontWeight: 600, color: '#1f2937', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <span>{u.full_name || 'Siswa SMKN 8'}</span>
+                                {u.is_verified && (
+                                  <BadgeCheck size={13} fill="#1d64ec" color="#ffffff" className="shrink-0" />
+                                )}
                               </div>
                               <div style={{ fontSize: '11px', color: '#64748b' }}>
                                 @{u.username || 'user'}
@@ -437,8 +441,15 @@ export function OverviewTab({
                         </td>
                         <td style={{ color: '#475569', fontSize: '12.5px' }}>
                           <div style={{ fontWeight: 500 }}>{u.class_group || 'Kelas Siswa'}</div>
-                          <div style={{ fontSize: '11px', color: '#94a3b8' }}>
-                            {u.is_verified ? 'Terverifikasi' : 'Belum Verifikasi'}
+                          <div style={{ fontSize: '11px', marginTop: '2px' }}>
+                            {u.is_verified ? (
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3.5px', color: '#1d4ed8', fontWeight: 600 }}>
+                                <BadgeCheck size={12} fill="#1d64ec" color="#ffffff" className="shrink-0" />
+                                Verified
+                              </span>
+                            ) : (
+                              <span style={{ color: '#94a3b8' }}>Belum Verifikasi</span>
+                            )}
                           </div>
                         </td>
                         <td>

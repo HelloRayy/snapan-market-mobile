@@ -1,6 +1,7 @@
 import type { MarketPostRow, ProfileRow } from '../services/adminService';
 import { UserAvatar } from './UserAvatar';
 import { AdminModalPortal } from './AdminModalPortal';
+import { AdminTooltip } from './AdminTooltip';
 
 type PostWithSeller = MarketPostRow & { seller?: ProfileRow | null };
 
@@ -70,26 +71,28 @@ export function PostDetailModal({
               })}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Tutup modal"
-            style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '6px',
-              background: '#f8fafc',
-              border: '1px solid #e4e7ec',
-              color: '#64748b',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              fontSize: '14px',
-            }}
-          >
-            <i className="fa-solid fa-xmark"></i>
-          </button>
+          <AdminTooltip content="Tutup" placement="bottom">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Tutup modal"
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '6px',
+                background: '#f8fafc',
+                border: '1px solid #e4e7ec',
+                color: '#64748b',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                fontSize: '14px',
+              }}
+            >
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+          </AdminTooltip>
         </div>
 
         {/* Modal Body */}

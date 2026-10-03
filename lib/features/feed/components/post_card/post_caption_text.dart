@@ -1,66 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/utils/mention_text_span_helper.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
-/// Caption text with multi-thread indicator badge and Meta Blue mentions/hashtags
+/// Caption text with multi-thread indicator badge and Pure Accent Blue mentions/hashtags
 class PostCaptionText extends StatelessWidget {
   final MarketPostModel item;
+  final ValueChanged<String>? onUserClick;
 
   const PostCaptionText({
     super.key,
     required this.item,
+    this.onUserClick,
   });
-
-  List<InlineSpan> _buildFormattedSpans(String text) {
-    final regex = RegExp(r'((?:@|#)[a-zA-Z0-9_.]+|https?:\/\/[^\s]+)');
-    final matches = regex.allMatches(text);
-    if (matches.isEmpty) {
-      return [TextSpan(text: text)];
-    }
-
-    final List<InlineSpan> spans = [];
-    int lastEnd = 0;
-
-    for (final match in matches) {
-      if (match.start > lastEnd) {
-        spans.add(TextSpan(text: text.substring(lastEnd, match.start)));
-      }
-
-      final matchedText = match.group(0)!;
-      final isUrl = matchedText.startsWith('http');
-      final isMention = matchedText.startsWith('@');
-
-      spans.add(
-        TextSpan(
-          text: matchedText,
-          style: TextStyle(
-            color: AppColors.metaBlue,
-            fontWeight: isMention ? FontWeight.w600 : FontWeight.w500,
-            decoration: isUrl ? TextDecoration.underline : TextDecoration.none,
-            decorationColor: AppColors.metaBlue,
-          ),
-        ),
-      );
-
-      lastEnd = match.end;
-    }
-
-    if (lastEnd < text.length) {
-      spans.add(TextSpan(text: text.substring(lastEnd)));
-    }
-
-    return spans;
-  }
 
   @override
   Widget build(BuildContext context) {
     final hasMultiThread =
         item.totalThreadParts != null && item.totalThreadParts! > 1;
 
+    const baseStyle = TextStyle(
+      fontFamily: 'SFPro',
+      fontFamilyFallback: ['AppleColorEmoji'],
+      fontSize: 14.5,
+      height: 1.35,
+      fontWeight: FontWeight.normal,
+      color: Color(0xFF0F172A),
+    );
+
     return Text.rich(
       TextSpan(
+        style: baseStyle,
         children: [
-          ..._buildFormattedSpans(item.caption),
+          ...MentionTextSpanHelper.buildSpans(
+            context: context,
+            text: item.caption,
+            defaultStyle: baseStyle,
+            onUserClick: onUserClick,
+          ),
           if (hasMultiThread) ...[
             WidgetSpan(
               alignment: PlaceholderAlignment.middle,
@@ -85,14 +61,6 @@ class PostCaptionText extends StatelessWidget {
             ),
           ],
         ],
-      ),
-      style: const TextStyle(
-        fontFamily: 'SFPro',
-        fontFamilyFallback: ['AppleColorEmoji'],
-        fontSize: 14.5,
-        height: 1.35,
-        fontWeight: FontWeight.normal,
-        color: Color(0xFF0F172A),
       ),
     );
   }

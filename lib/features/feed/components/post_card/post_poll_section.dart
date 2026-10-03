@@ -108,27 +108,13 @@ class PostPollSection extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Flexible(
-            child: Text(
-              '${poll.totalVotes} suara • ${poll.remainingTimeLabel}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 11.5,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFF64748B),
-                letterSpacing: -0.1,
-              ),
-            ),
-          ),
           if (hasLocation) ...[
-            const SizedBox(width: 8.0),
             Flexible(
               child: Text(
                 post.locationTag!,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.end,
+                textAlign: TextAlign.start,
                 style: const TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w400,
@@ -137,7 +123,23 @@ class PostPollSection extends StatelessWidget {
                 ),
               ),
             ),
-          ],
+            const SizedBox(width: 8.0),
+          ] else
+            const SizedBox.shrink(),
+          Flexible(
+            child: Text(
+              '${poll.totalVotes} suara • ${poll.remainingTimeLabel}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: hasLocation ? TextAlign.end : TextAlign.start,
+              style: const TextStyle(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFF64748B),
+                letterSpacing: -0.1,
+              ),
+            ),
+          ),
         ],
       ),
     );

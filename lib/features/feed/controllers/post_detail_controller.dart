@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/core/services/suspension_service.dart';
 import 'package:snapan_market/features/feed/components/delete_post_bottom_sheet.dart';
 import 'package:snapan_market/features/feed/components/post_submenu_popover.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
@@ -50,6 +51,11 @@ class PostDetailController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void openCommentField() {
+    isCommentingActive = true;
+    notifyListeners();
+  }
+
   Future<bool> addComment(BuildContext context, String content, bool isProductMode) async {
     if (content.trim().isEmpty) return false;
     HapticFeedback.mediumImpact();
@@ -63,6 +69,10 @@ class PostDetailController extends ChangeNotifier {
       );
       return false;
     }
+
+    // Proactively check if account got suspended (SNAPS-16)
+    final isSuspended = await SuspensionService.instance.checkStatus();
+    if (isSuspended) return false;
 
     try {
       final liveComment = await SupabaseService.instance.addComment(
@@ -99,6 +109,11 @@ class PostDetailController extends ChangeNotifier {
       return true;
     } catch (e) {
       debugPrint('Error adding comment: $e');
+
+      // Check if error is due to suspension RLS policy
+      final isNowSuspended = await SuspensionService.instance.checkStatus();
+      if (isNowSuspended) return false;
+
       final user = SupabaseService.instance.currentUser;
       final fallbackComment = PostCommentModel(
         id: 'comment-local-${DateTime.now().millisecondsSinceEpoch}',

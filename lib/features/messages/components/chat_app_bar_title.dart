@@ -51,7 +51,7 @@ class ChatAppBarTitle extends StatelessWidget {
                     child: Image.network(
                       user.avatar,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const Icon(
+                      errorBuilder: (context, error, stackTrace) => const Icon(
                         Icons.person_rounded,
                         color: AppColors.muted,
                         size: 18.0,

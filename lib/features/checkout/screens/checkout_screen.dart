@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/checkout/components/checkout_bottom_bar.dart';
 import 'package:snapan_market/features/checkout/components/checkout_buyer_note_card.dart';
 import 'package:snapan_market/features/checkout/components/checkout_hero_image.dart';
@@ -108,10 +109,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  void _handleOpenChat() {
+  void _handleOpenChat() async {
+    final targetUserId = widget.post.seller.id.isNotEmpty ? widget.post.seller.id : null;
+    String convId = 'conv-${widget.post.id}';
+    if (targetUserId != null) {
+      final realConvId = await SupabaseService.instance.getOrCreateConversation(
+        otherUserId: targetUserId,
+        productId: widget.post.id,
+      );
+      if (realConvId != null) {
+        convId = realConvId;
+      }
+    }
+
     final conv = ConversationModel(
-      id: "conv-${widget.post.id}",
+      id: convId,
+      productId: widget.post.id,
       user: ConversationUser(
+        id: targetUserId,
         name: widget.post.sellerName,
         username: widget.post.sellerUsername,
         avatar: widget.post.sellerAvatar,
@@ -128,11 +143,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ),
     );
     DirectMessagesService.instance.addOrUpdateConversation(conv);
-    Navigator.of(context).push(
-      AppSlidePageRoute(
-        builder: (_) => ChatConversationScreen(conversation: conv),
-      ),
-    );
+    if (mounted) {
+      Navigator.of(context).push(
+        AppSlidePageRoute(
+          builder: (_) => ChatConversationScreen(conversation: conv),
+        ),
+      );
+    }
   }
 
   @override

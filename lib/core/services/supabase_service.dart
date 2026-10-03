@@ -176,6 +176,17 @@ class SupabaseService {
   Future<List<MarketPostModel>> searchPosts(String query) =>
       feed.searchPosts(query);
 
+  Future<void> reportPost({
+    required String postId,
+    required String reason,
+    String? details,
+  }) =>
+      feed.reportPost(
+        postId: postId,
+        reason: reason,
+        details: details,
+      );
+
   // --- CHAT & DM DELEGATIONS ---
   Future<List<Map<String, dynamic>>> fetchConversations() =>
       chat.fetchConversations();
@@ -201,11 +212,19 @@ class SupabaseService {
         text: text,
       );
 
+  Future<void> markMessagesAsRead(String conversationId) =>
+      chat.markMessagesAsRead(conversationId);
+
   RealtimeChannel subscribeToMessages(
     String conversationId,
-    void Function(Map<String, dynamic> msg) onNewMessage,
-  ) =>
-      chat.subscribeToMessages(conversationId, onNewMessage);
+    void Function(Map<String, dynamic> msg) onNewMessage, {
+    void Function(Map<String, dynamic> updatedMsg)? onMessageUpdated,
+  }) =>
+      chat.subscribeToMessages(
+        conversationId,
+        onNewMessage,
+        onMessageUpdated: onMessageUpdated,
+      );
 
   RealtimeChannel subscribeToInbox(void Function() onInboxUpdated) =>
       chat.subscribeToInbox(onInboxUpdated);

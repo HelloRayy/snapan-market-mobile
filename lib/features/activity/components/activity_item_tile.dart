@@ -1,6 +1,7 @@
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
+import "package:snapan_market/core/utils/mention_text_span_helper.dart";
 import "package:snapan_market/features/activity/models/activity_notification_model.dart";
 
 class ActivityItemTile extends StatelessWidget {
@@ -97,13 +98,24 @@ class ActivityItemTile extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 2.0),
-                  Text(
-                    notification.message,
-                    style: TextStyle(
-                      fontSize: 13.0,
-                      fontWeight: notification.isRead ? FontWeight.w400 : FontWeight.w500,
-                      color: notification.isRead ? const Color(0xFF64748B) : const Color(0xFF334155),
-                      height: 1.3,
+                  Text.rich(
+                    TextSpan(
+                      style: TextStyle(
+                        fontSize: 13.0,
+                        fontWeight: notification.isRead ? FontWeight.w400 : FontWeight.w500,
+                        color: notification.isRead ? const Color(0xFF64748B) : const Color(0xFF334155),
+                        height: 1.3,
+                      ),
+                      children: MentionTextSpanHelper.buildSpans(
+                        context: context,
+                        text: notification.message,
+                        defaultStyle: TextStyle(
+                          fontSize: 13.0,
+                          fontWeight: notification.isRead ? FontWeight.w400 : FontWeight.w500,
+                          color: notification.isRead ? const Color(0xFF64748B) : const Color(0xFF334155),
+                          height: 1.3,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -146,6 +158,10 @@ class ActivityItemTile extends StatelessWidget {
         return const Color(0xFFF43F5E);
       case ActivityType.comment:
         return const Color(0xFF3B82F6);
+      case ActivityType.mention:
+        return AppColors.primary;
+      case ActivityType.follow:
+        return const Color(0xFF6366F1);
       case ActivityType.order:
         return const Color(0xFF10B981);
       case ActivityType.system:
@@ -159,6 +175,10 @@ class ActivityItemTile extends StatelessWidget {
         return CupertinoIcons.heart_fill;
       case ActivityType.comment:
         return CupertinoIcons.chat_bubble_fill;
+      case ActivityType.mention:
+        return CupertinoIcons.at;
+      case ActivityType.follow:
+        return CupertinoIcons.person_badge_plus_fill;
       case ActivityType.order:
         return CupertinoIcons.bag_fill;
       case ActivityType.system:

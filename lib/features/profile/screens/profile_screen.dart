@@ -141,12 +141,22 @@ class ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _handleDirectMessage() {
+  void _handleDirectMessage() async {
     final user = _controller.user;
     if (user == null) return;
+    String convId = 'conv_${user.id.isNotEmpty ? user.id : user.username}';
+    if (user.id.isNotEmpty) {
+      final realConvId = await SupabaseService.instance.getOrCreateConversation(
+        otherUserId: user.id,
+      );
+      if (realConvId != null) {
+        convId = realConvId;
+      }
+    }
     final conv = ConversationModel(
-      id: 'conv_${user.id.isNotEmpty ? user.id : user.username}',
+      id: convId,
       user: ConversationUser(
+        id: user.id.isNotEmpty ? user.id : null,
         name: user.name,
         username: user.username,
         avatar: user.avatar,
@@ -159,7 +169,9 @@ class ProfileScreenState extends State<ProfileScreen> {
       isSender: true,
     );
     DirectMessagesService.instance.addOrUpdateConversation(conv);
-    Navigator.of(context).push(AppSlidePageRoute(builder: (_) => ChatConversationScreen(conversation: conv)));
+    if (mounted) {
+      Navigator.of(context).push(AppSlidePageRoute(builder: (_) => ChatConversationScreen(conversation: conv)));
+    }
   }
 
   @override

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 
-export type UserRole = 'buyer' | 'seller' | 'admin';
+export type UserRole = 'user' | 'admin' | 'buyer' | 'seller';
 
 interface RoleSelectDropdownProps {
   currentRole: UserRole;
@@ -10,25 +10,17 @@ interface RoleSelectDropdownProps {
 
 const ROLE_OPTIONS = [
   {
-    id: 'buyer' as const,
-    title: 'Siswa (Buyer)',
-    desc: 'Akses belanja, checkout COD, dan berinteraksi di feed.',
-    icon: 'fa-user',
-    badgeBg: '#f1f5f9',
-    badgeColor: '#475569',
-  },
-  {
-    id: 'seller' as const,
-    title: 'Penjual (Seller)',
-    desc: 'Akses listing produk sekolah, karya jurusan, dan transaksi COD.',
-    icon: 'fa-store',
-    badgeBg: '#ecfdf5',
-    badgeColor: '#059669',
+    id: 'user' as const,
+    title: 'Siswa / Warga Sekolah',
+    desc: 'Akses penuh C2C: bebas beli & jual produk, posting utas sosial, dan transaksi COD.',
+    icon: 'fa-user-graduate',
+    badgeBg: '#f0fdf4',
+    badgeColor: '#16a34a',
   },
   {
     id: 'admin' as const,
     title: 'Staff Admin',
-    desc: 'Akses penuh ke portal manajemen, moderasi konten, dan sistem.',
+    desc: 'Akses penuh ke portal manajemen, moderasi konten, dan sistem sekolah.',
     icon: 'fa-shield-halved',
     badgeBg: '#eff6ff',
     badgeColor: '#2563eb',
@@ -43,8 +35,9 @@ export function RoleSelectDropdown({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const normalizedRole = currentRole === 'buyer' || currentRole === 'seller' ? 'user' : currentRole;
   const selectedOption =
-    ROLE_OPTIONS.find((opt) => opt.id === currentRole) || ROLE_OPTIONS[0];
+    ROLE_OPTIONS.find((opt) => opt.id === normalizedRole) || ROLE_OPTIONS[0];
 
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {

@@ -41,6 +41,7 @@ const AdminLoginPage = lazy(() =>
 );
 
 import { AuthPromptPopover } from '@/ui/components/auth/AuthPromptPopover';
+import { AccountSuspendedScreen } from '@/ui/components/auth/AccountSuspendedScreen';
 
 export function App() {
   useSmoothScroll();
@@ -106,6 +107,14 @@ export function App() {
 
   const isViewingOtherUserProfile = isProfileRoute && targetProfileUsername !== 'radityarayhannnn';
 
+  // Check Account Suspension Status (SNAPS-16)
+  const isAccountSuspended = Boolean(
+    user &&
+    profile?.is_suspended &&
+    (!profile.suspended_until || new Date(profile.suspended_until).getTime() > Date.now()) &&
+    profile.role !== 'admin'
+  );
+
   const [showSplash, setShowSplash] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       return !sessionStorage.getItem('snaps_splash_seen');
@@ -125,6 +134,16 @@ export function App() {
       }
     }
   }, [user, isHomeRoute]);
+
+  // Fallback to login prompt on account suspension (SNAPS-16)
+  useEffect(() => {
+    const handleAccountSuspended = () => {
+      setIsAuthPromptOpen(true);
+      navigateToHome();
+    };
+    window.addEventListener('snapan_account_suspended', handleAccountSuspended);
+    return () => window.removeEventListener('snapan_account_suspended', handleAccountSuspended);
+  }, [navigateToHome]);
 
   // Auto-redirect /home to root landing page /
   useEffect(() => {
@@ -190,6 +209,13 @@ export function App() {
           onNavigateLogin={() => {
             setCurrentRoute('/admin/login');
             window.history.pushState({}, '', '/admin/login');
+          }}
+        />
+      ) : isAccountSuspended ? (
+        <AccountSuspendedScreen
+          profile={profile as any}
+          onLoggedOut={() => {
+            window.location.reload();
           }}
         />
       ) : (

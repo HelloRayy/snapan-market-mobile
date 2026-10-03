@@ -3,6 +3,7 @@ import { adminService, type MarketPostRow, type ProfileRow } from '../services/a
 import { PostDetailModal } from '../components/PostDetailModal';
 import { UserAvatar } from '../components/UserAvatar';
 import { AdminModalPortal } from '../components/AdminModalPortal';
+import { AdminTooltip } from '../components/AdminTooltip';
 
 type PostWithSeller = MarketPostRow & { seller?: ProfileRow | null };
 
@@ -198,36 +199,41 @@ export function ContentModerationTab() {
 
             {/* View Mode Toggle */}
             <div style={{ display: 'flex', border: '1px solid #e4e7ec', borderRadius: '6px', overflow: 'hidden' }}>
-              <button
-                type="button"
-                onClick={() => setViewMode('table')}
-                style={{
-                  height: '34px',
-                  padding: '0 12px',
-                  border: 0,
-                  background: viewMode === 'table' ? '#4272d7' : '#ffffff',
-                  color: viewMode === 'table' ? '#ffffff' : '#475569',
-                  cursor: 'pointer',
-                  fontSize: '12px',
-                }}
-              >
-                <i className="fa-solid fa-table-list"></i>
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode('grid')}
-                style={{
-                  height: '34px',
-                  padding: '0 12px',
-                  border: 0,
-                  background: viewMode === 'grid' ? '#4272d7' : '#ffffff',
-                  color: viewMode === 'grid' ? '#ffffff' : '#475569',
-                  cursor: 'pointer',
-                  fontSize: '12px',
-                }}
-              >
-                <i className="fa-solid fa-table-cells-large"></i>
-              </button>
+              <AdminTooltip content="Tampilan tabel" placement="top">
+                <button
+                  type="button"
+                  onClick={() => setViewMode('table')}
+                  style={{
+                    height: '34px',
+                    padding: '0 12px',
+                    border: 0,
+                    background: viewMode === 'table' ? '#4272d7' : '#ffffff',
+                    color: viewMode === 'table' ? '#ffffff' : '#475569',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                  }}
+                >
+                  <i className="fa-solid fa-table-list"></i>
+                </button>
+              </AdminTooltip>
+
+              <AdminTooltip content="Tampilan kartu" placement="top">
+                <button
+                  type="button"
+                  onClick={() => setViewMode('grid')}
+                  style={{
+                    height: '34px',
+                    padding: '0 12px',
+                    border: 0,
+                    background: viewMode === 'grid' ? '#4272d7' : '#ffffff',
+                    color: viewMode === 'grid' ? '#ffffff' : '#475569',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                  }}
+                >
+                  <i className="fa-solid fa-table-cells-large"></i>
+                </button>
+              </AdminTooltip>
             </div>
           </div>
 
@@ -314,27 +320,29 @@ export function ContentModerationTab() {
                       <td className="num">
                         <div className="table-data-feature">
                           {/* Inspect Modal Button */}
-                          <button
-                            type="button"
-                            className="item"
-                            title="Tinjau Detail Postingan"
-                            onClick={() => handleInspectPost(post)}
-                            style={{ border: 0, cursor: 'pointer' }}
-                          >
-                            <i className="fa-solid fa-eye"></i>
-                          </button>
+                          <AdminTooltip content="Tinjau detail postingan" placement="top">
+                            <button
+                              type="button"
+                              className="item"
+                              onClick={() => handleInspectPost(post)}
+                              style={{ border: 0, cursor: 'pointer' }}
+                            >
+                              <i className="fa-solid fa-eye"></i>
+                            </button>
+                          </AdminTooltip>
 
                           {/* Takedown Button */}
-                          <button
-                            type="button"
-                            className="item"
-                            title="Takedown Postingan"
-                            disabled={deletingId === post.id}
-                            onClick={() => setTargetPostForDelete(post)}
-                            style={{ border: 0, cursor: 'pointer', color: '#dc3545' }}
-                          >
-                            <i className="fa-solid fa-trash-can"></i>
-                          </button>
+                          <AdminTooltip content="Takedown postingan" placement="top" variant="danger">
+                            <button
+                              type="button"
+                              className="item"
+                              disabled={deletingId === post.id}
+                              onClick={() => setTargetPostForDelete(post)}
+                              style={{ border: 0, cursor: 'pointer', color: '#dc3545' }}
+                            >
+                              <i className="fa-solid fa-trash-can"></i>
+                            </button>
+                          </AdminTooltip>
                         </div>
                       </td>
                     </tr>
@@ -428,22 +436,27 @@ export function ContentModerationTab() {
                             {formatPrice(post.price)}
                           </span>
                           <div style={{ display: 'flex', gap: '6px' }}>
-                            <button
-                              type="button"
-                              className="m-btn m-btn--ghost"
-                              onClick={() => handleInspectPost(post)}
-                              style={{ height: '28px', padding: '0 8px', fontSize: '11px' }}
-                            >
-                              <i className="fa-solid fa-eye"></i>
-                            </button>
-                            <button
-                              type="button"
-                              className="m-btn m-btn--ghost"
-                              onClick={() => setTargetPostForDelete(post)}
-                              style={{ height: '28px', padding: '0 8px', fontSize: '11px', color: '#dc3545' }}
-                            >
-                              <i className="fa-solid fa-trash-can"></i>
-                            </button>
+                            <AdminTooltip content="Tinjau detail" placement="top">
+                              <button
+                                type="button"
+                                className="m-btn m-btn--ghost"
+                                onClick={() => handleInspectPost(post)}
+                                style={{ height: '28px', padding: '0 8px', fontSize: '11px' }}
+                              >
+                                <i className="fa-solid fa-eye"></i>
+                              </button>
+                            </AdminTooltip>
+
+                            <AdminTooltip content="Takedown postingan" placement="top" variant="danger">
+                              <button
+                                type="button"
+                                className="m-btn m-btn--ghost"
+                                onClick={() => setTargetPostForDelete(post)}
+                                style={{ height: '28px', padding: '0 8px', fontSize: '11px', color: '#dc3545' }}
+                              >
+                                <i className="fa-solid fa-trash-can"></i>
+                              </button>
+                            </AdminTooltip>
                           </div>
                         </div>
                       </div>

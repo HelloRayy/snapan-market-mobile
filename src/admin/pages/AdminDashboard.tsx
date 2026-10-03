@@ -6,11 +6,12 @@ import { AdminHeader } from '../components/AdminHeader';
 import { OverviewTab } from './OverviewTab';
 import { UsersManagementTab } from './UsersManagementTab';
 import { ContentModerationTab } from './ContentModerationTab';
+import { ContentReportsTab } from './ContentReportsTab';
+import { BroadcastNotificationTab } from './BroadcastNotificationTab';
 import { MeetingPointsTab } from './MeetingPointsTab';
 import { ServerMonitorTab } from './ServerMonitorTab';
 import { useAdminSecurity } from '../hooks/useAdminSecurity';
 import { adminSecurityService, ADMIN_SESSION_STORAGE_KEY } from '../services/adminSecurityService';
-import { Loader2 } from 'lucide-react';
 import '../styles/cooladmin.css';
 
 interface AdminDashboardProps {
@@ -23,7 +24,6 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [adminEmail, setAdminEmail] = useState<string>('admin@snapan.id');
   const [adminRole, setAdminRole] = useState<string>('admin');
   const [adminProfile, setAdminProfile] = useState<ProfileRow | null>(null);
@@ -97,8 +97,6 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
               targetInfo: 'Sesi aktif didaftarkan via browser',
             });
           }
-
-          setIsCheckingAuth(false);
         }
       } catch (err) {
         console.error('Admin auth check failed:', err);
@@ -128,10 +126,8 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
   }, []);
 
   useEffect(() => {
-    if (!isCheckingAuth) {
-      loadStats();
-    }
-  }, [isCheckingAuth, loadStats]);
+    loadStats();
+  }, [loadStats]);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -155,17 +151,6 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
     onLogout: handleLogout,
     idleTimeoutMinutes: 20,
   });
-
-  if (isCheckingAuth) {
-    return (
-      <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center space-y-3">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3D38F5]" />
-        <span className="text-xs text-slate-500 font-medium">
-          Memverifikasi kredensial admin ekosistem...
-        </span>
-      </div>
-    );
-  }
 
   return (
     <div className="page-wrapper">
@@ -223,12 +208,20 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
                 <ContentModerationTab />
               </div>
 
+              <div className={activeTab === 'reports' ? 'block' : 'hidden'}>
+                <ContentReportsTab />
+              </div>
+
+              <div className={activeTab === 'broadcast' ? 'block' : 'hidden'}>
+                <BroadcastNotificationTab adminProfile={adminProfile} />
+              </div>
+
               <div className={activeTab === 'meeting-points' ? 'block' : 'hidden'}>
                 <MeetingPointsTab />
               </div>
 
               <div className={activeTab === 'server' ? 'block' : 'hidden'}>
-                <ServerMonitorTab />
+                <ServerMonitorTab onNavigateTab={(tab) => setActiveTab(tab)} />
               </div>
             </div>
           </div>

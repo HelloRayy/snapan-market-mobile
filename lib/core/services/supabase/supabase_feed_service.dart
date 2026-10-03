@@ -283,4 +283,29 @@ class SupabaseFeedService {
       return [];
     }
   }
+
+  /// Submit a content report to Supabase for admin review (SNAPS-16/Reports)
+  Future<void> reportPost({
+    required String postId,
+    required String reason,
+    String? details,
+  }) async {
+    final user = _currentUser;
+    if (user == null) {
+      throw Exception('Anda harus masuk untuk melaporkan postingan.');
+    }
+
+    try {
+      await _client.from('content_reports').insert({
+        'post_id': postId,
+        'reporter_id': user.id,
+        'reason': reason,
+        if (details != null && details.trim().isNotEmpty) 'details': details.trim(),
+        'status': 'pending',
+      });
+    } catch (e) {
+      debugPrint('Error reportPost: $e');
+      rethrow;
+    }
+  }
 }

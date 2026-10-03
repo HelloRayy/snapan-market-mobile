@@ -1,5 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { signInWithGoogle, signInWithEmail, signUpWithEmail } from '@/services/api/authService';
+import { 
+  signInWithGoogle, 
+  signInWithEmail, 
+  signUpWithEmail,
+  getStoredSuspensionNotice,
+  clearStoredSuspensionNotice,
+  type AccountSuspensionNotice
+} from '@/services/api/authService';
+import { AlertTriangle, Clock, MessageCircle } from 'lucide-react';
 import { AuthHeader } from './auth/AuthHeader';
 import { AuthLoginForm } from './auth/AuthLoginForm';
 import { AuthRegisterForm } from './auth/AuthRegisterForm';
@@ -25,6 +33,7 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
   const [regStep, setRegStep] = useState<'form' | 'otp'>('form');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [suspensionNotice, setSuspensionNotice] = useState<AccountSuspensionNotice | null>(null);
 
   const formSheetRef = useRef<HTMLDivElement>(null);
 
@@ -47,6 +56,24 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
   const [shakeKey, setShakeKey] = useState(0);
+
+  // Load stored suspension notice or listen to real-time ban (SNAPS-16)
+  useEffect(() => {
+    const stored = getStoredSuspensionNotice();
+    if (stored) {
+      setSuspensionNotice(stored);
+      setAuthTab('login');
+    }
+
+    const handleAccountSuspended = (e: any) => {
+      if (e?.detail) {
+        setSuspensionNotice(e.detail);
+        setAuthTab('login');
+      }
+    };
+    window.addEventListener('snapan_account_suspended', handleAccountSuspended);
+    return () => window.removeEventListener('snapan_account_suspended', handleAccountSuspended);
+  }, []);
 
   // OTP Countdown Timer Logic (60 seconds)
   useEffect(() => {
@@ -151,9 +178,16 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
       setIsSubmitting(true);
       try {
         await signInWithEmail(loginIdentifier, password);
+        setSuspensionNotice(null);
+        clearStoredSuspensionNotice();
         if (onSuccess) onSuccess();
       } catch (err: any) {
-        setErrors({ loginIdentifier: 'Email atau kata sandi tidak sesuai' });
+        if (err?.code === 'ACCOUNT_SUSPENDED' && err.suspension) {
+          setSuspensionNotice(err.suspension);
+          setErrors({ loginIdentifier: 'Akun ini sedang ditangguhkan' });
+        } else {
+          setErrors({ loginIdentifier: 'Email atau kata sandi tidak sesuai' });
+        }
         setShakeKey((k) => k + 1);
       } finally {
         setIsSubmitting(false);
@@ -255,6 +289,65 @@ export const AuthSlideVisual: React.FC<AuthSlideVisualProps> = ({ onBack, onSucc
                   Daftar
                 </button>
               </div>
+
+              {/* Account Suspension Alert Card (SNAPS-16) */}
+              {suspensionNotice && (
+                <div className="w-full p-4 rounded-2xl bg-rose-50 border border-rose-200 text-slate-800 shadow-xs animate-in fade-in duration-300">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-rose-100 flex items-center justify-center shrink-0 mt-0.5 text-rose-600">
+                      <AlertTriangle className="w-4 h-4 stroke-[2.5]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <h4 className="text-xs font-black text-rose-700 uppercase tracking-wider">
+                          Akun Ditangguhkan
+                        </h4>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSuspensionNotice(null);
+                            clearStoredSuspensionNotice();
+                          }}
+                          className="text-[11px] text-rose-500 hover:text-rose-700 font-semibold cursor-pointer"
+                        >
+                          Tutup Info
+                        </button>
+                      </div>
+
+                      <p className="mt-1 text-xs text-rose-900 font-medium leading-relaxed">
+                        {suspensionNotice.reason}
+                      </p>
+
+                      <div className="mt-2.5 pt-2 border-t border-rose-200/60 flex flex-col gap-1 text-[11px] text-rose-700">
+                        <div className="flex items-center gap-1.5 font-medium">
+                          <Clock className="w-3.5 h-3.5 shrink-0" />
+                          <span>
+                            {suspensionNotice.suspendedUntil
+                              ? `Berlaku hingga: ${new Date(suspensionNotice.suspendedUntil).toLocaleDateString('id-ID', {
+                                  day: 'numeric',
+                                  month: 'short',
+                                  year: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })} WIB`
+                              : 'Masa Penangguhan: Permanen (Tanpa Batas)'}
+                          </span>
+                        </div>
+                      </div>
+
+                      <a
+                        href="https://wa.me/6281234567890?text=Halo%20Admin%20SMKN%208%20Semarang,%20saya%20ingin%20mengajukan%20klarifikasi%20terkait%20penangguhan%20akun%20saya"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-600 text-white text-[11.5px] font-bold hover:bg-rose-700 active:scale-95 transition-all shadow-xs"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        <span>Hubungi Admin / Guru BK</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <form onSubmit={handleSubmitForm} noValidate className="space-y-4 pt-1">
                 {authTab === 'login' ? (

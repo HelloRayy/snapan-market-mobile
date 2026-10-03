@@ -65,4 +65,35 @@ class SupabaseAuthService {
       return false;
     }
   }
+
+  /// Check if the currently logged-in user is suspended (SNAPS-16)
+  Future<Map<String, dynamic>?> getCurrentUserSuspensionStatus() async {
+    final user = currentUser;
+    if (user == null) return null;
+
+    try {
+      final res = await _client
+          .from('profiles')
+          .select('id, full_name, username, avatar_url, class_group, role, is_suspended, suspended_at, suspended_until, suspend_reason')
+          .eq('id', user.id)
+          .maybeSingle();
+
+      if (res == null) return null;
+      final isSuspended = res['is_suspended'] == true;
+      if (!isSuspended) return null;
+
+      final suspendedUntilStr = res['suspended_until'] as String?;
+      if (suspendedUntilStr != null) {
+        final until = DateTime.tryParse(suspendedUntilStr);
+        if (until != null && DateTime.now().toUtc().isAfter(until.toUtc())) {
+          return null; // Durasi suspen telah usai
+        }
+      }
+
+      return res;
+    } catch (e) {
+      debugPrint('Error checking suspension status: $e');
+      return null;
+    }
+  }
 }

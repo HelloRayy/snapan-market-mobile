@@ -21,10 +21,49 @@ export async function signInWithGoogle() {
   return data;
 }
 
+export interface AccountSuspensionNotice {
+  reason: string;
+  suspendedUntil: string | null;
+  fullName?: string;
+  username?: string;
+}
+
+export class AccountSuspendedError extends Error {
+  code = 'ACCOUNT_SUSPENDED' as const;
+  suspension: AccountSuspensionNotice;
+
+  constructor(suspension: AccountSuspensionNotice) {
+    super(`Akun ini sedang ditangguhkan: ${suspension.reason}`);
+    this.name = 'AccountSuspendedError';
+    this.suspension = suspension;
+  }
+}
+
+export function getStoredSuspensionNotice(): AccountSuspensionNotice | null {
+  try {
+    const raw = sessionStorage.getItem('snapan_suspended_notice');
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function clearStoredSuspensionNotice() {
+  try {
+    sessionStorage.removeItem('snapan_suspended_notice');
+  } catch {}
+}
+
 /**
- * Sign In dengan Email & Password
+ * Sign In dengan Email & Password (mendukung identifier email atau username)
  */
-export async function signInWithEmail(email: string, password: string) {
+export async function signInWithEmail(emailOrIdentifier: string, password: string) {
+  let email = emailOrIdentifier.trim();
+  if (!email.includes('@')) {
+    const cleanUsername = email.toLowerCase().replace(/^@/, '');
+    email = `${cleanUsername}@snapan.id`;
+  }
+
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password
@@ -34,6 +73,35 @@ export async function signInWithEmail(email: string, password: string) {
     console.error('Error signing in with email:', error.message);
     throw error;
   }
+
+  // Check if profile is suspended
+  if (data?.user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id, full_name, username, is_suspended, suspended_until, suspend_reason, role')
+      .eq('id', data.user.id)
+      .maybeSingle();
+
+    if (profile?.is_suspended && profile.role !== 'admin') {
+      const until = profile.suspended_until ? new Date(profile.suspended_until) : null;
+      const isStillSuspended = !until || until.getTime() > Date.now();
+      if (isStillSuspended) {
+        // Sign out immediately to purge session
+        await supabase.auth.signOut();
+        const notice: AccountSuspensionNotice = {
+          reason: profile.suspend_reason || 'Pelanggaran terhadap tata tertib komunitas SMKN 8 Semarang.',
+          suspendedUntil: profile.suspended_until ?? null,
+          fullName: profile.full_name || undefined,
+          username: profile.username || undefined,
+        };
+        sessionStorage.setItem('snapan_suspended_notice', JSON.stringify(notice));
+        throw new AccountSuspendedError(notice);
+      }
+    }
+  }
+
+  // Sesi valid dan normal: bersihkan notice tersimpan jika ada
+  sessionStorage.removeItem('snapan_suspended_notice');
 
   return data;
 }
@@ -66,7 +134,7 @@ export async function signUpWithEmail(email: string, password: string, fullName?
         id: data.user.id,
         full_name: fullName || 'Siswa Snapan',
         class_group: classGroup || 'Siswa Snapan',
-        role: 'buyer'
+        role: 'user'
       });
     } catch (profileErr) {
       console.warn('Manual profile upsert skipped:', profileErr);

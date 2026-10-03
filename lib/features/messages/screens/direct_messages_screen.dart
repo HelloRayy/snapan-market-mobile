@@ -122,6 +122,7 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
             final conv = ConversationModel(
               id: convId,
               user: ConversationUser(
+                id: targetUserId,
                 name: user['full_name'] as String? ?? user['username'] as String? ?? 'Siswa SMKN 8 Semarang',
                 username: user['username'] as String? ?? 'user',
                 avatar: user['avatar_url'] as String? ?? '',
@@ -246,7 +247,7 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
                   itemCount: (_searchQuery.isEmpty && _activeFilter == 'inbox')
                       ? filtered.length + 1
                       : filtered.length,
-                  separatorBuilder: (_, __) => const Divider(
+                  separatorBuilder: (context, index) => const Divider(
                     height: 1.0,
                     thickness: 0.6,
                     color: Color(0xFFE6E6E6),

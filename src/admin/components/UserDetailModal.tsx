@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { BadgeCheck } from 'lucide-react';
 import type { ProfileRow } from '../services/adminService';
 import { UserAvatar } from './UserAvatar';
 import { AdminModalPortal } from './AdminModalPortal';
 import { RoleSelectDropdown, type UserRole } from './RoleSelectDropdown';
+import { AdminTooltip } from './AdminTooltip';
 
 interface UserDetailModalProps {
   user: ProfileRow | null;
@@ -10,6 +12,8 @@ interface UserDetailModalProps {
   onClose: () => void;
   onToggleVerify: (userId: string, currentStatus: boolean) => Promise<void>;
   onChangeRole: (user: ProfileRow, newRole: UserRole) => void;
+  onRequestSuspend?: (user: ProfileRow) => void;
+  onRequestUnsuspend?: (user: ProfileRow) => void;
   isUpdating: boolean;
 }
 
@@ -19,6 +23,8 @@ export function UserDetailModal({
   onClose,
   onToggleVerify,
   onChangeRole,
+  onRequestSuspend,
+  onRequestUnsuspend,
   isUpdating,
 }: UserDetailModalProps) {
   const [copiedId, setCopiedId] = useState(false);
@@ -72,26 +78,28 @@ export function UserDetailModal({
               })}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Tutup modal"
-            style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '6px',
-              background: '#f8fafc',
-              border: '1px solid #e4e7ec',
-              color: '#64748b',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              fontSize: '14px',
-            }}
-          >
-            <i className="fa-solid fa-xmark"></i>
-          </button>
+          <AdminTooltip content="Tutup" placement="bottom">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Tutup modal"
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '6px',
+                background: '#f8fafc',
+                border: '1px solid #e4e7ec',
+                color: '#64748b',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                fontSize: '14px',
+              }}
+            >
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+          </AdminTooltip>
         </div>
 
         {/* Modal Body - 2 Columns Layout */}
@@ -144,8 +152,8 @@ export function UserDetailModal({
                     {user.full_name || 'Siswa SMKN 8'}
                   </h4>
                   {user.is_verified && (
-                    <span style={{ color: '#4272d7', fontSize: '13px' }} title="Akun Resmi">
-                      <i className="fa-solid fa-circle-check"></i>
+                    <span style={{ display: 'inline-flex', alignItems: 'center' }} title="Akun Terverifikasi (Verified Biru)">
+                      <BadgeCheck size={16} fill="#1d64ec" color="#ffffff" className="shrink-0" />
                     </span>
                   )}
                 </div>
@@ -175,20 +183,24 @@ export function UserDetailModal({
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '4px',
-                      padding: '1px 8px',
+                      padding: '1.5px 8px',
                       borderRadius: '4px',
                       fontSize: '10.5px',
                       fontWeight: 600,
-                      background: user.is_verified ? '#ecfdf5' : '#fff7ed',
-                      color: user.is_verified ? '#059669' : '#ea580c',
-                      border: `1px solid ${user.is_verified ? '#a7f3d0' : '#fed7aa'}`,
+                      background: user.is_verified ? '#eff6ff' : '#fff7ed',
+                      color: user.is_verified ? '#1d4ed8' : '#ea580c',
+                      border: `1px solid ${user.is_verified ? '#bfdbfe' : '#fed7aa'}`,
                     }}
                   >
-                    <i
-                      className={`fa-solid ${user.is_verified ? 'fa-circle-check' : 'fa-circle-exclamation'}`}
-                      style={{ fontSize: '9px' }}
-                    ></i>
-                    {user.is_verified ? 'Terverifikasi' : 'Belum Verifikasi'}
+                    {user.is_verified ? (
+                      <BadgeCheck size={12} fill="#1d64ec" color="#ffffff" className="shrink-0" />
+                    ) : (
+                      <i
+                        className="fa-solid fa-circle-exclamation"
+                        style={{ fontSize: '9px' }}
+                      ></i>
+                    )}
+                    {user.is_verified ? 'Verified Biru' : 'Belum Verifikasi'}
                   </span>
                 </div>
               </div>
@@ -287,28 +299,30 @@ export function UserDetailModal({
                     <i className="fa-solid fa-fingerprint" style={{ width: '14px', color: '#94a3b8' }}></i>
                     User UUID
                   </span>
-                  <button
-                    type="button"
-                    onClick={handleCopyId}
-                    style={{
-                      background: '#f8fafc',
-                      border: '1px solid #e4e7ec',
-                      borderRadius: '4px',
-                      padding: '2px 8px',
-                      fontFamily: 'monospace',
-                      fontSize: '11px',
-                      color: '#4272d7',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '5px',
-                    }}
-                  >
-                    <span>{user.id.slice(0, 8)}...</span>
-                    <span style={{ fontSize: '10px', color: '#64748b' }}>
-                      {copiedId ? 'Disalin' : 'Salin'}
-                    </span>
-                  </button>
+                  <AdminTooltip content={copiedId ? 'UUID tersalin!' : 'Salin UUID'} placement="left">
+                    <button
+                      type="button"
+                      onClick={handleCopyId}
+                      style={{
+                        background: '#f8fafc',
+                        border: '1px solid #e4e7ec',
+                        borderRadius: '4px',
+                        padding: '2px 8px',
+                        fontFamily: 'monospace',
+                        fontSize: '11px',
+                        color: '#4272d7',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                      }}
+                    >
+                      <span>{user.id.slice(0, 8)}...</span>
+                      <span style={{ fontSize: '10px', color: '#64748b' }}>
+                        {copiedId ? 'Disalin' : 'Salin'}
+                      </span>
+                    </button>
+                  </AdminTooltip>
                 </div>
               </div>
             </div>
@@ -360,8 +374,8 @@ export function UserDetailModal({
               <div
                 style={{
                   padding: '14px 16px',
-                  background: user.is_verified ? '#f0fdf4' : '#fafaf9',
-                  border: user.is_verified ? '1px solid #bbf7d0' : '1px solid #e7e5e4',
+                  background: user.is_verified ? '#f0f7ff' : '#fafaf9',
+                  border: user.is_verified ? '1px solid #bfdbfe' : '1px solid #e7e5e4',
                   borderRadius: '8px',
                   display: 'flex',
                   flexDirection: 'column',
@@ -369,23 +383,25 @@ export function UserDetailModal({
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <i
-                    className={`fa-solid ${
-                      user.is_verified ? 'fa-circle-check' : 'fa-circle-question'
-                    }`}
-                    style={{
-                      color: user.is_verified ? '#16a34a' : '#78716c',
-                      fontSize: '15px',
-                    }}
-                  ></i>
+                  {user.is_verified ? (
+                    <BadgeCheck size={18} fill="#1d64ec" color="#ffffff" className="shrink-0" />
+                  ) : (
+                    <i
+                      className="fa-solid fa-circle-question"
+                      style={{
+                        color: '#78716c',
+                        fontSize: '15px',
+                      }}
+                    ></i>
+                  )}
                   <span
                     style={{
                       fontSize: '13px',
                       fontWeight: 700,
-                      color: user.is_verified ? '#15803d' : '#44403c',
+                      color: user.is_verified ? '#1d4ed8' : '#44403c',
                     }}
                   >
-                    {user.is_verified ? 'Lencana Resmi Aktif' : 'Status Belum Terverifikasi'}
+                    {user.is_verified ? 'Lencana Verified Biru Aktif' : 'Status Belum Terverifikasi'}
                   </span>
                 </div>
 
@@ -394,12 +410,12 @@ export function UserDetailModal({
                     margin: 0,
                     fontSize: '11.5px',
                     lineHeight: 1.45,
-                    color: user.is_verified ? '#166534' : '#78716c',
+                    color: user.is_verified ? '#1e40af' : '#78716c',
                   }}
                 >
                   {user.is_verified
-                    ? 'Akun telah divalidasi sebagai siswa/staff resmi SMKN 8 Semarang dengan reputasi terpercaya.'
-                    : 'Berikan lencana centang verifikasi setelah memeriksa identitas dan NIS/NISN siswa.'}
+                    ? 'Akun telah divalidasi sebagai siswa/staff resmi SMKN 8 Semarang dengan lencana verified biru terpercaya.'
+                    : 'Berikan lencana verified biru resmi setelah memeriksa identitas dan NIS/NISN siswa.'}
                 </p>
 
                 <button
@@ -419,30 +435,175 @@ export function UserDetailModal({
                     justifyContent: 'center',
                     gap: '7px',
                     cursor: isUpdating ? 'not-allowed' : 'pointer',
-                    border: user.is_verified ? '1px solid #fca5a5' : '1px solid #4272d7',
-                    background: user.is_verified ? '#fef2f2' : '#4272d7',
+                    border: user.is_verified ? '1px solid #fca5a5' : '1px solid #1d64ec',
+                    background: user.is_verified ? '#fef2f2' : '#1d64ec',
                     color: user.is_verified ? '#dc2626' : '#ffffff',
-                    boxShadow: user.is_verified ? 'none' : '0 2px 6px rgba(66, 114, 215, 0.28)',
+                    boxShadow: user.is_verified ? 'none' : '0 2px 6px rgba(29, 100, 236, 0.28)',
                     transition: 'all 120ms ease',
                   }}
                 >
-                  <i
-                    className={`fa-solid ${
-                      isUpdating
-                        ? 'fa-arrows-rotate fa-spin'
-                        : user.is_verified
-                        ? 'fa-ban'
-                        : 'fa-check'
-                    }`}
-                  ></i>
+                  {isUpdating ? (
+                    <i className="fa-solid fa-arrows-rotate fa-spin"></i>
+                  ) : user.is_verified ? (
+                    <i className="fa-solid fa-ban"></i>
+                  ) : (
+                    <BadgeCheck size={15} fill="#ffffff" color="#1d64ec" />
+                  )}
                   <span>
                     {isUpdating
                       ? 'Memproses...'
                       : user.is_verified
-                      ? 'Cabut Verifikasi Akun'
-                      : 'Verifikasi Akun Sekarang'}
+                      ? 'Cabut Lencana Verified Biru'
+                      : 'Beri Lencana Verified Biru'}
                   </span>
                 </button>
+              </div>
+            </div>
+
+            {/* Status Penangguhan / Suspend Akun (Pelanggaran) */}
+            <div>
+              <div
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  color: '#64748b',
+                  marginBottom: '8px',
+                }}
+              >
+                Pengawasan & Penangguhan Akun
+              </div>
+
+              <div
+                style={{
+                  padding: '14px 16px',
+                  background: user.is_suspended ? '#fff1f2' : '#f8fafc',
+                  border: user.is_suspended ? '1px solid #fecdd3' : '1px solid #e2e8f0',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i
+                      className={`fa-solid ${
+                        user.is_suspended ? 'fa-triangle-exclamation' : 'fa-shield-halved'
+                      }`}
+                      style={{
+                        color: user.is_suspended ? '#e11d48' : '#0284c7',
+                        fontSize: '15px',
+                      }}
+                    ></i>
+                    <span
+                      style={{
+                        fontSize: '13px',
+                        fontWeight: 700,
+                        color: user.is_suspended ? '#be123c' : '#1e293b',
+                      }}
+                    >
+                      {user.is_suspended ? 'Akun Ditangguhkan' : 'Status Akun Normal'}
+                    </span>
+                  </div>
+                  {user.is_suspended && (
+                    <span
+                      style={{
+                        fontSize: '10px',
+                        fontWeight: 700,
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        background: '#e11d48',
+                        color: '#ffffff',
+                      }}
+                    >
+                      SUSPENDED
+                    </span>
+                  )}
+                </div>
+
+                {user.is_suspended ? (
+                  <div style={{ fontSize: '11.5px', color: '#881337', lineHeight: 1.45 }}>
+                    <p style={{ margin: '0 0 4px', fontWeight: 600 }}>
+                      Alasan: <span style={{ fontWeight: 400 }}>{user.suspend_reason || 'Pelanggaran aturan transaksi'}</span>
+                    </p>
+                    <p style={{ margin: 0, fontSize: '11px', color: '#9f1239' }}>
+                      Batas Waktu:{' '}
+                      <b>
+                        {user.suspended_until
+                          ? new Date(user.suspended_until).toLocaleString('id-ID', {
+                              dateStyle: 'medium',
+                              timeStyle: 'short',
+                            })
+                          : 'Permanen (Tanpa batas)'}
+                      </b>
+                    </p>
+                  </div>
+                ) : (
+                  <p style={{ margin: 0, fontSize: '11.5px', lineHeight: 1.45, color: '#64748b' }}>
+                    Pengguna ini bebas beraktivitas, mempublikasikan postingan feed, dan bertransaksi di marketplace.
+                  </p>
+                )}
+
+                {user.is_suspended ? (
+                  <button
+                    type="button"
+                    disabled={isUpdating}
+                    onClick={() => onRequestUnsuspend?.(user)}
+                    style={{
+                      width: '100%',
+                      height: '36px',
+                      marginTop: '4px',
+                      padding: '0 14px',
+                      borderRadius: '6px',
+                      fontSize: '12.5px',
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '7px',
+                      cursor: isUpdating ? 'not-allowed' : 'pointer',
+                      border: '1px solid #10b981',
+                      background: '#10b981',
+                      color: '#ffffff',
+                      boxShadow: '0 2px 6px rgba(16, 185, 129, 0.28)',
+                      transition: 'all 120ms ease',
+                    }}
+                  >
+                    <i className="fa-solid fa-lock-open"></i>
+                    <span>Pulihkan & Buka Blokir Akun</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={isUpdating || user.role === 'admin'}
+                    onClick={() => onRequestSuspend?.(user)}
+                    style={{
+                      width: '100%',
+                      height: '36px',
+                      marginTop: '4px',
+                      padding: '0 14px',
+                      borderRadius: '6px',
+                      fontSize: '12.5px',
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '7px',
+                      cursor: isUpdating || user.role === 'admin' ? 'not-allowed' : 'pointer',
+                      border: '1px solid #fecdd3',
+                      background: '#fff1f2',
+                      color: '#e11d48',
+                      opacity: user.role === 'admin' ? 0.5 : 1,
+                      transition: 'all 120ms ease',
+                    }}
+                    title={user.role === 'admin' ? 'Akun admin tidak dapat disuspen' : 'Tangguhkan akun siswa'}
+                  >
+                    <i className="fa-solid fa-ban"></i>
+                    <span>Tangguhkan / Suspen Akun</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>

@@ -17,6 +17,8 @@ class AuthLoginTab extends StatelessWidget {
   final bool isSubmitting;
   final VoidCallback onSubmit;
   final VoidCallback onGoogleAuth;
+  final Map<String, dynamic>? suspensionInfo;
+  final VoidCallback? onDismissSuspension;
 
   const AuthLoginTab({
     super.key,
@@ -31,6 +33,8 @@ class AuthLoginTab extends StatelessWidget {
     required this.isSubmitting,
     required this.onSubmit,
     required this.onGoogleAuth,
+    this.suspensionInfo,
+    this.onDismissSuspension,
   });
 
   @override
@@ -38,6 +42,107 @@ class AuthLoginTab extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (suspensionInfo != null) ...[
+          Container(
+            padding: const EdgeInsets.all(14.0),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF1F2),
+              borderRadius: BorderRadius.circular(16.0),
+              border: Border.all(color: const Color(0xFFFECDD3)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6.0),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFE4E6),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: const Icon(
+                        LucideIcons.triangleAlert,
+                        size: 18.0,
+                        color: Color(0xFFE11D48),
+                      ),
+                    ),
+                    const SizedBox(width: 10.0),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'AKUN DITANGGUHKAN',
+                                style: TextStyle(
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFFBE123C),
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              if (onDismissSuspension != null)
+                                GestureDetector(
+                                  onTap: onDismissSuspension,
+                                  child: const Text(
+                                    'Tutup',
+                                    style: TextStyle(
+                                      fontSize: 11.0,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFFF43F5E),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 4.0),
+                          Text(
+                            suspensionInfo!['reason'] as String? ?? 'Pelanggaran terhadap tata tertib komunitas SMKN 8 Semarang.',
+                            style: const TextStyle(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF881337),
+                              height: 1.35,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10.0),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEE2E2),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(LucideIcons.clock, size: 14.0, color: Color(0xFF991B1B)),
+                      const SizedBox(width: 6.0),
+                      Expanded(
+                        child: Text(
+                          suspensionInfo!['untilText'] as String? ?? 'Masa Penangguhan: Permanen',
+                          style: const TextStyle(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF991B1B),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16.0),
+        ],
         AuthInputField(
           label: 'Username',
           hint: '@username_kamu',

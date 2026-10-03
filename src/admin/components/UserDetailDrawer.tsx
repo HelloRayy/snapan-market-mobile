@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  CheckCircle2,
+  BadgeCheck,
   XCircle,
   Copy,
   ShieldCheck,
@@ -16,7 +16,7 @@ interface UserDetailDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   onToggleVerify: (userId: string, currentStatus: boolean) => Promise<void>;
-  onChangeRole: (user: ProfileRow, newRole: 'buyer' | 'seller' | 'admin') => void;
+  onChangeRole: (user: ProfileRow, newRole: 'user' | 'admin' | 'buyer' | 'seller') => void;
   isUpdating: boolean;
 }
 
@@ -70,7 +70,7 @@ export function UserDetailDrawer({
               {user.full_name || 'Tanpa Nama Lengkap'}
             </h3>
             {user.is_verified && (
-              <CheckCircle2 className="h-4 w-4 text-blue-600 fill-blue-50" />
+              <BadgeCheck className="h-4 w-4 text-white fill-[#1d64ec] shrink-0" />
             )}
           </div>
           <p className="text-xs text-slate-500 font-medium">@{user.username || 'username'}</p>
@@ -79,22 +79,27 @@ export function UserDetailDrawer({
               className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold uppercase tracking-wider border ${
                 user.role === 'admin'
                   ? 'bg-purple-50 text-purple-700 border-purple-200'
-                  : user.role === 'seller'
-                  ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
-                  : 'bg-slate-100 text-slate-700 border-slate-200'
+                  : 'bg-emerald-50 text-emerald-700 border-emerald-200'
               }`}
             >
               <ShieldCheck className="h-3 w-3" />
-              {user.role}
+              {user.role === 'admin' ? 'Staff Admin' : 'Siswa / Warga'}
             </span>
             <span
               className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold border ${
                 user.is_verified
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                  ? 'bg-blue-50 text-blue-700 border-blue-200'
                   : 'bg-amber-50 text-amber-700 border-amber-200'
               }`}
             >
-              {user.is_verified ? 'Siswa Terverifikasi' : 'Menunggu Verifikasi'}
+              {user.is_verified ? (
+                <>
+                  <BadgeCheck className="h-3 w-3 text-white fill-[#1d64ec] shrink-0" />
+                  Siswa Terverifikasi
+                </>
+              ) : (
+                'Menunggu Verifikasi'
+              )}
             </span>
           </div>
         </div>
@@ -155,21 +160,27 @@ export function UserDetailDrawer({
         <h4 className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
           Ubah Hak Otorisasi (RBAC)
         </h4>
-        <div className="grid grid-cols-3 gap-2">
-          {(['buyer', 'seller', 'admin'] as const).map((r) => {
-            const isSelected = user.role === r;
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            { id: 'user', label: 'Siswa (Warga Sekolah)', desc: 'Beli, Jual C2C, Utas' },
+            { id: 'admin', label: 'Staff Admin', desc: 'Panel Admin & Moderasi' },
+          ].map((item) => {
+            const isSelected =
+              user.role === item.id ||
+              (item.id === 'user' && (user.role === 'buyer' || user.role === 'seller'));
             return (
               <button
-                key={r}
+                key={item.id}
                 disabled={isUpdating}
-                onClick={() => onChangeRole(user, r)}
-                className={`py-2 px-3 rounded-xl border text-xs font-semibold capitalize transition-all cursor-pointer text-center ${
+                onClick={() => onChangeRole(user, item.id as any)}
+                className={`py-2 px-3 rounded-xl border text-xs font-semibold transition-all cursor-pointer text-left ${
                   isSelected
                     ? 'bg-[#EEF0FF] text-[#3D38F5] border-[#D8DBFE] shadow-2xs ring-1 ring-[#3D38F5]/20'
                     : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900'
                 }`}
               >
-                {r === 'buyer' ? 'Siswa (Buyer)' : r === 'seller' ? 'Penjual (Seller)' : 'Staff Admin'}
+                <div>{item.label}</div>
+                <div className="text-[10px] font-normal text-slate-400 mt-0.5">{item.desc}</div>
               </button>
             );
           })}
@@ -190,12 +201,12 @@ export function UserDetailDrawer({
           {user.is_verified ? (
             <>
               <XCircle className="h-4 w-4" />
-              <span>Cabut Lencana Verifikasi</span>
+              <span>Cabut Lencana Verified Biru</span>
             </>
           ) : (
             <>
-              <CheckCircle2 className="h-4 w-4" />
-              <span>Beri Lencana Terverifikasi Resmi</span>
+              <BadgeCheck className="h-4 w-4 text-white fill-white/20" />
+              <span>Beri Lencana Verified Biru</span>
             </>
           )}
         </button>

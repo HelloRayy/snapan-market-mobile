@@ -3,6 +3,7 @@ import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
 import 'package:snapan_market/features/feed/components/comment_input_bar.dart';
 import 'package:snapan_market/features/feed/components/sticky_buy_bar.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/messages/models/conversation_model.dart';
 import 'package:snapan_market/features/messages/screens/chat_conversation_screen.dart';
@@ -37,10 +38,24 @@ class PostDetailBottomBar extends StatelessWidget {
         originalPrice: post.originalPrice,
         stockCount: post.stock,
         onBuyClick: onBuyClick,
-        onChatClick: () {
+        onChatClick: () async {
+          final targetUserId = post.seller.id.isNotEmpty ? post.seller.id : null;
+          String convId = 'conv-${post.id}';
+          if (targetUserId != null) {
+            final realConvId = await SupabaseService.instance.getOrCreateConversation(
+              otherUserId: targetUserId,
+              productId: post.id,
+            );
+            if (realConvId != null) {
+              convId = realConvId;
+            }
+          }
+
           final conv = ConversationModel(
-            id: 'conv-${post.id}',
+            id: convId,
+            productId: post.id,
             user: ConversationUser(
+              id: targetUserId,
               name: post.seller.name,
               username: post.seller.username ?? post.seller.name.toLowerCase().replaceAll(' ', ''),
               avatar: post.seller.avatar,
@@ -57,11 +72,13 @@ class PostDetailBottomBar extends StatelessWidget {
             ),
           );
           DirectMessagesService.instance.addOrUpdateConversation(conv);
-          Navigator.of(context).push(
-            AppSlidePageRoute(
-              builder: (_) => ChatConversationScreen(conversation: conv),
-            ),
-          );
+          if (context.mounted) {
+            Navigator.of(context).push(
+              AppSlidePageRoute(
+                builder: (_) => ChatConversationScreen(conversation: conv),
+              ),
+            );
+          }
         },
       );
     }

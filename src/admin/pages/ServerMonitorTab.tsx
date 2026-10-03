@@ -2,7 +2,13 @@ import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { UptimeServiceRow, type DayBarData } from '../components/UptimeServiceRow';
 import { LiveConnectionProbes, type ProbeResult } from '../components/LiveConnectionProbes';
 import { AdminLoginLogCard } from '../components/AdminLoginLogCard';
+import { RealInfrastructureVitals } from '../components/RealInfrastructureVitals';
 import { adminSecurityService } from '../services/adminSecurityService';
+import type { AdminTab } from '../components/AdminSidebar';
+
+interface ServerMonitorTabProps {
+  onNavigateTab?: (tab: AdminTab) => void;
+}
 
 // Generate 90 days of realistic history data matching Image 1
 function create90DayBars(pattern: 'compute' | 'analytics' | 'gateway' | 'auth' | 'db' | 'realtime'): DayBarData[] {
@@ -56,8 +62,24 @@ function create90DayBars(pattern: 'compute' | 'analytics' | 'gateway' | 'auth' |
   return bars;
 }
 
-export function ServerMonitorTab() {
+export function ServerMonitorTab({ onNavigateTab }: ServerMonitorTabProps = {}) {
   const [activeLogCategory, setActiveLogCategory] = useState<'all' | 'db' | 'ws' | 'auth'>('all');
+
+  const handleVitalsLog = useCallback(
+    (log: { service: string; text: string; level: 'ok' | 'warn' | 'err' }) => {
+      setProbeLogs((prev) => [
+        {
+          id: `vital_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+          time: new Date().toLocaleTimeString('id-ID'),
+          service: log.service,
+          text: log.text,
+          level: log.level,
+        },
+        ...prev.slice(0, 30),
+      ]);
+    },
+    []
+  );
   const [probeLogs, setProbeLogs] = useState<
     Array<{ id: string; time: string; service: string; text: string; level: 'ok' | 'warn' | 'err' }>
   >([
@@ -254,7 +276,10 @@ export function ServerMonitorTab() {
       {/* 4. Active Live Connection Probes Grid */}
       <LiveConnectionProbes onProbeComplete={handleProbeComplete} />
 
-      {/* 5. Live System Activity & Probe Log Terminal */}
+      {/* 5. Real Infrastructure Vitals (Tables, App Versions, Security, Storage CDN) */}
+      <RealInfrastructureVitals onLogGenerated={handleVitalsLog} onNavigateTab={onNavigateTab} />
+
+      {/* 6. Live System Activity & Probe Log Terminal */}
       <section className="m-card" style={{ marginTop: '24px' }}>
         <header className="m-card__header d-flex flex-wrap align-items-center justify-content-between">
           <div>

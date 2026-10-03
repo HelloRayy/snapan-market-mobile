@@ -37,7 +37,7 @@ class DirectMessagesFilterTabs extends StatelessWidget {
         physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         itemCount: tabs.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8.0),
+        separatorBuilder: (context, index) => const SizedBox(width: 8.0),
         itemBuilder: (context, index) {
           final tab = tabs[index];
           final isActive = activeFilter == tab.key;

@@ -1,4 +1,4 @@
-enum ActivityType { like, comment, order, system }
+enum ActivityType { like, comment, mention, follow, order, system }
 
 class ActivityNotification {
   final String id;
@@ -32,6 +32,10 @@ class ActivityNotification {
       notifType = ActivityType.like;
     } else if (typeStr == 'comment' || typeStr == 'reply') {
       notifType = ActivityType.comment;
+    } else if (typeStr == 'mention') {
+      notifType = ActivityType.mention;
+    } else if (typeStr == 'follow') {
+      notifType = ActivityType.follow;
     } else if (typeStr == 'order') {
       notifType = ActivityType.order;
     } else {

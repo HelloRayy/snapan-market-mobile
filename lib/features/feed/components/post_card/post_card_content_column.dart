@@ -72,7 +72,7 @@ class PostCardContentColumn extends StatelessWidget {
             onDeletePost: onDeletePost,
           ),
           const SizedBox(height: 2.0),
-          PostCaptionText(item: item),
+          PostCaptionText(item: item, onUserClick: onUserClick),
         ] else ...[
           SizedBox(
             height: 42.0,

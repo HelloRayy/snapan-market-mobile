@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
@@ -8,6 +7,7 @@ import 'package:snapan_market/features/feed/components/delete_post_bottom_sheet.
 import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
 import 'package:snapan_market/features/feed/components/post_card/post_author_avatar.dart';
 import 'package:snapan_market/features/feed/components/post_submenu_popover.dart';
+import 'package:snapan_market/features/feed/components/report_content_bottom_sheet.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// Header row for Feed and Detail Card variants
@@ -77,7 +77,9 @@ class PostCardHeader extends StatelessWidget {
       },
       onHidePost: () {},
       onMuteAuthor: () {},
-      onReport: () {},
+      onReport: () {
+        ReportContentBottomSheet.show(context, post: item);
+      },
     );
   }
 

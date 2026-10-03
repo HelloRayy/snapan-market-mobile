@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
+import 'package:snapan_market/core/utils/mention_text_span_helper.dart';
 import 'package:snapan_market/features/feed/components/comment/comment.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
@@ -378,19 +379,26 @@ class _PostCommentItemState extends State<PostCommentItem> {
   }
 
   Widget _buildContentText() {
+    const baseStyle = TextStyle(
+      fontFamily: 'SFPro',
+      fontFamilyFallback: ['AppleColorEmoji'],
+      fontSize: 14.5,
+      fontWeight: FontWeight.normal,
+      color: Color(0xFF0F172A),
+      height: 1.35,
+      letterSpacing: -0.1,
+    );
+
     return Text.rich(
       TextSpan(
-        style: const TextStyle(
-          fontFamily: 'SFPro',
-          fontFamilyFallback: ['AppleColorEmoji'],
-          fontSize: 14.5,
-          fontWeight: FontWeight.normal,
-          color: Color(0xFF0F172A),
-          height: 1.35,
-          letterSpacing: -0.1,
-        ),
+        style: baseStyle,
         children: [
-          TextSpan(text: widget.comment.content),
+          ...MentionTextSpanHelper.buildSpans(
+            context: context,
+            text: widget.comment.content,
+            defaultStyle: baseStyle,
+            onUserClick: widget.onUserClick,
+          ),
           if (widget.comment.threadPart != null &&
               widget.comment.totalParts != null)
             WidgetSpan(

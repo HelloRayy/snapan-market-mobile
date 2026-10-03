@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:snapan_market/core/services/app_update_service.dart';
 
 /// Pinned footer branding and version display for navigation drawer.
 class HomeDrawerFooter extends StatelessWidget {
@@ -13,6 +15,24 @@ class HomeDrawerFooter extends StatelessWidget {
     required this.mutedColor,
   });
 
+  Future<String> _fetchDisplayVersion() async {
+    try {
+      // 1. Coba ambil versi aktif terbaru langsung dari database Supabase
+      final dbVersion = await AppUpdateService.instance.getLatestActiveVersion();
+      if (dbVersion != null && dbVersion.versionName.isNotEmpty) {
+        return 'V ${dbVersion.versionName}';
+      }
+    } catch (_) {}
+
+    try {
+      // 2. Fallback ke versi binary lokal aplikasi di HP
+      final info = await PackageInfo.fromPlatform();
+      return 'V ${info.version}';
+    } catch (_) {
+      return 'V 1.0.5';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -25,14 +45,20 @@ class HomeDrawerFooter extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Snaps - Stable Version V 1.0.4',
-            style: TextStyle(
-              fontFamily: 'SFPro',
-              fontSize: 12.0,
-              fontWeight: FontWeight.w600,
-              color: inkColor,
-            ),
+          FutureBuilder<String>(
+            future: _fetchDisplayVersion(),
+            builder: (context, snapshot) {
+              final versionStr = snapshot.data ?? 'V 1.0.5';
+              return Text(
+                'Snaps - Stable Version $versionStr',
+                style: TextStyle(
+                  fontFamily: 'SFPro',
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.w600,
+                  color: inkColor,
+                ),
+              );
+            },
           ),
           const SizedBox(height: 2.0),
           Text(

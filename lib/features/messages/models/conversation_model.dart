@@ -1,5 +1,6 @@
 /// Model data percakapan untuk halaman Direct Messages (Pesan)
 class ConversationUser {
+  final String? id;
   final String name;
   final String username;
   final String avatar;
@@ -8,6 +9,7 @@ class ConversationUser {
   final bool isOnline;
 
   const ConversationUser({
+    this.id,
     required this.name,
     required this.username,
     required this.avatar,
@@ -15,6 +17,26 @@ class ConversationUser {
     this.isVerified = false,
     this.isOnline = false,
   });
+
+  ConversationUser copyWith({
+    String? id,
+    String? name,
+    String? username,
+    String? avatar,
+    String? classGroup,
+    bool? isVerified,
+    bool? isOnline,
+  }) {
+    return ConversationUser(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      username: username ?? this.username,
+      avatar: avatar ?? this.avatar,
+      classGroup: classGroup ?? this.classGroup,
+      isVerified: isVerified ?? this.isVerified,
+      isOnline: isOnline ?? this.isOnline,
+    );
+  }
 }
 
 class ProductContext {
@@ -31,6 +53,7 @@ class ProductContext {
 
 class ConversationModel {
   final String id;
+  final String? productId;
   final ConversationUser user;
   final String lastMessage;
   final String timestamp;
@@ -42,6 +65,7 @@ class ConversationModel {
 
   const ConversationModel({
     required this.id,
+    this.productId,
     required this.user,
     required this.lastMessage,
     required this.timestamp,
@@ -54,6 +78,7 @@ class ConversationModel {
 
   ConversationModel copyWith({
     String? id,
+    String? productId,
     ConversationUser? user,
     String? lastMessage,
     String? timestamp,
@@ -65,6 +90,7 @@ class ConversationModel {
   }) {
     return ConversationModel(
       id: id ?? this.id,
+      productId: productId ?? this.productId,
       user: user ?? this.user,
       lastMessage: lastMessage ?? this.lastMessage,
       timestamp: timestamp ?? this.timestamp,
@@ -103,9 +129,14 @@ class ConversationModel {
       );
     }
 
+    final otherUserId = otherProfile['id'] as String? ??
+        (isParticipantOne ? json['participant_two'] as String? : json['participant_one'] as String?);
+
     return ConversationModel(
       id: json['id'] as String? ?? '',
+      productId: json['product_id'] as String?,
       user: ConversationUser(
+        id: otherUserId,
         name: otherProfile['full_name'] as String? ?? otherProfile['username'] as String? ?? 'Siswa',
         username: otherProfile['username'] as String? ?? 'user',
         avatar: otherProfile['avatar_url'] as String? ?? '',
@@ -114,8 +145,8 @@ class ConversationModel {
       ),
       lastMessage: json['last_message'] as String? ?? '',
       timestamp: timeStr,
-      unreadCount: 0,
-      isSender: false,
+      unreadCount: (json['unread_count'] as num?)?.toInt() ?? 0,
+      isSender: json['last_message_sender_id'] == currentUserId,
       isRequest: json['product_id'] != null,
       productContext: productCtx,
     );

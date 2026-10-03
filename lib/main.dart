@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:async';
 import 'package:snapan_market/core/constants/supabase_constants.dart';
+import 'package:snapan_market/core/navigation/navigation_service.dart';
+import 'package:snapan_market/core/services/suspension_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/screens/home_feed_screen.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/services/follow_service.dart';
 import 'package:snapan_market/features/splash/screens/splash_screen.dart';
+import 'package:snapan_market/features/auth/screens/auth_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +34,9 @@ Future<void> main() async {
     FollowService.instance.loadFollowings();
   }
 
+  // Initialize background suspension listeners (SNAPS-16)
+  SuspensionService.instance.init();
+
   runApp(const SnapanMarketApp());
 }
 
@@ -39,6 +46,7 @@ class SnapanMarketApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: NavigationService.navigatorKey,
       title: 'Snaps',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -136,21 +144,38 @@ class _AppRootState extends State<AppRoot> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        HomeFeedScreen(
-          onLogout: () async {
-            await SupabaseService.instance.signOut();
-          },
-        ),
-        if (_showSplash)
-          FadeTransition(
-            opacity: _fadeAnimation,
-            child: SplashScreen(
-              onCompleted: _handleSplashCompleted,
+    return ValueListenableBuilder<Map<String, dynamic>?>(
+      valueListenable: SuspensionService.instance.suspensionNotifier,
+      builder: (context, suspensionInfo, child) {
+        if (suspensionInfo != null) {
+          return AuthScreen(
+            initialSuspensionInfo: suspensionInfo,
+            onBack: () {
+              SuspensionService.instance.clear();
+            },
+            onSuccess: () {
+              SuspensionService.instance.clear();
+            },
+          );
+        }
+
+        return Stack(
+          children: [
+            HomeFeedScreen(
+              onLogout: () async {
+                await SupabaseService.instance.signOut();
+              },
             ),
-          ),
-      ],
+            if (_showSplash)
+              FadeTransition(
+                opacity: _fadeAnimation,
+                child: SplashScreen(
+                  onCompleted: _handleSplashCompleted,
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }

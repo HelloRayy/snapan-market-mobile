@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mail, Lock, User, Loader2, CheckCircle2, ChevronRight } from 'lucide-react';
+import { X, Mail, Lock, User, Loader2, CheckCircle2, ChevronRight, AlertTriangle, Clock, MessageCircle } from 'lucide-react';
 import { SnapsLogoSvg } from '@/ui/components/brand/SnapsLogoSvg';
-import { signInWithEmail, signUpWithEmail } from '@/services/api/authService';
+import { 
+  signInWithEmail, 
+  signUpWithEmail, 
+  getStoredSuspensionNotice, 
+  clearStoredSuspensionNotice, 
+  AccountSuspensionNotice 
+} from '@/services/api/authService';
 import { triggerHaptic } from '@/utils/haptics';
 
 interface AuthPromptPopoverProps {
@@ -27,6 +33,7 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [suspensionNotice, setSuspensionNotice] = useState<AccountSuspensionNotice | null>(null);
 
   // Handle ESC key press
   useEffect(() => {
@@ -39,14 +46,30 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  // Reset internal states on open/close
+  // Check stored suspension notice on open or event
   useEffect(() => {
     if (isOpen) {
       setErrorMessage(null);
       setSuccessMessage(null);
       setIsLoading(false);
+      const stored = getStoredSuspensionNotice();
+      if (stored) {
+        setSuspensionNotice(stored);
+        setAuthMode('email-signin');
+      }
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    const handleAccountSuspended = (e: any) => {
+      if (e?.detail) {
+        setSuspensionNotice(e.detail);
+        setAuthMode('email-signin');
+      }
+    };
+    window.addEventListener('snapan_account_suspended', handleAccountSuspended);
+    return () => window.removeEventListener('snapan_account_suspended', handleAccountSuspended);
+  }, []);
 
   const handleEmailAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,6 +86,8 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
       if (authMode === 'email-signin') {
         const { user } = await signInWithEmail(email, password);
         if (user) {
+          setSuspensionNotice(null);
+          clearStoredSuspensionNotice();
           triggerHaptic('success');
           setSuccessMessage('Berhasil masuk! Mengarahkan...');
           setTimeout(() => {
@@ -79,6 +104,8 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
         const { user } = await signUpWithEmail(email, password, fullName, classGroup);
 
         if (user) {
+          setSuspensionNotice(null);
+          clearStoredSuspensionNotice();
           triggerHaptic('success');
           setSuccessMessage('Pendaftaran berhasil! Mengarahkan...');
           setTimeout(() => {
@@ -89,7 +116,12 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
       }
     } catch (err: any) {
       triggerHaptic('error');
-      setErrorMessage(err?.message || 'Autentikasi gagal. Silakan periksa kembali data Anda.');
+      if (err?.code === 'ACCOUNT_SUSPENDED' && err.suspension) {
+        setSuspensionNotice(err.suspension);
+        setErrorMessage(null);
+      } else {
+        setErrorMessage(err?.message || 'Autentikasi gagal. Silakan periksa kembali data Anda.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -121,7 +153,7 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 16 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="relative w-full max-w-[420px] bg-white text-slate-900 rounded-[28px] p-7 sm:p-9 shadow-2xl border border-slate-200/80 overflow-hidden z-10 flex flex-col items-center"
+            className="relative w-full max-w-[420px] bg-white text-slate-900 rounded-[28px] p-7 sm:p-9 shadow-2xl border border-slate-200/80 overflow-hidden z-10 flex flex-col items-center max-h-[92vh] overflow-y-auto no-scrollbar"
           >
             {/* Close Button */}
             <button
@@ -156,8 +188,67 @@ export const AuthPromptPopover: React.FC<AuthPromptPopoverProps> = ({
               {subtitle}
             </p>
 
+            {/* Account Suspension Alert Card (SNAPS-16) */}
+            {suspensionNotice && (
+              <div className="w-full mt-4 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-slate-800 shadow-xs animate-in fade-in duration-300">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-rose-100 flex items-center justify-center shrink-0 mt-0.5 text-rose-600">
+                    <AlertTriangle className="w-4 h-4 stroke-[2.5]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className="text-xs font-black text-rose-700 uppercase tracking-wider">
+                        Akun Ditangguhkan
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSuspensionNotice(null);
+                          clearStoredSuspensionNotice();
+                        }}
+                        className="text-[11px] text-rose-500 hover:text-rose-700 font-semibold cursor-pointer"
+                      >
+                        Tutup Info
+                      </button>
+                    </div>
+
+                    <p className="mt-1 text-xs text-rose-900 font-medium leading-relaxed">
+                      {suspensionNotice.reason}
+                    </p>
+
+                    <div className="mt-2.5 pt-2 border-t border-rose-200/60 flex flex-col gap-1 text-[11px] text-rose-700">
+                      <div className="flex items-center gap-1.5 font-medium">
+                        <Clock className="w-3.5 h-3.5 shrink-0" />
+                        <span>
+                          {suspensionNotice.suspendedUntil
+                            ? `Berlaku hingga: ${new Date(suspensionNotice.suspendedUntil).toLocaleDateString('id-ID', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })} WIB`
+                            : 'Masa Penangguhan: Permanen (Tanpa Batas)'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <a
+                      href="https://wa.me/6281234567890?text=Halo%20Admin%20SMKN%208%20Semarang,%20saya%20ingin%20mengajukan%20klarifikasi%20terkait%20penangguhan%20akun%20saya"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-600 text-white text-[11.5px] font-bold hover:bg-rose-700 active:scale-95 transition-all shadow-xs"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" />
+                      <span>Hubungi Admin / Guru BK</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Error / Success Notifications */}
-            {errorMessage && (
+            {errorMessage && !suspensionNotice && (
               <div className="w-full mt-4 p-3 rounded-xl bg-red-50 border border-red-200/80 text-xs text-red-600 font-medium">
                 {errorMessage}
               </div>

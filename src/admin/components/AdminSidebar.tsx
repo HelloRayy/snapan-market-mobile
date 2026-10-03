@@ -1,7 +1,7 @@
 import type { ProfileRow, AdminStats } from '../services/adminService';
 import { UserAvatar } from './UserAvatar';
 
-export type AdminTab = 'overview' | 'users' | 'moderation' | 'meeting-points' | 'server';
+export type AdminTab = 'overview' | 'users' | 'moderation' | 'reports' | 'broadcast' | 'meeting-points' | 'server';
 
 interface AdminSidebarProps {
   activeTab: AdminTab;
@@ -28,8 +28,8 @@ export function AdminSidebar({
 
   return (
     <aside className="menu-sidebar" id="main-sidebar">
-      {/* Brand Header */}
-      <div className="logo d-flex align-items-center justify-content-between">
+      {/* Brand Header: Logo Snaps Clean SVG */}
+      <div className="logo d-flex align-items-center justify-content-between" style={{ padding: '0 24px' }}>
         <a
           href="#/admin"
           onClick={(e) => {
@@ -37,47 +37,24 @@ export function AdminSidebar({
             onTabChange('overview');
           }}
           className="d-flex align-items-center text-decoration-none"
-          style={{ gap: '10px' }}
+          title="Beranda Snaps Admin"
+          style={{ height: '38px', display: 'inline-flex', alignItems: 'center' }}
         >
-          <div
+          <img
+            src="/snaps-logo-clean.svg"
+            alt="Snaps"
             style={{
-              width: '34px',
-              height: '34px',
-              borderRadius: '8px',
-              background: '#4272d7',
-              color: '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 800,
-              fontSize: '16px',
-              boxShadow: '0 2px 8px rgba(66, 114, 215, 0.45)',
+              height: '32px',
+              width: 'auto',
+              objectFit: 'contain',
+              display: 'block',
             }}
-          >
-            8
-          </div>
-          <div>
-            <div
-              style={{
-                fontSize: '15px',
-                fontWeight: 700,
-                color: '#1f2937',
-                lineHeight: 1.2,
-                letterSpacing: '-0.01em',
-              }}
-            >
-              Snaps<span style={{ color: '#4272d7' }}>Admin</span>
-            </div>
-            <div
-              style={{
-                fontSize: '11px',
-                color: '#64748b',
-                fontWeight: 500,
-              }}
-            >
-              SMKN 8 Semarang
-            </div>
-          </div>
+            onError={(e) => {
+              // Fallback ke asset brand jika needed
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = '/assets/logo/snaps-logo-clean.svg';
+            }}
+          />
         </a>
 
         {/* Mobile close button */}
@@ -113,9 +90,9 @@ export function AdminSidebar({
       >
         <nav className="navbar-sidebar" style={{ flex: 1 }}>
           <ul className="list-unstyled navbar__list">
-            <div className="nav-group-label" style={{ textTransform: 'none', letterSpacing: 'normal' }}>
+            <li className="nav-group-label" style={{ textTransform: 'none', letterSpacing: 'normal' }}>
               Menu Utama
-            </div>
+            </li>
             <li className={activeTab === 'overview' ? 'active' : ''}>
               <a
                 href="#overview"
@@ -130,9 +107,9 @@ export function AdminSidebar({
               </a>
             </li>
 
-            <div className="nav-group-label" style={{ textTransform: 'none', letterSpacing: 'normal' }}>
-              Manajemen
-            </div>
+            <li className="nav-group-label" style={{ textTransform: 'none', letterSpacing: 'normal' }}>
+              Manajemen & Pengawasan
+            </li>
             <li className={activeTab === 'users' ? 'active' : ''}>
               <a
                 href="#users"
@@ -172,7 +149,7 @@ export function AdminSidebar({
                 }}
               >
                 <i className="fa-solid fa-shield-halved"></i>
-                <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Moderasi</span>
+                <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Moderasi Feed</span>
                 {stats?.totalPosts != null && stats.totalPosts > 0 && (
                   <span
                     style={{
@@ -191,9 +168,39 @@ export function AdminSidebar({
               </a>
             </li>
 
-            <div className="nav-group-label" style={{ textTransform: 'none', letterSpacing: 'normal' }}>
+            {/* Navlink Laporan Konten Pengguna (Tab Tersendiri: activeTab === 'reports') */}
+            <li className={activeTab === 'reports' ? 'active' : ''}>
+              <a
+                href="#reports"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onTabChange('reports');
+                  onCloseMobile?.();
+                }}
+              >
+                <i className="fa-solid fa-flag" style={{ color: activeTab === 'reports' ? '#ffffff' : '#64748b' }}></i>
+                <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Laporan Konten</span>
+              </a>
+            </li>
+
+            {/* Navlink Broadcast Notifikasi Pengguna (activeTab === 'broadcast') */}
+            <li className={activeTab === 'broadcast' ? 'active' : ''}>
+              <a
+                href="#broadcast"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onTabChange('broadcast');
+                  onCloseMobile?.();
+                }}
+              >
+                <i className="fa-solid fa-bullhorn" style={{ color: activeTab === 'broadcast' ? '#ffffff' : '#64748b' }}></i>
+                <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Broadcast Notif</span>
+              </a>
+            </li>
+
+            <li className="nav-group-label" style={{ textTransform: 'none', letterSpacing: 'normal' }}>
               Logistik
-            </div>
+            </li>
             <li className={activeTab === 'meeting-points' ? 'active' : ''}>
               <a
                 href="#meeting-points"
@@ -223,9 +230,9 @@ export function AdminSidebar({
               </a>
             </li>
 
-            <div className="nav-group-label" style={{ textTransform: 'none', letterSpacing: 'normal' }}>
+            <li className="nav-group-label" style={{ textTransform: 'none', letterSpacing: 'normal' }}>
               Infrastruktur
-            </div>
+            </li>
             <li className={activeTab === 'server' ? 'active' : ''}>
               <a
                 href="#server"

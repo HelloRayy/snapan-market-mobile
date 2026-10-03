@@ -101,7 +101,7 @@ class ChatProductCard extends StatelessWidget {
                         width: 56.0,
                         height: 56.0,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
+                        errorBuilder: (context, error, stackTrace) => Container(
                           width: 56.0,
                           height: 56.0,
                           color: const Color(0xFFE2E8F0),

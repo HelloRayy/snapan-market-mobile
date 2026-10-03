@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/features/feed/components/post_submenu_item.dart';
+import 'package:snapan_market/features/feed/components/report_content_bottom_sheet.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// 1:1 Popover Contextual Menu for Post Three-Dot ('...') Trigger
@@ -258,9 +259,12 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
               textColor: const Color(0xFFEF4444),
               label: 'Laporkan Post',
               onTap: () {
-                widget.onReport?.call();
                 Navigator.pop(context);
-                _showFeedback('Laporan terkirim');
+                if (widget.onReport != null) {
+                  widget.onReport!.call();
+                } else {
+                  ReportContentBottomSheet.show(context, post: widget.post);
+                }
               },
             ),
           ],

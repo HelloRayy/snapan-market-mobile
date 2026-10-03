@@ -106,6 +106,7 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
               break;
 
             case OtaStatus.INSTALLING:
+              AppUpdateService.instance.clearCache();
               setState(() {
                 _isDownloading = false;
                 _isInstalling = true;

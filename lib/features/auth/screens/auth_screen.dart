@@ -14,11 +14,13 @@ enum AuthMode { login, register }
 class AuthScreen extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback onSuccess;
+  final Map<String, dynamic>? initialSuspensionInfo;
 
   const AuthScreen({
     super.key,
     required this.onBack,
     required this.onSuccess,
+    this.initialSuspensionInfo,
   });
 
   @override
@@ -27,6 +29,7 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   AuthMode _authMode = AuthMode.login;
+  Map<String, dynamic>? _suspensionInfo;
 
   // Controllers
   final TextEditingController _loginUsernameController = TextEditingController();
@@ -58,6 +61,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   void initState() {
     super.initState();
+    _suspensionInfo = widget.initialSuspensionInfo;
     for (final c in [_loginUsernameController, _loginPasswordController, _fullNameController, _regUsernameController, _regPasswordController]) {
       c.addListener(() {
         if (mounted && (_loginUsernameError != null || _loginPasswordError != null || _fullNameError != null || _regUsernameError != null || _regPasswordError != null)) {
@@ -104,6 +108,25 @@ class _AuthScreenState extends State<AuthScreen> {
     try {
       final success = await SupabaseService.instance.signInWithGoogle();
       if (success && mounted) {
+        // Cek apakah akun berstatus ditangguhkan (suspended) (SNAPS-16)
+        final suspension = await SupabaseService.instance.auth.getCurrentUserSuspensionStatus();
+        if (suspension != null) {
+          await SupabaseService.instance.signOut();
+          final reason = suspension['suspend_reason'] as String? ??
+              'Pelanggaran terhadap tata tertib komunitas SMKN 8 Semarang.';
+          final untilStr = suspension['suspended_until'] as String?;
+          final until = untilStr != null ? DateTime.tryParse(untilStr) : null;
+          final untilFormatted = until == null
+              ? 'Permanen (Tanpa Batas Waktu)'
+              : 'Berlaku hingga ${until.day}/${until.month}/${until.year} ${until.hour.toString().padLeft(2, '0')}:${until.minute.toString().padLeft(2, '0')} WIB';
+          setState(() {
+            _suspensionInfo = {
+              'reason': reason,
+              'untilText': untilFormatted,
+            };
+          });
+          return;
+        }
         widget.onSuccess();
       }
     } catch (e) {
@@ -144,7 +167,17 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(() => _isSubmitting = false);
 
     if (error == null) {
+      setState(() => _suspensionInfo = null);
       widget.onSuccess();
+    } else if (error.startsWith('ACCOUNT_SUSPENDED::')) {
+      final parts = error.split('::');
+      setState(() {
+        _suspensionInfo = {
+          'reason': parts.length > 1 ? parts[1] : 'Pelanggaran terhadap tata tertib komunitas SMKN 8 Semarang.',
+          'untilText': parts.length > 2 ? parts[2] : 'Permanen',
+        };
+      });
+      HapticFeedback.vibrate();
     } else {
       setState(() => _loginPasswordError = error);
       HapticFeedback.vibrate();
@@ -252,6 +285,8 @@ class _AuthScreenState extends State<AuthScreen> {
                             isSubmitting: _isSubmitting,
                             onSubmit: _submitLogin,
                             onGoogleAuth: _handleGoogleAuth,
+                            suspensionInfo: _suspensionInfo,
+                            onDismissSuspension: () => setState(() => _suspensionInfo = null),
                           )
                         else
                           AuthRegisterTab(

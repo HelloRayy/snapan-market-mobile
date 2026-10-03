@@ -47,7 +47,7 @@ class DirectMessagesService extends ChangeNotifier {
     }
   }
 
-  /// Load messages for a conversation from Supabase
+  /// Load messages for a conversation from Supabase and mark incoming messages as read
   Future<List<ChatMessageModel>> loadMessages(String conversationId) async {
     final currentUser = SupabaseService.instance.currentUser;
     final currentUserId = currentUser?.id ?? '';
@@ -58,12 +58,51 @@ class DirectMessagesService extends ChangeNotifier {
         final liveMessages = records.map((r) => ChatMessageModel.fromJson(r, currentUserId)).toList();
         _conversationMessages[conversationId] = liveMessages;
         notifyListeners();
+
+        // Mark incoming messages as read in Supabase & update local conversation badge
+        markAsRead(conversationId);
+
         return liveMessages;
       }
     } catch (e) {
       debugPrint('Error loadMessages from Supabase: $e');
     }
     return _conversationMessages[conversationId] ?? [];
+  }
+
+  /// Mark conversation as read locally and in Supabase
+  Future<void> markAsRead(String conversationId) async {
+    // 1. Supabase background update
+    await SupabaseService.instance.markMessagesAsRead(conversationId);
+
+    // 2. Update local unread counter on conversation
+    final idx = _conversations.indexWhere((c) => c.id == conversationId);
+    if (idx != -1 && _conversations[idx].unreadCount > 0) {
+      _conversations[idx] = _conversations[idx].copyWith(unreadCount: 0);
+      notifyListeners();
+    }
+  }
+
+  /// Migrate conversation ID from temporary placeholder to real UUID
+  void updateConversationId({required String oldId, required String newId}) {
+    if (oldId == newId) return;
+
+    final msgs = _conversationMessages.remove(oldId);
+    if (msgs != null) {
+      final existingNewMsgs = _conversationMessages[newId] ?? [];
+      for (final m in msgs) {
+        if (!existingNewMsgs.any((x) => x.id == m.id)) {
+          existingNewMsgs.add(m);
+        }
+      }
+      _conversationMessages[newId] = existingNewMsgs;
+    }
+
+    final idx = _conversations.indexWhere((c) => c.id == oldId);
+    if (idx != -1) {
+      _conversations[idx] = _conversations[idx].copyWith(id: newId);
+    }
+    notifyListeners();
   }
 
   void addOrUpdateConversation(ConversationModel conv) {
@@ -76,13 +115,27 @@ class DirectMessagesService extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Add message with intelligent deduplication for optimistic updates
   void addMessage(String conversationId, ChatMessageModel msg, {ConversationModel? conversation}) {
     if (!_conversationMessages.containsKey(conversationId)) {
       _conversationMessages[conversationId] = [];
     }
-    final exists = _conversationMessages[conversationId]!.any((m) => m.id == msg.id);
-    if (!exists) {
-      _conversationMessages[conversationId]!.add(msg);
+
+    final msgs = _conversationMessages[conversationId]!;
+
+    // Deduplication: If server sends a confirmed message matching an optimistic temp message, replace it
+    if (msg.isMe && !msg.id.startsWith('temp-')) {
+      final tempIdx = msgs.lastIndexWhere((m) => m.id.startsWith('temp-') && m.text == msg.text);
+      if (tempIdx != -1) {
+        msgs[tempIdx] = msg;
+      } else if (!msgs.any((m) => m.id == msg.id)) {
+        msgs.add(msg);
+      }
+    } else {
+      final exists = msgs.any((m) => m.id == msg.id);
+      if (!exists) {
+        msgs.add(msg);
+      }
     }
 
     // Update conversation lastMessage & timestamp
@@ -101,6 +154,18 @@ class DirectMessagesService extends ChangeNotifier {
       ));
     }
     notifyListeners();
+  }
+
+  /// Update an existing message status (e.g. read receipts from realtime)
+  void updateMessage(String conversationId, ChatMessageModel updatedMsg) {
+    final msgs = _conversationMessages[conversationId];
+    if (msgs != null) {
+      final idx = msgs.indexWhere((m) => m.id == updatedMsg.id);
+      if (idx != -1) {
+        msgs[idx] = updatedMsg;
+        notifyListeners();
+      }
+    }
   }
 
   /// Send message both optimistically and into Supabase
@@ -128,32 +193,39 @@ class DirectMessagesService extends ChangeNotifier {
     if (currentUser != null) {
       String targetConvId = conversationId;
       final isUuid = RegExp(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', caseSensitive: false);
-      if (!isUuid.hasMatch(targetConvId) && conversation != null) {
-        final profile = await SupabaseService.instance.getProfileByUsername(conversation.user.username);
-        if (profile != null && profile['id'] != null) {
+
+      // Auto-resolve real UUID if still using temporary ID
+      if (!isUuid.hasMatch(targetConvId)) {
+        String? targetUserId = conversation?.user.id;
+        if (targetUserId == null && conversation != null) {
+          final profile = await SupabaseService.instance.getProfileByUsername(conversation.user.username);
+          targetUserId = profile?['id'] as String?;
+        }
+
+        if (targetUserId != null) {
           final realId = await SupabaseService.instance.getOrCreateConversation(
-            otherUserId: profile['id'] as String,
+            otherUserId: targetUserId,
+            productId: conversation?.productId,
           );
           if (realId != null) {
+            updateConversationId(oldId: conversationId, newId: realId);
             targetConvId = realId;
           }
         }
       }
 
-      final inserted = await SupabaseService.instance.sendDirectMessage(
-        conversationId: targetConvId,
-        text: text,
-      );
-      if (inserted != null) {
-        final serverMsg = ChatMessageModel.fromJson(inserted, currentUser.id);
-        final msgs = _conversationMessages[conversationId];
-        if (msgs != null) {
-          final tempIdx = msgs.indexWhere((m) => m.id == tempMsg.id);
-          if (tempIdx != -1) {
-            msgs[tempIdx] = serverMsg;
-            notifyListeners();
-          }
+      try {
+        final inserted = await SupabaseService.instance.sendDirectMessage(
+          conversationId: targetConvId,
+          text: text,
+        );
+
+        if (inserted != null) {
+          final serverMsg = ChatMessageModel.fromJson(inserted, currentUser.id);
+          addMessage(targetConvId, serverMsg, conversation: conversation);
         }
+      } catch (e) {
+        debugPrint('Error sending direct message to Supabase: $e');
       }
     }
   }

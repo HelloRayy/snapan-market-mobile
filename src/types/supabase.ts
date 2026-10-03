@@ -17,10 +17,14 @@ export interface Database {
           avatar_url: string | null
           class_group: string
           is_verified: boolean
-          role: 'buyer' | 'seller' | 'admin'
+          role: 'user' | 'buyer' | 'seller' | 'admin'
           verified_sales_count: number
           total_revenue_idr: number
           created_at: string
+          is_suspended?: boolean
+          suspended_at?: string | null
+          suspended_until?: string | null
+          suspend_reason?: string | null
         }
         Insert: {
           id: string
@@ -29,10 +33,14 @@ export interface Database {
           avatar_url?: string | null
           class_group?: string
           is_verified?: boolean
-          role?: 'buyer' | 'seller' | 'admin'
+          role?: 'user' | 'buyer' | 'seller' | 'admin'
           verified_sales_count?: number
           total_revenue_idr?: number
           created_at?: string
+          is_suspended?: boolean
+          suspended_at?: string | null
+          suspended_until?: string | null
+          suspend_reason?: string | null
         }
         Update: {
           id?: string
@@ -41,10 +49,14 @@ export interface Database {
           avatar_url?: string | null
           class_group?: string
           is_verified?: boolean
-          role?: 'buyer' | 'seller' | 'admin'
+          role?: 'user' | 'buyer' | 'seller' | 'admin'
           verified_sales_count?: number
           total_revenue_idr?: number
           created_at?: string
+          is_suspended?: boolean
+          suspended_at?: string | null
+          suspended_until?: string | null
+          suspend_reason?: string | null
         }
         Relationships: []
       }
@@ -844,6 +856,57 @@ export interface Database {
           }
         ]
       }
+      content_reports: {
+        Row: {
+          id: string
+          post_id: string
+          reporter_id: string
+          reason: string
+          details: string | null
+          status: 'pending' | 'resolved' | 'dismissed'
+          created_at: string
+          resolved_at: string | null
+          resolved_by: string | null
+        }
+        Insert: {
+          id?: string
+          post_id: string
+          reporter_id: string
+          reason: string
+          details?: string | null
+          status?: 'pending' | 'resolved' | 'dismissed'
+          created_at?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+        }
+        Update: {
+          id?: string
+          post_id?: string
+          reporter_id?: string
+          reason?: string
+          details?: string | null
+          status?: 'pending' | 'resolved' | 'dismissed'
+          created_at?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_reports_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "market_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -891,6 +954,7 @@ export type DirectMessage = Database['public']['Tables']['direct_messages']['Row
 export type Notification = Database['public']['Tables']['notifications']['Row']
 export type UserFollow = Database['public']['Tables']['user_follows']['Row']
 export type PostRepost = Database['public']['Tables']['post_reposts']['Row']
+export type ContentReport = Database['public']['Tables']['content_reports']['Row']
 
 // In-App Order System Types
 export type InAppOrder = Database['public']['Tables']['orders']['Row']

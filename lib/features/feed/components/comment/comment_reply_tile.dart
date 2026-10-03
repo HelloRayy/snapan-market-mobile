@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
+import 'package:snapan_market/core/utils/mention_text_span_helper.dart';
 import 'package:snapan_market/features/feed/components/comment/comment_action_bar.dart';
 import 'package:snapan_market/features/feed/components/comment/comment_author_badge.dart';
 import 'package:snapan_market/features/feed/components/comment/comment_avatar.dart';
@@ -118,7 +119,7 @@ class CommentReplyTile extends StatelessWidget {
               children: [
                 _buildHeaderRow(context),
                 const SizedBox(height: 3.0),
-                _buildContentText(),
+                _buildContentText(context),
                 if (reply.images.isNotEmpty) ...[
                   const SizedBox(height: 8.0),
                   CommentImagesSection(
@@ -239,20 +240,27 @@ class CommentReplyTile extends StatelessWidget {
     );
   }
 
-  Widget _buildContentText() {
+  Widget _buildContentText(BuildContext context) {
+    const baseStyle = TextStyle(
+      fontFamily: 'SFPro',
+      fontFamilyFallback: ['AppleColorEmoji'],
+      fontSize: 14.5,
+      fontWeight: FontWeight.normal,
+      color: Color(0xFF0F172A),
+      height: 1.35,
+      letterSpacing: -0.1,
+    );
+
     return Text.rich(
       TextSpan(
-        style: const TextStyle(
-          fontFamily: 'SFPro',
-          fontFamilyFallback: ['AppleColorEmoji'],
-          fontSize: 14.5,
-          fontWeight: FontWeight.normal,
-          color: Color(0xFF0F172A),
-          height: 1.35,
-          letterSpacing: -0.1,
-        ),
+        style: baseStyle,
         children: [
-          TextSpan(text: reply.content),
+          ...MentionTextSpanHelper.buildSpans(
+            context: context,
+            text: reply.content,
+            defaultStyle: baseStyle,
+            onUserClick: onUserClick,
+          ),
           if (reply.threadPart != null && reply.totalParts != null)
             WidgetSpan(
               alignment: PlaceholderAlignment.middle,

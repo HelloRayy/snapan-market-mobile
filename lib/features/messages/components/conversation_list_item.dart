@@ -29,7 +29,6 @@ class ConversationListItem extends StatelessWidget {
     final hasUnread = conversation.unreadCount > 0;
     const secondaryInk = Color(0x993C3C43); // pen.dev #3c3c4399
     const azurePrimary = Color(0xFF008BFF); // pen.dev Accent #008BFF
-    const onlineGreen = Color(0xFF34C759); // pen.dev #34c759ff
     const titleBlack = Color(0xFF000000); // pen.dev #000000ff
 
     return Material(
@@ -92,7 +91,7 @@ class ConversationListItem extends StatelessWidget {
                             child: Image.network(
                               conversation.user.avatar,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => const Icon(
+                              errorBuilder: (context, error, stackTrace) => const Icon(
                                 CupertinoIcons.person_fill,
                                 color: AppColors.muted,
                                 size: 26.0,

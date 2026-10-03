@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { adminService, type SchoolMeetingPointRow } from '../services/adminService';
 import { AdminModalPortal } from '../components/AdminModalPortal';
+import { AdminTooltip } from '../components/AdminTooltip';
 
 export function MeetingPointsTab() {
   const [spots, setSpots] = useState<SchoolMeetingPointRow[]>([]);
@@ -324,53 +325,60 @@ export function MeetingPointsTab() {
                       Lantai {spot.floor}
                     </td>
                     <td>
-                      <button
-                        type="button"
-                        onClick={() => handleToggleActive(spot.id, spot.is_active)}
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '5px',
-                          padding: '3px 8px',
-                          borderRadius: '4px',
-                          border: '1px solid',
-                          fontSize: '11.5px',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          background: spot.is_active ? '#e0f3f1' : '#f8fafc',
-                          borderColor: spot.is_active ? '#a7f3d0' : '#e2e8f0',
-                          color: spot.is_active ? '#10b981' : '#94a3b8',
-                        }}
+                      <AdminTooltip
+                        content={spot.is_active ? 'Nonaktifkan titik COD' : 'Aktifkan titik COD'}
+                        placement="top"
                       >
-                        <i
-                          className={`fa-solid ${spot.is_active ? 'fa-circle-check' : 'fa-circle-xmark'}`}
-                        ></i>
-                        {spot.is_active ? 'Aktif' : 'Nonaktif'}
-                      </button>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleActive(spot.id, spot.is_active)}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                            border: '1px solid',
+                            fontSize: '11.5px',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            background: spot.is_active ? '#e0f3f1' : '#f8fafc',
+                            borderColor: spot.is_active ? '#a7f3d0' : '#e2e8f0',
+                            color: spot.is_active ? '#10b981' : '#94a3b8',
+                          }}
+                        >
+                          <i
+                            className={`fa-solid ${spot.is_active ? 'fa-circle-check' : 'fa-circle-xmark'}`}
+                          ></i>
+                          {spot.is_active ? 'Aktif' : 'Nonaktif'}
+                        </button>
+                      </AdminTooltip>
                     </td>
                     <td className="num">
                       <div className="table-data-feature">
                         {/* Edit Button */}
-                        <button
-                          type="button"
-                          className="item"
-                          title="Edit Spot"
-                          onClick={() => openEditModal(spot)}
-                          style={{ border: 0, cursor: 'pointer' }}
-                        >
-                          <i className="fa-solid fa-pen-to-square"></i>
-                        </button>
+                        <AdminTooltip content="Edit titik kumpul" placement="top">
+                          <button
+                            type="button"
+                            className="item"
+                            onClick={() => openEditModal(spot)}
+                            style={{ border: 0, cursor: 'pointer' }}
+                          >
+                            <i className="fa-solid fa-pen-to-square"></i>
+                          </button>
+                        </AdminTooltip>
 
                         {/* Delete Button */}
-                        <button
-                          type="button"
-                          className="item"
-                          title="Hapus Spot"
-                          onClick={() => setDeleteConfirmSpot(spot)}
-                          style={{ border: 0, cursor: 'pointer', color: '#dc3545' }}
-                        >
-                          <i className="fa-solid fa-trash-can"></i>
-                        </button>
+                        <AdminTooltip content="Hapus titik kumpul" placement="top" variant="danger">
+                          <button
+                            type="button"
+                            className="item"
+                            onClick={() => setDeleteConfirmSpot(spot)}
+                            style={{ border: 0, cursor: 'pointer', color: '#dc3545' }}
+                          >
+                            <i className="fa-solid fa-trash-can"></i>
+                          </button>
+                        </AdminTooltip>
                       </div>
                     </td>
                   </tr>

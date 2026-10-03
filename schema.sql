@@ -11,7 +11,7 @@ create table if not exists public.profiles (
   avatar_url text,
   class_group text default 'Siswa Snapan',
   is_verified boolean default false,
-  role text default 'buyer' check (role in ('buyer', 'seller', 'admin')),
+  role text default 'user' check (role in ('user', 'admin', 'buyer', 'seller')),
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -21,9 +21,14 @@ alter table public.profiles add column if not exists username text;
 alter table public.profiles add column if not exists avatar_url text;
 alter table public.profiles add column if not exists class_group text default 'Siswa Snapan';
 alter table public.profiles add column if not exists is_verified boolean default false;
-alter table public.profiles add column if not exists role text default 'buyer';
+alter table public.profiles add column if not exists role text default 'user';
 alter table public.profiles add column if not exists verified_sales_count integer default 0;
 alter table public.profiles add column if not exists total_revenue_idr numeric(14, 2) default 0.00;
+alter table public.profiles add column if not exists is_suspended boolean default false;
+alter table public.profiles add column if not exists suspended_at timestamptz;
+alter table public.profiles add column if not exists suspended_until timestamptz;
+alter table public.profiles add column if not exists suspend_reason text;
+create index if not exists idx_profiles_is_suspended on public.profiles(is_suspended) where is_suspended = true;
 
 
 -- Trigger Otomatis saat User Sign Up (Google OAuth / Email)
@@ -155,6 +160,22 @@ create table if not exists public.notifications (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
+-- 9. TABEL CONTENT REPORTS (Laporan Konten & Pelanggaran Siswa)
+create table if not exists public.content_reports (
+  id uuid default gen_random_uuid() primary key,
+  post_id uuid references public.market_posts(id) on delete cascade not null,
+  reporter_id uuid references public.profiles(id) on delete cascade not null,
+  reason text not null,
+  details text,
+  status text default 'pending' check (status in ('pending', 'resolved', 'dismissed')),
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  resolved_at timestamp with time zone,
+  resolved_by uuid references public.profiles(id) on delete set null
+);
+create index if not exists idx_content_reports_post_id on public.content_reports(post_id);
+create index if not exists idx_content_reports_reporter_id on public.content_reports(reporter_id);
+create index if not exists idx_content_reports_status on public.content_reports(status);
+
 
 -- ========================================================
 -- 🛡️ ROW LEVEL SECURITY (RLS) POLICIES
@@ -167,6 +188,7 @@ alter table public.comment_likes enable row level security;
 alter table public.cart_items enable row level security;
 alter table public.post_bookmarks enable row level security;
 alter table public.notifications enable row level security;
+alter table public.content_reports enable row level security;
 
 -- Profiles Policies
 drop policy if exists "Profiles viewable by everyone" on public.profiles;
@@ -246,6 +268,85 @@ begin
     raise exception 'Unauthorized: Hanya admin yang dapat menghapus postingan feed.';
   end if;
   delete from public.market_posts where id = target_post_id;
+end;
+$$;
+
+-- Helper Function Cek Status Suspen Pengguna (Security Definer)
+create or replace function public.is_user_suspended(check_user_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.profiles
+    where id = check_user_id
+      and is_suspended = true
+      and (suspended_until is null or suspended_until > timezone('utc'::text, now()))
+  );
+$$;
+
+-- RPC Helper for Admin Suspend User (Security Definer)
+create or replace function public.admin_suspend_user(
+  target_user_id uuid,
+  reason text,
+  duration_hours integer default null
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_until timestamptz := null;
+begin
+  if not public.is_admin() then
+    raise exception 'Unauthorized: Hanya admin yang dapat menangguhkan akun pengguna.';
+  end if;
+  if target_user_id = auth.uid() then
+    raise exception 'Invalid Operation: Administrator tidak diizinkan menangguhkan akun sendiri.';
+  end if;
+  if reason is null or length(trim(reason)) < 3 then
+    raise exception 'Invalid Input: Alasan penangguhan akun wajib diisi minimal 3 karakter.';
+  end if;
+  if duration_hours is not null and duration_hours > 0 then
+    v_until := timezone('utc'::text, now()) + (duration_hours || ' hours')::interval;
+  end if;
+  update public.profiles
+  set
+    is_suspended = true,
+    suspended_at = timezone('utc'::text, now()),
+    suspended_until = v_until,
+    suspend_reason = trim(reason)
+  where id = target_user_id;
+  if not found then
+    raise exception 'Target pengguna tidak ditemukan.';
+  end if;
+end;
+$$;
+
+-- RPC Helper for Admin Unsuspend User (Security Definer)
+create or replace function public.admin_unsuspend_user(target_user_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'Unauthorized: Hanya admin yang dapat memulihkan akun pengguna.';
+  end if;
+  update public.profiles
+  set
+    is_suspended = false,
+    suspended_at = null,
+    suspended_until = null,
+    suspend_reason = null
+  where id = target_user_id;
+  if not found then
+    raise exception 'Target pengguna tidak ditemukan.';
+  end if;
 end;
 $$;
 
@@ -743,61 +844,135 @@ drop policy if exists "Users can create conversations" on public.conversations;
 drop policy if exists "Users can update own conversations" on public.conversations;
 create policy "Users can view own conversations"
   on public.conversations for select to authenticated
-  using (auth.uid() in (participant_one, participant_two));
+  using ((select auth.uid()) in (participant_one, participant_two));
 create policy "Users can create conversations"
   on public.conversations for insert to authenticated
-  with check (auth.uid() in (participant_one, participant_two));
+  with check ((select auth.uid()) in (participant_one, participant_two));
 create policy "Users can update own conversations"
   on public.conversations for update to authenticated
-  using (auth.uid() in (participant_one, participant_two));
+  using ((select auth.uid()) in (participant_one, participant_two))
+  with check ((select auth.uid()) in (participant_one, participant_two));
 
--- Direct Messages: Hanya peserta percakapan yang berhak membaca & mengirim
+-- Direct Messages: Hanya peserta percakapan yang berhak membaca & mengirim & menandai terbaca
 drop policy if exists "Users can view conversation messages" on public.direct_messages;
 drop policy if exists "Users can send messages" on public.direct_messages;
 drop policy if exists "Users can update own messages" on public.direct_messages;
+drop policy if exists "Participants can update messages" on public.direct_messages;
 drop policy if exists "Users can delete own messages" on public.direct_messages;
+
 create policy "Users can view conversation messages"
   on public.direct_messages for select to authenticated
   using (
     exists (
-      select 1 from public.conversations
-      where id = direct_messages.conversation_id
-        and auth.uid() in (participant_one, participant_two)
+      select 1 from public.conversations c
+      where c.id = direct_messages.conversation_id
+        and (select auth.uid()) in (c.participant_one, c.participant_two)
     )
   );
+
 create policy "Users can send messages"
   on public.direct_messages for insert to authenticated
-  with check (auth.uid() = sender_id);
-create policy "Users can update own messages"
+  with check (
+    (select auth.uid()) = sender_id
+    and exists (
+      select 1 from public.conversations c
+      where c.id = direct_messages.conversation_id
+        and (select auth.uid()) in (c.participant_one, c.participant_two)
+    )
+  );
+
+create policy "Participants can update messages"
   on public.direct_messages for update to authenticated
-  using (auth.uid() = sender_id);
+  using (
+    exists (
+      select 1 from public.conversations c
+      where c.id = direct_messages.conversation_id
+        and (select auth.uid()) in (c.participant_one, c.participant_two)
+    )
+  )
+  with check (
+    exists (
+      select 1 from public.conversations c
+      where c.id = direct_messages.conversation_id
+        and (select auth.uid()) in (c.participant_one, c.participant_two)
+    )
+  );
+
 create policy "Users can delete own messages"
   on public.direct_messages for delete to authenticated
-  using (auth.uid() = sender_id);
+  using ((select auth.uid()) = sender_id);
 
+-- Trigger auto-update snapshot last_message pada tabel conversations
+create or replace function public.handle_direct_message_created()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update public.conversations
+  set
+    last_message = left(new.message_text, 100),
+    last_message_at = new.created_at
+  where id = new.conversation_id;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_direct_message_created on public.direct_messages;
+create trigger on_direct_message_created
+  after insert on public.direct_messages
+  for each row
+  execute function public.handle_direct_message_created();
 
 -- ========================================================
 -- ⚡ INDEXING: DIRECT MESSAGES
 -- ========================================================
 create index if not exists idx_conversations_participant_one on public.conversations(participant_one);
 create index if not exists idx_conversations_participant_two on public.conversations(participant_two);
+create index if not exists idx_conversations_participants on public.conversations(participant_one, participant_two);
 create index if not exists idx_conversations_last_message_at on public.conversations(last_message_at desc);
 create index if not exists idx_direct_messages_conversation on public.direct_messages(conversation_id);
 create index if not exists idx_direct_messages_sender on public.direct_messages(sender_id);
 create index if not exists idx_direct_messages_created_at on public.direct_messages(created_at asc);
 create index if not exists idx_direct_messages_unread on public.direct_messages(conversation_id, is_read) where is_read = false;
 
-
 -- ========================================================
--- 📡 REALTIME PUBLICATION (DM & Orders Push)
+-- 📡 REALTIME PUBLICATION (DM, Orders, Posts & Profiles Push)
 -- ========================================================
 -- Safe Idempotent Execution: Abaikan jika tabel sudah terdaftar di publication
+alter table public.conversations replica identity full;
+alter table public.direct_messages replica identity full;
+do $$ begin alter publication supabase_realtime add table public.profiles; exception when duplicate_object or others then null; end $$;
+alter table public.profiles replica identity full;
 do $$ begin alter publication supabase_realtime add table public.orders; exception when duplicate_object or others then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.order_notifications; exception when duplicate_object or others then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.conversations; exception when duplicate_object or others then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.direct_messages; exception when duplicate_object or others then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.market_posts; exception when duplicate_object or others then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.user_follows; exception when duplicate_object or others then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.content_reports; exception when duplicate_object or others then null; end $$;
+alter table public.content_reports replica identity full;
+
+-- Policies for content_reports
+drop policy if exists "Users can submit reports" on public.content_reports;
+drop policy if exists "Users and Admins can view reports" on public.content_reports;
+drop policy if exists "Admins can update report status" on public.content_reports;
+
+create policy "Users can submit reports" on public.content_reports
+  for insert to authenticated
+  with check ((select auth.uid()) = reporter_id);
+
+create policy "Users and Admins can view reports" on public.content_reports
+  for select
+  using (
+    (select auth.uid()) = reporter_id or public.is_admin()
+  );
+
+create policy "Admins can update report status" on public.content_reports
+  for update
+  using (public.is_admin())
+  with check (public.is_admin());
 
 
 

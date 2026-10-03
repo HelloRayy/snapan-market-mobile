@@ -154,7 +154,7 @@ class _DirectMessagesNewChatSheetState extends State<DirectMessagesNewChatSheet>
                         )
                       : ListView.separated(
                           itemCount: _results.length,
-                          separatorBuilder: (_, __) => const Divider(
+                          separatorBuilder: (context, index) => const Divider(
                             height: 1.0,
                             color: Color(0xFFF1F5F9),
                           ),

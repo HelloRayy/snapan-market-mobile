@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 
 class AuthController {
@@ -15,6 +13,19 @@ class AuthController {
       );
 
       if (response.user != null) {
+        // Cek apakah akun berstatus ditangguhkan (suspended) (SNAPS-16)
+        final suspension = await SupabaseService.instance.auth.getCurrentUserSuspensionStatus();
+        if (suspension != null) {
+          await SupabaseService.instance.signOut();
+          final reason = suspension['suspend_reason'] as String? ??
+              'Pelanggaran terhadap tata tertib komunitas SMKN 8 Semarang.';
+          final untilStr = suspension['suspended_until'] as String?;
+          final until = untilStr != null ? DateTime.tryParse(untilStr) : null;
+          final untilFormatted = until == null
+              ? 'Permanen (Tanpa Batas Waktu)'
+              : 'Berlaku hingga ${until.day}/${until.month}/${until.year} ${until.hour.toString().padLeft(2, '0')}:${until.minute.toString().padLeft(2, '0')} WIB';
+          return 'ACCOUNT_SUSPENDED::$reason::$untilFormatted';
+        }
         return null; // success
       }
       return 'Gagal masuk. Periksa kembali akun Anda.';

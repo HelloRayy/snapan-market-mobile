@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import "package:snapan_market/core/components/snaps_skeleton.dart";
-import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/core/services/supabase_service.dart";
 import "package:snapan_market/features/activity/components/activity_item_tile.dart";
 import "package:snapan_market/features/activity/models/activity_notification_model.dart";
@@ -44,7 +43,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
     if (_activeTabIndex == 1) {
       return _notifications.where((n) => n.type == ActivityType.order).toList();
     } else if (_activeTabIndex == 2) {
-      return _notifications.where((n) => n.type == ActivityType.like || n.type == ActivityType.comment).toList();
+      return _notifications.where((n) =>
+        n.type == ActivityType.like ||
+        n.type == ActivityType.comment ||
+        n.type == ActivityType.mention ||
+        n.type == ActivityType.follow
+      ).toList();
     }
     return _notifications;
   }

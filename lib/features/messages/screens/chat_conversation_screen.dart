@@ -30,6 +30,7 @@ class ChatConversationScreen extends StatefulWidget {
 }
 
 class _ChatConversationScreenState extends State<ChatConversationScreen> {
+  late String _activeConvId;
   late List<ChatMessageModel> _messages;
   final ScrollController _scrollController = ScrollController();
   RealtimeChannel? _messagesSubscription;
@@ -37,8 +38,10 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
   @override
   void initState() {
     super.initState();
+    _activeConvId = widget.conversation.id;
     DirectMessagesService.instance.addListener(_onServiceChanged);
-    final savedMessages = DirectMessagesService.instance.getMessages(widget.conversation.id);
+
+    final savedMessages = DirectMessagesService.instance.getMessages(_activeConvId);
     if (savedMessages.isNotEmpty) {
       _messages = List.from(savedMessages);
     } else if (widget.conversation.lastMessage.trim().isNotEmpty) {
@@ -51,19 +54,20 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
       );
       _messages = [initialMsg];
       DirectMessagesService.instance.addMessage(
-        widget.conversation.id,
+        _activeConvId,
         initialMsg,
         conversation: widget.conversation,
       );
     } else {
       _messages = [];
     }
+
     _initRealtimeChat();
   }
 
   void _onServiceChanged() {
     if (!mounted) return;
-    final updated = DirectMessagesService.instance.getMessages(widget.conversation.id);
+    final updated = DirectMessagesService.instance.getMessages(_activeConvId);
     if (updated.isNotEmpty) {
       setState(() {
         _messages = List.from(updated);
@@ -74,7 +78,34 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
 
   Future<void> _initRealtimeChat() async {
     final currentUserId = SupabaseService.instance.currentUser?.id ?? '';
-    final live = await DirectMessagesService.instance.loadMessages(widget.conversation.id);
+    final isUuid = RegExp(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', caseSensitive: false);
+
+    // Auto-resolve real UUID if opened with temporary conversation ID
+    if (!isUuid.hasMatch(_activeConvId)) {
+      String? targetUserId = widget.conversation.user.id;
+      if (targetUserId == null) {
+        final profile = await SupabaseService.instance.getProfileByUsername(widget.conversation.user.username);
+        targetUserId = profile?['id'] as String?;
+      }
+
+      if (targetUserId != null) {
+        final realId = await SupabaseService.instance.getOrCreateConversation(
+          otherUserId: targetUserId,
+          productId: widget.conversation.productId,
+        );
+        if (realId != null && realId != _activeConvId) {
+          final oldId = _activeConvId;
+          _activeConvId = realId;
+          DirectMessagesService.instance.updateConversationId(
+            oldId: oldId,
+            newId: realId,
+          );
+        }
+      }
+    }
+
+    // Load message history from Supabase
+    final live = await DirectMessagesService.instance.loadMessages(_activeConvId);
     if (live.isNotEmpty && mounted) {
       setState(() {
         _messages = List.from(live);
@@ -82,22 +113,28 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
       _scrollToBottom();
     }
 
+    // Subscribe to live realtime messages and read-status updates
+    _messagesSubscription?.unsubscribe();
     _messagesSubscription = SupabaseService.instance.subscribeToMessages(
-      widget.conversation.id,
+      _activeConvId,
       (newRecord) {
         if (!mounted) return;
         final msg = ChatMessageModel.fromJson(newRecord, currentUserId);
-        if (!_messages.any((m) => m.id == msg.id)) {
-          setState(() {
-            _messages.add(msg);
-          });
-          DirectMessagesService.instance.addMessage(
-            widget.conversation.id,
-            msg,
-            conversation: widget.conversation,
-          );
-          _scrollToBottom();
+        DirectMessagesService.instance.addMessage(
+          _activeConvId,
+          msg,
+          conversation: widget.conversation,
+        );
+        // If message is from other user, automatically mark as read
+        if (!msg.isMe) {
+          DirectMessagesService.instance.markAsRead(_activeConvId);
         }
+        _scrollToBottom();
+      },
+      onMessageUpdated: (updatedRecord) {
+        if (!mounted) return;
+        final updatedMsg = ChatMessageModel.fromJson(updatedRecord, currentUserId);
+        DirectMessagesService.instance.updateMessage(_activeConvId, updatedMsg);
       },
     );
   }
@@ -124,7 +161,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
 
   void _handleSendMessage(String text) {
     DirectMessagesService.instance.sendMessage(
-      conversationId: widget.conversation.id,
+      conversationId: _activeConvId,
       text: text,
       conversation: widget.conversation,
     );
@@ -225,9 +262,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                       alignment: Alignment.centerLeft,
                       child: ChatProductCard(
                         product: widget.conversation.productContext!,
-                        location: widget.conversation.id == "17892348123791823"
-                            ? "Lab Fisika Lt 2"
-                            : "Kantin Belakang SMKN 8 Semarang",
+                        location: "Kantin Belakang SMKN 8 Semarang",
                         onViewProduct: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(

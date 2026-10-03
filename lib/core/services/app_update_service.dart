@@ -47,6 +47,9 @@ class AppUpdateService {
   /// Set [isManual] to true when user explicitly taps "Periksa pembaruan".
   Future<AppVersionModel?> checkForUpdate({bool isManual = false}) async {
     try {
+      if (isManual) {
+        _cachedPackageInfo = null;
+      }
       final packageInfo = await getPackageInfo();
       final int currentBuildNumber = int.tryParse(packageInfo.buildNumber) ?? 1;
 
@@ -98,6 +101,32 @@ class AppUpdateService {
       debugPrint('Error checking app update: $e');
       return null;
     }
+  }
+
+  /// Ambil info versi aktif terbaru langsung dari database Supabase
+  Future<AppVersionModel?> getLatestActiveVersion() async {
+    try {
+      final response = await SupabaseService.instance.client
+          .from('app_versions')
+          .select()
+          .eq('is_active', true)
+          .order('version_code', ascending: false)
+          .limit(1)
+          .maybeSingle();
+
+      if (response == null) return null;
+      return AppVersionModel.fromJson(response);
+    } catch (e) {
+      debugPrint('Error getting latest active version: $e');
+      return null;
+    }
+  }
+
+  /// Invalidate cached package info & update state to reflect true disk/runtime state
+  void clearCache() {
+    _cachedLatestUpdate = null;
+    _cachedPackageInfo = null;
+    _hasPromptedThisSession = false;
   }
 
   AppVersionModel? get cachedUpdate => _cachedLatestUpdate;

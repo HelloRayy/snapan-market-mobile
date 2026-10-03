@@ -4,6 +4,12 @@ import type { Database } from '@/types/supabase';
 export type ProfileRow = Database['public']['Tables']['profiles']['Row'];
 export type MarketPostRow = Database['public']['Tables']['market_posts']['Row'];
 export type SchoolMeetingPointRow = Database['public']['Tables']['school_meeting_points']['Row'];
+export type ContentReportRow = Database['public']['Tables']['content_reports']['Row'];
+
+export interface ContentReportWithDetails extends ContentReportRow {
+  reporter?: ProfileRow | null;
+  post?: (MarketPostRow & { seller?: ProfileRow | null }) | null;
+}
 
 export interface GlobalSearchResult {
   users: ProfileRow[];
@@ -48,8 +54,30 @@ export const adminService = {
       supabase.from('market_posts').select('id', { count: 'exact', head: true }),
       supabase.from('school_meeting_points').select('id', { count: 'exact', head: true }),
       supabase.from('orders').select('id', { count: 'exact', head: true }),
-      supabase.from('profiles').select('*').order('created_at', { ascending: false }).limit(5),
-      supabase.from('market_posts').select('*, seller:seller_id(*)').order('created_at', { ascending: false }).limit(5),
+      supabase
+        .from('profiles')
+        .select('id, full_name, username, avatar_url, role, class_group, created_at')
+        .order('created_at', { ascending: false })
+        .limit(5),
+      supabase
+        .from('market_posts')
+        .select(`
+          id,
+          title,
+          price,
+          images,
+          category,
+          created_at,
+          seller:seller_id (
+            id,
+            full_name,
+            username,
+            avatar_url,
+            role
+          )
+        `)
+        .order('created_at', { ascending: false })
+        .limit(5),
     ]);
 
     return {
@@ -69,10 +97,18 @@ export const adminService = {
     search?: string;
     role?: string;
     verification?: 'all' | 'verified' | 'unverified';
+    status?: 'all' | 'active' | 'suspended';
     limit?: number;
     offset?: number;
   }): Promise<{ data: ProfileRow[]; count: number }> {
-    const { search = '', role = 'all', verification = 'all', limit = 20, offset = 0 } = params || {};
+    const {
+      search = '',
+      role = 'all',
+      verification = 'all',
+      status = 'all',
+      limit = 20,
+      offset = 0,
+    } = params || {};
 
     let query = supabase.from('profiles').select('*', { count: 'exact' });
 
@@ -81,13 +117,23 @@ export const adminService = {
     }
 
     if (role && role !== 'all') {
-      query = query.eq('role', role as 'buyer' | 'seller' | 'admin');
+      if (role === 'user') {
+        query = query.in('role', ['user', 'buyer', 'seller']);
+      } else {
+        query = query.eq('role', role as 'user' | 'admin' | 'buyer' | 'seller');
+      }
     }
 
     if (verification === 'verified') {
       query = query.eq('is_verified', true);
     } else if (verification === 'unverified') {
       query = query.eq('is_verified', false);
+    }
+
+    if (status === 'suspended') {
+      query = query.eq('is_suspended', true);
+    } else if (status === 'active') {
+      query = query.or('is_suspended.is.null,is_suspended.eq.false');
     }
 
     query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1);
@@ -102,9 +148,81 @@ export const adminService = {
   },
 
   /**
-   * Mengubah role profile (buyer, seller, admin)
+   * Menangguhkan (suspend) akun siswa yang melanggar batas aturan
    */
-  async updateProfileRole(userId: string, newRole: 'buyer' | 'seller' | 'admin'): Promise<void> {
+  async suspendUser(userId: string, reason: string, durationHours: number | null): Promise<void> {
+    const trimmedReason = reason.trim();
+    if (!trimmedReason) {
+      throw new Error('Alasan penangguhan akun wajib diisi.');
+    }
+
+    const untilDate =
+      durationHours && durationHours > 0
+        ? new Date(Date.now() + durationHours * 3600 * 1000).toISOString()
+        : null;
+
+    // Coba direct update terlebih dahulu
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({
+        is_suspended: true,
+        suspended_at: new Date().toISOString(),
+        suspended_until: untilDate,
+        suspend_reason: trimmedReason,
+      })
+      .eq('id', userId)
+      .select();
+
+    if (error || !data || data.length === 0) {
+      // Fallback ke RPC ber-security definer
+      const { error: rpcErr } = await (supabase.rpc as any)('admin_suspend_user', {
+        target_user_id: userId,
+        reason: trimmedReason,
+        duration_hours: durationHours,
+      });
+
+      if (rpcErr) {
+        throw new Error(
+          rpcErr.message ||
+            'Gagal menangguhkan akun pengguna. Jalankan SQL migration admin di Supabase SQL Editor.'
+        );
+      }
+    }
+  },
+
+  /**
+   * Memulihkan (unsuspend) akun siswa kembali aktif normal
+   */
+  async unsuspendUser(userId: string): Promise<void> {
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({
+        is_suspended: false,
+        suspended_at: null,
+        suspended_until: null,
+        suspend_reason: null,
+      })
+      .eq('id', userId)
+      .select();
+
+    if (error || !data || data.length === 0) {
+      const { error: rpcErr } = await (supabase.rpc as any)('admin_unsuspend_user', {
+        target_user_id: userId,
+      });
+
+      if (rpcErr) {
+        throw new Error(
+          rpcErr.message ||
+            'Gagal memulihkan akun pengguna. Jalankan SQL migration admin di Supabase SQL Editor.'
+        );
+      }
+    }
+  },
+
+  /**
+   * Mengubah role profile (user, admin)
+   */
+  async updateProfileRole(userId: string, newRole: 'user' | 'admin' | 'buyer' | 'seller'): Promise<void> {
     const { data, error } = await supabase
       .from('profiles')
       .update({ role: newRole })
@@ -300,17 +418,31 @@ export const adminService = {
       const [usersRes, postsRes, spotsRes] = await Promise.all([
         supabase
           .from('profiles')
-          .select('*')
+          .select('id, full_name, username, avatar_url, role, class_group, created_at')
           .or(`full_name.ilike.%${cleanQuery}%,username.ilike.%${cleanQuery}%,class_group.ilike.%${cleanQuery}%`)
           .limit(4),
         supabase
           .from('market_posts')
-          .select('*, seller:seller_id(*)')
+          .select(`
+            id,
+            title,
+            price,
+            images,
+            category,
+            created_at,
+            seller:seller_id (
+              id,
+              full_name,
+              username,
+              avatar_url,
+              role
+            )
+          `)
           .or(`title.ilike.%${cleanQuery}%,caption.ilike.%${cleanQuery}%,category.ilike.%${cleanQuery}%`)
           .limit(4),
         supabase
           .from('school_meeting_points')
-          .select('*')
+          .select('id, name, floor, area_category, description, coordinates_x, coordinates_y, is_active')
           .or(`name.ilike.%${cleanQuery}%,area_category.ilike.%${cleanQuery}%`)
           .limit(4),
       ]);
@@ -323,6 +455,223 @@ export const adminService = {
     } catch (err) {
       console.error('Error in searchGlobal:', err);
       return { users: [], posts: [], spots: [] };
+    }
+  },
+
+  /**
+   * Mengambil data laporan konten dari database Supabase (dengan proyeksi kolom teroptimasi & pagination)
+   */
+  async getContentReports(limit = 100): Promise<ContentReportWithDetails[]> {
+    try {
+      const { data: dbReports, error: repErr } = await (supabase as any)
+        .from('content_reports')
+        .select(`
+          id,
+          post_id,
+          reporter_id,
+          reason,
+          details,
+          status,
+          created_at,
+          resolved_at,
+          resolved_by,
+          reporter:reporter_id (
+            id,
+            full_name,
+            username,
+            avatar_url,
+            role,
+            class_group
+          ),
+          post:post_id (
+            id,
+            title,
+            caption,
+            price,
+            images,
+            category,
+            created_at,
+            seller:seller_id (
+              id,
+              full_name,
+              username,
+              avatar_url,
+              role
+            )
+          )
+        `)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (!repErr && dbReports) {
+        return dbReports as ContentReportWithDetails[];
+      }
+      return [];
+    } catch (e) {
+      console.warn('Gagal mengambil content_reports dari database:', e);
+      return [];
+    }
+  },
+
+  /**
+   * Mengambil cuplikan notifikasi laporan yang berstatus 'pending' (super ringan untuk AdminHeader)
+   */
+  async getPendingReportNotifications(limit = 5): Promise<{
+    notifications: {
+      id: string;
+      reason: string;
+      details: string | null;
+      created_at: string;
+      reporterUsername: string | null;
+    }[];
+    pendingCount: number;
+  }> {
+    try {
+      const { data, count, error } = await (supabase as any)
+        .from('content_reports')
+        .select(
+          `
+          id,
+          reason,
+          details,
+          created_at,
+          reporter:reporter_id (
+            username,
+            full_name
+          )
+        `,
+          { count: 'exact' }
+        )
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error || !data) {
+        return { notifications: [], pendingCount: 0 };
+      }
+
+      const formatted = (data as any[]).map((r) => ({
+        id: r.id,
+        reason: r.reason,
+        details: r.details,
+        created_at: r.created_at,
+        reporterUsername: r.reporter?.username || r.reporter?.full_name || 'siswa',
+      }));
+
+      return {
+        notifications: formatted,
+        pendingCount: count ?? formatted.length,
+      };
+    } catch (e) {
+      console.warn('Gagal mengambil pending notifications:', e);
+      return { notifications: [], pendingCount: 0 };
+    }
+  },
+
+  /**
+   * Mengupdate status laporan di database Supabase
+   */
+  async updateReportStatus(
+    reportId: string,
+    status: 'pending' | 'resolved' | 'dismissed',
+    adminUserId?: string
+  ): Promise<void> {
+    try {
+      const { error } = await (supabase as any)
+        .from('content_reports')
+        .update({
+          status,
+          resolved_at: status !== 'pending' ? new Date().toISOString() : null,
+          resolved_by: status !== 'pending' ? adminUserId ?? null : null,
+        })
+        .eq('id', reportId);
+
+      if (error) {
+        // Coba panggil RPC jika RLS membatasi
+        await (supabase.rpc as any)('admin_update_report_status', {
+          target_report_id: reportId,
+          new_status: status,
+          admin_user_id: adminUserId,
+        });
+      }
+    } catch (e) {
+      console.warn('Update report status fallback:', e);
+    }
+  },
+
+  /**
+   * Mengirim broadcast notifikasi sistem ke pengguna (semua atau target tertentu)
+   */
+  async sendBroadcastNotification(payload: {
+    title: string;
+    message: string;
+    targetType: 'all' | 'specific_role' | 'single_user';
+    targetRole?: string;
+    targetUserId?: string;
+    soundUrl?: string; // Mock custom sound url / name
+    adminId?: string;
+  }): Promise<{ successCount: number; targetCount: number }> {
+    try {
+      // 1. Ambil target user ID
+      let query = supabase.from('profiles').select('id');
+      if (payload.targetType === 'single_user' && payload.targetUserId) {
+        query = query.eq('id', payload.targetUserId);
+      } else if (payload.targetType === 'specific_role' && payload.targetRole) {
+        query = query.eq('role', payload.targetRole as any);
+      }
+
+      const { data: users, error: userError } = await query;
+      if (userError) throw userError;
+      if (!users || users.length === 0) return { successCount: 0, targetCount: 0 };
+
+      // 2. Siapkan records notifikasi untuk diinsert secara batch
+      const rows = users.map((u) => ({
+        user_id: u.id,
+        actor_id: payload.adminId || null,
+        type: 'system',
+        title: payload.title,
+        message: payload.message,
+        is_read: false,
+      }));
+
+      const chunkSize = 100;
+      let totalInserted = 0;
+      for (let i = 0; i < rows.length; i += chunkSize) {
+        const chunk = rows.slice(i, i + chunkSize);
+        const { error: insertError } = await (supabase as any)
+          .from('notifications')
+          .insert(chunk);
+        if (insertError) {
+          console.warn('Batch insert chunk error:', insertError);
+        } else {
+          totalInserted += chunk.length;
+        }
+      }
+
+      return { successCount: totalInserted, targetCount: users.length };
+    } catch (err: any) {
+      console.error('sendBroadcastNotification failed:', err);
+      throw new Error(err?.message || 'Gagal mengirim notifikasi broadcast');
+    }
+  },
+
+  /**
+   * Mengambil riwayat pengiriman notifikasi broadcast terkini
+   */
+  async getBroadcastHistory(limit = 15): Promise<any[]> {
+    try {
+      const { data, error } = await (supabase as any)
+        .from('notifications')
+        .select('id, title, message, type, created_at, actor:actor_id (full_name, username)')
+        .eq('type', 'system')
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error || !data) return [];
+      return data;
+    } catch (e) {
+      console.warn('Failed getBroadcastHistory:', e);
+      return [];
     }
   },
 };

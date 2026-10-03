@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,10 +12,17 @@ import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/activity/components/broadcast_detail_modal.dart';
 import 'package:snapan_market/features/activity/models/activity_notification_model.dart';
 
-/// Global Notification Service (OS Status Bar & In-App Dynamic Banner)
+/// Top-level background message handler for FCM
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // Handled by Google Play Services automatically in Android notification tray
+}
+
+/// Global Notification Service (OS Status Bar, In-App Dynamic Banner & FCM Background Push)
 /// - Registers Android High Importance Notification Channel (Unlocks OS Toggle)
-/// - Dispatches system notifications to Android Status Bar with sound & vibration
-/// - Displays in-app floating banner when app is active
+/// - Dispatches system notifications to Android Status Bar with BigTextStyle (Full Open Text)
+/// - Auto-opens Full Open Announcement Modal when tapped from notification tray
+/// - Connects Firebase Cloud Messaging (FCM) so alerts penetrate when app is killed/background
 class GlobalNotificationService {
   GlobalNotificationService._();
   static final GlobalNotificationService instance = GlobalNotificationService._();
@@ -27,11 +37,119 @@ class GlobalNotificationService {
   Timer? _dismissTimer;
   bool _isLocalNotifsInitialized = false;
 
-  /// Initialize global realtime notification listener & OS notification channel
+  /// Initialize global realtime notification listener, FCM, & OS notification channel
   Future<void> init() async {
     await _initLocalNotifications();
+    await _initFirebaseMessaging();
     _fetchInitialUnreadStatus();
     _subscribeRealtime();
+  }
+
+  Future<void> _initFirebaseMessaging() async {
+    try {
+      await Firebase.initializeApp();
+      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+      final fcm = FirebaseMessaging.instance;
+      await fcm.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      // Get FCM Token and save to Supabase
+      final token = await fcm.getToken();
+      if (token != null) {
+        await SupabaseService.instance.saveFcmToken(token);
+      }
+
+      // Listen for token refresh
+      fcm.onTokenRefresh.listen((newToken) {
+        SupabaseService.instance.saveFcmToken(newToken);
+      });
+
+      // When app is in foreground and FCM receives a message
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        final title = message.notification?.title ?? message.data['title'] ?? 'Pengumuman Baru';
+        final body = message.notification?.body ?? message.data['message'] ?? '';
+        final actionType = message.data['action_type'] ?? 'none';
+        final actionUrl = message.data['action_url'] ?? '';
+
+        final fakeNotif = ActivityNotification(
+          id: message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+          type: ActivityType.system,
+          actorName: 'Administrator',
+          actorUsername: 'admin',
+          actorAvatar: '',
+          title: title,
+          message: body,
+          timeAgo: 'Baru saja',
+          actionType: actionType,
+          actionUrl: actionUrl,
+          isRead: false,
+        );
+
+        _showOsNotification(
+          title: title,
+          message: body,
+          payloadJson: jsonEncode(fakeNotif.toJson()),
+        );
+
+        showTopBanner(
+          title: title,
+          message: body,
+          type: 'system',
+          onTap: () {
+            final ctx = NavigationService.currentContext;
+            if (ctx != null) {
+              BroadcastDetailModal.show(ctx, fakeNotif);
+            }
+          },
+        );
+      });
+
+      // When user clicks notification while app is opened from terminated state
+      FirebaseMessaging.instance.getInitialMessage().then((message) {
+        if (message != null) {
+          _handleFcmMessageClick(message);
+        }
+      });
+
+      // When user clicks notification while app is in background
+      FirebaseMessaging.onMessageOpenedApp.listen((message) {
+        _handleFcmMessageClick(message);
+      });
+    } catch (e) {
+      debugPrint('Firebase messaging initialization notice: $e');
+    }
+  }
+
+  void _handleFcmMessageClick(RemoteMessage message) {
+    final title = message.notification?.title ?? message.data['title'] ?? 'Pengumuman Resmi';
+    final body = message.notification?.body ?? message.data['message'] ?? '';
+    final actionType = message.data['action_type'] ?? 'none';
+    final actionUrl = message.data['action_url'] ?? '';
+
+    final notif = ActivityNotification(
+      id: message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      type: ActivityType.system,
+      actorName: 'Administrator',
+      actorUsername: 'admin',
+      actorAvatar: '',
+      title: title,
+      message: body,
+      timeAgo: 'Baru saja',
+      actionType: actionType,
+      actionUrl: actionUrl,
+      isRead: false,
+    );
+
+    Future.delayed(const Duration(milliseconds: 600), () {
+      final ctx = NavigationService.currentContext;
+      if (ctx != null) {
+        BroadcastDetailModal.show(ctx, notif);
+      }
+    });
   }
 
   Future<void> _initLocalNotifications() async {
@@ -45,6 +163,18 @@ class GlobalNotificationService {
         settings: initSettings,
         onDidReceiveNotificationResponse: (details) {
           // Ketika user tap notifikasi di status bar Android
+          final payload = details.payload;
+          if (payload != null && payload.isNotEmpty) {
+            try {
+              final json = jsonDecode(payload) as Map<String, dynamic>;
+              final notif = ActivityNotification.fromJson(json);
+              final ctx = NavigationService.currentContext;
+              if (ctx != null) {
+                BroadcastDetailModal.show(ctx, notif);
+                return;
+              }
+            } catch (_) {}
+          }
           NavigationService.popToRoot();
         },
       );
@@ -101,8 +231,12 @@ class GlobalNotificationService {
         final message = record['message']?.toString() ?? '';
         final type = record['type']?.toString() ?? 'system';
 
-        // 1. Post notification to Android OS Status Bar
-        _showOsNotification(title: title, message: message);
+        // 1. Post notification to Android OS Status Bar with BigTextStyle
+        _showOsNotification(
+          title: title,
+          message: message,
+          payloadJson: jsonEncode(record),
+        );
 
         // 2. Show floating in-app banner with tap action
         showTopBanner(
@@ -123,26 +257,40 @@ class GlobalNotificationService {
     }
   }
 
-  Future<void> _showOsNotification({required String title, required String message}) async {
+  Future<void> _showOsNotification({
+    required String title,
+    required String message,
+    String? payloadJson,
+  }) async {
     try {
-      const androidDetails = AndroidNotificationDetails(
+      final bigTextStyle = BigTextStyleInformation(
+        message,
+        contentTitle: title,
+        summaryText: 'SMKN 8 Semarang',
+        htmlFormatContent: false,
+        htmlFormatContentTitle: false,
+      );
+
+      final androidDetails = AndroidNotificationDetails(
         'snaps_announcements',
         'Pengumuman & Notifikasi Snaps',
         channelDescription: 'Notifikasi broadcast pengumuman resmi dan aktivitas interaksi Snaps.',
         importance: Importance.max,
         priority: Priority.high,
+        styleInformation: bigTextStyle,
         enableVibration: true,
         playSound: true,
         icon: '@mipmap/ic_launcher',
       );
 
-      const notifDetails = NotificationDetails(android: androidDetails);
+      final notifDetails = NotificationDetails(android: androidDetails);
 
       await _localNotifs.show(
         id: (DateTime.now().millisecondsSinceEpoch ~/ 1000) % 100000,
         title: title,
         body: message,
         notificationDetails: notifDetails,
+        payload: payloadJson,
       );
     } catch (e) {
       debugPrint('Error showing OS notification: $e');
@@ -376,11 +524,32 @@ class _FloatingNotificationBannerState extends State<_FloatingNotificationBanner
                               style: const TextStyle(
                                 color: Color(0xFFCBD5E1),
                                 fontSize: 12.0,
-                                height: 1.3,
+                                height: 1.35,
                               ),
-                              maxLines: 2,
+                              maxLines: 3,
                               overflow: TextOverflow.ellipsis,
                             ),
+                            if (widget.isSystem) ...[
+                              const SizedBox(height: 4.0),
+                              Row(
+                                children: [
+                                  Text(
+                                    "Ketuk untuk buka pesan penuh",
+                                    style: TextStyle(
+                                      color: Colors.white.withValues(alpha: 0.75),
+                                      fontSize: 10.5,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4.0),
+                                  Icon(
+                                    CupertinoIcons.arrow_up_right_square,
+                                    size: 11.0,
+                                    color: Colors.white.withValues(alpha: 0.75),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ],
                         ),
                       ),

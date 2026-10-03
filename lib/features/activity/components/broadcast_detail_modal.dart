@@ -24,7 +24,10 @@ class BroadcastDetailModal extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => BroadcastDetailModal(notification: notification),
+      builder: (_) => FractionallySizedBox(
+        heightFactor: 0.88,
+        child: BroadcastDetailModal(notification: notification),
+      ),
     );
   }
 
@@ -199,22 +202,27 @@ class BroadcastDetailModal extends StatelessWidget {
           ),
           const SizedBox(height: 12.0),
 
-          // Pesan Lengkap (Full Text, No Truncation)
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF8FAFC),
-              borderRadius: BorderRadius.circular(14.0),
-              border: Border.all(color: const Color(0xFFE2E8F0)),
-            ),
-            child: SelectableText(
-              notification.message,
-              style: const TextStyle(
-                fontSize: 14.5,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFF334155),
-                height: 1.55,
+          // Pesan Lengkap (Full Text, No Truncation, Full Expanded Scrollable)
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(16.0),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+              ),
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: SelectableText(
+                  notification.message,
+                  style: const TextStyle(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF334155),
+                    height: 1.6,
+                  ),
+                ),
               ),
             ),
           ),

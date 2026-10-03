@@ -70,6 +70,23 @@ class ActivityNotification {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'type': type.name,
+      'actor_name': actorName,
+      'actor_username': actorUsername,
+      'actor_avatar': actorAvatar,
+      'title': title,
+      'message': message,
+      'time_ago': timeAgo,
+      'action_url': actionUrl,
+      'action_type': actionType,
+      'post_id': postId,
+      'is_read': isRead,
+    };
+  }
+
   ActivityNotification copyWith({
     String? id,
     ActivityType? type,

@@ -17,7 +17,7 @@ class UpdateInfoBottomSheet extends StatefulWidget {
     required this.currentVersionName,
   });
 
-  /// Displays the modal bottom sheet
+  /// Displays the modal sheet with Full-Open expanded height
   static Future<void> show(
     BuildContext context, {
     required AppVersionModel update,
@@ -39,9 +39,12 @@ class UpdateInfoBottomSheet extends StatefulWidget {
             AppUpdateService.instance.dismissUpdate(update.versionCode);
           }
         },
-        child: UpdateInfoBottomSheet(
-          update: update,
-          currentVersionName: currentVersionName,
+        child: FractionallySizedBox(
+          heightFactor: 0.88,
+          child: UpdateInfoBottomSheet(
+            update: update,
+            currentVersionName: currentVersionName,
+          ),
         ),
       ),
     );
@@ -300,39 +303,50 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
 
               const SizedBox(height: 16.0),
 
-              // 3. Changelog Card
-              Container(
-                padding: const EdgeInsets.all(14.0),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
-                  borderRadius: BorderRadius.circular(14.0),
-                  border: Border.all(
-                    color: const Color(0xFFE2E8F0),
-                    width: 0.8,
+              // 3. Changelog Card (Expanded & Scrollable for Full-Open View)
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(16.0),
+                    border: Border.all(
+                      color: const Color(0xFFE2E8F0),
+                      width: 0.8,
+                    ),
                   ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Catatan Pembaruan:',
-                      style: TextStyle(
-                        fontSize: 13.0,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF334155),
-                      ),
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.article_rounded, size: 16.0, color: Color(0xFF64748B)),
+                            const SizedBox(width: 6.0),
+                            const Text(
+                              'Catatan Pembaruan:',
+                              style: TextStyle(
+                                fontSize: 13.5,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF334155),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10.0),
+                        SelectableText(
+                          widget.update.changelog,
+                          style: const TextStyle(
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF475569),
+                            height: 1.55,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 6.0),
-                    Text(
-                      widget.update.changelog,
-                      style: const TextStyle(
-                        fontSize: 13.0,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF475569),
-                        height: 1.45,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
 

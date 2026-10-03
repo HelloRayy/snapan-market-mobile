@@ -625,6 +625,22 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
                     <i className="fa-solid fa-volume-low text-muted"></i>
                     <span>Nada: {soundChoice === 'custom' ? 'Kustom Audio' : soundChoice}</span>
                   </div>
+
+                  {/* Simulasi Full-Open Action Button */}
+                  {actionType !== 'none' && (
+                    <div
+                      className="mt-2.5 pt-2 border-top d-flex align-items-center justify-content-between"
+                      style={{ fontSize: '11px', color: '#3d38f5', fontWeight: 600 }}
+                    >
+                      <span>
+                        <i className={`fa-solid ${actionType === 'update_app' ? 'fa-rocket' : actionType === 'external_url' ? 'fa-globe' : 'fa-thumbtack'} me-1.5`}></i>
+                        {actionType === 'update_app' ? 'Tombol Update Aplikasi' : actionType === 'external_url' ? 'Buka Link Web' : 'Buka Postingan'}
+                      </span>
+                      <span className="badge bg-primary-subtle text-primary border border-primary-subtle px-1.5 py-0.5" style={{ fontSize: '9px' }}>
+                        Full Open Action
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

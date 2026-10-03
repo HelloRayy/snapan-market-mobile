@@ -90,4 +90,8 @@ graphify-out/cache/
 graphify-out/.graphify_*
 graphify-out/20*/
 
+# Firebase Private Keys
+*firebase-service-account*.json
+*firebase-adminsdk*.json
+
 

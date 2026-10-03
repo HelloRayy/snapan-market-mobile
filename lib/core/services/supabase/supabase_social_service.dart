@@ -234,4 +234,20 @@ class SupabaseSocialService {
         )
         .subscribe();
   }
+
+  /// Save FCM Device Token for Push Notifications
+  Future<void> saveFcmToken(String token) async {
+    final user = _currentUser;
+    if (user == null || token.isEmpty) return;
+    try {
+      await _client.from('user_fcm_tokens').upsert({
+        'user_id': user.id,
+        'fcm_token': token,
+        'device_info': 'Android',
+        'updated_at': DateTime.now().toIso8601String(),
+      });
+    } catch (e) {
+      debugPrint('Error saving FCM Token: $e');
+    }
+  }
 }

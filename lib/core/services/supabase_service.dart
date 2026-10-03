@@ -265,4 +265,6 @@ class SupabaseService {
     void Function() onFollowChange,
   ) =>
       social.subscribeToFollowers(userId, onFollowChange);
+
+  Future<void> saveFcmToken(String token) => social.saveFcmToken(token);
 }

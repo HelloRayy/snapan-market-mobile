@@ -120,9 +120,9 @@
     "semantic_hash": "b6e76239bcc891871113a9f4a0f17889"
   },
   "lib/core/services/supabase_service.dart": {
-    "mtime": 1791037205.1199605,
-    "seen": 1791037280.359924,
-    "ast_hash": "2d449d176da49100fa4fdacf0333a7cb",
+    "mtime": 1791039355.0340743,
+    "seen": 1791039446.8189132,
+    "ast_hash": "aabb418a31fc02d0f61f566ee5a113ff",
     "semantic_hash": ""
   },
   "lib/core/theme/app_colors.dart": {
@@ -540,9 +540,9 @@
     "semantic_hash": "8239099c42899cb400451744d7ba567e"
   },
   "lib/features/feed/screens/home_feed_screen.dart": {
-    "mtime": 1791030309.552176,
-    "seen": 1791036263.980843,
-    "ast_hash": "5a31a695038beb97a006304ec26aab9f",
+    "mtime": 1791039426.5113845,
+    "seen": 1791039446.8191893,
+    "ast_hash": "ac0d05afd8c74ea9099ebc334ca1b0f7",
     "semantic_hash": ""
   },
   "lib/features/feed/screens/post_detail_screen.dart": {
@@ -3030,9 +3030,9 @@
     "semantic_hash": "a1addf35cedb28ae3c4bb9f26a22c7e6"
   },
   "lib/core/services/supabase/supabase_social_service.dart": {
-    "mtime": 1791037192.9499133,
-    "seen": 1791037280.3599136,
-    "ast_hash": "49ad2aa80b3d25913849417a083dde1e",
+    "mtime": 1791039342.8000214,
+    "seen": 1791039446.8189068,
+    "ast_hash": "c3fd2278d1860d9d1b24f0896b5e20ed",
     "semantic_hash": ""
   },
   "lib/core/services/supabase/supabase_storage_service.dart": {
@@ -3528,9 +3528,9 @@
     "semantic_hash": ""
   },
   "lib/features/feed/components/home_dock_overlay.dart": {
-    "mtime": 1790903690.988785,
-    "seen": 1790903784.3616056,
-    "ast_hash": "678dc858aedf28c07e1152a47ad14bce",
+    "mtime": 1791039417.3013442,
+    "seen": 1791039446.8190894,
+    "ast_hash": "ec3c7cd269e5d7763cf86efbcac6966d",
     "semantic_hash": ""
   },
   "lib/features/splash/components/eraser_logo.dart": {
@@ -3909,6 +3909,12 @@
     "mtime": 1791016104.1707067,
     "seen": 1791037280.361456,
     "ast_hash": "896f6841264276e5df385a236bc9b05f",
+    "semantic_hash": ""
+  },
+  "lib/core/services/global_notification_service.dart": {
+    "mtime": 1791039334.847987,
+    "seen": 1791039446.8188796,
+    "ast_hash": "090c6d3c92e420a418ac54beacc06c60",
     "semantic_hash": ""
   }
 }

@@ -2,16 +2,20 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:snapan_market/core/navigation/navigation_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
-/// Global In-App Floating Notification Banner Service
-/// Listens to incoming realtime notifications and displays a premium iOS/Dynamic Island style
-/// top banner with haptic feedback anywhere across the app.
+/// Global Notification Service (OS Status Bar & In-App Dynamic Banner)
+/// - Registers Android High Importance Notification Channel (Unlocks OS Toggle)
+/// - Dispatches system notifications to Android Status Bar with sound & vibration
+/// - Displays in-app floating banner when app is active
 class GlobalNotificationService {
   GlobalNotificationService._();
   static final GlobalNotificationService instance = GlobalNotificationService._();
+
+  static final FlutterLocalNotificationsPlugin _localNotifs = FlutterLocalNotificationsPlugin();
 
   dynamic _realtimeChannel;
   final ValueNotifier<bool> hasUnreadActivity = ValueNotifier<bool>(false);
@@ -19,11 +23,55 @@ class GlobalNotificationService {
 
   OverlayEntry? _currentBannerEntry;
   Timer? _dismissTimer;
+  bool _isLocalNotifsInitialized = false;
 
-  /// Initialize global realtime notification listener
-  void init() {
+  /// Initialize global realtime notification listener & OS notification channel
+  Future<void> init() async {
+    await _initLocalNotifications();
     _fetchInitialUnreadStatus();
     _subscribeRealtime();
+  }
+
+  Future<void> _initLocalNotifications() async {
+    if (_isLocalNotifsInitialized) return;
+
+    try {
+      const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+      const initSettings = InitializationSettings(android: androidInit);
+
+      await _localNotifs.initialize(
+        settings: initSettings,
+        onDidReceiveNotificationResponse: (details) {
+          // Ketika user tap notifikasi di status bar Android
+          NavigationService.popToRoot();
+        },
+      );
+
+      // Create Android Notification Channel (Required to enable notifications toggle on Android 8.0+)
+      final androidPlatformPlugin = _localNotifs.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+
+      if (androidPlatformPlugin != null) {
+        // Request runtime permission for Android 13+ (POST_NOTIFICATIONS)
+        await androidPlatformPlugin.requestNotificationsPermission();
+
+        const channel = AndroidNotificationChannel(
+          'snaps_announcements', // id
+          'Pengumuman & Notifikasi Snaps', // name
+          description: 'Notifikasi broadcast pengumuman resmi dan aktivitas interaksi Snaps.',
+          importance: Importance.max,
+          enableVibration: true,
+          playSound: true,
+          showBadge: true,
+        );
+
+        await androidPlatformPlugin.createNotificationChannel(channel);
+      }
+
+      _isLocalNotifsInitialized = true;
+    } catch (e) {
+      debugPrint('Error initializing local notifications: $e');
+    }
   }
 
   Future<void> _fetchInitialUnreadStatus() async {
@@ -47,15 +95,44 @@ class GlobalNotificationService {
         // Trigger system haptic feedback
         HapticFeedback.vibrate();
 
-        // Show floating in-app banner
         final title = record['title']?.toString() ?? 'Pengumuman Baru';
         final message = record['message']?.toString() ?? '';
         final type = record['type']?.toString() ?? 'system';
 
+        // 1. Post notification to Android OS Status Bar
+        _showOsNotification(title: title, message: message);
+
+        // 2. Show floating in-app banner
         showTopBanner(title: title, message: message, type: type);
       });
     } catch (e) {
       debugPrint('Error subscribing to global notifications: $e');
+    }
+  }
+
+  Future<void> _showOsNotification({required String title, required String message}) async {
+    try {
+      const androidDetails = AndroidNotificationDetails(
+        'snaps_announcements',
+        'Pengumuman & Notifikasi Snaps',
+        channelDescription: 'Notifikasi broadcast pengumuman resmi dan aktivitas interaksi Snaps.',
+        importance: Importance.max,
+        priority: Priority.high,
+        enableVibration: true,
+        playSound: true,
+        icon: '@mipmap/ic_launcher',
+      );
+
+      const notifDetails = NotificationDetails(android: androidDetails);
+
+      await _localNotifs.show(
+        id: (DateTime.now().millisecondsSinceEpoch ~/ 1000) % 100000,
+        title: title,
+        body: message,
+        notificationDetails: notifDetails,
+      );
+    } catch (e) {
+      debugPrint('Error showing OS notification: $e');
     }
   }
 

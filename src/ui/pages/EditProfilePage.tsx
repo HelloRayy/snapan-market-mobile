@@ -9,6 +9,8 @@ import {
 import { motion } from 'framer-motion';
 import { ConfirmActionModal } from '@/ui/components/ui/ConfirmActionModal';
 import { ToastNotification } from '@/ui/components/ui/ToastNotification';
+import { PRESET_OREO_AVATARS } from '@/utils/oreoAvatar';
+
 export interface EditProfileData {
   name: string;
   username: string;
@@ -25,14 +27,7 @@ interface EditProfilePageProps {
   onSave: (data: EditProfileData) => void;
 }
 
-const PRESET_AVATARS = [
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80',
-  'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&q=80',
-  'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&q=80',
-  'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&q=80',
-  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&q=80',
-];
+const PRESET_AVATARS = PRESET_OREO_AVATARS;
 
 export const EditProfilePage: React.FC<EditProfilePageProps> = ({
   initialData,

@@ -12,6 +12,7 @@ import { CheckoutPage } from './CheckoutPage';
 import { useAuth } from '@/ui/hooks/useAuth';
 import { triggerHaptic } from '@/utils/haptics';
 import { toUsernameSlug } from '@/utils/formatters';
+import { getOreoAvatarUrl } from '@/utils/oreoAvatar';
 
 interface PostDetailPageProps {
   post: MarketPostItem;
@@ -71,7 +72,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
         id: profile?.id || 'user-current',
         name: profile?.full_name || 'Raditya Rayhan',
         username: currentUsernameSlug,
-        avatar: profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+        avatar: profile?.avatar_url || getOreoAvatarUrl(currentUsernameSlug, { size: 120 }),
         classGroup: profile?.class_group || 'XII PPLG 1',
         isVerified: true,
         isAuthor: isPostAuthor,
@@ -145,7 +146,7 @@ export const PostDetailPage: React.FC<PostDetailPageProps> = ({
   };
 
   const userAvatar =
-    profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80';
+    profile?.avatar_url || getOreoAvatarUrl(profile?.full_name || 'radityarayhannnn', { size: 120 });
 
   const replyingToUsername = replyTarget?.username || null;
 

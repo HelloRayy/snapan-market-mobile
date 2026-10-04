@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snapan Market - Comment Section UI Visualizer</title>
+  <!-- Google Fonts: Plus Jakarta Sans / Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    :root {
+      --primary: #3D38F5;
+      --primary-dark: #312BD9;
+      --primary-pastel: #EEF0FF;
+      --primary-border: #D8DBFE;
+      --ink: #0F172A;
+      --ink-secondary: #334155;
+      --muted: #64748B;
+      --light-muted: #94A3B8;
+      --border: #E2E8F0;
+      --canvas: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --verified: #1D64EC;
+      --like-red: #EF4444;
+      --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: #090D16;
+      color: #E2E8F0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 60px;
+    }
+
+    /* Header & Control Center */
+    .top-hero {
+      text-align: center;
+      max-width: 820px;
+      margin-bottom: 24px;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      background: rgba(61, 56, 245, 0.15);
+      border: 1px solid rgba(61, 56, 245, 0.35);
+      color: #818CF8;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      letter-spacing: 0.3px;
+    }
+
+    .top-hero h1 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      color: #FFFFFF;
+      margin-bottom: 8px;
+    }
+
+    .top-hero p {
+      font-size: 14px;
+      color: #94A3B8;
+      line-height: 1.5;
+    }
+
+    /* Mode Selector Segmented Tabs */
+    .style-switcher {
+      display: flex;
+      gap: 6px;
+      background: #141B2D;
+      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 28px;
+      max-width: 780px;
+      width: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .style-switcher::-webkit-scrollbar { display: none; }
+
+    .switch-btn {
+      flex: 1;
+      min-width: 150px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: #94A3B8;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+    }
+
+    .switch-btn:hover {
+      color: #F8FAFC;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .switch-btn.active {
+      background: var(--primary);
+      color: #FFFFFF;
+      box-shadow: 0 4px 16px rgba(61, 56, 245, 0.4);
+    }
+
+    /* Main Workspace Layout */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 410px 1fr;
+      gap: 36px;
+      max-width: 1050px;
+      width: 100%;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .workspace-grid {
+        grid-template-columns: 1fr;
+        justify-items: center;
+      }
+    }
+
+    /* Mobile Device Frame Mockup */
+    .device-mockup {
+      width: 400px;
+      max-width: 100%;
+      height: 780px;
+      background: #FFFFFF;
+      border-radius: 46px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 0 10px #1E293B, 0 0 0 12px #334155;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Device Status Bar */
+    .status-bar {
+      height: 44px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      background: #FFFFFF;
+      z-index: 20;
+    }
+
+    .dynamic-island {
+      width: 100px;
+      height: 24px;
+      background: #000000;
+      border-radius: 20px;
+    }
+
+    /* Mobile App Top Header */
+    .app-header {
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: #FFFFFF;
+      z-index: 10;
+    }
+
+    .app-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: #F1F5F9;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .header-title-box h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .comment-count-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 7px;
+      background: var(--primary-pastel);
+      color: var(--primary);
+      border-radius: 999px;
+    }
+
+    /* Post Context Snippet at Top of Comment Sheet */
+    .post-snippet-bar {
+      padding: 10px 16px;
+      background: #F8FAFC;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12.5px;
+    }
+
+    .post-thumb {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+    }
+
+    .post-snippet-info {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .post-snippet-title {
+      font-weight: 600;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: ellipsis;
+      text-overflow: ellipsis;
+    }
+
+    .post-snippet-price {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 12px;
+    }
+
+    /* Scrollable Comments Viewport */
+    .comments-viewport {
+      flex: 1;
+      overflow-y: auto;
+      background: #FFFFFF;
+      padding: 12px 0 20px;
+    }
+
+    /* Comment Item Base Structure */
+    .comment-card {
+      padding: 12px 16px;
+      transition: background 0.15s ease;
+    }
+
+    .comment-card:not(:last-child) {
+      border-bottom: 1px solid #F1F5F9;
+    }
+
+    .parent-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .avatar-img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      display: block;
+    }
+
+    .content-column {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .author-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2px;
+    }
+
+    .author-meta {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .author-name {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .badge-seller {
+      font-size: 10px;
+      font-weight: 700;
+      background: var(--primary);
+      color: #FFFFFF;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .badge-buyer {
+      font-size: 10px;
+      font-weight: 600;
+      background: #E2E8F0;
+      color: #475569;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .timestamp {
+      font-size: 11.5px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .comment-body {
+      font-size: 13.5px;
+      color: var(--ink);
+      line-height: 1.42;
+      word-break: break-word;
+    }
+
+    .mention-tag {
+      color: var(--primary);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Action Bar */
+    .comment-actions {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: none;
+      border: none;
+      color: inherit;
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      cursor: pointer;
+      padding: 2px 0;
+      transition: color 0.15s ease;
+    }
+
+    .action-btn:hover {
+      color: var(--ink);
+    }
+
+    .action-btn.liked {
+      color: var(--like-red);
+    }
+
+    .action-btn.liked i {
+      font-weight: bold;
+      animation: heartPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes heartPop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.35); }
+      100% { transform: scale(1); }
+    }
+
+    /* Expand / Collapse Trigger Row */
+    .replies-expand-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 6px 0 2px;
+      user-select: none;
+    }
+
+    .expand-dash {
+      width: 24px;
+      height: 1.5px;
+      background: #CBD5E1;
+      border-radius: 1px;
+    }
+
+    .mini-reply-avatar {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--border);
+    }
+
+    .expand-label {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ========================================================================= */
+    /* 4 DISTINCT STYLING OPTIONS FOR REPLIES                                   */
+    /* ========================================================================= */
+
+    /* OPTION 1: Clean Minimalist Indent (Instagram / X Style) */
+    .style-option-1 .replies-container {
+      margin-left: 48px;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .style-option-1 .reply-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .style-option-1 .reply-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    /* OPTION 2: Modern Soft Bubble Card (Reddit / Discord Mobile Style) */
+    .style-option-2 .replies-container {
+      margin-left: 44px;
+      margin-top: 10px;
+      background: #F8FAFC;
+      border: 1px solid #EDF2F7;
+      border-radius: 14px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .style-option-2 .reply-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .style-option-2 .reply-item:not(:last-child) {
+      border-bottom: 1px dashed #E2E8F0;
+      padding-bottom: 8px;
+    }
+
+    .style-option-2 .reply-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    /* OPTION 3: Left Accent Hairline (Substack / Notion Minimalist) */
+    .style-option-3 .replies-container {
+      margin-left: 20px;
+      padding-left: 16px;
+      margin-top: 10px;
+      border-left: 2px solid var(--primary-border);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .style-option-3 .reply-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .style-option-3 .reply-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    /* OPTION 4: C2C Marketplace Q&A (Tokopedia / Shopee Discussion Card) */
+    .style-option-4 .comment-card {
+      background: #FFFFFF;
+      border-radius: 14px;
+      border: 1px solid #E2E8F0;
+      margin: 8px 12px;
+      padding: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+
+    .style-option-4 .replies-container {
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: #EEF0FF;
+      border-radius: 10px;
+      border: 1px solid #D8DBFE;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .style-option-4 .reply-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .style-option-4 .reply-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    /* Interactive Input Bar at Bottom */
+    .comment-input-dock {
+      background: #FFFFFF;
+      border-top: 1px solid var(--border);
+      padding: 8px 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 30;
+    }
+
+    .active-reply-chip {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--primary-pastel);
+      color: var(--primary);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    .active-reply-chip.visible {
+      display: flex;
+    }
+
+    .active-reply-chip button {
+      background: none;
+      border: none;
+      color: var(--primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    /* Quick Emoji Bar */
+    .quick-emojis {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px;
+    }
+
+    .emoji-pill {
+      font-size: 17px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+      padding: 2px;
+    }
+
+    .emoji-pill:hover {
+      transform: scale(1.25);
+    }
+
+    .input-field-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .comment-text-input {
+      flex: 1;
+      height: 40px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: #F8FAFC;
+      padding: 0 14px;
+      font-family: inherit;
+      font-size: 13.5px;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    .comment-text-input:focus {
+      border-color: var(--primary);
+      background: #FFFFFF;
+    }
+
+    .send-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #FFFFFF;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .send-btn:hover {
+      background: var(--primary-dark);
+      transform: scale(1.05);
+    }
+
+    /* Right Side Analysis / Implementation Panel */
+    .analysis-panel {
+      background: #111827;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 24px;
+    }
+
+    .panel-header {
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .panel-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .option-details-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+
+    .option-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #818CF8;
+      margin-bottom: 6px;
+    }
+
+    .option-desc {
+      font-size: 13.5px;
+      color: #94A3B8;
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .metrics-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .metric-item {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 10px 12px;
+      border-radius: 10px;
+      border-left: 3px solid var(--primary);
+    }
+
+    .metric-label {
+      font-size: 11px;
+      color: #64748B;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .metric-val {
+      font-size: 13px;
+      font-weight: 700;
+      color: #F1F5F9;
+      margin-top: 2px;
+    }
+
+    /* Comparison Table */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      margin-top: 14px;
+    }
+
+    .compare-table th {
+      text-align: left;
+      padding: 8px 10px;
+      color: #64748B;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-weight: 600;
+    }
+
+    .compare-table td {
+      padding: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #CBD5E1;
+    }
+
+    .tag-green {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34D399;
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    .tag-blue {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(61, 56, 245, 0.15);
+      color: #818CF8;
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    .tag-yellow {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(245, 158, 11, 0.15);
+      color: #FBBF24;
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    .code-preview-box {
+      margin-top: 20px;
+      background: #090D16;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      color: #A5B4FC;
+      overflow-x: auto;
+    }
+
+    .code-title {
+      font-size: 11px;
+      color: #64748B;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Hero -->
+  <div class="top-hero">
+    <div class="badge-pill">
+      <i class="ph ph-sparkle"></i> SNAPS-17 Interactive Prototype
+    </div>
+    <h1>Eksplorasi & Visualisasi UI Comment Section</h1>
+    <p>Pilih dan uji coba langsung 4 opsi desain interaktif berikut di frame ponsel sebelum diaplikasikan ke kode Flutter mobile app.</p>
+  </div>
+
+  <!-- Style Switcher Tabs -->
+  <div class="style-switcher">
+    <button class="switch-btn active" onclick="switchStyle(1)">
+      <i class="ph ph-chat-centered-text"></i> Opsi 1: Instagram / X
+    </button>
+    <button class="switch-btn" onclick="switchStyle(2)">
+      <i class="ph ph-cards"></i> Opsi 2: Soft Bubble Card
+    </button>
+    <button class="switch-btn" onclick="switchStyle(3)">
+      <i class="ph ph-git-branch"></i> Opsi 3: Left Accent Line
+    </button>
+    <button class="switch-btn" onclick="switchStyle(4)">
+      <i class="ph ph-storefront"></i> Opsi 4: C2C Q&A Card
+    </button>
+  </div>
+
+  <!-- Workspace Grid -->
+  <div class="workspace-grid">
+
+    <!-- Mobile Device Simulator -->
+    <div class="device-mockup style-option-1" id="phoneMockup">
+      <!-- Status Bar -->
+      <div class="status-bar">
+        <span>09:41</span>
+        <div class="dynamic-island"></div>
+        <div style="display: flex; gap: 4px; align-items: center;">
+          <i class="ph ph-wifi-high"></i>
+          <i class="ph ph-battery-full"></i>
+        </div>
+      </div>
+
+      <!-- App Header -->
+      <div class="app-header">
+        <div class="app-header-left">
+          <button class="header-btn" title="Kembali">
+            <i class="ph ph-caret-left"></i>
+          </button>
+          <div class="header-title-box">
+            <h3>Komentar <span class="comment-count-badge" id="totalCommentsBadge">14</span></h3>
+          </div>
+        </div>
+        <button class="header-btn" title="Filter Komentar">
+          <i class="ph ph-faders"></i>
+        </button>
+      </div>
+
+      <!-- Post Context Bar -->
+      <div class="post-snippet-bar">
+        <img class="post-thumb" src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=120&auto=format&fit=crop" alt="Buku">
+        <div class="post-snippet-info">
+          <div class="post-snippet-title">Buku Paket Kejuruan RPL & Jaringan Lengkap</div>
+          <div class="post-snippet-price">Rp 45.000 <span style="color:#64748B; font-weight:normal; font-size:11px;">• Ahmad (XII RPL 1)</span></div>
+        </div>
+      </div>
+
+      <!-- Scrollable Comments -->
+      <div class="comments-viewport" id="commentsList">
+        
+        <!-- Comment 1 (Has Replies) -->
+        <div class="comment-card" id="comment-1">
+          <div class="parent-row">
+            <div class="avatar-wrapper">
+              <img class="avatar-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop" alt="User">
+            </div>
+            <div class="content-column">
+              <div class="author-header">
+                <div class="author-meta">
+                  <span class="author-name">Sarah Amalia</span>
+                  <i class="ph ph-seal-check-fill" style="color:var(--verified); font-size:14px;"></i>
+                  <span class="timestamp">• 12m</span>
+                </div>
+                <button class="action-btn" title="Opsi"><i class="ph ph-dots-three"></i></button>
+              </div>
+              <div class="comment-body">
+                Kondisi bukunya masih mulus ga kak? Ada coretan di halaman latihan soalnya ga?
+              </div>
+              <div class="comment-actions">
+                <button class="action-btn" onclick="toggleLike(this, 'like-count-1')">
+                  <i class="ph ph-heart"></i> <span id="like-count-1">4</span>
+                </button>
+                <button class="action-btn" onclick="activateReply('Sarah Amalia')">
+                  Balas
+                </button>
+                <button class="action-btn"><i class="ph ph-share-network"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Expand / Collapse Row -->
+          <div style="margin-left: 48px; margin-top: 6px;">
+            <div class="replies-expand-row" onclick="toggleReplies('replies-1', this)">
+              <div class="expand-dash"></div>
+              <img class="mini-reply-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop" alt="Replier">
+              <span class="expand-label">
+                <span>Sembunyikan 2 balasan</span>
+                <i class="ph ph-caret-up"></i>
+              </span>
+            </div>
+          </div>
+
+          <!-- Nested Replies Container -->
+          <div class="replies-container" id="replies-1">
+            
+            <!-- Reply 1: From Seller -->
+            <div class="reply-item">
+              <img class="reply-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop" alt="Seller">
+              <div class="content-column">
+                <div class="author-header">
+                  <div class="author-meta">
+                    <span class="author-name">Ahmad</span>
+                    <span class="badge-seller">Penjual</span>
+                    <span class="timestamp">• 8m</span>
+                  </div>
+                </div>
+                <div class="comment-body">
+                  <span class="mention-tag">@Sarah Amalia</span> Masih bersih banget kak, cuma ada stabilo kuning di bab 2 dikit aja, selebihnya aman gada coretan pulpen!
+                </div>
+                <div class="comment-actions">
+                  <button class="action-btn" onclick="toggleLike(this, 'like-reply-1')">
+                    <i class="ph ph-heart"></i> <span id="like-reply-1">2</span>
+                  </button>
+                  <button class="action-btn" onclick="activateReply('Ahmad')">Balas</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Reply 2: Sarah Reply back -->
+            <div class="reply-item">
+              <img class="reply-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop" alt="Sarah">
+              <div class="content-column">
+                <div class="author-header">
+                  <div class="author-meta">
+                    <span class="author-name">Sarah Amalia</span>
+                    <span class="timestamp">• 5m</span>
+                  </div>
+                </div>
+                <div class="comment-body">
+                  <span class="mention-tag">@Ahmad</span> Oke sip kak, bisa COD di depan lab RPL istirahat pertama besok?
+                </div>
+                <div class="comment-actions">
+                  <button class="action-btn" onclick="toggleLike(this, 'like-reply-2')">
+                    <i class="ph ph-heart"></i> <span id="like-reply-2">1</span>
+                  </button>
+                  <button class="action-btn" onclick="activateReply('Sarah Amalia')">Balas</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Comment 2 (Single Comment without Replies) -->
+        <div class="comment-card" id="comment-2">
+          <div class="parent-row">
+            <div class="avatar-wrapper">
+              <img class="avatar-img" src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&auto=format&fit=crop" alt="User">
+            </div>
+            <div class="content-column">
+              <div class="author-header">
+                <div class="author-meta">
+                  <span class="author-name">Rian Fadhilah</span>
+                  <span class="timestamp">• 1h</span>
+                </div>
+                <button class="action-btn"><i class="ph ph-dots-three"></i></button>
+              </div>
+              <div class="comment-body">
+                Wah murah nih, kalau ambil bareng modul Mikrotik dapet diskon ga bang? 🔥
+              </div>
+              <div class="comment-actions">
+                <button class="action-btn liked" onclick="toggleLike(this, 'like-count-2')">
+                  <i class="ph ph-heart"></i> <span id="like-count-2">5</span>
+                </button>
+                <button class="action-btn" onclick="activateReply('Rian Fadhilah')">Balas</button>
+                <button class="action-btn"><i class="ph ph-share-network"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comment 3 (New Comment) -->
+        <div class="comment-card" id="comment-3">
+          <div class="parent-row">
+            <div class="avatar-wrapper">
+              <img class="avatar-img" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop" alt="User">
+            </div>
+            <div class="content-column">
+              <div class="author-header">
+                <div class="author-meta">
+                  <span class="author-name">Budi Santoso</span>
+                  <span class="timestamp">• 2h</span>
+                </div>
+                <button class="action-btn"><i class="ph ph-dots-three"></i></button>
+              </div>
+              <div class="comment-body">
+                Bantu sundul gan, penjual recommended langganan kelas sebelah 👍
+              </div>
+              <div class="comment-actions">
+                <button class="action-btn" onclick="toggleLike(this, 'like-count-3')">
+                  <i class="ph ph-heart"></i> <span id="like-count-3">3</span>
+                </button>
+                <button class="action-btn" onclick="activateReply('Budi Santoso')">Balas</button>
+                <button class="action-btn"><i class="ph ph-share-network"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Docked Input Bar -->
+      <div class="comment-input-dock">
+        <!-- Reply Context Chip -->
+        <div class="active-reply-chip" id="replyChip">
+          <span>Membalas <b id="replyTargetName">@Sarah Amalia</b></span>
+          <button onclick="cancelReply()"><i class="ph ph-x"></i></button>
+        </div>
+
+        <!-- Quick Emojis -->
+        <div class="quick-emojis">
+          <button class="emoji-pill" onclick="insertEmoji('❤️')">❤️</button>
+          <button class="emoji-pill" onclick="insertEmoji('🔥')">🔥</button>
+          <button class="emoji-pill" onclick="insertEmoji('👏')">👏</button>
+          <button class="emoji-pill" onclick="insertEmoji('📦')">📦</button>
+          <button class="emoji-pill" onclick="insertEmoji('👍')">👍</button>
+          <button class="emoji-pill" onclick="insertEmoji('💡')">💡</button>
+        </div>
+
+        <!-- Input Field + Send Button -->
+        <div class="input-field-row">
+          <input type="text" class="comment-text-input" id="commentInput" placeholder="Tulis komentar atau tanya penjual..." onkeypress="handleKeyPress(event)">
+          <button class="send-btn" onclick="submitComment()" title="Kirim">
+            <i class="ph ph-paper-plane-tilt"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side Analysis / Specs Panel -->
+    <div class="analysis-panel">
+      <div class="panel-header">
+        <h2><i class="ph ph-device-mobile"></i> Detail Desain & Karakteristik</h2>
+      </div>
+
+      <div class="option-details-card" id="optionInfoBox">
+        <div class="option-title" id="infoTitle">Opsi 1: Clean Minimalist Indent (Instagram / X Style)</div>
+        <div class="option-desc" id="infoDesc">
+          Menggunakan margin indentasi sebesar 48px presisi sejajar dengan awal teks komentar utama. Avatar balasan diperkecil menjadi 28px agar tercipta hirarki visual yang jelas tanpa membebani layar dengan garis-garis konektor.
+        </div>
+
+        <div class="metrics-list" id="infoMetrics">
+          <div class="metric-item">
+            <div class="metric-label">Spasial / Density</div>
+            <div class="metric-val">Sangat Efisien (48px Indent)</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label">Flutter Performance</div>
+            <div class="metric-val">Cepat (0 Overhead Layout)</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label">Avatar Balasan</div>
+            <div class="metric-val">28x28 Circular</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label">Pola Expand / Collapse</div>
+            <div class="metric-val">Horizontal Dash (──)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Comparison Matrix -->
+      <h3 style="font-size: 15px; font-weight: 700; color: #FFFFFF; margin-bottom: 8px;">
+        <i class="ph ph-scales"></i> Perbandingan 4 Opsi Desain
+      </h3>
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Gaya UI</th>
+            <th>Kelebihan Utama</th>
+            <th>Kesesuaian C2C</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Opsi 1: Minimalist Indent</b></td>
+            <td>Sangat bersih, familiar, layout tidak berat.</td>
+            <td><span class="tag-green">Rekomendasi Utama</span></td>
+          </tr>
+          <tr>
+            <td><b>Opsi 2: Soft Bubble Card</b></td>
+            <td>Pemisah percakapan jelas dalam satu kotak.</td>
+            <td><span class="tag-blue">Cocok untuk Diskusi</span></td>
+          </tr>
+          <tr>
+            <td><b>Opsi 3: Left Accent Line</b></td>
+            <td>Garis vertikal rapi pemandu tanpa lengkungan.</td>
+            <td><span class="tag-yellow">Alternatif Modern</span></td>
+          </tr>
+          <tr>
+            <td><b>Opsi 4: C2C Q&A Card</b></td>
+            <td>Badge Penjual/Pembeli & box jawaban resmi.</td>
+            <td><span class="tag-green">Sangat Cocok Marketplace</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Flutter Mapping Code Snippet -->
+      <div class="code-preview-box">
+        <div class="code-title">Cuplikan Kode Flutter Terkait (snapan-market-mobile)</div>
+        <div id="flutterCodeSnippet">
+// lib/features/feed/components/post_comment_item.dart
+Padding(
+  padding: const EdgeInsets.only(left: 48.0, top: 8.0),
+  child: ListView.separated(
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    itemCount: widget.comment.replies.length,
+    separatorBuilder: (context, index) => const SizedBox(height: 12.0),
+    itemBuilder: (context, idx) => CommentReplyTile(
+      reply: widget.comment.replies[idx],
+    ),
+  ),
+)
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const optionsData = {
+      1: {
+        title: "Opsi 1: Clean Minimalist Indent (Instagram / X Style)",
+        desc: "Menggunakan margin indentasi sebesar 48px presisi sejajar dengan awal teks komentar utama. Avatar balasan diperkecil menjadi 28px agar tercipta hirarki visual yang jelas tanpa membebani layar dengan garis-garis konektor.",
+        metrics: [
+          { label: "Spasial / Density", val: "Sangat Efisien (48px Indent)" },
+          { label: "Flutter Performance", val: "Cepat (0 Overhead Layout)" },
+          { label: "Avatar Balasan", val: "28x28 Circular" },
+          { label: "Pola Expand / Collapse", val: "Horizontal Dash (──)" }
+        ],
+        code: `// lib/features/feed/components/post_comment_item.dart (Opsi 1)
+Padding(
+  padding: const EdgeInsets.only(left: 48.0, top: 8.0),
+  child: ListView.separated(
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    itemCount: widget.comment.replies.length,
+    separatorBuilder: (context, index) => const SizedBox(height: 12.0),
+    itemBuilder: (context, idx) => CommentReplyTile(
+      reply: widget.comment.replies[idx],
+      avatarSize: 28.0,
+    ),
+  ),
+)`
+      },
+      2: {
+        title: "Opsi 2: Modern Soft Bubble Card (Reddit / Discord Style)",
+        desc: "Setiap rantai balasan dibungkus dalam container berlatar abu-abu lembut (#F8FAFC) dengan radius 14px. Memberikan batas yang sangat tegas bahwa komentar-komentar ini merupakan satu kesatuan percakapan.",
+        metrics: [
+          { label: "Spasial / Density", val: "Tergrup Rapi dalam Kartu" },
+          { label: "Visual Clarity", val: "Tinggi (Tampak Seperti Dialog)" },
+          { label: "Avatar Balasan", val: "26x26 Compact" },
+          { label: "Background", val: "#F8FAFC + Border #EDF2F7" }
+        ],
+        code: `// Container Balasan Lembut (Opsi 2)
+Container(
+  margin: const EdgeInsets.only(left: 44.0, top: 8.0),
+  padding: const EdgeInsets.all(10.0),
+  decoration: BoxDecoration(
+    color: const Color(0xFFF8FAFC),
+    borderRadius: BorderRadius.circular(14.0),
+    border: Border.all(color: const Color(0xFFEDF2F7)),
+  ),
+  child: Column(children: repliesList),
+)`
+      },
+      3: {
+        title: "Opsi 3: Left Accent Hairline (Substack / Notion Style)",
+        desc: "Menggunakan garis aksen lurus vertikal tipis (2px) di sebelah kiri margin balasan dengan warna lembut (Electric Indigo Tint / Slate 300). Tidak ada lengkungan siku yang menembus avatar, memberikan kesan rapi dan profesional.",
+        metrics: [
+          { label: "Garis Penuntun", val: "2px Straight Left Border" },
+          { label: "Warna Garis", val: "AppColors.primaryBorder" },
+          { label: "Avatar Balasan", val: "28x28 Circular" },
+          { label: "Kerapian", val: "Sangat Elegan & Minimalis" }
+        ],
+        code: `// Garis Lurus Aksen Kiri (Opsi 3)
+Container(
+  margin: const EdgeInsets.only(left: 20.0, top: 8.0),
+  padding: const EdgeInsets.only(left: 14.0),
+  decoration: const BoxDecoration(
+    border: Border(left: BorderSide(color: AppColors.primaryBorder, width: 2.0)),
+  ),
+  child: Column(children: repliesList),
+)`
+      },
+      4: {
+        title: "Opsi 4: C2C Marketplace Q&A (Tokopedia / Shopee Style)",
+        desc: "Dikhususkan untuk transaksi jual beli barang di sekolah. Setiap komentar utama dibingkai dalam kartu tersendiri. Balasan resmi dari Penjual dibedakan dengan highlight latar warna pastel lembut (#EEF0FF) dan badge 'Penjual' yang tegas.",
+        metrics: [
+          { label: "Fokus Transaksi", val: "Tanya Jawab Penjual-Pembeli" },
+          { label: "Seller Highlight", val: "Background Pastel & Badge" },
+          { label: "Struktur", val: "Separate Card per Discussion" },
+          { label: "Tingkat Kepercayaan", val: "Sangat Tinggi untuk C2C" }
+        ],
+        code: `// Card Q&A C2C (Opsi 4)
+Container(
+  decoration: BoxDecoration(
+    color: isSeller ? AppColors.primaryPastel : Colors.white,
+    borderRadius: BorderRadius.circular(12.0),
+    border: Border.all(color: isSeller ? AppColors.primaryBorder : AppColors.border),
+  ),
+  child: CommentTile(...),
+)`
+      }
+    };
+
+    function switchStyle(optionNum) {
+      // 1. Update buttons
+      const buttons = document.querySelectorAll('.switch-btn');
+      buttons.forEach((btn, idx) => {
+        btn.classList.toggle('active', idx === optionNum - 1);
+      });
+
+      // 2. Update mockup class
+      const mockup = document.getElementById('phoneMockup');
+      mockup.className = 'device-mockup style-option-' + optionNum;
+
+      // 3. Update info panel
+      const info = optionsData[optionNum];
+      document.getElementById('infoTitle').textContent = info.title;
+      document.getElementById('infoDesc').textContent = info.desc;
+      
+      const metricsContainer = document.getElementById('infoMetrics');
+      metricsContainer.innerHTML = '';
+      info.metrics.forEach(m => {
+        const item = document.createElement('div');
+        item.className = 'metric-item';
+        item.innerHTML = `<div class="metric-label">\${m.label}</div><div class="metric-val">\${m.val}</div>`;
+        metricsContainer.appendChild(item);
+      });
+
+      document.getElementById('flutterCodeSnippet').textContent = info.code;
+    }
+
+    // Interactive functions
+    function toggleLike(btn, countId) {
+      btn.classList.toggle('liked');
+      const countEl = document.getElementById(countId);
+      let count = parseInt(countEl.textContent, 10);
+      if (btn.classList.contains('liked')) {
+        count++;
+        btn.querySelector('i').className = 'ph ph-heart-fill';
+      } else {
+        count--;
+        btn.querySelector('i').className = 'ph ph-heart';
+      }
+      countEl.textContent = count;
+    }
+
+    function toggleReplies(containerId, rowBtn) {
+      const container = document.getElementById(containerId);
+      const isVisible = container.style.display !== 'none';
+      if (isVisible) {
+        container.style.display = 'none';
+        rowBtn.querySelector('.expand-label span').textContent = 'Lihat 2 balasan';
+        rowBtn.querySelector('.expand-label i').className = 'ph ph-caret-down';
+      } else {
+        container.style.display = 'flex';
+        rowBtn.querySelector('.expand-label span').textContent = 'Sembunyikan 2 balasan';
+        rowBtn.querySelector('.expand-label i').className = 'ph ph-caret-up';
+      }
+    }
+
+    let activeReplyUsername = null;
+
+    function activateReply(username) {
+      activeReplyUsername = username;
+      const chip = document.getElementById('replyChip');
+      document.getElementById('replyTargetName').textContent = '@' + username;
+      chip.classList.add('visible');
+
+      const input = document.getElementById('commentInput');
+      input.focus();
+      input.placeholder = 'Balas ke @' + username + '...';
+    }
+
+    function cancelReply() {
+      activeReplyUsername = null;
+      document.getElementById('replyChip').classList.remove('visible');
+      const input = document.getElementById('commentInput');
+      input.placeholder = 'Tulis komentar atau tanya penjual...';
+    }
+
+    function insertEmoji(emoji) {
+      const input = document.getElementById('commentInput');
+      input.value += emoji;
+      input.focus();
+    }
+
+    function handleKeyPress(e) {
+      if (e.key === 'Enter') {
+        submitComment();
+      }
+    }
+
+    function submitComment() {
+      const input = document.getElementById('commentInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const commentsList = document.getElementById('commentsList');
+
+      if (activeReplyUsername) {
+        // Append as a new reply in comment-1's container
+        const repliesContainer = document.getElementById('replies-1');
+        repliesContainer.style.display = 'flex';
+
+        const newReply = document.createElement('div');
+        newReply.className = 'reply-item';
+        newReply.innerHTML = `
+          <img class="reply-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop" alt="Saya">
+          <div class="content-column">
+            <div class="author-header">
+              <div class="author-meta">
+                <span class="author-name">Rayhan (Saya)</span>
+                <span class="timestamp">• Baru saja</span>
+              </div>
+            </div>
+            <div class="comment-body">
+              <span class="mention-tag">@\${activeReplyUsername}</span> \${text}
+            </div>
+            <div class="comment-actions">
+              <button class="action-btn" onclick="toggleLike(this, 'like-new-\${Date.now()}')">
+                <i class="ph ph-heart"></i> <span id="like-new-\${Date.now()}">0</span>
+              </button>
+              <button class="action-btn" onclick="activateReply('Rayhan (Saya)')">Balas</button>
+            </div>
+          </div>
+        `;
+        repliesContainer.appendChild(newReply);
+        cancelReply();
+      } else {
+        // Append as a new top-level comment
+        const newCard = document.createElement('div');
+        newCard.className = 'comment-card';
+        newCard.innerHTML = `
+          <div class="parent-row">
+            <div class="avatar-wrapper">
+              <img class="avatar-img" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop" alt="Saya">
+            </div>
+            <div class="content-column">
+              <div class="author-header">
+                <div class="author-meta">
+                  <span class="author-name">Rayhan (Saya)</span>
+                  <span class="timestamp">• Baru saja</span>
+                </div>
+                <button class="action-btn"><i class="ph ph-dots-three"></i></button>
+              </div>
+              <div class="comment-body">\${text}</div>
+              <div class="comment-actions">
+                <button class="action-btn" onclick="toggleLike(this, 'like-new-\${Date.now()}')">
+                  <i class="ph ph-heart"></i> <span id="like-new-\${Date.now()}">0</span>
+                </button>
+                <button class="action-btn" onclick="activateReply('Rayhan (Saya)')">Balas</button>
+                <button class="action-btn"><i class="ph ph-share-network"></i></button>
+              </div>
+            </div>
+          </div>
+        `;
+        commentsList.appendChild(newCard);
+      }
+
+      // Update badge
+      const badge = document.getElementById('totalCommentsBadge');
+      badge.textContent = parseInt(badge.textContent, 10) + 1;
+
+      input.value = '';
+      commentsList.scrollTop = commentsList.scrollHeight;
+    }
+  </script>
+</body>
+</html>

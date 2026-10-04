@@ -16,6 +16,7 @@ import { getMarketPosts, createMarketPost, mapSupabasePostToFeedItem } from '@/s
 import { PullToRefreshIndicator } from '@/ui/components/marketplace/PullToRefreshIndicator';
 import { triggerHaptic } from '@/utils/haptics';
 import { saveFeedCache, loadFeedCache } from '@/services/cache/feedCache';
+import { getOreoAvatarUrl } from '@/utils/oreoAvatar';
 
 interface HomePageProps {
   onSelectPost?: (post: MarketPostItem) => void;
@@ -150,7 +151,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   const handleCreatePost = async (newPostData: Partial<MarketPostItem>) => {
     const activeSellerId = profile?.id || user?.id || 'current-user-id';
     const activeSellerName = profile?.full_name || user?.user_metadata?.full_name || 'radityarayhannnn';
-    const activeSellerAvatar = profile?.avatar_url || user?.user_metadata?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80';
+    const activeSellerAvatar = profile?.avatar_url || user?.user_metadata?.avatar_url || getOreoAvatarUrl(activeSellerName, { size: 200 });
     const activeSellerClass = profile?.class_group || 'XII PPLG 1';
 
     const isProduct = newPostData.postType === 'product';

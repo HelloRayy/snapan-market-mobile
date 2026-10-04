@@ -6,7 +6,11 @@ import { UserAvatar } from '../components/UserAvatar';
 import { AdminModalPortal } from '../components/AdminModalPortal';
 import { AdminTooltip } from '../components/AdminTooltip';
 
-export function UsersManagementTab() {
+interface UsersManagementTabProps {
+  isActive?: boolean;
+}
+
+export function UsersManagementTab({ isActive = true }: UsersManagementTabProps) {
   const [users, setUsers] = useState<ProfileRow[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -64,6 +68,13 @@ export function UsersManagementTab() {
     }, 250);
     return () => clearTimeout(timer);
   }, [fetchUsers]);
+
+  // Re-fetch saat tab pengguna dibuka
+  useEffect(() => {
+    if (isActive) {
+      fetchUsers();
+    }
+  }, [isActive, fetchUsers]);
 
   const handleRowClick = (user: ProfileRow) => {
     setSelectedStudent(user);

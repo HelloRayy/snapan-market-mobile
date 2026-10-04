@@ -22,6 +22,7 @@ import { MarketPostItem } from '@/types/marketFeed';
 import { useAuth } from '@/ui/hooks/useAuth';
 import { createMarketPost } from '@/services/api/marketPostsService';
 import { triggerHaptic } from '@/utils/haptics';
+import { getOreoAvatarUrl } from '@/utils/oreoAvatar';
 
 const CreatePostModal = lazy(() =>
   import('@/ui/components/marketplace/CreatePostModal').then((m) => ({ default: m.CreatePostModal }))
@@ -87,10 +88,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [profileData, setProfileData] = useState({
     name: 'Raditya Rayhan',
     username: cleanTargetUsername,
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+    avatar: getOreoAvatarUrl(cleanTargetUsername, { size: 200 }),
     bio: 'Building scalable mobile applications & web apps with clean architecture.',
     classGroup: 'XII PPLG 1',
-    tags: ['💻 Web PWA', '🎨 UI/UX', '👕 Preloved', '⚡ Joki Coding', '🍱 Kuliner'],
+    tags: ['💻 Web PWA', '🎨 UI/UX', '👗 Preloved', '⚡ Joki Coding', '🍱 Kuliner'],
     followersCount: 142,
     soldCount: 24,
     rating: 4.9,
@@ -103,10 +104,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       setProfileData({
         name: profile?.full_name || 'Raditya Rayhan',
         username: 'radityarayhannnn',
-        avatar: profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+        avatar: profile?.avatar_url || getOreoAvatarUrl(profile?.username || 'radityarayhannnn', { size: 200 }),
         bio: (profile as { bio?: string } | null)?.bio || 'Building scalable mobile applications & web apps with clean architecture.',
         classGroup: profile?.class_group || 'XII PPLG 1',
-        tags: ['💻 Web PWA', '🎨 UI/UX', '👕 Preloved', '⚡ Joki Coding', '🍱 Kuliner'],
+        tags: ['💻 Web PWA', '🎨 UI/UX', '👗 Preloved', '⚡ Joki Coding', '🍱 Kuliner'],
         followersCount: 142,
         soldCount: 24,
         rating: 4.9,
@@ -137,7 +138,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         setProfileData({
           name: cleanTargetUsername.charAt(0).toUpperCase() + cleanTargetUsername.slice(1),
           username: cleanTargetUsername,
-          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
+          avatar: getOreoAvatarUrl(cleanTargetUsername, { size: 200 }),
           bio: 'Siswa SMKN 8 Semarang · Jurusan PPLG & DKV.',
           classGroup: 'XII PPLG 2',
           tags: ['📱 Flutter', '🎨 Figma', '📷 Fotografi', '💼 Project PJBL'],
@@ -384,21 +385,21 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             <div className="flex items-center -space-x-1.5 shrink-0 isolate">
               <div className="w-5 h-5 rounded-full overflow-hidden ring-2 ring-white bg-neutral-200 z-[3] shadow-2xs">
                 <img
-                  src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&q=80"
+                  src={getOreoAvatarUrl('follower-1', { size: 60 })}
                   alt="Follower 1"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="w-5 h-5 rounded-full overflow-hidden ring-2 ring-white bg-neutral-200 z-[2] shadow-2xs">
                 <img
-                  src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=60&q=80"
+                  src={getOreoAvatarUrl('follower-2', { size: 60 })}
                   alt="Follower 2"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="w-5 h-5 rounded-full overflow-hidden ring-2 ring-white bg-neutral-200 z-[1] shadow-2xs">
                 <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&q=80"
+                  src={getOreoAvatarUrl('follower-3', { size: 60 })}
                   alt="Follower 3"
                   className="w-full h-full object-cover"
                 />

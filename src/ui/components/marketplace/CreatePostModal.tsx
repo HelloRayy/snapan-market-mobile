@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+flkimport React, { useState, useEffect } from 'react';
 import { X, Image as ImageIcon, MapPin, Sparkles, Play, Volume2 } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { triggerHaptic } from '@/utils/haptics';
@@ -14,6 +14,7 @@ import { CreatePostTopicSelector } from './create-post/CreatePostTopicSelector';
 import { CreatePostPollBuilder } from './create-post/CreatePostPollBuilder';
 import { CreatePostSubThreadsList } from './create-post/CreatePostSubThreadsList';
 import { usePostDrafts } from './create-post/usePostDrafts';
+import { getOreoAvatarUrl } from '@/utils/oreoAvatar';
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -34,7 +35,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
   initialMode = 'thread',
   currentUser = {
     name: 'radityarayhannnn',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+    avatar: getOreoAvatarUrl('radityarayhannnn', { size: 120 }),
     username: 'radityarayhannnn',
   },
 }) => {

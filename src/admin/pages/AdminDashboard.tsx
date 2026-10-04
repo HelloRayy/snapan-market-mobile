@@ -129,6 +129,13 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
     loadStats();
   }, [loadStats]);
 
+  // Re-fetch ringkasan statistik saat tab overview dibuka
+  useEffect(() => {
+    if (activeTab === 'overview') {
+      loadStats();
+    }
+  }, [activeTab, loadStats]);
+
   const handleLogout = useCallback(async () => {
     try {
       if (adminProfile?.id) {
@@ -201,15 +208,15 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
               </div>
 
               <div className={activeTab === 'users' ? 'block' : 'hidden'}>
-                <UsersManagementTab />
+                <UsersManagementTab isActive={activeTab === 'users'} />
               </div>
 
               <div className={activeTab === 'moderation' ? 'block' : 'hidden'}>
-                <ContentModerationTab />
+                <ContentModerationTab isActive={activeTab === 'moderation'} />
               </div>
 
               <div className={activeTab === 'reports' ? 'block' : 'hidden'}>
-                <ContentReportsTab />
+                <ContentReportsTab isActive={activeTab === 'reports'} />
               </div>
 
               <div className={activeTab === 'broadcast' ? 'block' : 'hidden'}>

@@ -4,6 +4,7 @@ import { MobileSearchBar, MobileSearchBarRef } from '@/ui/components/ui/MobileSe
 import { MarketPostCard } from '@/ui/components/marketplace/MarketPostCard';
 import { MOCK_MARKET_POSTS } from '@/data/mockMarketData';
 import { MarketPostItem } from '@/types/marketFeed';
+import { getOreoAvatarUrl } from '@/utils/oreoAvatar';
 
 export interface SuggestedAccount {
   id: string;
@@ -30,7 +31,7 @@ const INITIAL_SUGGESTED_ACCOUNTS: SuggestedAccount[] = [
     id: '1',
     username: 'growthflo',
     fullName: 'Flo',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&q=80',
+    avatar: getOreoAvatarUrl('growthflo', { size: 150 }),
     bio: 'designing & running adfects.com',
     followersCount: '8.728 pengikut',
   },

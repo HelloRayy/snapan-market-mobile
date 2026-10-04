@@ -10,6 +10,7 @@ import { PostSubmenuDropdown } from './PostSubmenuDropdown';
 import { CommentInputBar } from './CommentInputBar';
 import { useAuth } from '@/ui/hooks/useAuth';
 import { triggerHaptic } from '@/utils/haptics';
+import { getOreoAvatarUrl } from '@/utils/oreoAvatar';
 
 interface CommentDetailPageProps {
   parentPost: MarketPostItem;
@@ -133,7 +134,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
         id: profile?.id || 'user-current',
         name: profile?.full_name || 'Raditya Rayhan',
         username: profile?.full_name?.toLowerCase().replace(/\s+/g, '') || 'radityarayhannnn',
-        avatar: profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+        avatar: profile?.avatar_url || getOreoAvatarUrl(profile?.full_name || 'radityarayhannnn', { size: 120 }),
         classGroup: profile?.class_group || 'XII PPLG 1',
         isVerified: true,
         isAuthor:
@@ -185,7 +186,7 @@ export const CommentDetailPage: React.FC<CommentDetailPageProps> = ({
   };
 
   const userAvatar =
-    profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80';
+    profile?.avatar_url || getOreoAvatarUrl(profile?.full_name || 'radityarayhannnn', { size: 120 });
 
   const repliesList = activeComment.replies || [];
 

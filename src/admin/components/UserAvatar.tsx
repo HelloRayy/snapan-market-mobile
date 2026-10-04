@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getOreoAvatarUrl } from '@/utils/oreoAvatar';
 
 interface UserAvatarProps {
   avatarUrl?: string | null;
@@ -11,8 +12,8 @@ interface UserAvatarProps {
 }
 
 /**
- * Reusable user avatar with graceful image fallback to initials.
- * Automatically handles broken URLs and distinct color schemes based on user role.
+ * Reusable user avatar with modern @oreo-design/avatar gradient fallback.
+ * Automatically handles broken URLs or missing avatars with elegant Figma-method soft gradients.
  */
 export function UserAvatar({
   avatarUrl,
@@ -31,54 +32,43 @@ export function UserAvatar({
   }, [avatarUrl]);
 
   const cleanName = (name || '').trim();
-  const initial = cleanName ? cleanName.charAt(0).toUpperCase() : 'S';
-
-  const isAdmin = role === 'admin';
-  const bgColor = isAdmin ? '#fff1e6' : '#eaf0fc';
-  const textColor = isAdmin ? '#f97316' : '#4272d7';
-  const borderColor = isAdmin ? 'rgba(249, 115, 22, 0.2)' : 'rgba(66, 114, 215, 0.2)';
+  const fallbackOreoUrl = getOreoAvatarUrl(cleanName || 'siswa-snapan', {
+    size,
+    appearance: role === 'admin' ? 'dark' : 'light',
+  });
 
   const containerStyle: React.CSSProperties = {
     width: `${size}px`,
     height: `${size}px`,
     borderRadius,
-    background: bgColor,
-    color: textColor,
-    border: `1px solid ${borderColor}`,
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontWeight: 700,
-    fontSize: `${Math.max(11, Math.round(size * 0.4))}px`,
     flexShrink: 0,
     overflow: 'hidden',
     userSelect: 'none',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+    border: '1px solid rgba(0,0,0,0.06)',
     ...style,
   };
 
-  if (avatarUrl && !hasError) {
-    return (
-      <div className={`user-avatar ${className}`} style={containerStyle}>
-        <img
-          src={avatarUrl}
-          alt={cleanName || 'Avatar'}
-          loading="lazy"
-          referrerPolicy="no-referrer"
-          onError={() => setHasError(true)}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            borderRadius: 'inherit',
-          }}
-        />
-      </div>
-    );
-  }
+  const finalSrc = avatarUrl && !hasError ? avatarUrl : fallbackOreoUrl;
 
   return (
-    <div className={`user-avatar ${className}`} style={containerStyle} aria-label={cleanName}>
-      {initial}
+    <div className={`user-avatar ${className}`} style={containerStyle} aria-label={cleanName || 'User Avatar'}>
+      <img
+        src={finalSrc}
+        alt={cleanName || 'Avatar'}
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        onError={() => setHasError(true)}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          borderRadius: 'inherit',
+        }}
+      />
     </div>
   );
 }

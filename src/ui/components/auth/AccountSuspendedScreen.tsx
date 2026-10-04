@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { ProfileRow } from '@/admin/services/adminService';
 import { signOut } from '@/services/api/authService';
+import { UserAvatar } from '@/admin/components/UserAvatar';
 
 interface AccountSuspendedScreenProps {
   profile: ProfileRow;
@@ -115,30 +116,13 @@ export function AccountSuspendedScreen({ profile, onLoggedOut }: AccountSuspende
               marginBottom: '20px',
             }}
           >
-            {profile.avatar_url ? (
-              <img
-                src={profile.avatar_url}
-                alt={profile.full_name || 'Profil Siswa'}
-                style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover' }}
-              />
-            ) : (
-              <div
-                style={{
-                  width: '42px',
-                  height: '42px',
-                  borderRadius: '50%',
-                  background: '#e2e8f0',
-                  color: '#64748b',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '16px',
-                  fontWeight: 700,
-                }}
-              >
-                {(profile.full_name || 'U').charAt(0).toUpperCase()}
-              </div>
-            )}
+            <UserAvatar
+              avatarUrl={profile.avatar_url}
+              name={profile.full_name}
+              size={42}
+              borderRadius="50%"
+              role={profile.role}
+            />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontWeight: 700, fontSize: '14px', color: '#1e293b' }}>
                 {profile.full_name || 'Siswa SMKN 8'}

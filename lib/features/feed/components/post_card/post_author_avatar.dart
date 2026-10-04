@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/services/follow_service.dart';
-import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/ui/oreo_avatar_helper.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// 42x42px circular author avatar with thumb-friendly '+' follow badge (Threads standard)
@@ -47,18 +47,10 @@ class PostAuthorAvatar extends StatelessWidget {
                       width: 42.0,
                       height: 42.0,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => Container(
-                        color: AppColors.primaryPastel,
-                        child: Center(
-                          child: Text(
-                            seller.name.isNotEmpty ? seller.name[0].toUpperCase() : 'U',
-                            style: const TextStyle(
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        ),
+                      errorBuilder: (_, _, _) => OreoAvatarPlaceholder(
+                        seed: seller.username ?? seller.name,
+                        displayName: seller.name,
+                        size: 42.0,
                       ),
                     ),
                   ),

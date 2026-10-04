@@ -2,6 +2,7 @@ import React from 'react';
 import { Home, MessageSquare, Heart, User } from 'lucide-react';
 import { useVirtualKeyboard } from '@/ui/hooks/useVirtualKeyboard';
 import { triggerHaptic } from '@/utils/haptics';
+import { getOreoAvatarUrl } from '@/utils/oreoAvatar';
 
 interface MarketBottomNavProps {
   activeTab: string;
@@ -16,7 +17,7 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   activeTab,
   onTabChange,
   onPostClick,
-  userAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
+  userAvatar = getOreoAvatarUrl('snapan-current-user', { size: 100 }),
   unreadMessagesCount = 20,
   isVisible = true,
 }) => {

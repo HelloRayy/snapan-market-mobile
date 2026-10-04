@@ -42,6 +42,7 @@ const AdminLoginPage = lazy(() =>
 
 import { AuthPromptPopover } from '@/ui/components/auth/AuthPromptPopover';
 import { AccountSuspendedScreen } from '@/ui/components/auth/AccountSuspendedScreen';
+import { getOreoAvatarUrl } from '@/utils/oreoAvatar';
 
 export function App() {
   useSmoothScroll();
@@ -366,7 +367,7 @@ export function App() {
                   ? 'profile'
                   : 'home'
               }
-              userAvatar={profile?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80'}
+              userAvatar={profile?.avatar_url || getOreoAvatarUrl(profile?.username || 'snapan-user', { size: 100 })}
               onTabChange={(tab) => {
                 triggerHaptic('selection');
                 if (tab === 'home') navigateToHome();

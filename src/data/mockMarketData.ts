@@ -1,4 +1,5 @@
 import { MarketPostItem, UserReplyThread } from '@/types/marketFeed';
+import { getOreoAvatarUrl } from '@/utils/oreoAvatar';
 
 export const MOCK_MARKET_POSTS: MarketPostItem[] = [
   {
@@ -7,7 +8,7 @@ export const MOCK_MARKET_POSTS: MarketPostItem[] = [
     seller: {
       id: 'user-thread-1',
       name: 'Raymond Chin',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+      avatar: getOreoAvatarUrl('raymondchins', { size: 150 }),
       classGroup: 'XII PPLG 1',
       isVerified: true,
       username: 'raymondchins',
@@ -62,7 +63,7 @@ export const MOCK_MARKET_POSTS: MarketPostItem[] = [
             user: {
               id: 'user-thread-1',
               name: 'Raymond Chin',
-              avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+              avatar: getOreoAvatarUrl('raymondchins', { size: 100 }),
               username: 'raymondchins',
               classGroup: 'XII PPLG 1',
               isVerified: true,
@@ -124,7 +125,7 @@ export const MOCK_MARKET_POSTS: MarketPostItem[] = [
     seller: {
       id: 'user-1',
       name: 'Raymond Chin',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+      avatar: getOreoAvatarUrl('raymondchins', { size: 150 }),
       classGroup: 'XII PPLG 1',
       isVerified: true,
       username: 'raymondchins',
@@ -274,7 +275,7 @@ export const MOCK_USER_REPLIES: UserReplyThread[] = [
       seller: {
         id: 'user-thread-1',
         name: 'Raymond Chin',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+        avatar: getOreoAvatarUrl('raymondchins', { size: 150 }),
         classGroup: 'XII PPLG 1',
         isVerified: true,
         username: 'raymondchins',
@@ -303,7 +304,7 @@ export const MOCK_USER_REPLIES: UserReplyThread[] = [
       user: {
         name: 'radityarayhannnn',
         username: 'radityarayhannnn',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+        avatar: getOreoAvatarUrl('radityarayhannnn', { size: 120 }),
         classGroup: 'XII PPLG 1',
         isVerified: true,
       },
@@ -342,7 +343,7 @@ export const MOCK_USER_REPLIES: UserReplyThread[] = [
       user: {
         name: 'radityarayhannnn',
         username: 'radityarayhannnn',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+        avatar: getOreoAvatarUrl('radityarayhannnn', { size: 120 }),
         classGroup: 'XII PPLG 1',
         isVerified: true,
       },
@@ -357,7 +358,7 @@ export const MOCK_USER_REPLIES: UserReplyThread[] = [
         id: 'user-kantin',
         name: 'Kantin SMKN 8',
         username: 'kantin_smkn8',
-        avatar: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=200&q=80',
+        avatar: getOreoAvatarUrl('kantin_smkn8', { size: 150 }),
         classGroup: 'Kantin Sekolah',
         isVerified: true,
       },
@@ -382,7 +383,7 @@ export const MOCK_USER_REPLIES: UserReplyThread[] = [
       user: {
         name: 'radityarayhannnn',
         username: 'radityarayhannnn',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+        avatar: getOreoAvatarUrl('radityarayhannnn', { size: 120 }),
         classGroup: 'XII PPLG 1',
         isVerified: true,
       },

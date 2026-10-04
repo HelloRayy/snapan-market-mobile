@@ -1,5 +1,6 @@
 import { supabase } from '@/services/api/supabase';
 import type { Database } from '@/types/supabase';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 
 export type ProfileRow = Database['public']['Tables']['profiles']['Row'];
 export type MarketPostRow = Database['public']['Tables']['market_posts']['Row'];
@@ -783,6 +784,55 @@ export const adminService = {
     } catch (e: any) {
       console.error('Failed deleteAllBroadcastHistory:', e);
       throw new Error(e?.message || 'Gagal menghapus seluruh riwayat broadcast.');
+    }
+  },
+
+  /**
+   * Subscribe ke event realtime perubahan laporan konten (INSERT, UPDATE, DELETE)
+   */
+  subscribeToContentReports(onChange: (payload: any) => void): RealtimeChannel {
+    const channelId = `admin-reports-${Math.random().toString(36).substring(2, 8)}`;
+    return supabase
+      .channel(channelId)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'content_reports',
+        },
+        (payload) => onChange(payload)
+      )
+      .subscribe();
+  },
+
+  /**
+   * Subscribe ke event realtime postingan market (misal takedown atau post baru)
+   */
+  subscribeToMarketPosts(onChange: (payload: any) => void): RealtimeChannel {
+    const channelId = `admin-posts-${Math.random().toString(36).substring(2, 8)}`;
+    return supabase
+      .channel(channelId)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'market_posts',
+        },
+        (payload) => onChange(payload)
+      )
+      .subscribe();
+  },
+
+  /**
+   * Unsubscribe channel Supabase Realtime secara aman
+   */
+  async unsubscribeChannel(channel: RealtimeChannel): Promise<void> {
+    try {
+      await supabase.removeChannel(channel);
+    } catch (e) {
+      console.warn('Failed to remove channel:', e);
     }
   },
 };

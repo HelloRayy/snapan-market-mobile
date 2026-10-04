@@ -9,6 +9,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { SlideOverDrawer } from './SlideOverDrawer';
+import { UserAvatar } from './UserAvatar';
 import type { ProfileRow } from '../services/adminService';
 
 interface UserDetailDrawerProps {
@@ -51,19 +52,13 @@ export function UserDetailDrawer({
     >
       {/* 1. Student Hero Profile */}
       <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80">
-        <div className="h-16 w-16 rounded-2xl bg-[#EEF0FF] border-2 border-[#D8DBFE] flex items-center justify-center font-bold text-2xl text-[#3D38F5] shadow-xs shrink-0 overflow-hidden">
-          {user.avatar_url ? (
-            <img
-              src={user.avatar_url}
-              alt={user.full_name || ''}
-              className="h-full w-full object-cover"
-            />
-          ) : user.full_name ? (
-            user.full_name.charAt(0).toUpperCase()
-          ) : (
-            'S'
-          )}
-        </div>
+        <UserAvatar
+          avatarUrl={user.avatar_url}
+          name={user.full_name}
+          size={64}
+          borderRadius="16px"
+          role={user.role}
+        />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5 flex-wrap">
             <h3 className="text-base font-bold text-slate-900 truncate">

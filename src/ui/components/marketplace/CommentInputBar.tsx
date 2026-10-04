@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, ArrowLeft } from 'lucide-react';
 import { triggerHaptic } from '@/utils/haptics';
+import { getOreoAvatarUrl } from '@/utils/oreoAvatar';
 
 interface CommentInputBarProps {
   replyToUser?: string | null;
@@ -81,7 +82,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
         <form onSubmit={handleSubmit} className="flex items-center gap-2 w-full min-w-0">
           <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-neutral-200 shadow-2xs">
             <img
-              src={userAvatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80"}
+              src={userAvatar || getOreoAvatarUrl('current-user', { size: 100 })}
               alt="Profil Saya"
               className="w-full h-full object-cover"
             />
@@ -177,7 +178,7 @@ export const CommentInputBar: React.FC<CommentInputBarProps> = ({
           ) : (
             <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 border border-neutral-200 shadow-2xs">
               <img
-                src={userAvatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80"}
+                src={userAvatar || getOreoAvatarUrl('current-user', { size: 100 })}
                 alt="Profil Saya"
                 className="w-full h-full object-cover"
               />

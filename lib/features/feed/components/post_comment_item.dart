@@ -106,19 +106,22 @@ class _PostCommentItemState extends State<PostCommentItem> {
 
     // 1. NESTED CHILD REPLY VARIANT (Standalone)
     if (widget.isNested) {
-      return CommentReplyTile(
-        reply: widget.comment,
-        parentCommentId: widget.parentCommentId ?? widget.comment.id,
-        isFirst: true,
-        isLast: widget.isLastNested,
-        onLikeToggle: (updated) => widget.onLikeToggle?.call(updated),
-        onReplyToComment: widget.onReplyToComment,
-        onReplyClick: widget.onReplyClick,
-        onUserClick: widget.onUserClick,
-        onImageClick: widget.onImageClick,
-        onShare: _copyToClipboard,
-        postAuthorId: widget.postAuthorId,
-        onDeleteComment: widget.onDeleteComment,
+      return Padding(
+        padding: const EdgeInsets.only(left: 48.0, top: 4.0, bottom: 4.0),
+        child: CommentReplyTile(
+          reply: widget.comment,
+          parentCommentId: widget.parentCommentId ?? widget.comment.id,
+          isFirst: true,
+          isLast: widget.isLastNested,
+          onLikeToggle: (updated) => widget.onLikeToggle?.call(updated),
+          onReplyToComment: widget.onReplyToComment,
+          onReplyClick: widget.onReplyClick,
+          onUserClick: widget.onUserClick,
+          onImageClick: widget.onImageClick,
+          onShare: _copyToClipboard,
+          postAuthorId: widget.postAuthorId,
+          onDeleteComment: widget.onDeleteComment,
+        ),
       );
     }
 
@@ -134,95 +137,62 @@ class _PostCommentItemState extends State<PostCommentItem> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Parent Comment Row (Dynamic height continuous threadline)
-          IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Left Column: Avatar (36x36) + Continuous Vertical Line
-                SizedBox(
-                  width: 36.0,
-                  child: Column(
-                    children: [
-                      if (widget.comment.threadPart != null) ...[
-                        Container(
-                          width: 2.0,
-                          height: 10.0,
-                          decoration: BoxDecoration(
-                            color: AppColors.cloudGray,
-                            borderRadius: BorderRadius.circular(1.0),
-                          ),
-                        ),
-                      ],
-                      CommentAvatar(
-                        avatarUrl: widget.comment.user.avatar,
-                        name: widget.comment.user.name,
-                        username: widget.comment.user.username,
-                        size: 36.0,
-                        onUserClick: widget.onUserClick,
-                      ),
-                      if (hasReplies && _isRepliesExpanded) ...[
-                        const SizedBox(height: 4.0),
-                        Expanded(
-                          child: Center(
-                            child: Container(
-                              width: 1.8,
-                              decoration: BoxDecoration(
-                                color: AppColors.cloudGray,
-                                borderRadius: BorderRadius.circular(1.0),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
+          // Parent Comment Row (Clean layout without vertical threadline)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Left: Parent Avatar (36x36)
+              CommentAvatar(
+                avatarUrl: widget.comment.user.avatar,
+                name: widget.comment.user.name,
+                username: widget.comment.user.username,
+                size: 36.0,
+                onUserClick: widget.onUserClick,
+              ),
 
-                const SizedBox(width: 12.0),
+              const SizedBox(width: 12.0),
 
-                // Right Column: Header, Content, Images, Action Bar
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildHeaderRow(context),
-                      const SizedBox(height: 3.0),
-                      _buildContentText(),
-                      if (widget.comment.images.isNotEmpty) ...[
-                        const SizedBox(height: 8.0),
-                        CommentImagesSection(
-                          images: widget.comment.images,
-                          onImageClick: widget.onImageClick,
-                        ),
-                      ],
-                      const SizedBox(height: 4.0),
-                      CommentActionBar(
-                        isLiked: _isLiked,
-                        likesCount: _likesCount,
-                        onLikeToggle: _handleLikeToggle,
-                        onReply: () {
-                          final targetUsername = widget.comment.user.username ?? widget.comment.user.name;
-                          if (widget.onReplyToComment != null) {
-                            widget.onReplyToComment!(targetUsername, widget.comment.id);
-                          } else {
-                            widget.onReplyClick?.call(targetUsername);
-                          }
-                        },
-                        onShare: () => _copyToClipboard(widget.comment.content),
+              // Right Column: Header, Content, Images, Action Bar
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeaderRow(context),
+                    const SizedBox(height: 3.0),
+                    _buildContentText(),
+                    if (widget.comment.images.isNotEmpty) ...[
+                      const SizedBox(height: 8.0),
+                      CommentImagesSection(
+                        images: widget.comment.images,
+                        onImageClick: widget.onImageClick,
                       ),
                     ],
-                  ),
+                    const SizedBox(height: 4.0),
+                    CommentActionBar(
+                      isLiked: _isLiked,
+                      likesCount: _likesCount,
+                      onLikeToggle: _handleLikeToggle,
+                      onReply: () {
+                        final targetUsername = widget.comment.user.username ?? widget.comment.user.name;
+                        if (widget.onReplyToComment != null) {
+                          widget.onReplyToComment!(targetUsername, widget.comment.id);
+                        } else {
+                          widget.onReplyClick?.call(targetUsername);
+                        }
+                      },
+                      onShare: () => _copyToClipboard(widget.comment.content),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
 
-          // Replies Tree connected with Threads Curved Line
+          // Replies (Clean Instagram / X Minimalist Indented Layout)
           if (hasReplies) ...[
             if (!_isRepliesExpanded)
               Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(left: 48.0, top: 4.0),
                 child: CommentRepliesExpandRow(
                   replies: widget.comment.replies,
                   isExpanded: false,
@@ -230,63 +200,46 @@ class _PostCommentItemState extends State<PostCommentItem> {
                 ),
               )
             else ...[
-              // Connector line bridging parent row to child reply
-              Container(
-                margin: const EdgeInsets.only(left: 17.1),
-                width: 1.8,
-                height: 10.0,
-                color: const Color(0xFFD1D5DB),
-              ),
-
-              // Child Replies
-              ListView.builder(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: widget.comment.replies.length,
-                itemBuilder: (context, idx) {
-                  final reply = widget.comment.replies[idx];
-                  final isFirst = idx == 0;
-                  final isLast = idx == widget.comment.replies.length - 1;
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (!isFirst)
-                        Container(
-                          margin: const EdgeInsets.only(left: 45.1),
-                          width: 1.8,
-                          height: 10.0,
-                          color: const Color(0xFFD1D5DB),
-                        ),
-                      CommentReplyTile(
-                        reply: reply,
-                        parentCommentId: widget.comment.id,
-                        isFirst: isFirst,
-                        isLast: isLast,
-                        onLikeToggle: _handleReplyLikeToggle,
-                        onReplyToComment: widget.onReplyToComment,
-                        onReplyClick: widget.onReplyClick,
-                        onUserClick: widget.onUserClick,
-                        onImageClick: widget.onImageClick,
-                        onShare: _copyToClipboard,
-                        postAuthorId: widget.postAuthorId,
-                        onDeleteComment: widget.onDeleteComment,
+              Padding(
+                padding: const EdgeInsets.only(left: 48.0, top: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ListView.separated(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: widget.comment.replies.length,
+                      separatorBuilder: (context, index) => const SizedBox(height: 12.0),
+                      itemBuilder: (context, idx) {
+                        final reply = widget.comment.replies[idx];
+                        return CommentReplyTile(
+                          reply: reply,
+                          parentCommentId: widget.comment.id,
+                          isFirst: idx == 0,
+                          isLast: idx == widget.comment.replies.length - 1,
+                          onLikeToggle: _handleReplyLikeToggle,
+                          onReplyToComment: widget.onReplyToComment,
+                          onReplyClick: widget.onReplyClick,
+                          onUserClick: widget.onUserClick,
+                          onImageClick: widget.onImageClick,
+                          onShare: _copyToClipboard,
+                          postAuthorId: widget.postAuthorId,
+                          onDeleteComment: widget.onDeleteComment,
+                        );
+                      },
+                    ),
+                    if (widget.comment.replies.length > 2) ...[
+                      const SizedBox(height: 8.0),
+                      CommentRepliesExpandRow(
+                        replies: widget.comment.replies,
+                        isExpanded: true,
+                        onToggle: () => setState(() => _isRepliesExpanded = false),
                       ),
                     ],
-                  );
-                },
-              ),
-
-              if (widget.comment.replies.length > 2)
-                Padding(
-                  padding: const EdgeInsets.only(top: 6.0),
-                  child: CommentRepliesExpandRow(
-                    replies: widget.comment.replies,
-                    isExpanded: true,
-                    onToggle: () => setState(() => _isRepliesExpanded = false),
-                  ),
+                  ],
                 ),
+              ),
             ],
           ],
         ],

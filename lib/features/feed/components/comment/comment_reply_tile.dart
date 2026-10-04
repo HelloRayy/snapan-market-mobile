@@ -7,10 +7,9 @@ import 'package:snapan_market/features/feed/components/comment/comment_author_ba
 import 'package:snapan_market/features/feed/components/comment/comment_avatar.dart';
 import 'package:snapan_market/features/feed/components/comment/comment_images_section.dart';
 import 'package:snapan_market/features/feed/components/comment/comment_options_sheet.dart';
-import 'package:snapan_market/features/feed/components/comment/thread_branch_painter.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
-/// Single Child Reply Tile connected to the parent thread via Threads curved branch
+/// Single Child Reply Tile styled with clean minimalist Instagram / X indent
 class CommentReplyTile extends StatelessWidget {
   final PostCommentModel reply;
   final String parentCommentId;
@@ -43,116 +42,60 @@ class CommentReplyTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Left Branch Column: L-curve or vertical connector + Child Avatar (36x36)
-          SizedBox(
-            width: 64.0, // 28.0 indent/curve + 36.0 avatar
-            child: Stack(
-              children: [
-                // 1. Initial L-Branch curve connecting from Parent's vertical line at x = 18.0
-                if (isFirst)
-                  const Positioned.fill(
-                    child: CustomPaint(
-                      painter: ReplyLBranchPainter(
-                        color: Color(0xFFD1D5DB),
-                        strokeWidth: 1.8,
-                        startX: 18.0,
-                        targetX: 28.0,
-                        targetY: 18.0,
-                        radius: 10.0,
-                      ),
-                    ),
-                  ),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Left Column: Compact Child Avatar (28x28)
+        CommentAvatar(
+          avatarUrl: reply.user.avatar,
+          name: reply.user.name,
+          username: reply.user.username,
+          size: 28.0,
+          onUserClick: onUserClick,
+        ),
 
-                // 2. Straight line entering top of avatar for subsequent replies (index > 0)
-                if (!isFirst)
-                  Positioned(
-                    left: 45.1,
-                    top: 0,
-                    child: Container(
-                      width: 1.8,
-                      height: 18.0,
-                      color: const Color(0xFFD1D5DB),
-                    ),
-                  ),
+        const SizedBox(width: 10.0),
 
-                // 3. Straight vertical line continuing below avatar to subsequent replies
-                if (!isLast)
-                  Positioned(
-                    left: 45.1,
-                    top: 36.0,
-                    bottom: 0,
-                    child: Container(
-                      width: 1.8,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFD1D5DB),
-                        borderRadius: BorderRadius.circular(1.0),
-                      ),
-                    ),
-                  ),
-
-                // 4. Avatar (36x36) at left: 28.0, top: 0
-                Positioned(
-                  left: 28.0,
-                  top: 0,
-                  child: CommentAvatar(
-                    avatarUrl: reply.user.avatar,
-                    name: reply.user.name,
-                    username: reply.user.username,
-                    size: 36.0,
-                    onUserClick: onUserClick,
-                  ),
+        // Right Column: Header, Content, Images, Action Bar
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeaderRow(context),
+              const SizedBox(height: 2.5),
+              _buildContentText(context),
+              if (reply.images.isNotEmpty) ...[
+                const SizedBox(height: 8.0),
+                CommentImagesSection(
+                  images: reply.images,
+                  onImageClick: onImageClick,
                 ),
               ],
-            ),
+              const SizedBox(height: 4.0),
+              CommentActionBar(
+                isLiked: reply.isLiked,
+                likesCount: reply.likesCount,
+                onLikeToggle: () {
+                  final isLiked = !reply.isLiked;
+                  final count = isLiked
+                      ? reply.likesCount + 1
+                      : (reply.likesCount - 1).clamp(0, 999999);
+                  onLikeToggle(reply.copyWith(isLiked: isLiked, likesCount: count));
+                },
+                onReply: () {
+                  final targetUsername = reply.user.username ?? reply.user.name;
+                  if (onReplyToComment != null) {
+                    onReplyToComment!(targetUsername, parentCommentId);
+                  } else {
+                    onReplyClick?.call(targetUsername);
+                  }
+                },
+                onShare: () => onShare(reply.content),
+              ),
+            ],
           ),
-
-          const SizedBox(width: 12.0),
-
-          // Right Column: Header, Content, Images, Action Bar
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeaderRow(context),
-                const SizedBox(height: 3.0),
-                _buildContentText(context),
-                if (reply.images.isNotEmpty) ...[
-                  const SizedBox(height: 8.0),
-                  CommentImagesSection(
-                    images: reply.images,
-                    onImageClick: onImageClick,
-                  ),
-                ],
-                const SizedBox(height: 4.0),
-                CommentActionBar(
-                  isLiked: reply.isLiked,
-                  likesCount: reply.likesCount,
-                  onLikeToggle: () {
-                    final isLiked = !reply.isLiked;
-                    final count = isLiked
-                        ? reply.likesCount + 1
-                        : (reply.likesCount - 1).clamp(0, 999999);
-                    onLikeToggle(reply.copyWith(isLiked: isLiked, likesCount: count));
-                  },
-                  onReply: () {
-                    final targetUsername = reply.user.username ?? reply.user.name;
-                    if (onReplyToComment != null) {
-                      onReplyToComment!(targetUsername, parentCommentId);
-                    } else {
-                      onReplyClick?.call(targetUsername);
-                    }
-                  },
-                  onShare: () => onShare(reply.content),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -179,7 +122,7 @@ class CommentReplyTile extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontSize: 14.0,
+                      fontSize: 13.5,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF0F172A),
                     ),
@@ -190,7 +133,7 @@ class CommentReplyTile extends StatelessWidget {
                 const SizedBox(width: 4.0),
                 const Icon(
                   Icons.verified_rounded,
-                  size: 14.5,
+                  size: 14.0,
                   color: AppColors.verifiedBlue,
                 ),
               ],
@@ -202,7 +145,7 @@ class CommentReplyTile extends StatelessWidget {
               Text(
                 formatSmartTimestamp(reply.timestamp),
                 style: const TextStyle(
-                  fontSize: 12.0,
+                  fontSize: 11.5,
                   fontWeight: FontWeight.normal,
                   color: Color(0xFF64748B),
                 ),
@@ -222,16 +165,16 @@ class CommentReplyTile extends StatelessWidget {
             onReplyToComment: onReplyToComment,
             onDeleteComment: onDeleteComment,
           ),
-          borderRadius: BorderRadius.circular(19.0),
+          borderRadius: BorderRadius.circular(15.0),
           splashColor: const Color(0xFFF1F5F9),
           highlightColor: Colors.transparent,
           child: Container(
-            width: 38.0,
-            height: 38.0,
+            width: 30.0,
+            height: 30.0,
             alignment: Alignment.center,
             child: const Icon(
               Icons.more_horiz_rounded,
-              size: 19.0,
+              size: 17.5,
               color: Color(0xFF64748B),
             ),
           ),

@@ -4,6 +4,7 @@ import { PostComment } from '@/types/marketFeed';
 import { FormattedText } from '@/ui/components/ui/FormattedText';
 import { triggerHaptic } from '@/utils/haptics';
 import { CommentRow } from './comment';
+import { getOreoAvatarUrl } from '@/utils/oreoAvatar';
 
 interface PostCommentItemProps {
   comment: PostComment;
@@ -140,7 +141,7 @@ export const PostCommentItem: React.FC<PostCommentItemProps> = ({
                 )}
                 <div className="w-9 h-9 rounded-full overflow-hidden border border-[#1d64ec]/50 ring-2 ring-[#1d64ec]/20 shadow-2xs shrink-0 bg-white">
                   <img
-                    src={draftReply.userAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80'}
+                    src={draftReply.userAvatar || getOreoAvatarUrl(draftReply.username || 'user', { size: 100 })}
                     alt={draftReply.username || 'Saya'}
                     className="w-full h-full object-cover"
                   />

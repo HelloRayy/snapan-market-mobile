@@ -113,8 +113,15 @@ export function AdminHeader({
     };
 
     loadRealReportsNoti();
+
+    // Realtime listener untuk laporan konten baru/update dari mobile app
+    const channel = adminService.subscribeToContentReports(() => {
+      loadRealReportsNoti();
+    });
+
     return () => {
       isSubscribed = false;
+      adminService.unsubscribeChannel(channel);
     };
   }, [isRefreshing]);
 

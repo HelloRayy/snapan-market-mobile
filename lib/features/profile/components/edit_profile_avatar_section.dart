@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:snapan_market/core/services/media_upload_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
-import 'package:snapan_market/features/profile/models/mock_profile_data.dart';
+import 'package:snapan_market/core/ui/oreo_avatar_helper.dart';
 
 /// Top section of Edit Profile with Name input, Circular Avatar with '+' badge,
 /// and smooth collapsible 6-Preset Avatars carousel picker matching EditProfilePage.tsx
@@ -200,23 +200,50 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                                 ? Image.network(
                                     widget.currentAvatar,
                                     fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => const Center(
-                                      child: Icon(
-                                        Icons.person_rounded,
-                                        size: 26.0,
-                                        color: Color(0xFF94A3B8),
-                                      ),
+                                    errorBuilder: (_, __, ___) => OreoAvatarPlaceholder(
+                                      seed: widget.nameController.text.isNotEmpty ? widget.nameController.text : 'user',
+                                      displayName: widget.nameController.text,
+                                      size: 52.0,
                                     ),
                                   )
-                                : Image.file(
+                                : widget.currentAvatar.startsWith('preset:')
+                                    ? Builder(builder: (_) {
+                                        final presetId = widget.currentAvatar.replaceFirst('preset:', '');
+                                        final preset = kOreoGradientPresets.firstWhere(
+                                          (p) => p.id == presetId,
+                                          orElse: () => kOreoGradientPresets.first,
+                                        );
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: preset.colors,
+                                              begin: preset.begin,
+                                              end: preset.end,
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              widget.nameController.text.trim().isNotEmpty
+                                                  ? widget.nameController.text.trim()[0].toUpperCase()
+                                                  : 'S',
+                                              style: TextStyle(
+                                                fontSize: 20.0,
+                                                fontWeight: FontWeight.w700,
+                                                color: (preset.id == 'aurora-pink' || preset.id == 'violet-peach')
+                                                    ? Colors.white.withValues(alpha: 0.95)
+                                                    : const Color(0xFF1E293B).withValues(alpha: 0.85),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      })
+                                    : Image.file(
                                     File(widget.currentAvatar),
                                     fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => const Center(
-                                      child: Icon(
-                                        Icons.person_rounded,
-                                        size: 26.0,
-                                        color: Color(0xFF94A3B8),
-                                      ),
+                                    errorBuilder: (_, __, ___) => OreoAvatarPlaceholder(
+                                      seed: widget.nameController.text.isNotEmpty ? widget.nameController.text : 'user',
+                                      displayName: widget.nameController.text,
+                                      size: 52.0,
                                     ),
                                   ),
                       ),
@@ -343,56 +370,71 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                             ),
                           ),
                         ),
-                        ...kPresetAvatars.asMap().entries.map((entry) {
-                        final avatarUrl = entry.value;
-                        final isSelected = widget.currentAvatar == avatarUrl;
+                        ...kOreoGradientPresets.map((preset) {
+                          final presetVal = 'preset:${preset.id}';
+                          final isSelected = widget.currentAvatar == presetVal;
 
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 10.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              HapticFeedback.selectionClick();
-                              widget.onAvatarChanged(avatarUrl);
-                            },
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 180),
-                              width: 44.0,
-                              height: 44.0,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: isSelected
-                                      ? const Color(0xFF101010)
-                                      : const Color(0xFFE2E8F0),
-                                  width: isSelected ? 2.5 : 1.0,
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                HapticFeedback.selectionClick();
+                                widget.onAvatarChanged(presetVal);
+                              },
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 180),
+                                width: 44.0,
+                                height: 44.0,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: LinearGradient(
+                                    colors: preset.colors,
+                                    begin: preset.begin,
+                                    end: preset.end,
+                                  ),
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? const Color(0xFF101010)
+                                        : const Color(0xFFE2E8F0),
+                                    width: isSelected ? 2.5 : 1.0,
+                                  ),
                                 ),
-                              ),
-                              child: ClipOval(
-                                child: Stack(
-                                  fit: StackFit.expand,
-                                  children: [
-                                    Image.network(
-                                      avatarUrl,
-                                      fit: BoxFit.cover,
-                                    ),
-                                    if (isSelected)
-                                      Container(
-                                        color: Colors.black.withValues(alpha: 0.4),
-                                        child: const Center(
-                                          child: Icon(
-                                            Icons.check_rounded,
-                                            size: 20.0,
-                                            color: Colors.white,
+                                child: ClipOval(
+                                  child: Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      Center(
+                                        child: Text(
+                                          widget.nameController.text.trim().isNotEmpty
+                                              ? widget.nameController.text.trim()[0].toUpperCase()
+                                              : 'S',
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.w700,
+                                            color: (preset.id == 'aurora-pink' || preset.id == 'violet-peach')
+                                                ? Colors.white.withValues(alpha: 0.95)
+                                                : const Color(0xFF1E293B).withValues(alpha: 0.85),
                                           ),
                                         ),
                                       ),
-                                  ],
+                                      if (isSelected)
+                                        Container(
+                                          color: Colors.black.withValues(alpha: 0.3),
+                                          child: const Center(
+                                            child: Icon(
+                                              Icons.check_rounded,
+                                              size: 20.0,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      }).toList(),
+                          );
+                        }),
                     ],
                   ),
                 ),

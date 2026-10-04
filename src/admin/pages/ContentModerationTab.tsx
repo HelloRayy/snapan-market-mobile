@@ -7,7 +7,11 @@ import { AdminTooltip } from '../components/AdminTooltip';
 
 type PostWithSeller = MarketPostRow & { seller?: ProfileRow | null };
 
-export function ContentModerationTab() {
+interface ContentModerationTabProps {
+  isActive?: boolean;
+}
+
+export function ContentModerationTab({ isActive = true }: ContentModerationTabProps) {
   const [posts, setPosts] = useState<PostWithSeller[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -48,6 +52,23 @@ export function ContentModerationTab() {
       fetchPosts();
     }, 250);
     return () => clearTimeout(timer);
+  }, [fetchPosts]);
+
+  // Re-fetch saat tab moderasi konten dibuka
+  useEffect(() => {
+    if (isActive) {
+      fetchPosts();
+    }
+  }, [isActive, fetchPosts]);
+
+  // Realtime subscription untuk postingan baru atau takedown
+  useEffect(() => {
+    const channel = adminService.subscribeToMarketPosts(() => {
+      fetchPosts();
+    });
+    return () => {
+      adminService.unsubscribeChannel(channel);
+    };
   }, [fetchPosts]);
 
   const handleInspectPost = (post: PostWithSeller) => {

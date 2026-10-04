@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
-import 'package:snapan_market/features/feed/components/comment/thread_branch_painter.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
-/// Interactive row for "Tampilkan balasan" featuring Threads curved threadline,
-/// mini avatar with reply arrow badge, and expand/collapse trigger.
+/// Minimalist row for expanding/collapsing comment replies in Instagram / X style
 class CommentRepliesExpandRow extends StatelessWidget {
   final List<PostCommentModel> replies;
   final bool isExpanded;
@@ -33,85 +31,51 @@ class CommentRepliesExpandRow extends StatelessWidget {
       },
       behavior: HitTestBehavior.opaque,
       child: Padding(
-        padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
+        padding: const EdgeInsets.symmetric(vertical: 6.0),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Curved elbow connector line (╰─)
-            SizedBox(
-              width: 36.0,
-              height: 28.0,
-              child: CustomPaint(
-                painter: const ThreadBranchPainter(
-                  color: Color(0xFFD1D5DB), // Subtle light slate threadline
-                  strokeWidth: 1.8,
-                  curveRadius: 14.0,
-                  avatarCenterX: 18.0,
-                  type: ThreadLineType.elbow,
-                ),
+            // Clean horizontal indicator dash (──)
+            Container(
+              width: 24.0,
+              height: 1.2,
+              decoration: BoxDecoration(
+                color: const Color(0xFFCBD5E1),
+                borderRadius: BorderRadius.circular(1.0),
               ),
             ),
 
             const SizedBox(width: 8.0),
 
-            // Mini replier avatar with reply arrow badge
-            SizedBox(
-              width: 22.0,
-              height: 22.0,
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    width: 20.0,
-                    height: 20.0,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFFE2E8F0), width: 0.8),
-                    ),
-                    child: ClipOval(
-                      child: Image.network(
-                        replierAvatar,
-                        width: 20.0,
-                        height: 20.0,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => Container(
-                          color: AppColors.primaryPastel,
-                          child: Center(
-                            child: Text(
-                              replierName.isNotEmpty ? replierName[0].toUpperCase() : 'U',
-                              style: const TextStyle(
-                                fontSize: 9.0,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                          ),
+            // Mini replier avatar
+            Container(
+              width: 18.0,
+              height: 18.0,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFFE2E8F0), width: 0.8),
+              ),
+              child: ClipOval(
+                child: Image.network(
+                  replierAvatar,
+                  width: 18.0,
+                  height: 18.0,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: AppColors.primaryPastel,
+                    child: Center(
+                      child: Text(
+                        replierName.isNotEmpty ? replierName[0].toUpperCase() : 'U',
+                        style: const TextStyle(
+                          fontSize: 8.5,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primary,
                         ),
                       ),
                     ),
                   ),
-
-                  // Tiny reply arrow badge at bottom-right
-                  Positioned(
-                    right: -2.0,
-                    bottom: -2.0,
-                    child: Container(
-                      width: 10.0,
-                      height: 10.0,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF0F172A),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.subdirectory_arrow_right_rounded,
-                          size: 7.5,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
 
@@ -122,11 +86,11 @@ class CommentRepliesExpandRow extends StatelessWidget {
               isExpanded
                   ? 'Sembunyikan balasan'
                   : (replies.length > 1
-                      ? 'Tampilkan ${replies.length} balasan'
-                      : 'Tampilkan balasan'),
+                      ? 'Lihat ${replies.length} balasan'
+                      : 'Lihat balasan'),
               style: const TextStyle(
-                fontSize: 13.0,
-                fontWeight: FontWeight.w500,
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
                 color: Color(0xFF64748B),
                 letterSpacing: -0.2,
               ),
@@ -138,8 +102,8 @@ class CommentRepliesExpandRow extends StatelessWidget {
               isExpanded
                   ? Icons.keyboard_arrow_up_rounded
                   : Icons.keyboard_arrow_down_rounded,
-              size: 15.0,
-              color: const Color(0xFF94A3B8),
+              size: 16.0,
+              color: const Color(0xFF64748B),
             ),
           ],
         ),

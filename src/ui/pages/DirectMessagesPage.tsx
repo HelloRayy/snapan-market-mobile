@@ -9,6 +9,7 @@ import {
 import { MobileSearchBar } from '@/ui/components/ui/MobileSearchBar';
 import { ClickableVerifiedBadge } from '@/ui/components/marketplace/VerifiedBadgeModal';
 import { triggerHaptic } from '@/utils/haptics';
+import { getOreoAvatarUrl } from '@/utils/oreoAvatar';
 
 interface DirectMessagesPageProps {
   onBack?: () => void;
@@ -46,7 +47,7 @@ export const MOCK_CONVERSATIONS: MockConversation[] = [
     user: {
       name: 'Sarah Anastasya',
       username: 'sarahanas',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&q=80',
+      avatar: getOreoAvatarUrl('sarahanas', { size: 150 }),
       isVerified: true,
       isOnline: true,
     },

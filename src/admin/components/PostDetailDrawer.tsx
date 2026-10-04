@@ -1,5 +1,6 @@
 import { Trash2, ExternalLink } from 'lucide-react';
 import { SlideOverDrawer } from './SlideOverDrawer';
+import { UserAvatar } from './UserAvatar';
 import type { MarketPostRow, ProfileRow } from '../services/adminService';
 
 type PostWithSeller = MarketPostRow & { seller?: ProfileRow | null };
@@ -103,19 +104,13 @@ export function PostDetailDrawer({
           Penulis / Siswa Pemilik
         </h4>
         <div className="flex items-center gap-3 p-3.5 rounded-xl border border-slate-200/80 bg-white">
-          <div className="h-10 w-10 rounded-xl bg-[#EEF0FF] border border-[#D8DBFE] flex items-center justify-center font-bold text-xs text-[#3D38F5] shrink-0">
-            {post.seller?.avatar_url ? (
-              <img
-                src={post.seller.avatar_url}
-                alt={post.seller.full_name || ''}
-                className="h-full w-full rounded-xl object-cover"
-              />
-            ) : post.seller?.full_name ? (
-              post.seller.full_name.charAt(0).toUpperCase()
-            ) : (
-              'S'
-            )}
-          </div>
+          <UserAvatar
+            avatarUrl={post.seller?.avatar_url}
+            name={post.seller?.full_name}
+            size={40}
+            borderRadius="12px"
+            role={post.seller?.role}
+          />
           <div>
             <div className="text-xs font-bold text-slate-900">
               {post.seller?.full_name || 'Siswa SMKN 8'}

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/ui/oreo_avatar_helper.dart';
 
 /// Standard 36x36 Circular Avatar for comment authors & replies
 class CommentAvatar extends StatelessWidget {
@@ -44,18 +44,10 @@ class CommentAvatar extends StatelessWidget {
             width: size,
             height: size,
             fit: BoxFit.cover,
-            errorBuilder: (_, _, _) => Container(
-              color: AppColors.primaryPastel,
-              child: Center(
-                child: Text(
-                  name.isNotEmpty ? name[0].toUpperCase() : 'U',
-                  style: TextStyle(
-                    fontSize: size * 0.4,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
+            errorBuilder: (_, _, _) => OreoAvatarPlaceholder(
+              seed: username ?? name,
+              displayName: name,
+              size: size,
             ),
           ),
         ),

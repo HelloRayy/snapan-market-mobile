@@ -97,9 +97,6 @@ class _CommentInputBarState extends State<CommentInputBar> {
 
   @override
   Widget build(BuildContext context) {
-    final defaultAvatar = widget.userAvatar ??
-        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80';
-
     final placeholder = widget.replyToUser != null
         ? 'Balas @${widget.replyToUser!.replaceAll('@', '')}...'
         : widget.targetAuthor != null

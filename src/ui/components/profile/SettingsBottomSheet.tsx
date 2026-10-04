@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, LogOut, ShieldCheck, Share2, Smartphone } from 'lucide-react';
 import { useAuth } from '@/ui/hooks/useAuth';
 import { ConfirmActionModal } from '@/ui/components/ui/ConfirmActionModal';
+import { getOreoAvatarUrl } from '@/utils/oreoAvatar';
 
 interface SettingsBottomSheetProps {
   isOpen: boolean;
@@ -63,7 +64,7 @@ export const SettingsBottomSheet: React.FC<SettingsBottomSheetProps> = ({
                   src={
                     profile?.avatar_url ||
                     user?.user_metadata?.avatar_url ||
-                    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80'
+                    getOreoAvatarUrl(profile?.username || user?.user_metadata?.username || 'snapan-user', { size: 120 })
                   }
                   alt="Avatar"
                   className="w-full h-full object-cover"

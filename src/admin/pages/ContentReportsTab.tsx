@@ -27,7 +27,11 @@ export interface ContentReportItem {
   post?: (MarketPostRow & { seller?: ProfileRow | null }) | null;
 }
 
-export function ContentReportsTab() {
+interface ContentReportsTabProps {
+  isActive?: boolean;
+}
+
+export function ContentReportsTab({ isActive = true }: ContentReportsTabProps) {
   const [reports, setReports] = useState<ContentReportItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'resolved' | 'dismissed'>('all');
@@ -160,8 +164,29 @@ export function ContentReportsTab() {
     }
   }, []);
 
+  // Re-fetch otomatis saat tab dibuka (misal hasil klik notifikasi di navbar/header)
   useEffect(() => {
-    fetchReports();
+    if (isActive) {
+      fetchReports();
+    }
+  }, [isActive, fetchReports]);
+
+  // Subscribe ke event realtime Supabase untuk update otomatis tanpa refresh manual
+  useEffect(() => {
+    const reportChannel = adminService.subscribeToContentReports(() => {
+      fetchReports();
+    });
+
+    const postChannel = adminService.subscribeToMarketPosts((payload) => {
+      if (payload.eventType === 'DELETE') {
+        fetchReports();
+      }
+    });
+
+    return () => {
+      adminService.unsubscribeChannel(reportChannel);
+      adminService.unsubscribeChannel(postChannel);
+    };
   }, [fetchReports]);
 
   // Pagination state (Super-light client pagination)
@@ -261,18 +286,16 @@ export function ContentReportsTab() {
     setIsProcessing(true);
     setConfirmTakedownTarget(null);
 
-    // Optimistic UI update (Instant responsiveness)
+    // Optimistic UI update: Langsung singkirkan laporan terkait dari list karena postingan musnah
     setReports((prev) =>
-      prev.map((r) =>
-        r.id === target.id ? { ...r, status: 'resolved' as const, post: null } : r
-      )
+      prev.filter((r) => r.id !== target.id && r.targetId !== target.targetId)
     );
     if (selectedReport?.id === target.id) {
       setSelectedReport(null);
     }
     setFeedbackMsg({
       type: 'success',
-      text: 'Konten berhasil di-takedown dan status laporan diselesaikan.',
+      text: 'Konten berhasil di-takedown dan laporan dibersihkan.',
     });
     setTimeout(() => setFeedbackMsg(null), 3500);
 
@@ -280,7 +303,11 @@ export function ContentReportsTab() {
       if (target.post?.id) {
         await adminService.deleteMarketPost(target.post.id);
       }
-      await adminService.updateReportStatus(target.id, 'resolved');
+      try {
+        await adminService.updateReportStatus(target.id, 'resolved');
+      } catch {
+        // Abaikan jika sudah terhapus otomatis via on delete cascade di database
+      }
     } catch (err: any) {
       setFeedbackMsg({ type: 'error', text: `Gagal takedown konten: ${err?.message || err}` });
       fetchReports();

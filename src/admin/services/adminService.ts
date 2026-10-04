@@ -720,22 +720,65 @@ export const adminService = {
   },
 
   /**
-   * Mengambil riwayat pengiriman notifikasi broadcast terkini
+   * Mengambil riwayat pengiriman notifikasi broadcast terkini yang dikelompokkan per sesi siaran.
+   * Setiap kali broadcast dikirim ke banyak orang, riwayat menggabungkannya menjadi 1 card
+   * dengan jumlah penerima (recipientCount), bukan spam kartu duplikat.
    */
-  async getBroadcastHistory(limit = 15): Promise<any[]> {
+  async getBroadcastHistory(limit = 20): Promise<any[]> {
     try {
       const { data, error } = await (supabase as any)
         .from('notifications')
-        .select('id, title, message, type, created_at, actor:actor_id (full_name, username)')
+        .select('id, title, message, type, created_at, action_type, action_url, user_id, actor:actor_id (full_name, username)')
         .eq('type', 'system')
         .order('created_at', { ascending: false })
-        .limit(limit);
+        .limit(200);
 
-      if (error || !data) return [];
-      return data;
+      if (error || !data || data.length === 0) return [];
+
+      // Grouping notifikasi yang memiliki title & message yang sama dalam rentang waktu yang berdekatan (selisih <= 15 detik)
+      const grouped: any[] = [];
+      data.forEach((item: any) => {
+        const itemTime = new Date(item.created_at).getTime();
+        const existingGroup = grouped.find((g) => {
+          const groupTime = new Date(g.created_at).getTime();
+          const isSameContent = g.title === item.title && g.message === item.message;
+          const isSameBatch = Math.abs(groupTime - itemTime) <= 15000; // dalam 15 detik yang sama
+          return isSameContent && isSameBatch;
+        });
+
+        if (existingGroup) {
+          existingGroup.recipientCount += 1;
+        } else {
+          grouped.push({
+            ...item,
+            recipientCount: 1,
+          });
+        }
+      });
+
+      return grouped.slice(0, limit);
     } catch (e) {
       console.warn('Failed getBroadcastHistory:', e);
       return [];
+    }
+  },
+
+  /**
+   * Menghapus seluruh riwayat broadcast notifikasi sistem
+   */
+  async deleteAllBroadcastHistory(): Promise<void> {
+    try {
+      const { error } = await (supabase as any)
+        .from('notifications')
+        .delete()
+        .eq('type', 'system');
+
+      if (error) {
+        throw error;
+      }
+    } catch (e: any) {
+      console.error('Failed deleteAllBroadcastHistory:', e);
+      throw new Error(e?.message || 'Gagal menghapus seluruh riwayat broadcast.');
     }
   },
 };

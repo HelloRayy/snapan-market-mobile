@@ -31,6 +31,7 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
   const [feedbackMsg, setFeedbackMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+  const [isDeletingHistory, setIsDeletingHistory] = useState(false);
 
   // Search User Dropdown for Single User target
   const [userSuggestions, setUserSuggestions] = useState<ProfileRow[]>([]);
@@ -39,12 +40,35 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
   const fetchHistory = async () => {
     setIsLoadingHistory(true);
     try {
-      const data = await adminService.getBroadcastHistory(10);
+      const data = await adminService.getBroadcastHistory(15);
       setHistory(data);
     } catch (e: any) {
       console.warn('Gagal memuat riwayat broadcast:', e);
     } finally {
       setIsLoadingHistory(false);
+    }
+  };
+
+  const handleDeleteAllHistory = async () => {
+    if (!window.confirm('Apakah Anda yakin ingin menghapus seluruh riwayat broadcast pengumuman sistem? Notifikasi di database akan dibersihkan.')) {
+      return;
+    }
+
+    setIsDeletingHistory(true);
+    try {
+      await adminService.deleteAllBroadcastHistory();
+      setHistory([]);
+      setFeedbackMsg({
+        type: 'success',
+        text: 'Seluruh riwayat broadcast pengumuman sistem berhasil dihapus!',
+      });
+    } catch (err: any) {
+      setFeedbackMsg({
+        type: 'error',
+        text: err?.message || 'Gagal menghapus riwayat broadcast.',
+      });
+    } finally {
+      setIsDeletingHistory(false);
     }
   };
 
@@ -780,15 +804,31 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
                 <i className="fa-solid fa-clock-rotate-left me-2 text-secondary"></i>
                 Riwayat Pengiriman Sistem
               </h5>
-              <button
-                type="button"
-                onClick={fetchHistory}
-                disabled={isLoadingHistory}
-                className="btn btn-sm btn-light"
-                style={{ fontSize: '11.5px', borderRadius: '6px' }}
-              >
-                <i className={`fa-solid fa-arrows-rotate ${isLoadingHistory ? 'fa-spin' : ''}`}></i>
-              </button>
+              <div className="d-flex align-items-center gap-1.5">
+                {history.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleDeleteAllHistory}
+                    disabled={isDeletingHistory || isLoadingHistory}
+                    className="btn btn-sm btn-outline-danger"
+                    title="Hapus / Bersihkan Seluruh Riwayat"
+                    style={{ fontSize: '11px', borderRadius: '6px', padding: '3px 8px' }}
+                  >
+                    <i className={`fa-solid fa-trash-can me-1 ${isDeletingHistory ? 'fa-fade' : ''}`}></i>
+                    {isDeletingHistory ? 'Menghapus...' : 'Hapus Semua'}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={fetchHistory}
+                  disabled={isLoadingHistory || isDeletingHistory}
+                  className="btn btn-sm btn-light border"
+                  title="Segarkan Riwayat"
+                  style={{ fontSize: '11px', borderRadius: '6px', padding: '3px 8px' }}
+                >
+                  <i className={`fa-solid fa-arrows-rotate ${isLoadingHistory ? 'fa-spin' : ''}`}></i>
+                </button>
+              </div>
             </div>
 
             {isLoadingHistory ? (
@@ -798,16 +838,36 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
                 Belum ada riwayat broadcast pengumuman.
               </div>
             ) : (
-              <div className="broadcast-history-list" style={{ maxHeight: '320px', overflowY: 'auto' }}>
+              <div className="broadcast-history-list" style={{ maxHeight: '340px', overflowY: 'auto' }}>
                 {history.map((item) => (
                   <div
                     key={item.id}
-                    className="p-2.5 mb-2 rounded-2 border"
-                    style={{ background: '#fdfdfe', borderColor: '#f1f5f9', fontSize: '12px' }}
+                    className="p-2.5 mb-2 rounded-3 border"
+                    style={{ background: '#fdfdfe', borderColor: '#e2e8f0', fontSize: '12px' }}
                   >
-                    <div className="d-flex justify-content-between align-items-center mb-1">
-                      <strong style={{ color: '#0f172a' }}>{item.title}</strong>
-                      <span className="text-muted" style={{ fontSize: '10.5px' }}>
+                    <div className="d-flex justify-content-between align-items-start mb-1">
+                      <div>
+                        <strong style={{ color: '#0f172a', fontSize: '13px' }}>{item.title}</strong>
+                        {item.recipientCount > 1 && (
+                          <span
+                            className="badge bg-primary-subtle text-primary border border-primary-subtle ms-1.5"
+                            style={{ fontSize: '10px', fontWeight: 600 }}
+                          >
+                            <i className="fa-solid fa-users me-1"></i>
+                            {item.recipientCount} Penerima
+                          </span>
+                        )}
+                        {item.recipientCount === 1 && (
+                          <span
+                            className="badge bg-secondary-subtle text-secondary border ms-1.5"
+                            style={{ fontSize: '10px' }}
+                          >
+                            <i className="fa-solid fa-user me-1"></i>
+                            1 Penerima
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-muted" style={{ fontSize: '10px', whiteSpace: 'nowrap' }}>
                         {new Date(item.created_at).toLocaleDateString('id-ID', {
                           day: 'numeric',
                           month: 'short',
@@ -816,9 +876,27 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
                         })}
                       </span>
                     </div>
-                    <div className="text-muted text-truncate" style={{ fontSize: '11.5px' }}>
+                    <div
+                      className="text-secondary"
+                      style={{
+                        fontSize: '11.5px',
+                        lineHeight: 1.4,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
                       {item.message}
                     </div>
+                    {item.action_type && item.action_type !== 'none' && (
+                      <div className="mt-1.5 pt-1.5 border-top d-flex align-items-center gap-1.5" style={{ fontSize: '10.5px', color: '#64748b' }}>
+                        <i className={`fa-solid ${item.action_type === 'update_app' ? 'fa-rocket text-primary' : item.action_type === 'external_url' ? 'fa-globe text-primary' : 'fa-thumbtack text-primary'}`}></i>
+                        <span className="text-truncate">
+                          Aksi: {item.action_type === 'update_app' ? 'Update APK' : item.action_type === 'external_url' ? (item.action_url || 'Buka Link Web') : 'Buka Postingan'}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

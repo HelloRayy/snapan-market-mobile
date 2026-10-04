@@ -11,7 +11,7 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
   const [targetType, setTargetType] = useState<'all' | 'specific_role' | 'single_user'>('all');
-  const [targetRole, setTargetRole] = useState<'buyer' | 'seller' | 'admin'>('buyer');
+  const [targetRole, setTargetRole] = useState<'user' | 'admin'>('user');
   const [targetUsername, setTargetUsername] = useState('');
   const [selectedUser, setSelectedUser] = useState<ProfileRow | null>(null);
   
@@ -334,7 +334,7 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
                 {targetType === 'specific_role' && (
                   <div className="mt-2 p-2.5 bg-light rounded-3 border" style={{ borderColor: '#e2e8f0' }}>
                     <label className="form-label mb-1" style={{ fontSize: '12px', color: '#64748b' }}>
-                      Pilih Role Siswa:
+                      Pilih Role Target:
                     </label>
                     <select
                       className="form-select form-select-sm"
@@ -342,9 +342,8 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
                       onChange={(e) => setTargetRole(e.target.value as any)}
                       style={{ borderRadius: '6px', fontSize: '13px' }}
                     >
-                      <option value="buyer">Hanya Pembeli (Buyer / Siswa Reguler)</option>
-                      <option value="seller">Hanya Penjual (Seller / Pengusaha Siswa)</option>
-                      <option value="admin">Hanya Administrator</option>
+                      <option value="user">Hanya Siswa / Warga Sekolah (User)</option>
+                      <option value="admin">Hanya Administrator (Admin)</option>
                     </select>
                   </div>
                 )}

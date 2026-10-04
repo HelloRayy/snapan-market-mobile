@@ -626,7 +626,11 @@ export const adminService = {
       if (payload.targetType === 'single_user' && payload.targetUserId) {
         query = query.eq('id', payload.targetUserId);
       } else if (payload.targetType === 'specific_role' && payload.targetRole) {
-        query = query.eq('role', payload.targetRole as any);
+        if (payload.targetRole === 'user') {
+          query = query.in('role', ['user', 'buyer', 'seller']);
+        } else {
+          query = query.eq('role', payload.targetRole as any);
+        }
       }
 
       const { data: users, error: userError } = await query;

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instagram Style Comment UI - Snapan Market</title>
+<style>
+  body {
+    background-color: #f8fafc;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #0f172a;
+    margin: 0;
+    padding: 24px;
+    display: flex;
+    justify-content: center;
+  }
+  .phone-card {
+    width: 390px;
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+  }
+  .header {
+    padding: 14px 16px;
+    border-bottom: 0.5px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .sort-dropdown {
+    font-size: 13px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+  }
+  .comment-container {
+    padding: 12px 16px;
+    border-bottom: 0.5px solid #f8fafc;
+  }
+  .comment-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .avatar-reply {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .content-col {
+    flex: 1;
+    min-width: 0;
+  }
+  .inline-comment {
+    font-size: 13.5px;
+    line-height: 1.4;
+    color: #0f172a;
+    word-break: break-word;
+  }
+  .username {
+    font-weight: 600;
+    color: #0f172a;
+    margin-right: 6px;
+    cursor: pointer;
+  }
+  .verified-badge {
+    color: #1d64ec;
+    font-size: 12px;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+  .author-badge {
+    background: #eef0ff;
+    color: #3d38f5;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-right: 6px;
+    vertical-align: middle;
+    letter-spacing: -0.2px;
+  }
+  .sub-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #64748b;
+  }
+  .sub-actions .time {
+    color: #94a3b8;
+  }
+  .sub-actions .likes-count {
+    font-weight: 600;
+    color: #64748b;
+  }
+  .sub-actions .reply-btn {
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+  }
+  .sub-actions .dots-btn {
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+  }
+  .heart-btn {
+    padding: 6px 4px;
+    cursor: pointer;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease;
+  }
+  .heart-btn:hover {
+    transform: scale(1.15);
+  }
+  .heart-btn.liked {
+    color: #f43f5e;
+  }
+  .replies-wrapper {
+    margin-left: 48px;
+    margin-top: 10px;
+  }
+  .expand-replies-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #64748b;
+  }
+  .expand-replies-btn .dash {
+    width: 24px;
+    height: 1.2px;
+    background: #cbd5e1;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-card">
+  <!-- Header -->
+  <div class="header">
+    <span>Komentar (2)</span>
+    <div class="sort-dropdown">
+      Terbaru
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </div>
+  </div>
+
+  <!-- Parent Comment -->
+  <div class="comment-container">
+    <div class="comment-row">
+      <img class="avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" alt="avatar" />
+      <div class="content-col">
+        <div class="inline-comment">
+          <span class="username">alfa_xiirpl1</span>
+          <span class="verified-badge">✓</span>
+          <span class="author-badge">Penulis</span>
+          Ready kak silakan order langsung via DM atau checkout yaa 🙌
+        </div>
+        <div class="sub-actions">
+          <span class="time">1j</span>
+          <span class="likes-count">1 suka</span>
+          <span class="reply-btn">Balas</span>
+          <span class="dots-btn">•••</span>
+        </div>
+      </div>
+      <div class="heart-btn liked">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="#f43f5e"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+      </div>
+    </div>
+
+    <!-- Replies -->
+    <div class="replies-wrapper">
+      <!-- Child Reply 1 -->
+      <div class="comment-row" style="margin-bottom: 12px;">
+        <img class="avatar-reply" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100" alt="avatar" />
+        <div class="content-col">
+          <div class="inline-comment">
+            <span class="username">dika_snapan</span>
+            <span style="color:#3d38f5; font-weight:500;">@alfa_xiirpl1</span> bisa nego tipis ga gan kalo ambil 2 pcs?
+          </div>
+          <div class="sub-actions">
+            <span class="time">45m</span>
+            <span class="reply-btn">Balas</span>
+            <span class="dots-btn">•••</span>
+          </div>
+        </div>
+        <div class="heart-btn">
+          <svg width="13.5" height="13.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        </div>
+      </div>
+
+      <!-- Child Reply 2 -->
+      <div class="comment-row">
+        <img class="avatar-reply" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" alt="avatar" />
+        <div class="content-col">
+          <div class="inline-comment">
+            <span class="username">alfa_xiirpl1</span>
+            <span class="author-badge">Penulis</span>
+            <span style="color:#3d38f5; font-weight:500;">@dika_snapan</span> boleh banget, lgsg chat aja bro
+          </div>
+          <div class="sub-actions">
+            <span class="time">20m</span>
+            <span class="reply-btn">Balas</span>
+            <span class="dots-btn">•••</span>
+          </div>
+        </div>
+        <div class="heart-btn">
+          <svg width="13.5" height="13.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

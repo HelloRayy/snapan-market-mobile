@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 
 /// Bottom sheet dialog to search SMKN 8 students and initiate a new direct chat.
 class DirectMessagesNewChatSheet extends StatefulWidget {
@@ -167,19 +168,11 @@ class _DirectMessagesNewChatSheetState extends State<DirectMessagesNewChatSheet>
 
                             return ListTile(
                               contentPadding: const EdgeInsets.symmetric(vertical: 4.0),
-                              leading: CircleAvatar(
-                                radius: 20.0,
-                                backgroundColor: const Color(0xFFEEF0FF),
-                                backgroundImage: avatar.isNotEmpty ? NetworkImage(avatar) : null,
-                                child: avatar.isEmpty
-                                    ? Text(
-                                        name.isNotEmpty ? name[0].toUpperCase() : 'U',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          color: AppColors.primary,
-                                        ),
-                                      )
-                                    : null,
+                              leading: AppAvatar(
+                                avatarUrl: avatar,
+                                size: 40.0,
+                                name: name,
+                                username: username,
                               ),
                               title: Text(
                                 name,

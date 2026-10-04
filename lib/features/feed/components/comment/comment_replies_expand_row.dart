@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// Minimalist row for expanding/collapsing comment replies in Instagram / X style
@@ -19,10 +19,6 @@ class CommentRepliesExpandRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (replies.isEmpty) return const SizedBox.shrink();
-
-    final firstReply = replies.first;
-    final replierAvatar = firstReply.user.avatar;
-    final replierName = firstReply.user.name;
 
     return GestureDetector(
       onTap: () {
@@ -49,34 +45,8 @@ class CommentRepliesExpandRow extends StatelessWidget {
             const SizedBox(width: 8.0),
 
             // Mini replier avatar
-            Container(
-              width: 18.0,
-              height: 18.0,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFE2E8F0), width: 0.8),
-              ),
-              child: ClipOval(
-                child: Image.network(
-                  replierAvatar,
-                  width: 18.0,
-                  height: 18.0,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    color: AppColors.primaryPastel,
-                    child: Center(
-                      child: Text(
-                        replierName.isNotEmpty ? replierName[0].toUpperCase() : 'U',
-                        style: const TextStyle(
-                          fontSize: 8.5,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+            const DefaultProfileAvatar(
+              size: 18.0,
             ),
 
             const SizedBox(width: 8.0),

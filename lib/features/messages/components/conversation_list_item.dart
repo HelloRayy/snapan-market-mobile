@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/features/messages/models/conversation_model.dart';
 
 /// Conversation Row item sliced 1:1 from pen.dev redesigned Row (`snaps-design.pen` node `bzgQS`)
@@ -84,20 +85,9 @@ class ConversationListItem extends StatelessWidget {
                           color: Colors.white,
                         ),
                         padding: EdgeInsets.all(conversation.user.isOnline ? 1.5 : 0),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(25.0),
-                          child: Container(
-                            color: const Color(0xFFF1F5F9),
-                            child: Image.network(
-                              conversation.user.avatar,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => const Icon(
-                                CupertinoIcons.person_fill,
-                                color: AppColors.muted,
-                                size: 26.0,
-                              ),
-                            ),
-                          ),
+                        child: AppAvatar(
+                          avatarUrl: conversation.user.avatar,
+                          size: conversation.user.isOnline ? 47.0 : 50.0,
                         ),
                       ),
                     ],

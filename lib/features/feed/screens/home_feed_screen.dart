@@ -24,6 +24,7 @@ import 'package:snapan_market/features/feed/controllers/home_feed_controller.dar
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
 import 'package:snapan_market/features/messages/screens/direct_messages_screen.dart';
+import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
 import 'package:snapan_market/features/profile/screens/profile_screen.dart';
 import 'package:snapan_market/features/search/screens/search_screen.dart';
 
@@ -61,6 +62,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
     // Initialize global realtime notification banner & badge listener
     GlobalNotificationService.instance.init();
+    DirectMessagesService.instance.loadConversations();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkForAppUpdate();

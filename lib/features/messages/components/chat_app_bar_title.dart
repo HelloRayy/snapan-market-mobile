@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/features/feed/components/media_lightbox_dialog.dart';
 import 'package:snapan_market/features/messages/models/conversation_model.dart';
 
@@ -27,7 +28,7 @@ class ChatAppBarTitle extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  if (user.avatar.isNotEmpty) {
+                  if (!kForceDefaultProfileAvatar && user.avatar.isNotEmpty) {
                     MediaLightboxDialog.show(
                       context: context,
                       images: [user.avatar],
@@ -35,28 +36,12 @@ class ChatAppBarTitle extends StatelessWidget {
                     );
                   }
                 },
-                child: Container(
-                  width: 34.0,
-                  height: 34.0,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFFF1F5F9),
-                    border: Border.all(
-                      color: const Color(0xFFE2E8F0),
-                      width: 0.8,
-                    ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(17.0),
-                    child: Image.network(
-                      user.avatar,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => const Icon(
-                        Icons.person_rounded,
-                        color: AppColors.muted,
-                        size: 18.0,
-                      ),
-                    ),
+                child: AppAvatar(
+                  avatarUrl: user.avatar,
+                  size: 34.0,
+                  border: Border.all(
+                    color: const Color(0xFFE2E8F0),
+                    width: 0.8,
                   ),
                 ),
               ),
@@ -90,7 +75,7 @@ class ChatAppBarTitle extends StatelessWidget {
                   children: [
                     Flexible(
                       child: Text(
-                        user.name,
+                        user.name.isNotEmpty ? user.name : (user.username.isNotEmpty ? '@${user.username.replaceAll('@', '')}' : 'Pengguna'),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -113,14 +98,18 @@ class ChatAppBarTitle extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  user.isOnline ? "Aktif sekarang" : (user.classGroup ?? "Siswa SMKN 8 Semarang"),
+                  (user.classGroup != null && user.classGroup!.isNotEmpty)
+                      ? (user.isOnline ? '${user.classGroup} • Aktif' : user.classGroup!)
+                      : (user.isOnline ? 'Aktif sekarang' : (user.username.isNotEmpty ? '@${user.username.replaceAll('@', '')}' : 'Siswa SMKN 8')),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontFamily: 'SF Pro',
-                    fontSize: 11.0,
+                    fontSize: 11.5,
                     color: user.isOnline
                         ? const Color(0xFF31A24C)
-                        : const Color(0xFF94A3B8),
-                    fontWeight: user.isOnline ? FontWeight.w600 : FontWeight.normal,
+                        : const Color(0xFF64748B),
+                    fontWeight: user.isOnline ? FontWeight.w600 : FontWeight.w500,
                   ),
                 ),
               ],

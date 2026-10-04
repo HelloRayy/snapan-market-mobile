@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
+import "package:snapan_market/core/ui/default_profile_avatar.dart";
 
 class CheckoutSellerCard extends StatelessWidget {
   final String sellerName;
@@ -31,23 +32,11 @@ class CheckoutSellerCard extends StatelessWidget {
       child: Row(
         children: [
           // Avatar
-          GestureDetector(
+          AppAvatar(
+            avatarUrl: sellerAvatar,
+            size: 44.0,
+            name: sellerName,
             onTap: onProfileTap,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20.0),
-              child: Image.network(
-                sellerAvatar,
-                width: 44.0,
-                height: 44.0,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  width: 44.0,
-                  height: 44.0,
-                  color: const Color(0xFFE2E8F0),
-                  child: const Icon(Icons.person, color: Color(0xFF94A3B8)),
-                ),
-              ),
-            ),
           ),
           const SizedBox(width: 12.0),
 

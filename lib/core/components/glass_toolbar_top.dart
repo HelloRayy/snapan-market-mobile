@@ -73,7 +73,10 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
     this.trailing,
     this.backgroundColor = Colors.transparent,
     this.showButtonBackground = true,
+    this.centerTitle = true,
   });
+
+  final bool centerTitle;
 
   @override
   Size get preferredSize => const Size.fromHeight(52.0);
@@ -100,11 +103,23 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
               ),
 
               // ===============================================================
-              // 2. CENTER TITLE (pen.dev uRDD1: Title + #008BFF Star)
+              // 2. CENTER OR LEFT TITLE (pen.dev uRDD1: Title + #008BFF Star)
               // ===============================================================
-              Center(
-                child: _buildCenterTitle(),
-              ),
+              if (centerTitle)
+                Center(
+                  child: _buildCenterTitle(),
+                )
+              else
+                Positioned(
+                  left: 48.0,
+                  right: (trailingActions != null && trailingActions!.isNotEmpty)
+                      ? (trailingActions!.length * 42.0 + 8.0)
+                      : (trailing != null || trailingText != null || trailingIcon != null ? 80.0 : 16.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: _buildCenterTitle(),
+                  ),
+                ),
 
               // ===============================================================
               // 3. TRAILING BUTTON (pen.dev FuSew: double action capsule)

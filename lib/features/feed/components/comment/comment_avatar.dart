@@ -20,38 +20,20 @@ class CommentAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        onUserClick?.call(username ?? name);
-      },
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x0D000000),
-              blurRadius: 4.0,
-              offset: Offset(0, 1),
-            ),
-          ],
+    return AppAvatar(
+      avatarUrl: avatarUrl,
+      size: size,
+      name: name,
+      username: username,
+      onTap: onUserClick != null ? () => onUserClick!(username ?? name) : null,
+      border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
+      boxShadow: const [
+        BoxShadow(
+          color: Color(0x0D000000),
+          blurRadius: 4.0,
+          offset: Offset(0, 1),
         ),
-        child: ClipOval(
-          child: Image.network(
-            avatarUrl,
-            width: size,
-            height: size,
-            fit: BoxFit.cover,
-            errorBuilder: (_, _, _) => OreoAvatarPlaceholder(
-              seed: username ?? name,
-              displayName: name,
-              size: size,
-            ),
-          ),
-        ),
-      ),
+      ],
     );
   }
 }

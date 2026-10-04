@@ -214,6 +214,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
         leadingTooltip: "Kembali",
         onLeadingTap: () => Navigator.of(context).pop(),
         showVerifiedBadge: false,
+        centerTitle: false,
         titleWidget: ChatAppBarTitle(
           user: widget.conversation.user,
           onTapProfile: _handleViewProfile,

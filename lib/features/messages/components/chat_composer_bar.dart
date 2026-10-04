@@ -67,8 +67,18 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
 
   @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final bottomPadding = MediaQuery.paddingOf(context).bottom;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+      padding: EdgeInsets.only(
+        left: 16.0,
+        right: 16.0,
+        bottom: bottomInset > 0
+            ? bottomInset + 8.0
+            : (bottomPadding > 0 ? bottomPadding + 6.0 : 12.0),
+        top: 6.0,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [

@@ -1,6 +1,7 @@
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
+import "package:snapan_market/core/ui/default_profile_avatar.dart";
 import "package:snapan_market/core/utils/mention_text_span_helper.dart";
 import "package:snapan_market/features/activity/models/activity_notification_model.dart";
 
@@ -43,25 +44,11 @@ class ActivityItemTile extends StatelessWidget {
                           ),
                           child: const Icon(CupertinoIcons.speaker_2_fill, color: Colors.white, size: 22.0),
                         )
-                      : (notification.actorAvatar.isNotEmpty
-                          ? Image.network(
-                              notification.actorAvatar,
-                              width: 44.0,
-                              height: 44.0,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, _, _) => Container(
-                                width: 44.0,
-                                height: 44.0,
-                                color: const Color(0xFFE2E8F0),
-                                child: const Icon(CupertinoIcons.person_fill, color: Color(0xFF94A3B8)),
-                              ),
-                            )
-                          : Container(
-                              width: 44.0,
-                              height: 44.0,
-                              color: const Color(0xFFE2E8F0),
-                              child: const Icon(CupertinoIcons.person_fill, color: Color(0xFF94A3B8)),
-                            )),
+                      : AppAvatar(
+                          avatarUrl: notification.actorAvatar,
+                          size: 44.0,
+                          name: notification.actorName,
+                        ),
                 ),
 
                 Positioned(

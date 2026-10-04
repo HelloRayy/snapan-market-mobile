@@ -47,7 +47,7 @@ class ChatProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final maxCardWidth = screenWidth * 0.85;
+    final maxCardWidth = screenWidth * 0.75;
 
     return Container(
       constraints: BoxConstraints(maxWidth: maxCardWidth),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 
 /// User profile banner header for the navigation drawer.
 class HomeDrawerProfileHeader extends StatelessWidget {
@@ -34,23 +34,10 @@ class HomeDrawerProfileHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 20.0,
-            backgroundColor: AppColors.primary,
-            backgroundImage: userProfile?['avatar_url'] != null
-                ? NetworkImage(userProfile!['avatar_url'])
-                : null,
-            child: userProfile?['avatar_url'] == null
-                ? Text(
-                    displayName.isNotEmpty ? displayName[0].toUpperCase() : 'S',
-                    style: const TextStyle(
-                      fontFamily: 'SFPro',
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  )
-                : null,
+          AppAvatar(
+            avatarUrl: userProfile?['avatar_url'] as String?,
+            size: 40.0,
+            name: displayName,
           ),
           const SizedBox(width: 12.0),
           Expanded(

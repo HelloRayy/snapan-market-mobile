@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
@@ -37,35 +38,9 @@ class PostThreadChainItem extends StatelessWidget {
                 SizedBox(
                   width: 36.0,
                   height: 36.0,
-                  child: ClipOval(
-                    child: post.seller.avatar.startsWith('assets/')
-                        ? Image.asset(
-                            post.seller.avatar,
-                            width: 36.0,
-                            height: 36.0,
-                            fit: BoxFit.cover,
-                          )
-                        : Image.network(
-                            post.seller.avatar,
-                            width: 36.0,
-                            height: 36.0,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(
-                              color: AppColors.primaryPastel,
-                              child: Center(
-                                child: Text(
-                                  post.seller.name.isNotEmpty
-                                      ? post.seller.name[0].toUpperCase()
-                                      : 'U',
-                                  style: const TextStyle(
-                                    fontSize: 14.0,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                  child: AppAvatar(
+                    avatarUrl: post.seller.avatar,
+                    size: 36.0,
                   ),
                 ),
                 if (!isLast) ...[

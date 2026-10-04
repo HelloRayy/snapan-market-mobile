@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -195,57 +194,10 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                                   ),
                                 ),
                               )
-                            : widget.currentAvatar.startsWith('http://') ||
-                                    widget.currentAvatar.startsWith('https://')
-                                ? Image.network(
-                                    widget.currentAvatar,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => OreoAvatarPlaceholder(
-                                      seed: widget.nameController.text.isNotEmpty ? widget.nameController.text : 'user',
-                                      displayName: widget.nameController.text,
-                                      size: 52.0,
-                                    ),
-                                  )
-                                : widget.currentAvatar.startsWith('preset:')
-                                    ? Builder(builder: (_) {
-                                        final presetId = widget.currentAvatar.replaceFirst('preset:', '');
-                                        final preset = kOreoGradientPresets.firstWhere(
-                                          (p) => p.id == presetId,
-                                          orElse: () => kOreoGradientPresets.first,
-                                        );
-                                        return Container(
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: preset.colors,
-                                              begin: preset.begin,
-                                              end: preset.end,
-                                            ),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              widget.nameController.text.trim().isNotEmpty
-                                                  ? widget.nameController.text.trim()[0].toUpperCase()
-                                                  : 'S',
-                                              style: TextStyle(
-                                                fontSize: 20.0,
-                                                fontWeight: FontWeight.w700,
-                                                color: (preset.id == 'aurora-pink' || preset.id == 'violet-peach')
-                                                    ? Colors.white.withValues(alpha: 0.95)
-                                                    : const Color(0xFF1E293B).withValues(alpha: 0.85),
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      })
-                                    : Image.file(
-                                    File(widget.currentAvatar),
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => OreoAvatarPlaceholder(
-                                      seed: widget.nameController.text.isNotEmpty ? widget.nameController.text : 'user',
-                                      displayName: widget.nameController.text,
-                                      size: 52.0,
-                                    ),
-                                  ),
+                            : AppAvatar(
+                                avatarUrl: widget.currentAvatar,
+                                size: 52.0,
+                              ),
                       ),
                     ),
 

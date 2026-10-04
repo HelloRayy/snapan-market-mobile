@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 
 /// 4. User Nav Glyph using circular avatar with fallback to CupertinoIcons (person_fill / person)
 class UserNavGlyph extends StatelessWidget {
@@ -16,7 +17,7 @@ class UserNavGlyph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (userAvatar != null && userAvatar!.isNotEmpty) {
+    if (!kForceDefaultProfileAvatar && userAvatar != null && userAvatar!.isNotEmpty) {
       return Container(
         width: 22.0,
         height: 22.0,

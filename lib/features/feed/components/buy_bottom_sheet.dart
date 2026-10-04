@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/kumo_button.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
 import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
@@ -95,15 +96,11 @@ class _BuyBottomSheetState extends State<BuyBottomSheet> {
               // 1. Seller Header Row
               Row(
                 children: [
-                  CircleAvatar(
-                    radius: 20.0,
-                    backgroundColor: const Color(0xFFF1F5F9),
-                    backgroundImage: widget.post.seller.avatar.isNotEmpty
-                        ? NetworkImage(widget.post.seller.avatar)
-                        : null,
-                    child: widget.post.seller.avatar.isEmpty
-                        ? const Icon(CupertinoIcons.person_fill, color: AppColors.muted, size: 20)
-                        : null,
+                  AppAvatar(
+                    avatarUrl: widget.post.seller.avatar,
+                    size: 40.0,
+                    name: widget.post.seller.name,
+                    username: widget.post.seller.username,
                   ),
                   const SizedBox(width: 12.0),
                   Expanded(

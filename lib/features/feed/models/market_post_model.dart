@@ -211,6 +211,7 @@ class CommentUserModel {
 class PostCommentModel {
   final String id;
   final String postId;
+  final String? parentCommentId;
   final CommentUserModel user;
   final String content;
   final List<String> images;
@@ -224,6 +225,7 @@ class PostCommentModel {
   const PostCommentModel({
     required this.id,
     required this.postId,
+    this.parentCommentId,
     required this.user,
     required this.content,
     this.images = const [],
@@ -267,6 +269,7 @@ class PostCommentModel {
     return PostCommentModel(
       id: json['id']?.toString() ?? '',
       postId: json['post_id']?.toString() ?? json['postId']?.toString() ?? '',
+      parentCommentId: json['parent_comment_id']?.toString() ?? json['parentCommentId']?.toString(),
       user: commentUser,
       content: json['content']?.toString() ?? '',
       images: parsedImages,
@@ -279,9 +282,48 @@ class PostCommentModel {
     );
   }
 
+  /// Reassembles flat comments from Supabase into Instagram-style nested comment trees
+  static List<PostCommentModel> assembleTree(List<PostCommentModel> flatList) {
+    if (flatList.isEmpty) return [];
+
+    final Map<String, PostCommentModel> roots = {};
+    final Map<String, List<PostCommentModel>> repliesByParent = {};
+
+    for (final comment in flatList) {
+      if (comment.parentCommentId != null && comment.parentCommentId!.isNotEmpty) {
+        repliesByParent.putIfAbsent(comment.parentCommentId!, () => []).add(comment);
+      } else {
+        roots[comment.id] = comment;
+      }
+    }
+
+    final List<PostCommentModel> assembled = [];
+    for (final root in roots.values) {
+      final childReplies = repliesByParent[root.id] ?? [];
+      final allRepliesMap = <String, PostCommentModel>{};
+      for (final r in root.replies) {
+        allRepliesMap[r.id] = r;
+      }
+      for (final r in childReplies) {
+        allRepliesMap[r.id] = r;
+      }
+      assembled.add(root.copyWith(replies: allRepliesMap.values.toList()));
+    }
+
+    // Preserve any reply whose parent wasn't in roots
+    for (final entry in repliesByParent.entries) {
+      if (!roots.containsKey(entry.key)) {
+        assembled.addAll(entry.value);
+      }
+    }
+
+    return assembled;
+  }
+
   PostCommentModel copyWith({
     String? id,
     String? postId,
+    String? parentCommentId,
     CommentUserModel? user,
     String? content,
     List<String>? images,
@@ -295,6 +337,7 @@ class PostCommentModel {
     return PostCommentModel(
       id: id ?? this.id,
       postId: postId ?? this.postId,
+      parentCommentId: parentCommentId ?? this.parentCommentId,
       user: user ?? this.user,
       content: content ?? this.content,
       images: images ?? this.images,
@@ -430,10 +473,11 @@ class MarketPostModel {
     final rawComments = json['comments'] ?? json['post_comments'];
     List<PostCommentModel> parsedComments = [];
     if (rawComments is List) {
-      parsedComments = rawComments
+      final flat = rawComments
           .whereType<Map<String, dynamic>>()
           .map((c) => PostCommentModel.fromJson(c))
           .toList();
+      parsedComments = PostCommentModel.assembleTree(flat);
     }
 
     PostPollModel? parsedPoll;

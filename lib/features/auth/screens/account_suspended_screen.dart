@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 
 class AccountSuspendedScreen extends StatefulWidget {
   final Map<String, dynamic> suspensionData;
@@ -248,17 +249,8 @@ class _AccountSuspendedScreenState extends State<AccountSuspendedScreen> {
                             ),
                             child: Row(
                               children: [
-                                CircleAvatar(
-                                  radius: 18,
-                                  backgroundColor: const Color(0xFFE2E8F0),
-                                  child: Text(
-                                    fullName.isNotEmpty ? fullName[0].toUpperCase() : 'U',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF475569),
-                                      fontSize: 14,
-                                    ),
-                                  ),
+                                const DefaultProfileAvatar(
+                                  size: 36.0,
                                 ),
                                 const SizedBox(width: 10),
                                 Expanded(

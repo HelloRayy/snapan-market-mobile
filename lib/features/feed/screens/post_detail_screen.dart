@@ -112,7 +112,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final post = _controller.post;
+    final post = _controller.post.copyWith(comments: _controller.comments);
 
     return PopScope(
       canPop: false,

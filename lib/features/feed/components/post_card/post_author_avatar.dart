@@ -41,18 +41,9 @@ class PostAuthorAvatar extends StatelessWidget {
                 SizedBox(
                   width: 42.0,
                   height: 42.0,
-                  child: ClipOval(
-                    child: Image.network(
-                      seller.avatar,
-                      width: 42.0,
-                      height: 42.0,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => OreoAvatarPlaceholder(
-                        seed: seller.username ?? seller.name,
-                        displayName: seller.name,
-                        size: 42.0,
-                      ),
-                    ),
+                  child: AppAvatar(
+                    avatarUrl: seller.avatar,
+                    size: 42.0,
                   ),
                 ),
 

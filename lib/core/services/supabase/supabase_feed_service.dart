@@ -223,10 +223,12 @@ class SupabaseFeedService {
           .eq('post_id', postId)
           .order('created_at', ascending: true);
 
-      return (response as List<dynamic>)
+      final flatList = (response as List<dynamic>)
           .whereType<Map<String, dynamic>>()
           .map((json) => PostCommentModel.fromJson(json))
           .toList();
+
+      return PostCommentModel.assembleTree(flatList);
     } catch (e) {
       debugPrint('Error fetchPostComments: $e');
       return [];

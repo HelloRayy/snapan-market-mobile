@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/profile/models/profile_user_model.dart';
 
@@ -310,34 +311,11 @@ class _ProfileReplyThreadCardState extends State<ProfileReplyThreadCard> {
   }
 
   Widget _buildAvatar(String avatarUrl, String name) {
-    return Container(
-      width: 36.0,
-      height: 36.0,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
-      ),
-      child: ClipOval(
-        child: Image.network(
-          avatarUrl,
-          width: 36.0,
-          height: 36.0,
-          fit: BoxFit.cover,
-          errorBuilder: (_, _, _) => Container(
-            color: const Color(0xFFEEF0FF),
-            child: Center(
-              child: Text(
-                name.isNotEmpty ? name[0].toUpperCase() : 'U',
-                style: const TextStyle(
-                  fontSize: 14.0,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF3D38F5),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+    return AppAvatar(
+      avatarUrl: avatarUrl,
+      size: 36.0,
+      name: name,
+      border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
     );
   }
 }

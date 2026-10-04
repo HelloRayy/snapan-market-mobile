@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
-import 'package:snapan_market/core/utils/formatters.dart';
 import 'package:snapan_market/core/utils/mention_text_span_helper.dart';
-import 'package:snapan_market/features/feed/components/comment/comment_action_bar.dart';
 import 'package:snapan_market/features/feed/components/comment/comment_author_badge.dart';
 import 'package:snapan_market/features/feed/components/comment/comment_avatar.dart';
 import 'package:snapan_market/features/feed/components/comment/comment_images_section.dart';
 import 'package:snapan_market/features/feed/components/comment/comment_options_sheet.dart';
+import 'package:snapan_market/features/feed/components/comment/comment_sub_action_row.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// Single Child Reply Tile styled with clean minimalist Instagram / X indent
-class CommentReplyTile extends StatelessWidget {
+class CommentReplyTile extends StatefulWidget {
   final PostCommentModel reply;
   final String parentCommentId;
   final bool isFirst;
@@ -41,22 +40,37 @@ class CommentReplyTile extends StatelessWidget {
   });
 
   @override
+  State<CommentReplyTile> createState() => _CommentReplyTileState();
+}
+
+class _CommentReplyTileState extends State<CommentReplyTile> {
+  bool _isTextExpanded = false;
+
+  void _handleLikeToggle() {
+    final isLiked = !widget.reply.isLiked;
+    final count = isLiked
+        ? widget.reply.likesCount + 1
+        : (widget.reply.likesCount - 1).clamp(0, 999999);
+    widget.onLikeToggle(widget.reply.copyWith(isLiked: isLiked, likesCount: count));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Left Column: Compact Child Avatar (28x28)
         CommentAvatar(
-          avatarUrl: reply.user.avatar,
-          name: reply.user.name,
-          username: reply.user.username,
+          avatarUrl: widget.reply.user.avatar,
+          name: widget.reply.user.name,
+          username: widget.reply.user.username,
           size: 28.0,
-          onUserClick: onUserClick,
+          onUserClick: widget.onUserClick,
         ),
 
         const SizedBox(width: 10.0),
 
-        // Right Column: Header, Content, Images, Action Bar
+        // Center Column: Header, Content, Images, Sub-Action Row
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,33 +78,36 @@ class CommentReplyTile extends StatelessWidget {
               _buildHeaderRow(context),
               const SizedBox(height: 2.5),
               _buildContentText(context),
-              if (reply.images.isNotEmpty) ...[
+              if (widget.reply.images.isNotEmpty) ...[
                 const SizedBox(height: 8.0),
                 CommentImagesSection(
-                  images: reply.images,
-                  onImageClick: onImageClick,
+                  images: widget.reply.images,
+                  onImageClick: widget.onImageClick,
                 ),
               ],
-              const SizedBox(height: 4.0),
-              CommentActionBar(
-                isLiked: reply.isLiked,
-                likesCount: reply.likesCount,
-                onLikeToggle: () {
-                  final isLiked = !reply.isLiked;
-                  final count = isLiked
-                      ? reply.likesCount + 1
-                      : (reply.likesCount - 1).clamp(0, 999999);
-                  onLikeToggle(reply.copyWith(isLiked: isLiked, likesCount: count));
-                },
+              const SizedBox(height: 6.0),
+              CommentSubActionRow(
+                timestamp: widget.reply.timestamp,
+                likesCount: widget.reply.likesCount,
+                isLiked: widget.reply.isLiked,
+                onLike: _handleLikeToggle,
                 onReply: () {
-                  final targetUsername = reply.user.username ?? reply.user.name;
-                  if (onReplyToComment != null) {
-                    onReplyToComment!(targetUsername, parentCommentId);
+                  final targetUsername = widget.reply.user.username ?? widget.reply.user.name;
+                  if (widget.onReplyToComment != null) {
+                    widget.onReplyToComment!(targetUsername, widget.parentCommentId);
                   } else {
-                    onReplyClick?.call(targetUsername);
+                    widget.onReplyClick?.call(targetUsername);
                   }
                 },
-                onShare: () => onShare(reply.content),
+                onOptions: () => CommentOptionsSheet.show(
+                  context: context,
+                  comment: widget.reply,
+                  parentCommentId: widget.parentCommentId,
+                  postAuthorId: widget.postAuthorId,
+                  onReplyClick: widget.onReplyClick,
+                  onReplyToComment: widget.onReplyToComment,
+                  onDeleteComment: widget.onDeleteComment,
+                ),
               ),
             ],
           ),
@@ -100,85 +117,42 @@ class CommentReplyTile extends StatelessWidget {
   }
 
   Widget _buildHeaderRow(BuildContext context) {
-    final username = reply.user.username ?? reply.user.name;
+    final username = widget.reply.user.username ?? widget.reply.user.name;
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Left: Username + Verified + Author Badge + Timestamp
-        Expanded(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Flexible(
-                child: GestureDetector(
-                  onTap: () {
-                    onUserClick?.call(username);
-                  },
-                  child: Text(
-                    username,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF0F172A),
-                    ),
-                  ),
-                ),
+        Flexible(
+          child: GestureDetector(
+            onTap: () {
+              widget.onUserClick?.call(username);
+            },
+            child: Text(
+              username,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontFamily: 'SFPro',
+                fontSize: 13.0,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF0F172A),
               ),
-              if (reply.user.isVerified) ...[
-                const SizedBox(width: 4.0),
-                const Icon(
-                  Icons.verified_rounded,
-                  size: 14.0,
-                  color: AppColors.verifiedBlue,
-                ),
-              ],
-              if (reply.user.isAuthor) ...[
-                const SizedBox(width: 6.0),
-                const CommentAuthorBadge(),
-              ],
-              const SizedBox(width: 6.0),
-              Text(
-                formatSmartTimestamp(reply.timestamp),
-                style: const TextStyle(
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.normal,
-                  color: Color(0xFF64748B),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        // Right: 3-dots Menu Button
-        InkWell(
-          onTap: () => CommentOptionsSheet.show(
-            context: context,
-            comment: reply,
-            parentCommentId: parentCommentId,
-            postAuthorId: postAuthorId,
-            onReplyClick: onReplyClick,
-            onReplyToComment: onReplyToComment,
-            onDeleteComment: onDeleteComment,
-          ),
-          borderRadius: BorderRadius.circular(15.0),
-          splashColor: const Color(0xFFF1F5F9),
-          highlightColor: Colors.transparent,
-          child: Container(
-            width: 30.0,
-            height: 30.0,
-            alignment: Alignment.center,
-            child: const Icon(
-              Icons.more_horiz_rounded,
-              size: 17.5,
-              color: Color(0xFF64748B),
             ),
           ),
         ),
+        if (widget.reply.user.isVerified) ...[
+          const SizedBox(width: 4.0),
+          const Icon(
+            Icons.verified_rounded,
+            size: 13.0,
+            color: AppColors.verifiedBlue,
+          ),
+        ],
+        if (widget.reply.user.isAuthor) ...[
+          const SizedBox(width: 5.0),
+          const CommentAuthorBadge(),
+        ],
       ],
     );
   }
@@ -187,45 +161,51 @@ class CommentReplyTile extends StatelessWidget {
     const baseStyle = TextStyle(
       fontFamily: 'SFPro',
       fontFamilyFallback: ['AppleColorEmoji'],
-      fontSize: 14.5,
+      fontSize: 13.5,
       fontWeight: FontWeight.normal,
       color: Color(0xFF0F172A),
       height: 1.35,
       letterSpacing: -0.1,
     );
 
-    return Text.rich(
-      TextSpan(
-        style: baseStyle,
-        children: [
-          ...MentionTextSpanHelper.buildSpans(
-            context: context,
-            text: reply.content,
-            defaultStyle: baseStyle,
-            onUserClick: onUserClick,
+    final isLong = widget.reply.content.length > 90 || widget.reply.content.contains('\n');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text.rich(
+          TextSpan(
+            style: baseStyle,
+            children: MentionTextSpanHelper.buildSpans(
+              context: context,
+              text: widget.reply.content,
+              defaultStyle: baseStyle,
+              onUserClick: widget.onUserClick,
+            ),
           ),
-          if (reply.threadPart != null && reply.totalParts != null)
-            WidgetSpan(
-              alignment: PlaceholderAlignment.middle,
-              child: Container(
-                margin: const EdgeInsets.only(left: 6.0),
-                padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 1.0),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5F9),
-                  borderRadius: BorderRadius.circular(4.0),
-                ),
-                child: Text(
-                  '${reply.threadPart}/${reply.totalParts}',
-                  style: const TextStyle(
-                    fontSize: 11.0,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF64748B),
-                  ),
+          maxLines: _isTextExpanded ? null : 3,
+          overflow: _isTextExpanded ? TextOverflow.clip : TextOverflow.ellipsis,
+        ),
+        if (isLong)
+          GestureDetector(
+            onTap: () {
+              setState(() => _isTextExpanded = !_isTextExpanded);
+            },
+            behavior: HitTestBehavior.opaque,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 2.5),
+              child: Text(
+                _isTextExpanded ? 'Sembunyikan' : 'Lihat selengkapnya',
+                style: const TextStyle(
+                  fontFamily: 'SFPro',
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF64748B),
                 ),
               ),
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 }

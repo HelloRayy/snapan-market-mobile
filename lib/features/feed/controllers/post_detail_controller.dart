@@ -26,7 +26,8 @@ class PostDetailController extends ChangeNotifier {
     try {
       final live = await SupabaseService.instance.fetchPostComments(post.id);
       if (live.isNotEmpty) {
-        comments = live;
+        comments = PostCommentModel.assembleTree(live);
+        post = post.copyWith(comments: comments);
       }
       isLoadingComments = false;
       notifyListeners();
@@ -91,7 +92,10 @@ class PostDetailController extends ChangeNotifier {
       } else {
         comments.insert(0, liveComment);
       }
-      post = post.copyWith(commentsCount: post.commentsCount + 1);
+      post = post.copyWith(
+        commentsCount: post.commentsCount + 1,
+        comments: comments,
+      );
       replyToUser = null;
       replyToCommentId = null;
       if (isProductMode) isCommentingActive = false;

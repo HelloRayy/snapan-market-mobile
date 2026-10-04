@@ -14,6 +14,7 @@ class DirectMessagesService extends ChangeNotifier {
 
   List<ConversationModel> get conversations => List.unmodifiable(_conversations);
   bool get isFetchingConversations => _isFetchingConversations;
+  int get totalUnreadCount => _conversations.fold<int>(0, (acc, c) => acc + c.unreadCount);
 
   List<ChatMessageModel> getMessages(String conversationId) {
     return _conversationMessages[conversationId] ?? [];

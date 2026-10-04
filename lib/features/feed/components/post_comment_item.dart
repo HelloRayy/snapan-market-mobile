@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
-import 'package:snapan_market/core/utils/formatters.dart';
 import 'package:snapan_market/core/utils/mention_text_span_helper.dart';
 import 'package:snapan_market/features/feed/components/comment/comment.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
@@ -44,6 +43,7 @@ class _PostCommentItemState extends State<PostCommentItem> {
   late bool _isLiked;
   late int _likesCount;
   bool _isRepliesExpanded = true;
+  bool _isTextExpanded = false;
 
   @override
   void initState() {
@@ -125,19 +125,19 @@ class _PostCommentItemState extends State<PostCommentItem> {
       );
     }
 
-    // 2. MAIN TOP-LEVEL COMMENT VARIANT
+    // 2. MAIN TOP-LEVEL COMMENT VARIANT (Instagram Style)
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
+      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
       decoration: const BoxDecoration(
         color: Colors.white,
         border: Border(
-          bottom: BorderSide(color: Color(0xFFF1F5F9), width: 0.8),
+          bottom: BorderSide(color: Color(0xFFF8FAFC), width: 0.8),
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Parent Comment Row (Clean layout without vertical threadline)
+          // Parent Comment Row (Instagram Style: Avatar + Content + Inline Actions)
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -150,15 +150,15 @@ class _PostCommentItemState extends State<PostCommentItem> {
                 onUserClick: widget.onUserClick,
               ),
 
-              const SizedBox(width: 12.0),
+              const SizedBox(width: 10.0),
 
-              // Right Column: Header, Content, Images, Action Bar
+              // Center Column: Username, Content, Images, Sub-Action Row
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildHeaderRow(context),
-                    const SizedBox(height: 3.0),
+                    const SizedBox(height: 2.5),
                     _buildContentText(),
                     if (widget.comment.images.isNotEmpty) ...[
                       const SizedBox(height: 8.0),
@@ -167,11 +167,12 @@ class _PostCommentItemState extends State<PostCommentItem> {
                         onImageClick: widget.onImageClick,
                       ),
                     ],
-                    const SizedBox(height: 4.0),
-                    CommentActionBar(
-                      isLiked: _isLiked,
+                    const SizedBox(height: 6.0),
+                    CommentSubActionRow(
+                      timestamp: widget.comment.timestamp,
                       likesCount: _likesCount,
-                      onLikeToggle: _handleLikeToggle,
+                      isLiked: _isLiked,
+                      onLike: _handleLikeToggle,
                       onReply: () {
                         final targetUsername = widget.comment.user.username ?? widget.comment.user.name;
                         if (widget.onReplyToComment != null) {
@@ -180,7 +181,15 @@ class _PostCommentItemState extends State<PostCommentItem> {
                           widget.onReplyClick?.call(targetUsername);
                         }
                       },
-                      onShare: () => _copyToClipboard(widget.comment.content),
+                      onOptions: () => CommentOptionsSheet.show(
+                        context: context,
+                        comment: widget.comment,
+                        parentCommentId: widget.comment.id,
+                        postAuthorId: widget.postAuthorId,
+                        onReplyClick: widget.onReplyClick,
+                        onReplyToComment: widget.onReplyToComment,
+                        onDeleteComment: widget.onDeleteComment,
+                      ),
                     ),
                   ],
                 ),
@@ -192,7 +201,7 @@ class _PostCommentItemState extends State<PostCommentItem> {
           if (hasReplies) ...[
             if (!_isRepliesExpanded)
               Padding(
-                padding: const EdgeInsets.only(left: 48.0, top: 4.0),
+                padding: const EdgeInsets.only(left: 46.0, top: 6.0),
                 child: CommentRepliesExpandRow(
                   replies: widget.comment.replies,
                   isExpanded: false,
@@ -201,7 +210,7 @@ class _PostCommentItemState extends State<PostCommentItem> {
               )
             else ...[
               Padding(
-                padding: const EdgeInsets.only(left: 48.0, top: 8.0),
+                padding: const EdgeInsets.only(left: 46.0, top: 10.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -251,82 +260,39 @@ class _PostCommentItemState extends State<PostCommentItem> {
     final username = widget.comment.user.username ?? widget.comment.user.name;
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Left: Username + Verified + Author Badge + Timestamp
-        Expanded(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Flexible(
-                child: GestureDetector(
-                  onTap: () {
-                    widget.onUserClick?.call(username);
-                  },
-                  child: Text(
-                    username,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF0F172A),
-                    ),
-                  ),
-                ),
+        Flexible(
+          child: GestureDetector(
+            onTap: () {
+              widget.onUserClick?.call(username);
+            },
+            child: Text(
+              username,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontFamily: 'SFPro',
+                fontSize: 13.5,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF0F172A),
               ),
-              if (widget.comment.user.isVerified) ...[
-                const SizedBox(width: 4.0),
-                const Icon(
-                  Icons.verified_rounded,
-                  size: 14.5,
-                  color: AppColors.verifiedBlue,
-                ),
-              ],
-              if (widget.comment.user.isAuthor) ...[
-                const SizedBox(width: 6.0),
-                const CommentAuthorBadge(),
-              ],
-              const SizedBox(width: 6.0),
-              Text(
-                formatSmartTimestamp(widget.comment.timestamp),
-                style: const TextStyle(
-                  fontSize: 12.0,
-                  fontWeight: FontWeight.normal,
-                  color: Color(0xFF64748B),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        // Right: 3-dots Menu Button
-        InkWell(
-          onTap: () => CommentOptionsSheet.show(
-            context: context,
-            comment: widget.comment,
-            parentCommentId: widget.comment.id,
-            postAuthorId: widget.postAuthorId,
-            onReplyClick: widget.onReplyClick,
-            onReplyToComment: widget.onReplyToComment,
-            onDeleteComment: widget.onDeleteComment,
-          ),
-          borderRadius: BorderRadius.circular(19.0),
-          splashColor: const Color(0xFFF1F5F9),
-          highlightColor: Colors.transparent,
-          child: Container(
-            width: 38.0,
-            height: 38.0,
-            alignment: Alignment.center,
-            child: const Icon(
-              Icons.more_horiz_rounded,
-              size: 19.0,
-              color: Color(0xFF64748B),
             ),
           ),
         ),
+        if (widget.comment.user.isVerified) ...[
+          const SizedBox(width: 4.0),
+          const Icon(
+            Icons.verified_rounded,
+            size: 13.5,
+            color: AppColors.verifiedBlue,
+          ),
+        ],
+        if (widget.comment.user.isAuthor) ...[
+          const SizedBox(width: 5.0),
+          const CommentAuthorBadge(),
+        ],
       ],
     );
   }
@@ -335,46 +301,52 @@ class _PostCommentItemState extends State<PostCommentItem> {
     const baseStyle = TextStyle(
       fontFamily: 'SFPro',
       fontFamilyFallback: ['AppleColorEmoji'],
-      fontSize: 14.5,
+      fontSize: 14.0,
       fontWeight: FontWeight.normal,
       color: Color(0xFF0F172A),
       height: 1.35,
       letterSpacing: -0.1,
     );
 
-    return Text.rich(
-      TextSpan(
-        style: baseStyle,
-        children: [
-          ...MentionTextSpanHelper.buildSpans(
-            context: context,
-            text: widget.comment.content,
-            defaultStyle: baseStyle,
-            onUserClick: widget.onUserClick,
+    final isLong = widget.comment.content.length > 90 || widget.comment.content.contains('\n');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text.rich(
+          TextSpan(
+            style: baseStyle,
+            children: MentionTextSpanHelper.buildSpans(
+              context: context,
+              text: widget.comment.content,
+              defaultStyle: baseStyle,
+              onUserClick: widget.onUserClick,
+            ),
           ),
-          if (widget.comment.threadPart != null &&
-              widget.comment.totalParts != null)
-            WidgetSpan(
-              alignment: PlaceholderAlignment.middle,
-              child: Container(
-                margin: const EdgeInsets.only(left: 6.0),
-                padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 1.0),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5F9),
-                  borderRadius: BorderRadius.circular(4.0),
-                ),
-                child: Text(
-                  '${widget.comment.threadPart}/${widget.comment.totalParts}',
-                  style: const TextStyle(
-                    fontSize: 11.0,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF64748B),
-                  ),
+          maxLines: _isTextExpanded ? null : 3,
+          overflow: _isTextExpanded ? TextOverflow.clip : TextOverflow.ellipsis,
+        ),
+        if (isLong)
+          GestureDetector(
+            onTap: () {
+              HapticFeedback.selectionClick();
+              setState(() => _isTextExpanded = !_isTextExpanded);
+            },
+            behavior: HitTestBehavior.opaque,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 2.5),
+              child: Text(
+                _isTextExpanded ? 'Sembunyikan' : 'Lihat selengkapnya',
+                style: const TextStyle(
+                  fontFamily: 'SFPro',
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF64748B),
                 ),
               ),
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 }

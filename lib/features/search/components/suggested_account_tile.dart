@@ -2,6 +2,7 @@ import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
+import "package:snapan_market/core/ui/default_profile_avatar.dart";
 import "package:snapan_market/core/services/follow_service.dart";
 import "package:snapan_market/features/search/models/search_models.dart";
 
@@ -37,42 +38,20 @@ class SuggestedAccountTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Avatar (40x40px matching HomeFeed style)
-            Container(
-              width: 40.0,
-              height: 40.0,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x0A000000),
-                    blurRadius: 3.0,
-                    offset: Offset(0, 1),
-                  ),
-                ],
-              ),
-              child: ClipOval(
-                child: account.avatar.startsWith('assets/')
-                    ? Image.asset(
-                        account.avatar,
-                        width: 40.0,
-                        height: 40.0,
-                        fit: BoxFit.cover,
-                      )
-                    : Image.network(
-                        account.avatar,
-                        width: 40.0,
-                        height: 40.0,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          width: 40.0,
-                          height: 40.0,
-                          color: const Color(0xFFE2E8F0),
-                          child: const Icon(CupertinoIcons.person_fill, color: Color(0xFF94A3B8)),
-                        ),
-                      ),
-              ),
+            // User Avatar (Standard 40x40 circle)
+            AppAvatar(
+              avatarUrl: account.avatar,
+              size: 40.0,
+              name: account.fullName,
+              username: account.username,
+              border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x0A000000),
+                  blurRadius: 3.0,
+                  offset: Offset(0, 1),
+                ),
+              ],
             ),
             const SizedBox(width: 12.0),
 

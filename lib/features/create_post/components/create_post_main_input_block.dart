@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/features/create_post/components/create_post_author_line.dart';
 import 'package:snapan_market/features/create_post/components/create_post_bottom_sheets.dart';
 import 'package:snapan_market/features/create_post/components/create_post_media_preview.dart';
@@ -92,27 +93,9 @@ class CreatePostMainInputBlock extends StatelessWidget {
             children: [
               SizedBox(
                 width: 36.0,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(18.0),
-                  child: currentUserAvatar.isNotEmpty
-                      ? Image.network(
-                          currentUserAvatar,
-                          width: 36.0,
-                          height: 36.0,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                            width: 36,
-                            height: 36,
-                            color: const Color(0xFFF1F5F9),
-                            child: const Icon(CupertinoIcons.person_fill, size: 20, color: AppColors.muted),
-                          ),
-                        )
-                      : Container(
-                          width: 36,
-                          height: 36,
-                          color: const Color(0xFFF1F5F9),
-                          child: const Icon(CupertinoIcons.person_fill, size: 20, color: AppColors.muted),
-                        ),
+                child: AppAvatar(
+                  avatarUrl: currentUserAvatar,
+                  size: 36.0,
                 ),
               ),
               const SizedBox(width: 12.0),

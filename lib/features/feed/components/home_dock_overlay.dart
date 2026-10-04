@@ -4,6 +4,7 @@ import 'package:snapan_market/features/create_post/models/create_post_types.dart
 import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart';
 export 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart' show HomeNavTab, HomeBottomNavBar;
 import 'package:snapan_market/features/feed/components/home_feed_fab_group.dart';
+import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
 import 'package:snapan_market/features/search/screens/search_screen.dart';
 
 /// Overlay widget combining FAB Group and HomeBottomNavBar (<60 lines).
@@ -45,18 +46,24 @@ class HomeDockOverlay extends StatelessWidget {
           right: 0,
           bottom: 0,
           child: RepaintBoundary(
-            child: HomeBottomNavBar(
-              currentTab: currentNavTab,
-              hasUnreadMessages: true,
-              unreadMessagesCount: 20,
-              hasUnreadActivity: hasUnreadActivity,
-              userAvatar: userAvatar,
-              onSearchTap: () => Navigator.push(
-                context,
-                AppSlidePageRoute(builder: (context) => SearchScreen(onBack: () => Navigator.pop(context))),
-              ),
-              onPostTap: onCreatePost,
-              onTabSelected: onTabSelected,
+            child: AnimatedBuilder(
+              animation: DirectMessagesService.instance,
+              builder: (context, _) {
+                final unreadCount = DirectMessagesService.instance.totalUnreadCount;
+                return HomeBottomNavBar(
+                  currentTab: currentNavTab,
+                  hasUnreadMessages: unreadCount > 0,
+                  unreadMessagesCount: unreadCount,
+                  hasUnreadActivity: hasUnreadActivity,
+                  userAvatar: userAvatar,
+                  onSearchTap: () => Navigator.push(
+                    context,
+                    AppSlidePageRoute(builder: (context) => SearchScreen(onBack: () => Navigator.pop(context))),
+                  ),
+                  onPostTap: onCreatePost,
+                  onTabSelected: onTabSelected,
+                );
+              },
             ),
           ),
         ),

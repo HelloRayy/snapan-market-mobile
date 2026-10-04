@@ -1,5 +1,7 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
+import 'default_profile_avatar.dart';
+
+export 'default_profile_avatar.dart';
 
 /// Preset soft gradient definitions inspired by @oreo-design/avatar
 class OreoGradientPreset {
@@ -91,8 +93,7 @@ OreoGradientPreset getOreoPresetForSeed(String seed) {
   return kOreoGradientPresets[hash % kOreoGradientPresets.length];
 }
 
-/// Fallback avatar builder that renders a modern soft gradient avatar
-/// with an elegant semi-transparent initial letter.
+/// Fallback avatar builder that renders the standard gray default profile avatar
 class OreoAvatarPlaceholder extends StatelessWidget {
   final String seed;
   final String? displayName;
@@ -107,36 +108,6 @@ class OreoAvatarPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final preset = getOreoPresetForSeed(seed);
-    final initial = (displayName?.trim().isNotEmpty == true)
-        ? displayName!.trim()[0].toUpperCase()
-        : (seed.trim().isNotEmpty ? seed.trim()[0].toUpperCase() : 'S');
-
-    // Choose legible text color based on gradient brightness
-    final isDark = preset.id == 'aurora-pink' || preset.id == 'violet-peach';
-
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: LinearGradient(
-          colors: preset.colors,
-          begin: preset.begin,
-          end: preset.end,
-        ),
-      ),
-      child: Center(
-        child: Text(
-          initial,
-          style: TextStyle(
-            fontSize: max(11.0, size * 0.42),
-            fontWeight: FontWeight.w700,
-            color: isDark ? Colors.white.withValues(alpha: 0.95) : const Color(0xFF1E293B).withValues(alpha: 0.85),
-            letterSpacing: -0.5,
-          ),
-        ),
-      ),
-    );
+    return DefaultProfileAvatar(size: size);
   }
 }

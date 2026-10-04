@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/snaps_skeleton.dart';
+import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/services/follow_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
@@ -306,7 +307,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                             isOwnProfile: _isOwnProfile,
                             onEditInterests: _handleEditProfile,
                             onAvatarTap: () {
-                              if (user.avatar.isNotEmpty) {
+                              if (!kForceDefaultProfileAvatar && user.avatar.isNotEmpty) {
                                 MediaLightboxDialog.show(context: context, images: [user.avatar], initialIndex: 0);
                               }
                             },

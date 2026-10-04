@@ -838,36 +838,54 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
                 Belum ada riwayat broadcast pengumuman.
               </div>
             ) : (
-              <div className="broadcast-history-list" style={{ maxHeight: '340px', overflowY: 'auto' }}>
-                {history.map((item) => (
+              <div className="broadcast-history-list" style={{ maxHeight: '380px', overflowY: 'auto' }}>
+                {history.map((item, index) => (
                   <div
                     key={item.id}
-                    className="p-2.5 mb-2 rounded-3 border"
-                    style={{ background: '#fdfdfe', borderColor: '#e2e8f0', fontSize: '12px' }}
+                    className="py-3"
+                    style={{
+                      borderBottom: index !== history.length - 1 ? '1px solid #f1f5f9' : 'none',
+                      fontSize: '12px',
+                    }}
                   >
-                    <div className="d-flex justify-content-between align-items-start mb-1">
-                      <div>
-                        <strong style={{ color: '#0f172a', fontSize: '13px' }}>{item.title}</strong>
-                        {item.recipientCount > 1 && (
+                    <div className="d-flex justify-content-between align-items-center mb-1.5">
+                      <div className="d-flex align-items-center flex-wrap gap-1.5">
+                        <span style={{ color: '#0f172a', fontSize: '13.5px', fontWeight: 650 }}>
+                          {item.title}
+                        </span>
+                        {item.recipientCount > 1 ? (
                           <span
-                            className="badge bg-primary-subtle text-primary border border-primary-subtle ms-1.5"
-                            style={{ fontSize: '10px', fontWeight: 600 }}
+                            className="badge"
+                            style={{
+                              background: '#e0e7ff',
+                              color: '#3730a3',
+                              fontSize: '10px',
+                              fontWeight: 600,
+                              padding: '2px 8px',
+                              borderRadius: '12px',
+                            }}
                           >
-                            <i className="fa-solid fa-users me-1"></i>
+                            <i className="fa-solid fa-users me-1" style={{ fontSize: '9px' }}></i>
                             {item.recipientCount} Penerima
                           </span>
-                        )}
-                        {item.recipientCount === 1 && (
+                        ) : (
                           <span
-                            className="badge bg-secondary-subtle text-secondary border ms-1.5"
-                            style={{ fontSize: '10px' }}
+                            className="badge"
+                            style={{
+                              background: '#f1f5f9',
+                              color: '#475569',
+                              fontSize: '10px',
+                              fontWeight: 500,
+                              padding: '2px 8px',
+                              borderRadius: '12px',
+                            }}
                           >
-                            <i className="fa-solid fa-user me-1"></i>
+                            <i className="fa-solid fa-user me-1" style={{ fontSize: '9px' }}></i>
                             1 Penerima
                           </span>
                         )}
                       </div>
-                      <span className="text-muted" style={{ fontSize: '10px', whiteSpace: 'nowrap' }}>
+                      <span className="text-muted" style={{ fontSize: '11px', whiteSpace: 'nowrap' }}>
                         {new Date(item.created_at).toLocaleDateString('id-ID', {
                           day: 'numeric',
                           month: 'short',
@@ -876,11 +894,12 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
                         })}
                       </span>
                     </div>
+
                     <div
-                      className="text-secondary"
                       style={{
-                        fontSize: '11.5px',
-                        lineHeight: 1.4,
+                        color: '#475569',
+                        fontSize: '12px',
+                        lineHeight: 1.5,
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
@@ -889,11 +908,29 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
                     >
                       {item.message}
                     </div>
+
                     {item.action_type && item.action_type !== 'none' && (
-                      <div className="mt-1.5 pt-1.5 border-top d-flex align-items-center gap-1.5" style={{ fontSize: '10.5px', color: '#64748b' }}>
-                        <i className={`fa-solid ${item.action_type === 'update_app' ? 'fa-rocket text-primary' : item.action_type === 'external_url' ? 'fa-globe text-primary' : 'fa-thumbtack text-primary'}`}></i>
+                      <div
+                        className="mt-2 d-flex align-items-center gap-1.5"
+                        style={{ fontSize: '11px', color: '#64748b' }}
+                      >
+                        <i
+                          className={`fa-solid ${
+                            item.action_type === 'update_app'
+                              ? 'fa-rocket text-primary'
+                              : item.action_type === 'external_url'
+                              ? 'fa-arrow-up-right-from-square text-primary'
+                              : 'fa-thumbtack text-primary'
+                          }`}
+                          style={{ fontSize: '10px' }}
+                        ></i>
                         <span className="text-truncate">
-                          Aksi: {item.action_type === 'update_app' ? 'Update APK' : item.action_type === 'external_url' ? (item.action_url || 'Buka Link Web') : 'Buka Postingan'}
+                          Aksi:{' '}
+                          {item.action_type === 'update_app'
+                            ? 'Update APK'
+                            : item.action_type === 'external_url'
+                            ? item.action_url || 'Buka Link Web'
+                            : 'Buka Postingan'}
                         </span>
                       </div>
                     )}

@@ -28,7 +28,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     final bigTextStyle = BigTextStyleInformation(
       body,
       contentTitle: title,
-      summaryText: 'SMKN 8 Semarang',
+      summaryText: 'Snaps',
       htmlFormatContent: false,
       htmlFormatContentTitle: false,
     );
@@ -338,7 +338,7 @@ class GlobalNotificationService {
       final bigTextStyle = BigTextStyleInformation(
         message,
         contentTitle: title,
-        summaryText: 'SMKN 8 Semarang',
+        summaryText: 'Snaps',
         htmlFormatContent: false,
         htmlFormatContentTitle: false,
       );

@@ -168,7 +168,7 @@ class BroadcastDetailModal extends StatelessWidget {
                     ),
                     const SizedBox(height: 2.0),
                     Text(
-                      "SMKN 8 Semarang • ${notification.timeAgo}",
+                      "Snaps • ${notification.timeAgo}",
                       style: const TextStyle(
                         fontSize: 12.0,
                         color: Color(0xFF64748B),

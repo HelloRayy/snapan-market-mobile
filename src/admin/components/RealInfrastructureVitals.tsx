@@ -245,11 +245,23 @@ export function RealInfrastructureVitals({
         hasSuspendedCol = false;
       }
 
+      // Cek jumlah laporan konten berstatus pending secara riil
+      let pendingReports = 0;
+      try {
+        const { count: repCount } = await supabase
+          .from('content_reports')
+          .select('id', { count: 'exact', head: true })
+          .eq('status', 'pending');
+        pendingReports = repCount ?? 0;
+      } catch {
+        pendingReports = 0;
+      }
+
       setSecurity({
         suspendedCount: suspended,
         suspendedSupported: hasSuspendedCol,
         unverifiedCount: unverified,
-        activeReportsCount: 2, // 2 active mock/sample reports in queue
+        activeReportsCount: pendingReports,
         adminSessionActive: adminValid,
         adminEmail: currentEmail,
         role: currentRole,

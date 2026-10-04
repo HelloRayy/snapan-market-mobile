@@ -612,6 +612,7 @@ export const adminService = {
     adminId?: string;
     actionUrl?: string;
     actionType?: 'none' | 'update_app' | 'external_url' | 'post_link';
+    actionButtonLabel?: string;
   }): Promise<{
     successCount: number;
     targetCount: number;
@@ -695,6 +696,7 @@ export const adminService = {
               message: payload.message,
               actionType: payload.actionType,
               actionUrl: payload.actionUrl,
+              actionButtonLabel: payload.actionButtonLabel,
             });
             fcmSentCount = fcmRes.success;
             fcmFailedCount = fcmRes.failed;

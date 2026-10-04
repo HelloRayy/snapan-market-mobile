@@ -82,29 +82,7 @@ export function ServerMonitorTab({ onNavigateTab }: ServerMonitorTabProps = {}) 
   );
   const [probeLogs, setProbeLogs] = useState<
     Array<{ id: string; time: string; service: string; text: string; level: 'ok' | 'warn' | 'err' }>
-  >([
-    {
-      id: '1',
-      time: new Date(Date.now() - 40000).toLocaleTimeString('id-ID'),
-      service: 'PostgreSQL',
-      text: 'Query health check 200 OK. Respon tabel profiles diterima dalam 46ms.',
-      level: 'ok',
-    },
-    {
-      id: '2',
-      time: new Date(Date.now() - 25000).toLocaleTimeString('id-ID'),
-      service: 'Realtime',
-      text: 'WebSocket channel subscription live broadcast aktif (TLS 1.3).',
-      level: 'ok',
-    },
-    {
-      id: '3',
-      time: new Date(Date.now() - 10000).toLocaleTimeString('id-ID'),
-      service: 'Auth',
-      text: 'Verifikasi JWT token sesi admin berhasil via GoTrue API.',
-      level: 'ok',
-    },
-  ]);
+  >([]);
 
   const logsContainerRef = useRef<HTMLDivElement>(null);
 

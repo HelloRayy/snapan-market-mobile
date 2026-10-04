@@ -23,6 +23,8 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
   // Action Link / Target Action Field
   const [actionType, setActionType] = useState<'none' | 'update_app' | 'external_url' | 'post_link'>('none');
   const [actionUrl, setActionUrl] = useState<string>('');
+  const [buttonLabelPreset, setButtonLabelPreset] = useState<string>('Buka Tautan');
+  const [customButtonLabel, setCustomButtonLabel] = useState<string>('');
 
   // Status & History State
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -130,6 +132,15 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
     setIsSubmitting(true);
     setFeedbackMsg(null);
 
+    const finalButtonLabel =
+      actionType === 'external_url'
+        ? (buttonLabelPreset === 'custom' ? customButtonLabel.trim() || 'Buka Tautan' : buttonLabelPreset)
+        : actionType === 'update_app'
+        ? 'Perbarui Aplikasi'
+        : actionType === 'post_link'
+        ? 'Lihat Postingan'
+        : undefined;
+
     try {
       const res: any = await adminService.sendBroadcastNotification({
         title: title.trim(),
@@ -140,6 +151,7 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
         soundUrl: soundChoice === 'custom' ? customSoundUrl : soundChoice,
         actionType,
         actionUrl: actionType !== 'none' ? actionUrl.trim() : undefined,
+        actionButtonLabel: finalButtonLabel,
         adminId: adminProfile?.id,
       });
 
@@ -486,16 +498,54 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
                   </div>
 
                   {actionType === 'external_url' && (
-                    <div className="col-sm-7">
+                    <div className="col-12 mt-2">
+                      <label className="form-label mb-1 text-muted" style={{ fontSize: '11.5px', fontWeight: 600 }}>
+                        Alamat URL Tujuan:
+                      </label>
                       <input
                         type="url"
-                        className="form-control form-control-sm"
-                        placeholder="https://smkn8semarang.sch.id / https://forms.gle/..."
+                        className="form-control form-control-sm mb-2"
+                        placeholder="https://forms.gle/... atau https://domain.com/..."
                         value={actionUrl}
                         onChange={(e) => setActionUrl(e.target.value)}
                         required
                         style={{ borderRadius: '6px', fontSize: '12px' }}
                       />
+
+                      <label className="form-label mb-1 text-muted" style={{ fontSize: '11.5px', fontWeight: 600 }}>
+                        Teks Tombol Aksi di Notifikasi HP:
+                      </label>
+                      <div className="row g-2">
+                        <div className="col-sm-6">
+                          <select
+                            className="form-select form-select-sm"
+                            value={buttonLabelPreset}
+                            onChange={(e) => setButtonLabelPreset(e.target.value)}
+                            style={{ borderRadius: '6px', fontSize: '12px' }}
+                          >
+                            <option value="Buka Tautan">Buka Tautan (Default Samsung)</option>
+                            <option value="Lihat Detail">Lihat Detail (Info Lengkap)</option>
+                            <option value="Kunjungi Web">Kunjungi Web (Website)</option>
+                            <option value="Isi Formulir">Isi Formulir (Google Forms)</option>
+                            <option value="Daftar Sekarang">Daftar Sekarang (Pendaftaran)</option>
+                            <option value="custom">✏️ Kustomisasi Teks Sendiri...</option>
+                          </select>
+                        </div>
+                        {buttonLabelPreset === 'custom' && (
+                          <div className="col-sm-6">
+                            <input
+                              type="text"
+                              className="form-control form-control-sm"
+                              placeholder="Ketik teks tombol (maks 20 huruf)"
+                              value={customButtonLabel}
+                              onChange={(e) => setCustomButtonLabel(e.target.value)}
+                              maxLength={20}
+                              style={{ borderRadius: '6px', fontSize: '12px' }}
+                              required
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
 
@@ -557,7 +607,7 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
 
         {/* Right Column: Riwayat & Live Preview Simulation */}
         <div className="col-lg-5">
-          {/* Live Mobile In-App Notification Preview */}
+          {/* Live Mobile Notification Shade Preview (Samsung OneUI / Android 14) */}
           <div
             className="au-card shadow-sm mb-4"
             style={{
@@ -567,86 +617,150 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
               border: '1px solid #e2e8f0',
             }}
           >
-            <h5 className="mb-3" style={{ fontSize: '14.5px', fontWeight: 700, color: '#1e293b' }}>
-              <i className="fa-solid fa-mobile-screen-button me-2 text-primary"></i>
-              Simulasi Tampilan di Layar Pengguna
-            </h5>
+            <div className="d-flex align-items-center justify-content-between mb-3">
+              <h5 className="mb-0" style={{ fontSize: '14.5px', fontWeight: 700, color: '#1e293b' }}>
+                <i className="fa-solid fa-mobile-screen me-2 text-primary"></i>
+                Pratinjau Nyata di HP Pengguna
+              </h5>
+              <span className="badge bg-light text-secondary border" style={{ fontSize: '10px' }}>
+                Status Bar & Drawer
+              </span>
+            </div>
 
+            {/* Mock Smartphone Frame */}
             <div
               style={{
-                borderRadius: '12px',
-                background: '#f8fafc',
-                border: '1px solid #e2e8f0',
-                padding: '14px',
+                borderRadius: '18px',
+                background: '#0f172a',
+                padding: '12px 10px 18px 10px',
+                boxShadow: '0 8px 24px rgba(15, 23, 42, 0.15)',
               }}
             >
+              {/* Phone Status Bar Top Indicators */}
+              <div className="d-flex justify-content-between align-items-center px-2 mb-2 text-white" style={{ fontSize: '11px', opacity: 0.85 }}>
+                <span className="fw-semibold">08:45</span>
+                <div className="d-flex gap-1.5 align-items-center">
+                  <i className="fa-solid fa-bell text-warning" style={{ fontSize: '10px' }}></i>
+                  <i className="fa-solid fa-wifi" style={{ fontSize: '10px' }}></i>
+                  <i className="fa-solid fa-battery-full" style={{ fontSize: '11px' }}></i>
+                </div>
+              </div>
+
+              {/* Samsung OneUI Expandable Notification Card */}
               <div
                 style={{
                   background: '#ffffff',
-                  borderRadius: '10px',
-                  padding: '12px 14px',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
-                  border: '1px solid #e2e8f0',
-                  display: 'flex',
-                  gap: '12px',
-                  alignItems: 'flex-start',
+                  borderRadius: '14px',
+                  padding: '14px',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
                 }}
               >
-                <div
-                  style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '50%',
-                    background: '#eef0ff',
-                    color: '#3d38f5',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '15px',
-                    flexShrink: 0,
-                  }}
-                >
-                  <i className="fa-solid fa-award"></i>
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div className="d-flex justify-content-between align-items-center mb-0.5">
-                    <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
-                      {title.trim() || 'Judul Notifikasi Pengumuman'}
-                    </span>
-                    <span style={{ fontSize: '10.5px', color: '#94a3b8' }}>Baru saja</span>
+                {/* Header App Info */}
+                <div className="d-flex align-items-center justify-content-between mb-2">
+                  <div className="d-flex align-items-center gap-1.5">
+                    <div
+                      style={{
+                        width: '20px',
+                        height: '20px',
+                        borderRadius: '6px',
+                        background: '#3d38f5',
+                        color: '#ffffff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '10px',
+                        fontWeight: 800,
+                      }}
+                    >
+                      S
+                    </div>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#1e293b' }}>Snaps</span>
+                    <span style={{ fontSize: '11px', color: '#94a3b8' }}>• Baru saja</span>
                   </div>
-                  <p
+                  <i className="fa-solid fa-chevron-down text-muted" style={{ fontSize: '10px' }}></i>
+                </div>
+
+                {/* Content: Title & Full Expanded Message */}
+                <div style={{ paddingLeft: '2px' }}>
+                  <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#0f172a', lineHeight: 1.35 }} className="mb-1">
+                    {title.trim() || 'Judul Notifikasi Pengumuman'}
+                  </div>
+                  <div
                     style={{
                       fontSize: '12px',
                       color: '#475569',
-                      margin: 0,
-                      lineHeight: 1.4,
+                      lineHeight: 1.45,
                       wordBreak: 'break-word',
+                      whiteSpace: 'pre-line',
                     }}
                   >
-                    {message.trim() || 'Isi teks pesan pengumuman sistem akan ditampilkan dengan jelas di sini.'}
-                  </p>
-                  <div className="mt-1 d-flex align-items-center gap-1.5" style={{ fontSize: '10px', color: '#64748b' }}>
-                    <i className="fa-solid fa-volume-low text-muted"></i>
-                    <span>Nada: {soundChoice === 'custom' ? 'Kustom Audio' : soundChoice}</span>
+                    {message.trim() || 'Teks pengumuman broadcast lengkap akan otomatis terbentang (auto-expanded) secara penuh di status bar tanpa terpotong.'}
                   </div>
-
-                  {/* Simulasi Full-Open Action Button */}
-                  {actionType !== 'none' && (
-                    <div
-                      className="mt-2.5 pt-2 border-top d-flex align-items-center justify-content-between"
-                      style={{ fontSize: '11px', color: '#3d38f5', fontWeight: 600 }}
-                    >
-                      <span>
-                        <i className={`fa-solid ${actionType === 'update_app' ? 'fa-rocket' : actionType === 'external_url' ? 'fa-globe' : 'fa-thumbtack'} me-1.5`}></i>
-                        {actionType === 'update_app' ? 'Tombol Update Aplikasi' : actionType === 'external_url' ? 'Buka Link Web' : 'Buka Postingan'}
-                      </span>
-                      <span className="badge bg-primary-subtle text-primary border border-primary-subtle px-1.5 py-0.5" style={{ fontSize: '9px' }}>
-                        Full Open Action
-                      </span>
-                    </div>
-                  )}
                 </div>
+
+                {/* Android / Samsung Quick Action Button Row */}
+                {actionType !== 'none' && (
+                  <div className="mt-3 pt-2.5 border-top d-flex flex-wrap gap-2">
+                    {actionType === 'external_url' && (
+                      <div
+                        className="d-inline-flex align-items-center gap-1.5 px-3 py-1.5 rounded-pill shadow-xs"
+                        style={{
+                          background: '#f1f5f9',
+                          border: '1px solid #cbd5e1',
+                          color: '#1e293b',
+                          fontSize: '11.5px',
+                          fontWeight: 600,
+                        }}
+                      >
+                        <i className="fa-solid fa-arrow-up-right-from-square text-primary" style={{ fontSize: '10.5px' }}></i>
+                        <span>
+                          {buttonLabelPreset === 'custom'
+                            ? customButtonLabel.trim() || 'Buka Tautan'
+                            : buttonLabelPreset}
+                        </span>
+                      </div>
+                    )}
+
+                    {actionType === 'update_app' && (
+                      <div
+                        className="d-inline-flex align-items-center gap-1.5 px-3 py-1.5 rounded-pill"
+                        style={{
+                          background: '#e0e7ff',
+                          border: '1px solid #c7d2fe',
+                          color: '#3730a3',
+                          fontSize: '11.5px',
+                          fontWeight: 600,
+                        }}
+                      >
+                        <i className="fa-solid fa-rocket" style={{ fontSize: '10.5px' }}></i>
+                        <span>Perbarui Aplikasi</span>
+                      </div>
+                    )}
+
+                    {actionType === 'post_link' && (
+                      <div
+                        className="d-inline-flex align-items-center gap-1.5 px-3 py-1.5 rounded-pill"
+                        style={{
+                          background: '#f1f5f9',
+                          border: '1px solid #cbd5e1',
+                          color: '#1e293b',
+                          fontSize: '11.5px',
+                          fontWeight: 600,
+                        }}
+                      >
+                        <i className="fa-solid fa-thumbtack text-primary" style={{ fontSize: '10.5px' }}></i>
+                        <span>Lihat Postingan</span>
+                      </div>
+                    )}
+
+                    <div
+                      className="d-inline-flex align-items-center px-2 py-1.5 text-muted"
+                      style={{ fontSize: '11px', fontWeight: 500 }}
+                    >
+                      Buka Snaps
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

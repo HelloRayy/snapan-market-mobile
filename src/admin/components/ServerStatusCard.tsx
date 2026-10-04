@@ -17,75 +17,109 @@ export function ServerStatusCard({ onNavigateDetails }: ServerStatusCardProps = 
   const [latencyMs, setLatencyMs] = useState<number | null>(null);
   const [isPinging, setIsPinging] = useState(false);
   const [dbStatus, setDbStatus] = useState<'online' | 'degraded' | 'offline'>('online');
+  const [wsConnected, setWsConnected] = useState<boolean>(true);
   const [activeLogTab, setActiveLogTab] = useState<'all' | 'DB' | 'AUTH' | 'REALTIME'>('all');
-  const [logs, setLogs] = useState<LogEntry[]>([
-    {
-      id: '1',
-      timestamp: new Date(Date.now() - 45000).toLocaleTimeString('id-ID'),
-      level: 'success',
-      service: 'AUTH',
-      message: 'Admin session token terverifikasi via Supabase GoTrue.',
-    },
-    {
-      id: '2',
-      timestamp: new Date(Date.now() - 30000).toLocaleTimeString('id-ID'),
-      level: 'info',
-      service: 'DB',
-      message: 'Query hitung statistik profiles & market_posts selesai.',
-    },
-    {
-      id: '3',
-      timestamp: new Date(Date.now() - 15000).toLocaleTimeString('id-ID'),
-      level: 'success',
-      service: 'REALTIME',
-      message: 'WebSocket subscription channel ekosistem SMKN 8 tersambung.',
-    },
-    {
-      id: '4',
-      timestamp: new Date().toLocaleTimeString('id-ID'),
-      level: 'info',
-      service: 'STORAGE',
-      message: 'Public storage bucket avatar & asset produk berstatus ready.',
-    },
-  ]);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
 
-  // Measure real latency to Supabase
+  // Measure real latency and subsystems health directly against Supabase
   const measurePing = useCallback(async () => {
     setIsPinging(true);
-    const start = performance.now();
+    const newLogs: LogEntry[] = [];
+    const nowTime = new Date().toLocaleTimeString('id-ID');
+
+    // 1. Database Ping (Exact Head Select)
+    const dbStart = performance.now();
     try {
-      const { error } = await supabase.from('profiles').select('id', { count: 'exact', head: true });
-      const duration = Math.round(performance.now() - start);
-      setLatencyMs(duration);
+      const { count, error: dbErr } = await supabase
+        .from('profiles')
+        .select('id', { count: 'exact', head: true });
+      const dbDuration = Math.round(performance.now() - dbStart);
+      setLatencyMs(dbDuration);
 
-      if (error) {
+      if (dbErr) {
         setDbStatus('degraded');
-      } else {
-        setDbStatus('online');
-      }
-
-      // Append real log entry
-      setLogs((prev) => [
-        {
-          id: String(Date.now()),
-          timestamp: new Date().toLocaleTimeString('id-ID'),
-          level: duration > 200 ? 'warn' : 'success',
+        newLogs.push({
+          id: `db_${Date.now()}`,
+          timestamp: nowTime,
+          level: 'warn',
           service: 'DB',
-          message: `Health check ping respon dalam ${duration}ms (status 200 OK).`,
-        },
-        ...prev.slice(0, 9),
-      ]);
-    } catch {
+          message: `Query database error: ${dbErr.message}`,
+        });
+      } else {
+        const isDegraded = dbDuration > 350;
+        setDbStatus(isDegraded ? 'degraded' : 'online');
+        newLogs.push({
+          id: `db_${Date.now()}`,
+          timestamp: nowTime,
+          level: isDegraded ? 'warn' : 'success',
+          service: 'DB',
+          message: `PostgreSQL query respon ${dbDuration}ms (200 OK, terdata ${count ?? 0} siswa).`,
+        });
+      }
+    } catch (e: any) {
       setDbStatus('offline');
       setLatencyMs(null);
-    } finally {
-      setIsPinging(false);
+      newLogs.push({
+        id: `db_${Date.now()}`,
+        timestamp: nowTime,
+        level: 'warn',
+        service: 'DB',
+        message: `Koneksi database offline: ${e?.message || 'Network timeout'}`,
+      });
     }
+
+    // 2. Auth Ping (GoTrue Session verification)
+    const authStart = performance.now();
+    try {
+      const { data: sessionData, error: authErr } = await supabase.auth.getSession();
+      const authDuration = Math.round(performance.now() - authStart);
+      if (authErr) {
+        newLogs.push({
+          id: `auth_${Date.now()}`,
+          timestamp: nowTime,
+          level: 'warn',
+          service: 'AUTH',
+          message: `GoTrue auth ping gagal: ${authErr.message}`,
+        });
+      } else {
+        newLogs.push({
+          id: `auth_${Date.now()}`,
+          timestamp: nowTime,
+          level: 'success',
+          service: 'AUTH',
+          message: sessionData?.session
+            ? `Admin session valid (${sessionData.session.user.email}) verifikasi ${authDuration}ms.`
+            : `GoTrue auth service siap (${authDuration}ms).`,
+        });
+      }
+    } catch {
+      // ignore
+    }
+
+    // 3. Realtime WebSocket Ping
+    try {
+      const isConnected = supabase.realtime.isConnected();
+      setWsConnected(isConnected);
+      newLogs.push({
+        id: `ws_${Date.now()}`,
+        timestamp: nowTime,
+        level: isConnected ? 'success' : 'info',
+        service: 'REALTIME',
+        message: isConnected
+          ? 'WebSocket live subscription tersambung aktif (Realtime broadcast siap).'
+          : 'WebSocket standby, siap menerima broadcast event.',
+      });
+    } catch {
+      setWsConnected(false);
+    }
+
+    setLogs((prev) => [...newLogs, ...prev.slice(0, 15)]);
+    setIsPinging(false);
   }, []);
 
   useEffect(() => {
     measurePing();
-    const interval = setInterval(measurePing, 30 * 60 * 1000); // Auto ping every 30 mins
+    const interval = setInterval(measurePing, 60 * 1000); // Auto ping every 60s
     return () => clearInterval(interval);
   }, [measurePing]);
 
@@ -99,7 +133,7 @@ export function ServerStatusCard({ onNavigateDetails }: ServerStatusCardProps = 
         <div>
           <h2 className="m-card__title">Status Server & Infrastruktur</h2>
           <p className="m-card__subtitle">
-            Koneksi live Supabase cloud, respon latensi, dan log sistem.
+            Koneksi live Supabase cloud, respon latensi riil, dan log sistem.
           </p>
         </div>
 
@@ -118,7 +152,7 @@ export function ServerStatusCard({ onNavigateDetails }: ServerStatusCardProps = 
             }}
           >
             <i className="fa-solid fa-circle" style={{ fontSize: '6px' }}></i>
-            {dbStatus === 'online' ? 'LIVE' : 'DEGRADED'}
+            {dbStatus === 'online' ? 'LIVE' : dbStatus === 'degraded' ? 'DEGRADED' : 'OFFLINE'}
           </span>
 
           <button
@@ -156,13 +190,13 @@ export function ServerStatusCard({ onNavigateDetails }: ServerStatusCardProps = 
           }}
         >
           <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>
-            Latensi PostgreSQL
+            Latensi PostgreSQL (Riil)
           </div>
           <div
             style={{
               fontSize: '16px',
               fontWeight: 700,
-              color: latencyMs && latencyMs < 150 ? '#10b981' : '#f97316',
+              color: latencyMs && latencyMs < 250 ? '#10b981' : '#f97316',
               marginTop: '2px',
             }}
           >
@@ -182,8 +216,15 @@ export function ServerStatusCard({ onNavigateDetails }: ServerStatusCardProps = 
           <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>
             Realtime WebSocket
           </div>
-          <div style={{ fontSize: '14px', fontWeight: 700, color: '#4272d7', marginTop: '3px' }}>
-            Connected (99.98%)
+          <div
+            style={{
+              fontSize: '14px',
+              fontWeight: 700,
+              color: wsConnected ? '#10b981' : '#4272d7',
+              marginTop: '3px',
+            }}
+          >
+            {wsConnected ? 'Connected (Live)' : 'Standby'}
           </div>
         </div>
       </div>
@@ -208,7 +249,7 @@ export function ServerStatusCard({ onNavigateDetails }: ServerStatusCardProps = 
             color: '#64748b',
           }}
         >
-          Log Aktivitas Server
+          Log Aktivitas Server (Live Telemetry)
         </span>
 
         <div style={{ display: 'flex', gap: '4px' }}>
@@ -234,7 +275,7 @@ export function ServerStatusCard({ onNavigateDetails }: ServerStatusCardProps = 
         </div>
       </div>
 
-      {/* Terminal Log Console (Light Theme) */}
+      {/* Terminal Log Console */}
       <div
         style={{
           background: '#f8fafc',
@@ -251,7 +292,7 @@ export function ServerStatusCard({ onNavigateDetails }: ServerStatusCardProps = 
       >
         {filteredLogs.length === 0 ? (
           <div style={{ color: '#94a3b8', textAlign: 'center', padding: '12px 0' }}>
-            Tidak ada log untuk filter ini.
+            {isPinging ? 'Sedang melakukan live ping...' : 'Tidak ada log untuk filter ini.'}
           </div>
         ) : (
           filteredLogs.map((log) => (
@@ -298,7 +339,7 @@ export function ServerStatusCard({ onNavigateDetails }: ServerStatusCardProps = 
             onClick={onNavigateDetails}
             style={{ fontSize: '11.5px', height: '30px', padding: '0 10px', gap: '6px' }}
           >
-            <span>Monitor Server Penuh & Uptime 90 Hari</span>
+            <span>Monitor Server Penuh & Uptime</span>
             <i className="fa-solid fa-arrow-right"></i>
           </button>
         </div>

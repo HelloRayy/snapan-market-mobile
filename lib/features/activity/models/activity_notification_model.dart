@@ -12,6 +12,7 @@ class ActivityNotification {
   final String? postThumbnail;
   final String? actionUrl;
   final String? actionType;
+  final String? actionButtonLabel;
   final String? postId;
   final bool isRead;
 
@@ -27,6 +28,7 @@ class ActivityNotification {
     this.postThumbnail,
     this.actionUrl,
     this.actionType,
+    this.actionButtonLabel,
     this.postId,
     this.isRead = false,
   });
@@ -65,6 +67,7 @@ class ActivityNotification {
       timeAgo: 'Baru saja',
       actionUrl: json['action_url']?.toString(),
       actionType: json['action_type']?.toString(),
+      actionButtonLabel: json['action_button_label']?.toString(),
       postId: json['post_id']?.toString(),
       isRead: json['is_read'] == true,
     );
@@ -82,6 +85,7 @@ class ActivityNotification {
       'time_ago': timeAgo,
       'action_url': actionUrl,
       'action_type': actionType,
+      'action_button_label': actionButtonLabel,
       'post_id': postId,
       'is_read': isRead,
     };

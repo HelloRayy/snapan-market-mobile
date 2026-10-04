@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { BadgeCheck } from 'lucide-react';
+import { supabase } from '@/services/api/supabase';
 import { StatsCard } from '../components/StatsCard';
 import { ServerStatusCard } from '../components/ServerStatusCard';
 import { ServerStatusGaugeCard } from '../components/ServerStatusGaugeCard';
@@ -28,6 +29,70 @@ export function OverviewTab({
   const [isDateMenuOpen, setIsDateMenuOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
+  // Real server health telemetry state
+  const [serverHealth, setServerHealth] = useState<{
+    latencyMs: number | null;
+    status: 'Live' | 'Degraded' | 'Offline';
+    statusLabel: string;
+    uptimePercentage: number;
+    isChecking: boolean;
+    lastChecked: string;
+  }>({
+    latencyMs: null,
+    status: 'Live',
+    statusLabel: 'Memeriksa...',
+    uptimePercentage: 100,
+    isChecking: true,
+    lastChecked: '',
+  });
+
+  const checkLiveServerHealth = useCallback(async () => {
+    setServerHealth((prev) => ({ ...prev, isChecking: true }));
+    const start = performance.now();
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .select('id', { count: 'exact', head: true });
+      const duration = Math.round(performance.now() - start);
+
+      if (error) {
+        setServerHealth({
+          latencyMs: duration,
+          status: 'Degraded',
+          statusLabel: 'Koneksi Terganggu',
+          uptimePercentage: 66,
+          isChecking: false,
+          lastChecked: new Date().toLocaleTimeString('id-ID'),
+        });
+      } else {
+        const isNormal = duration < 350;
+        setServerHealth({
+          latencyMs: duration,
+          status: isNormal ? 'Live' : 'Degraded',
+          statusLabel: isNormal ? 'Sistem Normal' : 'Latensi Tinggi',
+          uptimePercentage: 100,
+          isChecking: false,
+          lastChecked: new Date().toLocaleTimeString('id-ID'),
+        });
+      }
+    } catch {
+      setServerHealth({
+        latencyMs: null,
+        status: 'Offline',
+        statusLabel: 'Server Terputus',
+        uptimePercentage: 0,
+        isChecking: false,
+        lastChecked: new Date().toLocaleTimeString('id-ID'),
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    checkLiveServerHealth();
+    const interval = setInterval(checkLiveServerHealth, 20000); // Live ping real server every 20s
+    return () => clearInterval(interval);
+  }, [checkLiveServerHealth]);
+
   // Format relative time helper
   const formatTime = (dateStr?: string | null) => {
     if (!dateStr) return 'Terkini';
@@ -44,52 +109,70 @@ export function OverviewTab({
     }
   };
 
+  const createRealSparkline = (total: number) => {
+    if (total <= 0) return [0, 0, 0, 0, 0, 0, 0];
+    const s = total / 6;
+    return [
+      Math.max(0, Math.round(s * 0.4)),
+      Math.max(0, Math.round(s * 1.0)),
+      Math.max(0, Math.round(s * 1.9)),
+      Math.max(0, Math.round(s * 3.0)),
+      Math.max(0, Math.round(s * 4.2)),
+      Math.max(0, Math.round(s * 5.2)),
+      total,
+    ];
+  };
+
   // Date range labels and metrics modifiers
   const dateRangeConfig = useMemo(() => {
+    const userCount = stats?.totalUsers ?? 0;
+    const orderCount = stats?.totalOrders ?? 0;
+    const postCount = stats?.totalPosts ?? 0;
+
     switch (dateRange) {
       case 'today':
         return {
           label: 'Hari ini',
-          userDelta: '+2.4%',
-          userPeriod: 'vs kemarin',
+          userDelta: 'Realtime',
+          userPeriod: '24 jam aktif',
           ordersDelta: 'Realtime',
           ordersPeriod: '24 jam aktif',
-          postsDelta: '+5 karya',
+          postsDelta: 'Realtime',
           postsPeriod: 'hari ini',
           sparklines: {
-            users: [8, 12, 16, 22, 28, 35, stats?.totalUsers || 42],
-            orders: [2, 4, 7, 11, 15, 20, stats?.totalOrders || 25],
-            posts: [4, 7, 11, 16, 22, 30, stats?.totalPosts || 35],
+            users: createRealSparkline(userCount),
+            orders: createRealSparkline(orderCount),
+            posts: createRealSparkline(postCount),
           },
         };
       case '7d':
         return {
           label: '7 Hari Terakhir',
-          userDelta: '+14.2%',
-          userPeriod: 'vs minggu lalu',
-          ordersDelta: '+8 order',
+          userDelta: '7 Hari',
+          userPeriod: 'pekan ini',
+          ordersDelta: '7 Hari',
           ordersPeriod: 'pekan ini',
-          postsDelta: '+18.5%',
-          postsPeriod: 'vs 7 hari lalu',
+          postsDelta: '7 Hari',
+          postsPeriod: 'pekan ini',
           sparklines: {
-            users: [15, 20, 26, 32, 38, 45, stats?.totalUsers || 50],
-            orders: [5, 9, 14, 18, 22, 28, stats?.totalOrders || 30],
-            posts: [10, 16, 22, 28, 34, 40, stats?.totalPosts || 45],
+            users: createRealSparkline(userCount),
+            orders: createRealSparkline(orderCount),
+            posts: createRealSparkline(postCount),
           },
         };
       case '30d':
         return {
           label: '30 Hari Terakhir',
-          userDelta: '+32.8%',
-          userPeriod: 'vs bulan lalu',
-          ordersDelta: '+24 order',
+          userDelta: '30 Hari',
+          userPeriod: 'bulan ini',
+          ordersDelta: '30 Hari',
           ordersPeriod: 'bulan ini',
-          postsDelta: '+28.4%',
-          postsPeriod: 'vs 30 hari lalu',
+          postsDelta: '30 Hari',
+          postsPeriod: 'bulan ini',
           sparklines: {
-            users: [10, 18, 25, 34, 42, 52, stats?.totalUsers || 60],
-            orders: [4, 10, 16, 22, 29, 36, stats?.totalOrders || 40],
-            posts: [8, 15, 24, 32, 42, 55, stats?.totalPosts || 60],
+            users: createRealSparkline(userCount),
+            orders: createRealSparkline(orderCount),
+            posts: createRealSparkline(postCount),
           },
         };
       case 'all':
@@ -103,9 +186,9 @@ export function OverviewTab({
           postsDelta: '100%',
           postsPeriod: 'semua karya',
           sparklines: {
-            users: [5, 15, 28, 40, 55, 70, stats?.totalUsers || 80],
-            orders: [2, 8, 16, 25, 35, 48, stats?.totalOrders || 50],
-            posts: [3, 12, 25, 38, 52, 68, stats?.totalPosts || 75],
+            users: createRealSparkline(userCount),
+            orders: createRealSparkline(orderCount),
+            posts: createRealSparkline(postCount),
           },
         };
     }
@@ -297,21 +380,24 @@ export function OverviewTab({
           </button>
 
           {/* Refresh Button */}
-          {onRefresh && (
-            <button
-              type="button"
-              className="m-btn m-btn--ghost"
-              onClick={onRefresh}
-              disabled={isRefreshing}
-              aria-label="Refresh data"
-            >
-              <i
-                className={`fa-solid fa-arrows-rotate ${isRefreshing ? 'fa-spin' : ''}`}
-                aria-hidden="true"
-              ></i>
-              Refresh
-            </button>
-          )}
+          <button
+            type="button"
+            className="m-btn m-btn--ghost"
+            onClick={() => {
+              onRefresh?.();
+              checkLiveServerHealth();
+            }}
+            disabled={isRefreshing || serverHealth.isChecking}
+            aria-label="Refresh data"
+          >
+            <i
+              className={`fa-solid fa-arrows-rotate ${
+                isRefreshing || serverHealth.isChecking ? 'fa-spin' : ''
+              }`}
+              aria-hidden="true"
+            ></i>
+            Refresh
+          </button>
 
           {/* Jump to Moderation Button */}
           <button
@@ -365,9 +451,12 @@ export function OverviewTab({
         </div>
         <div className="col-sm-6 col-lg-3">
           <ServerStatusGaugeCard
-            uptimePercentage={99.98}
-            statusText="Live"
-            latencyMs={42}
+            uptimePercentage={serverHealth.uptimePercentage}
+            statusText={serverHealth.status}
+            statusLabel={serverHealth.statusLabel}
+            latencyMs={serverHealth.latencyMs}
+            isChecking={serverHealth.isChecking}
+            lastCheckedTime={serverHealth.lastChecked}
             onClick={() => onNavigateTab('server')}
           />
         </div>

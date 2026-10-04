@@ -12,6 +12,29 @@ import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/activity/components/broadcast_detail_modal.dart';
 import 'package:snapan_market/features/activity/models/activity_notification_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+/// Top-level background action response handler for notifications
+@pragma('vm:entry-point')
+Future<void> _notificationTapBackgroundHandler(NotificationResponse details) async {
+  try {
+    if (details.actionId == 'open_url') {
+      final payload = details.payload;
+      if (payload != null && payload.isNotEmpty) {
+        final json = jsonDecode(payload) as Map<String, dynamic>;
+        final actionUrl = json['action_url']?.toString();
+        if (actionUrl != null && actionUrl.isNotEmpty) {
+          final uri = Uri.tryParse(actionUrl);
+          if (uri != null) {
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          }
+        }
+      }
+    }
+  } catch (e) {
+    debugPrint('Background notification tap error: $e');
+  }
+}
 
 /// Top-level background message handler for FCM
 @pragma('vm:entry-point')
@@ -23,7 +46,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     final localNotifs = FlutterLocalNotificationsPlugin();
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const initSettings = InitializationSettings(android: androidInit);
-    await localNotifs.initialize(settings: initSettings);
+    await localNotifs.initialize(
+      settings: initSettings,
+      onDidReceiveBackgroundNotificationResponse: _notificationTapBackgroundHandler,
+    );
 
     final bigTextStyle = BigTextStyleInformation(
       body,
@@ -32,6 +58,22 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       htmlFormatContent: false,
       htmlFormatContentTitle: false,
     );
+
+    final actionType = message.data['action_type']?.toString() ?? 'none';
+    final actionUrl = message.data['action_url']?.toString() ?? '';
+    final actionLabel = message.data['action_button_label']?.toString() ?? 'Buka Tautan';
+
+    List<AndroidNotificationAction>? actions;
+    if (actionType == 'external_url' && actionUrl.isNotEmpty) {
+      actions = [
+        AndroidNotificationAction(
+          'open_url',
+          actionLabel,
+          showsUserInterface: true,
+          cancelNotification: true,
+        ),
+      ];
+    }
 
     final androidDetails = AndroidNotificationDetails(
       'snaps_announcements',
@@ -43,6 +85,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       enableVibration: true,
       playSound: true,
       icon: '@mipmap/ic_launcher',
+      actions: actions,
     );
 
     await localNotifs.show(
@@ -146,6 +189,7 @@ class GlobalNotificationService {
         final body = message.notification?.body ?? message.data['message'] ?? '';
         final actionType = message.data['action_type'] ?? 'none';
         final actionUrl = message.data['action_url'] ?? '';
+        final actionButtonLabel = message.data['action_button_label'] ?? 'Buka Tautan';
 
         final fakeNotif = ActivityNotification(
           id: message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
@@ -158,6 +202,7 @@ class GlobalNotificationService {
           timeAgo: 'Baru saja',
           actionType: actionType,
           actionUrl: actionUrl,
+          actionButtonLabel: actionButtonLabel,
           isRead: false,
         );
 
@@ -201,6 +246,7 @@ class GlobalNotificationService {
     final body = message.notification?.body ?? message.data['message'] ?? '';
     final actionType = message.data['action_type'] ?? 'none';
     final actionUrl = message.data['action_url'] ?? '';
+    final actionButtonLabel = message.data['action_button_label'] ?? 'Buka Tautan';
 
     final notif = ActivityNotification(
       id: message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
@@ -213,6 +259,7 @@ class GlobalNotificationService {
       timeAgo: 'Baru saja',
       actionType: actionType,
       actionUrl: actionUrl,
+      actionButtonLabel: actionButtonLabel,
       isRead: false,
     );
 
@@ -233,13 +280,26 @@ class GlobalNotificationService {
 
       await _localNotifs.initialize(
         settings: initSettings,
-        onDidReceiveNotificationResponse: (details) {
-          // Ketika user tap notifikasi di status bar Android
+        onDidReceiveNotificationResponse: (details) async {
           final payload = details.payload;
           if (payload != null && payload.isNotEmpty) {
             try {
               final json = jsonDecode(payload) as Map<String, dynamic>;
               final notif = ActivityNotification.fromJson(json);
+
+              // Jika user tap tombol aksi "open_url" di tray notifikasi
+              if (details.actionId == 'open_url') {
+                final url = notif.actionUrl ?? json['action_url']?.toString();
+                if (url != null && url.isNotEmpty) {
+                  final uri = Uri.tryParse(url);
+                  if (uri != null) {
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                    return;
+                  }
+                }
+              }
+
+              // Jika user tap notifikasi secara keseluruhan, buka modal broadcast
               final ctx = NavigationService.currentContext;
               if (ctx != null) {
                 BroadcastDetailModal.show(ctx, notif);
@@ -249,6 +309,7 @@ class GlobalNotificationService {
           }
           NavigationService.popToRoot();
         },
+        onDidReceiveBackgroundNotificationResponse: _notificationTapBackgroundHandler,
       );
 
       // Create Android Notification Channel (Required to enable notifications toggle on Android 8.0+)
@@ -343,6 +404,27 @@ class GlobalNotificationService {
         htmlFormatContentTitle: false,
       );
 
+      List<AndroidNotificationAction>? actions;
+      if (payloadJson != null && payloadJson.isNotEmpty) {
+        try {
+          final map = jsonDecode(payloadJson) as Map<String, dynamic>;
+          final actionType = map['action_type']?.toString();
+          final actionUrl = map['action_url']?.toString();
+          final actionLabel = map['action_button_label']?.toString() ?? 'Buka Tautan';
+
+          if (actionType == 'external_url' && actionUrl != null && actionUrl.isNotEmpty) {
+            actions = [
+              AndroidNotificationAction(
+                'open_url',
+                actionLabel,
+                showsUserInterface: true,
+                cancelNotification: true,
+              ),
+            ];
+          }
+        } catch (_) {}
+      }
+
       final androidDetails = AndroidNotificationDetails(
         'snaps_announcements',
         'Pengumuman & Notifikasi Snaps',
@@ -353,6 +435,7 @@ class GlobalNotificationService {
         enableVibration: true,
         playSound: true,
         icon: '@mipmap/ic_launcher',
+        actions: actions,
       );
 
       final notifDetails = NotificationDetails(android: androidDetails);

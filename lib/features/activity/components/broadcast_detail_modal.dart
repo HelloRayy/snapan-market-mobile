@@ -258,7 +258,9 @@ class BroadcastDetailModal extends StatelessWidget {
                       actionType == 'update_app'
                           ? 'Perbarui Aplikasi Sekarang'
                           : actionType == 'external_url'
-                              ? 'Kunjungi Tautan Terkait'
+                              ? (notification.actionButtonLabel?.isNotEmpty == true
+                                  ? notification.actionButtonLabel!
+                                  : 'Kunjungi Tautan Terkait')
                               : 'Lihat Postingan Terkait',
                       style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w700),
                     ),

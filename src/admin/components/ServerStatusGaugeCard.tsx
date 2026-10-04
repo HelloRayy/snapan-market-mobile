@@ -1,14 +1,20 @@
 interface ServerStatusGaugeCardProps {
   uptimePercentage?: number;
-  statusText?: 'Live' | 'Success' | 'Degraded';
+  statusText?: 'Live' | 'Success' | 'Degraded' | 'Offline';
+  statusLabel?: string;
   latencyMs?: number | null;
+  isChecking?: boolean;
+  lastCheckedTime?: string;
   onClick?: () => void;
 }
 
 export function ServerStatusGaugeCard({
-  uptimePercentage = 99.98,
+  uptimePercentage = 100,
   statusText = 'Live',
-  latencyMs = 46,
+  statusLabel,
+  latencyMs,
+  isChecking = false,
+  lastCheckedTime,
   onClick,
 }: ServerStatusGaugeCardProps) {
   const radius = 32;
@@ -18,7 +24,24 @@ export function ServerStatusGaugeCard({
   const strokeDashoffset = circumference - (clampedPercent / 100) * circumference;
 
   const isLive = statusText === 'Live' || statusText === 'Success';
-  const statusColor = isLive ? '#10b981' : '#f59e0b';
+  const isDegraded = statusText === 'Degraded';
+  const statusColor = isChecking
+    ? '#3b82f6'
+    : isLive
+    ? '#10b981'
+    : isDegraded
+    ? '#f59e0b'
+    : '#ef4444';
+
+  const headline =
+    statusLabel ||
+    (isChecking
+      ? 'Mengukur Ping...'
+      : isLive
+      ? 'Sistem Normal'
+      : isDegraded
+      ? 'Latensi Tinggi'
+      : 'Koneksi Terputus');
 
   return (
     <article
@@ -38,7 +61,10 @@ export function ServerStatusGaugeCard({
       <div className="stat-card__head" style={{ marginBottom: '8px' }}>
         <p className="stat-card__label">Status Server</p>
         <span className="stat-card__icon stat-card__icon--c2">
-          <i className="fa-solid fa-server" aria-hidden="true"></i>
+          <i
+            className={`fa-solid ${isChecking ? 'fa-arrows-rotate fa-spin' : 'fa-server'}`}
+            aria-hidden="true"
+          ></i>
         </span>
       </div>
 
@@ -106,14 +132,14 @@ export function ServerStatusGaugeCard({
           >
             <span
               style={{
-                fontSize: '13.5px',
+                fontSize: isChecking ? '11px' : '13.5px',
                 fontWeight: 700,
                 color: '#1e293b',
                 fontVariantNumeric: 'tabular-nums',
                 letterSpacing: '-0.02em',
               }}
             >
-              {uptimePercentage.toFixed(1)}%
+              {isChecking ? 'Ping...' : `${clampedPercent.toFixed(0)}%`}
             </span>
             <span
               style={{
@@ -135,7 +161,7 @@ export function ServerStatusGaugeCard({
                   display: 'inline-block',
                 }}
               />
-              {statusText}
+              {isChecking ? 'Wait' : statusText}
             </span>
           </div>
         </div>
@@ -150,7 +176,7 @@ export function ServerStatusGaugeCard({
               lineHeight: 1.2,
             }}
           >
-            Sistem Normal
+            {headline}
           </div>
           <div
             style={{
@@ -162,7 +188,11 @@ export function ServerStatusGaugeCard({
               textOverflow: 'ellipsis',
             }}
           >
-            {latencyMs != null ? `Latensi ~${latencyMs}ms` : 'Supabase Cloud'}
+            {isChecking
+              ? 'Mengukur latensi...'
+              : latencyMs != null
+              ? `Latensi ~${latencyMs}ms`
+              : 'Gagal terhubung'}
           </div>
           <div
             style={{
@@ -170,13 +200,32 @@ export function ServerStatusGaugeCard({
               alignItems: 'center',
               gap: '4px',
               fontSize: '11px',
-              color: '#10b981',
+              color: statusColor,
               fontWeight: 600,
               marginTop: '4px',
             }}
           >
-            <i className="fa-solid fa-arrow-up" style={{ fontSize: '9px' }}></i>
-            <span>100% uptime</span>
+            <i
+              className={`fa-solid ${
+                isChecking
+                  ? 'fa-arrows-rotate fa-spin'
+                  : isLive
+                  ? 'fa-circle-check'
+                  : isDegraded
+                  ? 'fa-triangle-exclamation'
+                  : 'fa-circle-xmark'
+              }`}
+              style={{ fontSize: '9.5px' }}
+            ></i>
+            <span>
+              {isChecking
+                ? 'Pinging DB'
+                : isLive
+                ? 'Database Online'
+                : isDegraded
+                ? 'Degraded'
+                : 'Offline'}
+            </span>
           </div>
         </div>
       </div>
@@ -193,7 +242,9 @@ export function ServerStatusGaugeCard({
           fontSize: '10.5px',
         }}
       >
-        <span style={{ color: '#94a3b8' }}>90 hari aktif</span>
+        <span style={{ color: '#94a3b8' }}>
+          {lastCheckedTime ? `Cek: ${lastCheckedTime}` : 'Supabase Cloud'}
+        </span>
         <span style={{ color: '#4272d7', fontWeight: 600 }}>Detail &rarr;</span>
       </div>
     </article>

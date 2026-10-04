@@ -93,6 +93,7 @@ export interface FcmPushPayload {
   message: string;
   actionType?: string;
   actionUrl?: string;
+  actionButtonLabel?: string;
 }
 
 export const adminFcmService = {
@@ -102,7 +103,7 @@ export const adminFcmService = {
    * expandable banner BigTextStyle meskipun app sedang tertutup / mati.
    */
   async sendPushNotificationToTokens(payload: FcmPushPayload): Promise<{ success: number; failed: number }> {
-    const { tokens, title, message, actionType, actionUrl } = payload;
+    const { tokens, title, message, actionType, actionUrl, actionButtonLabel } = payload;
     if (!tokens || tokens.length === 0) {
       return { success: 0, failed: 0 };
     }
@@ -116,30 +117,25 @@ export const adminFcmService = {
       let failedCount = 0;
 
       // Kirim secara paralel dalam batch kecil
+      // Catatan Arsitektur FCM Android:
+      // Jangan gunakan blok "notification" bawaan FCM agar sistem OS tidak langsung
+      // merender notifikasi polos. Dengan data-only message (android priority 'high'),
+      // _firebaseMessagingBackgroundHandler di Flutter selalu dipanggil bahkan saat app KILLED/MATI,
+      // sehingga FlutterLocalNotificationsPlugin bisa merender BigTextStyle & AndroidNotificationAction (Tombol Aksi).
       const promises = tokens.map(async (fcmToken) => {
         try {
           const body = {
             message: {
               token: fcmToken,
-              notification: {
-                title,
-                body: message,
-              },
               data: {
                 title,
                 message,
                 action_type: actionType || 'none',
                 action_url: actionUrl || '',
+                action_button_label: actionButtonLabel || 'Buka Tautan',
               },
               android: {
                 priority: 'high',
-                notification: {
-                  channel_id: 'snaps_announcements',
-                  default_sound: true,
-                  default_vibrate_timings: true,
-                  notification_priority: 'PRIORITY_MAX',
-                  visibility: 'PUBLIC',
-                },
               },
             },
           };

@@ -1,4 +1,4 @@
-flkimport React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Image as ImageIcon, MapPin, Sparkles, Play, Volume2 } from 'lucide-react';
 import { MarketPostItem } from '@/types/marketFeed';
 import { triggerHaptic } from '@/utils/haptics';

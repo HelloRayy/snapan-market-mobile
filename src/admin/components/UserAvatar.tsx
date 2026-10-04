@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
+import { User } from 'lucide-react';
 import { getOreoAvatarUrl } from '@/utils/oreoAvatar';
+
+export const FORCE_DEFAULT_AVATAR = true;
 
 interface UserAvatarProps {
   avatarUrl?: string | null;
@@ -12,14 +15,15 @@ interface UserAvatarProps {
 }
 
 /**
- * Reusable user avatar with modern @oreo-design/avatar gradient fallback.
- * Automatically handles broken URLs or missing avatars with elegant Figma-method soft gradients.
+ * Reusable user avatar with standard default silhouette fallback.
+ * When FORCE_DEFAULT_AVATAR is true, renders a consistent default silhouette avatar
+ * with neutral gray background (#E2E8F0) and slate icon (#94A3B8), matching the mobile app.
  */
 export function UserAvatar({
   avatarUrl,
   name,
   size = 36,
-  borderRadius = '8px',
+  borderRadius = '50%',
   role,
   className = '',
   style = {},
@@ -32,10 +36,7 @@ export function UserAvatar({
   }, [avatarUrl]);
 
   const cleanName = (name || '').trim();
-  const fallbackOreoUrl = getOreoAvatarUrl(cleanName || 'siswa-snapan', {
-    size,
-    appearance: role === 'admin' ? 'dark' : 'light',
-  });
+  const iconSize = Math.max(14, Math.round(size * 0.56));
 
   const containerStyle: React.CSSProperties = {
     width: `${size}px`,
@@ -48,11 +49,31 @@ export function UserAvatar({
     overflow: 'hidden',
     userSelect: 'none',
     boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
-    border: '1px solid rgba(0,0,0,0.06)',
+    border: '1px solid rgba(0,0,0,0.08)',
+    backgroundColor: '#E2E8F0',
+    color: '#94A3B8',
     ...style,
   };
 
-  const finalSrc = avatarUrl && !hasError ? avatarUrl : fallbackOreoUrl;
+  if (FORCE_DEFAULT_AVATAR || !avatarUrl || hasError) {
+    return (
+      <div
+        className={`user-avatar ${className}`}
+        style={containerStyle}
+        aria-label={cleanName || 'User Avatar'}
+        title={cleanName || undefined}
+      >
+        <User size={iconSize} strokeWidth={2.2} />
+      </div>
+    );
+  }
+
+  const fallbackOreoUrl = getOreoAvatarUrl(cleanName || 'siswa-snapan', {
+    size,
+    appearance: role === 'admin' ? 'dark' : 'light',
+  });
+
+  const finalSrc = avatarUrl || fallbackOreoUrl;
 
   return (
     <div className={`user-avatar ${className}`} style={containerStyle} aria-label={cleanName || 'User Avatar'}>

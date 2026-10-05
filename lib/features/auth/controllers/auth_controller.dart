@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:snapan_market/core/services/device_security_service.dart';
 import 'package:snapan_market/core/services/global_notification_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 
@@ -57,6 +58,12 @@ class AuthController {
     required String password,
   }) async {
     try {
+      // 1. Validasi kuota pendaftaran perangkat fisik (1 HP Max 3 Akun)
+      final quota = await DeviceSecurityService.instance.checkRegistrationQuota();
+      if (!quota.allowed) {
+        return quota.message;
+      }
+
       final isTaken = await SupabaseService.instance.isUsernameTaken(rawUsername);
       if (isTaken) {
         return 'Username @$rawUsername sudah terdaftar. Gunakan username lain.';
@@ -82,6 +89,13 @@ class AuthController {
           username: rawUsername,
           classGroup: classGroup,
         );
+
+        // 2. Catat perangkat fisik ke sistem keamanan secara background
+        unawaited(DeviceSecurityService.instance.recordRegistration(
+          userId: response.user!.id,
+          username: rawUsername,
+        ));
+
         return null; // success
       }
       return 'Pendaftaran gagal. Silakan coba lagi.';

@@ -72,25 +72,24 @@ class HomeNavDrawer extends StatelessWidget {
             ? '@${rawUsername.replaceAll('@', '')}'
             : 'Siswa SMKN 8 Semarang');
 
+    final String cleanUsername = (rawUsername != null && rawUsername.isNotEmpty)
+        ? rawUsername.replaceAll('@', '')
+        : (currentUser?.email != null && currentUser!.email!.isNotEmpty
+            ? currentUser.email!.split('@').first
+            : 'siswa');
+
+    final String? resolvedClass = (rawClass != null && rawClass.trim().isNotEmpty)
+        ? rawClass.trim()
+        : null;
+
+    // Baris kedua drawer: '@username • Kelas / Jurusan' (bukan email sistem @snapan.id)
     final String displaySubtitle;
-    if (rawUsername != null && rawUsername.isNotEmpty) {
-      final cleanUser = '@${rawUsername.replaceAll('@', '')}';
-      if (rawClass != null && rawClass.isNotEmpty) {
-        displaySubtitle = '$cleanUser • $rawClass';
-      } else {
-        displaySubtitle = cleanUser;
-      }
-    } else if (rawClass != null && rawClass.isNotEmpty) {
-      displaySubtitle = rawClass;
+    if (resolvedClass != null && resolvedClass.toLowerCase() != 'siswa snapan') {
+      displaySubtitle = '@$cleanUsername • $resolvedClass';
+    } else if (resolvedClass != null) {
+      displaySubtitle = '@$cleanUsername • $resolvedClass';
     } else {
-      final rawEmail = currentUser?.email ?? '';
-      if (rawEmail.contains('@snapan.id')) {
-        displaySubtitle = '@${rawEmail.split('@').first}';
-      } else if (rawEmail.isNotEmpty) {
-        displaySubtitle = rawEmail;
-      } else {
-        displaySubtitle = 'Siswa SMKN 8 Semarang';
-      }
+      displaySubtitle = '@$cleanUsername • Siswa SMKN 8';
     }
 
     return Drawer(

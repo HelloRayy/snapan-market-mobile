@@ -95,4 +95,8 @@ graphify-out/20*/
 *firebase-service-account*.json
 *firebase-adminsdk*.json
 
+# Supabase CLI temp files
+supabase/.temp/
+
+
 

@@ -27,6 +27,31 @@ export interface AdminStats {
   recentPosts: (MarketPostRow & { seller?: ProfileRow | null })[];
 }
 
+export interface DeviceSecuritySettings {
+  enabled: boolean;
+  max_accounts: number;
+}
+
+export interface DeviceRecordRow {
+  device_id: string;
+  device_model: string;
+  account_count: number;
+  accounts: string[];
+  is_whitelisted: boolean;
+  is_blocked: boolean;
+  notes?: string | null;
+  first_registered_at: string;
+  last_registered_at: string;
+}
+
+export interface DeviceSecurityData {
+  settings: DeviceSecuritySettings;
+  total_devices: number;
+  whitelisted_count: number;
+  blocked_count: number;
+  devices: DeviceRecordRow[];
+}
+
 export const adminService = {
   /**
    * Cek apakah user saat ini memiliki akses admin / superadmin
@@ -833,6 +858,215 @@ export const adminService = {
       await supabase.removeChannel(channel);
     } catch (e) {
       console.warn('Failed to remove channel:', e);
+    }
+  },
+
+  /**
+   * Mengambil data konfigurasi batas pendaftaran dan daftar perangkat unik
+   */
+  async getDeviceSecurityData(): Promise<DeviceSecurityData> {
+    try {
+      const { data, error } = await (supabase.rpc as any)('admin_get_device_security_data');
+      if (!error && data) {
+        return {
+          settings: {
+            enabled: data.settings?.enabled ?? true,
+            max_accounts: data.settings?.max_accounts ?? 3,
+          },
+          total_devices: data.total_devices || 0,
+          whitelisted_count: data.whitelisted_count || 0,
+          blocked_count: data.blocked_count || 0,
+          devices: Array.isArray(data.devices) ? data.devices : [],
+        };
+      }
+    } catch (e) {
+      console.warn('RPC admin_get_device_security_data unavailable, fallback to direct query:', e);
+    }
+
+    // Fallback direct table query
+    try {
+      const { data: settingsRow } = await (supabase as any)
+        .from('app_security_settings')
+        .select('value')
+        .eq('key', 'device_registration_limit')
+        .maybeSingle();
+
+      const settings: DeviceSecuritySettings = {
+        enabled: settingsRow?.value?.enabled ?? true,
+        max_accounts: settingsRow?.value?.max_accounts ?? 3,
+      };
+
+      const { data: rawDevices, error: devErr } = await (supabase as any)
+        .from('device_registrations')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (devErr || !rawDevices) {
+        return {
+          settings,
+          total_devices: 0,
+          whitelisted_count: 0,
+          blocked_count: 0,
+          devices: [],
+        };
+      }
+
+      // Client-side grouping fallback
+      const map = new Map<string, DeviceRecordRow>();
+      rawDevices.forEach((r: any) => {
+        const existing = map.get(r.device_id);
+        const uname = r.username || 'user';
+        if (existing) {
+          if (!existing.accounts.includes(uname)) {
+            existing.accounts.push(uname);
+            existing.account_count = existing.accounts.length;
+          }
+          if (r.is_whitelisted) existing.is_whitelisted = true;
+          if (r.is_blocked) existing.is_blocked = true;
+          if (new Date(r.created_at) > new Date(existing.last_registered_at)) {
+            existing.last_registered_at = r.created_at;
+          }
+          if (new Date(r.created_at) < new Date(existing.first_registered_at)) {
+            existing.first_registered_at = r.created_at;
+          }
+        } else {
+          map.set(r.device_id, {
+            device_id: r.device_id,
+            device_model: r.device_model || 'Unknown Device',
+            account_count: 1,
+            accounts: [uname],
+            is_whitelisted: !!r.is_whitelisted,
+            is_blocked: !!r.is_blocked,
+            notes: r.notes || null,
+            first_registered_at: r.created_at,
+            last_registered_at: r.created_at,
+          });
+        }
+      });
+
+      const devices = Array.from(map.values());
+      const whitelistedCount = devices.filter((d) => d.is_whitelisted).length;
+      const blockedCount = devices.filter((d) => d.is_blocked).length;
+
+      return {
+        settings,
+        total_devices: devices.length,
+        whitelisted_count: whitelistedCount,
+        blocked_count: blockedCount,
+        devices,
+      };
+    } catch (err: any) {
+      console.error('Failed getDeviceSecurityData:', err);
+      return {
+        settings: { enabled: true, max_accounts: 3 },
+        total_devices: 0,
+        whitelisted_count: 0,
+        blocked_count: 0,
+        devices: [],
+      };
+    }
+  },
+
+  /**
+   * Memperbarui konfigurasi global: Saklar On/Off & Batas Maksimal Akun per HP
+   */
+  async updateDeviceSecuritySettings(enabled: boolean, maxAccounts: number): Promise<boolean> {
+    try {
+      const { error } = await (supabase.rpc as any)('admin_update_device_security_settings', {
+        p_enabled: enabled,
+        p_max_accounts: maxAccounts,
+      });
+
+      if (!error) return true;
+
+      // Fallback direct update
+      const { error: directErr } = await (supabase as any)
+        .from('app_security_settings')
+        .upsert({
+          key: 'device_registration_limit',
+          value: { enabled, max_accounts: maxAccounts },
+          updated_at: new Date().toISOString(),
+        });
+
+      if (directErr) throw directErr;
+      return true;
+    } catch (e: any) {
+      console.error('Failed updateDeviceSecuritySettings:', e);
+      throw new Error(e?.message || 'Gagal menyimpan pengaturan keamanan perangkat.');
+    }
+  },
+
+  /**
+   * Mengubah status whitelist perangkat (VIP / Bebas Batas Kuota)
+   */
+  async toggleDeviceWhitelist(deviceId: string, status: boolean): Promise<boolean> {
+    try {
+      const { error } = await (supabase.rpc as any)('admin_toggle_device_whitelist', {
+        target_device_id: deviceId,
+        target_status: status,
+      });
+
+      if (!error) return true;
+
+      const { error: directErr } = await (supabase as any)
+        .from('device_registrations')
+        .update({ is_whitelisted: status })
+        .eq('device_id', deviceId);
+
+      if (directErr) throw directErr;
+      return true;
+    } catch (e: any) {
+      console.error('Failed toggleDeviceWhitelist:', e);
+      throw new Error(e?.message || 'Gagal mengubah status whitelist perangkat.');
+    }
+  },
+
+  /**
+   * Mengubah status blokir perangkat dari pendaftaran akun baru
+   */
+  async toggleDeviceBlock(deviceId: string, status: boolean): Promise<boolean> {
+    try {
+      const { error } = await (supabase.rpc as any)('admin_toggle_device_block', {
+        target_device_id: deviceId,
+        target_status: status,
+      });
+
+      if (!error) return true;
+
+      const { error: directErr } = await (supabase as any)
+        .from('device_registrations')
+        .update({ is_blocked: status })
+        .eq('device_id', deviceId);
+
+      if (directErr) throw directErr;
+      return true;
+    } catch (e: any) {
+      console.error('Failed toggleDeviceBlock:', e);
+      throw new Error(e?.message || 'Gagal mengubah status blokir perangkat.');
+    }
+  },
+
+  /**
+   * Mereset riwayat pendaftaran perangkat sehingga kuotanya kembali jadi 0
+   */
+  async resetDeviceQuota(deviceId: string): Promise<boolean> {
+    try {
+      const { error } = await (supabase.rpc as any)('admin_reset_device_quota', {
+        target_device_id: deviceId,
+      });
+
+      if (!error) return true;
+
+      const { error: directErr } = await (supabase as any)
+        .from('device_registrations')
+        .delete()
+        .eq('device_id', deviceId);
+
+      if (directErr) throw directErr;
+      return true;
+    } catch (e: any) {
+      console.error('Failed resetDeviceQuota:', e);
+      throw new Error(e?.message || 'Gagal mereset kuota perangkat.');
     }
   },
 };

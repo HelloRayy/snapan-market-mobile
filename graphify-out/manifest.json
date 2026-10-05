@@ -792,9 +792,9 @@
     "semantic_hash": "a738a9cfa7c94a7588811e1312efaa90"
   },
   "schema.sql": {
-    "mtime": 1791041020.1453602,
-    "seen": 1791043471.1088824,
-    "ast_hash": "ebf63cdc398ec1fd5e200a24f5a362ba",
+    "mtime": 1791207536.576689,
+    "seen": 1791207716.256456,
+    "ast_hash": "dfd383555cc14fdefd942bf7e890ce8f",
     "semantic_hash": ""
   },
   "scripts/analyze-diff.js": {
@@ -3084,9 +3084,9 @@
     "semantic_hash": ""
   },
   "lib/features/auth/controllers/auth_controller.dart": {
-    "mtime": 1791104765.844978,
-    "seen": 1791207485.5734212,
-    "ast_hash": "b76b047eb48bdbcc281fc94cef823416",
+    "mtime": 1791207565.6288252,
+    "seen": 1791207606.6980844,
+    "ast_hash": "8ad12cc06d28e46cfda92910f44e9108",
     "semantic_hash": ""
   },
   "lib/features/checkout/components/checkout_bottom_bar.dart": {
@@ -3144,9 +3144,9 @@
     "semantic_hash": "f8dffaee4523b0e9fc429b4941eed961"
   },
   "lib/features/feed/components/home_nav_drawer.dart": {
-    "mtime": 1791207354.240124,
-    "seen": 1791207485.5746357,
-    "ast_hash": "d8a6b212d3e22fa3ecbb82c3f0862364",
+    "mtime": 1791207576.5188763,
+    "seen": 1791207606.6992059,
+    "ast_hash": "3e2059e33dc91eeebc95cbbbef5c6252",
     "semantic_hash": ""
   },
   "lib/features/feed/components/home_nav_tab_switcher.dart": {
@@ -4044,9 +4044,81 @@
     "semantic_hash": ""
   },
   "CODEBASE_AGENT_MAP.md": {
-    "mtime": 1791110573.3595088,
-    "seen": 1791207485.582529,
-    "ast_hash": "7a0e075c20381c22e350bcf5085bb166",
+    "mtime": 1791207585.3009176,
+    "seen": 1791207606.7077262,
+    "ast_hash": "7b2f44f588423d73ac95ae7e3ef8c8df",
+    "semantic_hash": ""
+  },
+  "lib/core/services/device_security_service.dart": {
+    "mtime": 1791207551.1087573,
+    "seen": 1791207606.6972067,
+    "ast_hash": "d21e35a7ffa81a23c348c5d7aa8ef79d",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/supabase_admin_fix.sql": {
+    "mtime": 1790556490.8959553,
+    "seen": 1791207606.7052295,
+    "ast_hash": "e216963204c5e41a281f786e006955b6",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/supabase_admin_security_hardening.sql": {
+    "mtime": 1790959337.4107716,
+    "seen": 1791207606.7052312,
+    "ast_hash": "d14fd17096ac00c1f1c341951010467d",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/supabase_app_versions.sql": {
+    "mtime": 1790696905.2173302,
+    "seen": 1791207606.705232,
+    "ast_hash": "48b99f8eea74429c9eba680e1f0aa019",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/supabase_c2c_unified_role.sql": {
+    "mtime": 1791034746.7888026,
+    "seen": 1791207606.7052326,
+    "ast_hash": "34f062f680b3c2321f4746cab3cd15a0",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/supabase_content_reports_feature.sql": {
+    "mtime": 1791011520.092722,
+    "seen": 1791207606.7052343,
+    "ast_hash": "a06636665e0c9a2d61ecdd370587d75f",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/supabase_direct_messages_realtime_fix.sql": {
+    "mtime": 1791035193.5727866,
+    "seen": 1791207606.7052352,
+    "ast_hash": "951838feb1a7242e525bcdae969a7873",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/supabase_fcm_rls_fix.sql": {
+    "mtime": 1791104789.6210687,
+    "seen": 1791207606.7052362,
+    "ast_hash": "6b39ce24610e43558de8135c62d0131d",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/supabase_poll_feature.sql": {
+    "mtime": 1790836327.2547312,
+    "seen": 1791207606.7052507,
+    "ast_hash": "08993729a47ccbd9359d6c55ba978d47",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/supabase_suspend_account_feature.sql": {
+    "mtime": 1791016104.1707067,
+    "seen": 1791207606.7052522,
+    "ast_hash": "896f6841264276e5df385a236bc9b05f",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/supabase_update_legacy_locations.sql": {
+    "mtime": 1790785753.5240078,
+    "seen": 1791207606.705253,
+    "ast_hash": "18b25985efc1eb539e68c53ef3cb28cd",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/supabase_device_registration_limit.sql": {
+    "mtime": 1791207514.3205845,
+    "seen": 1791207716.260637,
+    "ast_hash": "acac1d18d7cd80b080d74d955b8484ac",
     "semantic_hash": ""
   }
 }

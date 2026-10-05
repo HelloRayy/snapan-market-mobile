@@ -10,6 +10,7 @@ import { ContentReportsTab } from './ContentReportsTab';
 import { BroadcastNotificationTab } from './BroadcastNotificationTab';
 import { MeetingPointsTab } from './MeetingPointsTab';
 import { ServerMonitorTab } from './ServerMonitorTab';
+import { DeviceSecurityTab } from './DeviceSecurityTab';
 import { useAdminSecurity } from '../hooks/useAdminSecurity';
 import { adminSecurityService, ADMIN_SESSION_STORAGE_KEY } from '../services/adminSecurityService';
 import '../styles/cooladmin.css';
@@ -229,6 +230,10 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
 
               <div className={activeTab === 'server' ? 'block' : 'hidden'}>
                 <ServerMonitorTab onNavigateTab={(tab) => setActiveTab(tab)} />
+              </div>
+
+              <div className={activeTab === 'devices' ? 'block' : 'hidden'}>
+                <DeviceSecurityTab isActive={activeTab === 'devices'} />
               </div>
             </div>
           </div>

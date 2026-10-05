@@ -1,7 +1,7 @@
 import type { ProfileRow, AdminStats } from '../services/adminService';
 import { UserAvatar } from './UserAvatar';
 
-export type AdminTab = 'overview' | 'users' | 'moderation' | 'reports' | 'broadcast' | 'meeting-points' | 'server';
+export type AdminTab = 'overview' | 'users' | 'moderation' | 'reports' | 'broadcast' | 'devices' | 'meeting-points' | 'server';
 
 interface AdminSidebarProps {
   activeTab: AdminTab;
@@ -195,6 +195,21 @@ export function AdminSidebar({
               >
                 <i className="fa-solid fa-bullhorn" style={{ color: activeTab === 'broadcast' ? '#ffffff' : '#64748b' }}></i>
                 <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Broadcast Notif</span>
+              </a>
+            </li>
+
+            {/* Navlink Keamanan Perangkat (Batas 1 HP Max 3 Akun) */}
+            <li className={activeTab === 'devices' ? 'active' : ''}>
+              <a
+                href="#devices"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onTabChange('devices');
+                  onCloseMobile?.();
+                }}
+              >
+                <i className="fa-solid fa-mobile-screen" style={{ color: activeTab === 'devices' ? '#ffffff' : '#64748b' }}></i>
+                <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Batas Akun HP</span>
               </a>
             </li>
 

@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:snapan_market/core/components/snaps_skeleton.dart";
+import "package:snapan_market/core/services/global_notification_service.dart";
 import "package:snapan_market/core/services/supabase_service.dart";
 import "package:snapan_market/features/activity/components/activity_item_tile.dart";
 import "package:snapan_market/features/activity/components/broadcast_detail_modal.dart";
@@ -226,8 +227,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                       }
                                     });
 
-                                    // Full Open Broadcast Modal
-                                    if (notif.type == ActivityType.system) {
+                                    // Jika notifikasi memiliki aksi (misal update app, url, post), langsung eksekusi aksinya
+                                    if (notif.hasAction) {
+                                      GlobalNotificationService.executeNotificationAction(context, notif);
+                                    } else if (notif.type == ActivityType.system) {
+                                      // Jika pengumuman biasa tanpa aksi khusus, buka teks pengumuman
                                       BroadcastDetailModal.show(context, notif);
                                     }
                                   },

@@ -17,17 +17,15 @@
 4. **NO Mandatory `flutter build bundle`**:
    - Do not run or require `flutter build bundle` routinely. Move directly to commit and push after clean code generation.
 
-5. **Strict Anti-Grep & Architecture Discovery with Graphify (`graphify-out/`)**:
-   - **STRICTLY PROHIBITED: Sequential `git grep` looping (>2 times)**. Never perform blind grep spirals across multiple files to trace dependencies or features.
-   - MANDATORY: Query Graphify on the first pass for file searches, symbol locations, and architecture relationship discovery:
-     ```bash
-     uv tool run --from graphifyy graphify query "<search query>"
-     ```
-   - Use `uv tool run --from graphifyy graphify path "<Source>" "<Target>"` to trace cross-module connections without reading files.
+5. **Deterministic Routing via `CODEBASE_AGENT_MAP.md` (Zero Blind Reads)**:
+   - **STRICTLY PROHIBITED: Blind search or sequential `git grep` looping in root directory**.
+   - **MANDATORY**: Check [`CODEBASE_AGENT_MAP.md`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/CODEBASE_AGENT_MAP.md) first to pinpoint the exact target component and controller.
+   - **Scoped Grep Only**: When searching, always scope queries to specific directories (e.g. `lib/features/feed/` or `src/admin/`). Never search globally without directory filters.
 
-6. **Mandatory Automatic Git Hook Graphify Sync, Commit & Push**:
-   - The repository has an active post-commit git hook (`graphify hook install`) that automatically updates `graphify-out/graph.json` in the background after every commit.
-   - Run `git add .`, commit, and push after completing tasks.
+6. **Graphify Role (Architectural & Refactoring Tool)**:
+   - Graphify (`graphify-out/`) is maintained for visual architecture inspection, dependency tracing, and community clustering.
+   - Do NOT run CLI `graphify query` on simple bug fixes or UI updates to avoid CLI latency and token bloat. Use `CODEBASE_AGENT_MAP.md` for direct file navigation.
+   - The git hook will continue to update the graph in the background after commits.
 
 7. **Strict File Size Cap (Max 250–300 Lines)**:
    - Decompose any UI screen or service >250 lines into atomic sub-components in `<feature>/components/`.

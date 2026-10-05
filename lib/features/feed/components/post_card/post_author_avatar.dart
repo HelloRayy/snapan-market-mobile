@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/services/follow_service.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/ui/oreo_avatar_helper.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
@@ -25,25 +26,28 @@ class PostAuthorAvatar extends StatelessWidget {
       listenable: FollowService.instance,
       builder: (context, _) {
         final bool isMe = FollowService.instance.isCurrentUser(seller.id, seller.username);
-        final bool followed = FollowService.instance.isLoaded
-            ? FollowService.instance.isFollowing(seller.id, seller.username)
-            : (FollowService.instance.isFollowing(seller.id, seller.username) || (isFollowed == true));
+        final bool followed = FollowService.instance.isFollowing(seller.id, seller.username) ||
+            (isFollowed == true && !FollowService.instance.isLoaded);
 
         return GestureDetector(
           onTap: onUserClick,
           child: SizedBox(
-            width: 44.0,
-            height: 44.0,
+            width: 46.0,
+            height: 46.0,
             child: Stack(
               clipBehavior: Clip.none,
               children: [
                 // Circular Avatar Container (Threads standard: borderless, shadowless, pure image fill)
-                SizedBox(
-                  width: 42.0,
-                  height: 42.0,
-                  child: AppAvatar(
-                    avatarUrl: seller.avatar,
-                    size: 42.0,
+                Positioned(
+                  left: 0,
+                  top: 0,
+                  child: SizedBox(
+                    width: 42.0,
+                    height: 42.0,
+                    child: AppAvatar(
+                      avatarUrl: seller.avatar,
+                      size: 42.0,
+                    ),
                   ),
                 ),
 
@@ -52,32 +56,48 @@ class PostAuthorAvatar extends StatelessWidget {
                 // Once followed, this badge immediately vanishes across all posts of this author!
                 if (!isMe && !followed)
                   Positioned(
-                    right: -6.0,
-                    bottom: -6.0,
+                    right: 0.0,
+                    bottom: 0.0,
                     child: MouseRegion(
                       cursor: SystemMouseCursors.click,
                       child: GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: () async {
                           HapticFeedback.lightImpact();
+                          if (!SupabaseService.instance.isAuthenticated) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Silakan masuk untuk mengikuti akun ini.'),
+                                  duration: Duration(seconds: 2),
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            }
+                            return;
+                          }
+
                           final newStatus = await FollowService.instance.toggleFollow(
                             targetUserId: seller.id,
                             targetUsername: seller.username,
                           );
-                          onFollowToggle?.call();
-                          if (context.mounted && newStatus) {
-                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Mengikuti ${seller.name}'),
-                                duration: const Duration(seconds: 1),
-                                behavior: SnackBarBehavior.floating,
-                              ),
-                            );
+                          if (context.mounted) {
+                            onFollowToggle?.call();
+                            if (newStatus) {
+                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Mengikuti ${seller.name}'),
+                                  duration: const Duration(seconds: 1),
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            }
                           }
                         },
                         child: Container(
-                          padding: const EdgeInsets.all(5.0),
+                          padding: const EdgeInsets.all(4.0),
                           color: Colors.transparent,
                           child: Container(
                             width: 20.0,

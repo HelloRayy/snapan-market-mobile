@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { User } from 'lucide-react';
 import { getOreoAvatarUrl } from '@/utils/oreoAvatar';
 
-export const FORCE_DEFAULT_AVATAR = true;
+export const FORCE_DEFAULT_AVATAR = false;
 
 interface UserAvatarProps {
   avatarUrl?: string | null;
@@ -16,8 +16,8 @@ interface UserAvatarProps {
 
 /**
  * Reusable user avatar with standard default silhouette fallback.
- * When FORCE_DEFAULT_AVATAR is true, renders a consistent default silhouette avatar
- * with neutral gray background (#E2E8F0) and slate icon (#94A3B8), matching the mobile app.
+ * Renders avatarUrl from the database when available; falls back to a consistent default silhouette avatar
+ * with neutral gray background (#E2E8F0) and slate icon (#94A3B8) if user has no avatar set or URL is broken.
  */
 export function UserAvatar({
   avatarUrl,

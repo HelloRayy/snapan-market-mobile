@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/core/services/supabase/supabase_auth_service.dart';
@@ -40,7 +40,10 @@ class SupabaseService {
   bool get isAuthenticated => auth.isAuthenticated;
   Stream<AuthState> get onAuthStateChange => auth.onAuthStateChange;
   Future<bool> signInWithGoogle() => auth.signInWithGoogle();
-  Future<void> signOut() => auth.signOut();
+  Future<void> signOut() {
+    profile.currentUserProfileNotifier.value = null;
+    return auth.signOut();
+  }
   Future<bool> isCurrentUserAdmin() => auth.isCurrentUserAdmin();
 
   // --- STORAGE DELEGATIONS ---
@@ -52,6 +55,9 @@ class SupabaseService {
       storage.uploadImage(bytes: bytes, fileName: fileName, bucket: bucket);
 
   // --- PROFILE DELEGATIONS ---
+  ValueNotifier<Map<String, dynamic>?> get currentUserProfileNotifier =>
+      profile.currentUserProfileNotifier;
+
   Future<Map<String, dynamic>?> getProfile(String userId) =>
       profile.getProfile(userId);
 
@@ -161,6 +167,9 @@ class SupabaseService {
 
   Future<List<PostCommentModel>> fetchPostComments(String postId) =>
       feed.fetchPostComments(postId);
+
+  Future<bool> toggleCommentLike(String commentId, bool isCurrentlyLiked) =>
+      feed.toggleCommentLike(commentId, isCurrentlyLiked);
 
   Future<PostCommentModel> addComment({
     required String postId,

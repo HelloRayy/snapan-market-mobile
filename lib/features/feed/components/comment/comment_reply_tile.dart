@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/utils/formatters.dart';
 import 'package:snapan_market/core/utils/mention_text_span_helper.dart';
 import 'package:snapan_market/features/feed/components/comment/comment_author_badge.dart';
 import 'package:snapan_market/features/feed/components/comment/comment_avatar.dart';
@@ -92,7 +94,10 @@ class _CommentReplyTileState extends State<CommentReplyTile> {
                 isLiked: widget.reply.isLiked,
                 onLike: _handleLikeToggle,
                 onReply: () {
-                  final targetUsername = widget.reply.user.username ?? widget.reply.user.name;
+                  final rawUsername = (widget.reply.user.username != null && widget.reply.user.username!.isNotEmpty)
+                      ? widget.reply.user.username!
+                      : widget.reply.user.name;
+                  final targetUsername = rawUsername.trim().replaceAll('@', '').replaceAll(' ', '_');
                   if (widget.onReplyToComment != null) {
                     widget.onReplyToComment!(targetUsername, widget.parentCommentId);
                   } else {
@@ -120,39 +125,81 @@ class _CommentReplyTileState extends State<CommentReplyTile> {
     final username = widget.reply.user.username ?? widget.reply.user.name;
 
     return Row(
-      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Flexible(
-          child: GestureDetector(
-            onTap: () {
-              widget.onUserClick?.call(username);
-            },
-            child: Text(
-              username,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontFamily: 'SFPro',
-                fontSize: 13.0,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF0F172A),
+        Expanded(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: GestureDetector(
+                  onTap: () {
+                    widget.onUserClick?.call(username);
+                  },
+                  child: Text(
+                    username,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontFamily: 'SFPro',
+                      fontSize: 13.0,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF0F172A),
+                    ),
+                  ),
+                ),
               ),
+              if (widget.reply.user.isVerified) ...[
+                const SizedBox(width: 4.0),
+                const Icon(
+                  Icons.verified_rounded,
+                  size: 13.0,
+                  color: AppColors.verifiedBlue,
+                ),
+              ],
+              if (widget.reply.user.isAuthor) ...[
+                const SizedBox(width: 5.0),
+                const CommentAuthorBadge(),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(width: 8.0),
+        // Timestamp
+        Text(
+          formatSmartTimestamp(widget.reply.timestamp),
+          style: const TextStyle(
+            fontFamily: 'SFPro',
+            fontSize: 11.5,
+            fontWeight: FontWeight.normal,
+            color: Color(0xFF94A3B8),
+          ),
+        ),
+        const SizedBox(width: 8.0),
+        // Three-dots menu
+        GestureDetector(
+          onTap: () {
+            HapticFeedback.lightImpact();
+            CommentOptionsSheet.show(
+              context: context,
+              comment: widget.reply,
+              parentCommentId: widget.parentCommentId,
+              postAuthorId: widget.postAuthorId,
+              onReplyClick: widget.onReplyClick,
+              onReplyToComment: widget.onReplyToComment,
+              onDeleteComment: widget.onDeleteComment,
+            );
+          },
+          behavior: HitTestBehavior.opaque,
+          child: const Padding(
+            padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            child: Icon(
+              Icons.more_horiz_rounded,
+              size: 15.0,
+              color: Color(0xFF94A3B8),
             ),
           ),
         ),
-        if (widget.reply.user.isVerified) ...[
-          const SizedBox(width: 4.0),
-          const Icon(
-            Icons.verified_rounded,
-            size: 13.0,
-            color: AppColors.verifiedBlue,
-          ),
-        ],
-        if (widget.reply.user.isAuthor) ...[
-          const SizedBox(width: 5.0),
-          const CommentAuthorBadge(),
-        ],
       ],
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/utils/formatters.dart';
 import 'package:snapan_market/core/utils/mention_text_span_helper.dart';
 import 'package:snapan_market/features/feed/components/comment/comment.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
@@ -42,7 +43,8 @@ class PostCommentItem extends StatefulWidget {
 class _PostCommentItemState extends State<PostCommentItem> {
   late bool _isLiked;
   late int _likesCount;
-  bool _isRepliesExpanded = true;
+  bool _isRepliesExpanded = false;
+  int _visibleRepliesCount = 3;
   bool _isTextExpanded = false;
 
   @override
@@ -61,9 +63,10 @@ class _PostCommentItemState extends State<PostCommentItem> {
       _isLiked = widget.comment.isLiked;
       _likesCount = widget.comment.likesCount;
     }
-    // Auto-expand replies threadline when a new reply is added
+    // Auto-expand and include newest reply when user adds a new reply
     if (widget.comment.replies.length > oldWidget.comment.replies.length) {
       _isRepliesExpanded = true;
+      _visibleRepliesCount = widget.comment.replies.length;
     }
   }
 
@@ -81,11 +84,7 @@ class _PostCommentItemState extends State<PostCommentItem> {
   }
 
   void _handleReplyLikeToggle(PostCommentModel updatedReply) {
-    final updatedReplies = widget.comment.replies.map((r) {
-      return r.id == updatedReply.id ? updatedReply : r;
-    }).toList();
-
-    widget.onLikeToggle?.call(widget.comment.copyWith(replies: updatedReplies));
+    widget.onLikeToggle?.call(updatedReply);
   }
 
   void _copyToClipboard(String text) {
@@ -174,7 +173,10 @@ class _PostCommentItemState extends State<PostCommentItem> {
                       isLiked: _isLiked,
                       onLike: _handleLikeToggle,
                       onReply: () {
-                        final targetUsername = widget.comment.user.username ?? widget.comment.user.name;
+                        final rawUsername = (widget.comment.user.username != null && widget.comment.user.username!.isNotEmpty)
+                            ? widget.comment.user.username!
+                            : widget.comment.user.name;
+                        final targetUsername = rawUsername.trim().replaceAll('@', '').replaceAll(' ', '_');
                         if (widget.onReplyToComment != null) {
                           widget.onReplyToComment!(targetUsername, widget.comment.id);
                         } else {
@@ -197,60 +199,95 @@ class _PostCommentItemState extends State<PostCommentItem> {
             ],
           ),
 
-          // Replies (Clean Instagram / X Minimalist Indented Layout)
-          if (hasReplies) ...[
-            if (!_isRepliesExpanded)
-              Padding(
-                padding: const EdgeInsets.only(left: 46.0, top: 6.0),
-                child: CommentRepliesExpandRow(
-                  replies: widget.comment.replies,
-                  isExpanded: false,
-                  onToggle: () => setState(() => _isRepliesExpanded = true),
-                ),
-              )
-            else ...[
-              Padding(
-                padding: const EdgeInsets.only(left: 46.0, top: 10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ListView.separated(
-                      shrinkWrap: true,
-                      padding: EdgeInsets.zero,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: widget.comment.replies.length,
-                      separatorBuilder: (context, index) => const SizedBox(height: 12.0),
-                      itemBuilder: (context, idx) {
-                        final reply = widget.comment.replies[idx];
-                        return CommentReplyTile(
-                          reply: reply,
-                          parentCommentId: widget.comment.id,
-                          isFirst: idx == 0,
-                          isLast: idx == widget.comment.replies.length - 1,
-                          onLikeToggle: _handleReplyLikeToggle,
-                          onReplyToComment: widget.onReplyToComment,
-                          onReplyClick: widget.onReplyClick,
-                          onUserClick: widget.onUserClick,
-                          onImageClick: widget.onImageClick,
-                          onShare: _copyToClipboard,
-                          postAuthorId: widget.postAuthorId,
-                          onDeleteComment: widget.onDeleteComment,
-                        );
-                      },
-                    ),
-                    if (widget.comment.replies.length > 2) ...[
-                      const SizedBox(height: 8.0),
-                      CommentRepliesExpandRow(
+          // Replies (Clean Instagram / Threads Minimalist Indented Layout with Progressive Paging)
+          if (hasReplies)
+            AnimatedSize(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOutCubic,
+              alignment: Alignment.topLeft,
+              child: !_isRepliesExpanded
+                  ? Padding(
+                      padding: const EdgeInsets.only(left: 46.0, top: 6.0),
+                      child: CommentRepliesExpandRow(
                         replies: widget.comment.replies,
-                        isExpanded: true,
-                        onToggle: () => setState(() => _isRepliesExpanded = false),
+                        isExpanded: false,
+                        onToggle: () {
+                          setState(() {
+                            _isRepliesExpanded = true;
+                            _visibleRepliesCount = 3;
+                          });
+                        },
                       ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
-          ],
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.only(left: 46.0, top: 10.0),
+                      child: Builder(
+                        builder: (context) {
+                          final totalReplies = widget.comment.replies.length;
+                          final displayCount = _visibleRepliesCount.clamp(0, totalReplies);
+                          final visibleReplies = widget.comment.replies.take(displayCount).toList();
+                          final remainingCount = totalReplies - displayCount;
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ListView.separated(
+                                shrinkWrap: true,
+                                padding: EdgeInsets.zero,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: visibleReplies.length,
+                                separatorBuilder: (context, index) => const SizedBox(height: 12.0),
+                                itemBuilder: (context, idx) {
+                                  final reply = visibleReplies[idx];
+                                  return CommentReplyTile(
+                                    reply: reply,
+                                    parentCommentId: widget.comment.id,
+                                    isFirst: idx == 0,
+                                    isLast: idx == visibleReplies.length - 1,
+                                    onLikeToggle: _handleReplyLikeToggle,
+                                    onReplyToComment: widget.onReplyToComment,
+                                    onReplyClick: widget.onReplyClick,
+                                    onUserClick: widget.onUserClick,
+                                    onImageClick: widget.onImageClick,
+                                    onShare: _copyToClipboard,
+                                    postAuthorId: widget.postAuthorId,
+                                    onDeleteComment: widget.onDeleteComment,
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 8.0),
+                              // Load more chunk button (if there are remaining replies)
+                              if (remainingCount > 0) ...[
+                                CommentRepliesExpandRow(
+                                  replies: widget.comment.replies,
+                                  isExpanded: true,
+                                  remainingCount: remainingCount,
+                                  onToggle: () {
+                                    setState(() {
+                                      _visibleRepliesCount += 5;
+                                    });
+                                  },
+                                ),
+                                const SizedBox(height: 6.0),
+                              ],
+                              // Collapse button to hide all replies
+                              CommentRepliesExpandRow(
+                                replies: widget.comment.replies,
+                                isExpanded: true,
+                                remainingCount: 0,
+                                onToggle: () {
+                                  setState(() {
+                                    _isRepliesExpanded = false;
+                                    _visibleRepliesCount = 3;
+                                  });
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+            ),
         ],
       ),
     );
@@ -260,39 +297,81 @@ class _PostCommentItemState extends State<PostCommentItem> {
     final username = widget.comment.user.username ?? widget.comment.user.name;
 
     return Row(
-      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Flexible(
-          child: GestureDetector(
-            onTap: () {
-              widget.onUserClick?.call(username);
-            },
-            child: Text(
-              username,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontFamily: 'SFPro',
-                fontSize: 13.5,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF0F172A),
+        Expanded(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: GestureDetector(
+                  onTap: () {
+                    widget.onUserClick?.call(username);
+                  },
+                  child: Text(
+                    username,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontFamily: 'SFPro',
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF0F172A),
+                    ),
+                  ),
+                ),
               ),
+              if (widget.comment.user.isVerified) ...[
+                const SizedBox(width: 4.0),
+                const Icon(
+                  Icons.verified_rounded,
+                  size: 13.5,
+                  color: AppColors.verifiedBlue,
+                ),
+              ],
+              if (widget.comment.user.isAuthor) ...[
+                const SizedBox(width: 5.0),
+                const CommentAuthorBadge(),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(width: 8.0),
+        // Timestamp
+        Text(
+          formatSmartTimestamp(widget.comment.timestamp),
+          style: const TextStyle(
+            fontFamily: 'SFPro',
+            fontSize: 12.0,
+            fontWeight: FontWeight.normal,
+            color: Color(0xFF94A3B8),
+          ),
+        ),
+        const SizedBox(width: 8.0),
+        // Three-dots menu
+        GestureDetector(
+          onTap: () {
+            HapticFeedback.lightImpact();
+            CommentOptionsSheet.show(
+              context: context,
+              comment: widget.comment,
+              parentCommentId: widget.comment.id,
+              postAuthorId: widget.postAuthorId,
+              onReplyClick: widget.onReplyClick,
+              onReplyToComment: widget.onReplyToComment,
+              onDeleteComment: widget.onDeleteComment,
+            );
+          },
+          behavior: HitTestBehavior.opaque,
+          child: const Padding(
+            padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            child: Icon(
+              Icons.more_horiz_rounded,
+              size: 16.0,
+              color: Color(0xFF94A3B8),
             ),
           ),
         ),
-        if (widget.comment.user.isVerified) ...[
-          const SizedBox(width: 4.0),
-          const Icon(
-            Icons.verified_rounded,
-            size: 13.5,
-            color: AppColors.verifiedBlue,
-          ),
-        ],
-        if (widget.comment.user.isAuthor) ...[
-          const SizedBox(width: 5.0),
-          const CommentAuthorBadge(),
-        ],
       ],
     );
   }

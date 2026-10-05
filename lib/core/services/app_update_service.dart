@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snapan_market/core/models/app_version_model.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
@@ -127,6 +129,78 @@ class AppUpdateService {
     _cachedLatestUpdate = null;
     _cachedPackageInfo = null;
     _hasPromptedThisSession = false;
+  }
+
+  /// Safely cleans up obsolete OTA APK installer files to free up disk space (SNAPS-36).
+  Future<void> cleanObsoleteInstallers() async {
+    try {
+      final List<Directory> targetDirs = [];
+
+      // 1. Files directory (where ota_update stores /files/ota_update/*.apk)
+      try {
+        final filesDir = await getApplicationSupportDirectory();
+        targetDirs.add(filesDir);
+        final otaDir = Directory('${filesDir.path}/ota_update');
+        if (await otaDir.exists()) {
+          targetDirs.add(otaDir);
+        }
+      } catch (e) {
+        debugPrint('[AppUpdateService] Error locating support dir: $e');
+      }
+
+      // 2. Cache directory
+      try {
+        final cacheDir = await getTemporaryDirectory();
+        targetDirs.add(cacheDir);
+        final cacheOtaDir = Directory('${cacheDir.path}/ota_update');
+        if (await cacheOtaDir.exists()) {
+          targetDirs.add(cacheOtaDir);
+        }
+      } catch (_) {}
+
+      // 3. External storage directory if present on Android
+      try {
+        final extDir = await getExternalStorageDirectory();
+        if (extDir != null) {
+          targetDirs.add(extDir);
+          final extOtaDir = Directory('${extDir.path}/ota_update');
+          if (await extOtaDir.exists()) {
+            targetDirs.add(extOtaDir);
+          }
+        }
+      } catch (_) {}
+
+      int deletedCount = 0;
+      int reclaimedBytes = 0;
+
+      for (final dir in targetDirs) {
+        if (!await dir.exists()) continue;
+        try {
+          final entities = dir.listSync();
+          for (final entity in entities) {
+            if (entity is File && entity.path.toLowerCase().endsWith('.apk')) {
+              try {
+                final size = await entity.length();
+                await entity.delete();
+                deletedCount++;
+                reclaimedBytes += size;
+                debugPrint('[AppUpdateService] Deleted stale APK: ${entity.path} (${(size / (1024 * 1024)).toStringAsFixed(1)} MB)');
+              } catch (e) {
+                debugPrint('[AppUpdateService] Could not delete ${entity.path}: $e');
+              }
+            }
+          }
+        } catch (e) {
+          debugPrint('[AppUpdateService] Error scanning directory ${dir.path}: $e');
+        }
+      }
+
+      if (deletedCount > 0) {
+        debugPrint('[AppUpdateService] Cleaned up $deletedCount installer APK(s). Total reclaimed: ${(reclaimedBytes / (1024 * 1024)).toStringAsFixed(1)} MB');
+      }
+    } catch (e) {
+      debugPrint('[AppUpdateService] Failed to clean obsolete installers: $e');
+    }
   }
 
   AppVersionModel? get cachedUpdate => _cachedLatestUpdate;

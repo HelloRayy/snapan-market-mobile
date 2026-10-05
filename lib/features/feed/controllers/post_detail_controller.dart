@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/services/poll_sync_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/services/suspension_service.dart';
 import 'package:snapan_market/features/feed/components/delete_post_bottom_sheet.dart';
@@ -18,8 +19,25 @@ class PostDetailController extends ChangeNotifier {
   PostDetailController({
     required this.post,
   }) : comments = List<PostCommentModel>.from(post.comments) {
+    post = PollSyncService.instance.syncPost(post);
+    PollSyncService.instance.addListener(_onPollSyncUpdate);
     isLoadingComments = comments.isEmpty;
     loadLiveComments();
+  }
+
+  void _onPollSyncUpdate() {
+    if (post.poll == null) return;
+    final synced = PollSyncService.instance.syncPost(post);
+    if (synced != post) {
+      post = synced;
+      notifyListeners();
+    }
+  }
+
+  @override
+  void dispose() {
+    PollSyncService.instance.removeListener(_onPollSyncUpdate);
+    super.dispose();
   }
 
   Future<void> loadLiveComments() async {
@@ -27,7 +45,16 @@ class PostDetailController extends ChangeNotifier {
       final live = await SupabaseService.instance.fetchPostComments(post.id);
       if (live.isNotEmpty) {
         comments = PostCommentModel.assembleTree(live);
-        post = post.copyWith(comments: comments);
+        post = post.copyWith(
+          comments: comments,
+          commentsCount: live.length,
+        );
+      } else {
+        comments = [];
+        post = post.copyWith(
+          comments: [],
+          commentsCount: 0,
+        );
       }
       isLoadingComments = false;
       notifyListeners();
@@ -197,46 +224,63 @@ class PostDetailController extends ChangeNotifier {
     }
   }
 
-  /// Vote in a poll with optimistic UI update
-  Future<void> votePoll(List<String> optionIds) async {
-    if (post.poll == null) return;
-    final currentPoll = post.poll!;
-    final previousVotes = currentPoll.userVotedOptionIds;
+  /// Toggle comment or reply like with optimistic UI update and remote persistence
+  Future<void> toggleCommentLike(PostCommentModel updated) async {
+    HapticFeedback.lightImpact();
+    final wasLiked = !updated.isLiked;
 
-    final updatedOptions = currentPoll.options.map((opt) {
-      int count = opt.votesCount;
-      if (previousVotes.contains(opt.id) && !optionIds.contains(opt.id)) {
-        count = (count - 1).clamp(0, 999999);
-      } else if (!previousVotes.contains(opt.id) && optionIds.contains(opt.id)) {
-        count += 1;
+    // Optimistic local update
+    comments = comments.map((c) {
+      if (c.id == updated.id) {
+        return updated.copyWith(replies: c.replies);
       }
-      return opt.copyWith(votesCount: count);
+      if (c.replies.any((r) => r.id == updated.id)) {
+        final newReplies = c.replies.map((r) => r.id == updated.id ? updated : r).toList();
+        return c.copyWith(replies: newReplies);
+      }
+      return c;
     }).toList();
-
-    int total = updatedOptions.fold(0, (sum, opt) => sum + opt.votesCount);
-
-    final optimisticPoll = currentPoll.copyWith(
-      options: updatedOptions,
-      totalVotes: total,
-      userVotedOptionIds: optionIds,
-    );
-
-    post = post.copyWith(poll: optimisticPoll);
     notifyListeners();
 
     try {
-      final serverPoll = await SupabaseService.instance.votePoll(
-        postId: post.id,
-        optionIds: optionIds,
-      );
-      post = post.copyWith(poll: serverPoll);
-      notifyListeners();
+      await SupabaseService.instance.toggleCommentLike(updated.id, wasLiked);
     } catch (e) {
-      debugPrint('Error votePoll detail: $e');
-      post = post.copyWith(poll: currentPoll);
+      debugPrint('Error toggleCommentLike: $e');
+      // Rollback
+      final rollback = updated.copyWith(
+        isLiked: wasLiked,
+        likesCount: wasLiked ? updated.likesCount + 1 : (updated.likesCount - 1).clamp(0, 999999),
+      );
+      comments = comments.map((c) {
+        if (c.id == rollback.id) {
+          return rollback.copyWith(replies: c.replies);
+        }
+        if (c.replies.any((r) => r.id == rollback.id)) {
+          final rollbackReplies = c.replies.map((r) => r.id == rollback.id ? rollback : r).toList();
+          return c.copyWith(replies: rollbackReplies);
+        }
+        return c;
+      }).toList();
       notifyListeners();
-      rethrow;
     }
+  }
+
+  /// Vote in a poll with instantaneous optimistic UI update & debounced network call
+  void votePoll(List<String> optionIds) {
+    if (post.poll == null) return;
+
+    PollSyncService.instance.castVote(
+      postId: post.id,
+      optionIds: optionIds,
+      currentPoll: post.poll!,
+      remoteCaller: (pId, oIds) => SupabaseService.instance.votePoll(
+        postId: pId,
+        optionIds: oIds,
+      ),
+      onError: (e) {
+        debugPrint('[PostDetailController] Error votePoll detail: $e');
+      },
+    );
   }
 
   Future<void> showSubmenu({

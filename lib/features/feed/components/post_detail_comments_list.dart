@@ -13,6 +13,7 @@ class PostDetailCommentsList extends StatelessWidget {
   final void Function(String username, [String? commentId]) onReplyClick;
   final void Function(List<String> images, int index) onImageClick;
   final ValueChanged<String>? onDeleteComment;
+  final ValueChanged<PostCommentModel>? onLikeToggle;
 
   const PostDetailCommentsList({
     super.key,
@@ -23,6 +24,7 @@ class PostDetailCommentsList extends StatelessWidget {
     required this.onReplyClick,
     required this.onImageClick,
     this.onDeleteComment,
+    this.onLikeToggle,
   });
 
   @override
@@ -55,6 +57,7 @@ class PostDetailCommentsList extends StatelessWidget {
             return PostCommentItem(
               key: ValueKey(chain.id),
               comment: chainComment,
+              onLikeToggle: onLikeToggle,
               onReplyClick: (u) => onReplyClick(u, chain.id),
               onReplyToComment: (u, cId) => onReplyClick(u, cId),
               onImageClick: onImageClick,
@@ -65,6 +68,7 @@ class PostDetailCommentsList extends StatelessWidget {
                 key: ValueKey(comment.id),
                 comment: comment,
                 postAuthorId: post.seller.id,
+                onLikeToggle: onLikeToggle,
                 onReplyClick: (u) => onReplyClick(u, comment.id),
                 onReplyToComment: (u, cId) => onReplyClick(u, cId),
                 onImageClick: onImageClick,

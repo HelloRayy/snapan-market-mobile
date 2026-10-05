@@ -134,6 +134,18 @@ class ThreadChainItemModel {
     if (rawImages is List) {
       parsedImages = rawImages.map((e) => e.toString()).toList();
     }
+    int parseCount(dynamic rawCount, dynamic countList) {
+      if (countList is List && countList.isNotEmpty && countList.first is Map) {
+        final firstMap = countList.first as Map;
+        if (firstMap.containsKey('count')) {
+          final c = firstMap['count'];
+          if (c is num) return c.toInt();
+        }
+      }
+      if (rawCount is num) return rawCount.toInt();
+      return 0;
+    }
+
     return ThreadChainItemModel(
       id: json['id']?.toString() ?? '',
       partNumber: (json['part_number'] ?? json['partNumber'] ?? 1) as int,
@@ -141,8 +153,8 @@ class ThreadChainItemModel {
       caption: json['caption']?.toString() ?? '',
       images: parsedImages,
       timestamp: _formatRelativeTimestamp(json['created_at'] ?? json['timestamp']),
-      likesCount: (json['likes_count'] ?? json['likesCount'] ?? 0) as int,
-      commentsCount: (json['comments_count'] ?? json['commentsCount'] ?? 0) as int,
+      likesCount: parseCount(json['likes_count'] ?? json['likesCount'], json['post_likes']),
+      commentsCount: parseCount(json['comments_count'] ?? json['commentsCount'], json['post_comments']),
       isLiked: json['is_liked'] == true || json['isLiked'] == true,
     );
   }
@@ -283,15 +295,39 @@ class PostCommentModel {
   }
 
   /// Reassembles flat comments from Supabase into Instagram-style nested comment trees
+  /// Flattens any depth of sub-replies into the root parent thread with chronologic order
   static List<PostCommentModel> assembleTree(List<PostCommentModel> flatList) {
     if (flatList.isEmpty) return [];
 
+    final Map<String, PostCommentModel> allById = {
+      for (final c in flatList) c.id: c,
+    };
+
+    // Helper to find the ultimate top-level root comment ID
+    String findRootId(String startParentId) {
+      String current = startParentId;
+      final visited = <String>{current};
+      while (allById.containsKey(current)) {
+        final parent = allById[current]!;
+        if (parent.parentCommentId == null || parent.parentCommentId!.isEmpty) {
+          return current;
+        }
+        if (visited.contains(parent.parentCommentId)) {
+          break; // Avoid cyclic loop
+        }
+        current = parent.parentCommentId!;
+        visited.add(current);
+      }
+      return current;
+    }
+
     final Map<String, PostCommentModel> roots = {};
-    final Map<String, List<PostCommentModel>> repliesByParent = {};
+    final Map<String, List<PostCommentModel>> repliesByRoot = {};
 
     for (final comment in flatList) {
       if (comment.parentCommentId != null && comment.parentCommentId!.isNotEmpty) {
-        repliesByParent.putIfAbsent(comment.parentCommentId!, () => []).add(comment);
+        final rootId = findRootId(comment.parentCommentId!);
+        repliesByRoot.putIfAbsent(rootId, () => []).add(comment);
       } else {
         roots[comment.id] = comment;
       }
@@ -299,7 +335,7 @@ class PostCommentModel {
 
     final List<PostCommentModel> assembled = [];
     for (final root in roots.values) {
-      final childReplies = repliesByParent[root.id] ?? [];
+      final childReplies = repliesByRoot[root.id] ?? [];
       final allRepliesMap = <String, PostCommentModel>{};
       for (final r in root.replies) {
         allRepliesMap[r.id] = r;
@@ -311,7 +347,7 @@ class PostCommentModel {
     }
 
     // Preserve any reply whose parent wasn't in roots
-    for (final entry in repliesByParent.entries) {
+    for (final entry in repliesByRoot.entries) {
       if (!roots.containsKey(entry.key)) {
         assembled.addAll(entry.value);
       }
@@ -475,6 +511,7 @@ class MarketPostModel {
     if (rawComments is List) {
       final flat = rawComments
           .whereType<Map<String, dynamic>>()
+          .where((c) => c.containsKey('content') || c.containsKey('user_id'))
           .map((c) => PostCommentModel.fromJson(c))
           .toList();
       parsedComments = PostCommentModel.assembleTree(flat);
@@ -491,6 +528,31 @@ class MarketPostModel {
         Map<String, dynamic>.from(json['poll'] as Map),
         userVotedOptionIds: userVotes,
       );
+    }
+
+    int parseCount(dynamic rawCount, dynamic countList) {
+      if (countList is List && countList.isNotEmpty && countList.first is Map) {
+        final firstMap = countList.first as Map;
+        if (firstMap.containsKey('count')) {
+          final c = firstMap['count'];
+          if (c is num) return c.toInt();
+        }
+      }
+      if (rawCount is num) return rawCount.toInt();
+      return 0;
+    }
+
+    final parsedLikes = parseCount(
+      json['likes_count'] ?? json['likesCount'],
+      json['post_likes'],
+    );
+
+    int parsedCommentsCount = parseCount(
+      json['comments_count'] ?? json['commentsCount'],
+      json['post_comments'],
+    );
+    if (parsedCommentsCount == 0 && parsedComments.isNotEmpty) {
+      parsedCommentsCount = parsedComments.length;
     }
 
     return MarketPostModel(
@@ -513,8 +575,8 @@ class MarketPostModel {
           : null,
       stock: json['stock'] != null ? (num.tryParse(json['stock'].toString())?.toInt()) : null,
       category: json['category']?.toString(),
-      likesCount: (json['likes_count'] ?? json['likesCount'] ?? 0) as int,
-      commentsCount: (json['comments_count'] ?? json['commentsCount'] ?? 0) as int,
+      likesCount: parsedLikes,
+      commentsCount: parsedCommentsCount,
       repostsCount: (json['reposts_count'] ?? json['repostsCount'] ?? 0) as int,
       isLiked: json['is_liked'] == true || json['isLiked'] == true,
       isReposted: json['is_reposted'] == true || json['isReposted'] == true,

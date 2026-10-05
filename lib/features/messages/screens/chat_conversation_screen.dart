@@ -221,18 +221,9 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
         ),
         trailingActions: [
           GlassToolbarAction(
-            icon: CupertinoIcons.phone,
-            tooltip: 'Panggilan',
-            onTap: () {
-              HapticFeedback.lightImpact();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Fitur panggilan suara akan segera hadir!'),
-                  behavior: SnackBarBehavior.floating,
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
+            icon: CupertinoIcons.person_crop_circle,
+            tooltip: 'Profil',
+            onTap: _handleViewProfile,
           ),
           GlassToolbarAction(
             icon: CupertinoIcons.ellipsis,
@@ -249,12 +240,16 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              controller: _scrollController,
-              padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 14.0),
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                controller: _scrollController,
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 14.0),
               children: [
                 if (widget.conversation.productContext != null)
                   Padding(
@@ -294,6 +289,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }

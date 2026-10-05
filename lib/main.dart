@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
 import 'package:snapan_market/core/constants/supabase_constants.dart';
 import 'package:snapan_market/core/navigation/navigation_service.dart';
+import 'package:snapan_market/core/services/app_update_service.dart';
 import 'package:snapan_market/core/services/global_notification_service.dart';
 import 'package:snapan_market/core/services/suspension_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -47,6 +48,9 @@ Future<void> main() async {
 
   // Initialize background suspension listeners (SNAPS-16)
   SuspensionService.instance.init();
+
+  // Clean obsolete OTA APK installers in background to reclaim disk space (SNAPS-36)
+  unawaited(AppUpdateService.instance.cleanObsoleteInstallers());
 
   runApp(const SnapanMarketApp());
 }

@@ -18,7 +18,7 @@ export const MarketBottomNav: React.FC<MarketBottomNavProps> = ({
   onTabChange,
   onPostClick,
   userAvatar = getOreoAvatarUrl('snapan-current-user', { size: 100 }),
-  unreadMessagesCount = 20,
+  unreadMessagesCount = 0,
   isVisible = true,
 }) => {
   // Auto-detect virtual keyboard and active text inputs to prevent bottom nav from floating over the keyboard

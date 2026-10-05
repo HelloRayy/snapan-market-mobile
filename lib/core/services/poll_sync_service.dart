@@ -1,7 +1,7 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
-import 'package:snapan_market/features/feed/models/post_poll_model.dart';
 
 /// Singleton service managing global poll voting cache and synchronization across screens (<200 lines).
 class PollSyncService extends ChangeNotifier {
@@ -10,6 +10,8 @@ class PollSyncService extends ChangeNotifier {
 
   final Map<String, List<String>> _userVotes = {};
   final Map<String, PostPollModel> _pollCache = {};
+  final Map<String, Timer> _debounceTimers = {};
+  final Map<String, PostPollModel> _preVoteSnapshots = {};
   bool _isInitialized = false;
 
   bool get isInitialized => _isInitialized;
@@ -17,10 +19,71 @@ class PollSyncService extends ChangeNotifier {
 
   /// Reset in-memory state on sign out
   void clear() {
+    for (final timer in _debounceTimers.values) {
+      timer.cancel();
+    }
+    _debounceTimers.clear();
+    _preVoteSnapshots.clear();
     _userVotes.clear();
     _pollCache.clear();
     _isInitialized = false;
     notifyListeners();
+  }
+
+  /// Get cached poll model if available
+  PostPollModel? getCachedPoll(String postId) => _pollCache[postId];
+
+  /// Cast or switch vote with instant optimistic UI update, debounce (450ms) to avoid
+  /// spamming Supabase RPCs, and auto-rollback on network error.
+  void castVote({
+    required String postId,
+    required List<String> optionIds,
+    required PostPollModel currentPoll,
+    required Future<PostPollModel> Function(String postId, List<String> optionIds) remoteCaller,
+    void Function(PostPollModel updatedPoll)? onOptimisticUpdate,
+    void Function(PostPollModel serverPoll)? onServerSuccess,
+    void Function(Object error)? onError,
+  }) {
+    if (currentPoll.isExpired) return;
+    if (currentPoll.hasVoted && !currentPoll.allowChangeVote) return;
+
+    final prevVotes = _userVotes[postId] ?? currentPoll.userVotedOptionIds;
+    if (setEquals(prevVotes.toSet(), optionIds.toSet())) return;
+
+    // Preserve snapshot of clean state before this debounce burst
+    _preVoteSnapshots.putIfAbsent(postId, () => _pollCache[postId] ?? currentPoll);
+
+    // Apply optimistic update immediately
+    final basePoll = _pollCache[postId] ?? currentPoll;
+    final optimisticPoll = basePoll.applyOptimisticVotes(optionIds);
+
+    _userVotes[postId] = List<String>.from(optionIds);
+    _pollCache[postId] = optimisticPoll;
+    onOptimisticUpdate?.call(optimisticPoll);
+    notifyListeners();
+
+    // Debounce the actual backend network RPC
+    _debounceTimers[postId]?.cancel();
+    _debounceTimers[postId] = Timer(const Duration(milliseconds: 450), () async {
+      try {
+        final serverPoll = await remoteCaller(postId, optionIds);
+        _preVoteSnapshots.remove(postId);
+        registerPollModel(postId, serverPoll);
+        onServerSuccess?.call(serverPoll);
+      } catch (e) {
+        debugPrint('[PollSyncService] Error casting vote for post $postId: $e');
+        // Rollback to clean pre-burst snapshot
+        final rollbackPoll = _preVoteSnapshots.remove(postId);
+        if (rollbackPoll != null) {
+          _userVotes[postId] = List<String>.from(rollbackPoll.userVotedOptionIds);
+          _pollCache[postId] = rollbackPoll;
+          notifyListeners();
+        }
+        onError?.call(e);
+      } finally {
+        _debounceTimers.remove(postId);
+      }
+    });
   }
 
   /// Check if the user has voted in a specific poll
@@ -104,13 +167,11 @@ class PollSyncService extends ChangeNotifier {
             .select('post_id, option_id')
             .eq('user_id', user.id);
 
-        if (votesResponse is List) {
-          for (final row in votesResponse) {
-            final pid = row['post_id']?.toString();
-            final oid = row['option_id']?.toString();
-            if (pid != null && oid != null) {
-              _userVotes.putIfAbsent(pid, () => []).add(oid);
-            }
+        for (final row in votesResponse) {
+          final pid = row['post_id']?.toString();
+          final oid = row['option_id']?.toString();
+          if (pid != null && oid != null) {
+            _userVotes.putIfAbsent(pid, () => []).add(oid);
           }
         }
         _isInitialized = true;

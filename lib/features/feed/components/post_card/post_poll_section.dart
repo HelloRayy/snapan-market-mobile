@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
+import 'package:snapan_market/core/services/poll_sync_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/auth/screens/auth_screen.dart';
 import 'package:snapan_market/features/feed/components/post_card/post_poll_option_tile.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
-import 'package:snapan_market/features/feed/models/post_poll_model.dart';
 
 /// Minimalist Threads-Style Poll Section (<120 lines)
 class PostPollSection extends StatelessWidget {
@@ -21,8 +21,8 @@ class PostPollSection extends StatelessWidget {
   PostPollModel? get _poll => post.poll;
 
   void _handleOptionTap(BuildContext context, PostPollOptionModel option) {
-    HapticFeedback.lightImpact();
     if (!SupabaseService.instance.isAuthenticated) {
+      HapticFeedback.lightImpact();
       _promptLogin(context);
       return;
     }
@@ -32,17 +32,29 @@ class PostPollSection extends StatelessWidget {
     if (poll.hasVoted && !poll.allowChangeVote) return;
 
     if (!poll.userVotedOptionIds.contains(option.id)) {
+      if (poll.hasVoted) {
+        HapticFeedback.selectionClick();
+      } else {
+        HapticFeedback.mediumImpact();
+      }
       _submitVote([option.id]);
     }
   }
 
   void _submitVote(List<String> optionIds) {
     if (optionIds.isEmpty) return;
-    HapticFeedback.mediumImpact();
     if (onVote != null) {
       onVote!(post, optionIds);
-    } else {
-      SupabaseService.instance.votePoll(postId: post.id, optionIds: optionIds);
+    } else if (post.poll != null) {
+      PollSyncService.instance.castVote(
+        postId: post.id,
+        optionIds: optionIds,
+        currentPoll: post.poll!,
+        remoteCaller: (pId, oIds) => SupabaseService.instance.votePoll(
+          postId: pId,
+          optionIds: oIds,
+        ),
+      );
     }
   }
 

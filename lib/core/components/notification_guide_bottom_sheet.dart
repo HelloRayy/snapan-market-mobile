@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:snapan_market/core/services/global_notification_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 /// Bottom Sheet Panduan Pengaturan Notifikasi HP (Agar notifikasi di luar app tembus)
 class NotificationGuideBottomSheet extends StatefulWidget {
   const NotificationGuideBottomSheet({super.key});
@@ -25,8 +27,30 @@ class _NotificationGuideBottomSheetState extends State<NotificationGuideBottomSh
   bool _isSyncing = false;
   String? _syncStatus;
 
+  static const MethodChannel _settingsChannel = MethodChannel('com.snapan.market/settings');
+
+  Future<void> _openNotificationSettings() async {
+    HapticFeedback.lightImpact();
+    try {
+      await _settingsChannel.invokeMethod('openNotificationSettings');
+    } catch (e) {
+      debugPrint('Error opening notification settings: $e');
+    }
+  }
+
   Future<void> _handleSyncToken() async {
     HapticFeedback.mediumImpact();
+
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) {
+      HapticFeedback.heavyImpact();
+      setState(() {
+        _isSyncing = false;
+        _syncStatus = 'Perhatian: Anda belum login. Silakan masuk ke akun Snaps Anda terlebih dahulu agar token tersambung ke profil.';
+      });
+      return;
+    }
+
     setState(() {
       _isSyncing = true;
       _syncStatus = null;
@@ -37,14 +61,14 @@ class _NotificationGuideBottomSheetState extends State<NotificationGuideBottomSh
       if (mounted) {
         setState(() {
           _isSyncing = false;
-          _syncStatus = 'Token perangkat berhasil disinkronkan ke server!';
+          _syncStatus = 'Token perangkat berhasil disinkronkan ke server untuk akun Anda!';
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
           _isSyncing = false;
-          _syncStatus = 'Gagal sinkronisasi: $e';
+          _syncStatus = 'Gagal sinkronisasi: ${e.toString().replaceAll('StateError: ', '').replaceAll('Exception: ', '')}';
         });
       }
     }
@@ -130,6 +154,49 @@ class _NotificationGuideBottomSheetState extends State<NotificationGuideBottomSh
             const Divider(color: Color(0xFFF1F5F9), height: 1.0),
             const SizedBox(height: 16.0),
 
+            // Account connection status indicator
+            Builder(
+              builder: (context) {
+                final user = Supabase.instance.client.auth.currentUser;
+                final isLoggedIn = user != null;
+                return Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
+                  margin: const EdgeInsets.only(bottom: 16.0),
+                  decoration: BoxDecoration(
+                    color: isLoggedIn ? const Color(0xFFF0FDF4) : const Color(0xFFFFFBEB),
+                    borderRadius: BorderRadius.circular(12.0),
+                    border: Border.all(
+                      color: isLoggedIn ? const Color(0xFFBBF7D0) : const Color(0xFFFDE68A),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        isLoggedIn ? CupertinoIcons.checkmark_shield_fill : CupertinoIcons.exclamationmark_triangle_fill,
+                        size: 16.0,
+                        color: isLoggedIn ? const Color(0xFF16A34A) : const Color(0xFFD97706),
+                      ),
+                      const SizedBox(width: 8.0),
+                      Expanded(
+                        child: Text(
+                          isLoggedIn
+                              ? 'Akun Terhubung: ${user.email?.split('@').first ?? 'Aktif'}'
+                              : 'Belum Login: Masuk akun dahulu agar notifikasi terhubung',
+                          style: TextStyle(
+                            fontFamily: 'SFPro',
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.w600,
+                            color: isLoggedIn ? const Color(0xFF15803D) : const Color(0xFFB45309),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+
             // Step 1
             _buildStepTile(
               stepNumber: '1',
@@ -195,7 +262,33 @@ class _NotificationGuideBottomSheetState extends State<NotificationGuideBottomSh
               ),
             ],
 
-            // Action Button: Sinkronisasi Token Sekarang
+            // Action 1: Buka Pengaturan Notifikasi HP Langsung (1-Tap Shortcut)
+            SizedBox(
+              width: double.infinity,
+              height: 48.0,
+              child: OutlinedButton.icon(
+                onPressed: _openNotificationSettings,
+                icon: const Icon(CupertinoIcons.gear_alt_fill, size: 18.0, color: AppColors.primary),
+                label: const Text(
+                  'Buka Pengaturan Notifikasi HP',
+                  style: TextStyle(
+                    fontFamily: 'SFPro',
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary,
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: AppColors.primary, width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14.0),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10.0),
+
+            // Action 2: Sinkronisasi Token Sekarang
             SizedBox(
               width: double.infinity,
               height: 48.0,

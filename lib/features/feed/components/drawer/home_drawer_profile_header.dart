@@ -5,7 +5,7 @@ import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 class HomeDrawerProfileHeader extends StatelessWidget {
   final Map<String, dynamic>? userProfile;
   final String displayName;
-  final String displayEmail;
+  final String displaySubtitle;
   final Color borderColor;
   final Color inkColor;
   final Color mutedColor;
@@ -15,7 +15,7 @@ class HomeDrawerProfileHeader extends StatelessWidget {
     super.key,
     this.userProfile,
     required this.displayName,
-    required this.displayEmail,
+    required this.displaySubtitle,
     required this.borderColor,
     required this.inkColor,
     required this.mutedColor,
@@ -57,7 +57,7 @@ class HomeDrawerProfileHeader extends StatelessWidget {
                 ),
                 const SizedBox(height: 2.0),
                 Text(
-                  displayEmail,
+                  displaySubtitle,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(

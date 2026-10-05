@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Shield, Lock, Mail, Eye, EyeOff, AlertCircle, ArrowLeft } from 'lucide-react';
-import { Button, Input, LayerCard, Badge } from '@cloudflare/kumo';
+import { Shield, Lock, Mail, Eye, EyeOff, AlertCircle, ArrowLeft, Loader2 } from 'lucide-react';
 import { supabase } from '@/services/api/supabase';
 import { adminService } from '../services/adminService';
 import { adminSecurityService } from '../services/adminSecurityService';
@@ -69,19 +68,18 @@ export function AdminLoginPage({ onSuccess, onBackToApp }: AdminLoginPageProps) 
   };
 
   return (
-    <div className="min-h-screen bg-kumo-canvas flex flex-col justify-center items-center px-4 py-12 selection:bg-indigo-600 selection:text-white">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center px-4 py-12 selection:bg-indigo-600 selection:text-white">
       {/* Top Navigation Back link */}
       {onBackToApp && (
         <div className="absolute top-6 left-6">
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
+            type="button"
             onClick={onBackToApp}
-            className="flex items-center gap-1.5 text-xs text-kumo-subtle hover:text-kumo-default"
+            className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-200/50 cursor-pointer"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             Kembali ke Aplikasi Siswa
-          </Button>
+          </button>
         </div>
       )}
 
@@ -93,25 +91,25 @@ export function AdminLoginPage({ onSuccess, onBackToApp }: AdminLoginPageProps) 
           </div>
           <div className="space-y-1">
             <div className="flex items-center justify-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-kumo-default">
+              <h1 className="text-xl font-bold tracking-tight text-slate-900">
                 sNaps Admin Portal
               </h1>
-              <Badge variant="outline" className="border-indigo-200 text-indigo-600 bg-indigo-50 text-[10px]">
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold border border-indigo-200 text-indigo-600 bg-indigo-50">
                 Internal
-              </Badge>
+              </span>
             </div>
-            <p className="text-xs text-kumo-subtle">
+            <p className="text-xs text-slate-500">
               Sistem Manajemen Terpadu Marketplace & Feed SMKN 8 Semarang
             </p>
           </div>
         </div>
 
         {/* Login Card */}
-        <LayerCard className="p-6 md:p-8 border border-kumo-hairline bg-kumo-canvas rounded-2xl shadow-sm">
+        <div className="p-6 md:p-8 border border-slate-200 bg-white rounded-2xl shadow-sm">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="flex items-center gap-2 pb-2 border-b border-kumo-hairline">
+            <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
               <Shield className="h-4 w-4 text-indigo-600" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-kumo-subtle">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Otentikasi Administrator
               </span>
             </div>
@@ -126,41 +124,43 @@ export function AdminLoginPage({ onSuccess, onBackToApp }: AdminLoginPageProps) 
 
             {/* Email Field */}
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-kumo-default flex items-center gap-1.5">
-                <Mail className="h-3.5 w-3.5 text-kumo-subtle" />
+              <label className="text-xs font-medium text-slate-700 flex items-center gap-1.5">
+                <Mail className="h-3.5 w-3.5 text-slate-400" />
                 Email Administrator
               </label>
-              <Input
-                type="email"
-                required
-                placeholder="admin@snapan.id"
-                value={email}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                disabled={isLoading}
-                className="w-full text-sm"
-              />
+              <div className="relative">
+                <input
+                  type="email"
+                  required
+                  placeholder="admin@snapan.id"
+                  value={email}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                  disabled={isLoading}
+                  className="w-full h-10 px-3 py-2 text-sm bg-slate-50/50 border border-slate-200 rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all disabled:opacity-50 disabled:bg-slate-100"
+                />
+              </div>
             </div>
 
             {/* Password Field */}
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-kumo-default flex items-center gap-1.5">
-                <Lock className="h-3.5 w-3.5 text-kumo-subtle" />
+              <label className="text-xs font-medium text-slate-700 flex items-center gap-1.5">
+                <Lock className="h-3.5 w-3.5 text-slate-400" />
                 Kata Sandi
               </label>
               <div className="relative">
-                <Input
+                <input
                   type={showPassword ? 'text' : 'password'}
                   required
                   placeholder="••••••••••••"
                   value={password}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                   disabled={isLoading}
-                  className="w-full pr-10 text-sm"
+                  className="w-full h-10 pl-3 pr-10 py-2 text-sm bg-slate-50/50 border border-slate-200 rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all disabled:opacity-50 disabled:bg-slate-100"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-kumo-subtle hover:text-kumo-default transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -173,21 +173,27 @@ export function AdminLoginPage({ onSuccess, onBackToApp }: AdminLoginPageProps) 
 
             {/* Submit Button */}
             <div className="pt-2">
-              <Button
+              <button
                 type="submit"
-                variant="primary"
                 disabled={isLoading}
-                className="w-full py-2.5 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs justify-center"
+                className="w-full h-10 px-4 py-2 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-lg shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? 'Memverifikasi Hak Akses...' : 'Masuk ke Portal Admin'}
-              </Button>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin text-white" />
+                    <span>Memverifikasi Hak Akses...</span>
+                  </>
+                ) : (
+                  <span>Masuk ke Portal Admin</span>
+                )}
+              </button>
             </div>
           </form>
-        </LayerCard>
+        </div>
 
         {/* Footer info */}
         <div className="text-center">
-          <p className="text-[11px] text-kumo-subtle">
+          <p className="text-[11px] text-slate-500">
             Hanya dapat diakses oleh akun terverifikasi dengan role <span className="font-mono text-indigo-600">admin</span> pada basis data SMKN 8 Semarang.
           </p>
         </div>

@@ -36,32 +36,15 @@
    - Generate, refactor, and update Flutter widgets, models, controllers, and services in `lib/` in one clean pass.
    - Apply clean widget decomposition, idiomatic Dart naming, proper null safety, and const constructor optimization.
 
-5. **Strict Anti-Grep & Architecture Discovery Rule with Graphify (`graphify-out/`)**:
-   - **STRICTLY PROHIBITED: Sequential `git grep` looping (>2 times in a row)**. Never perform blind grep spirals across multiple files to trace architecture or component relationships.
-   - The repository maintains an active knowledge graph (`graphify-out/graph.json`, `graphify-out/GRAPH_REPORT.md`, `graphify-out/graph.html`) containing 4,700+ nodes and 6,800+ edges across both Flutter and React codebases.
-   - **MANDATORY**: All AI agents MUST query Graphify on the first pass to locate files, symbols, modules, or trace component relationships faster:
-     ```bash
-     uv tool run --from graphifyy graphify query "<symbol or concept>"
-     ```
-   - For tracing connection paths between two modules:
-     ```bash
-     uv tool run --from graphifyy graphify path "<SourceModule>" "<TargetModule>"
-     ```
-   - For explaining a specific node or class:
-     ```bash
-     uv tool run --from graphifyy graphify explain "<NodeName>"
-     ```
+5. **Deterministic Routing via `CODEBASE_AGENT_MAP.md` (Zero Blind Reads)**:
+   - **STRICTLY PROHIBITED: Blind grep in root directory or sequential grep spirals**. Never search across all 600+ files simultaneously.
+   - **MANDATORY**: Consult [`CODEBASE_AGENT_MAP.md`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/CODEBASE_AGENT_MAP.md) first to identify the exact file, controller, and screen before calling `view_file`.
+   - **Strictly Scoped Searches**: If searching for a symbol or text, always scope your search pattern to a specific subfolder (e.g. `lib/features/feed/` or `src/admin/`).
 
-6. **Mandatory Automatic Git Hook Graphify Sync, Commit & Push Directive**:
-   - The repository has an active post-commit git hook (`graphify hook install`) that automatically updates `graphify-out/graph.json` in the background after every commit.
-   - For manual incremental sync if needed:
-     ```bash
-     uv tool run --from graphifyy graphify extract . --code-only
-     ```
-   - After completing any task or code change:
-     1. `git add .`
-     2. `git commit -m "<type>(<scope>): <descriptive message>"`
-     3. `git push`
+6. **Graphify Role (Architectural & Refactoring Tool)**:
+   - Graphify (`graphify-out/`) is maintained for visual knowledge graphs, community clustering, and cross-module circular dependency detection.
+   - **Do NOT run CLI `graphify query` on standard bug fixes or UI tasks**, as it adds process latency and token overhead. Use `CODEBASE_AGENT_MAP.md` for instant direct file location.
+   - Keep the git hook intact for background index updates when commits are made.
 
 7. **Strict File Size Cap (Max 250–300 Lines Per File)**:
    - Every Dart file must be strictly bounded in size (target <= 250 lines, hard cap 300 lines).
@@ -151,6 +134,14 @@
          );
          ```
       ```
+
+12. **Waspada Isu & Penyakit Output AI (Panduan Kualitas & Akal Sehat)**:
+    - **Jangan Asal Kelihatan Bener tapi Logikanya Ngaco**: Output atau kode jangan cuma yang penting kelihatan rapi atau nggak error di layar, tapi begitu dipakai alurnya malah berantakan. Pastikan **logika** alur dari awal sampai akhir nyambung dan masuk akal (misalnya hitungan harga nggak salah, alur beli barang tepat, dan status nggak nyangkut).
+    - **Jangan Suka Ngarang (Halusinasi)**: Jangan pernah mengarang tombol, nama fitur, file, atau data yang aslinya nggak ada di aplikasi. Kalau memang belum tahu atau datanya belum jelas, langsung tanya ke pengguna, jangan sok tahu atau ngarang bebas.
+    - **Jangan Bikin Masalah Baru (Efek Domino)**: Waktu disuruh benerin satu bagian kecil, jangan asal utak-atik bagian lain yang sudah jalan normal. Niatnya benerin satu hal, jangan sampai malah ngerusak fitur lain yang sudah rapi.
+    - **Jangan Cuma Janji Manis**: Jangan gampang bilang "sudah beres", "sudah aman", atau "sudah ditest" kalau aslinya cuma dikira-kira di kepala doang. Lebih baik jujur dan teliti cek logikanya daripada ngasih rasa aman palsu.
+    - **Bicara Jelas, Jangan Bertele-tele**: Jelaskan apa yang dikerjakan dengan bahasa manusia yang santai dan to the point. Hindari ceramah teori panjang lebar atau istilah rumit yang bikin pusing.
+    - **Pikirkan Rasa Nyata Pas Dipakai Manusia**: Sadari bahwa AI nggak megang HP langsung. Jangan bikin tombol yang kekecilan buat dipencet jempol, tulisan yang numpuk/kepotong, atau alur yang bikin orang bingung waktu pakai aplikasinya.
 
 ---
 

@@ -50,7 +50,10 @@ class CommentOptionsSheet {
                 ),
                 onTap: () {
                   Navigator.pop(ctx);
-                  final targetUsername = comment.user.username ?? comment.user.name;
+                  final rawUsername = (comment.user.username != null && comment.user.username!.isNotEmpty)
+                      ? comment.user.username!
+                      : comment.user.name;
+                  final targetUsername = rawUsername.trim().replaceAll('@', '').replaceAll(' ', '_');
                   if (onReplyToComment != null) {
                     onReplyToComment(targetUsername, parentCommentId);
                   } else {

@@ -71,13 +71,23 @@ export function App() {
     handleCloseChatThread,
   } = useAppNavigation();
 
-  // Admin Route Flags
-  const isAdminLoginRoute = currentRoute === '/admin/login' || (typeof window !== 'undefined' && window.location.pathname === '/admin/login');
+  // Admin Route Flags with path normalization (strips trailing slashes & supports hash routes)
+  const windowPath = typeof window !== 'undefined' ? window.location.pathname.replace(/\/+$/, '').toLowerCase() : '';
+  const windowHash = typeof window !== 'undefined' ? window.location.hash.toLowerCase() : '';
+  const currentPath = currentRoute.replace(/\/+$/, '').toLowerCase();
+
+  const isAdminLoginRoute =
+    currentPath === '/admin/login' ||
+    windowPath === '/admin/login' ||
+    windowHash === '#/admin/login' ||
+    windowHash === '#admin/login';
+
   const isAdminDashboardRoute =
-    (currentRoute === '/admin' ||
-      currentRoute.startsWith('/admin/') ||
-      (typeof window !== 'undefined' && (window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/')))) &&
+    ((currentPath === '/admin' || currentPath.startsWith('/admin/')) ||
+      (windowPath === '/admin' || windowPath.startsWith('/admin/')) ||
+      (windowHash === '#/admin' || windowHash === '#admin' || windowHash.startsWith('#/admin/'))) &&
     !isAdminLoginRoute;
+
   const isAdminRoute = isAdminLoginRoute || isAdminDashboardRoute;
 
   // Route Flags
@@ -87,12 +97,13 @@ export function App() {
   const isColorsRoute = currentRoute === '/colors' || (typeof window !== 'undefined' && window.location.hash === '#colors');
   const isMapRoute = currentRoute === '/map' || (typeof window !== 'undefined' && window.location.hash === '#map');
   const isLandingRoute =
-    currentRoute === '/' ||
-    currentRoute === '/download' ||
-    (typeof window !== 'undefined' &&
-      (window.location.pathname === '/' ||
-        window.location.pathname === '/home' ||
-        window.location.hash === '#download'));
+    !isAdminRoute &&
+    (currentRoute === '/' ||
+      currentRoute === '/download' ||
+      (typeof window !== 'undefined' &&
+        (window.location.pathname === '/' ||
+          window.location.pathname === '/home' ||
+          window.location.hash === '#download')));
   const isHomeRoute =
     !isLandingRoute &&
     !isSearchRoute &&

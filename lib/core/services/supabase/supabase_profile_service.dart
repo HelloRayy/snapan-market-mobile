@@ -5,6 +5,10 @@ class SupabaseProfileService {
   SupabaseProfileService(this._client);
   final SupabaseClient _client;
 
+  /// Broadcast notifier for the current user's profile
+  final ValueNotifier<Map<String, dynamic>?> currentUserProfileNotifier =
+      ValueNotifier<Map<String, dynamic>?>(null);
+
   /// Fetch user profile from public.profiles
   Future<Map<String, dynamic>?> getProfile(String userId) async {
     try {
@@ -13,6 +17,9 @@ class SupabaseProfileService {
           .select()
           .eq('id', userId)
           .maybeSingle();
+      if (_client.auth.currentUser?.id == userId && data != null) {
+        currentUserProfileNotifier.value = data;
+      }
       return data;
     } catch (e) {
       debugPrint('Error getProfile: $e');
@@ -53,6 +60,9 @@ class SupabaseProfileService {
           ),
           callback: (PostgresChangePayload payload) {
             if (payload.newRecord.isNotEmpty) {
+              if (_client.auth.currentUser?.id == userId) {
+                currentUserProfileNotifier.value = payload.newRecord;
+              }
               onUpdate(payload.newRecord);
             }
           },
@@ -71,10 +81,25 @@ class SupabaseProfileService {
     List<String>? tags,
     String? link,
   }) async {
+    // Immediately update local profile notifier so entire app UI updates with zero delay
+    final existing = currentUserProfileNotifier.value ?? {};
+    // ignore: use_null_aware_elements
+    currentUserProfileNotifier.value = {
+      ...existing,
+      'id': userId,
+      'full_name': fullName,
+      'username': username,
+      'class_group': classGroup,
+      if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
+      if (bio != null) 'bio': bio,
+      if (tags != null) 'interests': tags.join(','),
+      if (link != null) 'link': link,
+    };
     // 1. Update Supabase Auth user metadata so session & currentUser stay in sync
     try {
       await _client.auth.updateUser(
         UserAttributes(
+          // ignore: use_null_aware_elements
           data: {
             'full_name': fullName,
             'username': username,
@@ -91,6 +116,7 @@ class SupabaseProfileService {
     }
 
     // 2. Prepare payload for public.profiles table
+    // ignore: use_null_aware_elements
     final fullPayload = <String, dynamic>{
       'full_name': fullName,
       'username': username,

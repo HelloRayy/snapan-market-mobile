@@ -59,7 +59,7 @@ class AuthRegisterTab extends StatelessWidget {
       children: [
         AuthInputField(
           label: 'Nama Lengkap',
-          hint: 'Contoh: Raditya Rayhan',
+          hint: 'Masukkan nama anda',
           prefixIcon: LucideIcons.user,
           controller: fullNameController,
           errorText: fullNameError,

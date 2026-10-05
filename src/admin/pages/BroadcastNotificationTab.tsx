@@ -179,10 +179,16 @@ export function BroadcastNotificationTab({ adminProfile }: BroadcastNotification
         adminId: adminProfile?.id,
       });
 
-      const fcmInfo =
-        res.totalTokensFound > 0
-          ? ` (Push Google FCM terkirim ke ${res.fcmSentCount} perangkat)`
-          : ` (Perhatian: Belum ada token HP di user_fcm_tokens, pastikan siswa sudah login di v1.0.12)`;
+      let fcmInfo = '';
+      if (res.totalTokensFound === 0) {
+        fcmInfo = ' (Perhatian: Belum ada token HP di user_fcm_tokens, pastikan siswa sudah login di aplikasi v1.0.12)';
+      } else if (res.fcmSentCount > 0 && res.fcmFailedCount === 0) {
+        fcmInfo = ` (Push Google FCM berhasil terkirim ke seluruh ${res.fcmSentCount} perangkat)`;
+      } else if (res.fcmSentCount > 0 && res.fcmFailedCount > 0) {
+        fcmInfo = ` (Push Google FCM terkirim ke ${res.fcmSentCount} perangkat, ${res.fcmFailedCount} token kedaluwarsa dibersihkan)`;
+      } else {
+        fcmInfo = ` (Perhatian: ${res.totalTokensFound} token HP ditemukan namun ditolak Google FCM/kedaluwarsa. Minta siswa membuka Panduan Notifikasi di aplikasi untuk sinkronisasi token baru)`;
+      }
 
       setFeedbackMsg({
         type: 'success',

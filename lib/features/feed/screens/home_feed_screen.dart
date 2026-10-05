@@ -282,7 +282,8 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
                   }
                   if (tab == HomeNavTab.profile) _profileKey.currentState?.reloadProfile();
                 },
-                userAvatar: _feedController.userProfile?['avatar_url'] as String? ??
+                userAvatar: SupabaseService.instance.currentUserProfileNotifier.value?['avatar_url'] as String? ??
+                    _feedController.userProfile?['avatar_url'] as String? ??
                     (SupabaseService.instance.currentUser?.userMetadata?['avatar_url'] as String?),
               );
             },

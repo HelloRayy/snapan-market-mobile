@@ -76,8 +76,17 @@ class _ChatComposerBarState extends State<ChatComposerBar> {
         right: 16.0,
         bottom: bottomInset > 0
             ? bottomInset + 8.0
-            : (bottomPadding > 0 ? bottomPadding + 6.0 : 12.0),
+            : (bottomPadding > 0 ? bottomPadding + 8.0 : 16.0),
         top: 6.0,
+      ),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF6F7F9),
+        border: Border(
+          top: BorderSide(
+            color: const Color(0xFFE2E8F0).withValues(alpha: 0.6),
+            width: 0.8,
+          ),
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,

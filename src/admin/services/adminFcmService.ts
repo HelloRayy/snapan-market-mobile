@@ -117,16 +117,19 @@ export const adminFcmService = {
       let failedCount = 0;
 
       // Kirim secara paralel dalam batch kecil
-      // Catatan Arsitektur FCM Android:
-      // Jangan gunakan blok "notification" bawaan FCM agar sistem OS tidak langsung
-      // merender notifikasi polos. Dengan data-only message (android priority 'high'),
-      // _firebaseMessagingBackgroundHandler di Flutter selalu dipanggil bahkan saat app KILLED/MATI,
-      // sehingga FlutterLocalNotificationsPlugin bisa merender BigTextStyle & AndroidNotificationAction (Tombol Aksi).
+      // Mengirimkan kedua blok:
+      // 1. "notification" agar OS Android (Google Play Services) langsung memunculkan pop-up status bar
+      //    meskipun aplikasi ditutup paksa / mode hemat daya.
+      // 2. "data" agar Flutter foreground & background listener membaca payload interaksi lengkap.
       const promises = tokens.map(async (fcmToken) => {
         try {
           const body = {
             message: {
               token: fcmToken,
+              notification: {
+                title,
+                body: message,
+              },
               data: {
                 title,
                 message,
@@ -136,6 +139,10 @@ export const adminFcmService = {
               },
               android: {
                 priority: 'high',
+                notification: {
+                  channel_id: 'snaps_announcements',
+                  click_action: 'FLUTTER_NOTIFICATION_CLICK',
+                },
               },
             },
           };
@@ -152,6 +159,21 @@ export const adminFcmService = {
           if (res.ok) {
             successCount++;
           } else {
+            const errJson = await res.json().catch(() => null);
+            console.warn('[FCM] Dispatch rejected token:', fcmToken.substring(0, 15) + '...', errJson);
+
+            // Jika token sudah kedaluwarsa atau app di-uninstall, hapus dari user_fcm_tokens
+            if (
+              errJson?.error?.status === 'NOT_FOUND' ||
+              errJson?.error?.code === 404 ||
+              errJson?.error?.details?.some((d: any) => d.errorCode === 'UNREGISTERED')
+            ) {
+              try {
+                const { supabase } = await import('@/services/api/supabase');
+                await (supabase as any).from('user_fcm_tokens').delete().eq('fcm_token', fcmToken);
+                console.log('[FCM] Pruned expired token from user_fcm_tokens:', fcmToken.substring(0, 15) + '...');
+              } catch (_) {}
+            }
             failedCount++;
           }
         } catch (e) {

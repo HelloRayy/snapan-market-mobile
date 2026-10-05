@@ -73,6 +73,7 @@ flutter_*.png
 .flutter-plugins-dependencies
 .packages
 build/
+build_artifacts/
 android/.gradle/
 android/app/build/
 android/local.properties

@@ -182,34 +182,20 @@ class AppSearchController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> votePoll(MarketPost post, List<String> optionIds) async {
+  void votePoll(MarketPost post, List<String> optionIds) {
     if (post.poll == null) return;
-    final poll = post.poll!;
-    final prevVotes = poll.userVotedOptionIds;
-    final updatedOpts = poll.options.map((opt) {
-      int count = opt.votesCount;
-      if (prevVotes.contains(opt.id) && !optionIds.contains(opt.id)) count = (count - 1).clamp(0, 999999);
-      if (!prevVotes.contains(opt.id) && optionIds.contains(opt.id)) count += 1;
-      return opt.copyWith(votesCount: count);
-    }).toList();
-    final optimistic = poll.copyWith(
-      options: updatedOpts,
-      totalVotes: updatedOpts.fold<int>(0, (int s, o) => s + o.votesCount),
-      userVotedOptionIds: optionIds,
-    );
-    liveMatchingPosts = liveMatchingPosts.map((p) => p.id == post.id ? post.copyWith(poll: optimistic) : p).toList();
-    PollSyncService.instance.registerUserVote(post.id, optionIds, optimistic);
-    notifyListeners();
 
-    try {
-      final serverPoll = await SupabaseService.instance.votePoll(postId: post.id, optionIds: optionIds);
-      liveMatchingPosts = liveMatchingPosts.map((p) => p.id == post.id ? p.copyWith(poll: serverPoll) : p).toList();
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error votePoll search: $e');
-      PollSyncService.instance.registerUserVote(post.id, prevVotes, poll);
-      liveMatchingPosts = liveMatchingPosts.map((p) => p.id == post.id ? post : p).toList();
-      notifyListeners();
-    }
+    PollSyncService.instance.castVote(
+      postId: post.id,
+      optionIds: optionIds,
+      currentPoll: post.poll!,
+      remoteCaller: (pId, oIds) => SupabaseService.instance.votePoll(
+        postId: pId,
+        optionIds: oIds,
+      ),
+      onError: (e) {
+        debugPrint('[AppSearchController] Error votePoll search: $e');
+      },
+    );
   }
 }

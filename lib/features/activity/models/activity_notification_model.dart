@@ -33,6 +33,9 @@ class ActivityNotification {
     this.isRead = false,
   });
 
+  bool get hasAction =>
+      actionType != null && actionType != 'none' && actionType!.isNotEmpty;
+
   factory ActivityNotification.fromJson(Map<String, dynamic> json) {
     final typeStr = json['type']?.toString().toLowerCase() ?? 'system';
     ActivityType notifType;

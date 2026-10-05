@@ -83,7 +83,7 @@ class ChatMessageBubble extends StatelessWidget {
         ),
       );
     } else {
-      // Incoming message (Other user) - White card with subtle border
+      // Incoming message (Other user) - White compact card with subtle border
       return Padding(
         padding: const EdgeInsets.only(bottom: 8.0),
         child: Row(
@@ -92,9 +92,10 @@ class ChatMessageBubble extends StatelessWidget {
           children: [
             Container(
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.70,
+                minWidth: 48.0,
+                maxWidth: MediaQuery.of(context).size.width * 0.72,
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
+              padding: const EdgeInsets.symmetric(horizontal: 13.0, vertical: 9.0),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: const BorderRadius.only(
@@ -115,8 +116,11 @@ class ChatMessageBubble extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Wrap(
+                alignment: WrapAlignment.end,
+                crossAxisAlignment: WrapCrossAlignment.end,
+                spacing: 8.0,
+                runSpacing: 2.0,
                 children: [
                   Text(
                     message.text,
@@ -125,17 +129,17 @@ class ChatMessageBubble extends StatelessWidget {
                       fontFamilyFallback: ['AppleColorEmoji'],
                       fontSize: 14.5,
                       color: Color(0xFF0F172A),
-                      height: 1.38,
+                      height: 1.36,
                       letterSpacing: -0.1,
                     ),
                   ),
-                  const SizedBox(height: 3.0),
-                  Align(
-                    alignment: Alignment.centerRight,
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 1.0),
                     child: Text(
                       message.timestamp,
                       style: const TextStyle(
-                        fontSize: 11.0,
+                        fontFamily: 'SFPro',
+                        fontSize: 10.5,
                         color: Color(0xFF94A3B8),
                         fontWeight: FontWeight.w400,
                       ),

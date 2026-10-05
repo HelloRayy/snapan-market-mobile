@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 
 /// Global flag to force default profile avatar across the entire app.
-/// Set to true per user request: "change all phtoo profile for now to profile default iocn".
-const bool kForceDefaultProfileAvatar = true;
+/// Set to false so that users with an avatar in the database display their photo,
+/// while users without a photo gracefully fallback to DefaultProfileAvatar.
+const bool kForceDefaultProfileAvatar = false;
 
 /// Standard default profile avatar with neutral gray background and person silhouette icon,
 /// matching standard mobile app design (Instagram/X/TikTok) when a user has no profile photo.
@@ -68,7 +69,8 @@ class AppAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (kForceDefaultProfileAvatar || avatarUrl == null || avatarUrl!.trim().isEmpty) {
+    final cleanUrl = avatarUrl?.trim();
+    if (kForceDefaultProfileAvatar || cleanUrl == null || cleanUrl.isEmpty) {
       Widget avatar = DefaultProfileAvatar(
         size: size,
         border: border,
@@ -94,17 +96,32 @@ class AppAvatar extends StatelessWidget {
       return avatar;
     }
 
-    Widget content = Image.network(
-      avatarUrl!,
-      width: size,
-      height: size,
-      fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) => DefaultProfileAvatar(
-        size: size,
-        backgroundColor: backgroundColor,
-        iconColor: iconColor,
-      ),
-    );
+    Widget content;
+    if (cleanUrl.startsWith('assets/')) {
+      content = Image.asset(
+        cleanUrl,
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => DefaultProfileAvatar(
+          size: size,
+          backgroundColor: backgroundColor,
+          iconColor: iconColor,
+        ),
+      );
+    } else {
+      content = Image.network(
+        cleanUrl,
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => DefaultProfileAvatar(
+          size: size,
+          backgroundColor: backgroundColor,
+          iconColor: iconColor,
+        ),
+      );
+    }
 
     Widget avatar = Container(
       width: size,

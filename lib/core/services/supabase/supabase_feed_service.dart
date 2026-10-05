@@ -17,7 +17,7 @@ class SupabaseFeedService {
     try {
       final response = await _client
           .from('market_posts')
-          .select('*, seller:profiles!market_posts_seller_id_fkey(*)')
+          .select('*, seller:profiles!market_posts_seller_id_fkey(*), post_likes(count), post_comments(count)')
           .order('created_at', ascending: false)
           .range(offset, offset + limit - 1);
 
@@ -111,7 +111,7 @@ class SupabaseFeedService {
     try {
       final response = await _client
           .from('market_posts')
-          .select('*, seller:profiles!market_posts_seller_id_fkey(*)')
+          .select('*, seller:profiles!market_posts_seller_id_fkey(*), post_likes(count), post_comments(count)')
           .eq('seller_id', userId)
           .order('created_at', ascending: false);
 
@@ -184,12 +184,18 @@ class SupabaseFeedService {
     try {
       final response = await _client
           .from('market_posts')
-          .select('*, seller:profiles!market_posts_seller_id_fkey(*)')
+          .select('*, seller:profiles!market_posts_seller_id_fkey(*), post_likes(count), post_comments(count)')
           .eq('id', postId)
           .maybeSingle();
 
       if (response == null) return null;
-      final post = MarketPostModel.fromJson(response);
+      var post = MarketPostModel.fromJson(response);
+      final likedIds = await fetchLikedPostIds();
+      final savedIds = await fetchBookmarkedPostIds();
+      post = post.copyWith(
+        isLiked: likedIds.contains(post.id),
+        isSaved: savedIds.contains(post.id),
+      );
       final hydrated = await PollSyncService.instance.hydrateAndSyncPosts(
         client: _client,
         posts: [post],
@@ -214,7 +220,7 @@ class SupabaseFeedService {
     }
   }
 
-  /// Fetch comments for a post joined with user profiles
+  /// Fetch comments for a post joined with user profiles and hydrated comment likes
   Future<List<PostCommentModel>> fetchPostComments(String postId) async {
     try {
       final response = await _client
@@ -228,10 +234,62 @@ class SupabaseFeedService {
           .map((json) => PostCommentModel.fromJson(json))
           .toList();
 
-      return PostCommentModel.assembleTree(flatList);
+      if (flatList.isEmpty) return [];
+
+      final commentIds = flatList.map((c) => c.id).toList();
+      final currentUserId = _currentUser?.id;
+
+      final likesResponse = await _client
+          .from('comment_likes')
+          .select('comment_id, user_id')
+          .filter('comment_id', 'in', commentIds);
+
+      final likesList = (likesResponse as List<dynamic>?) ?? [];
+      final Map<String, int> likesCountMap = {};
+      final Set<String> userLikedCommentIds = {};
+
+      for (final item in likesList) {
+        if (item is Map<String, dynamic>) {
+          final cId = item['comment_id']?.toString() ?? '';
+          final uId = item['user_id']?.toString() ?? '';
+          if (cId.isNotEmpty) {
+            likesCountMap[cId] = (likesCountMap[cId] ?? 0) + 1;
+            if (currentUserId != null && uId == currentUserId) {
+              userLikedCommentIds.add(cId);
+            }
+          }
+        }
+      }
+
+      final enrichedList = flatList.map((c) {
+        return c.copyWith(
+          likesCount: likesCountMap[c.id] ?? 0,
+          isLiked: userLikedCommentIds.contains(c.id),
+        );
+      }).toList();
+
+      return PostCommentModel.assembleTree(enrichedList);
     } catch (e) {
       debugPrint('Error fetchPostComments: $e');
       return [];
+    }
+  }
+
+  /// Toggle like on comment in public.comment_likes
+  Future<bool> toggleCommentLike(String commentId, bool isCurrentlyLiked) async {
+    final user = _currentUser;
+    if (user == null) return !isCurrentlyLiked;
+    try {
+      if (isCurrentlyLiked) {
+        await _client.from('comment_likes').delete().match({'comment_id': commentId, 'user_id': user.id});
+        return false;
+      } else {
+        await _client.from('comment_likes').insert({'comment_id': commentId, 'user_id': user.id});
+        return true;
+      }
+    } catch (e) {
+      debugPrint('Error toggleCommentLike: $e');
+      return isCurrentlyLiked;
     }
   }
 
@@ -288,7 +346,7 @@ class SupabaseFeedService {
       final clean = query.trim();
       final response = await _client
           .from('market_posts')
-          .select('*, seller:profiles!market_posts_seller_id_fkey(*)')
+          .select('*, seller:profiles!market_posts_seller_id_fkey(*), post_likes(count), post_comments(count)')
           .or('caption.ilike.%$clean%,title.ilike.%$clean%,location_tag.ilike.%$clean%')
           .order('created_at', ascending: false)
           .limit(30);

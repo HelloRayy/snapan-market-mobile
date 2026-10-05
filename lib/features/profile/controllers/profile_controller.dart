@@ -189,48 +189,24 @@ class ProfileController extends ChangeNotifier {
     }
   }
 
-  Future<void> votePoll(String postId, List<String> optionIds) async {
+  void votePoll(String postId, List<String> optionIds) {
     final idx = allUserPosts.indexWhere((p) => p.id == postId);
     if (idx == -1) return;
     final currentPost = allUserPosts[idx];
     if (currentPost.poll == null) return;
 
-    final poll = currentPost.poll!;
-    final prevVotes = poll.userVotedOptionIds;
-
-    final updatedOpts = poll.options.map((opt) {
-      int count = opt.votesCount;
-      if (prevVotes.contains(opt.id) && !optionIds.contains(opt.id)) count = (count - 1).clamp(0, 999999);
-      if (!prevVotes.contains(opt.id) && optionIds.contains(opt.id)) count += 1;
-      return opt.copyWith(votesCount: count);
-    }).toList();
-
-    final optimistic = poll.copyWith(
-      options: updatedOpts,
-      totalVotes: updatedOpts.fold<int>(0, (int s, o) => s + o.votesCount),
-      userVotedOptionIds: optionIds,
+    PollSyncService.instance.castVote(
+      postId: postId,
+      optionIds: optionIds,
+      currentPoll: currentPost.poll!,
+      remoteCaller: (pId, oIds) => SupabaseService.instance.votePoll(
+        postId: pId,
+        optionIds: oIds,
+      ),
+      onError: (e) {
+        debugPrint('[ProfileController] Error votePoll profile: $e');
+      },
     );
-
-    allUserPosts[idx] = currentPost.copyWith(poll: optimistic);
-    PollSyncService.instance.registerUserVote(postId, optionIds, optimistic);
-    notifyListeners();
-
-    try {
-      final serverPoll = await SupabaseService.instance.votePoll(postId: postId, optionIds: optionIds);
-      final cIdx = allUserPosts.indexWhere((p) => p.id == postId);
-      if (cIdx != -1) {
-        allUserPosts[cIdx] = allUserPosts[cIdx].copyWith(poll: serverPoll);
-        notifyListeners();
-      }
-    } catch (e) {
-      debugPrint('Error votePoll profile: $e');
-      PollSyncService.instance.registerUserVote(postId, prevVotes, poll);
-      final cIdx = allUserPosts.indexWhere((p) => p.id == postId);
-      if (cIdx != -1) {
-        allUserPosts[cIdx] = currentPost;
-        notifyListeners();
-      }
-    }
   }
 
   void removePost(String postId) {
@@ -240,6 +216,19 @@ class ProfileController extends ChangeNotifier {
 
   void updateUser(ProfileUserModel updated) {
     user = updated;
+    if (SupabaseService.instance.currentUser?.id == updated.id) {
+      final existing = SupabaseService.instance.currentUserProfileNotifier.value ?? {};
+      SupabaseService.instance.currentUserProfileNotifier.value = {
+        ...existing,
+        'id': updated.id,
+        'full_name': updated.name,
+        'username': updated.username,
+        'avatar_url': updated.avatar,
+        'class_group': updated.classGroup,
+        'bio': updated.bio,
+        'link': updated.link,
+      };
+    }
     allUserPosts = allUserPosts.map((p) => p.copyWith(
       seller: p.seller.copyWith(name: updated.name, username: updated.username, avatar: updated.avatar, classGroup: updated.classGroup),
     )).toList();

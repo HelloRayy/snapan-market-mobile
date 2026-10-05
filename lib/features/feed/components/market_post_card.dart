@@ -50,7 +50,6 @@ class _MarketPostCardState extends State<MarketPostCard>
   late int _likesCount;
   late bool _isReposted;
   late int _repostsCount;
-  bool _isFollowed = false;
 
   late AnimationController _likeAnimController;
   late Animation<double> _likeScaleAnim;
@@ -153,31 +152,34 @@ class _MarketPostCardState extends State<MarketPostCard>
   }
 
   void _handleFollowToggle() {
-    HapticFeedback.mediumImpact();
-    setState(() => _isFollowed = !_isFollowed);
-    final sellerId = widget.item.seller.id;
-    if (sellerId.isNotEmpty) {
-      FollowService.instance.toggleFollow(
-        targetUserId: sellerId,
-        targetUsername: widget.item.seller.username,
-      );
-    }
     widget.onFollowToggle?.call(widget.item);
   }
 
+  MarketPostModel get _currentItem => widget.item.copyWith(
+        isLiked: _isLiked,
+        likesCount: _likesCount,
+        isReposted: _isReposted,
+        repostsCount: _repostsCount,
+      );
+
   @override
   Widget build(BuildContext context) {
+    final bool isFollowingAuthor = FollowService.instance.isFollowing(
+      widget.item.seller.id,
+      widget.item.seller.username,
+    );
+
     if (widget.variant == 'detail') {
       return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         decoration: const BoxDecoration(
           color: Colors.white,
           border: Border(bottom: BorderSide(color: AppColors.separator, width: 0.8)),
         ),
         child: PostCardContentColumn(
-          item: widget.item,
+          item: _currentItem,
           isDetail: true,
-          isFollowed: _isFollowed,
+          isFollowed: isFollowingAuthor,
           onFollowToggle: _handleFollowToggle,
           onUserClick: widget.onUserClick,
           onTopicClick: widget.onTopicClick,
@@ -203,7 +205,7 @@ class _MarketPostCardState extends State<MarketPostCard>
     final hasChain = widget.item.threadChain.isNotEmpty;
 
     return GestureDetector(
-      onTap: () => widget.onPostClick?.call(widget.item),
+      onTap: () => widget.onPostClick?.call(_currentItem),
       behavior: HitTestBehavior.opaque,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
@@ -232,17 +234,22 @@ class _MarketPostCardState extends State<MarketPostCard>
   }
 
   Widget _buildRowWithAvatar({required bool showConnector}) {
+    final bool isFollowingAuthor = FollowService.instance.isFollowing(
+      widget.item.seller.id,
+      widget.item.seller.username,
+    );
+
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 44.0,
+            width: 46.0,
             child: Column(
               children: [
                 PostAuthorAvatar(
                   seller: widget.item.seller,
-                  isFollowed: _isFollowed,
+                  isFollowed: isFollowingAuthor,
                   onFollowToggle: _handleFollowToggle,
                   onUserClick: () => widget.onUserClick?.call(widget.item.seller.username ?? widget.item.seller.name),
                 ),
@@ -263,12 +270,12 @@ class _MarketPostCardState extends State<MarketPostCard>
               ],
             ),
           ),
-          const SizedBox(width: 12.0),
+          const SizedBox(width: 10.0),
           Expanded(
             child: PostCardContentColumn(
-              item: widget.item,
+              item: _currentItem,
               isDetail: false,
-              isFollowed: _isFollowed,
+              isFollowed: isFollowingAuthor,
               onFollowToggle: _handleFollowToggle,
               onUserClick: widget.onUserClick,
               onTopicClick: widget.onTopicClick,

@@ -1,0 +1,68 @@
+# CODEBASE_AGENT_MAP.md — Deterministic Agent Routing Index
+
+> **Tujuan**: Membuka langsung file target dalam 1 tool call (`view_file`). **Dilarang melakukan blind grep di root** atau membaca file yang tidak relevan.
+
+---
+
+## 1. Aturan Triage Stack (Pilih Platform Terlebih Dahulu)
+
+| Kata Kunci / Scope | Platform | Direktori Utama | DILARANG Membaca |
+| :--- | :--- | :--- | :--- |
+| **Android, APK, Flutter, HP, Widget, Screen, Dart** | Flutter Mobile | [`lib/`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib) | [`src/`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src), `.sql` files |
+| **Admin, Web Portal, CMS, CoolAdmin, Kumo** | Web Admin | [`src/admin/`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin) | [`lib/`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib) |
+| **PWA, Web Siswa, Landing Page Web** | React Web | [`src/ui/`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/ui) & [`src/App.tsx`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/App.tsx) | [`lib/`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib) |
+| **Database, SQL, Tabel, RLS, Trigger, Supabase** | Backend DB | [`schema.sql`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/schema.sql) (Master) & [`supabase/migrations/`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/supabase/migrations) (Histori) | File non-SQL atau file di luar `supabase/` |
+
+---
+
+## 2. Peta Routing Fitur Flutter Mobile (`lib/`)
+
+| Fitur / Layar | Screen File (Orchestrator) | Controller / Service | Komponen Utama |
+| :--- | :--- | :--- | :--- |
+| **Beranda & Timeline Feed** | [`lib/features/feed/screens/home_feed_screen.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/feed/screens/home_feed_screen.dart) | [`home_feed_controller.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/feed/controllers/home_feed_controller.dart) | [`market_post_card.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/feed/components/market_post_card.dart), [`home_feed_header.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/feed/components/home_feed_header.dart) |
+| **Kartu Post & Polling Feed** | — | [`poll_sync_service.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/core/services/poll_sync_service.dart) | [`post_poll_section.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/feed/components/post_card/post_poll_section.dart), [`post_thread_chain_section.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/feed/components/post_card/post_thread_chain_section.dart) |
+| **Detail Post & Komentar** | [`lib/features/feed/screens/post_detail_screen.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/feed/screens/post_detail_screen.dart) | [`post_detail_controller.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/feed/controllers/post_detail_controller.dart) | [`post_comment_item.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/feed/components/post_comment_item.dart), [`post_detail_bottom_bar.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/feed/components/post_detail_bottom_bar.dart) |
+| **Login & Register Siswa** | [`lib/features/auth/screens/auth_screen.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/auth/screens/auth_screen.dart) | [`auth_controller.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/auth/controllers/auth_controller.dart) | [`auth_login_tab.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/auth/components/auth_login_tab.dart), [`auth_register_tab.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/auth/components/auth_register_tab.dart) |
+| **Akun Ditangguhkan (Suspend)**| [`account_suspended_screen.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/auth/screens/account_suspended_screen.dart) | [`suspension_service.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/core/services/suspension_service.dart) | Dialog / banner larangan interaksi |
+| **Buat Post / Jual Produk** | [`create_post_modal.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/create_post/screens/create_post_modal.dart) | [`supabase_feed_service.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/core/services/supabase/supabase_feed_service.dart) | [`create_post_product_fields.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/create_post/components/create_post_product_fields.dart), [`create_post_poll_builder.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/create_post/components/create_post_poll_builder.dart) |
+| **Profil & Portofolio** | [`lib/features/profile/screens/profile_screen.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/profile/screens/profile_screen.dart) | [`profile_controller.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/profile/controllers/profile_controller.dart) | [`profile_info_header.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/profile/components/profile_info_header.dart), [`profile_content_tabs.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/profile/components/profile_content_tabs.dart) |
+| **Edit Profil Siswa** | [`edit_profile_screen.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/profile/screens/edit_profile_screen.dart) | [`supabase_profile_service.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/core/services/supabase/supabase_profile_service.dart) | [`edit_profile_avatar_section.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/profile/components/edit_profile_avatar_section.dart), [`edit_profile_form_fields.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/profile/components/edit_profile_form_fields.dart) |
+| **Pencarian Akun & Produk** | [`lib/features/search/screens/search_screen.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/search/screens/search_screen.dart) | [`search_controller.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/search/controllers/search_controller.dart) | [`search_results_view.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/search/components/search_results_view.dart), [`suggested_account_tile.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/search/components/suggested_account_tile.dart) |
+| **Chat & Direct Messages** | [`direct_messages_screen.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/messages/screens/direct_messages_screen.dart) | [`direct_messages_service.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/messages/services/direct_messages_service.dart) | [`chat_conversation_screen.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/messages/screens/chat_conversation_screen.dart) |
+| **Notifikasi / Aktivitas** | [`lib/features/activity/screens/activity_screen.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/activity/screens/activity_screen.dart) | [`global_notification_service.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/core/services/global_notification_service.dart) | [`activity_item_tile.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/activity/components/activity_item_tile.dart) |
+| **In-App Update APK** | [`update_info_bottom_sheet.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/core/components/update_info_bottom_sheet.dart) | [`app_update_service.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/core/services/app_update_service.dart) | [`app_version_model.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/core/models/app_version_model.dart) |
+| **Checkout COD & Lokasi** | [`checkout_screen.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/checkout/screens/checkout_screen.dart) | [`checkout_models.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/checkout/models/checkout_models.dart) | [`campus_locations_picker_screen.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/locations/screens/campus_locations_picker_screen.dart) |
+
+---
+
+## 3. Peta Routing Web Admin (`src/admin/`)
+
+| Fitur Admin Web | File Halaman / Tab | Service Terkait | Deskripsi Aksi |
+| :--- | :--- | :--- | :--- |
+| **Login Admin** | [`AdminLoginPage.tsx`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin/pages/AdminLoginPage.tsx) | [`adminSecurityService.ts`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin/services/adminSecurityService.ts) | Form login email/password khusus role admin |
+| **Dashboard Shell** | [`AdminDashboard.tsx`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin/pages/AdminDashboard.tsx) | [`adminService.ts`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin/services/adminService.ts) | Sidebar navigasi, header search, logout |
+| **Ringkasan & Statistik** | [`OverviewTab.tsx`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin/pages/OverviewTab.tsx) | [`adminService.ts`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin/services/adminService.ts) | Metrik pengguna, produk aktif, total interaksi |
+| **Manajemen Pengguna** | [`UsersManagementTab.tsx`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin/pages/UsersManagementTab.tsx) | [`adminService.ts`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin/services/adminService.ts) | Suspend akun, ubah role siswa/admin |
+| **Moderasi Konten & Hapus Post**| [`ContentModerationTab.tsx`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin/pages/ContentModerationTab.tsx) | [`adminService.ts`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin/services/adminService.ts) | Tinjau postingan pasar/feed dan hapus konten |
+| **Laporan Konten Pengguna** | [`ContentReportsTab.tsx`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin/pages/ContentReportsTab.tsx) | [`adminService.ts`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin/services/adminService.ts) | Tiket laporan spam, pelecehan, pelanggaran aturan |
+| **Broadcast Notifikasi FCM** | [`BroadcastNotificationTab.tsx`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin/pages/BroadcastNotificationTab.tsx) | [`adminFcmService.ts`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin/services/adminFcmService.ts) | Kirim pengumuman push notif & update app |
+| **Titik Temu COD Kampus** | [`MeetingPointsTab.tsx`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin/pages/MeetingPointsTab.tsx) | [`adminService.ts`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin/services/adminService.ts) | Tambah/edit titik COD (Bengkel PPLG, Gazebo, dll.) |
+| **Server & Telemetri** | [`ServerMonitorTab.tsx`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin/pages/ServerMonitorTab.tsx) | [`adminSecurityService.ts`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin/services/adminSecurityService.ts) | Latency Supabase, status database, audit log |
+
+---
+
+## 4. Troubleshooting Cepat (Direct Problem-to-File Guide)
+
+1. **Masalah Push Notification / FCM Tidak Muncul**:
+   - Flutter listener & action click: [`lib/core/services/global_notification_service.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/core/services/global_notification_service.dart)
+   - Admin pengirim broadcast: [`src/admin/services/adminFcmService.ts`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/admin/services/adminFcmService.ts)
+   - Tabel token: `user_fcm_tokens` di [`schema.sql`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/schema.sql)
+2. **Masalah Route Nyasar / Salah Halaman di Web**:
+   - Routing global web: [`src/App.tsx`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/App.tsx)
+   - Custom hook URL history: [`src/ui/navigation/useAppNavigation.ts`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/src/ui/navigation/useAppNavigation.ts)
+3. **Masalah Polling Tidak Sinkron**:
+   - State & debounce sync: [`lib/core/services/poll_sync_service.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/core/services/poll_sync_service.dart)
+   - Service query Supabase: [`lib/core/services/supabase/supabase_poll_service.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/core/services/supabase/supabase_poll_service.dart)
+4. **Masalah Akun Ditangguhkan (Suspended Account)**:
+   - Logic interceptor: [`lib/core/services/suspension_service.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/core/services/suspension_service.dart)
+   - Tampilan blokir: [`lib/features/auth/screens/account_suspended_screen.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/features/auth/screens/account_suspended_screen.dart)

@@ -6,11 +6,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:snapan_market/core/components/update_info_bottom_sheet.dart';
+import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/navigation/navigation_service.dart';
+import 'package:snapan_market/core/services/app_update_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
-import 'package:snapan_market/features/activity/components/broadcast_detail_modal.dart';
 import 'package:snapan_market/features/activity/models/activity_notification_model.dart';
+import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -18,16 +21,16 @@ import 'package:url_launcher/url_launcher.dart';
 @pragma('vm:entry-point')
 Future<void> _notificationTapBackgroundHandler(NotificationResponse details) async {
   try {
+    final payload = details.payload;
+    if (payload == null || payload.isEmpty) return;
+    final json = jsonDecode(payload) as Map<String, dynamic>;
+    final actionUrl = json['action_url']?.toString();
+
     if (details.actionId == 'open_url') {
-      final payload = details.payload;
-      if (payload != null && payload.isNotEmpty) {
-        final json = jsonDecode(payload) as Map<String, dynamic>;
-        final actionUrl = json['action_url']?.toString();
-        if (actionUrl != null && actionUrl.isNotEmpty) {
-          final uri = Uri.tryParse(actionUrl);
-          if (uri != null) {
-            await launchUrl(uri, mode: LaunchMode.externalApplication);
-          }
+      if (actionUrl != null && actionUrl.isNotEmpty) {
+        final uri = Uri.tryParse(actionUrl);
+        if (uri != null) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
         }
       }
     }
@@ -61,13 +64,36 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
     final actionType = message.data['action_type']?.toString() ?? 'none';
     final actionUrl = message.data['action_url']?.toString() ?? '';
-    final actionLabel = message.data['action_button_label']?.toString() ?? 'Buka Tautan';
+    final actionLabel = message.data['action_button_label']?.toString() ??
+        (actionType == 'update_app'
+            ? 'Perbarui Aplikasi'
+            : actionType == 'post_link'
+                ? 'Lihat Postingan'
+                : 'Buka Tautan');
 
     List<AndroidNotificationAction>? actions;
     if (actionType == 'external_url' && actionUrl.isNotEmpty) {
       actions = [
         AndroidNotificationAction(
           'open_url',
+          actionLabel,
+          showsUserInterface: true,
+          cancelNotification: true,
+        ),
+      ];
+    } else if (actionType == 'update_app') {
+      actions = [
+        AndroidNotificationAction(
+          'update_app',
+          actionLabel,
+          showsUserInterface: true,
+          cancelNotification: true,
+        ),
+      ];
+    } else if (actionType == 'post_link' && actionUrl.isNotEmpty) {
+      actions = [
+        AndroidNotificationAction(
+          'post_link',
           actionLabel,
           showsUserInterface: true,
           cancelNotification: true,
@@ -129,17 +155,26 @@ class GlobalNotificationService {
   }
 
   /// Memaksa pengambilan token FCM dan pendaftaran ke Supabase secara langsung
-  Future<void> syncFcmTokenNow() async {
-    try {
-      final fcm = FirebaseMessaging.instance;
-      final token = await fcm.getToken();
-      if (token != null && token.isNotEmpty) {
-        debugPrint('[FCM] syncFcmTokenNow token: $token');
-        await SupabaseService.instance.saveFcmToken(token);
-      }
-    } catch (e) {
-      debugPrint('[FCM] syncFcmTokenNow error: $e');
+  Future<String> syncFcmTokenNow() async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) {
+      throw StateError('Anda belum login ke akun. Silakan masuk terlebih dahulu.');
     }
+
+    final fcm = FirebaseMessaging.instance;
+    final token = await fcm.getToken();
+    if (token == null || token.isEmpty) {
+      throw StateError('Gagal memperoleh token perangkat dari Google Play Services.');
+    }
+
+    debugPrint('[FCM] syncFcmTokenNow token: $token');
+    await SupabaseService.instance.saveFcmToken(token);
+
+    // Refresh status unread & subscription realtime untuk user ini
+    _fetchInitialUnreadStatus();
+    _subscribeRealtime();
+
+    return token;
   }
 
   Future<void> _initFirebaseMessaging() async {
@@ -153,7 +188,9 @@ class GlobalNotificationService {
       fcm.getToken().then((token) async {
         if (token != null && token.isNotEmpty) {
           debugPrint('[FCM] Device FCM Token generated: $token');
-          await SupabaseService.instance.saveFcmToken(token);
+          try {
+            await SupabaseService.instance.saveFcmToken(token);
+          } catch (_) {}
         }
       }).catchError((e) {
         debugPrint('[FCM] getToken error: $e');
@@ -169,17 +206,31 @@ class GlobalNotificationService {
       // Listen for token refresh
       fcm.onTokenRefresh.listen((newToken) {
         debugPrint('[FCM] Token refreshed: $newToken');
-        SupabaseService.instance.saveFcmToken(newToken);
+        SupabaseService.instance.saveFcmToken(newToken).catchError((_) {});
       });
 
       // Listen for Supabase Auth state changes to immediately associate token after login
       Supabase.instance.client.auth.onAuthStateChange.listen((data) async {
-        if (data.session?.user != null) {
+        final session = data.session;
+        if (session?.user != null) {
           final currentToken = await fcm.getToken();
-          if (currentToken != null) {
-            debugPrint('[FCM] Auth state changed, re-saving token for user: ${data.session!.user.id}');
-            await SupabaseService.instance.saveFcmToken(currentToken);
+          if (currentToken != null && currentToken.isNotEmpty) {
+            debugPrint('[FCM] Auth state changed, re-saving token for user: ${session!.user.id}');
+            try {
+              await SupabaseService.instance.saveFcmToken(currentToken);
+            } catch (e) {
+              debugPrint('[FCM] Error saving token on auth change: $e');
+            }
           }
+          // Segera perbarui unread count & koneksikan Realtime listener untuk user ini
+          _fetchInitialUnreadStatus();
+          _subscribeRealtime();
+        } else {
+          // User logout: bersihkan subscription realtime & reset badge
+          _realtimeChannel?.unsubscribe();
+          _realtimeChannel = null;
+          unreadCount.value = 0;
+          hasUnreadActivity.value = false;
         }
       });
 
@@ -219,7 +270,7 @@ class GlobalNotificationService {
           onTap: () {
             final ctx = NavigationService.currentContext;
             if (ctx != null) {
-              BroadcastDetailModal.show(ctx, fakeNotif);
+              executeNotificationAction(ctx, fakeNotif);
             }
           },
         );
@@ -266,9 +317,48 @@ class GlobalNotificationService {
     Future.delayed(const Duration(milliseconds: 600), () {
       final ctx = NavigationService.currentContext;
       if (ctx != null) {
-        BroadcastDetailModal.show(ctx, notif);
+        executeNotificationAction(ctx, notif);
       }
     });
+  }
+
+  /// Eksekusi langsung aksi dari notifikasi tanpa memunculkan modal pengumuman
+  static Future<void> executeNotificationAction(BuildContext context, ActivityNotification notif) async {
+    final actionType = notif.actionType ?? 'none';
+    final actionUrl = notif.actionUrl ?? '';
+
+    if (actionType == 'update_app') {
+      try {
+        final update = await AppUpdateService.instance.checkForUpdate(isManual: true);
+        if (update != null && context.mounted) {
+          final info = await AppUpdateService.instance.getPackageInfo();
+          if (context.mounted) {
+            UpdateInfoBottomSheet.show(context, update: update, currentVersionName: info.version);
+          }
+        }
+      } catch (e) {
+        debugPrint('Error triggering update from notification: $e');
+      }
+    } else if (actionType == 'external_url' && actionUrl.isNotEmpty) {
+      final uri = Uri.tryParse(actionUrl);
+      if (uri != null) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    } else if (actionType == 'post_link' && actionUrl.isNotEmpty) {
+      try {
+        final post = await SupabaseService.instance.fetchPostById(actionUrl);
+        if (post != null && context.mounted) {
+          Navigator.push(
+            context,
+            AppSlidePageRoute(
+              builder: (_) => PostDetailScreen(post: post),
+            ),
+          );
+        }
+      } catch (e) {
+        debugPrint('Error navigating to post from notification: $e');
+      }
+    }
   }
 
   Future<void> _initLocalNotifications() async {
@@ -287,23 +377,46 @@ class GlobalNotificationService {
               final json = jsonDecode(payload) as Map<String, dynamic>;
               final notif = ActivityNotification.fromJson(json);
 
-              // Jika user tap tombol aksi "open_url" di tray notifikasi
-              if (details.actionId == 'open_url') {
-                final url = notif.actionUrl ?? json['action_url']?.toString();
-                if (url != null && url.isNotEmpty) {
-                  final uri = Uri.tryParse(url);
-                  if (uri != null) {
-                    await launchUrl(uri, mode: LaunchMode.externalApplication);
-                    return;
-                  }
-                }
-              }
-
-              // Jika user tap notifikasi secara keseluruhan, buka modal broadcast
+              // Eksekusi aksi jika ada (misal update_app, open_url, post_link)
               final ctx = NavigationService.currentContext;
               if (ctx != null) {
-                BroadcastDetailModal.show(ctx, notif);
-                return;
+                if (details.actionId == 'open_url') {
+                  final url = notif.actionUrl ?? json['action_url']?.toString();
+                  if (url != null && url.isNotEmpty) {
+                    final uri = Uri.tryParse(url);
+                    if (uri != null) {
+                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                      return;
+                    }
+                  }
+                } else if (details.actionId == 'update_app') {
+                  final update = await AppUpdateService.instance.checkForUpdate(isManual: true);
+                  if (update != null && ctx.mounted) {
+                    final info = await AppUpdateService.instance.getPackageInfo();
+                    if (ctx.mounted) {
+                      UpdateInfoBottomSheet.show(ctx, update: update, currentVersionName: info.version);
+                    }
+                  }
+                  return;
+                } else if (details.actionId == 'post_link') {
+                  final postId = notif.actionUrl ?? json['action_url']?.toString();
+                  if (postId != null && postId.isNotEmpty) {
+                    final post = await SupabaseService.instance.fetchPostById(postId);
+                    if (post != null && ctx.mounted) {
+                      Navigator.push(
+                        ctx,
+                        AppSlidePageRoute(
+                          builder: (_) => PostDetailScreen(post: post),
+                        ),
+                      );
+                      return;
+                    }
+                  }
+                } else {
+                  // User tap tray notifikasi secara keseluruhan: langsung jalankan aksinya
+                  await executeNotificationAction(ctx, notif);
+                  return;
+                }
               }
             } catch (_) {}
           }
@@ -351,6 +464,12 @@ class GlobalNotificationService {
 
   void _subscribeRealtime() {
     try {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) {
+        debugPrint('[Notification] _subscribeRealtime ditunda: Pengguna belum login.');
+        return;
+      }
+
       _realtimeChannel?.unsubscribe();
       _realtimeChannel = SupabaseService.instance.subscribeToNotifications((record) {
         // Increment unread count & turn on unread badge dot
@@ -371,7 +490,7 @@ class GlobalNotificationService {
           payloadJson: jsonEncode(record),
         );
 
-        // 2. Show floating in-app banner with tap action
+        // 2. Show floating in-app banner with direct tap action
         showTopBanner(
           title: title,
           message: message,
@@ -380,7 +499,7 @@ class GlobalNotificationService {
             final ctx = NavigationService.currentContext;
             if (ctx != null) {
               final notif = ActivityNotification.fromJson(record);
-              BroadcastDetailModal.show(ctx, notif);
+              executeNotificationAction(ctx, notif);
             }
           },
         );
@@ -410,12 +529,35 @@ class GlobalNotificationService {
           final map = jsonDecode(payloadJson) as Map<String, dynamic>;
           final actionType = map['action_type']?.toString();
           final actionUrl = map['action_url']?.toString();
-          final actionLabel = map['action_button_label']?.toString() ?? 'Buka Tautan';
+          final actionLabel = map['action_button_label']?.toString() ??
+              (actionType == 'update_app'
+                  ? 'Perbarui Aplikasi'
+                  : actionType == 'post_link'
+                      ? 'Lihat Postingan'
+                      : 'Buka Tautan');
 
           if (actionType == 'external_url' && actionUrl != null && actionUrl.isNotEmpty) {
             actions = [
               AndroidNotificationAction(
                 'open_url',
+                actionLabel,
+                showsUserInterface: true,
+                cancelNotification: true,
+              ),
+            ];
+          } else if (actionType == 'update_app') {
+            actions = [
+              AndroidNotificationAction(
+                'update_app',
+                actionLabel,
+                showsUserInterface: true,
+                cancelNotification: true,
+              ),
+            ];
+          } else if (actionType == 'post_link' && actionUrl != null && actionUrl.isNotEmpty) {
+            actions = [
+              AndroidNotificationAction(
+                'post_link',
                 actionLabel,
                 showsUserInterface: true,
                 cancelNotification: true,

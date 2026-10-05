@@ -240,20 +240,26 @@ class SupabaseSocialService {
     final user = _currentUser;
     if (user == null) {
       debugPrint('[FCM] saveFcmToken ditunda: Pengguna belum login (currentUser null)');
-      return;
+      throw StateError('Pengguna belum login ke akun');
     }
-    if (token.isEmpty) return;
+    if (token.isEmpty) {
+      throw ArgumentError('Token FCM tidak boleh kosong');
+    }
 
     try {
-      await _client.from('user_fcm_tokens').upsert({
-        'user_id': user.id,
-        'fcm_token': token,
-        'device_info': 'Android',
-        'updated_at': DateTime.now().toIso8601String(),
-      });
+      await _client.from('user_fcm_tokens').upsert(
+        {
+          'user_id': user.id,
+          'fcm_token': token,
+          'device_info': 'Android',
+          'updated_at': DateTime.now().toIso8601String(),
+        },
+        onConflict: 'user_id',
+      );
       debugPrint('[FCM] ✅ Berhasil mendaftarkan FCM Token untuk user ${user.id} ke tabel user_fcm_tokens');
     } catch (e) {
       debugPrint('[FCM] ❌ Gagal menyimpan FCM Token ke tabel user_fcm_tokens: $e');
+      rethrow;
     }
   }
 }

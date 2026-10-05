@@ -56,11 +56,42 @@ class HomeNavDrawer extends StatelessWidget {
     final Color borderColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9);
     final Color tileHoverColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC);
 
-    final String displayName = userProfile?['full_name'] ??
-        currentUser?.userMetadata?['full_name'] ??
-        currentUser?.email?.split('@').first ??
-        'Siswa SMKN 8 Semarang';
-    final String displayEmail = currentUser?.email ?? 'Belum masuk';
+    final rawFullName = (userProfile?['full_name'] as String?)?.trim() ??
+        (currentUser?.userMetadata?['full_name'] as String?)?.trim();
+    final rawUsername = (userProfile?['username'] as String?)?.trim() ??
+        (currentUser?.userMetadata?['username'] as String?)?.trim() ??
+        (currentUser?.email?.contains('@snapan.id') == true
+            ? currentUser?.email?.split('@').first
+            : null);
+    final rawClass = (userProfile?['class_group'] as String?)?.trim() ??
+        (currentUser?.userMetadata?['class_group'] as String?)?.trim();
+
+    final String displayName = (rawFullName != null && rawFullName.isNotEmpty)
+        ? rawFullName
+        : ((rawUsername != null && rawUsername.isNotEmpty)
+            ? '@${rawUsername.replaceAll('@', '')}'
+            : 'Siswa SMKN 8 Semarang');
+
+    final String displaySubtitle;
+    if (rawUsername != null && rawUsername.isNotEmpty) {
+      final cleanUser = '@${rawUsername.replaceAll('@', '')}';
+      if (rawClass != null && rawClass.isNotEmpty) {
+        displaySubtitle = '$cleanUser • $rawClass';
+      } else {
+        displaySubtitle = cleanUser;
+      }
+    } else if (rawClass != null && rawClass.isNotEmpty) {
+      displaySubtitle = rawClass;
+    } else {
+      final rawEmail = currentUser?.email ?? '';
+      if (rawEmail.contains('@snapan.id')) {
+        displaySubtitle = '@${rawEmail.split('@').first}';
+      } else if (rawEmail.isNotEmpty) {
+        displaySubtitle = rawEmail;
+      } else {
+        displaySubtitle = 'Siswa SMKN 8 Semarang';
+      }
+    }
 
     return Drawer(
       width: 285.0,
@@ -80,7 +111,7 @@ class HomeNavDrawer extends StatelessWidget {
               HomeDrawerProfileHeader(
                 userProfile: userProfile,
                 displayName: displayName,
-                displayEmail: displayEmail,
+                displaySubtitle: displaySubtitle,
                 borderColor: borderColor,
                 inkColor: inkColor,
                 mutedColor: mutedColor,

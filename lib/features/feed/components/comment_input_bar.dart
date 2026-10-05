@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
-import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
 
 /// CommentInputBar Widget
 /// 100% Sliced 1:1 from Web React CommentInputBar.tsx
@@ -43,6 +42,9 @@ class _CommentInputBarState extends State<CommentInputBar> {
   bool _hasText = false;
   bool _isSendPressed = false;
 
+  String _cleanUsername(String raw) =>
+      raw.trim().replaceAll('@', '').replaceAll(' ', '_');
+
   @override
   void initState() {
     super.initState();
@@ -52,6 +54,12 @@ class _CommentInputBarState extends State<CommentInputBar> {
     _textController.addListener(_onTextChanged);
 
     if (widget.replyToUser != null) {
+      final clean = _cleanUsername(widget.replyToUser!);
+      final prefix = '@$clean ';
+      _textController.text = prefix;
+      _textController.selection = TextSelection.fromPosition(
+        TextPosition(offset: prefix.length),
+      );
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _focusNode.requestFocus();
       });
@@ -61,7 +69,17 @@ class _CommentInputBarState extends State<CommentInputBar> {
   @override
   void didUpdateWidget(covariant CommentInputBar oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.replyToUser != null && oldWidget.replyToUser != widget.replyToUser) {
+    if (widget.replyToUser != null) {
+      final clean = _cleanUsername(widget.replyToUser!);
+      final prefix = '@$clean ';
+      if (oldWidget.replyToUser != widget.replyToUser || !_textController.text.startsWith(prefix)) {
+        // Strip any existing mention prefix if present and apply the new target
+        final remainingText = _textController.text.replaceFirst(RegExp(r'^@[a-zA-Z0-9_.]+\s*'), '');
+        _textController.text = '$prefix$remainingText';
+        _textController.selection = TextSelection.fromPosition(
+          TextPosition(offset: _textController.text.length),
+        );
+      }
       _focusNode.requestFocus();
     }
   }
@@ -87,7 +105,14 @@ class _CommentInputBarState extends State<CommentInputBar> {
   }
 
   void _handleSubmit() {
-    final text = _textController.text.trim();
+    var text = _textController.text.trim();
+    if (widget.replyToUser != null) {
+      final clean = _cleanUsername(widget.replyToUser!);
+      final prefix = '@$clean ';
+      if (!text.startsWith(prefix) && !text.startsWith('@$clean')) {
+        text = '$prefix$text';
+      }
+    }
     if (text.isEmpty) return;
     HapticFeedback.lightImpact();
     widget.onSubmitComment(text);

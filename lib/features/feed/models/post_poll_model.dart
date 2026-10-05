@@ -76,12 +76,72 @@ class PostPollModel {
   /// Calculate percentage of votes for an option (0.0 to 1.0)
   double getPercentage(PostPollOptionModel option) {
     if (totalVotes <= 0) return 0.0;
-    return option.votesCount / totalVotes;
+    return (option.votesCount / totalVotes).clamp(0.0, 1.0);
   }
 
-  /// Formatted integer percentage (e.g. 64)
+  /// Formatted integer percentages mapped by option ID using Largest Remainder Method (Hare-Niemeyer)
+  /// ensuring the sum of all percentages always equals exactly 100% when totalVotes > 0.
+  Map<String, int> get calculatedPercentageMap {
+    if (totalVotes <= 0 || options.isEmpty) {
+      return {for (final opt in options) opt.id: 0};
+    }
+
+    final Map<String, int> floorPercentages = {};
+    final List<MapEntry<String, double>> remainders = [];
+    int sumFloors = 0;
+
+    for (final opt in options) {
+      final exact = (opt.votesCount / totalVotes) * 100.0;
+      final floorVal = exact.floor();
+      floorPercentages[opt.id] = floorVal;
+      remainders.add(MapEntry(opt.id, exact - floorVal));
+      sumFloors += floorVal;
+    }
+
+    int remainingVotesToDistribute = 100 - sumFloors;
+    // Sort remainders descending
+    remainders.sort((a, b) => b.value.compareTo(a.value));
+
+    for (int i = 0; i < remainingVotesToDistribute && i < remainders.length; i++) {
+      final optId = remainders[i].key;
+      floorPercentages[optId] = (floorPercentages[optId] ?? 0) + 1;
+    }
+
+    return floorPercentages;
+  }
+
+  /// Formatted integer percentage (e.g. 64) with sum-to-100% guarantee
   int getPercentageInt(PostPollOptionModel option) {
-    return (getPercentage(option) * 100).round();
+    return calculatedPercentageMap[option.id] ?? 0;
+  }
+
+  /// Returns a new PostPollModel with the user's optimistic vote applied
+  PostPollModel applyOptimisticVotes(List<String> newVotedOptionIds) {
+    if (isExpired) return this;
+    if (hasVoted && !allowChangeVote) return this;
+
+    final prevVotes = userVotedOptionIds;
+    if (setEquals(prevVotes.toSet(), newVotedOptionIds.toSet())) {
+      return this;
+    }
+
+    final updatedOptions = options.map((opt) {
+      int count = opt.votesCount;
+      if (prevVotes.contains(opt.id) && !newVotedOptionIds.contains(opt.id)) {
+        count = (count - 1).clamp(0, 999999);
+      } else if (!prevVotes.contains(opt.id) && newVotedOptionIds.contains(opt.id)) {
+        count += 1;
+      }
+      return opt.copyWith(votesCount: count);
+    }).toList();
+
+    int total = updatedOptions.fold(0, (sum, opt) => sum + opt.votesCount);
+
+    return copyWith(
+      options: updatedOptions,
+      totalVotes: total,
+      userVotedOptionIds: newVotedOptionIds,
+    );
   }
 
   /// Whether an option has the highest votes among all options

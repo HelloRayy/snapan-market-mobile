@@ -129,6 +129,12 @@ class FollowService extends ChangeNotifier {
       }
     }
 
+    // Prevent self-follow or unauthenticated follow
+    if (resolvedId != null && resolvedId == user.id) {
+      debugPrint('FollowService: Cannot follow self.');
+      return false;
+    }
+
     final cleanUsername = targetUsername?.toLowerCase().replaceAll('@', '').trim();
     final bool currentlyFollowing = isFollowing(resolvedId, targetUsername);
     final String countKey = (resolvedId != null && resolvedId.isNotEmpty)
@@ -156,9 +162,20 @@ class FollowService extends ChangeNotifier {
         }
         notifyListeners();
 
-        // 2. Persist to BE asynchronously
-        if (resolvedId != null) {
-          await SupabaseService.instance.unfollowUser(resolvedId);
+        // 2. Persist to BE asynchronously with rollback on failure
+        if (resolvedId != null && resolvedId.isNotEmpty) {
+          final success = await SupabaseService.instance.unfollowUser(resolvedId);
+          if (!success) {
+            // Rollback optimistic unfollow
+            _followingIds.add(resolvedId);
+            if (cleanUsername != null) _followingUsernames.add(cleanUsername);
+            if (countKey.isNotEmpty) {
+              final cur = _followerCounts[countKey] ?? 0;
+              _followerCounts[countKey] = cur + 1;
+            }
+            notifyListeners();
+            return true;
+          }
           loadFollowerCount(resolvedId);
         }
         return false;
@@ -172,13 +189,29 @@ class FollowService extends ChangeNotifier {
         }
         notifyListeners();
 
-        // 2. Persist to BE asynchronously
-        if (resolvedId != null) {
-          await SupabaseService.instance.followUser(resolvedId);
+        // 2. Persist to BE asynchronously with rollback on failure
+        if (resolvedId != null && resolvedId.isNotEmpty) {
+          final success = await SupabaseService.instance.followUser(resolvedId);
+          if (!success) {
+            // Rollback optimistic follow
+            _followingIds.remove(resolvedId);
+            if (cleanUsername != null) _followingUsernames.remove(cleanUsername);
+            if (countKey.isNotEmpty) {
+              final cur = _followerCounts[countKey] ?? 1;
+              _followerCounts[countKey] = (cur > 0 ? cur - 1 : 0);
+            }
+            notifyListeners();
+            return false;
+          }
           loadFollowerCount(resolvedId);
         }
         return true;
       }
+    } catch (e) {
+      debugPrint('FollowService toggleFollow exception: $e');
+      // On unexpected exception, reload fresh followings from backend
+      loadFollowings();
+      return currentlyFollowing;
     } finally {
       if (lockKey.isNotEmpty) {
         _pendingToggles.remove(lockKey);

@@ -89,7 +89,8 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
     });
 
     try {
-      final filename = 'Snaps-v${widget.update.versionName}.apk';
+      // Use single static filename so subsequent updates overwrite previous installer automatically (SNAPS-36)
+      const filename = 'snaps_app_update.apk';
 
       OtaUpdate().execute(
         widget.update.downloadUrl,

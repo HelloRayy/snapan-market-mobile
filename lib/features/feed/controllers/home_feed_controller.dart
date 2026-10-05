@@ -13,19 +13,51 @@ class HomeFeedController extends ChangeNotifier {
   String errorMessage = '';
   Map<String, dynamic>? userProfile;
   StreamSubscription<AuthState>? _authSubscription;
+  RealtimeChannel? _profileChannel;
 
   void init() {
     FollowService.instance.loadFollowings();
     PollSyncService.instance.addListener(_handlePollSyncUpdate);
+    SupabaseService.instance.currentUserProfileNotifier.addListener(_handleProfileChange);
+    _setupProfileSubscription();
     fetchPosts();
-    _authSubscription = SupabaseService.instance.client.auth.onAuthStateChange.listen((_) {
+    _authSubscription = SupabaseService.instance.client.auth.onAuthStateChange.listen((data) {
+      if (data.event == AuthChangeEvent.signedOut) {
+        SupabaseService.instance.currentUserProfileNotifier.value = null;
+        userProfile = null;
+        notifyListeners();
+      } else if (data.event == AuthChangeEvent.signedIn || data.event == AuthChangeEvent.tokenRefreshed) {
+        _setupProfileSubscription();
+      }
       FollowService.instance.loadFollowings();
       fetchPosts(isRefresh: true);
     });
   }
 
+  void _setupProfileSubscription() {
+    final user = SupabaseService.instance.currentUser;
+    if (user != null) {
+      _profileChannel?.unsubscribe();
+      _profileChannel = SupabaseService.instance.subscribeToProfile(user.id, (record) {
+        SupabaseService.instance.currentUserProfileNotifier.value = record;
+        userProfile = record;
+        notifyListeners();
+      });
+    }
+  }
+
+  void _handleProfileChange() {
+    final p = SupabaseService.instance.currentUserProfileNotifier.value;
+    if (p != null) {
+      userProfile = p;
+      notifyListeners();
+    }
+  }
+
   @override
   void dispose() {
+    SupabaseService.instance.currentUserProfileNotifier.removeListener(_handleProfileChange);
+    _profileChannel?.unsubscribe();
     PollSyncService.instance.removeListener(_handlePollSyncUpdate);
     _authSubscription?.cancel();
     super.dispose();
@@ -66,6 +98,7 @@ class HomeFeedController extends ChangeNotifier {
         SupabaseService.instance.getProfile(currentUser.id).then((p) {
           if (p != null) {
             userProfile = p;
+            SupabaseService.instance.currentUserProfileNotifier.value = p;
             notifyListeners();
           }
         });
@@ -108,58 +141,25 @@ class HomeFeedController extends ChangeNotifier {
     }
   }
 
-  /// Vote in a poll with instantaneous optimistic UI update
-  Future<void> votePoll(String postId, List<String> optionIds) async {
+  /// Vote in a poll with instantaneous optimistic UI update & debounced network call
+  void votePoll(String postId, List<String> optionIds) {
     final idx = posts.indexWhere((p) => p.id == postId);
     if (idx == -1) return;
     final currentPost = posts[idx];
     if (currentPost.poll == null) return;
 
-    final currentPoll = currentPost.poll!;
-    final previousVotes = currentPoll.userVotedOptionIds;
-
-    final updatedOptions = currentPoll.options.map((opt) {
-      int count = opt.votesCount;
-      if (previousVotes.contains(opt.id) && !optionIds.contains(opt.id)) {
-        count = (count - 1).clamp(0, 999999);
-      } else if (!previousVotes.contains(opt.id) && optionIds.contains(opt.id)) {
-        count += 1;
-      }
-      return opt.copyWith(votesCount: count);
-    }).toList();
-
-    int total = updatedOptions.fold(0, (sum, opt) => sum + opt.votesCount);
-
-    final optimisticPoll = currentPoll.copyWith(
-      options: updatedOptions,
-      totalVotes: total,
-      userVotedOptionIds: optionIds,
+    PollSyncService.instance.castVote(
+      postId: postId,
+      optionIds: optionIds,
+      currentPoll: currentPost.poll!,
+      remoteCaller: (pId, oIds) => SupabaseService.instance.votePoll(
+        postId: pId,
+        optionIds: oIds,
+      ),
+      onError: (e) {
+        debugPrint('[HomeFeedController] Error during poll vote: $e');
+      },
     );
-
-    posts[idx] = currentPost.copyWith(poll: optimisticPoll);
-    PollSyncService.instance.registerUserVote(postId, optionIds, optimisticPoll);
-    notifyListeners();
-
-    try {
-      final serverPoll = await SupabaseService.instance.votePoll(
-        postId: postId,
-        optionIds: optionIds,
-      );
-      final currentIdx = posts.indexWhere((p) => p.id == postId);
-      if (currentIdx != -1) {
-        posts[currentIdx] = posts[currentIdx].copyWith(poll: serverPoll);
-        notifyListeners();
-      }
-    } catch (e) {
-      debugPrint('Error votePoll: $e');
-      PollSyncService.instance.registerUserVote(postId, previousVotes, currentPoll);
-      final currentIdx = posts.indexWhere((p) => p.id == postId);
-      if (currentIdx != -1) {
-        posts[currentIdx] = currentPost;
-        notifyListeners();
-      }
-      rethrow;
-    }
   }
 
   /// Close poll prematurely

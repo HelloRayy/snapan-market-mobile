@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:snapan_market/core/services/global_notification_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 
 class AuthController {
@@ -26,6 +28,10 @@ class AuthController {
               : 'Berlaku hingga ${until.day}/${until.month}/${until.year} ${until.hour.toString().padLeft(2, '0')}:${until.minute.toString().padLeft(2, '0')} WIB';
           return 'ACCOUNT_SUSPENDED::$reason::$untilFormatted';
         }
+
+        // Segera hubungkan FCM token & Realtime listener untuk user yang baru login
+        unawaited(GlobalNotificationService.instance.syncFcmTokenNow().catchError((_) => ''));
+
         return null; // success
       }
       return 'Gagal masuk. Periksa kembali akun Anda.';

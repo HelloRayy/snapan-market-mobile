@@ -112,7 +112,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final post = _controller.post.copyWith(comments: _controller.comments);
+    final post = _controller.post.copyWith(
+      comments: _controller.comments,
+      commentsCount: _totalCommentsCount,
+    );
 
     return PopScope(
       canPop: false,
@@ -171,8 +174,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     variant: 'detail',
                     onLikeToggle: (updated) {
                       setState(() => _controller.post = updated);
-                      SupabaseService.instance.togglePostLike(updated.id, !updated.isLiked);
-                      widget.onLikeToggle?.call(updated);
+                      if (widget.onLikeToggle != null) {
+                        widget.onLikeToggle!(updated);
+                      } else {
+                        SupabaseService.instance.togglePostLike(updated.id, !updated.isLiked);
+                      }
                     },
                     onRepostToggle: (updated) {
                       setState(() => _controller.post = updated);
@@ -197,6 +203,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     comments: _sortedComments,
                     isLoadingComments: _controller.isLoadingComments,
                     isProductMode: _isProductMode,
+                    onLikeToggle: _controller.toggleCommentLike,
                     onReplyClick: (u, [cId]) => _controller.setReply(u, cId),
                     onImageClick: _handleImageClick,
                     onDeleteComment: (cId) => _controller.deleteComment(context, cId),

@@ -1,5 +1,6 @@
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
+import "package:snapan_market/core/components/snaps_logo.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/core/ui/default_profile_avatar.dart";
 import "package:snapan_market/core/utils/mention_text_span_helper.dart";
@@ -35,14 +36,15 @@ class ActivityItemTile extends StatelessWidget {
                       ? Container(
                           width: 44.0,
                           height: 44.0,
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Color(0xFF3D38F5), Color(0xFF6366F1)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
                           ),
-                          child: const Icon(CupertinoIcons.speaker_2_fill, color: Colors.white, size: 22.0),
+                          padding: const EdgeInsets.all(7.0),
+                          child: const Center(
+                            child: SnapsLogo(height: 18.0),
+                          ),
                         )
                       : AppAvatar(
                           avatarUrl: notification.actorAvatar,
@@ -82,7 +84,10 @@ class ActivityItemTile extends StatelessWidget {
                     children: [
                       Flexible(
                         child: Text(
-                          notification.actorName,
+                          notification.type == ActivityType.system ||
+                                  notification.actorName.toLowerCase().startsWith('admin')
+                              ? 'Snaps'
+                              : notification.actorName,
                           style: const TextStyle(
                             fontSize: 13.5,
                             fontWeight: FontWeight.w700,
@@ -93,6 +98,15 @@ class ActivityItemTile extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      if (notification.type == ActivityType.system ||
+                          notification.actorName.toLowerCase().startsWith('admin')) ...[
+                        const SizedBox(width: 4.0),
+                        const Icon(
+                          CupertinoIcons.checkmark_seal_fill,
+                          size: 13.0,
+                          color: Color(0xFF0283F3),
+                        ),
+                      ],
                       const SizedBox(width: 6.0),
                       Text(
                         "• ${notification.timeAgo}",

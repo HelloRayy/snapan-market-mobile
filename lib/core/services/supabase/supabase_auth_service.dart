@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:snapan_market/core/constants/supabase_constants.dart';
+import 'package:snapan_market/core/services/follow_service.dart';
 import 'package:snapan_market/core/services/poll_sync_service.dart';
+import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
 
 class SupabaseAuthService {
   SupabaseAuthService(this._client);
@@ -34,6 +36,8 @@ class SupabaseAuthService {
       _isAdminCache = null;
       _isAdminCachedUserId = null;
       PollSyncService.instance.clear();
+      DirectMessagesService.instance.clear();
+      FollowService.instance.clear();
       await _client.auth.signOut();
     } catch (e) {
       debugPrint('Error signOut: $e');

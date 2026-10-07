@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/components/snaps_logo.dart';
 import 'package:snapan_market/core/components/update_info_bottom_sheet.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/services/app_update_service.dart';
@@ -110,18 +111,14 @@ class BroadcastDetailModal extends StatelessWidget {
               Container(
                 width: 44.0,
                 height: 44.0,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [Color(0xFF3D38F5), Color(0xFF6366F1)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: const Icon(
-                  CupertinoIcons.speaker_2_fill,
                   color: Colors.white,
-                  size: 20.0,
+                  border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
+                ),
+                padding: const EdgeInsets.all(7.0),
+                child: const Center(
+                  child: SnapsLogo(height: 18.0),
                 ),
               ),
               const SizedBox(width: 12.0),
@@ -131,12 +128,10 @@ class BroadcastDetailModal extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Flexible(
+                        const Flexible(
                           child: Text(
-                            notification.actorName.isNotEmpty
-                                ? notification.actorName
-                                : 'Pengumuman Resmi',
-                            style: const TextStyle(
+                            'Snaps',
+                            style: TextStyle(
                               fontSize: 15.0,
                               fontWeight: FontWeight.w700,
                               color: Color(0xFF0F172A),
@@ -146,20 +141,26 @@ class BroadcastDetailModal extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        const SizedBox(width: 4.0),
+                        const Icon(
+                          CupertinoIcons.checkmark_seal_fill,
+                          size: 14.0,
+                          color: Color(0xFF0283F3),
+                        ),
                         const SizedBox(width: 6.0),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6.5, vertical: 2.0),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEEF2FF),
+                            color: const Color(0xFFEFF6FF),
                             borderRadius: BorderRadius.circular(6.0),
-                            border: Border.all(color: const Color(0xFFC7D2FE), width: 0.8),
+                            border: Border.all(color: const Color(0xFFBFDBFE), width: 0.8),
                           ),
                           child: const Text(
-                            "ADMINISTRATOR",
+                            "OFFICIAL",
                             style: TextStyle(
                               fontSize: 9.5,
                               fontWeight: FontWeight.w800,
-                              color: Color(0xFF4338CA),
+                              color: Color(0xFF1D4ED8),
                               letterSpacing: 0.2,
                             ),
                           ),
@@ -168,7 +169,7 @@ class BroadcastDetailModal extends StatelessWidget {
                     ),
                     const SizedBox(height: 2.0),
                     Text(
-                      "Snaps • ${notification.timeAgo}",
+                      "Pengumuman Resmi • ${notification.timeAgo}",
                       style: const TextStyle(
                         fontSize: 12.0,
                         color: Color(0xFF64748B),

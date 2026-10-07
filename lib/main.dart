@@ -14,6 +14,7 @@ import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/services/follow_service.dart';
 import 'package:snapan_market/features/splash/screens/splash_screen.dart';
 import 'package:snapan_market/features/auth/screens/auth_screen.dart';
+import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,6 +49,9 @@ Future<void> main() async {
 
   // Initialize background suspension listeners (SNAPS-16)
   SuspensionService.instance.init();
+
+  // Initialize isolated direct messages cache & account-switch listener (SNAPS-42)
+  DirectMessagesService.instance.init();
 
   // Clean obsolete OTA APK installers in background to reclaim disk space (SNAPS-36)
   unawaited(AppUpdateService.instance.cleanObsoleteInstallers());

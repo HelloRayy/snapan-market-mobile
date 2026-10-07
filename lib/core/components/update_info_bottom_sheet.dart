@@ -39,12 +39,9 @@ class UpdateInfoBottomSheet extends StatefulWidget {
             AppUpdateService.instance.dismissUpdate(update.versionCode);
           }
         },
-        child: FractionallySizedBox(
-          heightFactor: 0.88,
-          child: UpdateInfoBottomSheet(
-            update: update,
-            currentVersionName: currentVersionName,
-          ),
+        child: UpdateInfoBottomSheet(
+          update: update,
+          currentVersionName: currentVersionName,
         ),
       ),
     );
@@ -69,7 +66,7 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Link download APK disalin ke clipboard! Buka browser untuk mengunduh.'),
+            content: Text('Tautan unduhan disalin ke papan klip! Buka browser untuk mengunduh.'),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -127,14 +124,14 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
             case OtaStatus.ALREADY_RUNNING_ERROR:
               setState(() {
                 _isDownloading = false;
-                _errorMessage = 'Proses unduhan sudah berjalan di latar belakang.';
+                _errorMessage = 'Proses unduhan sedang berjalan di latar belakang.';
               });
               break;
 
             case OtaStatus.PERMISSION_NOT_GRANTED_ERROR:
               setState(() {
                 _isDownloading = false;
-                _errorMessage = 'Izin pemasangan aplikasi belum diaktifkan. Buka Pengaturan HP > Aplikasi > Snaps > Aktifkan "Instal aplikasi tidak dikenal", lalu coba lagi.';
+                _errorMessage = 'Izin pemasangan aplikasi belum aktif. Buka Pengaturan HP > Aplikasi > Snaps > Aktifkan "Instal aplikasi tidak dikenal", lalu coba lagi.';
               });
               break;
 
@@ -143,7 +140,7 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
             case OtaStatus.CHECKSUM_ERROR:
               setState(() {
                 _isDownloading = false;
-                _errorMessage = 'Gagal mengunduh file pembaruan. Periksa koneksi internet Anda.';
+                _errorMessage = 'Gagal mengunduh pembaruan. Periksa koneksi internet Anda dan coba lagi.';
               });
               break;
 
@@ -151,7 +148,7 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
               setState(() {
                 _isDownloading = false;
                 _isInstalling = false;
-                _errorMessage = 'Pemasangan paket gagal atau dibatalkan. Anda dapat mengunduh manual melalui tombol di bawah.';
+                _errorMessage = 'Pemasangan pembaruan belum berhasil. Anda dapat mengunduh manual melalui tombol di bawah.';
               });
               break;
 
@@ -171,7 +168,7 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
           if (!mounted) return;
           setState(() {
             _isDownloading = false;
-            _errorMessage = 'Terjadi kesalahan sistem: $err';
+            _errorMessage = 'Terjadi kendala saat mengunduh pembaruan. Silakan coba lagi.';
           });
         },
       );
@@ -179,7 +176,7 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
       if (!mounted) return;
       setState(() {
         _isDownloading = false;
-        _errorMessage = 'Gagal memulai unduhan: $e';
+        _errorMessage = 'Gagal memulai unduhan pembaruan. Silakan coba lagi.';
       });
     }
   }
@@ -187,6 +184,9 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
+    final formattedChangelog = widget.update.changelog
+        .replaceAll(r'\n', '\n')
+        .trim();
 
     return Container(
       decoration: const BoxDecoration(
@@ -304,9 +304,13 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
 
               const SizedBox(height: 16.0),
 
-              // 3. Changelog Card (Expanded & Scrollable for Full-Open View)
-              Expanded(
+              // 3. Changelog Card (Hug / Compact to content, scrollable if exceeds maxHeight)
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.sizeOf(context).height * 0.38,
+                ),
                 child: Container(
+                  width: double.infinity,
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF8FAFC),
@@ -319,13 +323,14 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        const Row(
                           children: [
-                            const Icon(Icons.article_rounded, size: 16.0, color: Color(0xFF64748B)),
-                            const SizedBox(width: 6.0),
-                            const Text(
+                            Icon(Icons.article_rounded, size: 16.0, color: Color(0xFF64748B)),
+                            SizedBox(width: 6.0),
+                            Text(
                               'Catatan Pembaruan:',
                               style: TextStyle(
                                 fontSize: 13.5,
@@ -337,7 +342,7 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                         ),
                         const SizedBox(height: 10.0),
                         SelectableText(
-                          widget.update.changelog,
+                          formattedChangelog,
                           style: const TextStyle(
                             fontSize: 13.5,
                             fontWeight: FontWeight.w400,
@@ -402,7 +407,7 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                               Clipboard.setData(ClipboardData(text: widget.update.downloadUrl));
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Link download APK disalin ke clipboard!'),
+                                  content: Text('Tautan unduhan disalin ke papan klip!'),
                                   behavior: SnackBarBehavior.floating,
                                   duration: Duration(seconds: 2),
                                 ),
@@ -491,8 +496,8 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                     _isDownloading
                         ? 'Sedang Mengunduh... ($_downloadProgress%)'
                         : _isInstalling
-                            ? 'Membuka Pemasang Paket...'
-                            : 'Update Sekarang',
+                            ? 'Mempersiapkan Pemasangan...'
+                            : 'Perbarui Sekarang',
                   ),
                 ),
               ),

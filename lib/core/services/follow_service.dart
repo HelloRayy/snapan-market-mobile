@@ -43,6 +43,16 @@ class FollowService extends ChangeNotifier {
     }
   }
 
+  /// Reset all follow cache when logging out or switching accounts
+  void clear() {
+    _followingIds.clear();
+    _followingUsernames.clear();
+    _followerCounts.clear();
+    _pendingToggles.clear();
+    _isLoaded = false;
+    notifyListeners();
+  }
+
   /// Checks if the target is the currently authenticated user
   bool isCurrentUser(String? userId, String? username) {
     final current = SupabaseService.instance.currentUser;

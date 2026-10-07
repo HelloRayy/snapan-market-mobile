@@ -245,8 +245,8 @@ class GlobalNotificationService {
         final fakeNotif = ActivityNotification(
           id: message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
           type: ActivityType.system,
-          actorName: 'Administrator',
-          actorUsername: 'admin',
+          actorName: 'Snaps',
+          actorUsername: 'snaps',
           actorAvatar: '',
           title: title,
           message: body,
@@ -302,8 +302,8 @@ class GlobalNotificationService {
     final notif = ActivityNotification(
       id: message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
       type: ActivityType.system,
-      actorName: 'Administrator',
-      actorUsername: 'admin',
+      actorName: 'Snaps',
+      actorUsername: 'snaps',
       actorAvatar: '',
       title: title,
       message: body,

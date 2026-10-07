@@ -31,6 +31,7 @@ class ProfileScreen extends StatefulWidget {
   final ProfileUserModel? initialUser;
   final VoidCallback? onBack;
   final VoidCallback? onOpenMenu;
+  final VoidCallback? onLogout;
   final bool showAppBar;
 
   const ProfileScreen({
@@ -39,6 +40,7 @@ class ProfileScreen extends StatefulWidget {
     this.initialUser,
     this.onBack,
     this.onOpenMenu,
+    this.onLogout,
     this.showAppBar = true,
   });
 

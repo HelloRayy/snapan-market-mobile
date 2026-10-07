@@ -98,5 +98,5 @@ graphify-out/20*/
 # Supabase CLI temp files
 supabase/.temp/
 
-
-
+# VibeWise local state
+.vibe-wise/

@@ -262,7 +262,12 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
             ),
             messagesTab: const DirectMessagesScreen(showBackButton: false, showAppBar: false),
             activityTab: const ActivityScreen(showAppBar: false),
-            profileTab: ProfileScreen(key: _profileKey, showAppBar: false, onOpenMenu: () => _scaffoldKey.currentState?.openDrawer()),
+            profileTab: ProfileScreen(
+              key: _profileKey,
+              showAppBar: false,
+              onOpenMenu: () => _scaffoldKey.currentState?.openDrawer(),
+              onLogout: widget.onLogout,
+            ),
           ),
           ValueListenableBuilder<bool>(
             valueListenable: GlobalNotificationService.instance.hasUnreadActivity,

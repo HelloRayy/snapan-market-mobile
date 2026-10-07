@@ -2,10 +2,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
-import 'package:snapan_market/features/feed/components/nav_glyphs/home_nav_glyph.dart';
-import 'package:snapan_market/features/feed/components/nav_glyphs/paper_plane_nav_glyph.dart';
-import 'package:snapan_market/features/feed/components/nav_glyphs/heart_nav_glyph.dart';
-import 'package:snapan_market/features/feed/components/nav_glyphs/user_nav_glyph.dart';
+import 'package:snapan_market/features/feed/components/navigation/nav_glyphs/home_nav_glyph.dart';
+import 'package:snapan_market/features/feed/components/navigation/nav_glyphs/paper_plane_nav_glyph.dart';
+import 'package:snapan_market/features/feed/components/navigation/nav_glyphs/heart_nav_glyph.dart';
+import 'package:snapan_market/features/feed/components/navigation/nav_glyphs/user_nav_glyph.dart';
 
 /// Enum representing the 4 main navigation tabs in the Center Bot Bar
 enum HomeNavTab {

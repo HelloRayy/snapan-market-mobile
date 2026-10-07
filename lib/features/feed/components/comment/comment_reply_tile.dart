@@ -122,7 +122,11 @@ class _CommentReplyTileState extends State<CommentReplyTile> {
   }
 
   Widget _buildHeaderRow(BuildContext context) {
-    final username = widget.reply.user.username ?? widget.reply.user.name;
+    final rawUsername = (widget.reply.user.username != null && widget.reply.user.username!.isNotEmpty)
+        ? widget.reply.user.username!
+        : widget.reply.user.name;
+    final cleanUsername = rawUsername.trim().replaceAll('@', '');
+    final displayAuthor = '@$cleanUsername';
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -134,10 +138,10 @@ class _CommentReplyTileState extends State<CommentReplyTile> {
               Flexible(
                 child: GestureDetector(
                   onTap: () {
-                    widget.onUserClick?.call(username);
+                    widget.onUserClick?.call(cleanUsername);
                   },
                   child: Text(
-                    username,
+                    displayAuthor,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(

@@ -100,4 +100,44 @@ class SupabaseAuthService {
       return null;
     }
   }
+
+  /// Memeriksa status kesehatan akun aktif saat app startup atau resume:
+  /// - 'unauthenticated': Tidak ada sesi aktif
+  /// - 'deleted': Token sesi ada di perangkat, tetapi profil di database sudah dihapus oleh admin
+  /// - 'suspended': Akun sedang ditangguhkan
+  /// - 'active': Akun valid dan aktif normal
+  Future<Map<String, dynamic>?> checkCurrentUserAccountHealth() async {
+    final user = currentUser;
+    if (user == null) return {'status': 'unauthenticated'};
+
+    try {
+      final res = await _client
+          .from('profiles')
+          .select('id, full_name, username, avatar_url, class_group, role, is_suspended, suspended_at, suspended_until, suspend_reason')
+          .eq('id', user.id)
+          .maybeSingle();
+
+      if (res == null) {
+        // Baris profil tidak ditemukan di database -> Akun telah dihapus oleh admin
+        return {'status': 'deleted'};
+      }
+
+      final isSuspended = res['is_suspended'] == true;
+      if (isSuspended) {
+        final suspendedUntilStr = res['suspended_until'] as String?;
+        if (suspendedUntilStr != null) {
+          final until = DateTime.tryParse(suspendedUntilStr);
+          if (until != null && DateTime.now().toUtc().isAfter(until.toUtc())) {
+            return {'status': 'active', 'profile': res}; // Durasi suspen telah usai
+          }
+        }
+        return {'status': 'suspended', 'data': res};
+      }
+
+      return {'status': 'active', 'profile': res};
+    } catch (e) {
+      debugPrint('Error checkCurrentUserAccountHealth: $e');
+      return null;
+    }
+  }
 }

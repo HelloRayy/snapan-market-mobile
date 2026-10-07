@@ -143,6 +143,13 @@
     - **Bicara Jelas, Jangan Bertele-tele**: Jelaskan apa yang dikerjakan dengan bahasa manusia yang santai dan to the point. Hindari ceramah teori panjang lebar atau istilah rumit yang bikin pusing.
     - **Pikirkan Rasa Nyata Pas Dipakai Manusia**: Sadari bahwa AI nggak megang HP langsung. Jangan bikin tombol yang kekecilan buat dipencet jempol, tulisan yang numpuk/kepotong, atau alur yang bikin orang bingung waktu pakai aplikasinya.
 
+13. **Pedoman Menulis Codebase untuk Maintainability Jangka Panjang (Wajib Bagi AI Baru)**:
+    - **Dokumen Wajib**: Sebelum menambah fitur atau melakukan refactor, pelajari [`docs/coding-standards.md`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/docs/coding-standards.md) dan [`docs/clean-code-architecture.md`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/docs/clean-code-architecture.md).
+    - **Anti-Monolith & Batas Keras 250 Baris**: Dilarang membuat screen yang membengkak dengan puluhan method private `_buildX()`. Selalu pecah menjadi widget class terpisah di `<feature>/components/`.
+    - **Pemisahan Lapisan (Separation of Concerns)**: UI Widget dilarang memanggil query Supabase mentah di dalam method `build()`. Semua akses data wajib melalui `Controller` atau `Service` (`lib/core/services/` atau `lib/features/<feature>/controllers/`).
+    - **Disiplin Design Tokens**: Wajib memakai token resmi `AppColors.*` (`lib/core/theme/app_colors.dart`), `LucideIcons.*`, dan `SnapsLogo`. Jangan mengarang warna hex atau styling acak.
+    - **Defensive & Human-First**: Gunakan explicit null-safety, tangani 4 status UI (Loading, Empty, Error, Success), dan sediakan area sentuh minimal 44x44 dp untuk seluruh tombol interaktif.
+
 ---
 
 ## Flutter Architecture & Modular Structure (`lib/`)

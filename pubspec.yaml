@@ -72,6 +72,7 @@ flutter:
     - assets/locations/
     - assets/fonts/
     - assets/logo/
+    - assets/data/
 
   fonts:
     - family: SFPro

@@ -5,7 +5,7 @@ import 'package:snapan_market/core/components/kumo_button.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
-import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
+import 'package:snapan_market/features/feed/components/post_card/market_feed_icons.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// Interactive Buy Bottom Sheet for Instant COD Order Placement in SMKN 8

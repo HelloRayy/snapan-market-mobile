@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:snapan_market/core/services/student_registry_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/auth/components/auth_text_field.dart';
-import 'package:snapan_market/features/auth/components/auth_class_picker.dart';
-import 'package:snapan_market/features/auth/components/auth_social_section.dart';
+import 'package:snapan_market/features/auth/components/student_nis_combobox.dart';
 
 class AuthRegisterTab extends StatelessWidget {
-  final TextEditingController fullNameController;
-  final String? fullNameError;
-  final String? selectedGrade;
-  final String? selectedMajor;
-  final String? selectedClassNum;
-  final String? classError;
-  final ValueChanged<String?> onGradeChanged;
-  final ValueChanged<String?> onMajorChanged;
-  final ValueChanged<String?> onClassNumChanged;
+  final TextEditingController nisController;
+  final String? nisError;
+  final RegisteredStudent? verifiedStudent;
+  final ValueChanged<RegisteredStudent?> onStudentSelected;
+
   final TextEditingController usernameController;
   final String? usernameError;
   final TextEditingController passwordController;
@@ -25,20 +21,15 @@ class AuthRegisterTab extends StatelessWidget {
   final bool agreedTerms;
   final VoidCallback onToggleAgreedTerms;
   final bool isSubmitting;
+  final bool isGeneratingUsername;
   final VoidCallback onSubmit;
-  final VoidCallback onGoogleAuth;
 
   const AuthRegisterTab({
     super.key,
-    required this.fullNameController,
-    this.fullNameError,
-    required this.selectedGrade,
-    required this.selectedMajor,
-    required this.selectedClassNum,
-    this.classError,
-    required this.onGradeChanged,
-    required this.onMajorChanged,
-    required this.onClassNumChanged,
+    required this.nisController,
+    this.nisError,
+    this.verifiedStudent,
+    required this.onStudentSelected,
     required this.usernameController,
     this.usernameError,
     required this.passwordController,
@@ -48,8 +39,8 @@ class AuthRegisterTab extends StatelessWidget {
     required this.agreedTerms,
     required this.onToggleAgreedTerms,
     required this.isSubmitting,
+    this.isGeneratingUsername = false,
     required this.onSubmit,
-    required this.onGoogleAuth,
   });
 
   @override
@@ -57,31 +48,35 @@ class AuthRegisterTab extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AuthInputField(
-          label: 'Nama Lengkap',
-          hint: 'Masukkan nama anda',
-          prefixIcon: LucideIcons.user,
-          controller: fullNameController,
-          errorText: fullNameError,
-          textInputAction: TextInputAction.next,
+        // 1. COMBOBOX NIS SISWA DENGAN FLOATING OVERLAY & BORDER HIJAU DINAMIS
+        StudentNisCombobox(
+          controller: nisController,
+          errorText: nisError,
+          verifiedStudent: verifiedStudent,
+          onStudentSelected: onStudentSelected,
         ),
         const SizedBox(height: 16.0),
-        AuthClassPicker(
-          selectedGrade: selectedGrade,
-          selectedMajor: selectedMajor,
-          selectedClassNum: selectedClassNum,
-          classError: classError,
-          onGradeChanged: onGradeChanged,
-          onMajorChanged: onMajorChanged,
-          onClassNumChanged: onClassNumChanged,
-        ),
-        const SizedBox(height: 16.0),
+
+        // 2. USERNAME @ (AUTO SUGGEST DARI NAMA DEPAN + TENGAH DENGAN LOADING SPINNER)
         AuthInputField(
-          label: 'Username',
-          hint: '@username_kamu',
+          label: isGeneratingUsername ? 'Memilih username...' : 'Username',
+          hint: isGeneratingUsername ? 'Menyiapkan rekomendasi...' : '@username',
           prefixIcon: LucideIcons.atSign,
           controller: usernameController,
           errorText: usernameError,
+          customSuffixIcon: isGeneratingUsername
+              ? const Padding(
+                  padding: EdgeInsets.only(right: 14.0),
+                  child: SizedBox(
+                    width: 16.0,
+                    height: 16.0,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.0,
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                    ),
+                  ),
+                )
+              : null,
           textInputAction: TextInputAction.next,
           inputFormatters: [
             FilteringTextInputFormatter.deny(RegExp(r'\s')),
@@ -92,6 +87,8 @@ class AuthRegisterTab extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16.0),
+
+        // 4. KATA SANDI
         AuthInputField(
           label: 'Kata Sandi',
           hint: 'Minimal 6 karakter',
@@ -105,17 +102,27 @@ class AuthRegisterTab extends StatelessWidget {
           onSubmitted: (_) => onSubmit(),
         ),
         const SizedBox(height: 16.0),
+
+        // 5. PERSETUJUAN KETENTUAN
         _buildRegisterTermsRow(),
         const SizedBox(height: 22.0),
-        PrimaryAuthButton(
-          text: 'Buat Akun Sekarang',
-          isLoading: isSubmitting,
-          onPressed: onSubmit,
-        ),
-        const SizedBox(height: 22.0),
-        AuthSocialSection(
-          dividerText: 'atau daftar dengan',
-          onGoogleAuth: onGoogleAuth,
+
+        // 6. TOMBOL AKSI (Disable abu-abu jika belum lengkap atau belum setuju S&K)
+        ListenableBuilder(
+          listenable: Listenable.merge([nisController, usernameController, passwordController]),
+          builder: (context, _) {
+            final bool isFormComplete = nisController.text.trim().isNotEmpty &&
+                usernameController.text.trim().isNotEmpty &&
+                passwordController.text.isNotEmpty &&
+                agreedTerms;
+
+            return PrimaryAuthButton(
+              text: 'Aktifkan Akun & Masuk',
+              isLoading: isSubmitting,
+              isEnabled: isFormComplete,
+              onPressed: onSubmit,
+            );
+          },
         ),
       ],
     );
@@ -159,18 +166,10 @@ class AuthRegisterTab extends StatelessWidget {
                 ),
                 children: [
                   TextSpan(
-                    text: 'Ketentuan Komunitas',
+                    text: 'Ketentuan Komunitas & Privasi SMKN 8',
                     style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF0F172A),
-                    ),
-                  ),
-                  TextSpan(text: ' dan '),
-                  TextSpan(
-                    text: 'Kebijakan Privasi SMKN 8',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF0F172A),
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],

@@ -1,3 +1,4 @@
+// ignore_for_file: use_null_aware_elements
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -76,6 +77,7 @@ class SupabaseProfileService {
     required String fullName,
     required String username,
     required String classGroup,
+    String? nis,
     String? avatarUrl,
     String? bio,
     List<String>? tags,
@@ -83,13 +85,13 @@ class SupabaseProfileService {
   }) async {
     // Immediately update local profile notifier so entire app UI updates with zero delay
     final existing = currentUserProfileNotifier.value ?? {};
-    // ignore: use_null_aware_elements
     currentUserProfileNotifier.value = {
       ...existing,
       'id': userId,
       'full_name': fullName,
       'username': username,
       'class_group': classGroup,
+      if (nis != null && nis.isNotEmpty) 'nis': nis,
       if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
       if (bio != null) 'bio': bio,
       if (tags != null) 'interests': tags.join(','),
@@ -99,11 +101,11 @@ class SupabaseProfileService {
     try {
       await _client.auth.updateUser(
         UserAttributes(
-          // ignore: use_null_aware_elements
           data: {
             'full_name': fullName,
             'username': username,
             'class_group': classGroup,
+            if (nis != null && nis.isNotEmpty) 'nis': nis,
             if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
             if (bio != null) 'bio': bio,
             if (tags != null) 'tags': tags,
@@ -116,11 +118,11 @@ class SupabaseProfileService {
     }
 
     // 2. Prepare payload for public.profiles table
-    // ignore: use_null_aware_elements
     final fullPayload = <String, dynamic>{
       'full_name': fullName,
       'username': username,
       'class_group': classGroup,
+      if (nis != null && nis.isNotEmpty) 'nis': nis,
       if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
       if (bio != null) 'bio': bio,
       if (link != null) 'link': link,
@@ -131,6 +133,7 @@ class SupabaseProfileService {
       'full_name': fullName,
       'username': username,
       'class_group': classGroup,
+      if (nis != null && nis.isNotEmpty) 'nis': nis,
       if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
     };
 
@@ -151,6 +154,40 @@ class SupabaseProfileService {
           debugPrint('Warning updateProfile upsert fallback failed: $err');
         });
       }
+    }
+  }
+
+  /// Fetch user profile by NIS from public.profiles
+  Future<Map<String, dynamic>?> getProfileByNis(String nis) async {
+    try {
+      final clean = nis.trim();
+      if (clean.isEmpty) return null;
+      final data = await _client
+          .from('profiles')
+          .select()
+          .eq('nis', clean)
+          .maybeSingle();
+      return data;
+    } catch (e) {
+      debugPrint('Error getProfileByNis: $e');
+      return null;
+    }
+  }
+
+  /// Check if an NIS has already been claimed by a registered user
+  Future<bool> isNisClaimed(String nis) async {
+    try {
+      final clean = nis.trim();
+      if (clean.isEmpty) return false;
+      final res = await _client
+          .from('profiles')
+          .select('id')
+          .eq('nis', clean)
+          .maybeSingle();
+      return res != null;
+    } catch (e) {
+      debugPrint('Error isNisClaimed: $e');
+      return false;
     }
   }
 

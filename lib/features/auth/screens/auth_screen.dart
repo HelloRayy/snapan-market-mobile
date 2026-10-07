@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/services/global_notification_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
-import 'package:snapan_market/features/auth/components/auth_brand_header.dart';
+import 'package:snapan_market/core/components/snaps_logo.dart';
 import 'package:snapan_market/features/auth/components/auth_login_tab.dart';
 import 'package:snapan_market/features/auth/components/auth_register_tab.dart';
 import 'package:snapan_market/features/auth/components/auth_footer_switcher.dart';
 import 'package:snapan_market/features/auth/controllers/auth_controller.dart';
+import 'package:snapan_market/features/auth/components/student_confirmation_dialog.dart';
+
+import 'package:snapan_market/core/services/student_registry_service.dart';
 
 enum AuthMode { login, register }
 
@@ -17,12 +20,14 @@ class AuthScreen extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback onSuccess;
   final Map<String, dynamic>? initialSuspensionInfo;
+  final bool initialAccountDeletedNotice;
 
   const AuthScreen({
     super.key,
     required this.onBack,
     required this.onSuccess,
     this.initialSuspensionInfo,
+    this.initialAccountDeletedNotice = false,
   });
 
   @override
@@ -32,6 +37,7 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   AuthMode _authMode = AuthMode.login;
   Map<String, dynamic>? _suspensionInfo;
+  bool _showAccountDeletedNotice = false;
 
   // Controllers
   final TextEditingController _loginUsernameController = TextEditingController();
@@ -39,24 +45,22 @@ class _AuthScreenState extends State<AuthScreen> {
   bool _showLoginPassword = false;
   bool _rememberMe = true;
 
+  final TextEditingController _nisController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _regUsernameController = TextEditingController();
   final TextEditingController _regPasswordController = TextEditingController();
+  RegisteredStudent? _verifiedStudent;
   bool _showRegPassword = false;
   bool _agreedTerms = false;
-
-  // Grade & Class Selection
-  String? _selectedGrade;
-  String? _selectedMajor;
-  String? _selectedClassNum;
+  bool _isGeneratingUsername = false;
 
   // Error States
   String? _loginUsernameError;
   String? _loginPasswordError;
+  String? _nisError;
   String? _fullNameError;
   String? _regUsernameError;
   String? _regPasswordError;
-  String? _classError;
 
   bool _isSubmitting = false;
 
@@ -64,9 +68,13 @@ class _AuthScreenState extends State<AuthScreen> {
   void initState() {
     super.initState();
     _suspensionInfo = widget.initialSuspensionInfo;
-    for (final c in [_loginUsernameController, _loginPasswordController, _fullNameController, _regUsernameController, _regPasswordController]) {
+    _showAccountDeletedNotice = widget.initialAccountDeletedNotice;
+    if (_showAccountDeletedNotice) {
+      _authMode = AuthMode.register;
+    }
+    for (final c in [_loginUsernameController, _loginPasswordController, _nisController, _fullNameController, _regUsernameController, _regPasswordController]) {
       c.addListener(() {
-        if (mounted && (_loginUsernameError != null || _loginPasswordError != null || _fullNameError != null || _regUsernameError != null || _regPasswordError != null)) {
+        if (mounted && (_loginUsernameError != null || _loginPasswordError != null || _nisError != null || _fullNameError != null || _regUsernameError != null || _regPasswordError != null)) {
           setState(_clearAllErrors);
         }
       });
@@ -76,16 +84,78 @@ class _AuthScreenState extends State<AuthScreen> {
   void _clearAllErrors() {
     _loginUsernameError = null;
     _loginPasswordError = null;
+    _nisError = null;
     _fullNameError = null;
     _regUsernameError = null;
     _regPasswordError = null;
-    _classError = null;
+  }
+
+  Future<void> _handleStudentSelected(RegisteredStudent? student) async {
+    if (student == null) {
+      setState(() {
+        _verifiedStudent = null;
+        _fullNameController.clear();
+      });
+      return;
+    }
+
+    // Dismiss active keyboard for clean presentation
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    // Show clean horizontal confirmation popup: "Apakah Anda {Nama Lengkap}?"
+    final confirmed = await StudentConfirmationDialog.show(
+      context,
+      student: student,
+    );
+
+    if (confirmed != true) {
+      // User cancelled or pressed "Bukan Saya"
+      setState(() {
+        _verifiedStudent = null;
+        _nisController.clear();
+        _fullNameController.clear();
+        _regUsernameController.clear();
+      });
+      return;
+    }
+
+    // User confirmed: Lock student identity & set green border
+    setState(() {
+      _nisController.text = student.nis;
+      _verifiedStudent = student;
+      _fullNameController.text = student.name;
+      _nisError = null;
+      _isGeneratingUsername = true;
+    });
+
+    // Auto generate username: [nama depan + nama tengah]
+    final baseUsername = StudentRegistryService.generateSuggestedUsername(student.name);
+    String targetUsername = baseUsername;
+
+    // Check if username already taken, if taken add random number
+    try {
+      final isTaken = await SupabaseService.instance.isUsernameTaken(targetUsername);
+      if (isTaken) {
+        final rand = (DateTime.now().millisecondsSinceEpoch % 899) + 100;
+        targetUsername = '${baseUsername}_$rand';
+      }
+    } catch (_) {
+      // Offline fallback
+    }
+
+    if (mounted) {
+      setState(() {
+        _regUsernameController.text = targetUsername;
+        _isGeneratingUsername = false;
+      });
+    }
   }
 
   @override
   void dispose() {
     _loginUsernameController.dispose();
     _loginPasswordController.dispose();
+    _nisController.dispose();
     _fullNameController.dispose();
     _regUsernameController.dispose();
     _regPasswordController.dispose();
@@ -101,47 +171,6 @@ class _AuthScreenState extends State<AuthScreen> {
       });
     } else {
       widget.onBack();
-    }
-  }
-
-  Future<void> _handleGoogleAuth() async {
-    HapticFeedback.selectionClick();
-    setState(() => _isSubmitting = true);
-    try {
-      final success = await SupabaseService.instance.signInWithGoogle();
-      if (success && mounted) {
-        // Cek apakah akun berstatus ditangguhkan (suspended) (SNAPS-16)
-        final suspension = await SupabaseService.instance.auth.getCurrentUserSuspensionStatus();
-        if (suspension != null) {
-          await SupabaseService.instance.signOut();
-          final reason = suspension['suspend_reason'] as String? ??
-              'Pelanggaran terhadap tata tertib komunitas SMKN 8 Semarang.';
-          final untilStr = suspension['suspended_until'] as String?;
-          final until = untilStr != null ? DateTime.tryParse(untilStr) : null;
-          final untilFormatted = until == null
-              ? 'Permanen (Tanpa Batas Waktu)'
-              : 'Berlaku hingga ${until.day}/${until.month}/${until.year} ${until.hour.toString().padLeft(2, '0')}:${until.minute.toString().padLeft(2, '0')} WIB';
-          setState(() {
-            _suspensionInfo = {
-              'reason': reason,
-              'untilText': untilFormatted,
-            };
-          });
-          return;
-        }
-        widget.onSuccess();
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Login Google gagal: $e'),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
@@ -191,16 +220,24 @@ class _AuthScreenState extends State<AuthScreen> {
     FocusManager.instance.primaryFocus?.unfocus();
     setState(_clearAllErrors);
 
-    final fullName = _fullNameController.text.trim();
-    if (fullName.isEmpty) {
-      setState(() => _fullNameError = 'Nama lengkap wajib diisi');
+    final rawNis = _nisController.text.trim();
+    if (rawNis.isEmpty) {
+      setState(() => _nisError = 'NIS siswa wajib diisi');
       return;
     }
 
-    if (_selectedGrade == null || _selectedMajor == null || _selectedClassNum == null) {
-      setState(() => _classError = 'Pilih kelas, jurusan, dan nomor ruang Anda');
-      return;
+    if (_verifiedStudent == null) {
+      final student = StudentRegistryService.instance.findByNis(rawNis);
+      if (student == null) {
+        setState(() => _nisError = 'NIS belum terdaftar sebagai siswa SMKN 8');
+        return;
+      }
+      _verifiedStudent = student;
+      _fullNameController.text = student.name;
     }
+
+    final fullName = _verifiedStudent!.name;
+    final classGroup = _verifiedStudent!.classGroup;
 
     final rawUsername = _regUsernameController.text.trim().toLowerCase().replaceAll('@', '');
     if (rawUsername.length < 3 || rawUsername.length > 20) {
@@ -229,9 +266,8 @@ class _AuthScreenState extends State<AuthScreen> {
     final error = await AuthController.submitRegister(
       fullName: fullName,
       rawUsername: rawUsername,
-      grade: _selectedGrade!,
-      major: _selectedMajor!,
-      classNum: _selectedClassNum!,
+      classGroup: classGroup,
+      nis: rawNis,
       password: pass,
     );
 
@@ -249,88 +285,258 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      behavior: HitTestBehavior.opaque,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        resizeToAvoidBottomInset: true,
-        body: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight - 24.0),
-                  child: IntrinsicHeight(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AuthBrandHeader(
-                          onBack: _handleBack,
-                          title: _authMode == AuthMode.login ? 'Masuk Akun' : 'Daftar Akun Baru',
-                          subtitle: _authMode == AuthMode.login
-                              ? 'Selamat datang kembali, Snapanians!'
-                              : 'Daftarkan akunmu untuk berjejaring dan belanja bareng!',
-                        ),
-                        const SizedBox(height: 26.0),
-                        if (_authMode == AuthMode.login)
-                          AuthLoginTab(
-                            usernameController: _loginUsernameController,
-                            passwordController: _loginPasswordController,
-                            showPassword: _showLoginPassword,
-                            onTogglePassword: () => setState(() => _showLoginPassword = !_showLoginPassword),
-                            usernameError: _loginUsernameError,
-                            passwordError: _loginPasswordError,
-                            rememberMe: _rememberMe,
-                            onToggleRememberMe: () => setState(() => _rememberMe = !_rememberMe),
-                            isSubmitting: _isSubmitting,
-                            onSubmit: _submitLogin,
-                            onGoogleAuth: _handleGoogleAuth,
-                            suspensionInfo: _suspensionInfo,
-                            onDismissSuspension: () => setState(() => _suspensionInfo = null),
-                          )
-                        else
-                          AuthRegisterTab(
-                            fullNameController: _fullNameController,
-                            fullNameError: _fullNameError,
-                            selectedGrade: _selectedGrade,
-                            selectedMajor: _selectedMajor,
-                            selectedClassNum: _selectedClassNum,
-                            classError: _classError,
-                            onGradeChanged: (val) => setState(() => _selectedGrade = val),
-                            onMajorChanged: (val) => setState(() => _selectedMajor = val),
-                            onClassNumChanged: (val) => setState(() => _selectedClassNum = val),
-                            usernameController: _regUsernameController,
-                            usernameError: _regUsernameError,
-                            passwordController: _regPasswordController,
-                            passwordError: _regPasswordError,
-                            showPassword: _showRegPassword,
-                            onTogglePassword: () => setState(() => _showRegPassword = !_showRegPassword),
-                            agreedTerms: _agreedTerms,
-                            onToggleAgreedTerms: () => setState(() => _agreedTerms = !_agreedTerms),
-                            isSubmitting: _isSubmitting,
-                            onSubmit: _submitRegister,
-                            onGoogleAuth: _handleGoogleAuth,
+    final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 100;
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+
+        // If soft keyboard is visible, swipe back gesture should ONLY close keyboard (SNAPS-48)
+        if (isKeyboardOpen || (FocusManager.instance.primaryFocus?.hasFocus ?? false)) {
+          FocusManager.instance.primaryFocus?.unfocus();
+          return;
+        }
+
+        // If keyboard is already closed and we are in register mode, return to login tab
+        if (_authMode == AuthMode.register) {
+          setState(() {
+            _authMode = AuthMode.login;
+            _clearAllErrors();
+          });
+          return;
+        }
+
+        // Otherwise delegate to onBack handler
+        widget.onBack();
+      },
+      child: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          resizeToAvoidBottomInset: true,
+          body: SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight - 16.0,
+                    ),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // 1. TOP BAR: Back button
+                          GestureDetector(
+                            onTap: _handleBack,
+                            behavior: HitTestBehavior.opaque,
+                            child: Container(
+                              width: 38.0,
+                              height: 38.0,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: const Color(0xFFE2E8F0),
+                                  width: 1.0,
+                                ),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Color(0x08000000),
+                                    blurRadius: 4.0,
+                                    offset: Offset(0, 1),
+                                  ),
+                                ],
+                              ),
+                              child: const Center(
+                                child: Icon(
+                                  Icons.chevron_left_rounded,
+                                  size: 24.0,
+                                  color: Color(0xFF0F172A),
+                                ),
+                              ),
+                            ),
                           ),
-                        const Spacer(),
-                        const SizedBox(height: 18.0),
-                        AuthFooterSwitcher(
-                          isLogin: _authMode == AuthMode.login,
-                          onSwitch: () => setState(() {
-                            _authMode = _authMode == AuthMode.login ? AuthMode.register : AuthMode.login;
-                            _clearAllErrors();
-                          }),
-                        ),
-                        const SizedBox(height: 8.0),
-                      ],
+
+                          // Equal top spacer pushes central block to optical center
+                          const Spacer(flex: 1),
+                          const SizedBox(height: 12.0),
+
+                          // 2. CENTRAL CONTENT BLOCK (Logo + Header + Form tightly grouped)
+                          const Center(
+                            child: SnapsLogo(height: 44.0),
+                          ),
+                          const SizedBox(height: 20.0),
+
+                          // Headline & Subtitle center-aligned directly attached to inputs
+                          Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  _authMode == AuthMode.login ? 'Masuk Akun' : 'Daftar Akun Baru',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontFamily: 'SFPro',
+                                    fontSize: 24.0,
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xFF0F172A),
+                                    letterSpacing: -0.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 6.0),
+                                Text(
+                                  _authMode == AuthMode.login
+                                      ? 'Selamat datang kembali, Snapanians!'
+                                      : 'Daftarkan akunmu untuk berjejaring dan belanja bareng!',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontFamily: 'SFPro',
+                                    fontSize: 13.5,
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xFF64748B),
+                                    letterSpacing: -0.1,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 24.0), // Gap rapat & presisi ke form input
+
+                          // Banner Notifikasi: Akun Direset / Dihapus oleh Admin
+                          if (_showAccountDeletedNotice) ...[
+                            Container(
+                              margin: const EdgeInsets.only(bottom: 20.0),
+                              padding: const EdgeInsets.all(14.0),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFFFBEB),
+                                borderRadius: BorderRadius.circular(16.0),
+                                border: Border.all(color: const Color(0xFFFDE68A)),
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(7.0),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFFEF3C7),
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    child: const Icon(
+                                      Icons.person_off_outlined,
+                                      size: 18.0,
+                                      color: Color(0xFFD97706),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12.0),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            const Text(
+                                              'AKUN TELAH DIRESET',
+                                              style: TextStyle(
+                                                fontSize: 12.0,
+                                                fontWeight: FontWeight.w800,
+                                                letterSpacing: 0.4,
+                                                color: Color(0xFF92400E),
+                                              ),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () => setState(() => _showAccountDeletedNotice = false),
+                                              behavior: HitTestBehavior.opaque,
+                                              child: const Padding(
+                                                padding: EdgeInsets.only(left: 6.0),
+                                                child: Icon(
+                                                  Icons.close_rounded,
+                                                  size: 16.0,
+                                                  color: Color(0xFFB45309),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 4.0),
+                                        const Text(
+                                          'Akun kamu sebelumnya tidak lagi terdaftar di sistem Snaps. NIS kamu sudah dibebaskan dan siap didaftarkan kembali sebagai akun baru di bawah ini.',
+                                          style: TextStyle(
+                                            fontSize: 12.5,
+                                            height: 1.4,
+                                            color: Color(0xFF78350F),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+
+                          // Form Tab (Login / Register)
+                          if (_authMode == AuthMode.login)
+                            AuthLoginTab(
+                              usernameController: _loginUsernameController,
+                              passwordController: _loginPasswordController,
+                              showPassword: _showLoginPassword,
+                              onTogglePassword: () => setState(() => _showLoginPassword = !_showLoginPassword),
+                              usernameError: _loginUsernameError,
+                              passwordError: _loginPasswordError,
+                              rememberMe: _rememberMe,
+                              onToggleRememberMe: () => setState(() => _rememberMe = !_rememberMe),
+                              isSubmitting: _isSubmitting,
+                              onSubmit: _submitLogin,
+                              suspensionInfo: _suspensionInfo,
+                              onDismissSuspension: () => setState(() => _suspensionInfo = null),
+                            )
+                          else
+                            AuthRegisterTab(
+                              nisController: _nisController,
+                              nisError: _nisError,
+                              verifiedStudent: _verifiedStudent,
+                              onStudentSelected: _handleStudentSelected,
+                              usernameController: _regUsernameController,
+                              usernameError: _regUsernameError,
+                              passwordController: _regPasswordController,
+                              passwordError: _regPasswordError,
+                              showPassword: _showRegPassword,
+                              onTogglePassword: () => setState(() => _showRegPassword = !_showRegPassword),
+                              agreedTerms: _agreedTerms,
+                              onToggleAgreedTerms: () => setState(() => _agreedTerms = !_agreedTerms),
+                              isSubmitting: _isSubmitting,
+                              isGeneratingUsername: _isGeneratingUsername,
+                              onSubmit: _submitRegister,
+                            ),
+
+                          // Equal bottom spacer
+                          const Spacer(flex: 1),
+                          const SizedBox(height: 16.0),
+
+                          // 3. FOOTER SWITCHER
+                          AuthFooterSwitcher(
+                            isLogin: _authMode == AuthMode.login,
+                            onSwitch: () => setState(() {
+                              _authMode = _authMode == AuthMode.login ? AuthMode.register : AuthMode.login;
+                              _clearAllErrors();
+                            }),
+                          ),
+                          const SizedBox(height: 8.0),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ),

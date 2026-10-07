@@ -34,7 +34,7 @@ class AuthFooterSwitcher extends StatelessWidget {
                   text: isLogin ? 'Daftar sekarang' : 'Masuk di sini',
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF0F172A),
+                    color: Color(0xFF3D38F5),
                   ),
                 ),
               ],

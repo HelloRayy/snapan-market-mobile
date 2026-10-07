@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
-import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
+import 'package:snapan_market/features/feed/components/post_card/market_feed_icons.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// Floating bottom action bar for Media Lightbox:

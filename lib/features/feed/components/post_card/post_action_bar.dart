@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
 import 'package:snapan_market/core/utils/snaps_toast.dart';
-import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
+import 'package:snapan_market/features/feed/components/post_card/market_feed_icons.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// Interactive action bar with Like, Comment, Repost, Share, and Stock pill

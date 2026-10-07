@@ -20,8 +20,10 @@ class SuspensionService {
 
   final ValueNotifier<Map<String, dynamic>?> suspensionNotifier =
       ValueNotifier<Map<String, dynamic>?>(null);
+  final ValueNotifier<bool> accountDeletedNotifier = ValueNotifier<bool>(false);
 
   bool get isSuspended => suspensionNotifier.value != null;
+  bool get isAccountDeleted => accountDeletedNotifier.value;
 
   /// Initialize suspension watchers and auth state subscription
   void init() {
@@ -58,6 +60,10 @@ class SuspensionService {
             value: userId,
           ),
           callback: (payload) {
+            if (payload.eventType == PostgresChangeEvent.delete) {
+              handleDeletedAccountTriggered();
+              return;
+            }
             final record = payload.newRecord;
             if (record.isNotEmpty && record['is_suspended'] == true) {
               handleSuspensionTriggered(record);
@@ -72,12 +78,19 @@ class SuspensionService {
     _profileChannel = null;
   }
 
-  /// Perform active check against Supabase
+  /// Perform active health & suspension check against Supabase
   Future<bool> checkStatus() async {
     try {
-      final status = await SupabaseService.instance.auth.getCurrentUserSuspensionStatus();
-      if (status != null) {
-        await handleSuspensionTriggered(status);
+      final health = await SupabaseService.instance.auth.checkCurrentUserAccountHealth();
+      if (health == null) return false;
+
+      final status = health['status'] as String?;
+      if (status == 'deleted') {
+        await handleDeletedAccountTriggered();
+        return true;
+      } else if (status == 'suspended') {
+        final data = health['data'] as Map<String, dynamic>? ?? {};
+        await handleSuspensionTriggered(data);
         return true;
       }
       return false;
@@ -85,6 +98,20 @@ class SuspensionService {
       debugPrint('Error checkStatus: $e');
       return false;
     }
+  }
+
+  /// Handles account deletion triggered when a user session exists but profile is gone
+  Future<void> handleDeletedAccountTriggered() async {
+    _unsubscribe();
+
+    try {
+      await SupabaseService.instance.signOut();
+    } catch (_) {}
+
+    HapticFeedback.heavyImpact();
+    NavigationService.popToRoot();
+
+    accountDeletedNotifier.value = true;
   }
 
   /// Handles suspension triggered either by Realtime event or direct query check
@@ -121,9 +148,15 @@ class SuspensionService {
     suspensionNotifier.value = null;
   }
 
+  /// Clears account deleted notice state
+  void clearAccountDeleted() {
+    accountDeletedNotifier.value = false;
+  }
+
   void dispose() {
     _unsubscribe();
     _authSub?.cancel();
     suspensionNotifier.dispose();
+    accountDeletedNotifier.dispose();
   }
 }

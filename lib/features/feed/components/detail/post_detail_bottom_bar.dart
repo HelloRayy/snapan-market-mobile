@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
-import 'package:snapan_market/features/feed/components/comment_input_bar.dart';
-import 'package:snapan_market/features/feed/components/sticky_buy_bar.dart';
+import 'package:snapan_market/features/feed/components/comment/comment_input_bar.dart';
+import 'package:snapan_market/features/feed/components/sheets/sticky_buy_bar.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/messages/models/conversation_model.dart';

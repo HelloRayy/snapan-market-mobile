@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:snapan_market/core/services/app_update_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
-import 'package:snapan_market/features/feed/components/drawer/home_drawer_footer.dart';
-import 'package:snapan_market/features/feed/components/drawer/home_drawer_item.dart';
-import 'package:snapan_market/features/feed/components/drawer/home_drawer_logout_dialog.dart';
-import 'package:snapan_market/features/feed/components/drawer/home_drawer_profile_header.dart';
+import 'package:snapan_market/features/feed/components/navigation/drawer/home_drawer_footer.dart';
+import 'package:snapan_market/features/feed/components/navigation/drawer/home_drawer_item.dart';
+import 'package:snapan_market/features/feed/components/navigation/drawer/home_drawer_logout_dialog.dart';
+import 'package:snapan_market/features/feed/components/navigation/drawer/home_drawer_profile_header.dart';
 
 /// Minimalist Left-to-Right Navigation Drawer for Home Feed
 ///

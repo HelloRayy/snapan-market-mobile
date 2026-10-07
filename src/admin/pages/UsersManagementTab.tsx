@@ -41,6 +41,9 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
   // Modal Unsuspend / Pulihkan Akun
   const [pendingUnsuspendTarget, setPendingUnsuspendTarget] = useState<ProfileRow | null>(null);
 
+  // Modal Hapus Akun Permanen (Anti-Miss Click)
+  const [pendingDeleteTarget, setPendingDeleteTarget] = useState<ProfileRow | null>(null);
+
   const fetchUsers = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -177,6 +180,31 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
       setTimeout(() => setFeedbackMsg(null), 4000);
     } catch (e: any) {
       setFeedbackMsg({ type: 'error', text: `Gagal memulihkan akun: ${e?.message || e}` });
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!pendingDeleteTarget) return;
+    const target = pendingDeleteTarget;
+    setUpdatingId(target.id);
+    try {
+      await adminService.deleteUser(target.id);
+      setUsers((prev) => prev.filter((u) => u.id !== target.id));
+      setTotalCount((prev) => Math.max(0, prev - 1));
+      if (selectedStudent?.id === target.id) {
+        setSelectedStudent(null);
+        setIsModalOpen(false);
+      }
+      setPendingDeleteTarget(null);
+      setFeedbackMsg({
+        type: 'success',
+        text: `Akun "${target.full_name || target.username}" dan seluruh postingannya berhasil dihapus permanen.`,
+      });
+      setTimeout(() => setFeedbackMsg(null), 4000);
+    } catch (e: any) {
+      setFeedbackMsg({ type: 'error', text: `Gagal menghapus akun: ${e?.message || e}` });
     } finally {
       setUpdatingId(null);
     }
@@ -625,6 +653,32 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
                             <i className={`fa-solid ${u.is_suspended ? 'fa-lock-open' : 'fa-ban'}`}></i>
                           </button>
                         </AdminTooltip>
+
+                        {/* Hapus Akun Permanen Button */}
+                        <AdminTooltip
+                          content={
+                            u.role === 'admin'
+                              ? 'Admin tidak dapat dihapus'
+                              : 'Hapus akun permanen'
+                          }
+                          placement="top"
+                          variant="danger"
+                        >
+                          <button
+                            type="button"
+                            className="item"
+                            disabled={updatingId === u.id || u.role === 'admin'}
+                            onClick={() => setPendingDeleteTarget(u)}
+                            style={{
+                              border: 0,
+                              cursor: u.role === 'admin' ? 'not-allowed' : 'pointer',
+                              color: '#dc2626',
+                              opacity: u.role === 'admin' ? 0.35 : 1,
+                            }}
+                          >
+                            <i className="fa-solid fa-trash-can"></i>
+                          </button>
+                        </AdminTooltip>
                       </div>
                     </td>
                   </tr>
@@ -692,6 +746,9 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
         }}
         onRequestUnsuspend={(user) => {
           setPendingUnsuspendTarget(user);
+        }}
+        onRequestDelete={(user) => {
+          setPendingDeleteTarget(user);
         }}
         isUpdating={updatingId === selectedStudent?.id}
       />
@@ -1159,6 +1216,166 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
                   <>
                     <i className="fa-solid fa-check"></i>
                     Ya, Pulihkan Akun
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+      </AdminModalPortal>
+
+      {/* Modal Popup Konfirmasi Hapus Akun Permanen (Anti-Miss Click) */}
+      <AdminModalPortal
+        isOpen={!!pendingDeleteTarget}
+        onClose={() => {
+          if (!updatingId) setPendingDeleteTarget(null);
+        }}
+      >
+        {pendingDeleteTarget && (
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '12px',
+              padding: '24px',
+              maxWidth: '490px',
+              width: '100%',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            }}
+          >
+            {/* Header Modal */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <div
+                style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '50%',
+                  background: '#fee2e2',
+                  color: '#dc2626',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '20px',
+                  flexShrink: 0,
+                }}
+              >
+                <i className="fa-solid fa-trash-can"></i>
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#991b1b' }}>
+                  Hapus Akun Pengguna Secara Permanen
+                </h3>
+                <span style={{ fontSize: '12px', color: '#64748b' }}>
+                  Tindakan destruktif ini tidak dapat dibatalkan
+                </span>
+              </div>
+            </div>
+
+            {/* Target Profile Snippet */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '10px 14px',
+                background: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '8px',
+                marginBottom: '16px',
+              }}
+            >
+              <UserAvatar
+                avatarUrl={pendingDeleteTarget.avatar_url}
+                name={pendingDeleteTarget.full_name}
+                size={40}
+                role={pendingDeleteTarget.role}
+              />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: 600, fontSize: '13.5px', color: '#1e293b' }}>
+                  {pendingDeleteTarget.full_name || 'Pengguna'}
+                </div>
+                <div style={{ fontSize: '11.5px', color: '#64748b' }}>
+                  @{pendingDeleteTarget.username || 'user'} • {pendingDeleteTarget.class_group || 'Umum'}
+                  {pendingDeleteTarget.nis ? ` • NIS: ${pendingDeleteTarget.nis}` : ''}
+                </div>
+              </div>
+            </div>
+
+            {/* Penjelasan Dampak Penghapusan Akun */}
+            <div
+              style={{
+                background: '#fff1f2',
+                border: '1px solid #fecdd3',
+                borderRadius: '8px',
+                padding: '12px 14px',
+                marginBottom: '18px',
+              }}
+            >
+              <div style={{ fontWeight: 600, fontSize: '12.5px', color: '#9f1239', marginBottom: '8px' }}>
+                <i className="fa-solid fa-triangle-exclamation" style={{ marginRight: '6px' }}></i>
+                Konsekuensi penghapusan akun:
+              </div>
+              <ul
+                style={{
+                  margin: 0,
+                  paddingLeft: '18px',
+                  fontSize: '12px',
+                  color: '#881337',
+                  lineHeight: 1.55,
+                }}
+              >
+                <li>
+                  <b>Semua postingan pasar & utas sosial</b> milik pengguna ini akan dihapus permanen.
+                </li>
+                <li>
+                  <b>Username (@{pendingDeleteTarget.username})</b> dan <b>nomor NIS</b> akan dibebaskan kembali sehingga pengguna lain dapat mendaftar dengan identitas tersebut.
+                </li>
+                <li>
+                  Semua interaksi sosial (pesanan COD, pesan obrolan, suka, dan komentar) akan dibersihkan.
+                </li>
+              </ul>
+            </div>
+
+            {/* Footer Buttons */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button
+                type="button"
+                className="m-btn m-btn--ghost"
+                onClick={() => setPendingDeleteTarget(null)}
+                disabled={!!updatingId}
+                style={{ height: '36px', padding: '0 16px', fontSize: '13px' }}
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                className="m-btn"
+                disabled={!!updatingId}
+                onClick={handleConfirmDelete}
+                style={{
+                  height: '36px',
+                  padding: '0 18px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  background: '#dc2626',
+                  color: '#ffffff',
+                  border: 0,
+                  borderRadius: '6px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: updatingId ? 'not-allowed' : 'pointer',
+                  boxShadow: '0 2px 6px rgba(220, 38, 38, 0.35)',
+                }}
+              >
+                {updatingId === pendingDeleteTarget.id ? (
+                  <>
+                    <i className="fa-solid fa-spinner fa-spin"></i>
+                    Menghapus Akun...
+                  </>
+                ) : (
+                  <>
+                    <i className="fa-solid fa-trash-can"></i>
+                    Ya, Hapus Akun Permanen
                   </>
                 )}
               </button>

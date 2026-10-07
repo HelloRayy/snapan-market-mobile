@@ -64,6 +64,12 @@ class SupabaseService {
   Future<Map<String, dynamic>?> getProfileByUsername(String username) =>
       profile.getProfileByUsername(username);
 
+  Future<Map<String, dynamic>?> getProfileByNis(String nis) =>
+      profile.getProfileByNis(nis);
+
+  Future<bool> isNisClaimed(String nis) =>
+      profile.isNisClaimed(nis);
+
   RealtimeChannel subscribeToProfile(
     String userId,
     void Function(Map<String, dynamic> newRecord) onUpdate,
@@ -75,6 +81,7 @@ class SupabaseService {
     required String fullName,
     required String username,
     required String classGroup,
+    String? nis,
     String? avatarUrl,
     String? bio,
     List<String>? tags,
@@ -85,6 +92,7 @@ class SupabaseService {
         fullName: fullName,
         username: username,
         classGroup: classGroup,
+        nis: nis,
         avatarUrl: avatarUrl,
         bio: bio,
         tags: tags,

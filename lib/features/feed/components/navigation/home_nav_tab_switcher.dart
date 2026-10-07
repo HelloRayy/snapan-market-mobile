@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart';
+import 'package:snapan_market/features/feed/components/navigation/home_bottom_nav_bar.dart';
 
 /// Animated Directional Slide Tab Switcher for Bottom Nav (Preserves State)
 class HomeNavTabSwitcher extends StatelessWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
+import 'package:snapan_market/features/feed/components/post_card/market_feed_icons.dart';
 
 /// 4-Icon Action Bar: Heart (Like), Comment (Reply), Repost, Share
 /// Sliced 1:1 with Threads Web interaction flow

@@ -14,6 +14,7 @@ interface UserDetailModalProps {
   onChangeRole: (user: ProfileRow, newRole: UserRole) => void;
   onRequestSuspend?: (user: ProfileRow) => void;
   onRequestUnsuspend?: (user: ProfileRow) => void;
+  onRequestDelete?: (user: ProfileRow) => void;
   isUpdating: boolean;
 }
 
@@ -25,6 +26,7 @@ export function UserDetailModal({
   onChangeRole,
   onRequestSuspend,
   onRequestUnsuspend,
+  onRequestDelete,
   isUpdating,
 }: UserDetailModalProps) {
   const [copiedId, setCopiedId] = useState(false);
@@ -604,6 +606,66 @@ export function UserDetailModal({
                     <span>Tangguhkan / Suspen Akun</span>
                   </button>
                 )}
+              </div>
+            </div>
+
+            {/* Zona Bahaya: Hapus Akun Permanen */}
+            <div>
+              <div
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  color: '#dc2626',
+                  marginBottom: '8px',
+                }}
+              >
+                Zona Bahaya (Tindakan Permanen)
+              </div>
+
+              <div
+                style={{
+                  padding: '12px 16px',
+                  background: '#fef2f2',
+                  border: '1px solid #fee2e2',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px',
+                }}
+              >
+                <p style={{ margin: 0, fontSize: '11.5px', color: '#991b1b', lineHeight: 1.4 }}>
+                  Menghapus akun akan membersihkan semua postingan produk, obrolan, dan relasi, serta membebaskan kembali username dan NIS.
+                </p>
+
+                <button
+                  type="button"
+                  disabled={isUpdating || user.role === 'admin'}
+                  onClick={() => onRequestDelete?.(user)}
+                  style={{
+                    width: '100%',
+                    height: '34px',
+                    padding: '0 14px',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '7px',
+                    cursor: isUpdating || user.role === 'admin' ? 'not-allowed' : 'pointer',
+                    border: '1px solid #f87171',
+                    background: '#dc2626',
+                    color: '#ffffff',
+                    opacity: user.role === 'admin' ? 0.5 : 1,
+                    transition: 'all 120ms ease',
+                  }}
+                  title={user.role === 'admin' ? 'Akun admin tidak dapat dihapus' : 'Hapus akun siswa secara permanen'}
+                >
+                  <i className="fa-solid fa-trash-can"></i>
+                  <span>Hapus Akun Pengguna Secara Permanen</span>
+                </button>
               </div>
             </div>
           </div>

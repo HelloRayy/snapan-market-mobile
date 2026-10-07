@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
-import 'package:snapan_market/features/feed/components/floating_plus_squircle_button.dart';
-import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart';
+import 'package:snapan_market/features/feed/components/navigation/floating_plus_squircle_button.dart';
+import 'package:snapan_market/features/feed/components/navigation/home_bottom_nav_bar.dart';
 
 class HomeFeedFabGroup extends StatelessWidget {
   final HomeNavTab currentNavTab;

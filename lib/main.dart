@@ -15,6 +15,7 @@ import 'package:snapan_market/core/services/follow_service.dart';
 import 'package:snapan_market/features/splash/screens/splash_screen.dart';
 import 'package:snapan_market/features/auth/screens/auth_screen.dart';
 import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
+import 'package:snapan_market/core/services/student_registry_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +50,9 @@ Future<void> main() async {
 
   // Initialize background suspension listeners (SNAPS-16)
   SuspensionService.instance.init();
+
+  // Initialize student registry dataset for demo NIS lookup
+  unawaited(StudentRegistryService.instance.init());
 
   // Initialize isolated direct messages cache & account-switch listener (SNAPS-42)
   DirectMessagesService.instance.init();
@@ -163,36 +167,53 @@ class _AppRootState extends State<AppRoot> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<Map<String, dynamic>?>(
-      valueListenable: SuspensionService.instance.suspensionNotifier,
-      builder: (context, suspensionInfo, child) {
-        if (suspensionInfo != null) {
+    return ValueListenableBuilder<bool>(
+      valueListenable: SuspensionService.instance.accountDeletedNotifier,
+      builder: (context, isAccountDeleted, _) {
+        if (isAccountDeleted) {
           return AuthScreen(
-            initialSuspensionInfo: suspensionInfo,
+            initialAccountDeletedNotice: true,
             onBack: () {
-              SuspensionService.instance.clear();
+              SuspensionService.instance.clearAccountDeleted();
             },
             onSuccess: () {
-              SuspensionService.instance.clear();
+              SuspensionService.instance.clearAccountDeleted();
             },
           );
         }
 
-        return Stack(
-          children: [
-            HomeFeedScreen(
-              onLogout: () async {
-                await SupabaseService.instance.signOut();
-              },
-            ),
-            if (_showSplash)
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: SplashScreen(
-                  onCompleted: _handleSplashCompleted,
+        return ValueListenableBuilder<Map<String, dynamic>?>(
+          valueListenable: SuspensionService.instance.suspensionNotifier,
+          builder: (context, suspensionInfo, child) {
+            if (suspensionInfo != null) {
+              return AuthScreen(
+                initialSuspensionInfo: suspensionInfo,
+                onBack: () {
+                  SuspensionService.instance.clear();
+                },
+                onSuccess: () {
+                  SuspensionService.instance.clear();
+                },
+              );
+            }
+
+            return Stack(
+              children: [
+                HomeFeedScreen(
+                  onLogout: () async {
+                    await SupabaseService.instance.signOut();
+                  },
                 ),
-              ),
-          ],
+                if (_showSplash)
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: SplashScreen(
+                      onCompleted: _handleSplashCompleted,
+                    ),
+                  ),
+              ],
+            );
+          },
         );
       },
     );

@@ -32,7 +32,7 @@ class AuthPromptOverlay extends StatelessWidget {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 16.0, sigmaY: 16.0),
               child: Container(
-                color: Colors.black.withOpacity(0.40),
+                color: Colors.black.withValues(alpha: 0.40),
               ),
             ),
           ),
@@ -53,7 +53,7 @@ class AuthPromptOverlay extends StatelessWidget {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
+                        color: Colors.black.withValues(alpha: 0.08),
                         blurRadius: 36.0,
                         offset: const Offset(0, 16),
                         spreadRadius: 2.0,
@@ -173,7 +173,7 @@ class _ThreadsActionCapsuleState extends State<_ThreadsActionCapsule> {
             boxShadow: [
               if (!_isPressed)
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
+                  color: Colors.black.withValues(alpha: 0.04),
                   blurRadius: 8.0,
                   offset: const Offset(0, 2),
                 ),
@@ -195,7 +195,7 @@ class _ThreadsActionCapsuleState extends State<_ThreadsActionCapsule> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.06),
+                      color: Colors.black.withValues(alpha: 0.06),
                       blurRadius: 6.0,
                       offset: const Offset(0, 2),
                     ),

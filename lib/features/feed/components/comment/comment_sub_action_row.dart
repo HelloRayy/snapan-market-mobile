@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/features/feed/components/comment/comment_heart_button.dart';
-import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
+import 'package:snapan_market/features/feed/components/post_card/market_feed_icons.dart';
 
 /// Simplified Minimalist Action Row under comment text
 /// Displays: [♡ (count)]   [💬] (icon-only without text labels, repost removed)

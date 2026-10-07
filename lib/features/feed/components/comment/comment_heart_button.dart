@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
+import 'package:snapan_market/features/feed/components/post_card/market_feed_icons.dart';
 
 /// Minimalist Instagram-Style Heart Button for comments
 /// Positioned on the right side of the comment row with bounce scale animation.

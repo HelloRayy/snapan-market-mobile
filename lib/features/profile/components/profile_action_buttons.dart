@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 /// Action Buttons row for Profile Screen matching ProfilePage.tsx 1:1
@@ -136,25 +135,14 @@ class ProfileActionButtons extends StatelessWidget {
                 ],
               ),
               alignment: Alignment.center,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    isFollowing ? CupertinoIcons.person_crop_circle_badge_checkmark : CupertinoIcons.person_badge_plus,
-                    size: 16.0,
-                    color: isFollowing ? const Color(0xFF0F172A) : Colors.white,
-                  ),
-                  const SizedBox(width: 6.0),
-                  Text(
-                    isFollowing ? 'Mengikuti' : 'Ikuti',
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.w600,
-                      color: isFollowing ? const Color(0xFF0F172A) : Colors.white,
-                      letterSpacing: -0.1,
-                    ),
-                  ),
-                ],
+              child: Text(
+                isFollowing ? 'Mengikuti' : 'Ikuti',
+                style: TextStyle(
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.w600,
+                  color: isFollowing ? const Color(0xFF0F172A) : Colors.white,
+                  letterSpacing: -0.1,
+                ),
               ),
             ),
           ),
@@ -184,25 +172,14 @@ class ProfileActionButtons extends StatelessWidget {
                 ],
               ),
               alignment: Alignment.center,
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    CupertinoIcons.chat_bubble,
-                    size: 16.0,
-                    color: Color(0xFF0F172A),
-                  ),
-                  SizedBox(width: 6.0),
-                  Text(
-                    'Kirim pesan',
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF0F172A),
-                      letterSpacing: -0.1,
-                    ),
-                  ),
-                ],
+              child: const Text(
+                'Kirim pesan',
+                style: TextStyle(
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF0F172A),
+                  letterSpacing: -0.1,
+                ),
               ),
             ),
           ),

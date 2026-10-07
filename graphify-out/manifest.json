@@ -690,9 +690,9 @@
     "semantic_hash": ""
   },
   "lib/features/profile/components/profile_action_buttons.dart": {
-    "mtime": 1791342205.9938264,
-    "seen": 1791342242.4982376,
-    "ast_hash": "812d83594771ae959388d1f41406605f",
+    "mtime": 1791342371.6885962,
+    "seen": 1791343501.7733715,
+    "ast_hash": "37e4f84b75d75d1d7b309c31fd8fb48b",
     "semantic_hash": ""
   },
   "lib/features/profile/components/profile_info_header.dart": {
@@ -738,9 +738,9 @@
     "semantic_hash": ""
   },
   "lib/features/profile/screens/profile_screen.dart": {
-    "mtime": 1791342216.254874,
-    "seen": 1791342242.4982681,
-    "ast_hash": "9622b1f64b894b5ab8db9494b093c63e",
+    "mtime": 1791342397.4997163,
+    "seen": 1791343501.7733943,
+    "ast_hash": "c3d02257cf4e252c38d132f409fe341b",
     "semantic_hash": ""
   },
   "lib/features/search/components/search_bar_header.dart": {

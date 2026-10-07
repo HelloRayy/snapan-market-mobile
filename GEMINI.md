@@ -43,5 +43,13 @@
       - **Cara 1: Otomatis via Script**: `./scripts/auto_release.sh <new_version_name> <new_version_code> "<changelog>"` (1. Bump pubspec, 2. Build APK, 3. Tag & push git, 4. Upload GitHub Release, 5. Inject Supabase `app_versions`).
       - **Cara 2: Manual Langkah demi Langkah**: (1) Naikkan Versi di `pubspec.yaml`, (2) `flutter build apk --release`, (3) Upload File APK ke GitHub Release, (4) Query SQL `INSERT INTO public.app_versions` di Supabase Dashboard.
 
+11. **Long-Term Codebase Maintainability & Standards for New AI Agents**:
+    - **Single Source of Truth**: Wajib membaca [`docs/coding-standards.md`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/docs/coding-standards.md) dan [`docs/clean-code-architecture.md`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/docs/clean-code-architecture.md).
+    - **Anti-Monolith & Separation of Concerns**: Batas maksimal panjang file 250–300 baris. Dilarang menumpuk private helper methods (`_buildX()`) di file screen. Pecah komponen ke `<feature>/components/`.
+    - **Zero Raw DB Queries in Widgets**: Semua pemanggilan data melalui `Controller` atau `Service`. UI widget hanya bertanggung jawab merender antarmuka.
+    - **Design Tokens**: Selalu gunakan `AppColors.*` (`lib/core/theme/app_colors.dart`), `LucideIcons.*`, dan `SnapsLogo`.
+    - **Touch Targets**: Pastikan setiap elemen interaktif memiliki hit area minimal 44x44 dp dengan haptic feedback yang tepat.
+
+
 
 

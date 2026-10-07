@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
-import 'package:snapan_market/features/feed/components/delete_post_bottom_sheet.dart';
-import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
+import 'package:snapan_market/features/feed/components/sheets/delete_post_bottom_sheet.dart';
+import 'package:snapan_market/features/feed/components/post_card/market_feed_icons.dart';
 import 'package:snapan_market/features/feed/components/post_card/post_author_avatar.dart';
-import 'package:snapan_market/features/feed/components/post_submenu_popover.dart';
-import 'package:snapan_market/features/feed/components/report_content_bottom_sheet.dart';
+import 'package:snapan_market/features/feed/components/post_card/post_submenu_popover.dart';
+import 'package:snapan_market/features/feed/components/sheets/report_content_bottom_sheet.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// Header row for Feed and Detail Card variants
@@ -85,6 +85,12 @@ class PostCardHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rawUsername = (item.seller.username != null && item.seller.username!.isNotEmpty)
+        ? item.seller.username!
+        : item.seller.name;
+    final cleanUsername = rawUsername.trim().replaceAll('@', '');
+    final displayAuthor = '@$cleanUsername';
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -100,22 +106,26 @@ class PostCardHeader extends StatelessWidget {
                   seller: item.seller,
                   isFollowed: isFollowed,
                   onFollowToggle: onFollowToggle,
-                  onUserClick: () => onUserClick?.call(item.seller.username ?? item.seller.name),
+                  onUserClick: () => onUserClick?.call(cleanUsername),
                 ),
                 const SizedBox(width: 10.0),
               ],
 
-              // 1. Author Name
-              GestureDetector(
-                onTap: () => onUserClick?.call(item.seller.username ?? item.seller.name),
-                child: Text(
-                  item.seller.name,
-                  maxLines: 1,
-                  style: const TextStyle(
-                    fontSize: 14.5,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF0F172A),
-                    letterSpacing: -0.2,
+              // 1. Author Name (Standardized to @{username})
+              Flexible(
+                child: GestureDetector(
+                  onTap: () => onUserClick?.call(cleanUsername),
+                  child: Text(
+                    displayAuthor,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontFamily: 'SFPro',
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF0F172A),
+                      letterSpacing: -0.2,
+                    ),
                   ),
                 ),
               ),
@@ -163,7 +173,7 @@ class PostCardHeader extends StatelessWidget {
                     ),
                   ),
                 ),
-              ] else if (item.seller.name.length <= 14 && item.seller.classGroup.isNotEmpty) ...[
+              ] else if (displayAuthor.length <= 16 && item.seller.classGroup.isNotEmpty) ...[
                 const SizedBox(width: 4.0),
                 Flexible(
                   child: Text(

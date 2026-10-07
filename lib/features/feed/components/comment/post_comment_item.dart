@@ -294,7 +294,11 @@ class _PostCommentItemState extends State<PostCommentItem> {
   }
 
   Widget _buildHeaderRow(BuildContext context) {
-    final username = widget.comment.user.username ?? widget.comment.user.name;
+    final rawUsername = (widget.comment.user.username != null && widget.comment.user.username!.isNotEmpty)
+        ? widget.comment.user.username!
+        : widget.comment.user.name;
+    final cleanUsername = rawUsername.trim().replaceAll('@', '');
+    final displayAuthor = '@$cleanUsername';
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -306,10 +310,10 @@ class _PostCommentItemState extends State<PostCommentItem> {
               Flexible(
                 child: GestureDetector(
                   onTap: () {
-                    widget.onUserClick?.call(username);
+                    widget.onUserClick?.call(cleanUsername);
                   },
                   child: Text(
-                    username,
+                    displayAuthor,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(

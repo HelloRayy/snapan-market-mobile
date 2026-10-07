@@ -13,8 +13,11 @@ class AuthInputField extends StatefulWidget {
   final bool isPassword;
   final bool showPassword;
   final VoidCallback? onTogglePassword;
+  final Widget? customSuffixIcon;
+  final bool isValid;
   final TextInputType keyboardType;
   final TextInputAction textInputAction;
+  final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
   final List<TextInputFormatter>? inputFormatters;
 
@@ -28,8 +31,11 @@ class AuthInputField extends StatefulWidget {
     this.isPassword = false,
     this.showPassword = false,
     this.onTogglePassword,
+    this.customSuffixIcon,
+    this.isValid = false,
     this.keyboardType = TextInputType.text,
     this.textInputAction = TextInputAction.next,
+    this.onChanged,
     this.onSubmitted,
     this.inputFormatters,
   });
@@ -66,6 +72,7 @@ class _AuthInputFieldState extends State<AuthInputField> {
       obscureText: widget.isPassword && !widget.showPassword,
       keyboardType: widget.keyboardType,
       textInputAction: widget.textInputAction,
+      onChanged: widget.onChanged,
       onSubmitted: widget.onSubmitted,
       inputFormatters: widget.inputFormatters,
       cursorColor: AppColors.primary,
@@ -90,9 +97,11 @@ class _AuthInputFieldState extends State<AuthInputField> {
           fontWeight: FontWeight.w600,
           color: hasError
               ? AppColors.error
-              : _isFocused
-                  ? AppColors.primary
-                  : const Color(0xFF64748B),
+              : widget.isValid
+                  ? const Color(0xFF16A34A)
+                  : _isFocused
+                      ? AppColors.primary
+                      : const Color(0xFF64748B),
         ),
         hintText: widget.hint,
         hintStyle: const TextStyle(
@@ -106,24 +115,27 @@ class _AuthInputFieldState extends State<AuthInputField> {
           size: 19.5,
           color: hasError
               ? AppColors.error
-              : _isFocused
-                  ? AppColors.primary
-                  : const Color(0xFF64748B),
+              : widget.isValid
+                  ? const Color(0xFF16A34A)
+                  : _isFocused
+                      ? AppColors.primary
+                      : const Color(0xFF64748B),
         ),
-        suffixIcon: widget.isPassword
-            ? GestureDetector(
-                onTap: widget.onTogglePassword,
-                behavior: HitTestBehavior.opaque,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 14.0),
-                  child: Icon(
-                    widget.showPassword ? LucideIcons.eyeOff : LucideIcons.eye,
-                    size: 19.5,
-                    color: const Color(0xFF64748B),
-                  ),
-                ),
-              )
-            : null,
+        suffixIcon: widget.customSuffixIcon ??
+            (widget.isPassword
+                ? GestureDetector(
+                    onTap: widget.onTogglePassword,
+                    behavior: HitTestBehavior.opaque,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 14.0),
+                      child: Icon(
+                        widget.showPassword ? LucideIcons.eyeOff : LucideIcons.eye,
+                        size: 19.5,
+                        color: const Color(0xFF64748B),
+                      ),
+                    ),
+                  )
+                : null),
         suffixIconConstraints: const BoxConstraints(
           minWidth: 40.0,
           minHeight: 20.0,
@@ -133,18 +145,32 @@ class _AuthInputFieldState extends State<AuthInputField> {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15.5),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.0),
-          borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
+          borderSide: BorderSide(
+            color: widget.isValid ? const Color(0xFF16A34A) : const Color(0xFFE2E8F0),
+            width: widget.isValid ? 1.5 : 1.2,
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.0),
           borderSide: BorderSide(
-            color: hasError ? AppColors.error : const Color(0xFFE2E8F0),
-            width: hasError ? 1.4 : 1.2,
+            color: hasError
+                ? AppColors.error
+                : widget.isValid
+                    ? const Color(0xFF16A34A)
+                    : const Color(0xFFE2E8F0),
+            width: hasError
+                ? 1.4
+                : widget.isValid
+                    ? 1.5
+                    : 1.2,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.0),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.8),
+          borderSide: BorderSide(
+            color: widget.isValid ? const Color(0xFF16A34A) : AppColors.primary,
+            width: 1.8,
+          ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.0),
@@ -166,15 +192,19 @@ class _AuthInputFieldState extends State<AuthInputField> {
 }
 
 /// Primary CTA Button with micro-tap physics & loading state
+/// Primary CTA Button with Threads modern aesthetic (Ink Black / Brand Blue, pill shape, soft shadow)
+/// Supports disabled grey state when form fields are incomplete.
 class PrimaryAuthButton extends StatefulWidget {
   final String text;
   final bool isLoading;
+  final bool isEnabled;
   final VoidCallback onPressed;
 
   const PrimaryAuthButton({
     super.key,
     required this.text,
     required this.isLoading,
+    this.isEnabled = true,
     required this.onPressed,
   });
 
@@ -187,48 +217,62 @@ class _PrimaryAuthButtonState extends State<PrimaryAuthButton> {
 
   @override
   Widget build(BuildContext context) {
+    final bool canInteract = widget.isEnabled && !widget.isLoading;
+
     return GestureDetector(
-      onTapDown: widget.isLoading ? null : (_) => setState(() => _isPressed = true),
-      onTapUp: widget.isLoading ? null : (_) => setState(() => _isPressed = false),
-      onTapCancel: widget.isLoading ? null : () => setState(() => _isPressed = false),
-      onTap: widget.isLoading ? null : widget.onPressed,
+      onTapDown: canInteract ? (_) => setState(() => _isPressed = true) : null,
+      onTapUp: canInteract ? (_) => setState(() => _isPressed = false) : null,
+      onTapCancel: canInteract ? () => setState(() => _isPressed = false) : null,
+      onTap: () {
+        if (!canInteract) return;
+        HapticFeedback.mediumImpact();
+        widget.onPressed();
+      },
       behavior: HitTestBehavior.opaque,
       child: AnimatedScale(
-        scale: _isPressed ? 0.98 : 1.0,
+        scale: (_isPressed && canInteract) ? 0.98 : 1.0,
         duration: const Duration(milliseconds: 90),
         curve: Curves.easeOutCubic,
-        child: Container(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeInOut,
           width: double.infinity,
-          height: 52.0,
+          height: 50.0,
           decoration: BoxDecoration(
-            color: widget.isLoading
-                ? AppColors.primary.withValues(alpha: 0.7)
-                : AppColors.primary,
-            borderRadius: BorderRadius.circular(16.0),
+            color: !widget.isEnabled
+                ? const Color(0xFFE2E8F0) // Disabled soft grey
+                : widget.isLoading
+                    ? AppColors.primary.withValues(alpha: 0.7)
+                    : AppColors.primary,
+            borderRadius: BorderRadius.circular(100.0), // Pill / Full Rounded
             boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.28),
-                blurRadius: 10.0,
-                offset: const Offset(0, 3),
-              ),
+              if (!_isPressed && widget.isEnabled)
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.28),
+                  blurRadius: 12.0,
+                  offset: const Offset(0, 4),
+                ),
             ],
           ),
           child: Center(
             child: widget.isLoading
                 ? const SizedBox(
-                    width: 22.0,
-                    height: 22.0,
+                    width: 20.0,
+                    height: 20.0,
                     child: CircularProgressIndicator(
                       strokeWidth: 2.2,
-                      color: Colors.white,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   )
                 : Text(
                     widget.text,
-                    style: const TextStyle(
-                      fontSize: 16.0,
+                    style: TextStyle(
+                      fontFamily: 'SFPro',
+                      fontSize: 15.0,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                      color: !widget.isEnabled
+                          ? const Color(0xFF94A3B8) // Slate 400 disabled text
+                          : Colors.white,
                       letterSpacing: -0.2,
                     ),
                   ),

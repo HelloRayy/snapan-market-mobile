@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:snapan_market/core/services/poll_sync_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/services/suspension_service.dart';
-import 'package:snapan_market/features/feed/components/delete_post_bottom_sheet.dart';
-import 'package:snapan_market/features/feed/components/post_submenu_popover.dart';
+import 'package:snapan_market/features/feed/components/sheets/delete_post_bottom_sheet.dart';
+import 'package:snapan_market/features/feed/components/post_card/post_submenu_popover.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// Controller managing comments fetching, adding, post deletion, and submenu actions.

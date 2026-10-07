@@ -1,116 +1,98 @@
 # 🏛️ Panduan Arsitektur Clean Code & Long-Term Maintainability
-**Proyek: Snapan Market Mobile PWA**  
-*Standar Rekayasa Perangkat Lunak untuk Kemudahan Perawatan Jangka Panjang & Optimalisasi AI Coding Agent*
+**Proyek: Snapan Market Mobile (sNaps)**  
+*Arsitektur Berbasis Feature-First Modular untuk Kemudahan Perawatan Jangka Panjang & Konsistensi AI Coding Agent*
 
 ---
 
-## 📑 1. RINGKASAN EKSEKUTIF (*Executive Summary*)
+## 🎯 1. Filosofi Arsitektur
 
-Arsitektur **Snapan Market Mobile** dirancang berdasarkan prinsip **Clean Architecture**, **Single Responsibility Principle (SRP)**, dan **Explicit Dependency Inversion**. Tujuannya adalah memastikan bahwa:
-1. **Kode Modular & Terisolasi**: Perubahan pada layer tampilan (UI) tidak akan merusak kontrak data (Types) atau logika API (Services).
-2. **Optimal untuk AI Coding Agent**: Struktur direktori yang terprediksi, penamaan deskriptif, dan *strict TypeScript typing* meminimalisir *context token overhead* dan mencegah halusinasi AI hingga 0%.
-3. **Kinerja Tinggi & Skalabel**: Siap untuk penambahan puluhan fitur baru (seperti Side Drawer, Realtime Chat, Payment Gateway, Push Notification) tanpa penumpukan *technical debt*.
+Arsitektur **Snapan Market Mobile** dirancang berdasarkan prinsip **Feature-First Architecture**, **Separation of Concerns (SoC)**, dan **Single Source of Truth**.
+
+### Tujuan Utama:
+1. **Prediktabilitas Tinggi**: AI atau developer baru dapat menemukan file target dalam 1 kali pencarian tanpa perlu menelusuri seluruh repositori.
+2. **Isolasi Fitur**: Modifikasi pada satu fitur (misalnya `auth` atau `checkout`) tidak akan menimbulkan efek domino yang merusak fitur lain (seperti `feed` atau `profile`).
+3. **Mencegah Monolithic Code**: File dijaga tetap ramping (<250 baris) dengan memisahkan tampilan, logika bisnis, dan interaksi data.
 
 ---
 
-## 📂 2. PETA STRUKTUR LAYER APLIKASI (*Directory & Layer Breakdown*)
+## 📂 2. Struktur Direktori Utama (`lib/`)
 
-```
-snapan-market-mobile/
-├── docs/                             # 📚 Single Source of Truth untuk Developer & AI Agent
-│   ├── architecture.md               # Panduan struktur folder & dependency rules
-│   ├── clean-code-architecture.md    # Standar arsitektur clean code & maintainability
-│   ├── coding-standards.md           # Standar penulisan clean code & styling Tailwind
-│   ├── multi-laptop-setup.md         # Protokol kolaborasi Laptop A (FE) vs Laptop B (BE)
-│   ├── pwa-guide.md                  # Panduan PWA & Service Worker
-│   └── supabase-guide.md             # Skema database SQL & RLS policies
+```text
+lib/
+├── main.dart                          # App bootstrap, MaterialApp, theme global, route table
 │
-├── src/
-│   ├── types/                        # 🏷️ [LAYER 1: DOMAIN & CONTRACTS]
-│   │   ├── marketFeed.ts             # Model data feed, post, komentar, seller
-│   │   ├── product.ts                # Model produk katalog & kategori
-│   │   └── supabase.ts               # Generated schema types dari Supabase
-│   │
-│   ├── services/                     # 🔌 [LAYER 2: INFRASTRUCTURE & DATA]
-│   │   ├── api/
-│   │   │   ├── supabase.ts           # Supabase Client singleton
-│   │   │   ├── authService.ts        # Layanan autentikasi & profile
-│   │   │   └── marketPostService.ts  # Layanan query feed & postingan
-│   │   └── pwa/                      # Service Worker registration & PWA update
-│   │
-│   ├── utils/                        # 🛠️ [LAYER 3: PURE HELPERS]
-│   │   ├── cn.ts                     # Classname merger (clsx + tailwind-merge)
-│   │   └── formatters.ts             # Pure function (formatRupiah, timeAgo, dsb)
-│   │
-│   └── ui/                           # 🎨 [LAYER 4: PRESENTATION]
-│       ├── components/
-│       │   ├── ui/                   # Atomic UI dasar (ButtonPrimary, Modal, dsb)
-│       │   ├── marketplace/          # Komponen domain e-commerce (PostCard, BottomNav, Header)
-│       │   ├── profile/              # Komponen halaman profil (EditProfileModal, SettingsSheet)
-│       │   └── pwa/                  # Banner install & offline indicator
-│       ├── hooks/                    # Custom React hooks (useAuth, usePWA, useOnlineStatus)
-│       ├── store/                    # Global state management (Zustand)
-│       └── pages/                    # Container views (HomePage, ProfilePage, PostDetailPage)
+├── core/                              # Layer Pondasi (Shared Lintas Fitur)
+│   ├── theme/                         # Token desain: app_colors.dart, typography
+│   ├── components/                    # Atomic reusable widgets (snaps_logo.dart, kumo_button.dart)
+│   ├── constants/                     # Konstanta aplikasi & asset paths
+│   ├── navigation/                    # Transisi halaman kustom (app_slide_page_route.dart)
+│   ├── services/                      # Service global (Supabase singleton, notification, registry)
+│   │   ├── supabase/                  # Domain query supabase (feed, social, poll, profile)
+│   │   ├── global_notification_service.dart
+│   │   ├── student_registry_service.dart
+│   │   └── device_security_service.dart
+│   └── utils/                         # Helper murni (rupiah_formatter.dart, date_formatter.dart)
 │
-├── AGENTS.md                         # 🤖 System Instructions Wajib untuk Seluruh AI Agent
-└── tailwind.config.js / vite.config  # ⚙️ Konfigurasi build & style
+└── features/                          # Modul Fitur Berbasis Domain (Feature-First)
+    ├── feed/                          # Linimasa beranda, postingan pasar & threads
+    ├── auth/                          # Autentikasi NIS/Username, login, register
+    ├── profile/                       # Profil siswa, portofolio kejuruan, edit profile
+    ├── create_post/                   # Pembuat post pasar & voting polling
+    ├── messages/                      # Direct messages & chat COD
+    ├── checkout/                      # Keranjang, checkout COD, rincian pembayaran
+    ├── locations/                     # Titik temu COD kampus SMKN 8
+    ├── map/                           # Blueprint 2D peta interaktif kampus
+    ├── search/                        # Pencarian produk & penemuan akun siswa
+    ├── activity/                      # Notifikasi & riwayat interaksi
+    └── onboarding/                    # Walkthrough pengenalan aplikasi
 ```
 
 ---
 
-## 🔒 3. ATURAN KETERGANTUNGAN (*Dependency Flow Rules*)
+## 🧩 3. Anatomi Sebuah Fitur (`features/<nama_fitur>/`)
 
-Agar kode tidak saling mengunci (*circular dependency*), seluruh kode wajib mematuhi arah panah ketergantungan satu arah berikut:
+Setiap fitur dalam `lib/features/` memiliki struktur internal yang seragam:
 
-$$\text{ui/ (Tampilan)} \longrightarrow \text{services/ (API)} \longrightarrow \text{types/ (Kontrak Data)}$$
-$$\text{ui/ (Tampilan)} \longrightarrow \text{utils/ (Helper Murni)}$$
+```text
+lib/features/<nama_fitur>/
+├── screens/               # 1. ORCHESTRATOR (Halaman Utama)
+│   └── <nama>_screen.dart # Hanya mengatur Scaffold, AppBar, layout dasar, dan state binding
+│
+├── components/            # 2. PRESENTATION (Sub-komponen visual terpecah)
+│   ├── <nama>_header.dart
+│   ├── <nama>_card.dart
+│   └── <nama>_tab.dart
+│
+├── controllers/           # 3. STATE & LOGIC (State Controller)
+│   └── <nama>_controller.dart # Mengatur state, validasi, dan orkestrasi pemanggilan service
+│
+└── models/                # 4. DATA CONTRACTS (Domain Models)
+    └── <nama>_model.dart  # Data class immutabel dengan fromJson / toJson
+```
 
-| Layer | Boleh Mengimpor Dari | Dilarang Mengimpor Dari |
+---
+
+## 🔒 4. Aturan Aliran Ketergantungan (Dependency Flow)
+
+Untuk mencegah *circular dependency* dan *spaghetti code*, aturan impor kode mengikuti alur satu arah berikut:
+
+$$\text{Screens} \longrightarrow \text{Components} \longrightarrow \text{Controllers} \longrightarrow \text{Services} \longrightarrow \text{Supabase / DB}$$
+
+| Lapisan (Layer) | Boleh Mengimpor | DILARANG Mengimpor |
 | :--- | :--- | :--- |
-| **`types/`** | Tidak ada (Pure TypeScript) | `ui/`, `services/`, `utils/` |
-| **`utils/`** | Libraries murni (`clsx`, dsb) | `ui/`, `services/` |
-| **`services/`** | `types/`, `utils/`, SDK eksternal (`@supabase/supabase-js`) | `ui/` |
-| **`ui/`** | `types/`, `services/`, `utils/`, `ui/components/` | File internal build tool |
+| **`models/`** | `core/constants/`, `core/utils/` | `screens/`, `controllers/`, `services/` |
+| **`services/`** | `core/`, `models/`, SDK external (Supabase) | `screens/`, `components/` |
+| **`controllers/`**| `services/`, `models/`, `core/` | `screens/`, `components/` |
+| **`components/`** | `models/`, `core/theme/`, `core/components/` | Memanggil langsung SQL / query DB mentah |
+| **`screens/`** | `controllers/`, `components/`, `core/` | Menulis query database langsung di dalam `build()` |
 
 ---
 
-## 🤖 4. MENGAPA STRUKTUR INI SANGAT RAMAH UNTUK AI AGENT?
+## 🛡️ 5. Prinsip Pertahanan Terhadap Efek Domino
 
-1. **Deterministic Discovery**:
-   - Jika AI diminta memperbaiki query data $\rightarrow$ AI langsung tahu membuka `src/services/api/`.
-   - Jika AI diminta mengubah tampilan profil $\rightarrow$ AI langsung tahu membuka `src/ui/pages/ProfilePage.tsx`.
-2. **Explicit Type Contracts (`src/types/`)**:
-   - AI tidak perlu menebak properti objek (misal: apakah `item.price` atau `item.harga`). Tipe TypeScript yang ketat (*Strict Typing*) mencegah bug `undefined is not a function`.
-3. **Standarisasi Path Alias (`@/`)**:
-   - Selalu gunakan `@/ui/components/...` dibanding relative path bertingkat seperti `../../../../components/...`. Ini memudahkan AI saat me-refactor atau memindahkan file.
-4. **AGENTS.md sebagai Guardrail**:
-   - Setiap AI yang membaca repositori ini langsung mengetahui aturan Laptop A (Frontend) vs Laptop B (Backend) sehingga tidak akan mengubah skema database secara sembarangan.
-
----
-
-## 💎 5. PRINSIP CLEAN CODE YANG DITERAPKAN DI CODEBASE
-
-1. **Single Responsibility Principle (SRP)**:
-   - Satu komponen hanya mengerjakan satu tugas utama (Contoh: `MarketHeader` hanya menangani header navigasi, `MarketBottomNav` hanya menangani navigasi bawah, `PostCommentItem` hanya merender satu baris komentar).
-2. **Performance-First Motion (60-120fps)**:
-   - Menggunakan animasi berbasis akselerasi GPU (`transform: translate3d(...)`, `will-change: transform`, `transform-gpu`).
-   - Menghindari filter berat (`backdrop-blur`) di elemen bergerak untuk mencegah lag pada perangkat mobile low-end.
-3. **Synchronous State Initialization (Zero-Flash)**:
-   - State autentikasi dan onboarding dihitung secara sinkron di Frame 0 menggunakan *lazy initializer* `useState(() => ...)`, mencegah kedipan layar (*splashscreen flash*).
-4. **Resilient Touch Targets (Apple HIG & Material 3 Compliant)**:
-   - Semua tombol interaktif memiliki minimum hit area $44\times 44\text{ px}$.
-   - Sensitivitas gesture scroll (*scroll delta*) diatur pada angka $24\text{ px}$ untuk mencegah pergeseran layout yang tidak disengaja.
-
----
-
-## 🚀 6. PROTOKOL KOLABORASI MULTI-LAPTOP (LAPTOP A vs LAPTOP B)
-
-1. **Laptop B (Backend)**:
-   - Tulis SQL & RLS di `/docs/supabase-guide.md`.
-   - Update tipe di `src/types/supabase.ts`.
-   - Buat fungsi query di `src/services/api/<fitur>Service.ts`.
-   - `git commit` & `git push`.
-2. **Laptop A (Frontend)**:
-   - `git pull origin main`.
-   - Buat UI di `src/ui/` mengonsumsi tipe data resmi dari `src/types/supabase.ts`.
-   - `git commit` & `git push`.
+1. **Jaga Kontrak Parameter**:
+   - Jika mengubah constructor widget atau parameter controller, gunakan default value atau pertahankan backward compatibility agar tidak merusak pemanggil lain.
+2. **Jangan Mengubah File di Luar Scope Tugas**:
+   - Jika ditugaskan merapikan satu sub-komponen (misal kartu postingan), fokuslah hanya pada file sub-komponen tersebut. Jangan mengutak-atik routing global atau service database.
+3. **Pemisahan Validasi & State**:
+   - Validasi form sebaiknya didelegasikan ke controller atau validator helper teruji, bukan dicampur di tengah-tengah fungsi `onPressed` tombol.

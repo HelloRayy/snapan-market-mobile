@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/snaps_skeleton.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
-import 'package:snapan_market/features/feed/components/home_feed_tab_switch.dart';
-import 'package:snapan_market/features/feed/components/market_post_card.dart';
+import 'package:snapan_market/features/feed/components/navigation/home_feed_tab_switch.dart';
+import 'package:snapan_market/features/feed/components/post_card/market_post_card.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 class HomeFeedScrollableList extends StatelessWidget {

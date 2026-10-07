@@ -130,7 +130,7 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Nama',
+                      'Display Name',
                       style: TextStyle(
                         fontSize: 14.0,
                         fontWeight: FontWeight.w600,
@@ -149,7 +149,7 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                         color: Color(0xFF0F172A),
                       ),
                       decoration: const InputDecoration(
-                        hintText: 'Nama lengkap Anda',
+                        hintText: 'Nama tampilan kamu',
                         hintStyle: TextStyle(
                           fontFamily: 'SFPro',
                           fontSize: 15.5,

@@ -53,7 +53,9 @@ class AppUpdateService {
         _cachedPackageInfo = null;
       }
       final packageInfo = await getPackageInfo();
-      final int currentBuildNumber = int.tryParse(packageInfo.buildNumber) ?? 1;
+      final int rawCurrentBuild = int.tryParse(packageInfo.buildNumber) ?? 1;
+      // Normalisasi build number jika APK berasal dari split-per-abi (e.g. 2021 -> 21, 1021 -> 21)
+      final int currentBuildNumber = rawCurrentBuild >= 1000 ? (rawCurrentBuild % 1000) : rawCurrentBuild;
 
       final response = await SupabaseService.instance.client
           .from('app_versions')
@@ -66,9 +68,13 @@ class AppUpdateService {
       if (response == null) return null;
 
       final latest = AppVersionModel.fromJson(response);
+      final int remoteBuildNumber = latest.versionCode >= 1000 ? (latest.versionCode % 1000) : latest.versionCode;
 
-      // Check if remote version code is strictly higher than current installed app
-      if (latest.versionCode > currentBuildNumber) {
+      final bool hasNewerBuild = remoteBuildNumber > currentBuildNumber;
+      final bool hasNewerVersion = _isVersionHigher(latest.versionName, packageInfo.version);
+
+      // Check if remote version is strictly higher than current installed app
+      if (hasNewerBuild || hasNewerVersion || latest.versionCode > rawCurrentBuild) {
         _cachedLatestUpdate = latest;
 
         // If automatic check and not mandatory: respect dismissal & session limits
@@ -103,6 +109,22 @@ class AppUpdateService {
       debugPrint('Error checking app update: $e');
       return null;
     }
+  }
+
+  /// Memeriksa apakah semantic version [remote] lebih tinggi dari [local] (misal '1.0.21' > '1.0.19')
+  static bool _isVersionHigher(String remote, String local) {
+    try {
+      final remoteParts = remote.replaceAll(RegExp(r'[^0-9.]'), '').split('.').map((e) => int.tryParse(e) ?? 0).toList();
+      final localParts = local.replaceAll(RegExp(r'[^0-9.]'), '').split('.').map((e) => int.tryParse(e) ?? 0).toList();
+      final maxLength = remoteParts.length > localParts.length ? remoteParts.length : localParts.length;
+      for (int i = 0; i < maxLength; i++) {
+        final r = i < remoteParts.length ? remoteParts[i] : 0;
+        final l = i < localParts.length ? localParts[i] : 0;
+        if (r > l) return true;
+        if (r < l) return false;
+      }
+    } catch (_) {}
+    return false;
   }
 
   /// Ambil info versi aktif terbaru langsung dari database Supabase

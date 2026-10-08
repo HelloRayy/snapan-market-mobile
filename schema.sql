@@ -31,18 +31,80 @@ alter table public.profiles add column if not exists suspend_reason text;
 create index if not exists idx_profiles_is_suspended on public.profiles(is_suspended) where is_suspended = true;
 
 
--- Trigger Otomatis saat User Sign Up (Google OAuth / Email)
+alter table public.profiles add column if not exists nis text unique;
+alter table public.profiles add column if not exists display_name text;
+create index if not exists idx_profiles_nis on public.profiles(nis);
+
+-- Trigger Otomatis saat User Sign Up (Google OAuth / Email / NIS)
 create or replace function public.handle_new_user()
 returns trigger as $$
+declare
+  v_nis text;
+  v_class text;
+  v_full_name text;
+  v_display_name text;
+  v_username text;
+  v_avatar text;
 begin
-  insert into public.profiles (id, full_name, username, avatar_url)
+  -- Ekstraksi metadata dari raw_user_meta_data
+  v_nis := nullif(trim(coalesce(new.raw_user_meta_data->>'nis', '')), '');
+  v_class := nullif(trim(coalesce(new.raw_user_meta_data->>'class_group', '')), '');
+  v_full_name := coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', 'Pengguna Baru');
+  v_display_name := nullif(trim(coalesce(new.raw_user_meta_data->>'display_name', '')), '');
+  v_username := coalesce(new.raw_user_meta_data->>'username', lower(replace(v_full_name, ' ', '')));
+  v_avatar := coalesce(new.raw_user_meta_data->>'avatar_url', new.raw_user_meta_data->>'picture', '');
+
+  -- 1. Jika NIS disertakan, periksa ke student_registry
+  if v_nis is not null and exists (
+    select 1 from information_schema.tables 
+    where table_schema = 'public' and table_name = 'student_registry'
+  ) then
+    select class_group, full_name into v_class, v_full_name
+    from public.student_registry
+    where nis = v_nis
+    limit 1;
+
+    update public.student_registry
+    set is_claimed = true,
+        claimed_by = new.id,
+        claimed_at = timezone('utc'::text, now())
+    where nis = v_nis;
+  end if;
+
+  -- 2. Fallback kelas jika masih kosong atau bernilai 'Siswa Snapan'
+  if v_class is null or v_class = '' or lower(v_class) = 'siswa snapan' then
+    v_class := coalesce(nullif(trim(new.raw_user_meta_data->>'class_group'), ''), 'Siswa Snapan');
+  end if;
+
+  -- 3. Simpan ke public.profiles
+  insert into public.profiles (
+    id,
+    full_name,
+    display_name,
+    username,
+    avatar_url,
+    class_group,
+    nis
+  )
   values (
     new.id,
-    coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', 'Pengguna Baru'),
-    coalesce(new.raw_user_meta_data->>'username', lower(replace(coalesce(new.raw_user_meta_data->>'full_name', 'user'), ' ', ''))),
-    coalesce(new.raw_user_meta_data->>'avatar_url', new.raw_user_meta_data->>'picture', '')
+    v_full_name,
+    v_display_name,
+    v_username,
+    v_avatar,
+    v_class,
+    v_nis
   )
-  on conflict (id) do nothing;
+  on conflict (id) do update set
+    full_name = case 
+      when public.profiles.full_name is null or public.profiles.full_name = 'Pengguna Baru' 
+      then excluded.full_name else public.profiles.full_name end,
+    class_group = case 
+      when public.profiles.class_group is null or public.profiles.class_group = 'Siswa Snapan' or public.profiles.class_group = ''
+      then excluded.class_group else public.profiles.class_group end,
+    nis = coalesce(public.profiles.nis, excluded.nis),
+    display_name = coalesce(public.profiles.display_name, excluded.display_name);
+
   return new;
 end;
 $$ language plpgsql security definer;
@@ -222,6 +284,13 @@ to authenticated
 using (public.is_admin())
 with check (public.is_admin());
 
+drop policy if exists "Admins can delete any profile" on public.profiles;
+create policy "Admins can delete any profile"
+on public.profiles
+for delete
+to authenticated
+using (public.is_admin());
+
 -- Market Posts Policies
 drop policy if exists "Market posts viewable by everyone" on public.market_posts;
 drop policy if exists "Sellers can insert own posts" on public.market_posts;
@@ -354,6 +423,176 @@ begin
   end if;
 end;
 $$;
+
+-- RPC Helper for Admin Delete User Permanently (Security Definer)
+create or replace function public.admin_delete_user(target_user_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public, auth
+as $$
+declare
+  v_nis text;
+  v_username text;
+  v_admin_email text;
+begin
+  if not public.is_admin() then
+    raise exception 'Unauthorized: Hanya administrator yang berhak menghapus akun pengguna.';
+  end if;
+
+  if target_user_id = auth.uid() then
+    raise exception 'Invalid Operation: Administrator tidak diizinkan menghapus akun sendiri.';
+  end if;
+
+  if exists (
+    select 1 from information_schema.columns 
+    where table_schema = 'public' and table_name = 'profiles' and column_name = 'nis'
+  ) then
+    execute 'select nis, username from public.profiles where id = $1'
+    into v_nis, v_username
+    using target_user_id;
+  else
+    select username into v_username
+    from public.profiles
+    where id = target_user_id;
+  end if;
+
+  select coalesce(auth.jwt()->>'email', 'admin@snaps.internal') into v_admin_email;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'student_registry') then
+    if v_nis is not null then
+      execute 'update public.student_registry set is_claimed = false, claimed_by = null, claimed_at = null where claimed_by = $1 or nis = $2'
+      using target_user_id, v_nis;
+    else
+      execute 'update public.student_registry set is_claimed = false, claimed_by = null, claimed_at = null where claimed_by = $1'
+      using target_user_id;
+    end if;
+  end if;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'orders') then
+    update public.orders set cancelled_by = null where cancelled_by = target_user_id;
+    delete from public.orders where buyer_id = target_user_id or seller_id = target_user_id;
+    delete from public.orders where post_id in (select id from public.market_posts where seller_id = target_user_id);
+  end if;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'order_notifications') then
+    delete from public.order_notifications where recipient_id = target_user_id;
+  end if;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'cart_items') then
+    delete from public.cart_items where user_id = target_user_id;
+  end if;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'post_bookmarks') then
+    delete from public.post_bookmarks where user_id = target_user_id;
+  end if;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'post_reposts') then
+    delete from public.post_reposts where user_id = target_user_id;
+  end if;
+
+  delete from public.market_posts where seller_id = target_user_id;
+  delete from public.post_likes where user_id = target_user_id;
+  delete from public.post_comments where user_id = target_user_id;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'comment_likes') then
+    delete from public.comment_likes where user_id = target_user_id;
+  end if;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'user_follows') then
+    delete from public.user_follows where follower_id = target_user_id or following_id = target_user_id;
+  end if;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'follows') then
+    delete from public.follows where follower_id = target_user_id or following_id = target_user_id;
+  end if;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'notifications') then
+    if exists (
+      select 1 from information_schema.columns 
+      where table_schema = 'public' and table_name = 'notifications' and column_name = 'user_id'
+    ) then
+      delete from public.notifications where user_id = target_user_id or actor_id = target_user_id;
+    elsif exists (
+      select 1 from information_schema.columns 
+      where table_schema = 'public' and table_name = 'notifications' and column_name = 'recipient_id'
+    ) then
+      delete from public.notifications where recipient_id = target_user_id or actor_id = target_user_id;
+    end if;
+  end if;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'content_reports') then
+    update public.content_reports set resolved_by = null where resolved_by = target_user_id;
+    delete from public.content_reports where reporter_id = target_user_id;
+  end if;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'direct_messages') then
+    delete from public.direct_messages where sender_id = target_user_id;
+  end if;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'conversations') then
+    delete from public.conversations where participant_one = target_user_id or participant_two = target_user_id;
+  end if;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'chat_conversations') then
+    delete from public.chat_conversations where participant_one = target_user_id or participant_two = target_user_id;
+  end if;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'post_poll_votes') then
+    delete from public.post_poll_votes where user_id = target_user_id;
+  end if;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'device_registrations') then
+    delete from public.device_registrations where user_id = target_user_id;
+  end if;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'app_security_settings') then
+    update public.app_security_settings set updated_by = null where updated_by = target_user_id;
+  end if;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'fcm_tokens') then
+    delete from public.fcm_tokens where user_id = target_user_id;
+  end if;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'user_fcm_tokens') then
+    delete from public.user_fcm_tokens where user_id = target_user_id;
+  end if;
+
+  if exists (select from pg_tables where schemaname = 'storage' and tablename = 'objects') then
+    begin
+      execute 'delete from storage.objects where owner::text = $1' using target_user_id::text;
+    exception when others then
+      null;
+    end;
+  end if;
+
+  delete from public.profiles where id = target_user_id;
+
+  begin
+    delete from auth.users where id = target_user_id;
+  exception when others then
+    raise notice 'Catatan: Supabase auth.users internal delete notice: %', sqlerrm;
+  end;
+
+  if exists (select from pg_tables where schemaname = 'public' and tablename = 'admin_activity_logs') then
+    insert into public.admin_activity_logs (admin_id, admin_email, action, target_info, metadata)
+    values (
+      auth.uid(),
+      v_admin_email,
+      'DELETE_USER_PERMANENT',
+      coalesce(v_username, target_user_id::text),
+      jsonb_build_object(
+        'target_user_id', target_user_id,
+        'username', v_username,
+        'nis', v_nis
+      )
+    );
+  end if;
+end;
+$$;
+
+grant execute on function public.admin_delete_user(uuid) to authenticated;
+grant execute on function public.admin_delete_user(uuid) to service_role;
 
 -- Post Likes Policies
 drop policy if exists "Likes viewable by everyone" on public.post_likes;

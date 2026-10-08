@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/services/app_update_service.dart';
+import 'package:snapan_market/core/services/student_registry_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/components/navigation/drawer/home_drawer_footer.dart';
@@ -56,8 +57,8 @@ class HomeNavDrawer extends StatelessWidget {
     final Color borderColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9);
     final Color tileHoverColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC);
 
-    final rawFullName = (userProfile?['full_name'] as String?)?.trim() ??
-        (currentUser?.userMetadata?['full_name'] as String?)?.trim();
+    final rawDisplayName = (userProfile?['display_name'] as String?)?.trim() ??
+        (currentUser?.userMetadata?['display_name'] as String?)?.trim();
     final rawUsername = (userProfile?['username'] as String?)?.trim() ??
         (currentUser?.userMetadata?['username'] as String?)?.trim() ??
         (currentUser?.email?.contains('@snapan.id') == true
@@ -66,8 +67,8 @@ class HomeNavDrawer extends StatelessWidget {
     final rawClass = (userProfile?['class_group'] as String?)?.trim() ??
         (currentUser?.userMetadata?['class_group'] as String?)?.trim();
 
-    final String displayName = (rawFullName != null && rawFullName.isNotEmpty)
-        ? rawFullName
+    final String displayName = (rawDisplayName != null && rawDisplayName.isNotEmpty)
+        ? rawDisplayName
         : ((rawUsername != null && rawUsername.isNotEmpty)
             ? '@${rawUsername.replaceAll('@', '')}'
             : 'Siswa SMKN 8 Semarang');
@@ -78,15 +79,19 @@ class HomeNavDrawer extends StatelessWidget {
             ? currentUser.email!.split('@').first
             : 'siswa');
 
-    final String? resolvedClass = (rawClass != null && rawClass.trim().isNotEmpty)
-        ? rawClass.trim()
-        : null;
+    final String? userNis = (userProfile?['nis'] as String?)?.trim() ??
+        (currentUser?.userMetadata?['nis'] as String?)?.trim();
+
+    String? resolvedClass;
+    if (rawClass != null && rawClass.trim().isNotEmpty && rawClass.trim().toLowerCase() != 'siswa snapan') {
+      resolvedClass = rawClass.trim();
+    } else if (userNis != null && userNis.isNotEmpty) {
+      resolvedClass = StudentRegistryService.instance.findClassByNis(userNis);
+    }
 
     // Baris kedua drawer: '@username • Kelas / Jurusan' (bukan email sistem @snapan.id)
     final String displaySubtitle;
-    if (resolvedClass != null && resolvedClass.toLowerCase() != 'siswa snapan') {
-      displaySubtitle = '@$cleanUsername • $resolvedClass';
-    } else if (resolvedClass != null) {
+    if (resolvedClass != null && resolvedClass.isNotEmpty) {
       displaySubtitle = '@$cleanUsername • $resolvedClass';
     } else {
       displaySubtitle = '@$cleanUsername • Siswa SMKN 8';

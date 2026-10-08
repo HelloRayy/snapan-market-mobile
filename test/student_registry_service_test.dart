@@ -32,6 +32,23 @@ void main() {
       final searchResults = StudentRegistryService.instance.searchStudents('AIDA');
       expect(searchResults.isNotEmpty, isTrue);
       expect(searchResults.first.nis, '11816');
+
+      // Test findClassByNis
+      expect(StudentRegistryService.instance.findClassByNis('11816'), '11 PPLG 2');
+      expect(StudentRegistryService.instance.findClassByNis('99999'), isNull);
+      expect(StudentRegistryService.instance.findClassByNis(null), isNull);
+      expect(StudentRegistryService.instance.findClassByNis(''), isNull);
+    });
+
+    test('registerStudent manually adds student to local registry', () {
+      StudentRegistryService.instance.registerStudent(const RegisteredStudent(
+        nis: '12345',
+        name: 'Siswa Percobaan',
+        classGroup: '10 PPLG 1',
+      ));
+
+      expect(StudentRegistryService.instance.findClassByNis('12345'), '10 PPLG 1');
+      expect(StudentRegistryService.instance.findByNis('12345')?.name, 'Siswa Percobaan');
     });
 
     test('generateSuggestedUsername creates first+middle name clean handle', () {

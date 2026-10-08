@@ -256,75 +256,19 @@ export const adminService = {
     });
 
     if (rpcErr) {
-      console.warn('RPC admin_delete_user gagal atau belum dipasang, beralih ke fallback pembersihan bertingkat:', rpcErr);
+      console.error('RPC admin_delete_user gagal:', rpcErr);
 
-      // Fallback: Pembersihan bertingkat melalui Client API
-      // A. Ambil profil untuk mendapatkan data NIS
-      const { data: profile } = await (supabase as any)
-        .from('profiles')
-        .select('nis, username')
-        .eq('id', userId)
-        .maybeSingle();
-
-      // B. Bebaskan klaim master data siswa (student_registry)
-      if (profile?.nis) {
-        await (supabase as any)
-          .from('student_registry')
-          .update({ is_claimed: false, claimed_by: null, claimed_at: null })
-          .eq('nis', profile.nis);
-      }
-      await (supabase as any)
-        .from('student_registry')
-        .update({ is_claimed: false, claimed_by: null, claimed_at: null })
-        .eq('claimed_by', userId);
-
-      // C. Hapus pesanan (orders) terkait pengguna agar tidak melanggar foreign key restrict
-      try {
-        await (supabase as any)
-          .from('orders')
-          .delete()
-          .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`);
-      } catch (err) {
-        console.warn('Orders cleanup warning:', err);
+      // Deteksi jika fungsi RPC belum terpasang di database Supabase
+      const isMissingRpc = rpcErr?.code === 'PGRST202' || (rpcErr?.code === '42883' && rpcErr?.message?.includes('admin_delete_user'));
+      
+      let userFriendlyMsg = rpcErr?.message || 'Gagal menghapus akun pengguna.';
+      if (isMissingRpc) {
+        userFriendlyMsg = 'Fungsi database "admin_delete_user" belum dibuat di Supabase. Jalankan file migrasi "supabase_admin_remove_account_feature.sql" di Supabase SQL Editor.';
+      } else if (rpcErr?.message) {
+        userFriendlyMsg = `Gagal menghapus akun (${rpcErr.code || 'DB_ERROR'}): ${rpcErr.message}${rpcErr.hint ? ` - ${rpcErr.hint}` : ''}`;
       }
 
-      // D. Hapus semua postingan feed & marketplace milik pengguna
-      const { error: postsErr } = await (supabase as any)
-        .from('market_posts')
-        .delete()
-        .eq('seller_id', userId);
-      if (postsErr) {
-        console.warn('Fallback delete market_posts warning:', postsErr);
-      }
-
-      // E. Hapus relasi sosial (likes, comments, follows, notifications)
-      try {
-        await (supabase as any).from('post_likes').delete().eq('user_id', userId);
-        await (supabase as any).from('post_comments').delete().eq('user_id', userId);
-        await (supabase as any).from('post_poll_votes').delete().eq('user_id', userId);
-        await (supabase as any).from('device_registrations').delete().eq('user_id', userId);
-        await (supabase as any).from('fcm_tokens').delete().eq('user_id', userId);
-        await (supabase as any).from('follows').delete().or(`follower_id.eq.${userId},following_id.eq.${userId}`);
-        await (supabase as any).from('notifications').delete().or(`recipient_id.eq.${userId},actor_id.eq.${userId}`);
-      } catch (err) {
-        console.warn('Social relations cleanup warning:', err);
-      }
-
-      // F. Hapus baris profil dan verifikasi baris yang benar-benar terhapus
-      const { data: deletedRows, error: profileErr } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('id', userId)
-        .select('id');
-
-      if (profileErr || !deletedRows || deletedRows.length === 0) {
-        const isRpcMissing = rpcErr?.code === 'PGRST202' || rpcErr?.message?.includes('admin_delete_user');
-        throw new Error(
-          isRpcMissing
-            ? 'Fungsi database "admin_delete_user" belum dipasang di Supabase. Silakan jalankan script SQL migrasi "supabase_admin_remove_account_feature.sql" di Supabase SQL Editor.'
-            : (rpcErr?.message || profileErr?.message || 'Gagal menghapus akun pengguna dari database. Pastikan kebijakan RLS DELETE aktif.')
-        );
-      }
+      throw new Error(userFriendlyMsg);
     }
   },
 

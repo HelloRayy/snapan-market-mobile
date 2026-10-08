@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:snapan_market/core/services/device_security_service.dart';
 import 'package:snapan_market/core/services/global_notification_service.dart';
+import 'package:snapan_market/core/services/student_registry_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 
 class AuthController {
@@ -114,8 +115,20 @@ class AuthController {
         }
       }
 
-      final finalClassGroup = classGroup ??
-          (grade != null && major != null && classNum != null
+      // Pastikan kelas otomatis tersinkronisasi dari NIS terdaftar jika belum spesifik
+      String resolvedClassGroup = classGroup?.trim() ?? '';
+      if ((resolvedClassGroup.isEmpty || resolvedClassGroup.toLowerCase() == 'siswa snapan') &&
+          cleanNis != null &&
+          cleanNis.isNotEmpty) {
+        final matchedClass = StudentRegistryService.instance.findClassByNis(cleanNis);
+        if (matchedClass != null && matchedClass.isNotEmpty) {
+          resolvedClassGroup = matchedClass;
+        }
+      }
+
+      final finalClassGroup = resolvedClassGroup.isNotEmpty
+          ? resolvedClassGroup
+          : (grade != null && major != null && classNum != null
               ? '$grade $major $classNum'
               : 'Siswa Snapan');
 
@@ -137,6 +150,18 @@ class AuthController {
       );
 
       if (response.user != null) {
+        // Jika sesi belum aktif (misal auth setting tanpa auto-confirm), aktifkan sesi via signInWithPassword
+        if (response.session == null) {
+          try {
+            await SupabaseService.instance.client.auth.signInWithPassword(
+              email: email,
+              password: password,
+            );
+          } catch (_) {
+            // Non-critical fallback jika server require manual confirm
+          }
+        }
+
         await SupabaseService.instance.updateProfile(
           userId: response.user!.id,
           fullName: fullName,

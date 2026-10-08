@@ -8,16 +8,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:snapan_market/core/components/kumo_button.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
-import 'package:snapan_market/features/feed/components/home_feed_header.dart';
-import 'package:snapan_market/features/feed/components/home_feed_tab_switch.dart';
-import 'package:snapan_market/features/feed/components/home_bottom_nav_bar.dart';
+import 'package:snapan_market/features/feed/components/feed_components.dart';
 import 'package:snapan_market/features/create_post/screens/create_post_modal.dart';
 import 'package:snapan_market/features/feed/screens/home_feed_screen.dart';
-import 'package:snapan_market/features/feed/components/market_post_card.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
-import 'package:snapan_market/features/feed/components/market_feed_icons.dart';
-import 'package:snapan_market/features/feed/components/post_comment_item.dart';
-import 'package:snapan_market/features/feed/components/comment_input_bar.dart';
 import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
 import 'package:snapan_market/main.dart';
 

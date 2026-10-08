@@ -88,11 +88,11 @@ class PostCardHeader extends StatelessWidget {
     final hasDisplayName = item.seller.displayName != null && item.seller.displayName!.trim().isNotEmpty;
     final rawUsername = (item.seller.username != null && item.seller.username!.isNotEmpty)
         ? item.seller.username!
-        : item.seller.name;
+        : '';
     final cleanUsername = rawUsername.trim().replaceAll('@', '');
     final displayAuthor = hasDisplayName
         ? item.seller.displayName!.trim()
-        : '@$cleanUsername';
+        : (cleanUsername.isNotEmpty ? '@$cleanUsername' : 'Pengguna');
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

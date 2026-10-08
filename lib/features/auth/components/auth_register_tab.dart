@@ -61,10 +61,10 @@ class AuthRegisterTab extends StatelessWidget {
         ),
         const SizedBox(height: 16.0),
 
-        // 2. NAMA TAMPILAN / BRAND (OPSIONAL, MAX 20 KARAKTER)
+        // 2. DISPLAY NAME (OPSIONAL, MAX 20 KARAKTER)
         AuthInputField(
-          label: 'Nama Tampilan / Brand (Opsional)',
-          hint: 'Contoh: Budi Studio, Dhea Craft',
+          label: 'Display Name (Opsional)',
+          hint: 'Masukkan nama tampilan kamu',
           prefixIcon: LucideIcons.user,
           controller: displayNameController,
           errorText: displayNameError,

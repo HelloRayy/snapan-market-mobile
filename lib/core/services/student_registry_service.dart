@@ -104,4 +104,27 @@ class StudentRegistryService {
       return s.nis.contains(clean) || s.name.toLowerCase().contains(clean);
     }).toList();
   }
+
+  /// Find class group by NIS. Returns null if NIS is not found or empty.
+  String? findClassByNis(String? rawNis) {
+    if (rawNis == null) return null;
+    final clean = rawNis.trim();
+    if (clean.isEmpty) return null;
+    final student = findByNis(clean);
+    if (student != null && student.classGroup.trim().isNotEmpty) {
+      return student.classGroup.trim();
+    }
+    return null;
+  }
+
+  /// Manually add or update a student in the in-memory cache
+  void registerStudent(RegisteredStudent student) {
+    final idx = _students.indexWhere((s) => s.nis == student.nis);
+    if (idx >= 0) {
+      _students[idx] = student;
+    } else {
+      _students.add(student);
+    }
+  }
 }
+

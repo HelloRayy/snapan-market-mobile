@@ -132,12 +132,22 @@ class ConversationModel {
     final otherUserId = otherProfile['id'] as String? ??
         (isParticipantOne ? json['participant_two'] as String? : json['participant_one'] as String?);
 
+    final rawDisplayName = (otherProfile['display_name'] as String?)?.trim();
+    final rawFullName = (otherProfile['full_name'] as String?)?.trim();
+    final rawUsername = (otherProfile['username'] as String?)?.trim();
+    final cleanUsername = (rawUsername != null && rawUsername.isNotEmpty) ? rawUsername.replaceAll('@', '') : null;
+    final otherName = (rawDisplayName != null && rawDisplayName.isNotEmpty)
+        ? rawDisplayName
+        : (rawFullName != null && rawFullName.isNotEmpty
+            ? rawFullName
+            : (cleanUsername != null ? '@$cleanUsername' : 'Siswa'));
+
     return ConversationModel(
       id: json['id'] as String? ?? '',
       productId: json['product_id'] as String?,
       user: ConversationUser(
         id: otherUserId,
-        name: otherProfile['full_name'] as String? ?? otherProfile['username'] as String? ?? 'Siswa',
+        name: otherName,
         username: otherProfile['username'] as String? ?? 'user',
         avatar: otherProfile['avatar_url'] as String? ?? '',
         classGroup: otherProfile['class_group'] as String? ?? 'SMKN 8 Semarang',

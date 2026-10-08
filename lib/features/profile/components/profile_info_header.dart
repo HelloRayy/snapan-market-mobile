@@ -55,7 +55,7 @@ class ProfileInfoHeader extends StatelessWidget {
                               letterSpacing: -0.4,
                               height: 1.2,
                             ),
-                            maxLines: 1,
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),

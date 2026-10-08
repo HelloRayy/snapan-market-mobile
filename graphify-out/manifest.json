@@ -48,9 +48,9 @@
     "semantic_hash": "04d1c36bc8420745cf9fa824090d179f"
   },
   "android/app/build.gradle.kts": {
-    "mtime": 1791042397.0943027,
-    "seen": 1791043471.1083891,
-    "ast_hash": "c41031cf7f5e1a7c4bbbd1323dd0d94a",
+    "mtime": 1791431743.936485,
+    "seen": 1791431935.7336745,
+    "ast_hash": "a4f388eec066fd011f8edf381b30c047",
     "semantic_hash": ""
   },
   "android/app/src/main/kotlin/com/snapan/market/snapan_market/MainActivity.kt": {
@@ -2514,9 +2514,9 @@
     "semantic_hash": ""
   },
   "pubspec.yaml": {
-    "mtime": 1791428630.5957997,
-    "seen": 1791428706.8473716,
-    "ast_hash": "cb9b998580b6462cdffbb864ae28ac73",
+    "mtime": 1791431822.591077,
+    "seen": 1791431935.7343385,
+    "ast_hash": "f401bf46cf61248be1954814d0cf4e62",
     "semantic_hash": ""
   },
   "tasks/plan.md": {
@@ -2862,9 +2862,9 @@
     "semantic_hash": "48f05133c5eb92b18c5d7c48b76d90d9"
   },
   "lib/core/components/update_info_bottom_sheet.dart": {
-    "mtime": 1791392552.7599366,
-    "seen": 1791393128.4476106,
-    "ast_hash": "2931e7be213c42644d1e49de9f3ae5c4",
+    "mtime": 1791431794.983757,
+    "seen": 1791431935.73371,
+    "ast_hash": "f3b3c71f1b40e1643ea5edca686fde7e",
     "semantic_hash": ""
   },
   "lib/core/models/app_version_model.dart": {
@@ -3282,9 +3282,9 @@
     "semantic_hash": "0560bdac74e10626869bb38c9d3e4cdd"
   },
   "scripts/auto_release.sh": {
-    "mtime": 1791427341.665182,
-    "seen": 1791428706.8462791,
-    "ast_hash": "5e8f5cd91d8c668c10bc263f2d21fec2",
+    "mtime": 1791431776.6296592,
+    "seen": 1791431935.7339287,
+    "ast_hash": "4ac14204534c3031688f933a53d06f9c",
     "semantic_hash": ""
   },
   "docs/UI_MAP.md": {
@@ -3642,9 +3642,9 @@
     "semantic_hash": ""
   },
   "update_release.sh": {
-    "mtime": 1791428567.8993573,
-    "seen": 1791428706.8468735,
-    "ast_hash": "079cb4a9590764b4ceded7666ee142ff",
+    "mtime": 1791431759.6445687,
+    "seen": 1791431935.7341754,
+    "ast_hash": "64e78acb9532cd67c89128ec93badae0",
     "semantic_hash": ""
   },
   "docs/admin_performance_indexes.sql": {
@@ -4215,6 +4215,12 @@
     "mtime": 1791379723.511726,
     "seen": 1791428706.84683,
     "ast_hash": "62c9308c72ffc587187a4b0c47242016",
+    "semantic_hash": ""
+  },
+  "docs/RELEASE_OTA_GUIDE.md": {
+    "mtime": 1791431808.096827,
+    "seen": 1791431935.7342954,
+    "ast_hash": "3e16e826672c3ac9b45efc56f7c75fec",
     "semantic_hash": ""
   }
 }

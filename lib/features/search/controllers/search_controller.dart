@@ -48,10 +48,10 @@ class AppSearchController extends ChangeNotifier {
 
   SuggestedAccount _mapAccount(Map<String, dynamic> p) {
     final uName = p['username'] as String? ?? '';
-    final fName = p['full_name'] as String?;
+    final dName = (p['display_name'] as String?)?.trim();
     return SuggestedAccount(
       id: p['id'] as String? ?? '',
-      fullName: (fName != null && fName.isNotEmpty) ? fName : (uName.isNotEmpty ? '@$uName' : 'Pengguna'),
+      fullName: (dName != null && dName.isNotEmpty) ? dName : (uName.isNotEmpty ? '@$uName' : 'Pengguna'),
       username: uName,
       avatar: (p['avatar_url'] as String?)?.isNotEmpty == true ? p['avatar_url'] as String : '',
       bio: p['bio'] as String? ?? '',

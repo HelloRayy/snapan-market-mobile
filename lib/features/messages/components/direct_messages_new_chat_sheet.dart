@@ -161,8 +161,12 @@ class _DirectMessagesNewChatSheetState extends State<DirectMessagesNewChatSheet>
                           ),
                           itemBuilder: (context, index) {
                             final user = _results[index];
-                            final name = user['full_name'] as String? ?? 'Siswa';
-                            final username = user['username'] as String? ?? '';
+                            final rawDisplayName = (user['display_name'] as String?)?.trim();
+                            final rawUsername = (user['username'] as String?)?.trim();
+                            final name = (rawDisplayName != null && rawDisplayName.isNotEmpty)
+                                ? rawDisplayName
+                                : ((rawUsername != null && rawUsername.isNotEmpty) ? '@$rawUsername' : 'Siswa');
+                            final username = rawUsername ?? '';
                             final avatar = user['avatar_url'] as String? ?? '';
                             final classGroup = user['class_group'] as String? ?? 'SMKN 8 Semarang';
 

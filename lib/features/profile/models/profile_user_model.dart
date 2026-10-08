@@ -4,6 +4,7 @@ import 'package:snapan_market/features/feed/models/market_post_model.dart';
 class ProfileUserModel {
   final String id;
   final String name;
+  final String? displayName;
   final String username;
   final String avatar;
   final String bio;
@@ -20,6 +21,7 @@ class ProfileUserModel {
   const ProfileUserModel({
     required this.id,
     required this.name,
+    this.displayName,
     required this.username,
     required this.avatar,
     required this.bio,
@@ -37,6 +39,7 @@ class ProfileUserModel {
   ProfileUserModel copyWith({
     String? id,
     String? name,
+    String? displayName,
     String? username,
     String? avatar,
     String? bio,
@@ -53,6 +56,7 @@ class ProfileUserModel {
     return ProfileUserModel(
       id: id ?? this.id,
       name: name ?? this.name,
+      displayName: displayName ?? this.displayName,
       username: username ?? this.username,
       avatar: avatar ?? this.avatar,
       bio: bio ?? this.bio,

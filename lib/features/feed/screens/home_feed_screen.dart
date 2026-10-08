@@ -165,9 +165,13 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       SnapsToast.show(context, 'Silakan masuk untuk membuat postingan.', hasBottomNav: true, action: SnackBarAction(label: 'Masuk', textColor: Colors.amber, onPressed: _handleOpenAuth));
       return;
     }
-    final name = (_feedController.userProfile?['full_name'] as String?)?.isNotEmpty == true
-        ? _feedController.userProfile!['full_name'] as String
-        : ((_feedController.userProfile?['username'] as String?)?.isNotEmpty == true ? '@${_feedController.userProfile!['username']}' : '');
+    final rawDisplayName = (_feedController.userProfile?['display_name'] as String?)?.trim() ??
+        (SupabaseService.instance.currentUser?.userMetadata?['display_name'] as String?)?.trim();
+    final rawUsername = (_feedController.userProfile?['username'] as String?)?.trim() ??
+        (SupabaseService.instance.currentUser?.userMetadata?['username'] as String?)?.trim();
+    final name = (rawDisplayName != null && rawDisplayName.isNotEmpty)
+        ? rawDisplayName
+        : ((rawUsername != null && rawUsername.isNotEmpty) ? '@$rawUsername' : 'Pengguna');
     CreatePostModal.show(context, initialMode: mode, currentUserName: name, currentUserAvatar: _feedController.userProfile?['avatar_url'] as String?, onSubmitPost: _feedController.createPost);
   }
 

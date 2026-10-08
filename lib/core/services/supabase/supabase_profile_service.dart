@@ -18,8 +18,15 @@ class SupabaseProfileService {
           .select()
           .eq('id', userId)
           .maybeSingle();
-      if (_client.auth.currentUser?.id == userId && data != null) {
-        currentUserProfileNotifier.value = data;
+      if (data != null) {
+        if (_client.auth.currentUser?.id == userId) {
+          final metaDisplayName = _client.auth.currentUser?.userMetadata?['display_name'] as String?;
+          if ((data['display_name'] == null || (data['display_name'] as String).isEmpty) &&
+              metaDisplayName != null && metaDisplayName.isNotEmpty) {
+            data['display_name'] = metaDisplayName;
+          }
+          currentUserProfileNotifier.value = data;
+        }
       }
       return data;
     } catch (e) {
@@ -36,6 +43,13 @@ class SupabaseProfileService {
           .select()
           .ilike('username', username)
           .maybeSingle();
+      if (data != null && _client.auth.currentUser?.id == data['id']) {
+        final metaDisplayName = _client.auth.currentUser?.userMetadata?['display_name'] as String?;
+        if ((data['display_name'] == null || (data['display_name'] as String).isEmpty) &&
+            metaDisplayName != null && metaDisplayName.isNotEmpty) {
+          data['display_name'] = metaDisplayName;
+        }
+      }
       return data;
     } catch (e) {
       debugPrint('Error getProfileByUsername: $e');
@@ -62,7 +76,15 @@ class SupabaseProfileService {
           callback: (PostgresChangePayload payload) {
             if (payload.newRecord.isNotEmpty) {
               if (_client.auth.currentUser?.id == userId) {
-                currentUserProfileNotifier.value = payload.newRecord;
+                final enriched = Map<String, dynamic>.from(payload.newRecord);
+                final metaDisplayName = _client.auth.currentUser?.userMetadata?['display_name'] as String?;
+                if ((enriched['display_name'] == null || (enriched['display_name'] as String).isEmpty) &&
+                    metaDisplayName != null && metaDisplayName.isNotEmpty) {
+                  enriched['display_name'] = metaDisplayName;
+                }
+                currentUserProfileNotifier.value = enriched;
+                onUpdate(enriched);
+                return;
               }
               onUpdate(payload.newRecord);
             }
@@ -138,13 +160,22 @@ class SupabaseProfileService {
 
     final corePayload = <String, dynamic>{
       'full_name': fullName,
+      if (hasDisplayName) 'display_name': cleanDisplayName,
       'username': username,
       'class_group': classGroup,
       if (nis != null && nis.isNotEmpty) 'nis': nis,
       if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
     };
 
-    // 3. Update public.profiles table (try full payload first, fallback to core payload if columns don't exist)
+    final minimalPayload = <String, dynamic>{
+      'full_name': fullName,
+      'username': username,
+      'class_group': classGroup,
+      if (nis != null && nis.isNotEmpty) 'nis': nis,
+      if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
+    };
+
+    // 3. Update public.profiles table (try full payload first, fallback to core/minimal payload)
     try {
       await _client.from('profiles').update(fullPayload).eq('id', userId);
     } catch (e) {
@@ -152,14 +183,19 @@ class SupabaseProfileService {
       try {
         await _client.from('profiles').update(corePayload).eq('id', userId);
       } catch (coreErr) {
-        debugPrint('Warning updateProfile core update failed: $coreErr');
-        final fallbackPayload = {
-          'id': userId,
-          ...corePayload,
-        };
-        await _client.from('profiles').upsert(fallbackPayload).catchError((err) {
-          debugPrint('Warning updateProfile upsert fallback failed: $err');
-        });
+        debugPrint('Warning updateProfile core update failed, retrying minimal payload: $coreErr');
+        try {
+          await _client.from('profiles').update(minimalPayload).eq('id', userId);
+        } catch (minErr) {
+          debugPrint('Warning updateProfile minimal update failed: $minErr');
+          final fallbackPayload = {
+            'id': userId,
+            ...minimalPayload,
+          };
+          await _client.from('profiles').upsert(fallbackPayload).catchError((err) {
+            debugPrint('Warning updateProfile upsert fallback failed: $err');
+          });
+        }
       }
     }
   }

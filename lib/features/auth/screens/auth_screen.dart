@@ -266,6 +266,10 @@ class _AuthScreenState extends State<AuthScreen> {
     final classGroup = _verifiedStudent!.classGroup;
 
     final rawDisplayName = _regDisplayNameController.text.trim();
+    if (rawDisplayName.isNotEmpty && rawDisplayName.length < 6) {
+      setState(() => _regDisplayNameError = 'Nama tampilan minimal 6 karakter');
+      return;
+    }
     if (rawDisplayName.isNotEmpty && rawDisplayName.length > 20) {
       setState(() => _regDisplayNameError = 'Nama tampilan maksimal 20 karakter');
       return;

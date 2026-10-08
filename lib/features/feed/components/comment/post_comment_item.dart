@@ -297,11 +297,11 @@ class _PostCommentItemState extends State<PostCommentItem> {
     final hasDisplayName = widget.comment.user.displayName != null && widget.comment.user.displayName!.trim().isNotEmpty;
     final rawUsername = (widget.comment.user.username != null && widget.comment.user.username!.isNotEmpty)
         ? widget.comment.user.username!
-        : widget.comment.user.name;
+        : '';
     final cleanUsername = rawUsername.trim().replaceAll('@', '');
     final displayAuthor = hasDisplayName
         ? widget.comment.user.displayName!.trim()
-        : '@$cleanUsername';
+        : (cleanUsername.isNotEmpty ? '@$cleanUsername' : 'Pengguna');
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,

@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:snapan_market/core/services/follow_service.dart';
 import 'package:snapan_market/core/services/poll_sync_service.dart';
+import 'package:snapan_market/core/services/student_registry_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/profile/models/profile_user_model.dart';
@@ -77,6 +79,27 @@ class ProfileController extends ChangeNotifier {
           fallbackUsername: currentUser.email?.split('@').first,
         );
 
+        // Self-healing: jika class_group di DB masih 'Siswa Snapan' tapi terdeteksi kelas spesifik dari NIS/meta, perbarui DB di latar belakang
+        final dbClass = (profile?['class_group'] as String?)?.trim();
+        final effectiveClass = user?.classGroup ?? '';
+        final userNis = (profile?['nis'] as String?)?.trim() ??
+            (currentUser.userMetadata?['nis'] as String?)?.trim();
+        if ((dbClass == null || dbClass.isEmpty || dbClass.toLowerCase() == 'siswa snapan') &&
+            effectiveClass.isNotEmpty &&
+            effectiveClass.toLowerCase() != 'siswa snapan' &&
+            effectiveClass != 'SMKN 8 Semarang') {
+          unawaited(SupabaseService.instance.updateProfile(
+            userId: currentUser.id,
+            fullName: (profile?['full_name'] as String?)?.trim() ??
+                (currentUser.userMetadata?['full_name'] as String?)?.trim() ??
+                user!.name,
+            displayName: user!.displayName,
+            username: user!.username,
+            classGroup: effectiveClass,
+            nis: userNis,
+          ).catchError((_) {}));
+        }
+
         allUserPosts = await _enrichPosts(livePosts);
         isLoading = false;
         isNotFound = false;
@@ -141,9 +164,18 @@ class ProfileController extends ChangeNotifier {
     if (isOwn) {
       _profileSubscription = SupabaseService.instance.subscribeToProfile(userId, (newRecord) {
         if (user != null) {
+          final rawDisplayName = (newRecord['display_name'] as String?)?.trim();
+          final uName = newRecord['username'] as String? ?? user!.username;
+          final updatedName = (rawDisplayName != null && rawDisplayName.isNotEmpty)
+              ? rawDisplayName
+              : (user!.displayName?.isNotEmpty == true
+                  ? user!.displayName!
+                  : '@${uName.replaceAll('@', '')}');
+
           user = user!.copyWith(
-            name: newRecord['full_name'] as String? ?? user!.name,
-            username: newRecord['username'] as String? ?? user!.username,
+            name: updatedName,
+            displayName: (rawDisplayName != null && rawDisplayName.isNotEmpty) ? rawDisplayName : user!.displayName,
+            username: uName,
             classGroup: newRecord['class_group'] as String? ?? user!.classGroup,
             avatar: (newRecord['avatar_url'] as String?)?.isNotEmpty == true ? newRecord['avatar_url'] as String : user!.avatar,
             bio: newRecord['bio'] as String? ?? user!.bio,
@@ -221,7 +253,7 @@ class ProfileController extends ChangeNotifier {
       SupabaseService.instance.currentUserProfileNotifier.value = {
         ...existing,
         'id': updated.id,
-        'full_name': updated.name,
+        if (updated.displayName != null && updated.displayName!.isNotEmpty) 'display_name': updated.displayName,
         'username': updated.username,
         'avatar_url': updated.avatar,
         'class_group': updated.classGroup,
@@ -230,7 +262,13 @@ class ProfileController extends ChangeNotifier {
       };
     }
     allUserPosts = allUserPosts.map((p) => p.copyWith(
-      seller: p.seller.copyWith(name: updated.name, username: updated.username, avatar: updated.avatar, classGroup: updated.classGroup),
+      seller: p.seller.copyWith(
+        name: updated.name,
+        displayName: updated.displayName,
+        username: updated.username,
+        avatar: updated.avatar,
+        classGroup: updated.classGroup,
+      ),
     )).toList();
     notifyListeners();
   }
@@ -260,18 +298,39 @@ class ProfileController extends ChangeNotifier {
       tags = metaTags.map((e) => e.toString()).toList();
     }
 
-    final fullName = profile?['full_name'] as String? ?? (meta['full_name'] as String?)?.trim();
+    final rawDisplayName = (profile?['display_name'] as String?)?.trim() ??
+        (meta['display_name'] as String?)?.trim();
     final uName = profile?['username'] as String? ?? (meta['username'] as String?)?.trim() ?? fallbackUsername ?? 'siswa';
+
+    // JANGAN MENAMPILKAN NAMA LENGKAP DI FEED / PROFILE SCREEN (SNAPS-59).
+    // Prioritas: Display Name -> @username
+    final effectiveDisplayName = (rawDisplayName != null && rawDisplayName.isNotEmpty)
+        ? rawDisplayName
+        : '@${uName.replaceAll('@', '')}';
 
     final rawClass = (profile?['class_group'] as String?)?.trim();
     final metaClass = (meta['class_group'] as String?)?.trim();
-    final effectiveClass = (rawClass != null && rawClass.isNotEmpty)
-        ? rawClass
-        : ((metaClass != null && metaClass.isNotEmpty) ? metaClass : 'SMKN 8 Semarang');
+    final userNis = (profile?['nis'] as String?)?.trim() ??
+        (meta['nis'] as String?)?.trim();
+
+    String effectiveClass;
+    if (rawClass != null && rawClass.isNotEmpty && rawClass.toLowerCase() != 'siswa snapan') {
+      effectiveClass = rawClass;
+    } else if (metaClass != null && metaClass.isNotEmpty && metaClass.toLowerCase() != 'siswa snapan') {
+      effectiveClass = metaClass;
+    } else if (userNis != null && userNis.isNotEmpty) {
+      final matchedClass = StudentRegistryService.instance.findClassByNis(userNis);
+      effectiveClass = matchedClass ?? (rawClass ?? metaClass ?? 'SMKN 8 Semarang');
+    } else {
+      effectiveClass = (rawClass != null && rawClass.isNotEmpty)
+          ? rawClass
+          : ((metaClass != null && metaClass.isNotEmpty) ? metaClass : 'SMKN 8 Semarang');
+    }
 
     return ProfileUserModel(
       id: id,
-      name: (fullName != null && fullName.isNotEmpty) ? fullName : '@$uName',
+      name: effectiveDisplayName,
+      displayName: (rawDisplayName != null && rawDisplayName.isNotEmpty) ? rawDisplayName : null,
       username: uName,
       classGroup: effectiveClass,
       avatar: (profile?['avatar_url'] as String?)?.isNotEmpty == true

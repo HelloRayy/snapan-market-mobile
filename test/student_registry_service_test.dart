@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:snapan_market/core/services/student_registry_service.dart';
+import 'package:snapan_market/features/auth/models/auth_constants.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +50,14 @@ void main() {
 
       expect(StudentRegistryService.instance.findClassByNis('12345'), 'X PPLG 1');
       expect(StudentRegistryService.instance.findByNis('12345')?.name, 'Siswa Percobaan');
+    });
+
+    test('AuthConstants.normalizeClassGroup normalizes various inputs to Roman format', () {
+      expect(AuthConstants.normalizeClassGroup('11 pplg 2'), 'XI PPLG 2');
+      expect(AuthConstants.normalizeClassGroup('11 PPLG 2'), 'XI PPLG 2');
+      expect(AuthConstants.normalizeClassGroup('XI PPLG 2'), 'XI PPLG 2');
+      expect(AuthConstants.normalizeClassGroup('10 dkv 1'), 'X DKV 1');
+      expect(AuthConstants.normalizeClassGroup('12 tjkt 3'), 'XII TJKT 3');
     });
 
     test('generateSuggestedUsername creates first+middle name clean handle', () {

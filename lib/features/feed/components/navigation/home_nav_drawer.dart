@@ -4,6 +4,7 @@ import 'package:snapan_market/core/services/app_update_service.dart';
 import 'package:snapan_market/core/services/student_registry_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/features/auth/models/auth_constants.dart';
 import 'package:snapan_market/features/feed/components/navigation/drawer/home_drawer_footer.dart';
 import 'package:snapan_market/features/feed/components/navigation/drawer/home_drawer_item.dart';
 import 'package:snapan_market/features/feed/components/navigation/drawer/home_drawer_logout_dialog.dart';
@@ -84,9 +85,12 @@ class HomeNavDrawer extends StatelessWidget {
 
     String? resolvedClass;
     if (rawClass != null && rawClass.trim().isNotEmpty && rawClass.trim().toLowerCase() != 'siswa snapan') {
-      resolvedClass = rawClass.trim();
+      resolvedClass = AuthConstants.normalizeClassGroup(rawClass.trim());
     } else if (userNis != null && userNis.isNotEmpty) {
       resolvedClass = StudentRegistryService.instance.findClassByNis(userNis);
+    }
+    if (resolvedClass != null && resolvedClass.isNotEmpty) {
+      resolvedClass = AuthConstants.normalizeClassGroup(resolvedClass);
     }
 
     // Baris kedua drawer: '@username • Kelas / Jurusan' (bukan email sistem @snapan.id)

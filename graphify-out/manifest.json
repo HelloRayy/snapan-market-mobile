@@ -120,9 +120,9 @@
     "semantic_hash": "b6e76239bcc891871113a9f4a0f17889"
   },
   "lib/core/services/supabase_service.dart": {
-    "mtime": 1791426612.6266081,
-    "seen": 1791428706.8457363,
-    "ast_hash": "fee3fdf6c6688073ecba59af641166ae",
+    "mtime": 1791465012.0101895,
+    "seen": 1791468562.6673813,
+    "ast_hash": "4cb9553c01e7a7730e4a6dfcb144ed2c",
     "semantic_hash": ""
   },
   "lib/core/theme/app_colors.dart": {
@@ -618,9 +618,9 @@
     "semantic_hash": ""
   },
   "lib/features/profile/screens/edit_profile_screen.dart": {
-    "mtime": 1791392552.9439373,
-    "seen": 1791393128.4477794,
-    "ast_hash": "37bbb965b445dcca48319bcfb077a5cc",
+    "mtime": 1791465045.5123453,
+    "seen": 1791468562.6769383,
+    "ast_hash": "6b33e874b8f1416105dbf0de1d6a6133",
     "semantic_hash": ""
   },
   "lib/features/profile/screens/profile_screen.dart": {
@@ -680,7 +680,7 @@
   "schema.sql": {
     "mtime": 1791460309.3155572,
     "seen": 1791462399.3626285,
-    "ast_hash": "84a2236ae1e19d17618e523a008375f9",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "scripts/analyze-diff.js": {
@@ -2514,9 +2514,9 @@
     "semantic_hash": ""
   },
   "pubspec.yaml": {
-    "mtime": 1791463274.998111,
-    "seen": 1791463369.5129886,
-    "ast_hash": "2369f00aec7555fbc20c45aca18ac518",
+    "mtime": 1791468428.2703388,
+    "seen": 1791468562.6956549,
+    "ast_hash": "8f019e69af40a008184d025daadadfbc",
     "semantic_hash": ""
   },
   "tasks/plan.md": {
@@ -2910,9 +2910,9 @@
     "semantic_hash": ""
   },
   "lib/core/services/supabase/supabase_profile_service.dart": {
-    "mtime": 1791461550.4363632,
-    "seen": 1791462399.3584106,
-    "ast_hash": "2825f947b701bcbb9313eb0f170c4deb",
+    "mtime": 1791465122.0707014,
+    "seen": 1791468562.6673286,
+    "ast_hash": "1b2e8e093ffc5c86d95bd3f29339e4fc",
     "semantic_hash": ""
   },
   "lib/core/services/supabase/supabase_social_service.dart": {
@@ -2970,9 +2970,9 @@
     "semantic_hash": ""
   },
   "lib/features/auth/controllers/auth_controller.dart": {
-    "mtime": 1791462225.1423771,
-    "seen": 1791462399.3592508,
-    "ast_hash": "d046ceeabc90ccfcef8d7db1ae62bc58",
+    "mtime": 1791465038.0873108,
+    "seen": 1791468562.6681483,
+    "ast_hash": "717ac08eec3fe7ad66d4a8df78d6e466",
     "semantic_hash": ""
   },
   "lib/features/checkout/components/checkout_bottom_bar.dart": {
@@ -3198,15 +3198,15 @@
     "semantic_hash": ""
   },
   "src/admin/pages/UsersManagementTab.tsx": {
-    "mtime": 1791387140.0268025,
-    "seen": 1791393128.4487991,
-    "ast_hash": "cb9d0ca4f00836558c98950bb4f03ee4",
+    "mtime": 1791467523.3798695,
+    "seen": 1791468562.680814,
+    "ast_hash": "1521bfcb6286a16e2a30df5c9084a484",
     "semantic_hash": ""
   },
   "src/admin/services/adminService.ts": {
-    "mtime": 1791460320.3276086,
-    "seen": 1791460772.6045172,
-    "ast_hash": "98473eea05d60a345fdd27b0db46f787",
+    "mtime": 1791467442.5634937,
+    "seen": 1791468562.6809335,
+    "ast_hash": "bacf0b3faee399b0d9c10c9b16bc6dc8",
     "semantic_hash": ""
   },
   "lib/core/components/skeleton/activity_skeleton.dart": {
@@ -3516,9 +3516,9 @@
     "semantic_hash": ""
   },
   "src/admin/components/RoleSelectDropdown.tsx": {
-    "mtime": 1791034686.963537,
-    "seen": 1791036263.9824574,
-    "ast_hash": "5e2c19ea5fb5568296d1fb2720ea0914",
+    "mtime": 1791467421.0603936,
+    "seen": 1791468562.6794121,
+    "ast_hash": "0edf6a6a3dd1aee25bf05622e4427ecb",
     "semantic_hash": ""
   },
   "linux/flutter/generated_plugin_registrant.cc": {
@@ -4188,9 +4188,9 @@
     "semantic_hash": ""
   },
   "test/auth_controller_nis_test.dart": {
-    "mtime": 1791379784.218018,
-    "seen": 1791393128.4518745,
-    "ast_hash": "8557284fa07c2df672c65f704f2d64cd",
+    "mtime": 1791465111.5376523,
+    "seen": 1791468562.6905723,
+    "ast_hash": "ba591d68be648198cf2e492b7e73fc35",
     "semantic_hash": ""
   },
   "test/student_registry_service_test.dart": {
@@ -4212,9 +4212,9 @@
     "semantic_hash": ""
   },
   "supabase/migrations/supabase_student_registry.sql": {
-    "mtime": 1791379723.511726,
-    "seen": 1791428706.84683,
-    "ast_hash": "",
+    "mtime": 1791463116.3389728,
+    "seen": 1791468562.690278,
+    "ast_hash": "4fb7ed5dd22b0f833a0516bad3ad0899",
     "semantic_hash": ""
   },
   "docs/RELEASE_OTA_GUIDE.md": {

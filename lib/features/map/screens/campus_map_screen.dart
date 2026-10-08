@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/services/meeting_point_service.dart';
 import 'package:snapan_market/features/map/components/campus_2d_blueprint_painter.dart';
 import 'package:snapan_market/features/map/components/campus_map_header.dart';
 import 'package:snapan_market/features/map/components/campus_map_room_card.dart';
@@ -20,18 +21,39 @@ class CampusMapScreen extends StatefulWidget {
 }
 
 class _CampusMapScreenState extends State<CampusMapScreen> {
+  final MeetingPointService _meetingPointService = MeetingPointService();
   int _currentFloor = 1;
   late CampusRoom _selectedRoom;
   String _selectedCategory = "all";
+  List<CampusRoom> _allRooms = kCampusRooms;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _selectedRoom = kCampusRooms[0];
+    _loadMeetingPoints();
+  }
+
+  Future<void> _loadMeetingPoints() async {
+    final spots = await _meetingPointService.fetchMeetingPoints();
+    if (!mounted) return;
+    setState(() {
+      _allRooms = spots;
+      _isLoading = false;
+      // Match current selected room or default to first of the floor
+      final floorRooms = spots.where((r) => r.floor == _currentFloor).toList();
+      if (floorRooms.isNotEmpty) {
+        _selectedRoom = floorRooms.first;
+      } else if (spots.isNotEmpty) {
+        _selectedRoom = spots.first;
+        _currentFloor = _selectedRoom.floor;
+      }
+    });
   }
 
   List<CampusRoom> get _filteredRooms {
-    return kCampusRooms.where((room) {
+    return _allRooms.where((room) {
       if (_selectedCategory == "all") return true;
       return room.category == _selectedCategory;
     }).toList();
@@ -68,12 +90,42 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
             top: topPadding > 0 ? topPadding + 10.0 : 16.0,
             left: 14.0,
             right: 14.0,
-            child: CampusMapHeader(
-              onBack: widget.onBack ?? () => Navigator.of(context).pop(),
-              currentFloor: _currentFloor,
-              onFloorChanged: (f) => setState(() => _currentFloor = f),
-              selectedCategory: _selectedCategory,
-              onCategoryChanged: (cat) => setState(() => _selectedCategory = cat),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CampusMapHeader(
+                  onBack: widget.onBack ?? () => Navigator.of(context).pop(),
+                  currentFloor: _currentFloor,
+                  onFloorChanged: (f) {
+                    setState(() {
+                      _currentFloor = f;
+                      final floorRooms = _filteredRooms.where((r) => r.floor == f).toList();
+                      if (floorRooms.isNotEmpty && _selectedRoom.floor != f) {
+                        _selectedRoom = floorRooms.first;
+                      }
+                    });
+                  },
+                  selectedCategory: _selectedCategory,
+                  onCategoryChanged: (cat) {
+                    setState(() {
+                      _selectedCategory = cat;
+                      final catRooms = _filteredRooms.where((r) => r.floor == _currentFloor).toList();
+                      if (catRooms.isNotEmpty && !_filteredRooms.contains(_selectedRoom)) {
+                        _selectedRoom = catRooms.first;
+                      }
+                    });
+                  },
+                ),
+                if (_isLoading)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 6.0),
+                    child: LinearProgressIndicator(
+                      minHeight: 2.0,
+                      backgroundColor: Colors.transparent,
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF3D38F5)),
+                    ),
+                  ),
+              ],
             ),
           ),
           Positioned(

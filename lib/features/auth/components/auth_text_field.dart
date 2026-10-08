@@ -20,6 +20,7 @@ class AuthInputField extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
   final List<TextInputFormatter>? inputFormatters;
+  final int? maxLength;
 
   const AuthInputField({
     super.key,
@@ -38,6 +39,7 @@ class AuthInputField extends StatefulWidget {
     this.onChanged,
     this.onSubmitted,
     this.inputFormatters,
+    this.maxLength,
   });
 
   @override
@@ -75,6 +77,10 @@ class _AuthInputFieldState extends State<AuthInputField> {
       onChanged: widget.onChanged,
       onSubmitted: widget.onSubmitted,
       inputFormatters: widget.inputFormatters,
+      maxLength: widget.maxLength,
+      buildCounter: widget.maxLength != null
+          ? (context, {required currentLength, required isFocused, maxLength}) => null
+          : null,
       cursorColor: AppColors.primary,
       style: const TextStyle(
         fontFamily: 'SFPro',

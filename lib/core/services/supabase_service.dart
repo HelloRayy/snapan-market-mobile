@@ -79,6 +79,7 @@ class SupabaseService {
   Future<void> updateProfile({
     required String userId,
     required String fullName,
+    String? displayName,
     required String username,
     required String classGroup,
     String? nis,
@@ -90,6 +91,7 @@ class SupabaseService {
       profile.updateProfile(
         userId: userId,
         fullName: fullName,
+        displayName: displayName,
         username: username,
         classGroup: classGroup,
         nis: nis,

@@ -77,7 +77,7 @@ echo -e "${GREEN}✅ APK Release berhasil dibuat: Snaps-Market.apk (${APK_SIZE})
 
 # 4. Commit Git & Push Tag
 echo -e "\n${CYAN}🏷️  [3/5] Membuat Git Commit & Tag v${NEW_NAME}...${NC}"
-git add pubspec.yaml
+git add -A
 git commit -m "chore(release): bump version to v${NEW_NAME}+${NEW_CODE}" || true
 git tag -f "v${NEW_NAME}"
 
@@ -163,7 +163,7 @@ if [ -n "$SUPABASE_KEY" ]; then
   "download_url": "${DOWNLOAD_URL}",
   "title": "Pembaruan Snaps v${NEW_NAME}",
   "changelog": "${CHANGELOG}",
-  "is_mandatory": false,
+  "is_mandatory": true,
   "is_active": true
 }
 EOF

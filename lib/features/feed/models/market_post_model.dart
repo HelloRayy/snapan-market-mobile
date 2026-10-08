@@ -29,6 +29,7 @@ String _formatRelativeTimestamp(dynamic raw) {
 class SellerModel {
   final String id;
   final String name;
+  final String? displayName;
   final String? username;
   final String avatar;
   final String classGroup;
@@ -37,6 +38,7 @@ class SellerModel {
   const SellerModel({
     required this.id,
     required this.name,
+    this.displayName,
     this.username,
     required this.avatar,
     required this.classGroup,
@@ -47,6 +49,7 @@ class SellerModel {
     return SellerModel(
       id: json['id']?.toString() ?? '',
       name: json['full_name']?.toString() ?? json['name']?.toString() ?? (json['username'] != null ? '@${json['username']}' : 'Pengguna'),
+      displayName: json['display_name']?.toString() ?? json['displayName']?.toString(),
       username: json['username']?.toString(),
       avatar: json['avatar_url']?.toString() ?? json['avatar']?.toString() ?? '',
       classGroup: json['class_group']?.toString() ?? json['classGroup']?.toString() ?? '',
@@ -57,6 +60,7 @@ class SellerModel {
   Map<String, dynamic> toJson() => {
     'id': id,
     'full_name': name,
+    'display_name': displayName,
     'username': username,
     'avatar_url': avatar,
     'class_group': classGroup,
@@ -66,6 +70,7 @@ class SellerModel {
   SellerModel copyWith({
     String? id,
     String? name,
+    String? displayName,
     String? username,
     String? avatar,
     String? classGroup,
@@ -74,6 +79,7 @@ class SellerModel {
     return SellerModel(
       id: id ?? this.id,
       name: name ?? this.name,
+      displayName: displayName ?? this.displayName,
       username: username ?? this.username,
       avatar: avatar ?? this.avatar,
       classGroup: classGroup ?? this.classGroup,
@@ -189,6 +195,7 @@ class ThreadChainItemModel {
 class CommentUserModel {
   final String id;
   final String name;
+  final String? displayName;
   final String avatar;
   final String? username;
   final String? classGroup;
@@ -198,6 +205,7 @@ class CommentUserModel {
   const CommentUserModel({
     required this.id,
     required this.name,
+    this.displayName,
     required this.avatar,
     this.username,
     this.classGroup,
@@ -209,6 +217,7 @@ class CommentUserModel {
     return CommentUserModel(
       id: json['id']?.toString() ?? '',
       name: json['full_name']?.toString() ?? json['name']?.toString() ?? 'Pengguna Snapan',
+      displayName: json['display_name']?.toString() ?? json['displayName']?.toString(),
       avatar: json['avatar_url']?.toString() ?? json['avatar']?.toString() ?? '',
       username: json['username']?.toString(),
       classGroup: json['class_group']?.toString() ?? json['classGroup']?.toString(),

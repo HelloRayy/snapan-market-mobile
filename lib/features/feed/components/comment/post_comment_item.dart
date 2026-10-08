@@ -294,11 +294,14 @@ class _PostCommentItemState extends State<PostCommentItem> {
   }
 
   Widget _buildHeaderRow(BuildContext context) {
+    final hasDisplayName = widget.comment.user.displayName != null && widget.comment.user.displayName!.trim().isNotEmpty;
     final rawUsername = (widget.comment.user.username != null && widget.comment.user.username!.isNotEmpty)
         ? widget.comment.user.username!
         : widget.comment.user.name;
     final cleanUsername = rawUsername.trim().replaceAll('@', '');
-    final displayAuthor = '@$cleanUsername';
+    final displayAuthor = hasDisplayName
+        ? widget.comment.user.displayName!.trim()
+        : '@$cleanUsername';
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,

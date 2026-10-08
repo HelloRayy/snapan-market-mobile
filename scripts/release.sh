@@ -60,7 +60,7 @@ VALUES (
   '${DOWNLOAD_URL}',
   'Pembaruan Snaps v${VERSION_NAME}',
   '${CHANGELOG}',
-  false,
+  true,
   true
 );
 EOF

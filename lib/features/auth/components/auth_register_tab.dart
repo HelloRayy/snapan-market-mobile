@@ -12,6 +12,8 @@ class AuthRegisterTab extends StatelessWidget {
   final RegisteredStudent? verifiedStudent;
   final ValueChanged<RegisteredStudent?> onStudentSelected;
 
+  final TextEditingController displayNameController;
+  final String? displayNameError;
   final TextEditingController usernameController;
   final String? usernameError;
   final TextEditingController passwordController;
@@ -30,6 +32,8 @@ class AuthRegisterTab extends StatelessWidget {
     this.nisError,
     this.verifiedStudent,
     required this.onStudentSelected,
+    required this.displayNameController,
+    this.displayNameError,
     required this.usernameController,
     this.usernameError,
     required this.passwordController,
@@ -57,7 +61,22 @@ class AuthRegisterTab extends StatelessWidget {
         ),
         const SizedBox(height: 16.0),
 
-        // 2. USERNAME @ (AUTO SUGGEST DARI NAMA DEPAN + TENGAH DENGAN LOADING SPINNER)
+        // 2. NAMA TAMPILAN / BRAND (OPSIONAL, MAX 20 KARAKTER)
+        AuthInputField(
+          label: 'Nama Tampilan / Brand (Opsional)',
+          hint: 'Contoh: Budi Studio, Dhea Craft',
+          prefixIcon: LucideIcons.user,
+          controller: displayNameController,
+          errorText: displayNameError,
+          maxLength: 20,
+          textInputAction: TextInputAction.next,
+          inputFormatters: [
+            LengthLimitingTextInputFormatter(20),
+          ],
+        ),
+        const SizedBox(height: 16.0),
+
+        // 3. USERNAME @ (AUTO SUGGEST DARI NAMA DEPAN + TENGAH DENGAN LOADING SPINNER)
         AuthInputField(
           label: isGeneratingUsername ? 'Memilih username...' : 'Username',
           hint: isGeneratingUsername ? 'Menyiapkan rekomendasi...' : '@username',

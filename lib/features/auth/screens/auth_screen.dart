@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/components/update_info_bottom_sheet.dart';
+import 'package:snapan_market/core/services/app_update_service.dart';
 import 'package:snapan_market/core/services/global_notification_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/components/snaps_logo.dart';
@@ -47,6 +49,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   final TextEditingController _nisController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _regDisplayNameController = TextEditingController();
   final TextEditingController _regUsernameController = TextEditingController();
   final TextEditingController _regPasswordController = TextEditingController();
   RegisteredStudent? _verifiedStudent;
@@ -59,6 +62,7 @@ class _AuthScreenState extends State<AuthScreen> {
   String? _loginPasswordError;
   String? _nisError;
   String? _fullNameError;
+  String? _regDisplayNameError;
   String? _regUsernameError;
   String? _regPasswordError;
 
@@ -72,12 +76,29 @@ class _AuthScreenState extends State<AuthScreen> {
     if (_showAccountDeletedNotice) {
       _authMode = AuthMode.register;
     }
-    for (final c in [_loginUsernameController, _loginPasswordController, _nisController, _fullNameController, _regUsernameController, _regPasswordController]) {
+    for (final c in [_loginUsernameController, _loginPasswordController, _nisController, _fullNameController, _regDisplayNameController, _regUsernameController, _regPasswordController]) {
       c.addListener(() {
-        if (mounted && (_loginUsernameError != null || _loginPasswordError != null || _nisError != null || _fullNameError != null || _regUsernameError != null || _regPasswordError != null)) {
+        if (mounted && (_loginUsernameError != null || _loginPasswordError != null || _nisError != null || _fullNameError != null || _regDisplayNameError != null || _regUsernameError != null || _regPasswordError != null)) {
           setState(_clearAllErrors);
         }
       });
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkForAppUpdate();
+    });
+  }
+
+  Future<void> _checkForAppUpdate() async {
+    try {
+      final update = await AppUpdateService.instance.checkForUpdate(isManual: false);
+      if (update != null && mounted) {
+        final info = await AppUpdateService.instance.getPackageInfo();
+        if (!mounted) return;
+        UpdateInfoBottomSheet.show(context, update: update, currentVersionName: info.version);
+      }
+    } catch (e) {
+      debugPrint('Update check error in AuthScreen: $e');
     }
   }
 
@@ -86,6 +107,7 @@ class _AuthScreenState extends State<AuthScreen> {
     _loginPasswordError = null;
     _nisError = null;
     _fullNameError = null;
+    _regDisplayNameError = null;
     _regUsernameError = null;
     _regPasswordError = null;
   }
@@ -95,6 +117,7 @@ class _AuthScreenState extends State<AuthScreen> {
       setState(() {
         _verifiedStudent = null;
         _fullNameController.clear();
+        _regDisplayNameController.clear();
       });
       return;
     }
@@ -114,6 +137,7 @@ class _AuthScreenState extends State<AuthScreen> {
         _verifiedStudent = null;
         _nisController.clear();
         _fullNameController.clear();
+        _regDisplayNameController.clear();
         _regUsernameController.clear();
       });
       return;
@@ -124,6 +148,7 @@ class _AuthScreenState extends State<AuthScreen> {
       _nisController.text = student.nis;
       _verifiedStudent = student;
       _fullNameController.text = student.name;
+      _regDisplayNameController.clear(); // Keep empty by default as per UX specification
       _nisError = null;
       _isGeneratingUsername = true;
     });
@@ -157,6 +182,7 @@ class _AuthScreenState extends State<AuthScreen> {
     _loginPasswordController.dispose();
     _nisController.dispose();
     _fullNameController.dispose();
+    _regDisplayNameController.dispose();
     _regUsernameController.dispose();
     _regPasswordController.dispose();
     super.dispose();
@@ -239,6 +265,12 @@ class _AuthScreenState extends State<AuthScreen> {
     final fullName = _verifiedStudent!.name;
     final classGroup = _verifiedStudent!.classGroup;
 
+    final rawDisplayName = _regDisplayNameController.text.trim();
+    if (rawDisplayName.isNotEmpty && rawDisplayName.length > 20) {
+      setState(() => _regDisplayNameError = 'Nama tampilan maksimal 20 karakter');
+      return;
+    }
+
     final rawUsername = _regUsernameController.text.trim().toLowerCase().replaceAll('@', '');
     if (rawUsername.length < 3 || rawUsername.length > 20) {
       setState(() => _regUsernameError = 'Username harus 3-20 karakter');
@@ -265,6 +297,7 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(() => _isSubmitting = true);
     final error = await AuthController.submitRegister(
       fullName: fullName,
+      displayName: rawDisplayName.isNotEmpty ? rawDisplayName : null,
       rawUsername: rawUsername,
       classGroup: classGroup,
       nis: rawNis,
@@ -504,6 +537,8 @@ class _AuthScreenState extends State<AuthScreen> {
                               nisError: _nisError,
                               verifiedStudent: _verifiedStudent,
                               onStudentSelected: _handleStudentSelected,
+                              displayNameController: _regDisplayNameController,
+                              displayNameError: _regDisplayNameError,
                               usernameController: _regUsernameController,
                               usernameError: _regUsernameError,
                               passwordController: _regPasswordController,

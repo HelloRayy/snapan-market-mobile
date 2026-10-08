@@ -75,6 +75,7 @@ class SupabaseProfileService {
   Future<void> updateProfile({
     required String userId,
     required String fullName,
+    String? displayName,
     required String username,
     required String classGroup,
     String? nis,
@@ -85,10 +86,14 @@ class SupabaseProfileService {
   }) async {
     // Immediately update local profile notifier so entire app UI updates with zero delay
     final existing = currentUserProfileNotifier.value ?? {};
+    final cleanDisplayName = displayName?.trim();
+    final hasDisplayName = cleanDisplayName != null && cleanDisplayName.isNotEmpty;
+
     currentUserProfileNotifier.value = {
       ...existing,
       'id': userId,
       'full_name': fullName,
+      if (hasDisplayName) 'display_name': cleanDisplayName,
       'username': username,
       'class_group': classGroup,
       if (nis != null && nis.isNotEmpty) 'nis': nis,
@@ -103,6 +108,7 @@ class SupabaseProfileService {
         UserAttributes(
           data: {
             'full_name': fullName,
+            if (hasDisplayName) 'display_name': cleanDisplayName,
             'username': username,
             'class_group': classGroup,
             if (nis != null && nis.isNotEmpty) 'nis': nis,
@@ -120,6 +126,7 @@ class SupabaseProfileService {
     // 2. Prepare payload for public.profiles table
     final fullPayload = <String, dynamic>{
       'full_name': fullName,
+      if (hasDisplayName) 'display_name': cleanDisplayName,
       'username': username,
       'class_group': classGroup,
       if (nis != null && nis.isNotEmpty) 'nis': nis,

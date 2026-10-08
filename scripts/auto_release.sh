@@ -144,7 +144,7 @@ if [ -n "$SUPABASE_KEY" ]; then
   "download_url": "${DOWNLOAD_URL}",
   "title": "Pembaruan Snaps v${VERSION_NAME}",
   "changelog": "${CHANGELOG}",
-  "is_mandatory": false,
+  "is_mandatory": true,
   "is_active": true
 }
 EOF
@@ -170,7 +170,7 @@ VALUES (
   '${DOWNLOAD_URL}',
   'Pembaruan Snaps v${VERSION_NAME}',
   '${CHANGELOG}',
-  false,
+  true,
   true
 );
 EOF

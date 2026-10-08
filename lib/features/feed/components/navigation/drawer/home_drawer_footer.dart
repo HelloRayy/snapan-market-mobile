@@ -17,19 +17,16 @@ class HomeDrawerFooter extends StatelessWidget {
 
   Future<String> _fetchDisplayVersion() async {
     try {
-      // 1. Coba ambil versi aktif terbaru langsung dari database Supabase
-      final dbVersion = await AppUpdateService.instance.getLatestActiveVersion();
-      if (dbVersion != null && dbVersion.versionName.isNotEmpty) {
-        return 'V ${dbVersion.versionName}';
-      }
-    } catch (_) {}
-
-    try {
-      // 2. Fallback ke versi binary lokal aplikasi di HP
-      final info = await PackageInfo.fromPlatform();
+      // Selalu tampilkan versi riil binary lokal aplikasi yang terpasang di HP
+      final info = await AppUpdateService.instance.getPackageInfo();
       return 'V ${info.version}';
     } catch (_) {
-      return 'V 1.0.5';
+      try {
+        final info = await PackageInfo.fromPlatform();
+        return 'V ${info.version}';
+      } catch (_) {
+        return 'V 1.0.0';
+      }
     }
   }
 

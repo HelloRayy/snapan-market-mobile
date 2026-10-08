@@ -83,6 +83,7 @@ class AuthController {
 
   static Future<String?> submitRegister({
     required String fullName,
+    String? displayName,
     required String rawUsername,
     String? grade,
     String? major,
@@ -118,6 +119,9 @@ class AuthController {
               ? '$grade $major $classNum'
               : 'Siswa Snapan');
 
+      final cleanDisplayName = displayName?.trim();
+      final hasDisplayName = cleanDisplayName != null && cleanDisplayName.isNotEmpty;
+
       final email = '$cleanUsername@snapan.id';
 
       final response = await SupabaseService.instance.client.auth.signUp(
@@ -125,6 +129,7 @@ class AuthController {
         password: password,
         data: {
           'full_name': fullName,
+          if (hasDisplayName) 'display_name': cleanDisplayName,
           'username': cleanUsername,
           'class_group': finalClassGroup,
           if (cleanNis != null && cleanNis.isNotEmpty) 'nis': cleanNis,
@@ -135,6 +140,7 @@ class AuthController {
         await SupabaseService.instance.updateProfile(
           userId: response.user!.id,
           fullName: fullName,
+          displayName: hasDisplayName ? cleanDisplayName : null,
           username: cleanUsername,
           classGroup: finalClassGroup,
           nis: cleanNis,

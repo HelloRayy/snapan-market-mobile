@@ -122,11 +122,14 @@ class _CommentReplyTileState extends State<CommentReplyTile> {
   }
 
   Widget _buildHeaderRow(BuildContext context) {
+    final hasDisplayName = widget.reply.user.displayName != null && widget.reply.user.displayName!.trim().isNotEmpty;
     final rawUsername = (widget.reply.user.username != null && widget.reply.user.username!.isNotEmpty)
         ? widget.reply.user.username!
         : widget.reply.user.name;
     final cleanUsername = rawUsername.trim().replaceAll('@', '');
-    final displayAuthor = '@$cleanUsername';
+    final displayAuthor = hasDisplayName
+        ? widget.reply.user.displayName!.trim()
+        : '@$cleanUsername';
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,

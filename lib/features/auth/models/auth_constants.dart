@@ -14,7 +14,16 @@ class AuthConstants {
   // Pilihan Nomor Kelas SMKN 8
   static const List<String> classNumOptions = ['1', '2', '3'];
 
-  /// Parses raw class string (e.g. "X PPLG 1", "x-pplg-1") into components (grade, major, classNum)
+  /// Normalizes any raw class string to standard Roman format (e.g. "11 pplg 2" -> "XI PPLG 2")
+  static String normalizeClassGroup(String rawClassGroup) {
+    final parsed = parseClassGroup(rawClassGroup);
+    if (parsed.grade != null && parsed.major != null && parsed.classNum != null) {
+      return '${parsed.grade} ${parsed.major} ${parsed.classNum}';
+    }
+    return rawClassGroup.trim();
+  }
+
+  /// Parses raw class string (e.g. "X PPLG 1", "11 pplg 2", "x-pplg-1") into components (grade, major, classNum)
   static ({String? grade, String? major, String? classNum}) parseClassGroup(String rawClassGroup) {
     String? grade;
     String? major;
@@ -27,9 +36,16 @@ class AuthConstants {
 
     for (final token in tokens) {
       final upper = token.toUpperCase();
-      for (final g in gradeOptions) {
-        if (upper == g.toUpperCase()) grade = g;
+
+      // Support both Roman ('X', 'XI', 'XII') and Arabic numbers ('10', '11', '12')
+      if (upper == '10' || upper == 'X') {
+        grade = 'X';
+      } else if (upper == '11' || upper == 'XI') {
+        grade = 'XI';
+      } else if (upper == '12' || upper == 'XII') {
+        grade = 'XII';
       }
+
       for (final m in majorOptions) {
         if (upper == m.toUpperCase()) major = m;
       }

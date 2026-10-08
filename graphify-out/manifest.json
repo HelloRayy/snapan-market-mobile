@@ -210,9 +210,9 @@
     "semantic_hash": ""
   },
   "lib/features/auth/screens/auth_screen.dart": {
-    "mtime": 1791428560.0583308,
-    "seen": 1791428706.8458323,
-    "ast_hash": "d6f997434bc0e66dcada4eb23896c2ab",
+    "mtime": 1791460103.9355974,
+    "seen": 1791460772.5926125,
+    "ast_hash": "3d55c1b2faa963eac0078c7f6fd771f0",
     "semantic_hash": ""
   },
   "lib/features/checkout/components/checkout_hero_image.dart": {
@@ -366,9 +366,9 @@
     "semantic_hash": ""
   },
   "lib/features/feed/components/comment/comment_reply_tile.dart": {
-    "mtime": 1791426827.0973983,
-    "seen": 1791428706.8459256,
-    "ast_hash": "bd63af14b0e9eebe4dfd47a991bda6ba",
+    "mtime": 1791460035.2082763,
+    "seen": 1791460772.5948079,
+    "ast_hash": "62f3aff2adcf16dec8ecd92d5a071638",
     "semantic_hash": ""
   },
   "lib/features/feed/components/comment/thread_branch_painter.dart": {
@@ -402,9 +402,9 @@
     "semantic_hash": "97332444f520269196da3eb19cbdbae1"
   },
   "lib/features/feed/components/post_card/post_card_header.dart": {
-    "mtime": 1791426813.456351,
-    "seen": 1791428706.8460324,
-    "ast_hash": "b6cb87455cf2cb1bb80ae54a59e8af7a",
+    "mtime": 1791460019.9712052,
+    "seen": 1791460772.5975301,
+    "ast_hash": "043cadad570ff8bbc465aa14192533fa",
     "semantic_hash": ""
   },
   "lib/features/feed/components/post_card/post_media_section.dart": {
@@ -426,9 +426,9 @@
     "semantic_hash": "8239099c42899cb400451744d7ba567e"
   },
   "lib/features/feed/screens/home_feed_screen.dart": {
-    "mtime": 1791392552.9079373,
-    "seen": 1791393128.4477434,
-    "ast_hash": "95dadee008c82419e8c32d5326c78985",
+    "mtime": 1791460007.5971475,
+    "seen": 1791460772.598508,
+    "ast_hash": "f644dde091d4d536d349d9884a9b7739",
     "semantic_hash": ""
   },
   "lib/features/feed/screens/post_detail_screen.dart": {
@@ -510,9 +510,9 @@
     "semantic_hash": "c46191da13bcef0ee5a1fa967cde6ec8"
   },
   "lib/features/messages/models/conversation_model.dart": {
-    "mtime": 1791392552.9459534,
-    "seen": 1791393128.447761,
-    "ast_hash": "891a5c875ebd443585081b8dd7518ddb",
+    "mtime": 1791460169.331903,
+    "seen": 1791460772.5998259,
+    "ast_hash": "28dd303a369478f5cdf207e3517cc505",
     "semantic_hash": ""
   },
   "lib/features/messages/models/mock_messages_data.dart": {
@@ -582,9 +582,9 @@
     "semantic_hash": ""
   },
   "lib/features/profile/components/profile_info_header.dart": {
-    "mtime": 1791392552.9315202,
-    "seen": 1791393128.4477735,
-    "ast_hash": "3fc49972be16657ba34c3b3b9671cb37",
+    "mtime": 1791460121.163678,
+    "seen": 1791460772.600819,
+    "ast_hash": "ea260e26ad275a3ad92d2394edd4fe44",
     "semantic_hash": ""
   },
   "lib/features/profile/components/profile_media_grid.dart": {
@@ -612,10 +612,10 @@
     "semantic_hash": "2769da6cc08a848f6fb3f05f45ba1580"
   },
   "lib/features/profile/models/profile_user_model.dart": {
-    "mtime": 1791392552.9307876,
-    "seen": 1791393128.4477782,
-    "ast_hash": "662396562c7b08901193a5312682ab46",
-    "semantic_hash": "662396562c7b08901193a5312682ab46"
+    "mtime": 1791459943.8338494,
+    "seen": 1791460772.6011417,
+    "ast_hash": "e2d5ca9fa65153acd8110d3322de2c20",
+    "semantic_hash": ""
   },
   "lib/features/profile/screens/edit_profile_screen.dart": {
     "mtime": 1791392552.9439373,
@@ -680,7 +680,7 @@
   "schema.sql": {
     "mtime": 1791208247.752908,
     "seen": 1791342162.4104922,
-    "ast_hash": "a0630cf7f8e882c3f8f3d709b96da6c7",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "scripts/analyze-diff.js": {
@@ -1644,10 +1644,10 @@
     "semantic_hash": "f8f695600a8dfc7cbab371192da6f83b"
   },
   "test/widget_test.dart": {
-    "mtime": 1790817846.4098094,
-    "seen": 1790840491.4157765,
-    "ast_hash": "18c838fb28443fecc19dfa8821f92895",
-    "semantic_hash": "18c838fb28443fecc19dfa8821f92895"
+    "mtime": 1791432723.7844088,
+    "seen": 1791460772.6086988,
+    "ast_hash": "2413f4e6befd66bc83f448bb0bc118e6",
+    "semantic_hash": ""
   },
   "tests/visual.spec.ts": {
     "mtime": 1788154448.2749002,
@@ -2514,9 +2514,9 @@
     "semantic_hash": ""
   },
   "pubspec.yaml": {
-    "mtime": 1791431822.591077,
-    "seen": 1791431935.7343385,
-    "ast_hash": "f401bf46cf61248be1954814d0cf4e62",
+    "mtime": 1791460650.7824533,
+    "seen": 1791460772.6123455,
+    "ast_hash": "edf5d71cf74696b9635c90e0121df3e7",
     "semantic_hash": ""
   },
   "tasks/plan.md": {
@@ -2910,9 +2910,9 @@
     "semantic_hash": ""
   },
   "lib/core/services/supabase/supabase_profile_service.dart": {
-    "mtime": 1791426593.8525252,
-    "seen": 1791428706.845721,
-    "ast_hash": "1e21ac2412c22fcbdd69f636b48ce688",
+    "mtime": 1791460095.2335567,
+    "seen": 1791460772.5903108,
+    "ast_hash": "26b9a69fcaba560d43c7a28b23a5f418",
     "semantic_hash": ""
   },
   "lib/core/services/supabase/supabase_social_service.dart": {
@@ -2952,9 +2952,9 @@
     "semantic_hash": ""
   },
   "lib/features/auth/components/auth_register_tab.dart": {
-    "mtime": 1791426540.2902884,
-    "seen": 1791428706.8457983,
-    "ast_hash": "fface412f9bac57c5e3b46e146659c42",
+    "mtime": 1791432662.6370342,
+    "seen": 1791460772.5918882,
+    "ast_hash": "b25dff0343a4cf162f3253a0672155a4",
     "semantic_hash": ""
   },
   "lib/features/auth/components/auth_social_section.dart": {
@@ -2970,9 +2970,9 @@
     "semantic_hash": ""
   },
   "lib/features/auth/controllers/auth_controller.dart": {
-    "mtime": 1791426575.056442,
-    "seen": 1791428706.845823,
-    "ast_hash": "b180eeb703364cce0b702e1c83927e66",
+    "mtime": 1791460007.5851474,
+    "seen": 1791460772.5924568,
+    "ast_hash": "775dec97a4bfc54940ed7b93cbc12224",
     "semantic_hash": ""
   },
   "lib/features/checkout/components/checkout_bottom_bar.dart": {
@@ -3090,9 +3090,9 @@
     "semantic_hash": ""
   },
   "lib/features/messages/components/direct_messages_new_chat_sheet.dart": {
-    "mtime": 1791392552.9522498,
-    "seen": 1791393128.4477596,
-    "ast_hash": "34ef81eae6222f6152e44a956fb2a33c",
+    "mtime": 1791460050.98635,
+    "seen": 1791460772.5997605,
+    "ast_hash": "9705f2ddd563a1de54f87966403dd1f1",
     "semantic_hash": ""
   },
   "lib/features/messages/services/direct_messages_service.dart": {
@@ -3126,9 +3126,9 @@
     "semantic_hash": ""
   },
   "lib/features/profile/controllers/profile_controller.dart": {
-    "mtime": 1791392552.9453216,
-    "seen": 1791393128.447777,
-    "ast_hash": "64b32dfe7ba5e9e4716b4eb766a50a40",
+    "mtime": 1791460059.102388,
+    "seen": 1791460772.601075,
+    "ast_hash": "f7e7399e531488ad82e6e814d0aa26d3",
     "semantic_hash": ""
   },
   "lib/features/search/components/search_results_view.dart": {
@@ -3204,9 +3204,9 @@
     "semantic_hash": ""
   },
   "src/admin/services/adminService.ts": {
-    "mtime": 1791388096.520007,
-    "seen": 1791393128.4488387,
-    "ast_hash": "30130bfeea6cb70d19383c7ad6372036",
+    "mtime": 1791460320.3276086,
+    "seen": 1791460772.6045172,
+    "ast_hash": "98473eea05d60a345fdd27b0db46f787",
     "semantic_hash": ""
   },
   "lib/core/components/skeleton/activity_skeleton.dart": {
@@ -3318,9 +3318,9 @@
     "semantic_hash": ""
   },
   "lib/features/search/controllers/search_controller.dart": {
-    "mtime": 1791392552.9569373,
-    "seen": 1791393128.4477844,
-    "ast_hash": "593d7c66ddbd72ac3764a2bd577c6158",
+    "mtime": 1791460061.9544013,
+    "seen": 1791460772.6015837,
+    "ast_hash": "5e47f07ecacf51d990fe0e8f44eae04a",
     "semantic_hash": ""
   },
   "lib/core/utils/snaps_toast.dart": {
@@ -3960,9 +3960,9 @@
     "semantic_hash": ""
   },
   "lib/core/services/student_registry_service.dart": {
-    "mtime": 1791392552.804218,
-    "seen": 1791393128.4476206,
-    "ast_hash": "5f793d8a7964b80f758778b489f91794",
+    "mtime": 1791459979.0270138,
+    "seen": 1791460772.5900462,
+    "ast_hash": "8fa437feb618e316e1a115432629e765",
     "semantic_hash": ""
   },
   "lib/features/auth/components/student_confirmation_dialog.dart": {
@@ -3984,9 +3984,9 @@
     "semantic_hash": ""
   },
   "lib/features/feed/components/comment/post_comment_item.dart": {
-    "mtime": 1791426819.8983734,
-    "seen": 1791428706.8459296,
-    "ast_hash": "a900464e4f5fbc8e29aa8de07ff17ee4",
+    "mtime": 1791460027.6832411,
+    "seen": 1791460772.5948782,
+    "ast_hash": "62f688a727175f8679da5afa413a728f",
     "semantic_hash": ""
   },
   "lib/features/feed/components/detail/post_detail_bottom_bar.dart": {
@@ -4092,9 +4092,9 @@
     "semantic_hash": ""
   },
   "lib/features/feed/components/navigation/home_nav_drawer.dart": {
-    "mtime": 1791392552.8959372,
-    "seen": 1791393128.4477086,
-    "ast_hash": "14fda9f67606157dd4c7ada0b144a32b",
+    "mtime": 1791460094.8055549,
+    "seen": 1791460772.5964987,
+    "ast_hash": "25cc63ce4a2bcf64b16ee28703ec7c6c",
     "semantic_hash": ""
   },
   "lib/features/feed/components/navigation/home_nav_tab_switcher.dart": {
@@ -4194,9 +4194,9 @@
     "semantic_hash": ""
   },
   "test/student_registry_service_test.dart": {
-    "mtime": 1791384296.9253042,
-    "seen": 1791393128.4519534,
-    "ast_hash": "e3ec5664264f9288e390d3e30dae6638",
+    "mtime": 1791460169.3509033,
+    "seen": 1791460772.608698,
+    "ast_hash": "79bd179e04b72f5215ed5cb3a3cf4d07",
     "semantic_hash": ""
   },
   "ARCHITECTURE.md": {
@@ -4208,7 +4208,7 @@
   "supabase/migrations/supabase_admin_remove_account_feature.sql": {
     "mtime": 1791388062.9888527,
     "seen": 1791428706.8468058,
-    "ast_hash": "4087edf9a5ae90b25483195e7416feaa",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "supabase/migrations/supabase_student_registry.sql": {
@@ -4221,6 +4221,18 @@
     "mtime": 1791431808.096827,
     "seen": 1791431935.7342954,
     "ast_hash": "3e16e826672c3ac9b45efc56f7c75fec",
+    "semantic_hash": ""
+  },
+  "test/auth_register_tab_test.dart": {
+    "mtime": 1791432756.0596066,
+    "seen": 1791460772.608591,
+    "ast_hash": "a1ef9efe98daef87c1582fbcad3a75db",
+    "semantic_hash": ""
+  },
+  "test/display_name_validation_test.dart": {
+    "mtime": 1791460196.4540298,
+    "seen": 1791460772.6086352,
+    "ast_hash": "d0f40064e02d1127eddd303512afe649",
     "semantic_hash": ""
   }
 }

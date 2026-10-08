@@ -1,5 +1,6 @@
 // ignore_for_file: use_null_aware_elements
 import 'package:flutter/foundation.dart';
+import 'package:snapan_market/features/auth/models/auth_constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseProfileService {
@@ -110,6 +111,7 @@ class SupabaseProfileService {
     final existing = currentUserProfileNotifier.value ?? {};
     final cleanDisplayName = displayName?.trim();
     final hasDisplayName = cleanDisplayName != null && cleanDisplayName.isNotEmpty;
+    final cleanClassGroup = AuthConstants.normalizeClassGroup(classGroup);
 
     currentUserProfileNotifier.value = {
       ...existing,
@@ -117,7 +119,7 @@ class SupabaseProfileService {
       'full_name': fullName,
       if (hasDisplayName) 'display_name': cleanDisplayName,
       'username': username,
-      'class_group': classGroup,
+      'class_group': cleanClassGroup,
       if (nis != null && nis.isNotEmpty) 'nis': nis,
       if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
       if (bio != null) 'bio': bio,
@@ -132,7 +134,7 @@ class SupabaseProfileService {
             'full_name': fullName,
             if (hasDisplayName) 'display_name': cleanDisplayName,
             'username': username,
-            'class_group': classGroup,
+            'class_group': cleanClassGroup,
             if (nis != null && nis.isNotEmpty) 'nis': nis,
             if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
             if (bio != null) 'bio': bio,
@@ -150,7 +152,7 @@ class SupabaseProfileService {
       'full_name': fullName,
       if (hasDisplayName) 'display_name': cleanDisplayName,
       'username': username,
-      'class_group': classGroup,
+      'class_group': cleanClassGroup,
       if (nis != null && nis.isNotEmpty) 'nis': nis,
       if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
       if (bio != null) 'bio': bio,
@@ -162,7 +164,7 @@ class SupabaseProfileService {
       'full_name': fullName,
       if (hasDisplayName) 'display_name': cleanDisplayName,
       'username': username,
-      'class_group': classGroup,
+      'class_group': cleanClassGroup,
       if (nis != null && nis.isNotEmpty) 'nis': nis,
       if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
     };
@@ -170,7 +172,7 @@ class SupabaseProfileService {
     final minimalPayload = <String, dynamic>{
       'full_name': fullName,
       'username': username,
-      'class_group': classGroup,
+      'class_group': cleanClassGroup,
       if (nis != null && nis.isNotEmpty) 'nis': nis,
       if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
     };

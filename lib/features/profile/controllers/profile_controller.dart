@@ -5,6 +5,7 @@ import 'package:snapan_market/core/services/follow_service.dart';
 import 'package:snapan_market/core/services/poll_sync_service.dart';
 import 'package:snapan_market/core/services/student_registry_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/features/auth/models/auth_constants.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/profile/models/profile_user_model.dart';
 
@@ -326,6 +327,7 @@ class ProfileController extends ChangeNotifier {
           ? rawClass
           : ((metaClass != null && metaClass.isNotEmpty) ? metaClass : 'SMKN 8 Semarang');
     }
+    effectiveClass = AuthConstants.normalizeClassGroup(effectiveClass);
 
     return ProfileUserModel(
       id: id,

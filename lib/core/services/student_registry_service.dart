@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/features/auth/models/auth_constants.dart';
 
 class RegisteredStudent {
   final String nis;
@@ -13,10 +14,11 @@ class RegisteredStudent {
   });
 
   factory RegisteredStudent.fromJson(Map<String, dynamic> json) {
+    final rawClass = json['class_group']?.toString() ?? '';
     return RegisteredStudent(
       nis: json['nis']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
-      classGroup: json['class_group']?.toString() ?? '',
+      classGroup: AuthConstants.normalizeClassGroup(rawClass),
     );
   }
 

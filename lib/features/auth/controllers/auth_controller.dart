@@ -4,6 +4,7 @@ import 'package:snapan_market/core/services/device_security_service.dart';
 import 'package:snapan_market/core/services/global_notification_service.dart';
 import 'package:snapan_market/core/services/student_registry_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/features/auth/models/auth_constants.dart';
 
 class AuthController {
   static Future<String?> submitLogin({
@@ -126,8 +127,9 @@ class AuthController {
         }
       }
 
-      final finalClassGroup = resolvedClassGroup.isNotEmpty
-          ? resolvedClassGroup
+      final normalizedClass = AuthConstants.normalizeClassGroup(resolvedClassGroup);
+      final finalClassGroup = normalizedClass.isNotEmpty
+          ? normalizedClass
           : (grade != null && major != null && classNum != null
               ? '$grade $major $classNum'
               : 'Siswa Snapan');

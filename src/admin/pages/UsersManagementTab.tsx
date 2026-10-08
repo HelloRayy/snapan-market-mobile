@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { BadgeCheck } from 'lucide-react';
+import { supabase } from '../../services/api/supabase';
 import { adminService, type ProfileRow } from '../services/adminService';
 import { UserDetailModal } from '../components/UserDetailModal';
 import { UserAvatar } from '../components/UserAvatar';
@@ -211,6 +212,15 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
   };
 
   const handleRoleChange = async (user: ProfileRow, newRole: 'user' | 'admin' | 'buyer' | 'seller') => {
+    // Pencegahan lockout: jika admin mendowngrade akunnya sendiri
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    if (currentUser?.id === user.id && newRole !== 'admin') {
+      const confirmSelfDemote = window.confirm(
+        'PERINGATAN: Anda sedang mengubah role akun Anda sendiri menjadi Siswa/User. Anda akan kehilangan akses dashboard admin setelah ini. Lanjutkan?'
+      );
+      if (!confirmSelfDemote) return;
+    }
+
     setUpdatingId(user.id);
     try {
       await adminService.updateProfileRole(user.id, newRole);

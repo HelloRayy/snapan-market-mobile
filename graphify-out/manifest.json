@@ -2514,9 +2514,9 @@
     "semantic_hash": ""
   },
   "pubspec.yaml": {
-    "mtime": 1791462331.808066,
-    "seen": 1791462399.3697581,
-    "ast_hash": "edf5d71cf74696b9635c90e0121df3e7",
+    "mtime": 1791463274.998111,
+    "seen": 1791463369.5129886,
+    "ast_hash": "2369f00aec7555fbc20c45aca18ac518",
     "semantic_hash": ""
   },
   "tasks/plan.md": {
@@ -4092,9 +4092,9 @@
     "semantic_hash": ""
   },
   "lib/features/feed/components/navigation/home_nav_drawer.dart": {
-    "mtime": 1791460094.8055549,
-    "seen": 1791460772.5964987,
-    "ast_hash": "25cc63ce4a2bcf64b16ee28703ec7c6c",
+    "mtime": 1791462789.3318522,
+    "seen": 1791463369.5035203,
+    "ast_hash": "d23c69e838e26e9db474e747c918cb7f",
     "semantic_hash": ""
   },
   "lib/features/feed/components/navigation/home_nav_tab_switcher.dart": {
@@ -4194,9 +4194,9 @@
     "semantic_hash": ""
   },
   "test/student_registry_service_test.dart": {
-    "mtime": 1791461641.0497875,
-    "seen": 1791462399.366901,
-    "ast_hash": "71383b3a254d1f5dc1f67dda0400b514",
+    "mtime": 1791462751.9726863,
+    "seen": 1791463369.510164,
+    "ast_hash": "cc418e85a89ebd8601fbcd2f713a76a0",
     "semantic_hash": ""
   },
   "ARCHITECTURE.md": {
@@ -4214,7 +4214,7 @@
   "supabase/migrations/supabase_student_registry.sql": {
     "mtime": 1791379723.511726,
     "seen": 1791428706.84683,
-    "ast_hash": "62c9308c72ffc587187a4b0c47242016",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "docs/RELEASE_OTA_GUIDE.md": {
@@ -4251,6 +4251,12 @@
     "mtime": 1791461722.572169,
     "seen": 1791462399.3691366,
     "ast_hash": "91e2a8a5c174059b7cca485aa248d846",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/supabase_normalize_class_roman.sql": {
+    "mtime": 1791461729.9812038,
+    "seen": 1791463369.509907,
+    "ast_hash": "a3d1d3de4bb82700cf0ad99b70c484de",
     "semantic_hash": ""
   }
 }

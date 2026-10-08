@@ -58,7 +58,7 @@ export function RoleSelectDropdown({
   }, [isOpen]);
 
   const handleSelect = (role: UserRole) => {
-    if (disabled || role === currentRole) {
+    if (disabled || role === normalizedRole) {
       setIsOpen(false);
       return;
     }
@@ -158,7 +158,7 @@ export function RoleSelectDropdown({
           }}
         >
           {ROLE_OPTIONS.map((opt) => {
-            const isSelected = opt.id === currentRole;
+            const isSelected = opt.id === normalizedRole;
             return (
               <div
                 key={opt.id}

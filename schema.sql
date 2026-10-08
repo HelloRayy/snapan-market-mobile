@@ -322,12 +322,24 @@ create or replace function public.admin_update_profile_role(target_user_id uuid,
 returns void
 language plpgsql
 security definer
+set search_path = public
 as $$
+declare
+  v_normalized_role text;
 begin
   if not public.is_admin() then
     raise exception 'Unauthorized: Hanya admin yang dapat mengubah role akun.';
   end if;
-  update public.profiles set role = new_role where id = target_user_id;
+
+  v_normalized_role := lower(trim(new_role));
+  if v_normalized_role not in ('user', 'admin', 'buyer', 'seller') then
+    raise exception 'Invalid role: %', new_role;
+  end if;
+
+  update public.profiles
+  set role = v_normalized_role,
+      updated_at = now()
+  where id = target_user_id;
 end;
 $$;
 
@@ -909,6 +921,22 @@ alter table public.order_notifications enable row level security;
 drop policy if exists "Public read meeting points" on public.school_meeting_points;
 create policy "Public read meeting points"
   on public.school_meeting_points for select using (true);
+
+drop policy if exists "Admins can insert meeting points" on public.school_meeting_points;
+create policy "Admins can insert meeting points"
+  on public.school_meeting_points for insert to authenticated
+  with check (public.is_admin());
+
+drop policy if exists "Admins can update meeting points" on public.school_meeting_points;
+create policy "Admins can update meeting points"
+  on public.school_meeting_points for update to authenticated
+  using (public.is_admin())
+  with check (public.is_admin());
+
+drop policy if exists "Admins can delete meeting points" on public.school_meeting_points;
+create policy "Admins can delete meeting points"
+  on public.school_meeting_points for delete to authenticated
+  using (public.is_admin());
 
 -- Orders: Hanya Pembeli & Penjual yang berhak melihat pesanan
 drop policy if exists "Users can read own orders" on public.orders;

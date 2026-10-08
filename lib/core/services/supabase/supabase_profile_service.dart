@@ -126,14 +126,49 @@ class SupabaseProfileService {
       if (tags != null) 'interests': tags.join(','),
       if (link != null) 'link': link,
     };
-    // 1. Update Supabase Auth user metadata so session & currentUser stay in sync
+    // 1. If username has changed, synchronize auth.users email and credentials atomically
+    final oldUsername = (existing['username'] as String?)?.trim().toLowerCase();
+    final cleanUsername = username.trim().toLowerCase().replaceFirst(RegExp(r'^@'), '');
+    final isUsernameChanged = oldUsername != null && oldUsername.isNotEmpty && oldUsername != cleanUsername;
+
+    if (isUsernameChanged) {
+      bool rpcSucceeded = false;
+      try {
+        final rpcRes = await _client.rpc('change_user_username', params: {'new_username': cleanUsername});
+        if (rpcRes is Map && rpcRes['success'] == false) {
+          throw Exception(rpcRes['error'] ?? 'Gagal memperbarui username.');
+        }
+        rpcSucceeded = true;
+      } catch (e) {
+        if (e.toString().contains('sudah digunakan')) {
+          rethrow;
+        }
+        debugPrint('change_user_username RPC notice: $e');
+      }
+
+      if (!rpcSucceeded) {
+        // Fallback update email in auth.users
+        try {
+          await _client.auth.updateUser(
+            UserAttributes(
+              email: '$cleanUsername@snapan.id',
+              data: {'username': cleanUsername},
+            ),
+          );
+        } catch (authErr) {
+          debugPrint('updateUser email fallback notice: $authErr');
+        }
+      }
+    }
+
+    // 2. Update Supabase Auth user metadata so session & currentUser stay in sync
     try {
       await _client.auth.updateUser(
         UserAttributes(
           data: {
             'full_name': fullName,
             if (hasDisplayName) 'display_name': cleanDisplayName,
-            'username': username,
+            'username': cleanUsername,
             'class_group': cleanClassGroup,
             if (nis != null && nis.isNotEmpty) 'nis': nis,
             if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
@@ -284,6 +319,50 @@ class SupabaseProfileService {
     } catch (e) {
       debugPrint('Error fetchSuggestedProfiles: $e');
       return [];
+    }
+  }
+
+  /// Synchronizes auth.users email and metadata with current public.profiles username & NIS (SNAPS-64)
+  Future<void> syncProfileAuthCredentials() async {
+    try {
+      final user = _client.auth.currentUser;
+      if (user == null) return;
+
+      final profile = await getProfile(user.id);
+      if (profile == null) return;
+
+      final currentUsername = (profile['username'] as String?)?.trim().toLowerCase();
+      if (currentUsername == null || currentUsername.isEmpty) return;
+
+      final expectedEmail = '$currentUsername@snapan.id';
+      final currentEmail = user.email?.trim().toLowerCase();
+
+      if (currentEmail != expectedEmail) {
+        // Coba via RPC change_user_username
+        bool rpcSuccess = false;
+        try {
+          final res = await _client.rpc('change_user_username', params: {'new_username': currentUsername});
+          if (res is Map && res['success'] == true) {
+            rpcSuccess = true;
+          }
+        } catch (_) {}
+
+        if (!rpcSuccess) {
+          // Fallback ke auth.updateUser
+          try {
+            await _client.auth.updateUser(
+              UserAttributes(
+                email: expectedEmail,
+                data: {'username': currentUsername},
+              ),
+            );
+          } catch (e) {
+            debugPrint('syncProfileAuthCredentials updateUser notice: $e');
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('syncProfileAuthCredentials error: $e');
     }
   }
 }

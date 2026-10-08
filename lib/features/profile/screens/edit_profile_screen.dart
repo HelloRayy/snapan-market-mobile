@@ -180,6 +180,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         await SupabaseService.instance.updateProfile(
           userId: currentUser.id,
           fullName: cleanName,
+          displayName: cleanName,
           username: cleanUsername,
           classGroup: cleanClass,
           avatarUrl: finalAvatarUrl,

@@ -14,42 +14,101 @@ class AuthController {
     try {
       final cleanInput = username.trim().toLowerCase().replaceAll('@', '');
       String email;
+      String? resolvedUsername;
+      final candidateEmails = <String>[];
+
       if (username.contains('@') && username.contains('.')) {
+        // Input adalah format email langsung (misal: admin@snapan.id)
         email = username.trim().toLowerCase();
-      } else if (RegExp(r'^\d+$').hasMatch(cleanInput)) {
-        // Pengguna memasukkan NIS (deretan angka)
-        // Coba cari profil terdaftar berdasarkan NIS
-        final profile = await SupabaseService.instance.getProfileByNis(cleanInput);
-        if (profile != null && profile['username'] != null) {
-          final registeredUsername = (profile['username'] as String).toLowerCase();
-          email = '$registeredUsername@snapan.id';
-        } else {
-          // Fallback ke format email NIS langsung
-          email = '$cleanInput@snapan.id';
-        }
+        candidateEmails.add(email);
       } else {
-        email = '$cleanInput@snapan.id';
+        // 1. Coba lookup via RPC 'lookup_login_email' terlebih dahulu jika ada
+        bool rpcMatched = false;
+        try {
+          final rpcData = await SupabaseService.instance.client.rpc(
+            'lookup_login_email',
+            params: {'identifier': cleanInput},
+          );
+          if (rpcData is Map && rpcData['email'] != null) {
+            email = (rpcData['email'] as String).toLowerCase();
+            resolvedUsername = rpcData['username'] as String?;
+            candidateEmails.add(email);
+            rpcMatched = true;
+          }
+        } catch (_) {}
+
+        if (!rpcMatched) {
+          if (RegExp(r'^\d+$').hasMatch(cleanInput)) {
+            // Input adalah NIS (deretan angka)
+            // A. Coba cari profil terdaftar berdasarkan NIS di Supabase
+            final profile = await SupabaseService.instance.getProfileByNis(cleanInput);
+            if (profile != null && profile['username'] != null && (profile['username'] as String).isNotEmpty) {
+              resolvedUsername = (profile['username'] as String).toLowerCase();
+              email = '$resolvedUsername@snapan.id';
+              candidateEmails.add(email);
+            } else {
+              // B. Coba cari di dataset registri siswa offline jika ada saran username
+              final offline = StudentRegistryService.instance.findByNis(cleanInput);
+              if (offline != null) {
+                final suggested = StudentRegistryService.generateSuggestedUsername(offline.name);
+                email = '$suggested@snapan.id';
+                candidateEmails.add(email);
+              } else {
+                email = '$cleanInput@snapan.id';
+                candidateEmails.add(email);
+              }
+            }
+            if (!candidateEmails.contains('$cleanInput@snapan.id')) {
+              candidateEmails.add('$cleanInput@snapan.id');
+            }
+          } else {
+            // Input adalah username biasa
+            email = '$cleanInput@snapan.id';
+            candidateEmails.add(email);
+
+            // Coba ambil NIS terkait jika ada profilnya untuk fallback
+            try {
+              final profile = await SupabaseService.instance.getProfileByUsername(cleanInput);
+              if (profile != null && profile['nis'] != null) {
+                final nisStr = (profile['nis'] as String).trim();
+                if (nisStr.isNotEmpty && !candidateEmails.contains('$nisStr@snapan.id')) {
+                  candidateEmails.add('$nisStr@snapan.id');
+                }
+              }
+            } catch (_) {}
+          }
+        }
       }
 
-      AuthResponse response;
-      try {
-        response = await SupabaseService.instance.client.auth.signInWithPassword(
-          email: email,
-          password: password,
-        );
-      } catch (authErr) {
-        // Jika login dengan email username gagal dan input adalah NIS, coba alternatif $cleanInput@snapan.id
-        if (RegExp(r'^\d+$').hasMatch(cleanInput) && email != '$cleanInput@snapan.id') {
-          response = await SupabaseService.instance.client.auth.signInWithPassword(
-            email: '$cleanInput@snapan.id',
+      AuthResponse? response;
+      dynamic lastAuthError;
+
+      // Coba autentikasi menggunakan kandidat email yang tersedia secara berurutan
+      for (final candidate in candidateEmails) {
+        try {
+          final authRes = await SupabaseService.instance.client.auth.signInWithPassword(
+            email: candidate,
             password: password,
           );
-        } else {
-          rethrow;
+          if (authRes.user != null) {
+            response = authRes;
+            break;
+          }
+        } catch (authErr) {
+          lastAuthError = authErr;
         }
+      }
+
+      if (response == null || response.user == null) {
+        if (lastAuthError != null) {
+          throw lastAuthError;
+        }
+        return 'Username, NIS, atau kata sandi tidak cocok.';
       }
 
       if (response.user != null) {
+        // Sinkronkan kredensial di background jika username pernah diganti (SNAPS-64)
+        unawaited(SupabaseService.instance.syncProfileAuthCredentials());
         // Cek apakah akun berstatus ditangguhkan (suspended) (SNAPS-16)
         final suspension = await SupabaseService.instance.auth.getCurrentUserSuspensionStatus();
         if (suspension != null) {

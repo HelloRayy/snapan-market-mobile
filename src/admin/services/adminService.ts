@@ -276,23 +276,32 @@ export const adminService = {
    * Mengubah role profile (user, admin)
    */
   async updateProfileRole(userId: string, newRole: 'user' | 'admin' | 'buyer' | 'seller'): Promise<void> {
+    // 1. Coba lewat RPC SECURITY DEFINER terlebih dahulu (mencegah RLS recursion saat demote admin -> user)
+    const { error: rpcErr } = await (supabase.rpc as any)('admin_update_profile_role', {
+      target_user_id: userId,
+      new_role: newRole,
+    });
+
+    if (!rpcErr) {
+      return;
+    }
+
+    // 2. Fallback jika function RPC belum terpasang (PGRST202: function not found)
+    console.warn('[adminService] RPC admin_update_profile_role gagal/tidak ditemukan, mencoba fallback direct update:', rpcErr);
     const { data, error } = await supabase
       .from('profiles')
       .update({ role: newRole })
       .eq('id', userId)
       .select();
 
-    if (error) throw error;
+    if (error) {
+      throw new Error(`Gagal mengubah role: ${error.message}`);
+    }
+
     if (!data || data.length === 0) {
-      const { error: rpcErr } = await (supabase.rpc as any)('admin_update_profile_role', {
-        target_user_id: userId,
-        new_role: newRole,
-      });
-      if (rpcErr) {
-        throw new Error(
-          'Gagal mengubah role: Terhalang Supabase RLS. Jalankan SQL Migration Admin di Supabase SQL Editor.'
-        );
-      }
+      throw new Error(
+        'Gagal mengubah role akun. Kemungkinan terhalang aturan RLS Supabase. Harap jalankan SQL migration supabase_fix_role_toggle_rpc.sql di Supabase SQL Editor.'
+      );
     }
   },
 
@@ -385,7 +394,14 @@ export const adminService = {
       .order('floor', { ascending: true })
       .order('name', { ascending: true });
 
-    if (error) throw error;
+    if (error) {
+      if (error.code === '42P01' || error.message?.includes('does not exist')) {
+        throw new Error(
+          'Tabel database "school_meeting_points" belum dibuat. Jalankan skrip "supabase_school_meeting_points_feature.sql" di Supabase SQL Editor.'
+        );
+      }
+      throw error;
+    }
     return (data as SchoolMeetingPointRow[]) || [];
   },
 
@@ -416,7 +432,19 @@ export const adminService = {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      if (error.code === '42501' || error.message?.includes('row-level security')) {
+        throw new Error(
+          'Akses ditolak (RLS): Akun Anda belum memiliki izin menambah titik COD atau kebijakan RLS belum disetel. Jalankan "supabase_school_meeting_points_feature.sql" di Supabase SQL Editor.'
+        );
+      }
+      if (error.code === '42P01' || error.message?.includes('does not exist')) {
+        throw new Error(
+          'Tabel "school_meeting_points" belum dibuat di Supabase. Jalankan skrip "supabase_school_meeting_points_feature.sql" di Supabase SQL Editor.'
+        );
+      }
+      throw new Error(`Gagal menambah titik COD (${error.code || 'DB_ERROR'}): ${error.message}`);
+    }
     return data as SchoolMeetingPointRow;
   },
 
@@ -442,7 +470,14 @@ export const adminService = {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      if (error.code === '42501' || error.message?.includes('row-level security')) {
+        throw new Error(
+          'Akses ditolak (RLS): Kebijakan RLS membatasi pengubahan titik COD. Jalankan "supabase_school_meeting_points_feature.sql" di Supabase SQL Editor.'
+        );
+      }
+      throw new Error(`Gagal mengubah titik COD (${error.code || 'DB_ERROR'}): ${error.message}`);
+    }
     return data as SchoolMeetingPointRow;
   },
 
@@ -455,7 +490,14 @@ export const adminService = {
       .delete()
       .eq('id', id);
 
-    if (error) throw error;
+    if (error) {
+      if (error.code === '42501' || error.message?.includes('row-level security')) {
+        throw new Error(
+          'Akses ditolak (RLS): Kebijakan RLS membatasi penghapusan titik COD. Jalankan "supabase_school_meeting_points_feature.sql" di Supabase SQL Editor.'
+        );
+      }
+      throw new Error(`Gagal menghapus titik COD (${error.code || 'DB_ERROR'}): ${error.message}`);
+    }
   },
 
   /**

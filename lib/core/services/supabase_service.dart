@@ -110,6 +110,9 @@ class SupabaseService {
   Future<List<Map<String, dynamic>>> fetchSuggestedProfiles({int limit = 15}) =>
       profile.fetchSuggestedProfiles(limit: limit);
 
+  Future<void> syncProfileAuthCredentials() =>
+      profile.syncProfileAuthCredentials();
+
   // --- FEED & POST DELEGATIONS ---
   Future<List<MarketPostModel>> fetchFeedPosts({
     int limit = 30,

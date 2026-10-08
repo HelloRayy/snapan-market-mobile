@@ -480,10 +480,10 @@
     "semantic_hash": "50147481e6b9f42ecaeaeabcddc6e4e5"
   },
   "lib/features/map/screens/campus_map_screen.dart": {
-    "mtime": 1791392552.9681609,
-    "seen": 1791393128.4477518,
-    "ast_hash": "1b48dcb17cad3a0e74f4dafe00216843",
-    "semantic_hash": "1b48dcb17cad3a0e74f4dafe00216843"
+    "mtime": 1791469383.3415258,
+    "seen": 1791469763.54831,
+    "ast_hash": "1fc9c6a8e46daa238f1542b9aa8a11a0",
+    "semantic_hash": ""
   },
   "lib/features/messages/components/chat_composer_bar.dart": {
     "mtime": 1791392552.9481974,
@@ -678,9 +678,9 @@
     "semantic_hash": "a738a9cfa7c94a7588811e1312efaa90"
   },
   "schema.sql": {
-    "mtime": 1791460309.3155572,
-    "seen": 1791462399.3626285,
-    "ast_hash": "",
+    "mtime": 1791467409.5533402,
+    "seen": 1791469763.5494251,
+    "ast_hash": "9bc7fe525607ea4a89abf307199aa94a",
     "semantic_hash": ""
   },
   "scripts/analyze-diff.js": {
@@ -2514,8 +2514,8 @@
     "semantic_hash": ""
   },
   "pubspec.yaml": {
-    "mtime": 1791468428.2703388,
-    "seen": 1791468562.6956549,
+    "mtime": 1791469753.309372,
+    "seen": 1791469763.5566378,
     "ast_hash": "8f019e69af40a008184d025daadadfbc",
     "semantic_hash": ""
   },
@@ -4257,6 +4257,30 @@
     "mtime": 1791461729.9812038,
     "seen": 1791463369.509907,
     "ast_hash": "a3d1d3de4bb82700cf0ad99b70c484de",
+    "semantic_hash": ""
+  },
+  "lib/core/services/meeting_point_service.dart": {
+    "mtime": 1791469331.978286,
+    "seen": 1791469763.5451727,
+    "ast_hash": "d8758678d146e58d055f870a22827a2b",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/supabase_fix_role_toggle_rpc.sql": {
+    "mtime": 1791467394.1292684,
+    "seen": 1791469763.5534537,
+    "ast_hash": "e7764fa3034549250b6f52151af82e40",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/supabase_fix_username_and_nis_auth.sql": {
+    "mtime": 1791464939.2738512,
+    "seen": 1791469763.5534554,
+    "ast_hash": "8d29a5fc00c5e4e0f86da15289076a8f",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/supabase_school_meeting_points_feature.sql": {
+    "mtime": 1791464671.0936038,
+    "seen": 1791469763.5535269,
+    "ast_hash": "cb9c30a7a7e73dec8b852aeb109c9cb2",
     "semantic_hash": ""
   }
 }

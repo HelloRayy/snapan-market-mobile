@@ -462,7 +462,7 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(6.0),
                       child: LinearProgressIndicator(
-                        value: _downloadProgress / 100.0,
+                        value: _downloadProgress > 0 ? (_downloadProgress / 100.0) : null,
                         backgroundColor: const Color(0xFFE2E8F0),
                         valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
                         minHeight: 8.0,

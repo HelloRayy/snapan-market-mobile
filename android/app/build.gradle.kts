@@ -23,11 +23,11 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        // Uses the version code from pubspec.yaml. When using split APKs, 1000 * ABI_VERSION
-        // is added automatically by Flutter. (https://developer.android.com/studio/build/configure-apk-splits#configure-APK-versions)
-        // You can force using the value of versionCode by specifying the `-P force-version-code-ignoring-abi=true`
-        // flag during build.
-        versionCode = flutter.versionCode
+        // Uses the version code from pubspec.yaml. To ensure OTA updates are never blocked
+        // by Android's strict downgrade protection (SNAPS-56), we enforce a baseline >= 2000.
+        // Even if pubspec has versionCode 24, Android sees 2024 (strictly > 2021).
+        val baseCode = flutter.versionCode
+        versionCode = if (baseCode < 2000) (2000 + baseCode) else baseCode
         versionName = flutter.versionName
     }
 

@@ -137,9 +137,10 @@ echo "=========================================================="
 if [ -n "$SUPABASE_KEY" ]; then
   echo "Menyuntikkan rilis baru ke tabel app_versions Supabase..."
   
+  REAL_VERSION_CODE=$((VERSION_CODE < 2000 ? 2000 + VERSION_CODE : VERSION_CODE))
   SUPABASE_PAYLOAD=$(cat <<EOF
 {
-  "version_code": ${VERSION_CODE},
+  "version_code": ${REAL_VERSION_CODE},
   "version_name": "${VERSION_NAME}",
   "download_url": "${DOWNLOAD_URL}",
   "title": "Pembaruan Snaps v${VERSION_NAME}",

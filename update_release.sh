@@ -156,9 +156,12 @@ if [ -f ".env.local" ]; then
 fi
 
 if [ -n "$SUPABASE_KEY" ]; then
+  # Hitung real version code yang cocok dengan AndroidManifest (>= 2000)
+  REAL_VERSION_CODE=$((NEW_CODE < 2000 ? 2000 + NEW_CODE : NEW_CODE))
+
   SUPABASE_PAYLOAD=$(cat <<EOF
 {
-  "version_code": ${NEW_CODE},
+  "version_code": ${REAL_VERSION_CODE},
   "version_name": "${NEW_NAME}",
   "download_url": "${DOWNLOAD_URL}",
   "title": "Pembaruan Snaps v${NEW_NAME}",

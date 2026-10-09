@@ -93,20 +93,31 @@ export const CustomPwaInstallModal: React.FC<CustomPwaInstallModalProps> = ({
         </div>
 
         {/* CTA Buttons */}
-        <div className="space-y-2 pt-1">
+        <div className="space-y-2.5 pt-1">
           <ButtonPrimary
             size="lg"
             onClick={onConfirmInstall}
-            className="w-full justify-center font-bold h-14 text-base rounded-full bg-[#1d64ec] hover:bg-blue-600 shadow-md shadow-blue-500/25 text-white active:scale-[0.98] cursor-pointer"
+            className="w-full justify-center font-bold h-13 text-base rounded-full bg-[#1d64ec] hover:bg-blue-600 shadow-md shadow-blue-500/25 text-white active:scale-[0.98] cursor-pointer"
             iconLeft={<Download className="h-5 w-5 text-white" />}
           >
-            Pasang Aplikasi Sekarang
+            Pasang Aplikasi Web (PWA)
           </ButtonPrimary>
+
+          <a
+            href="https://github.com/HelloRayy/snapan-market-mobile/releases/latest/download/app-release.apk"
+            target="_blank"
+            rel="noopener noreferrer"
+            download="Snaps-Market.apk"
+            className="w-full flex items-center justify-center gap-2 font-bold h-12 text-sm rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-800 active:scale-[0.98] transition-all cursor-pointer border border-neutral-200/80"
+          >
+            <Download className="h-4 w-4 text-emerald-600" />
+            Download APK Android (.apk)
+          </a>
 
           <button
             type="button"
             onClick={onClose}
-            className="w-full text-center text-xs font-bold text-neutral-500 hover:text-slate-900 py-2 cursor-pointer transition-colors"
+            className="w-full text-center text-xs font-bold text-neutral-400 hover:text-slate-700 py-1 cursor-pointer transition-colors"
           >
             Nanti Saja
           </button>

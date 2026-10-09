@@ -60,9 +60,9 @@ echo "------------------------------------------------------------"
 echo -e "\n${CYAN}📦 [1/5] Memperbarui versi di pubspec.yaml...${NC}"
 sed -i -E "s/^version: .*/version: ${NEW_NAME}+${NEW_CODE}/" pubspec.yaml
 
-# 3. Kompilasi APK Release
+# 3. Kompilasi APK Release (Target arm64 untuk ukuran optimal dan stabil)
 echo -e "\n${YELLOW}⚙️  [2/5] Mengompilasi APK Release (Harap tunggu)...${NC}"
-flutter build apk --release --no-pub
+flutter build apk --release --target-platform android-arm64 --no-pub
 
 APK_SOURCE="build/app/outputs/flutter-apk/app-release.apk"
 if [ ! -f "$APK_SOURCE" ]; then

@@ -25,6 +25,7 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [securityAlertsCount, setSecurityAlertsCount] = useState<number>(0);
   const [adminEmail, setAdminEmail] = useState<string>('admin@snapan.id');
   const [adminRole, setAdminRole] = useState<string>('admin');
   const [adminProfile, setAdminProfile] = useState<ProfileRow | null>(null);
@@ -112,12 +113,16 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
     };
   }, [onNavigateLogin]);
 
-  // Load dashboard overview statistics
+  // Load dashboard overview statistics & security alerts count
   const loadStats = useCallback(async () => {
     try {
       setIsRefreshing(true);
-      const data = await adminService.getAdminStats();
-      setStats(data);
+      const [statsData, secAlerts] = await Promise.all([
+        adminService.getAdminStats(),
+        adminService.getSecurityAlerts().catch(() => ({ total_alerts: 0 })),
+      ]);
+      setStats(statsData);
+      setSecurityAlertsCount(secAlerts.total_alerts || 0);
     } catch (err) {
       console.error('Failed to load admin stats:', err);
     } finally {
@@ -128,11 +133,21 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
 
   useEffect(() => {
     loadStats();
+    // Realtime channel for device security alerts
+    const secChannel = adminService.subscribeToDeviceSecurityAlerts(() => {
+      adminService.getSecurityAlerts()
+        .then((res) => setSecurityAlertsCount(res.total_alerts || 0))
+        .catch(() => {});
+    });
+
+    return () => {
+      adminService.unsubscribeChannel(secChannel);
+    };
   }, [loadStats]);
 
   // Re-fetch ringkasan statistik saat tab overview dibuka
   useEffect(() => {
-    if (activeTab === 'overview') {
+    if (activeTab === 'overview' || activeTab === 'devices') {
       loadStats();
     }
   }, [activeTab, loadStats]);
@@ -175,6 +190,7 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
         adminProfile={adminProfile}
         adminEmail={adminEmail}
         stats={stats}
+        securityAlertsCount={securityAlertsCount}
       />
 
       {/* CoolAdmin Page Container */}

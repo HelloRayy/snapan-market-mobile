@@ -43,8 +43,27 @@ Future<void> _notificationTapBackgroundHandler(NotificationResponse details) asy
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   try {
-    final title = message.notification?.title ?? message.data['title'] ?? 'Pengumuman Resmi';
-    final body = message.notification?.body ?? message.data['message'] ?? '';
+    // 1. Ekstrak teks judul dan badan pesan
+    final title = (message.notification?.title ?? message.data['title']?.toString() ?? '').trim();
+    final body = (message.notification?.body ?? message.data['message']?.toString() ?? '').trim();
+
+    // 2. Proteksi Anti-Ghost Notification:
+    // Jika body kosong atau pesan tidak memiliki konten teks sama sekali,
+    // jangan pernah memunculkan notifikasi di OS status bar.
+    if (body.isEmpty) {
+      debugPrint('[FCM Background] Diabaikan: Body pesan kosong atau silent wakeup.');
+      return;
+    }
+
+    // 3. Jika pesan sudah memiliki blok `notification` standar dari Firebase FCM,
+    // Google Play Services / OS Android sudah otomatis menampilkan notifikasi di status bar.
+    // Menampilkan lagi via FlutterLocalNotificationsPlugin akan menyebabkan notifikasi ganda.
+    if (message.notification != null) {
+      debugPrint('[FCM Background] Diabaikan dari plugin lokal: Pesan sudah ditampilkan otomatis oleh OS Android.');
+      return;
+    }
+
+    final displayTitle = title.isNotEmpty ? title : 'Pengumuman Resmi';
 
     final localNotifs = FlutterLocalNotificationsPlugin();
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -56,7 +75,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
     final bigTextStyle = BigTextStyleInformation(
       body,
-      contentTitle: title,
+      contentTitle: displayTitle,
       summaryText: 'Snaps',
       htmlFormatContent: false,
       htmlFormatContentTitle: false,
@@ -116,7 +135,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
     await localNotifs.show(
       id: (DateTime.now().millisecondsSinceEpoch ~/ 1000) % 100000,
-      title: title,
+      title: displayTitle,
       body: body,
       notificationDetails: NotificationDetails(android: androidDetails),
       payload: jsonEncode(message.data),

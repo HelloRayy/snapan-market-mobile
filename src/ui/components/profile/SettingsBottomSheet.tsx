@@ -98,7 +98,7 @@ export const SettingsBottomSheet: React.FC<SettingsBottomSheetProps> = ({
               onClick={() => {
                 if (navigator.share) {
                   navigator.share({
-                    title: 'Snapan Market Mobile',
+                    title: 'Snaps Mobile',
                     url: window.location.href,
                   }).catch(() => {});
                 }
@@ -145,7 +145,7 @@ export const SettingsBottomSheet: React.FC<SettingsBottomSheetProps> = ({
 
           {/* Footer Info */}
           <div className="pt-2 text-center text-xs text-neutral-400 space-y-0.5">
-            <p className="font-semibold text-slate-700">Snapan Market Mobile v0.1.0 (PWA)</p>
+            <p className="font-semibold text-slate-700">Snaps Mobile v0.1.0 (PWA)</p>
             <p>Platform Marketplace & Komunitas Siswa SMKN 8 Semarang</p>
           </div>
         </div>

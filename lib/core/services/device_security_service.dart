@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
@@ -18,7 +19,7 @@ class DeviceQuotaResult {
   });
 }
 
-/// Layanan keamanan perangkat untuk membatasi pendaftaran akun (1 HP max 3 akun)
+/// Layanan keamanan perangkat untuk membatasi pendaftaran akun & analisa device login per NIS
 class DeviceSecurityService {
   DeviceSecurityService._internal();
   static final DeviceSecurityService instance = DeviceSecurityService._internal();
@@ -30,7 +31,7 @@ class DeviceSecurityService {
   String? _cachedDeviceId;
   String? _cachedDeviceModel;
 
-  /// Mengambil identitas unik perangkat yang persisten (Hardware + OS ID)
+  /// Mengambil identitas unik perangkat yang persisten (Hardware + Local UUID)
   Future<String> getDeviceId() async {
     if (_cachedDeviceId != null && _cachedDeviceId!.isNotEmpty) {
       return _cachedDeviceId!;
@@ -51,30 +52,25 @@ class DeviceSecurityService {
         final brand = androidInfo.brand.trim().toLowerCase();
         final model = androidInfo.model.trim().toLowerCase();
         final hardware = androidInfo.hardware.trim().toLowerCase();
-        final buildId = androidInfo.id.trim().toLowerCase();
-        final fingerprint = androidInfo.fingerprint.trim().toLowerCase();
+        final randomEntropy = '${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(999999).toString().padLeft(6, '0')}';
 
-        // Gabungan identitas hardware dan build OS
-        final rawId = '${brand}_${model}_${hardware}_$buildId';
+        // Gabungan identitas hardware dan entropy acak agar tidak bentrok antar siswa bertipe HP sama
+        final rawId = '${brand}_${model}_${hardware}_$randomEntropy';
         deviceIdentifier = rawId.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_');
-
-        if (deviceIdentifier.isEmpty) {
-          deviceIdentifier = fingerprint.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_');
-        }
       } else if (Platform.isIOS) {
         final iosInfo = await _deviceInfoPlugin.iosInfo;
-        final identifierForVendor = iosInfo.identifierForVendor ?? 'ios_device';
+        final identifierForVendor = iosInfo.identifierForVendor ?? 'ios_${DateTime.now().millisecondsSinceEpoch}';
         deviceIdentifier = 'ios_${identifierForVendor.replaceAll('-', '_')}';
       } else {
-        deviceIdentifier = 'platform_${Platform.operatingSystem}';
+        deviceIdentifier = 'platform_${Platform.operatingSystem}_${DateTime.now().millisecondsSinceEpoch}';
       }
     } catch (_) {
-      // Fallback fallback identifier bila akses info perangkat terkendala
-      deviceIdentifier = 'dev_${DateTime.now().millisecondsSinceEpoch}';
+      // Fallback identifier bila akses info perangkat terkendala
+      deviceIdentifier = 'dev_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(999999)}';
     }
 
     if (deviceIdentifier.isEmpty) {
-      deviceIdentifier = 'dev_${DateTime.now().millisecondsSinceEpoch}';
+      deviceIdentifier = 'dev_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(999999)}';
     }
 
     await prefs.setString(_prefKeyDeviceId, deviceIdentifier);
@@ -97,7 +93,8 @@ class DeviceSecurityService {
         return _cachedDeviceModel!;
       } else if (Platform.isIOS) {
         final iosInfo = await _deviceInfoPlugin.iosInfo;
-        _cachedDeviceModel = iosInfo.utsname.machine.toUpperCase();
+        final machine = iosInfo.utsname.machine.toUpperCase();
+        _cachedDeviceModel = 'APPLE $machine'.trim();
         return _cachedDeviceModel!;
       }
     } catch (_) {}
@@ -167,6 +164,34 @@ class DeviceSecurityService {
       );
     } catch (_) {
       // Non-blocking background log
+    }
+  }
+
+  /// [SNAPS-63] Mencatat aktivitas autentikasi perangkat (login_success, login_failed, register)
+  Future<void> recordAuthLog({
+    required String nis,
+    required String eventType, // 'login_success' | 'login_failed' | 'register'
+    String? userId,
+  }) async {
+    try {
+      final cleanNis = nis.trim();
+      if (cleanNis.isEmpty) return;
+
+      final deviceId = await getDeviceId();
+      final deviceModel = await getDeviceModel();
+
+      await SupabaseService.instance.client.rpc(
+        'record_device_auth_event',
+        params: {
+          'p_nis': cleanNis,
+          'p_device_id': deviceId,
+          'p_device_model': deviceModel,
+          'p_event_type': eventType,
+          if (userId != null && userId.isNotEmpty) 'p_user_id': userId,
+        },
+      );
+    } catch (_) {
+      // Non-blocking background telemetry
     }
   }
 }

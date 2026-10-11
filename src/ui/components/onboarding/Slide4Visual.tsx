@@ -6,7 +6,7 @@ export const Slide4Visual: React.FC = () => {
     <div className="relative w-full aspect-[4/5] flex items-center justify-center overflow-hidden select-none">
       <img
         src={personLoginBgSvg}
-        alt="Siap Menjelajahi Snapan Market!"
+        alt="Siap Menjelajahi Snaps!"
         className="w-[85%] h-[85%] mx-auto my-auto object-contain drop-shadow-md transition-transform duration-300 hover:scale-[1.02]"
       />
     </div>

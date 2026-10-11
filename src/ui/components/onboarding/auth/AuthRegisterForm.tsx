@@ -403,7 +403,7 @@ export const AuthRegisterForm: React.FC<AuthRegisterFormProps> = ({
             <Checkbox checked={agreeTerms} onCheckedChange={(checked: boolean) => { setAgreeTerms(checked); setErrors((prev: any) => ({ ...prev, agreeTerms: undefined })); }} />
           </div>
           <span className="leading-snug">
-            Saya menyetujui <span className="font-bold text-[#1d64ec] hover:underline">Ketentuan Layanan</span> dan <span className="font-bold text-[#1d64ec] hover:underline">Kebijakan Privasi</span> Snapan Market SMKN 8.
+            Saya menyetujui <span className="font-bold text-[#1d64ec] hover:underline">Ketentuan Layanan</span> dan <span className="font-bold text-[#1d64ec] hover:underline">Kebijakan Privasi</span> Snaps SMKN 8.
           </span>
         </label>
         {errors.agreeTerms && (

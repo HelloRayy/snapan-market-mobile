@@ -12,6 +12,7 @@ interface AdminSidebarProps {
   adminProfile?: ProfileRow | null;
   adminEmail?: string;
   stats?: AdminStats | null;
+  securityAlertsCount?: number;
 }
 
 export function AdminSidebar({
@@ -22,6 +23,7 @@ export function AdminSidebar({
   adminProfile,
   adminEmail = 'admin@snapan.id',
   stats,
+  securityAlertsCount,
 }: AdminSidebarProps) {
   const displayName = adminProfile?.full_name || adminEmail.split('@')[0] || 'Administrator';
   const displayUsername = adminProfile?.username ? `@${adminProfile.username}` : adminEmail;
@@ -198,7 +200,7 @@ export function AdminSidebar({
               </a>
             </li>
 
-            {/* Navlink Keamanan Perangkat (Batas 1 HP Max 3 Akun) */}
+            {/* Navlink Keamanan Perangkat (Batas 1 HP Max 3 Akun & Analisis NIS) */}
             <li className={activeTab === 'devices' ? 'active' : ''}>
               <a
                 href="#devices"
@@ -209,7 +211,23 @@ export function AdminSidebar({
                 }}
               >
                 <i className="fa-solid fa-mobile-screen" style={{ color: activeTab === 'devices' ? '#ffffff' : '#64748b' }}></i>
-                <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Batas Akun HP</span>
+                <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Keamanan Device</span>
+                {securityAlertsCount != null && securityAlertsCount > 0 && (
+                  <span
+                    style={{
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      padding: '2px 7px',
+                      borderRadius: '10px',
+                      background: '#ef4444',
+                      color: '#ffffff',
+                      fontVariantNumeric: 'tabular-nums',
+                      boxShadow: '0 1px 3px rgba(239, 68, 68, 0.4)',
+                    }}
+                  >
+                    {securityAlertsCount}
+                  </span>
+                )}
               </a>
             </li>
 

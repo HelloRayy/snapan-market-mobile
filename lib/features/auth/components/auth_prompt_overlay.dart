@@ -9,7 +9,7 @@ import 'package:snapan_market/core/components/snaps_logo.dart';
 /// 100% Minimalist Structure matching Threads reference:
 /// - Light theme (#FFFFFF Card, #111827 Headline, #6B7280 Subtitle)
 /// - Title: "Katakan lebih banyak" \n "dengan [Snaps Logo SVG]"
-/// - Subtitle: "Gabung ke Snapan Market untuk membagikan pemikiran, mencari tahu apa yang sedang terjadi, mengikuti orang-orang Anda, dan banyak lagi."
+/// - Subtitle: "Gabung ke Snaps untuk membagikan pemikiran, mencari tahu apa yang sedang terjadi, mengikuti orang-orang Anda, dan banyak lagi."
 /// - Single Action Capsule: Squircle student icon + "Lanjutkan sebagai siswa" + chevron right
 /// - Soft frosted backdrop blur (16px blur + 40% dim) covering the entire screen
 class AuthPromptOverlay extends StatelessWidget {

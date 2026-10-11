@@ -294,7 +294,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               type="button"
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               className="flex items-center justify-center hover:opacity-85 active:scale-95 transition-all duration-200 cursor-pointer"
-              aria-label="Snapan Market"
+              aria-label="Snaps"
             >
               <SnapanLogotype />
             </button>

@@ -41,8 +41,8 @@ export const ProfileHeaderCard: React.FC<ProfileHeaderCardProps> = ({
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share({
-          title: `Profil ${profileData.name} di Snapan Market`,
-          text: `Cek profil @${profileData.username} di Snapan Market!`,
+          title: `Profil ${profileData.name} di Snaps`,
+          text: `Cek profil @${profileData.username} di Snaps!`,
           url: shareUrl,
         });
       } catch {}

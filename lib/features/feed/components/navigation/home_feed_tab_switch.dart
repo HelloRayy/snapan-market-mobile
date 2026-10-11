@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:snapan_market/core/theme/app_animations.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Enum representing the available tabs in Home Feed
@@ -17,10 +17,11 @@ enum FeedTab {
   }
 }
 
-/// Home Feed Tab Switch Bar ("Untuk Anda" & "Jualan")
+/// Home Feed Tab Switch Bar ("Untuk Anda" & "Jualan") - Threads-Style Tap-Only.
 ///
 /// Features a 47px fixed height container, balanced 50/50 tab buttons,
-/// a smooth 2.5px active indicator bar transition, and tactile micro-tap interactions.
+/// a responsive 2.5px active indicator bar with polished spring motion,
+/// and crisp tactile micro-tap interactions (SNAPS-26).
 class HomeFeedTabSwitch extends StatelessWidget implements PreferredSizeWidget {
   final FeedTab activeTab;
   final ValueChanged<FeedTab> onTabChanged;
@@ -49,9 +50,9 @@ class HomeFeedTabSwitch extends StatelessWidget implements PreferredSizeWidget {
       ),
       child: Stack(
         children: [
-          // Animated Bottom Indicator Bar (2.5px height)
+          // Polished Spring Sliding Indicator Bar (2.5px height)
           AnimatedAlign(
-            duration: const Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 220),
             curve: Curves.easeOutCubic,
             alignment: activeTab == FeedTab.forYou
                 ? Alignment.bottomLeft
@@ -82,7 +83,7 @@ class HomeFeedTabSwitch extends StatelessWidget implements PreferredSizeWidget {
                   isActive: activeTab == FeedTab.forYou,
                   onTap: () {
                     if (activeTab != FeedTab.forYou) {
-                      HapticFeedback.selectionClick();
+                      AppAnimations.tabSwipeHaptic();
                       onTabChanged(FeedTab.forYou);
                     }
                   },
@@ -94,7 +95,7 @@ class HomeFeedTabSwitch extends StatelessWidget implements PreferredSizeWidget {
                   isActive: activeTab == FeedTab.market,
                   onTap: () {
                     if (activeTab != FeedTab.market) {
-                      HapticFeedback.selectionClick();
+                      AppAnimations.tabSwipeHaptic();
                       onTabChanged(FeedTab.market);
                     }
                   },
@@ -108,7 +109,7 @@ class HomeFeedTabSwitch extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-/// Interactive Tab Item Button with tactile scale and subtle tap highlight
+/// Interactive Tab Item Button with tactile scale and smooth state transition
 class _TabButton extends StatefulWidget {
   final FeedTab tab;
   final bool isActive;
@@ -157,16 +158,19 @@ class _TabButtonState extends State<_TabButton> {
           color: _isPressed
               ? Colors.black.withValues(alpha: 0.04)
               : Colors.transparent,
-          child: Text(
-            widget.tab.label,
-            textAlign: TextAlign.center,
+          child: AnimatedDefaultTextStyle(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
             style: TextStyle(
+              fontFamily: 'Plus Jakarta Sans',
               fontSize: 15.0,
               fontWeight: widget.isActive ? FontWeight.w700 : FontWeight.w500,
-              color: widget.isActive
-                  ? AppColors.ink
-                  : const Color(0xFF8E8E93),
+              color: widget.isActive ? AppColors.ink : const Color(0xFF8E8E93),
               letterSpacing: -0.2,
+            ),
+            child: Text(
+              widget.tab.label,
+              textAlign: TextAlign.center,
             ),
           ),
         ),

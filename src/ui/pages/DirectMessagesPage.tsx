@@ -365,7 +365,7 @@ export const DirectMessagesPage: React.FC<DirectMessagesPageProps> = ({
                 ? `Tidak ditemukan pesan dengan kata kunci "${searchQuery}"`
                 : activeFilter === 'requests'
                 ? 'Pesan dari calon pembeli produk jualan Anda akan muncul di sini.'
-                : 'Mulai kirim pesan ke teman atau penjual barang di Snapan Market.'}
+                : 'Mulai kirim pesan ke teman atau penjual barang di Snaps.'}
             </p>
           </div>
         )}

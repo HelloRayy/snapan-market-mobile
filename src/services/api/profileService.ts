@@ -121,3 +121,113 @@ export async function getProfileById(userId: string): Promise<ProfileWithFollowS
     is_followed_by_user: false
   };
 }
+
+export interface UsernameCheckResult {
+  available: boolean;
+  cleanUsername: string;
+  reason?: 'too_short' | 'invalid_chars' | 'reserved' | 'taken' | 'error';
+  message?: string;
+}
+
+const RESERVED_USERNAMES = new Set([
+  'admin',
+  'administrator',
+  'root',
+  'snapan',
+  'official',
+  'support',
+  'help',
+  'system',
+  'moderator',
+  'smkn8',
+  'smkn8semarang',
+  'bot',
+  'user',
+  'guest',
+  'public',
+  'dashboard',
+  'auth',
+  'profile',
+  'search',
+  'direct',
+  'messages',
+  'market',
+  'store'
+]);
+
+/**
+ * Cek ketersediaan username di Supabase (public.profiles)
+ * Digunakan untuk live check di Landing Page & flow registrasi/onboarding
+ */
+export async function checkUsernameAvailability(rawUsername: string): Promise<UsernameCheckResult> {
+  const cleanUsername = rawUsername.replace(/^@+/, '').trim().toLowerCase();
+
+  if (cleanUsername.length < 3) {
+    return {
+      available: false,
+      cleanUsername,
+      reason: 'too_short',
+      message: 'Minimal 3 karakter'
+    };
+  }
+
+  if (cleanUsername.length > 20 || !/^[a-z0-9_.]+$/.test(cleanUsername)) {
+    return {
+      available: false,
+      cleanUsername,
+      reason: 'invalid_chars',
+      message: 'Hanya huruf kecil, angka, garis bawah (_), dan titik (.)'
+    };
+  }
+
+  if (RESERVED_USERNAMES.has(cleanUsername)) {
+    return {
+      available: false,
+      cleanUsername,
+      reason: 'reserved',
+      message: 'Username ini dilindungi oleh sistem'
+    };
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, username')
+      .ilike('username', cleanUsername)
+      .maybeSingle();
+
+    if (error) {
+      console.warn('Error checking username availability from Supabase:', error.message);
+      return {
+        available: false,
+        cleanUsername,
+        reason: 'error',
+        message: 'Gagal mengecek ke server'
+      };
+    }
+
+    if (data) {
+      return {
+        available: false,
+        cleanUsername,
+        reason: 'taken',
+        message: 'Username sudah digunakan oleh akun lain'
+      };
+    }
+
+    return {
+      available: true,
+      cleanUsername,
+      message: 'Username tersedia!'
+    };
+  } catch (err: any) {
+    console.warn('Exception during username availability check:', err);
+    return {
+      available: false,
+      cleanUsername,
+      reason: 'error',
+      message: 'Gagal memeriksa ketersediaan'
+    };
+  }
+}
+

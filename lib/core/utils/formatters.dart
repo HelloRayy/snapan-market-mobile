@@ -1,4 +1,4 @@
-/// Core Formatter Utilities for Snapan Market
+/// Core Formatter Utilities for Snaps
 /// Aligned 100% with Web TypeScript Formatters (src/utils/formatters.ts)
 library;
 

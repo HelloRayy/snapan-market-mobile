@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/glass_toolbar_top.dart';
+import 'package:snapan_market/core/services/device_security_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/snaps_toast.dart';
@@ -69,6 +70,27 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     super.initState();
     _controller = PostDetailController(post: widget.post);
     _controller.addListener(_onControllerUpdate);
+    _trackPostView();
+  }
+
+  /// Rekam view secara atomic & non-blocking untuk 1 device unik
+  void _trackPostView() {
+    Future.microtask(() async {
+      try {
+        final deviceId = await DeviceSecurityService.instance.getDeviceId();
+        final updatedViews = await SupabaseService.instance.recordPostView(
+          widget.post.id,
+          deviceId: deviceId,
+        );
+        if (updatedViews != null && mounted) {
+          setState(() {
+            _controller.post = _controller.post.copyWith(viewsCount: updatedViews);
+          });
+        }
+      } catch (e) {
+        debugPrint('Error tracking post view: $e');
+      }
+    });
   }
 
   void _onControllerUpdate() {

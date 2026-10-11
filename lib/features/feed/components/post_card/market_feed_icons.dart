@@ -221,3 +221,25 @@ class FeedBoxIcon extends StatelessWidget {
     );
   }
 }
+
+/// 10. Feed Eye Icon for Views Count (Minimalist & Sleek)
+class FeedEyeIcon extends StatelessWidget {
+  final double size;
+  final Color? color;
+
+  const FeedEyeIcon({
+    super.key,
+    this.size = 14.0,
+    this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Icon(
+      CupertinoIcons.eye,
+      size: size,
+      color: color ?? AppColors.ashGray,
+    );
+  }
+}
+

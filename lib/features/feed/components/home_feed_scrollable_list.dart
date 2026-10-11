@@ -5,14 +5,18 @@ import 'package:snapan_market/features/feed/components/navigation/home_feed_tab_
 import 'package:snapan_market/features/feed/components/post_card/market_post_card.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
-class HomeFeedScrollableList extends StatelessWidget {
-  final ScrollController scrollController;
+/// Threads-Style Feed Container with Tap-Only Mode Switcher (SNAPS-26).
+///
+/// Eliminates horizontal gesture arena conflicts to guarantee 100% solid,
+/// unhindered vertical scrolling while preserving independent scroll states
+/// across "Untuk Anda" (All posts) and "Jualan" (Product posts).
+class HomeFeedScrollableList extends StatefulWidget {
   final FeedTab activeTab;
   final ValueChanged<FeedTab> onTabChanged;
   final bool isLoading;
   final bool hasError;
   final String errorMessage;
-  final List<MarketPostModel> posts;
+  final List<MarketPostModel> allPosts;
   final Future<void> Function() onRefresh;
   final VoidCallback onRetry;
   final VoidCallback onScrollToTop;
@@ -30,13 +34,12 @@ class HomeFeedScrollableList extends StatelessWidget {
 
   const HomeFeedScrollableList({
     super.key,
-    required this.scrollController,
     required this.activeTab,
     required this.onTabChanged,
     required this.isLoading,
     required this.hasError,
     required this.errorMessage,
-    required this.posts,
+    required this.allPosts,
     required this.onRefresh,
     required this.onRetry,
     required this.onScrollToTop,
@@ -54,10 +57,92 @@ class HomeFeedScrollableList extends StatelessWidget {
   });
 
   @override
+  State<HomeFeedScrollableList> createState() => HomeFeedScrollableListState();
+}
+
+class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
+  late final ScrollController _forYouScrollController;
+  late final ScrollController _marketScrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _forYouScrollController = ScrollController();
+    _marketScrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _forYouScrollController.dispose();
+    _marketScrollController.dispose();
+    super.dispose();
+  }
+
+  /// Public imperative method to scroll the currently visible tab to top
+  void scrollToTop() {
+    final activeController = widget.activeTab == FeedTab.forYou
+        ? _forYouScrollController
+        : _marketScrollController;
+    if (activeController.hasClients) {
+      activeController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final forYouPosts = widget.allPosts;
+    final marketPosts = widget.allPosts
+        .where((p) => p.postType == 'product' || (p.price != null && p.price! > 0))
+        .toList();
+
+    return Column(
+      children: [
+        // Pinned Header Tab Switch with Polished Spring Indicator
+        RepaintBoundary(
+          child: HomeFeedTabSwitch(
+            activeTab: widget.activeTab,
+            onTabChanged: widget.onTabChanged,
+          ),
+        ),
+
+        // Pure Vertical Timeline Container with Zero Horizontal Gesture Conflicts
+        Expanded(
+          child: IndexedStack(
+            index: widget.activeTab == FeedTab.forYou ? 0 : 1,
+            children: [
+              _buildTimelinePage(
+                key: const PageStorageKey('timeline_for_you'),
+                scrollController: _forYouScrollController,
+                posts: forYouPosts,
+                isMarket: false,
+              ),
+              _buildTimelinePage(
+                key: const PageStorageKey('timeline_market'),
+                scrollController: _marketScrollController,
+                posts: marketPosts,
+                isMarket: true,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTimelinePage({
+    required Key key,
+    required ScrollController scrollController,
+    required List<MarketPostModel> posts,
+    required bool isMarket,
+  }) {
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
-        if (notification.depth != 0 || notification.metrics.axis != Axis.vertical) {
+        if (notification.depth != 0 ||
+            notification.metrics.axis != Axis.vertical) {
           return false;
         }
 
@@ -67,40 +152,33 @@ class HomeFeedScrollableList extends StatelessWidget {
           final double maxScroll = notification.metrics.maxScrollExtent;
 
           if (currentOffset <= 10.0) {
-            onShowFab();
+            widget.onShowFab();
           } else if (currentOffset < maxScroll) {
             if (delta > 2.0) {
-              onHideFab();
+              widget.onHideFab();
             } else if (delta < -2.0) {
-              onShowFab();
+              widget.onShowFab();
             }
           }
         }
         return false;
       },
       child: RefreshIndicator(
-        onRefresh: onRefresh,
+        onRefresh: widget.onRefresh,
         color: AppColors.primary,
         backgroundColor: Colors.white,
         child: CustomScrollView(
+          key: key,
           controller: scrollController,
           physics: const BouncingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics(),
           ),
           slivers: [
-            SliverToBoxAdapter(
-              child: RepaintBoundary(
-                child: HomeFeedTabSwitch(
-                  activeTab: activeTab,
-                  onTabChanged: onTabChanged,
-                ),
-              ),
-            ),
-            if (isLoading && posts.isEmpty)
+            if (widget.isLoading && posts.isEmpty)
               const SliverToBoxAdapter(
                 child: FeedTimelineSkeleton(itemCount: 4),
               )
-            else if (hasError && posts.isEmpty)
+            else if (widget.hasError && posts.isEmpty)
               SliverFillRemaining(
                 hasScrollBody: false,
                 child: _buildErrorState(),
@@ -108,7 +186,7 @@ class HomeFeedScrollableList extends StatelessWidget {
             else if (posts.isEmpty)
               SliverFillRemaining(
                 hasScrollBody: false,
-                child: _buildEmptyState(),
+                child: _buildEmptyState(isMarket: isMarket),
               )
             else ...[
               SliverList.builder(
@@ -118,14 +196,14 @@ class HomeFeedScrollableList extends StatelessWidget {
                   return MarketPostCard(
                     key: ValueKey(post.id),
                     item: post,
-                    onLikeToggle: onLikeToggle,
-                    onRepostToggle: onRepostToggle,
-                    onPostClick: onPostClick,
-                    onTopicClick: onTopicClick,
-                    onUserClick: onUserClick,
-                    onImageClick: onImageClick,
-                    onDeletePost: onDeletePost,
-                    onVotePoll: onVotePoll,
+                    onLikeToggle: widget.onLikeToggle,
+                    onRepostToggle: widget.onRepostToggle,
+                    onPostClick: widget.onPostClick,
+                    onTopicClick: widget.onTopicClick,
+                    onUserClick: widget.onUserClick,
+                    onImageClick: widget.onImageClick,
+                    onDeletePost: widget.onDeletePost,
+                    onVotePoll: widget.onVotePoll,
                   );
                 },
               ),
@@ -142,33 +220,40 @@ class HomeFeedScrollableList extends StatelessWidget {
   Widget _buildErrorState() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: const EdgeInsets.fromLTRB(32.0, 32.0, 32.0, 100.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.wifi_off_rounded, size: 52, color: Color(0xFF94A3B8)),
+            const Icon(Icons.wifi_off_rounded,
+                size: 52, color: Color(0xFF94A3B8)),
             const SizedBox(height: 14),
             const Text(
               'Koneksi Terputus',
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: Color(0xFF1E293B)),
+              style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF1E293B)),
             ),
             const SizedBox(height: 6),
             Text(
-              errorMessage,
+              widget.errorMessage,
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
             ),
             const SizedBox(height: 18),
             ElevatedButton(
-              onPressed: onRetry,
+              onPressed: widget.onRetry,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
-              child: const Text('Coba Lagi', style: TextStyle(fontWeight: FontWeight.w600)),
+              child: const Text('Coba Lagi',
+                  style: TextStyle(fontWeight: FontWeight.w600)),
             ),
           ],
         ),
@@ -176,11 +261,10 @@ class HomeFeedScrollableList extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
-    final isMarket = activeTab == FeedTab.market;
+  Widget _buildEmptyState({required bool isMarket}) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: const EdgeInsets.fromLTRB(32.0, 32.0, 32.0, 100.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -192,7 +276,9 @@ class HomeFeedScrollableList extends StatelessWidget {
                 borderRadius: BorderRadius.circular(18.0),
               ),
               child: Icon(
-                isMarket ? Icons.storefront_outlined : Icons.dynamic_feed_rounded,
+                isMarket
+                    ? Icons.storefront_outlined
+                    : Icons.dynamic_feed_rounded,
                 size: 28.0,
                 color: const Color(0xFF94A3B8),
               ),
@@ -227,7 +313,7 @@ class HomeFeedScrollableList extends StatelessWidget {
   Widget _buildFooter() {
     return Container(
       color: AppColors.canvas,
-      padding: const EdgeInsets.symmetric(vertical: 28.0, horizontal: 16.0),
+      padding: const EdgeInsets.fromLTRB(16.0, 28.0, 16.0, 100.0),
       child: Column(
         children: [
           Container(
@@ -247,10 +333,10 @@ class HomeFeedScrollableList extends StatelessWidget {
               color: Color(0xFF94A3B8),
             ),
           ),
-          if (onLogout != null) ...[
+          if (widget.onLogout != null) ...[
             const SizedBox(height: 16.0),
             TextButton.icon(
-              onPressed: onLogout,
+              onPressed: widget.onLogout,
               icon: const Icon(
                 Icons.logout_rounded,
                 size: 16.0,
@@ -259,14 +345,13 @@ class HomeFeedScrollableList extends StatelessWidget {
               label: const Text(
                 'Keluar Akun',
                 style: TextStyle(
-                  fontSize: 13.0,
                   color: AppColors.muted,
+                  fontSize: 13.0,
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ),
           ],
-          const SizedBox(height: 160.0),
         ],
       ),
     );

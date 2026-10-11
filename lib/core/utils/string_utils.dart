@@ -1,4 +1,4 @@
-/// Common string and text utilities for Snapan Market
+/// Common string and text utilities for Snaps
 class StringUtils {
   /// Regular expression matching all Unicode emoji ranges
   static final RegExp _emojiRegex = RegExp(

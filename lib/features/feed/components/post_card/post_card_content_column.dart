@@ -105,6 +105,7 @@ class PostCardContentColumn extends StatelessWidget {
             item: item,
             isDetail: isDetail,
             onImageClick: onImageClick,
+            onDoubleTapLike: isLiked ? null : onLikeToggle,
           ),
         ],
         if (item.locationTag != null && item.locationTag!.isNotEmpty && item.poll == null) ...[
@@ -131,6 +132,7 @@ class PostCardContentColumn extends StatelessWidget {
           repostsCount: repostsCount,
           likeScaleAnim: likeScaleAnim,
           repostRotateAnim: repostRotateAnim,
+          isDetail: isDetail,
           onLikeToggle: onLikeToggle,
           onRepostToggle: onRepostToggle,
           onPostClick: onPostClick,

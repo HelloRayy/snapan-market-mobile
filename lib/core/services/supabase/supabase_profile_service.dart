@@ -26,6 +26,16 @@ class SupabaseProfileService {
               metaDisplayName != null && metaDisplayName.isNotEmpty) {
             data['display_name'] = metaDisplayName;
           }
+          final metaBio = _client.auth.currentUser?.userMetadata?['bio'] as String?;
+          if ((data['bio'] == null || (data['bio'] as String).isEmpty) &&
+              metaBio != null && metaBio.isNotEmpty) {
+            data['bio'] = metaBio;
+          }
+          final metaLink = _client.auth.currentUser?.userMetadata?['link'] as String?;
+          if ((data['link'] == null || (data['link'] as String).isEmpty) &&
+              metaLink != null && metaLink.isNotEmpty) {
+            data['link'] = metaLink;
+          }
           currentUserProfileNotifier.value = data;
         }
       }
@@ -49,6 +59,16 @@ class SupabaseProfileService {
         if ((data['display_name'] == null || (data['display_name'] as String).isEmpty) &&
             metaDisplayName != null && metaDisplayName.isNotEmpty) {
           data['display_name'] = metaDisplayName;
+        }
+        final metaBio = _client.auth.currentUser?.userMetadata?['bio'] as String?;
+        if ((data['bio'] == null || (data['bio'] as String).isEmpty) &&
+            metaBio != null && metaBio.isNotEmpty) {
+          data['bio'] = metaBio;
+        }
+        final metaLink = _client.auth.currentUser?.userMetadata?['link'] as String?;
+        if ((data['link'] == null || (data['link'] as String).isEmpty) &&
+            metaLink != null && metaLink.isNotEmpty) {
+          data['link'] = metaLink;
         }
       }
       return data;
@@ -202,6 +222,8 @@ class SupabaseProfileService {
       'class_group': cleanClassGroup,
       if (nis != null && nis.isNotEmpty) 'nis': nis,
       if (avatarUrl != null && avatarUrl.isNotEmpty) 'avatar_url': avatarUrl,
+      if (bio != null) 'bio': bio,
+      if (link != null) 'link': link,
     };
 
     final minimalPayload = <String, dynamic>{

@@ -45,8 +45,9 @@ export function useAuth() {
       if (profileChannel) {
         supabase.removeChannel(profileChannel);
       }
+      const channelName = `public:profiles:${userId}-${Math.random().toString(36).substring(2, 7)}`;
       profileChannel = supabase
-        .channel(`public:profiles:${userId}`)
+        .channel(channelName)
         .on(
           'postgres_changes',
           {

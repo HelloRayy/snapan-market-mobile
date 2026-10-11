@@ -17,7 +17,7 @@ export const InstallBanner: React.FC = () => {
             <Download className="h-5 w-5" />
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-slate-100">Install Snapan Market</h4>
+            <h4 className="text-sm font-semibold text-slate-100">Install Snaps</h4>
             <p className="text-xs text-slate-400">Akses cepat & bekerja offline di HP kamu</p>
           </div>
         </div>

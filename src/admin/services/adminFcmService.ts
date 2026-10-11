@@ -113,38 +113,62 @@ export const adminFcmService = {
       const projectId = serviceAccount.project_id || 'snaps-6767';
       const endpoint = `https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`;
 
+      const safeTitle = (title || 'Pengumuman Resmi').trim();
+      const safeMessage = (message || '').trim();
+
+      if (!safeMessage) {
+        console.warn('[FCM] Dibatalkan: Pesan notifikasi kosong.');
+        return { success: 0, failed: 0 };
+      }
+
       let successCount = 0;
       let failedCount = 0;
 
+      // Cek apakah notifikasi membawa aksi tombol khusus
+      const hasActionButton = Boolean(
+        actionType &&
+        actionType !== 'none' &&
+        (actionUrl || actionType === 'update_app')
+      );
+
       // Kirim secara paralel dalam batch kecil
-      // Mengirimkan kedua blok:
-      // 1. "notification" agar OS Android (Google Play Services) langsung memunculkan pop-up status bar
-      //    meskipun aplikasi ditutup paksa / mode hemat daya.
-      // 2. "data" agar Flutter foreground & background listener membaca payload interaksi lengkap.
+      // ARSITEKTUR FCM ANTI-DUPLIKASI & SUPPORT BUTTON:
+      // - Jika ada action button: Kirim DATA-ONLY message. Android OS tidak akan menampilkan
+      //   notifikasi bawaan yang bisu tanpa tombol. Sebaliknya, Flutter background handler
+      //   akan membangkitkan notifikasi lokal dengan tombol aksi interaktif (AndroidNotificationAction).
+      // - Jika tidak ada action button: Kirim standard notification block agar langsung muncul di OS status bar.
       const promises = tokens.map(async (fcmToken) => {
         try {
-          const body = {
-            message: {
-              token: fcmToken,
-              notification: {
-                title,
-                body: message,
-              },
-              data: {
-                title,
-                message,
-                action_type: actionType || 'none',
-                action_url: actionUrl || '',
-                action_button_label: actionButtonLabel || 'Buka Tautan',
-              },
-              android: {
-                priority: 'high',
-                notification: {
-                  channel_id: 'snaps_announcements',
-                  click_action: 'FLUTTER_NOTIFICATION_CLICK',
-                },
-              },
+          const messagePayload: any = {
+            token: fcmToken,
+            data: {
+              title: safeTitle,
+              message: safeMessage,
+              action_type: actionType || 'none',
+              action_url: actionUrl || '',
+              action_button_label: actionButtonLabel || 'Buka Tautan',
             },
+            android: {
+              priority: 'high',
+              collapse_key: 'snaps_announcements_broadcast',
+            },
+          };
+
+          if (!hasActionButton) {
+            // Standar push tanpa tombol: delegasikan langsung ke OS Play Services
+            messagePayload.notification = {
+              title: safeTitle,
+              body: safeMessage,
+            };
+            messagePayload.android.notification = {
+              channel_id: 'snaps_announcements',
+              click_action: 'FLUTTER_NOTIFICATION_CLICK',
+              tag: 'snaps_broadcast',
+            };
+          }
+
+          const body = {
+            message: messagePayload,
           };
 
           const res = await fetch(endpoint, {

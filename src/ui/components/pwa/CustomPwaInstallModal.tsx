@@ -44,7 +44,7 @@ export const CustomPwaInstallModal: React.FC<CustomPwaInstallModalProps> = ({
           <div className="space-y-1">
             <div className="flex items-center gap-1.5">
               <h3 className="text-lg font-extrabold text-slate-900 font-shopify-sans leading-tight">
-                Snapan Market
+                Snaps
               </h3>
               <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                 Resmi

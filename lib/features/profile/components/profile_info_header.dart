@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/core/utils/string_utils.dart';
@@ -86,16 +87,45 @@ class ProfileInfoHeader extends StatelessWidget {
 
               const SizedBox(width: 14.0),
 
-              // Right Avatar (60x60px Apple HIG Standard with Zoom Viewer)
+              // Right Avatar (60x60px Apple HIG Standard with Zoom Viewer / Incomplete Badge)
               GestureDetector(
                 onTap: onAvatarTap,
-                child: SizedBox(
-                  width: 60.0,
-                  height: 60.0,
-                  child: AppAvatar(
-                    avatarUrl: user.avatar,
-                    size: 60.0,
-                  ),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    SizedBox(
+                      width: 60.0,
+                      height: 60.0,
+                      child: AppAvatar(
+                        avatarUrl: user.avatar,
+                        size: 60.0,
+                      ),
+                    ),
+                    if (isOwnProfile && (user.avatar.trim().isEmpty || user.avatar.startsWith('assets/')))
+                      Positioned(
+                        right: -2.0,
+                        bottom: -2.0,
+                        child: Container(
+                          width: 18.0,
+                          height: 18.0,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF59E0B), // Warm amber yellow
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2.0),
+                          ),
+                          alignment: Alignment.center,
+                          child: const Text(
+                            '!',
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                              height: 1.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ],
@@ -115,9 +145,11 @@ class ProfileInfoHeader extends StatelessWidget {
             ),
           ] else if (isOwnProfile) ...[
             const SizedBox(height: 8.0),
-            const Text(
-              'Ketuk Edit Profil untuk menambahkan bio Anda...',
-              style: TextStyle(
+            Text(
+              (user.avatar.trim().isEmpty || user.avatar.startsWith('assets/'))
+                  ? 'Sentuh foto untuk menambahkan foto profil Anda...'
+                  : 'Ketuk Edit Profil untuk menambahkan bio Anda...',
+              style: const TextStyle(
                 fontSize: 13.5,
                 fontStyle: FontStyle.italic,
                 color: Color(0xFF94A3B8),

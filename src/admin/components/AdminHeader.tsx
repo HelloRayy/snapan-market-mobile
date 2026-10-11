@@ -72,15 +72,16 @@ export function AdminHeader({
   // Key untuk menyimpan ID notifikasi yang sudah pernah dibuka/dibaca
   const READ_NOTIFS_STORAGE_KEY = 'snapan_admin_read_notifs';
 
-  // Daftar notifikasi laporan konten/teks dari pengguna (Real DB)
+  // Daftar notifikasi laporan konten & peringatan keamanan perangkat (Real DB)
   const [reportNotifications, setReportNotifications] = useState<
     {
       id: string;
       title: string;
       desc: string;
       time: string;
-      type: 'post' | 'text' | 'verification';
+      type: 'post' | 'text' | 'verification' | 'security';
       unread: boolean;
+      nis?: string;
     }[]
   >([]);
 
@@ -88,7 +89,11 @@ export function AdminHeader({
     let isSubscribed = true;
     const loadRealReportsNoti = async () => {
       try {
-        const { notifications } = await adminService.getPendingReportNotifications(5);
+        const [{ notifications }, securityData] = await Promise.all([
+          adminService.getPendingReportNotifications(5).catch(() => ({ notifications: [] })),
+          adminService.getSecurityAlerts().catch(() => ({ total_alerts: 0, alerts: [], policy: { max_devices_per_nis: 3, failed_threshold: 3 } })),
+        ]);
+
         if (!isSubscribed) return;
 
         let readIds: string[] = [];
@@ -98,7 +103,7 @@ export function AdminHeader({
           readIds = [];
         }
 
-        const formatted = notifications.map((r) => ({
+        const formattedReports = notifications.map((r) => ({
           id: r.id,
           title: `Laporan: ${r.reason}`,
           desc: r.details || `Dilaporkan oleh @${r.reporterUsername || 'siswa'}`,
@@ -106,7 +111,20 @@ export function AdminHeader({
           type: 'post' as const,
           unread: !readIds.includes(r.id),
         }));
-        setReportNotifications(formatted);
+
+        const formattedSecurityAlerts = (securityData.alerts || []).map((sec) => ({
+          id: `sec-${sec.nis}-${sec.alert_type}`,
+          title: sec.alert_type === 'excess_devices'
+            ? `⚠️ Perangkat Berlebih (NIS ${sec.nis})`
+            : `🚨 Percobaan Gagal (NIS ${sec.nis})`,
+          desc: sec.message,
+          time: new Date(sec.last_activity).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+          type: 'security' as const,
+          unread: !readIds.includes(`sec-${sec.nis}-${sec.alert_type}`),
+          nis: sec.nis,
+        }));
+
+        setReportNotifications([...formattedSecurityAlerts, ...formattedReports]);
       } catch (err) {
         console.error('Failed to load notifications:', err);
       }
@@ -114,14 +132,18 @@ export function AdminHeader({
 
     loadRealReportsNoti();
 
-    // Realtime listener untuk laporan konten baru/update dari mobile app
-    const channel = adminService.subscribeToContentReports(() => {
+    // Realtime listener untuk laporan konten dan audit perangkat
+    const contentChannel = adminService.subscribeToContentReports(() => {
+      loadRealReportsNoti();
+    });
+    const deviceChannel = adminService.subscribeToDeviceSecurityAlerts(() => {
       loadRealReportsNoti();
     });
 
     return () => {
       isSubscribed = false;
-      adminService.unsubscribeChannel(channel);
+      adminService.unsubscribeChannel(contentChannel);
+      adminService.unsubscribeChannel(deviceChannel);
     };
   }, [isRefreshing]);
 
@@ -402,7 +424,9 @@ export function AdminHeader({
                               key={noti.id}
                               onClick={() => {
                                 setIsNotiOpen(false);
-                                if (noti.type === 'verification') {
+                                if (noti.type === 'security') {
+                                  onNavigateTab?.('devices');
+                                } else if (noti.type === 'verification') {
                                   onNavigateTab?.('users');
                                 } else {
                                   onNavigateTab?.('reports');
@@ -427,8 +451,17 @@ export function AdminHeader({
                                     height: '28px',
                                     borderRadius: '6px',
                                     background:
-                                      noti.type === 'verification' ? '#e0f2fe' : '#fee2e2',
-                                    color: noti.type === 'verification' ? '#0369a1' : '#b91c1c',
+                                      noti.type === 'security'
+                                        ? '#fee2e2'
+                                        : noti.type === 'verification'
+                                        ? '#e0f2fe'
+                                        : '#fee2e2',
+                                    color:
+                                      noti.type === 'security'
+                                        ? '#dc2626'
+                                        : noti.type === 'verification'
+                                        ? '#0369a1'
+                                        : '#b91c1c',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
@@ -439,7 +472,11 @@ export function AdminHeader({
                                 >
                                   <i
                                     className={`fa-solid ${
-                                      noti.type === 'verification' ? 'fa-user-check' : 'fa-triangle-exclamation'
+                                      noti.type === 'security'
+                                        ? 'fa-shield-halved'
+                                        : noti.type === 'verification'
+                                        ? 'fa-user-check'
+                                        : 'fa-triangle-exclamation'
                                     }`}
                                   ></i>
                                 </div>

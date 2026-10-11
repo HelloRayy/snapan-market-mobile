@@ -52,6 +52,52 @@ export interface DeviceSecurityData {
   devices: DeviceRecordRow[];
 }
 
+export interface DeviceSecurityAlert {
+  nis: string;
+  alert_type: 'excess_devices' | 'excessive_failed_attempts';
+  count: number;
+  device_models: string[];
+  last_activity: string;
+  message: string;
+}
+
+export interface DeviceSecurityAlertsData {
+  total_alerts: number;
+  alerts: DeviceSecurityAlert[];
+  policy: {
+    max_devices_per_nis: number;
+    failed_threshold: number;
+  };
+}
+
+export interface NisDeviceBindingRow {
+  device_id: string;
+  device_model: string;
+  first_used_at: string;
+  last_used_at: string;
+  is_unlinked: boolean;
+  unlinked_at: string | null;
+}
+
+export interface DeviceAuthLogRow {
+  id: string;
+  device_id: string;
+  device_model: string;
+  event_type: 'login_success' | 'login_failed' | 'register';
+  created_at: string;
+}
+
+export interface NisDeviceDetailsData {
+  student: {
+    nis: string;
+    full_name: string;
+    username: string | null;
+    class_group: string;
+  } | null;
+  devices: NisDeviceBindingRow[];
+  recent_logs: DeviceAuthLogRow[];
+}
+
 export const adminService = {
   /**
    * Cek apakah user saat ini memiliki akses admin / superadmin
@@ -782,15 +828,18 @@ export const adminService = {
         }
 
         if (fcmRows && fcmRows.length > 0) {
-          const tokens = fcmRows
-            .map((r: any) => r.fcm_token)
-            .filter((t: any) => typeof t === 'string' && t.trim().length > 10);
+          const rawTokens = fcmRows
+            .map((r: any) => (typeof r.fcm_token === 'string' ? r.fcm_token.trim() : ''))
+            .filter((t: string) => t.length > 10);
 
-          totalTokensFound = tokens.length;
-          if (tokens.length > 0) {
+          // Deduplikasi token agar satu perangkat tidak menerima pesan berulang kali
+          const uniqueTokens = Array.from(new Set<string>(rawTokens));
+
+          totalTokensFound = uniqueTokens.length;
+          if (uniqueTokens.length > 0) {
             const { adminFcmService } = await import('./adminFcmService');
             const fcmRes = await adminFcmService.sendPushNotificationToTokens({
-              tokens,
+              tokens: uniqueTokens,
               title: payload.title,
               message: payload.message,
               actionType: payload.actionType,
@@ -1137,5 +1186,137 @@ export const adminService = {
       console.error('Failed resetDeviceQuota:', e);
       throw new Error(e?.message || 'Gagal mereset kuota perangkat.');
     }
+  },
+
+  /**
+   * [SNAPS-63] Mengambil daftar peringatan anomali keamanan perangkat:
+   * 1. NIS terhubung dengan > 3 perangkat aktif
+   * 2. NIS mengalami > 3 kali salah password dalam 24 jam terakhir
+   */
+  async getSecurityAlerts(): Promise<DeviceSecurityAlertsData> {
+    try {
+      const { data, error } = await (supabase.rpc as any)('admin_get_security_alerts');
+      if (!error && data) {
+        return {
+          total_alerts: data.total_alerts || 0,
+          alerts: Array.isArray(data.alerts) ? data.alerts : [],
+          policy: data.policy || { max_devices_per_nis: 3, failed_threshold: 3 },
+        };
+      }
+    } catch (err) {
+      console.warn('RPC admin_get_security_alerts failed, fallback to empty alerts:', err);
+    }
+
+    return {
+      total_alerts: 0,
+      alerts: [],
+      policy: { max_devices_per_nis: 3, failed_threshold: 3 },
+    };
+  },
+
+  /**
+   * [SNAPS-63] Mengambil detail perangkat dan log aktivitas berdasarkan target NIS
+   */
+  async getNisDeviceDetails(targetNis: string): Promise<NisDeviceDetailsData> {
+    const cleanNis = targetNis.trim();
+    if (!cleanNis) {
+      return { student: null, devices: [], recent_logs: [] };
+    }
+
+    try {
+      const { data, error } = await (supabase.rpc as any)('admin_get_nis_device_details', {
+        target_nis: cleanNis,
+      });
+
+      if (!error && data) {
+        return {
+          student: data.student || null,
+          devices: Array.isArray(data.devices) ? data.devices : [],
+          recent_logs: Array.isArray(data.recent_logs) ? data.recent_logs : [],
+        };
+      }
+    } catch (err) {
+      console.warn('RPC admin_get_nis_device_details failed, using direct query fallback:', err);
+    }
+
+    // Direct table query fallback
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('nis, full_name, username, class_group')
+        .eq('nis', cleanNis)
+        .maybeSingle();
+
+      const { data: bindings } = await (supabase as any)
+        .from('nis_device_bindings')
+        .select('*')
+        .eq('nis', cleanNis)
+        .order('last_used_at', { ascending: false });
+
+      const { data: logs } = await (supabase as any)
+        .from('device_auth_logs')
+        .select('*')
+        .eq('nis', cleanNis)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      return {
+        student: profile as any,
+        devices: (bindings || []) as NisDeviceBindingRow[],
+        recent_logs: (logs || []) as DeviceAuthLogRow[],
+      };
+    } catch (e: any) {
+      console.error('Failed getNisDeviceDetails direct fallback:', e);
+      return { student: null, devices: [], recent_logs: [] };
+    }
+  },
+
+  /**
+   * [SNAPS-63] Unlink perangkat fisik dari suatu NIS (ketika siswa melapor ganti HP / hilang)
+   */
+  async unlinkNisDevice(nis: string, deviceId: string): Promise<boolean> {
+    try {
+      const { error } = await (supabase.rpc as any)('admin_unlink_nis_device', {
+        p_nis: nis,
+        p_device_id: deviceId,
+      });
+
+      if (!error) return true;
+
+      // Fallback direct update
+      const { error: directErr } = await (supabase as any)
+        .from('nis_device_bindings')
+        .update({
+          is_unlinked: true,
+          unlinked_at: new Date().toISOString(),
+        })
+        .match({ nis, device_id: deviceId });
+
+      if (directErr) throw directErr;
+      return true;
+    } catch (err: any) {
+      console.error('Failed unlinkNisDevice:', err);
+      throw new Error(err?.message || 'Gagal memutuskan tautan perangkat.');
+    }
+  },
+
+  /**
+   * [SNAPS-63] Subscribe realtime ke log autentikasi perangkat
+   */
+  subscribeToDeviceSecurityAlerts(onUpdate: () => void): RealtimeChannel {
+    const channelId = `admin-sec-alerts-${Math.random().toString(36).substring(2, 9)}`;
+    return supabase
+      .channel(channelId)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'device_auth_logs' },
+        () => onUpdate()
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'nis_device_bindings' },
+        () => onUpdate()
+      )
+      .subscribe();
   },
 };

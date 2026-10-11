@@ -63,12 +63,14 @@ class SupabaseFeedService {
       if (title != null && title.isNotEmpty) 'title': title,
       if (description != null && description.isNotEmpty) 'description': description,
       'price': price ?? 0,
+      // ignore: use_null_aware_elements
       if (originalPrice != null) 'original_price': originalPrice,
       'stock': stock ?? 1,
       'category': category ?? (postType == 'product' ? 'Produk Siswa' : 'Umum'),
       'location_tag': MarketPostModel.normalizeLocationTag(locationTag),
       if (topicTag != null && topicTag.isNotEmpty) 'topic_tag': topicTag,
       'images': images,
+      // ignore: use_null_aware_elements
       if (poll != null) 'poll': poll,
     };
 
@@ -159,6 +161,46 @@ class SupabaseFeedService {
       debugPrint('Error fetchLikedPostIds: $e');
       return {};
     }
+  }
+
+  /// Set lokal ID postingan yang sudah dicatat dalam sesi runtime ini agar tidak menembak network berulang kali
+  final Set<String> _viewedPostIdsInMemory = <String>{};
+
+  /// Mencatat 1 view untuk 1 device pada sebuah postingan
+  Future<int?> recordPostView(String postId, {required String deviceId}) async {
+    if (postId.isEmpty || deviceId.isEmpty) return null;
+
+    // Deduplikasi in-memory: jangan tembak jika dalam sesi aplikasi sudah tercatat
+    final dedupeKey = '${postId}_$deviceId';
+    if (_viewedPostIdsInMemory.contains(dedupeKey)) {
+      return null;
+    }
+    _viewedPostIdsInMemory.add(dedupeKey);
+
+    try {
+      final user = _currentUser;
+      final response = await _client.rpc('record_post_view', params: {
+        'p_post_id': postId,
+        'p_device_id': deviceId,
+        'p_user_id': user?.id,
+      });
+
+      if (response != null && response is num) {
+        return response.toInt();
+      }
+    } catch (e) {
+      // Fallback jika RPC record_post_view belum dieksekusi di database SQL:
+      // coba insert manual ke tabel post_views jika ada
+      try {
+        final user = _currentUser;
+        await _client.from('post_views').insert({
+          'post_id': postId,
+          'device_id': deviceId,
+          'user_id': user?.id,
+        });
+      } catch (_) {}
+    }
+    return null;
   }
 
   /// Toggle bookmark / save on post in public.post_bookmarks
@@ -311,6 +353,7 @@ class SupabaseFeedService {
             'post_id': postId,
             'user_id': user.id,
             'content': content,
+            // ignore: use_null_aware_elements
             if (parentCommentId != null) 'parent_comment_id': parentCommentId,
           })
           .select('*, user:profiles!post_comments_user_id_fkey(*)')

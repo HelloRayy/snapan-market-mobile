@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/notification_guide_bottom_sheet.dart';
 import 'package:snapan_market/core/components/update_info_bottom_sheet.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/services/app_update_service.dart';
 import 'package:snapan_market/core/services/global_notification_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/core/theme/app_animations.dart';
 import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/features/activity/screens/activity_screen.dart';
 import 'package:snapan_market/features/auth/components/auth_prompt_overlay.dart';
@@ -42,6 +42,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ProfileScreenState> _profileKey = GlobalKey<ProfileScreenState>();
+  final GlobalKey<HomeFeedScrollableListState> _feedListKey = GlobalKey<HomeFeedScrollableListState>();
   final ScrollController _scrollController = ScrollController();
   final HomeFeedController _feedController = HomeFeedController();
 
@@ -137,6 +138,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
   void _scrollToTop() {
     _showFab();
+    _feedListKey.currentState?.scrollToTop();
     if (_scrollController.hasClients) {
       _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOutCubic);
     }
@@ -186,10 +188,6 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     }
   }
 
-  List<MarketPostModel> get _displayedPosts => _activeTab == FeedTab.market
-      ? _feedController.posts.where((p) => p.postType == 'product' || (p.price != null && p.price! > 0)).toList()
-      : _feedController.posts;
-
   @override
   Widget build(BuildContext context) {
     if (_fabAnimationController == null || _fabAnimation == null) _initAnimations();
@@ -202,7 +200,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
       backgroundColor: Colors.white,
       extendBody: true,
       drawerScrimColor: Colors.black.withValues(alpha: 0.35),
-      drawerEdgeDragWidth: 28.0,
+      drawerEdgeDragWidth: AppAnimations.drawerEdgeDragWidth,
       drawer: HomeNavDrawer(
         userProfile: _feedController.userProfile,
         onAppearanceTap: () {},
@@ -230,7 +228,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           HomeNavTab.profile => 'Profil',
         },
         onMenuTap: () {
-          HapticFeedback.lightImpact();
+          AppAnimations.lightImpact();
           _scaffoldKey.currentState?.openDrawer();
         },
         onBackTap: _currentNavTab != HomeNavTab.home ? () => setState(() => _currentNavTab = HomeNavTab.home) : null,
@@ -242,13 +240,13 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           HomeNavTabSwitcher(
             currentNavTab: _currentNavTab,
             feedTab: HomeFeedScrollableList(
-              scrollController: _scrollController,
+              key: _feedListKey,
               activeTab: _activeTab,
               onTabChanged: (t) => setState(() => _activeTab = t),
               isLoading: _feedController.isLoading,
               hasError: _feedController.hasError,
               errorMessage: _feedController.errorMessage,
-              posts: _displayedPosts,
+              allPosts: _feedController.posts,
               onRefresh: () => _feedController.fetchPosts(isRefresh: true),
               onRetry: () => _feedController.fetchPosts(),
               onScrollToTop: _scrollToTop,

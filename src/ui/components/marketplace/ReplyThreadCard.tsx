@@ -651,7 +651,7 @@ export const ReplyThreadCard = memo<ReplyThreadCardProps>(function ReplyThreadCa
           onShare={() => {
             if (navigator.share) {
               navigator.share({
-                title: 'Snapan Market',
+                title: 'Snaps',
                 text: parentPost.caption,
                 url: window.location.href,
               }).catch(() => {});

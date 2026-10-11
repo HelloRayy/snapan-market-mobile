@@ -162,30 +162,29 @@ class ProfileController extends ChangeNotifier {
 
   void _setupRealtime(String userId, {required bool isOwn}) {
     disposeSubscriptions();
-    if (isOwn) {
-      _profileSubscription = SupabaseService.instance.subscribeToProfile(userId, (newRecord) {
-        if (user != null) {
-          final rawDisplayName = (newRecord['display_name'] as String?)?.trim();
-          final uName = newRecord['username'] as String? ?? user!.username;
-          final updatedName = (rawDisplayName != null && rawDisplayName.isNotEmpty)
-              ? rawDisplayName
-              : (user!.displayName?.isNotEmpty == true
-                  ? user!.displayName!
-                  : '@${uName.replaceAll('@', '')}');
+    _profileSubscription = SupabaseService.instance.subscribeToProfile(userId, (newRecord) {
+      if (user != null) {
+        final rawDisplayName = (newRecord['display_name'] as String?)?.trim();
+        final uName = newRecord['username'] as String? ?? user!.username;
+        final updatedName = (rawDisplayName != null && rawDisplayName.isNotEmpty)
+            ? rawDisplayName
+            : (user!.displayName?.isNotEmpty == true
+                ? user!.displayName!
+                : '@${uName.replaceAll('@', '')}');
 
-          user = user!.copyWith(
-            name: updatedName,
-            displayName: (rawDisplayName != null && rawDisplayName.isNotEmpty) ? rawDisplayName : user!.displayName,
-            username: uName,
-            classGroup: newRecord['class_group'] as String? ?? user!.classGroup,
-            avatar: (newRecord['avatar_url'] as String?)?.isNotEmpty == true ? newRecord['avatar_url'] as String : user!.avatar,
-            bio: newRecord['bio'] as String? ?? user!.bio,
-            isVerified: newRecord['is_verified'] as bool? ?? false,
-          );
-          notifyListeners();
-        }
-      });
-    }
+        user = user!.copyWith(
+          name: updatedName,
+          displayName: (rawDisplayName != null && rawDisplayName.isNotEmpty) ? rawDisplayName : user!.displayName,
+          username: uName,
+          classGroup: newRecord['class_group'] as String? ?? user!.classGroup,
+          avatar: (newRecord['avatar_url'] as String?)?.isNotEmpty == true ? newRecord['avatar_url'] as String : user!.avatar,
+          bio: (newRecord['bio'] as String?)?.trim() ?? user!.bio,
+          link: (newRecord['link'] as String?)?.trim() ?? user!.link,
+          isVerified: newRecord['is_verified'] as bool? ?? false,
+        );
+        notifyListeners();
+      }
+    });
     _followRealtimeSubscription = SupabaseService.instance.subscribeToFollowers(userId, () {
       FollowService.instance.loadFollowerCount(userId);
     });
@@ -338,8 +337,8 @@ class ProfileController extends ChangeNotifier {
       avatar: (profile?['avatar_url'] as String?)?.isNotEmpty == true
           ? profile!['avatar_url'] as String
           : ((meta['avatar_url'] as String?)?.trim() ?? ''),
-      bio: profile?['bio'] as String? ?? (meta['bio'] as String?)?.trim() ?? '',
-      link: profile?['link'] as String? ?? (meta['link'] as String?)?.trim() ?? '',
+      bio: (profile?['bio'] as String?)?.trim() ?? (meta['bio'] as String?)?.trim() ?? '',
+      link: (profile?['link'] as String?)?.trim() ?? (meta['link'] as String?)?.trim() ?? '',
       tags: tags,
       followersCount: followersCount,
       isVerified: profile?['is_verified'] as bool? ?? false,

@@ -188,7 +188,7 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
   const [demoCheckbox, setDemoCheckbox] = useState(true);
   const [demoTab2, setDemoTab2] = useState<'for-you' | 'latest'>('for-you');
   const [demoTab3, setDemoTab3] = useState<'threads' | 'replies' | 'media'>('threads');
-  const [demoSearch, setDemoSearch] = useState('Snapan Market');
+  const [demoSearch, setDemoSearch] = useState('Snaps');
   const [demoBottomNavTab, setDemoBottomNavTab] = useState('home');
   const [imageReloadKey, setImageReloadKey] = useState(1);
   const [demoPullProgress, setDemoPullProgress] = useState(0.85);
@@ -279,7 +279,7 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
               S
             </div>
             <div>
-              <h1 className="font-bold text-sm text-slate-900 leading-tight">Snapan Market</h1>
+              <h1 className="font-bold text-sm text-slate-900 leading-tight">Snaps</h1>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
                   DESIGN SYSTEM
@@ -376,7 +376,7 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
               {navItems.find((n) => n.id === activeSection)?.label}
             </h2>
             <p className="text-xs text-neutral-500">
-              Koleksi komponen & design tokens resmi Snapan Market Mobile PWA
+              Koleksi komponen & design tokens resmi Snaps Mobile PWA
             </p>
           </div>
 
@@ -449,7 +449,7 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
 
                 <div className="bg-white rounded-2xl border border-neutral-200/80 p-5 divide-y divide-neutral-100 shadow-2xs">
                   {[
-                    { label: 'text-2xl (24px)', weight: 'font-bold', sample: 'Snapan Market Mobile PWA' },
+                    { label: 'text-2xl (24px)', weight: 'font-bold', sample: 'Snaps Mobile PWA' },
                     { label: 'text-xl (20px)', weight: 'font-bold', sample: 'Kantin Belakang & Ruang Praktik' },
                     { label: 'text-lg (18px)', weight: 'font-semibold', sample: 'Detail Postingan & Komentar' },
                     { label: 'text-base (16px)', weight: 'font-normal', sample: 'Teks Deskripsi & Caption Feed Produk' },
@@ -1177,7 +1177,7 @@ export const DesignSystemPage: React.FC<DesignSystemPageProps> = ({ onBack }) =>
                 id="nav-logotype"
                 title="Snapan Logotype Text Header"
                 category="Navigation"
-                description="Logotype tipografi resmi Snapan Market dengan aksen biru Threads."
+                description="Logotype tipografi resmi Snaps dengan aksen biru Threads."
                 codeSnippet={`<SnapanLogotype className="text-xl font-black" />`}
                 availableStates={['default']}
               >

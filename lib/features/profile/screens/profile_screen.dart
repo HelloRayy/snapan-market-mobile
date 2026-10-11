@@ -51,6 +51,7 @@ class ProfileScreen extends StatefulWidget {
 class ProfileScreenState extends State<ProfileScreen> {
   final ScrollController _scrollController = ScrollController();
   final ProfileController _controller = ProfileController();
+  late final PageController _pageController;
   ProfileTab _activeTab = ProfileTab.threads;
   bool _showSearch = false;
   String _searchQuery = '';
@@ -69,6 +70,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(initialPage: _activeTab.index);
     _controller.addListener(() { if (mounted) setState(() {}); });
     reloadProfile();
   }
@@ -79,6 +81,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void dispose() {
+    _pageController.dispose();
     _controller.disposeSubscriptions();
     _controller.dispose();
     _scrollController.dispose();
@@ -278,85 +281,150 @@ class ProfileScreenState extends State<ProfileScreen> {
 
       body = RefreshIndicator(
         onRefresh: () => _controller.loadProfile(isOwnProfile: _isOwnProfile, username: widget.username),
-        child: CustomScrollView(
+        child: NestedScrollView(
           controller: _scrollController,
-          physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-          slivers: [
-            if (_showSearch)
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              if (_showSearch)
+                SliverToBoxAdapter(
+                  child: ProfileSearchBar(
+                    searchQuery: _searchQuery,
+                    onChanged: (val) => setState(() => _searchQuery = val),
+                    onClear: () => setState(() => _searchQuery = ''),
+                  ),
+                ),
               SliverToBoxAdapter(
-                child: ProfileSearchBar(
-                  searchQuery: _searchQuery,
-                  onChanged: (val) => setState(() => _searchQuery = val),
-                  onClear: () => setState(() => _searchQuery = ''),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ListenableBuilder(
+                      listenable: FollowService.instance,
+                      builder: (context, _) {
+                        final isFollowing = FollowService.instance.isFollowing(user.id, user.username);
+                        final reactiveFollowers = FollowService.instance.getFollowerCount(user.id, user.followersCount);
+                        final displayUser = user.copyWith(followersCount: reactiveFollowers);
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ProfileInfoHeader(
+                              user: displayUser,
+                              isOwnProfile: _isOwnProfile,
+                              onEditInterests: _handleEditProfile,
+                              onAvatarTap: () {
+                                if (_isOwnProfile && (user.avatar.trim().isEmpty || user.avatar.startsWith('assets/'))) {
+                                  _handleEditProfile();
+                                } else if (!kForceDefaultProfileAvatar && user.avatar.isNotEmpty) {
+                                  MediaLightboxDialog.show(context: context, images: [user.avatar], initialIndex: 0);
+                                }
+                              },
+                            ),
+                            ProfileActionButtons(
+                              isOwnProfile: _isOwnProfile,
+                              isFollowing: isFollowing,
+                              isLoggedIn: SupabaseService.instance.isAuthenticated,
+                              hasIncompleteAvatar: _isOwnProfile && (user.avatar.trim().isEmpty || user.avatar.startsWith('assets/')),
+                              onEditProfile: _handleEditProfile,
+                              onAuthTap: _handleOpenAuth,
+                              onToggleFollow: () => FollowService.instance.toggleFollow(targetUserId: user.id, targetUsername: user.username),
+                              onDirectMessage: _handleDirectMessage,
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 10.0),
+                  ],
                 ),
               ),
-            SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ListenableBuilder(
-                    listenable: FollowService.instance,
-                    builder: (context, _) {
-                      final isFollowing = FollowService.instance.isFollowing(user.id, user.username);
-                      final reactiveFollowers = FollowService.instance.getFollowerCount(user.id, user.followersCount);
-                      final displayUser = user.copyWith(followersCount: reactiveFollowers);
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ProfileInfoHeader(
-                            user: displayUser,
-                            isOwnProfile: _isOwnProfile,
-                            onEditInterests: _handleEditProfile,
-                            onAvatarTap: () {
-                              if (!kForceDefaultProfileAvatar && user.avatar.isNotEmpty) {
-                                MediaLightboxDialog.show(context: context, images: [user.avatar], initialIndex: 0);
-                              }
-                            },
-                          ),
-                          ProfileActionButtons(
-                            isOwnProfile: _isOwnProfile,
-                            isFollowing: isFollowing,
-                            isLoggedIn: SupabaseService.instance.isAuthenticated,
-                            onEditProfile: _handleEditProfile,
-                            onAuthTap: _handleOpenAuth,
-                            onToggleFollow: () => FollowService.instance.toggleFollow(targetUserId: user.id, targetUsername: user.username),
-                            onDirectMessage: _handleDirectMessage,
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 10.0),
-                ],
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: RepaintBoundary(
-                child: ProfileTabBar(
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: ProfileTabBarDelegate(
                   activeTab: _activeTab,
+                  pageController: _pageController,
                   onTabChanged: (tab) => setState(() => _activeTab = tab),
                 ),
               ),
-            ),
-            ProfileContentTabs(
-              activeTab: _activeTab,
-              isLoading: _controller.isLoading,
-              displayPosts: displayPosts,
-              displayReplies: displayReplies,
-              mediaItems: mediaItems,
-              username: user.username,
-              onPostClick: _handlePostClick,
-              onLikeToggle: _controller.toggleLike,
-              onBookmarkToggle: _controller.toggleBookmark,
-              onRepostToggle: _controller.toggleRepost,
-              onVotePoll: (post, optionIds) => _controller.votePoll(post.id, optionIds),
-              onImageClick: (item, idx) => MediaLightboxDialog.show(context: context, images: item.images, initialIndex: idx, post: item),
-              onDeletePost: (post) => _controller.removePost(post.id),
-              onReplyImageClick: (imgs, idx) => MediaLightboxDialog.show(context: context, images: imgs, initialIndex: idx),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 120.0)),
-          ],
+            ];
+          },
+          body: PageView(
+            controller: _pageController,
+            onPageChanged: (idx) {
+              HapticFeedback.selectionClick();
+              setState(() => _activeTab = ProfileTab.values[idx]);
+            },
+            children: [
+              CustomScrollView(
+                key: const PageStorageKey('profile_threads_tab'),
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                slivers: [
+                  ProfileContentTabs(
+                    activeTab: ProfileTab.threads,
+                    isLoading: _controller.isLoading,
+                    displayPosts: displayPosts,
+                    displayReplies: displayReplies,
+                    mediaItems: mediaItems,
+                    username: user.username,
+                    onPostClick: _handlePostClick,
+                    onLikeToggle: _controller.toggleLike,
+                    onBookmarkToggle: _controller.toggleBookmark,
+                    onRepostToggle: _controller.toggleRepost,
+                    onVotePoll: (post, optionIds) => _controller.votePoll(post.id, optionIds),
+                    onImageClick: (item, idx) => MediaLightboxDialog.show(context: context, images: item.images, initialIndex: idx, post: item),
+                    onDeletePost: (post) => _controller.removePost(post.id),
+                    onReplyImageClick: (imgs, idx) => MediaLightboxDialog.show(context: context, images: imgs, initialIndex: idx),
+                  ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 120.0)),
+                ],
+              ),
+              CustomScrollView(
+                key: const PageStorageKey('profile_replies_tab'),
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                slivers: [
+                  ProfileContentTabs(
+                    activeTab: ProfileTab.replies,
+                    isLoading: _controller.isLoading,
+                    displayPosts: displayPosts,
+                    displayReplies: displayReplies,
+                    mediaItems: mediaItems,
+                    username: user.username,
+                    onPostClick: _handlePostClick,
+                    onLikeToggle: _controller.toggleLike,
+                    onBookmarkToggle: _controller.toggleBookmark,
+                    onRepostToggle: _controller.toggleRepost,
+                    onVotePoll: (post, optionIds) => _controller.votePoll(post.id, optionIds),
+                    onImageClick: (item, idx) => MediaLightboxDialog.show(context: context, images: item.images, initialIndex: idx, post: item),
+                    onDeletePost: (post) => _controller.removePost(post.id),
+                    onReplyImageClick: (imgs, idx) => MediaLightboxDialog.show(context: context, images: imgs, initialIndex: idx),
+                  ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 120.0)),
+                ],
+              ),
+              CustomScrollView(
+                key: const PageStorageKey('profile_media_tab'),
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                slivers: [
+                  ProfileContentTabs(
+                    activeTab: ProfileTab.media,
+                    isLoading: _controller.isLoading,
+                    displayPosts: displayPosts,
+                    displayReplies: displayReplies,
+                    mediaItems: mediaItems,
+                    username: user.username,
+                    onPostClick: _handlePostClick,
+                    onLikeToggle: _controller.toggleLike,
+                    onBookmarkToggle: _controller.toggleBookmark,
+                    onRepostToggle: _controller.toggleRepost,
+                    onVotePoll: (post, optionIds) => _controller.votePoll(post.id, optionIds),
+                    onImageClick: (item, idx) => MediaLightboxDialog.show(context: context, images: item.images, initialIndex: idx, post: item),
+                    onDeletePost: (post) => _controller.removePost(post.id),
+                    onReplyImageClick: (imgs, idx) => MediaLightboxDialog.show(context: context, images: imgs, initialIndex: idx),
+                  ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 120.0)),
+                ],
+              ),
+            ],
+          ),
         ),
       );
     } else {

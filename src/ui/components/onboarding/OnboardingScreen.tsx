@@ -54,7 +54,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
     },
     {
       id: 3,
-      title: 'Siap Menjelajahi Snapan Market!',
+      title: 'Siap Menjelajahi Snaps!',
       description: 'Mulai jelajahi dan nikmati pengalaman jual beli online antar warga SMKN 8 yang aman dan praktis.',
       type: 'content' as const,
       visual: <Slide4Visual />

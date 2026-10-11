@@ -115,8 +115,8 @@ class DeletePostBottomSheet extends StatelessWidget {
               // 4. Description
               Text(
                 isAdmin
-                    ? 'Sebagai admin/moderator, postingan ini akan dihapus permanen dari feed dan katalog Snapan Market beserta seluruh komentar dan interaksinya.'
-                    : 'Postingan ini akan dihapus secara permanen dari feed Snapan Market beserta seluruh komentar, foto, dan tanda sukanya. Tindakan ini tidak dapat dibatalkan.',
+                    ? 'Sebagai admin/moderator, postingan ini akan dihapus permanen dari feed dan katalog Snaps beserta seluruh komentar dan interaksinya.'
+                    : 'Postingan ini akan dihapus secara permanen dari feed Snaps beserta seluruh komentar, foto, dan tanda sukanya. Tindakan ini tidak dapat dibatalkan.',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 14.0,

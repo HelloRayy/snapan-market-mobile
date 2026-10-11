@@ -1,5 +1,6 @@
 import { useEffect, RefObject } from 'react';
 import { triggerHaptic } from '@/utils/haptics';
+import { checkUsernameAvailability } from '@/services/api/profileService';
 
 interface UsePwaLandingEffectsOptions {
   containerRef: RefObject<HTMLDivElement | null>;

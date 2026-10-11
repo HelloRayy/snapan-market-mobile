@@ -150,7 +150,7 @@ const List<ActivityNotification> kMockNotifications = [
     actorUsername: "growthflo",
     actorAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&q=80",
     title: "Menyukai Postingan",
-    message: 'Menyukai karya kamu: "Source Code Snapan Market Web App PPLG".',
+    message: 'Menyukai karya kamu: "Source Code Snaps Web App PPLG".',
     timeAgo: "1j lalu",
     postThumbnail: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=300&q=80",
     isRead: false,

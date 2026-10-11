@@ -8,15 +8,18 @@ enum ProfileTab {
 }
 
 /// 3-Tab Sliding Switcher for Profile Screen (Utas, Balasan, Media)
-/// Matching ProfilePage.tsx with 47px fixed height and animated 2px underline indicator
+/// Matching ProfilePage.tsx with 47px fixed height, real-time 1:1 indicator tracking,
+/// and smooth pageController synchronization.
 class ProfileTabBar extends StatelessWidget implements PreferredSizeWidget {
   final ProfileTab activeTab;
   final ValueChanged<ProfileTab> onTabChanged;
+  final PageController? pageController;
 
   const ProfileTabBar({
     super.key,
     required this.activeTab,
     required this.onTabChanged,
+    this.pageController,
   });
 
   @override
@@ -24,18 +27,27 @@ class ProfileTabBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double indicatorAlignment;
-    switch (activeTab) {
-      case ProfileTab.threads:
-        indicatorAlignment = -1.0;
-        break;
-      case ProfileTab.replies:
-        indicatorAlignment = 0.0;
-        break;
-      case ProfileTab.media:
-        indicatorAlignment = 1.0;
-        break;
+    if (pageController != null) {
+      return AnimatedBuilder(
+        animation: pageController!,
+        builder: (context, _) => _buildBar(context),
+      );
     }
+    return _buildBar(context);
+  }
+
+  Widget _buildBar(BuildContext context) {
+    double pageOffset = activeTab.index.toDouble();
+    if (pageController != null &&
+        pageController!.hasClients &&
+        pageController!.position.haveDimensions) {
+      pageOffset = pageController!.page ?? activeTab.index.toDouble();
+    }
+    final double clampedOffset = pageOffset.clamp(0.0, 2.0);
+    final double indicatorAlignment = -1.0 + clampedOffset;
+
+    final int activeIndex = clampedOffset.round().clamp(0, 2);
+    final ProfileTab currentActiveTab = ProfileTab.values[activeIndex];
 
     return Container(
       height: 47.0,
@@ -54,25 +66,23 @@ class ProfileTabBar extends StatelessWidget implements PreferredSizeWidget {
               _buildTabItem(
                 title: 'Utas',
                 tab: ProfileTab.threads,
-                isSelected: activeTab == ProfileTab.threads,
+                isSelected: currentActiveTab == ProfileTab.threads,
               ),
               _buildTabItem(
                 title: 'Balasan',
                 tab: ProfileTab.replies,
-                isSelected: activeTab == ProfileTab.replies,
+                isSelected: currentActiveTab == ProfileTab.replies,
               ),
               _buildTabItem(
                 title: 'Media',
                 tab: ProfileTab.media,
-                isSelected: activeTab == ProfileTab.media,
+                isSelected: currentActiveTab == ProfileTab.media,
               ),
             ],
           ),
 
-          // Smooth Sliding Underline Indicator
-          AnimatedAlign(
-            duration: const Duration(milliseconds: 220),
-            curve: Curves.easeOutCubic,
+          // Real-time 1:1 Sliding Underline Indicator
+          Align(
             alignment: Alignment(indicatorAlignment, 1.0),
             child: FractionallySizedBox(
               widthFactor: 1 / 3,
@@ -102,6 +112,13 @@ class ProfileTabBar extends StatelessWidget implements PreferredSizeWidget {
       child: GestureDetector(
         onTap: () {
           HapticFeedback.selectionClick();
+          if (pageController != null && pageController!.hasClients) {
+            pageController!.animateToPage(
+              tab.index,
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutCubic,
+            );
+          }
           onTabChanged(tab);
         },
         behavior: HitTestBehavior.opaque,
@@ -111,12 +128,52 @@ class ProfileTabBar extends StatelessWidget implements PreferredSizeWidget {
             style: TextStyle(
               fontSize: 14.0,
               fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-              color: isSelected ? const Color(0xFF0F172A) : const Color(0xFF94A3B8),
+              color: isSelected
+                  ? const Color(0xFF0F172A)
+                  : const Color(0xFF94A3B8),
               letterSpacing: -0.1,
             ),
           ),
         ),
       ),
     );
+  }
+}
+
+/// Sliver Header Delegate to pin ProfileTabBar smoothly in NestedScrollView
+class ProfileTabBarDelegate extends SliverPersistentHeaderDelegate {
+  final ProfileTab activeTab;
+  final ValueChanged<ProfileTab> onTabChanged;
+  final PageController? pageController;
+
+  const ProfileTabBarDelegate({
+    required this.activeTab,
+    required this.onTabChanged,
+    this.pageController,
+  });
+
+  @override
+  double get minExtent => 47.0;
+
+  @override
+  double get maxExtent => 47.0;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return ProfileTabBar(
+      activeTab: activeTab,
+      onTabChanged: onTabChanged,
+      pageController: pageController,
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant ProfileTabBarDelegate oldDelegate) {
+    return oldDelegate.activeTab != activeTab ||
+        oldDelegate.pageController != pageController;
   }
 }

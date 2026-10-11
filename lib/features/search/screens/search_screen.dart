@@ -116,7 +116,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 onOpenAppTap: () {
                   SnapsToast.show(
                     context,
-                    'Snapan Market v0.1.0',
+                    'Snaps v0.1.0',
                     hasBottomNav: false,
                     duration: const Duration(seconds: 1),
                   );

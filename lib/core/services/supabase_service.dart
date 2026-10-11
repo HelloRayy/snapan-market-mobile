@@ -17,7 +17,7 @@ export 'package:snapan_market/core/services/supabase/supabase_social_service.dar
 export 'package:snapan_market/core/services/supabase/supabase_storage_service.dart';
 export 'package:snapan_market/core/services/supabase/supabase_poll_service.dart';
 
-/// Unified Facade for Supabase services across Snapan Market Mobile.
+/// Unified Facade for Supabase services across Snaps Mobile.
 /// Decomposed into domain-specific modules under `lib/core/services/supabase/`.
 class SupabaseService {
   SupabaseService._();
@@ -35,9 +35,15 @@ class SupabaseService {
   late final SupabasePollService poll = SupabasePollService(client);
 
   // --- AUTH DELEGATIONS ---
-  User? get currentUser => auth.currentUser;
-  String? get currentUserId => auth.currentUser?.id;
-  bool get isAuthenticated => auth.isAuthenticated;
+  User? get currentUser {
+    try {
+      return auth.currentUser;
+    } catch (_) {
+      return null;
+    }
+  }
+  String? get currentUserId => currentUser?.id;
+  bool get isAuthenticated => currentUser != null;
   Stream<AuthState> get onAuthStateChange => auth.onAuthStateChange;
   Future<bool> signInWithGoogle() => auth.signInWithGoogle();
   Future<void> signOut() {
@@ -148,6 +154,9 @@ class SupabaseService {
         images: images,
         poll: poll,
       );
+
+  Future<int?> recordPostView(String postId, {required String deviceId}) =>
+      feed.recordPostView(postId, deviceId: deviceId);
 
   // --- POLL DELEGATIONS ---
   Future<PostPollModel> votePoll({

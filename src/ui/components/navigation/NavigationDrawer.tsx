@@ -347,7 +347,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
           <div className="text-center pt-1">
             <p className="text-[11px] text-neutral-400 font-medium leading-tight">
-              Snapan Market PWA v0.1.0
+              Snaps PWA v0.1.0
             </p>
           </div>
         </div>

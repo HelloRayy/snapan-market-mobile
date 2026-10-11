@@ -38,7 +38,7 @@ final List<OnboardingSlide> onboardingSlides = [
   ),
   const OnboardingSlide(
     id: 3,
-    title: 'Siap Menjelajahi Snapan Market!',
+    title: 'Siap Menjelajahi Snaps!',
     description:
         'Mulai jelajahi dan nikmati pengalaman jual beli online antar warga SMKN 8 yang aman dan praktis.',
     assetPath: 'assets/onboarding/person-login.png',

@@ -417,6 +417,7 @@ class MarketPostModel {
   final int likesCount;
   final int commentsCount;
   final int repostsCount;
+  final int viewsCount;
   final bool isLiked;
   final bool isReposted;
   final bool isSaved;
@@ -444,6 +445,7 @@ class MarketPostModel {
     this.likesCount = 0,
     this.commentsCount = 0,
     this.repostsCount = 0,
+    this.viewsCount = 0,
     this.isLiked = false,
     this.isReposted = false,
     this.isSaved = false,
@@ -564,6 +566,11 @@ class MarketPostModel {
       parsedCommentsCount = parsedComments.length;
     }
 
+    final parsedViews = parseCount(
+      json['views_count'] ?? json['viewsCount'],
+      json['post_views'],
+    );
+
     return MarketPostModel(
       id: json['id']?.toString() ?? '',
       postType: json['post_type']?.toString() ?? json['postType']?.toString() ?? 'thread',
@@ -587,6 +594,7 @@ class MarketPostModel {
       likesCount: parsedLikes,
       commentsCount: parsedCommentsCount,
       repostsCount: (json['reposts_count'] ?? json['repostsCount'] ?? 0) as int,
+      viewsCount: parsedViews,
       isLiked: json['is_liked'] == true || json['isLiked'] == true,
       isReposted: json['is_reposted'] == true || json['isReposted'] == true,
       isSaved: json['is_saved'] == true || json['isSaved'] == true,
@@ -625,6 +633,7 @@ class MarketPostModel {
     int? likesCount,
     int? commentsCount,
     int? repostsCount,
+    int? viewsCount,
     bool? isLiked,
     bool? isReposted,
     bool? isSaved,
@@ -652,6 +661,7 @@ class MarketPostModel {
       likesCount: likesCount ?? this.likesCount,
       commentsCount: commentsCount ?? this.commentsCount,
       repostsCount: repostsCount ?? this.repostsCount,
+      viewsCount: viewsCount ?? this.viewsCount,
       isLiked: isLiked ?? this.isLiked,
       isReposted: isReposted ?? this.isReposted,
       isSaved: isSaved ?? this.isSaved,

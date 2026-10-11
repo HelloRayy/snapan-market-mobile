@@ -12,12 +12,14 @@ class ProfileActionButtons extends StatelessWidget {
 
   final bool isLoggedIn;
   final VoidCallback? onAuthTap;
+  final bool hasIncompleteAvatar;
 
   const ProfileActionButtons({
     super.key,
     this.isOwnProfile = true,
     this.isFollowing = false,
     this.isLoggedIn = true,
+    this.hasIncompleteAvatar = false,
     this.onEditProfile,
     this.onToggleFollow,
     this.onDirectMessage,
@@ -92,14 +94,61 @@ class ProfileActionButtons extends StatelessWidget {
           ],
         ),
         alignment: Alignment.center,
-        child: const Text(
-          'Edit profil',
-          style: TextStyle(
-            fontSize: 14.0,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF0F172A),
-            letterSpacing: -0.1,
-          ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Optical Center: Edit profil text NEVER shifts
+            const Center(
+              child: Text(
+                'Edit profil',
+                style: TextStyle(
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF0F172A),
+                  letterSpacing: -0.1,
+                ),
+              ),
+            ),
+
+            // Pinned Right Pill: [Lengkapi foto !]
+            if (hasIncompleteAvatar)
+              Positioned(
+                right: 8.0,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 2.0),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEF3C7), // Warm amber background
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(color: const Color(0xFFFDE68A), width: 1.0),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Lengkapi foto',
+                        style: TextStyle(
+                          fontSize: 11.0,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFFB45309),
+                          letterSpacing: -0.2,
+                          height: 1.1,
+                        ),
+                      ),
+                      SizedBox(width: 3.0),
+                      Text(
+                        '!',
+                        style: TextStyle(
+                          fontSize: 11.0,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFFD97706),
+                          height: 1.1,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );

@@ -28,7 +28,7 @@ export const AuthHeader: React.FC<AuthHeaderProps> = ({ authTab, regStep, onBack
       <div className="relative mb-2 h-28 w-28 sm:h-32 sm:w-32 flex items-center justify-center">
         <img
           src={regStep === 'otp' ? otpHero : personLoginBg}
-          alt="Ilustrasi Akun Snapan Market"
+          alt="Ilustrasi Akun Snaps"
           className="h-full w-full object-contain drop-shadow-sm transition-all duration-300 transform-gpu"
         />
       </div>

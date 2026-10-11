@@ -15,6 +15,7 @@ class AuthController {
       final cleanInput = username.trim().toLowerCase().replaceAll('@', '');
       String email;
       String? resolvedUsername;
+      String? candidateNis;
       final candidateEmails = <String>[];
 
       if (username.contains('@') && username.contains('.')) {
@@ -32,6 +33,9 @@ class AuthController {
           if (rpcData is Map && rpcData['email'] != null) {
             email = (rpcData['email'] as String).toLowerCase();
             resolvedUsername = rpcData['username'] as String?;
+            if (rpcData['nis'] != null) {
+              candidateNis = (rpcData['nis'] as String).trim();
+            }
             candidateEmails.add(email);
             rpcMatched = true;
           }
@@ -40,6 +44,7 @@ class AuthController {
         if (!rpcMatched) {
           if (RegExp(r'^\d+$').hasMatch(cleanInput)) {
             // Input adalah NIS (deretan angka)
+            candidateNis = cleanInput;
             // A. Coba cari profil terdaftar berdasarkan NIS di Supabase
             final profile = await SupabaseService.instance.getProfileByNis(cleanInput);
             if (profile != null && profile['username'] != null && (profile['username'] as String).isNotEmpty) {
@@ -71,8 +76,11 @@ class AuthController {
               final profile = await SupabaseService.instance.getProfileByUsername(cleanInput);
               if (profile != null && profile['nis'] != null) {
                 final nisStr = (profile['nis'] as String).trim();
-                if (nisStr.isNotEmpty && !candidateEmails.contains('$nisStr@snapan.id')) {
-                  candidateEmails.add('$nisStr@snapan.id');
+                if (nisStr.isNotEmpty) {
+                  candidateNis = nisStr;
+                  if (!candidateEmails.contains('$nisStr@snapan.id')) {
+                    candidateEmails.add('$nisStr@snapan.id');
+                  }
                 }
               }
             } catch (_) {}
@@ -100,6 +108,12 @@ class AuthController {
       }
 
       if (response == null || response.user == null) {
+        if (candidateNis != null && candidateNis.isNotEmpty) {
+          unawaited(DeviceSecurityService.instance.recordAuthLog(
+            nis: candidateNis,
+            eventType: 'login_failed',
+          ));
+        }
         if (lastAuthError != null) {
           throw lastAuthError;
         }
@@ -107,6 +121,30 @@ class AuthController {
       }
 
       if (response.user != null) {
+        // [SNAPS-63] Rekam device login success per NIS
+        final effectiveNis = candidateNis ?? response.user!.userMetadata?['nis'] as String?;
+        if (effectiveNis != null && effectiveNis.isNotEmpty) {
+          unawaited(DeviceSecurityService.instance.recordAuthLog(
+            nis: effectiveNis,
+            eventType: 'login_success',
+            userId: response.user!.id,
+          ));
+        } else {
+          unawaited(() async {
+            try {
+              final p = await SupabaseService.instance.getProfile(response!.user!.id);
+              final n = p?['nis'] as String?;
+              if (n != null && n.isNotEmpty) {
+                await DeviceSecurityService.instance.recordAuthLog(
+                  nis: n,
+                  eventType: 'login_success',
+                  userId: response!.user!.id,
+                );
+              }
+            } catch (_) {}
+          }());
+        }
+
         // Sinkronkan kredensial di background jika username pernah diganti (SNAPS-64)
         unawaited(SupabaseService.instance.syncProfileAuthCredentials());
         // Cek apakah akun berstatus ditangguhkan (suspended) (SNAPS-16)
@@ -253,6 +291,15 @@ class AuthController {
           userId: response.user!.id,
           username: cleanUsername,
         ));
+
+        // [SNAPS-63] Rekam event pendaftaran NIS pada perangkat ini
+        if (cleanNis != null && cleanNis.isNotEmpty) {
+          unawaited(DeviceSecurityService.instance.recordAuthLog(
+            nis: cleanNis,
+            eventType: 'register',
+            userId: response.user!.id,
+          ));
+        }
 
         return null; // success
       }

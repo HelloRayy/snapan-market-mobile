@@ -36,14 +36,23 @@
    - Generate, refactor, and update Flutter widgets, models, controllers, and services in `lib/` in one clean pass.
    - Apply clean widget decomposition, idiomatic Dart naming, proper null safety, and const constructor optimization.
 
-5. **Deterministic Routing via `CODEBASE_AGENT_MAP.md` (Zero Blind Reads)**:
-   - **STRICTLY PROHIBITED: Blind grep in root directory or sequential grep spirals**. Never search across all 600+ files simultaneously.
-   - **MANDATORY**: Consult [`CODEBASE_AGENT_MAP.md`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/CODEBASE_AGENT_MAP.md) first to identify the exact file, controller, and screen before calling `view_file`.
-   - **Strictly Scoped Searches**: If searching for a symbol or text, always scope your search pattern to a specific subfolder (e.g. `lib/features/feed/` or `src/admin/`).
+5. **Domain Heuristic Routing (Maksimal 2 Tool Calls, Zero-MD Overhead)**:
+   - **Zero-MD Reading untuk Task Lokal**: Jika instruksi user mengandung kata kunci domain fitur (contoh: *checkout*, *feed*, *auth/login/nis*, *profile*, *chat/messages*, *lokasi/map*, *notif*), agen **DILARANG membaca file `.md` apa pun**. Langsung manfaatkan konsistensi struktur folder yang sudah ada!
+   - **Tabel Penguncian Domain Instan**:
+     - *checkout / bayar / pesanan* $\rightarrow$ kunci folder `lib/features/checkout/components/`
+     - *feed / post / komentar / like / poll* $\rightarrow$ kunci folder `lib/features/feed/components/`
+     - *auth / login / daftar / nis* $\rightarrow$ kunci folder `lib/features/auth/components/`
+     - *profil / bio / avatar siswa* $\rightarrow$ kunci folder `lib/features/profile/components/`
+     - *chat / dm / pesan masuk* $\rightarrow$ kunci folder `lib/features/messages/`
+     - *lokasi / spot cod / denah map* $\rightarrow$ kunci folder `lib/features/locations/` atau `lib/features/map/`
+   - **Protokol 2 Panggilan Tool**:
+     1. Panggilan 1: Jalankan `find_by_name(SearchDirectory="lib/features/<domain>/components", Pattern="*")` atau 1 targeted grep di folder domain tersebut.
+     2. Panggilan 2: Buka file leaf yang cocok dan terapkan edit via `replace_file_content`.
+   - **Status Dokumen .MD (Emergency Fallback Saja)**: File [`AGENT_MANIFEST.md`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/AGENT_MANIFEST.md) adalah *Single Source of Truth* tunggal di root (<80 baris). HANYA buka file ini jika domain fitur tidak dikenali atau hasil pencarian folder domain nihil. Dilarang blind recursive grep di root repository.
 
 6. **Graphify Role (Architectural & Refactoring Tool)**:
    - Graphify (`graphify-out/`) is maintained for visual knowledge graphs, community clustering, and cross-module circular dependency detection.
-   - **Do NOT run CLI `graphify query` on standard bug fixes or UI tasks**, as it adds process latency and token overhead. Use `CODEBASE_AGENT_MAP.md` for instant direct file location.
+   - **Do NOT run CLI `graphify query` on standard bug fixes or UI tasks**, as it adds process latency and token overhead. Use [`AGENT_MANIFEST.md`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/AGENT_MANIFEST.md) for instant direct file location.
    - Keep the git hook intact for background index updates when commits are made.
 
 7. **Strict File Size Cap (Max 250–300 Lines Per File)**:
@@ -51,15 +60,18 @@
    - If a screen, widget, or service exceeds 250 lines, it MUST be decomposed into modular single-responsibility sub-components in `<feature>/components/`.
    - Never write monolithic screens that inline all sub-widgets with private helper methods (`_buildHeader`, `_buildCard`, `_buildForm`). Decompose into separate widget classes in separate files.
 
-8. **Instant Screenshot-to-Code Protocol (Zero Wasted Reads)**:
-   - When the user provides a screenshot or asks for a UI fix:
-     - **Step 1: Visual Text Grep**: Identify unique visible text/labels from the screenshot (e.g. "Kategori", "Detail Produk", "Kirim Pesan"). Run:
+8. **Instant Screenshot-to-Code & Visual Grounding SOP (Zero Wasted Reads)**:
+   - **Prinsip Utama**: Screenshot adalah instruksi visual presisi tinggi. Agen **DILARANG membaca file `.md` apa pun** ketika pengguna mengirimkan screenshot.
+   - **Alur Kerja 4 Langkah (Target < 20 Detik)**:
+     - **Langkah 1: Visual Text Extraction (OCR First)**: Ekstraksi teks atau label paling unik dari elemen visual yang ditunjuk (contoh: "Lihat Detail", "Kirim Pesan", "Titik Temu COD"). Lakukan targeted grep langsung di `lib/features/`:
        ```bash
        git grep -i "kata_kunci" lib/
        ```
-     - **Step 2: UI Map Reference**: If text is dynamic (e.g. price, user name), consult `docs/UI_MAP.md` to pinpoint the exact screen and sub-component file in one shot.
-     - **Step 3: Surgical Target Read**: Open ONLY the identified component file using `view_file`. NEVER read full screen orchestrators when fixing a sub-component.
-     - **Step 4: Surgical Edit**: Edit using `replace_file_content` directly on the modular component.
+     - **Langkah 2: Dynamic / L10n Fallback (Domain Heuristic)**: Jika teks bersifat dinamis (harga, nama pengguna, kuantitas) atau tidak ditemukan karena lokalisasi/state:
+       - Kenali domain layar secara visual (contoh: Header Feed -> `feed/components/navigation`, Kartu Checkout -> `checkout/components`, Profil -> `profile/components`).
+       - Buka langsung folder `lib/features/<domain>/components/` untuk mengunci leaf widget terkait tanpa mencari ke seluruh repo.
+     - **Langkah 3: Surgical Target Read (Hanya 1 File)**: Buka HANYA file komponen terkecil (leaf) tempat elemen visual itu berada. DILARANG membuka file screen orchestrator jika hanya mengubah styling tombol, warna, atau posisi teks.
+     - **Langkah 4: Surgical Edit**: Terapkan perubahan styling atau logika langsung dengan `replace_file_content` (selalu gunakan design token resmi `AppColors.*`).
 
 9. **Modular Architecture Structure Convention**:
    - Screens (`<feature>/screens/`) must only serve as orchestrators (Scaffold, AppBar, layout structure, scroll view, state binding).
@@ -149,6 +161,13 @@
     - **Pemisahan Lapisan (Separation of Concerns)**: UI Widget dilarang memanggil query Supabase mentah di dalam method `build()`. Semua akses data wajib melalui `Controller` atau `Service` (`lib/core/services/` atau `lib/features/<feature>/controllers/`).
     - **Disiplin Design Tokens**: Wajib memakai token resmi `AppColors.*` (`lib/core/theme/app_colors.dart`), `LucideIcons.*`, dan `SnapsLogo`. Jangan mengarang warna hex atau styling acak.
     - **Defensive & Human-First**: Gunakan explicit null-safety, tangani 4 status UI (Loading, Empty, Error, Success), dan sediakan area sentuh minimal 44x44 dp untuk seluruh tombol interaktif.
+
+14. **Surgical Dual-Read & AGENT_MANIFEST Mandate**:
+    - **Single Source of Truth**: Seluruh aturan mutlak dan peta parent-to-leaf terkunci di [`AGENT_MANIFEST.md`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/AGENT_MANIFEST.md). Dilarang membaca file dokumentasi lain untuk navigasi rutin.
+    - **Interface-First Dual-Read Protocol**:
+      - **Jika task murni visual / UI styling**: Cukup baca file Leaf Component (deklarasi konstruktor & method `build()`). DILARANG membuang token membaca controller jika props tidak berubah.
+      - **Jika task melibatkan data / state / event**: Baca pasangan [Parent Orchestrator / Controller] + [Leaf Component] sekaligus dalam 1 batch call untuk menjaga kontrak parameter dan null-safety.
+    - **Pre-Commit Enforcement**: Seluruh path di [`AGENT_MANIFEST.md`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/AGENT_MANIFEST.md) dikawal ketat oleh `./scripts/verify-agent-map.sh` di dalam git pre-commit hook. Jika memindahkan/membuat file baru, wajib perbarui baris di manifest sebelum commit.
 
 ---
 

@@ -1368,10 +1368,10 @@
     "semantic_hash": ""
   },
   "src/ui/components/pwa/CustomPwaInstallModal.tsx": {
-    "mtime": 1788236366.06934,
-    "seen": 1790510031.1731436,
-    "ast_hash": "f8c4ea36f576e1cb94718eb1bbca70d5",
-    "semantic_hash": "f8c4ea36f576e1cb94718eb1bbca70d5"
+    "mtime": 1791546581.7980924,
+    "seen": 1791546925.6188118,
+    "ast_hash": "34b097c507cdc11fa4a3be5c84603fd3",
+    "semantic_hash": ""
   },
   "src/ui/components/pwa/InstallBanner.tsx": {
     "mtime": 1788236366.07034,
@@ -2514,9 +2514,9 @@
     "semantic_hash": ""
   },
   "pubspec.yaml": {
-    "mtime": 1791469753.309372,
-    "seen": 1791469763.5566378,
-    "ast_hash": "8f019e69af40a008184d025daadadfbc",
+    "mtime": 1791546747.759377,
+    "seen": 1791546925.6193173,
+    "ast_hash": "9bb99eb19bcb5485d58281012a31dd5a",
     "semantic_hash": ""
   },
   "tasks/plan.md": {
@@ -3642,9 +3642,9 @@
     "semantic_hash": ""
   },
   "update_release.sh": {
-    "mtime": 1791431759.6445687,
-    "seen": 1791431935.7341754,
-    "ast_hash": "64e78acb9532cd67c89128ec93badae0",
+    "mtime": 1791546566.5460663,
+    "seen": 1791546925.6189866,
+    "ast_hash": "3ce480e61161a1d0b2b6e8f9163a8d4c",
     "semantic_hash": ""
   },
   "docs/admin_performance_indexes.sql": {
@@ -4281,6 +4281,18 @@
     "mtime": 1791464671.0936038,
     "seen": 1791469763.5535269,
     "ast_hash": "cb9c30a7a7e73dec8b852aeb109c9cb2",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/supabase_combined_release_v1_0_25.sql": {
+    "mtime": 1791469621.7656384,
+    "seen": 1791546925.6189153,
+    "ast_hash": "0aaae4f4bcc0c7d60298cc138ee4b4d7",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/supabase_snaps66_meeting_points.sql": {
+    "mtime": 1791469704.9230263,
+    "seen": 1791546925.618943,
+    "ast_hash": "989d6431235a1ba8f27a1c16640a3407",
     "semantic_hash": ""
   }
 }

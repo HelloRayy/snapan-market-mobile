@@ -17,21 +17,31 @@
 4. **NO Mandatory `flutter build bundle`**:
    - Do not run or require `flutter build bundle` routinely. Move directly to commit and push after clean code generation.
 
-5. **Deterministic Routing via `CODEBASE_AGENT_MAP.md` (Zero Blind Reads)**:
-   - **STRICTLY PROHIBITED: Blind search or sequential `git grep` looping in root directory**.
-   - **MANDATORY**: Check [`CODEBASE_AGENT_MAP.md`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/CODEBASE_AGENT_MAP.md) first to pinpoint the exact target component and controller.
-   - **Scoped Grep Only**: When searching, always scope queries to specific directories (e.g. `lib/features/feed/` or `src/admin/`). Never search globally without directory filters.
+5. **Domain Heuristic Routing (Maksimal 2 Tool Calls, Zero-MD Overhead)**:
+   - **Zero-MD Reading untuk Task Lokal**: Jika instruksi user menyebut domain (contoh: *checkout*, *feed*, *auth*, *profile*, *chat*, *map*, *notif*), agen **DILARANG membaca file `.md` apa pun**.
+   - **Kunci Folder Langsung**:
+     - *checkout* $\rightarrow$ `lib/features/checkout/components/`
+     - *feed/post/poll/komen* $\rightarrow$ `lib/features/feed/components/`
+     - *auth/login/nis* $\rightarrow$ `lib/features/auth/components/`
+     - *profil/bio/avatar* $\rightarrow$ `lib/features/profile/components/`
+     - *chat/dm* $\rightarrow$ `lib/features/messages/`
+     - *lokasi/denah* $\rightarrow$ `lib/features/locations/` atau `lib/features/map/`
+   - **Protokol 2 Tool Calls**: Panggilan 1 (`find_by_name` folder domain) $\rightarrow$ Panggilan 2 (`replace_file_content` leaf file). Selesai dalam < 15 detik!
+   - **File .MD Sebagai Fallback Saja**: [`AGENT_MANIFEST.md`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/AGENT_MANIFEST.md) HANYA dibuka jika pencarian domain nihil. Dilarang blind grep di root.
 
 6. **Graphify Role (Architectural & Refactoring Tool)**:
    - Graphify (`graphify-out/`) is maintained for visual architecture inspection, dependency tracing, and community clustering.
-   - Do NOT run CLI `graphify query` on simple bug fixes or UI updates to avoid CLI latency and token bloat. Use `CODEBASE_AGENT_MAP.md` for direct file navigation.
+   - Do NOT run CLI `graphify query` on simple bug fixes or UI updates to avoid CLI latency and token bloat. Use [`AGENT_MANIFEST.md`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/AGENT_MANIFEST.md) for direct file navigation.
    - The git hook will continue to update the graph in the background after commits.
 
 7. **Strict File Size Cap (Max 250–300 Lines)**:
    - Decompose any UI screen or service >250 lines into atomic sub-components in `<feature>/components/`.
 
-8. **Screenshot-to-Code SOP (Zero Unnecessary File Reads)**:
-   - Always run `git grep -i "visible_text" lib/` or check `docs/UI_MAP.md` first. Read ONLY the specific sub-widget, never the entire 1000-line screen file.
+8. **Screenshot-to-Code & Visual Grounding SOP (Zero Unnecessary File Reads)**:
+   - **Zero .MD Reading**: Dilarang membaca file `.md` saat menerima screenshot UI.
+   - **OCR First**: Ekstrak teks/label unik dari screenshot, lalu jalankan `git grep -i "kata_kunci" lib/features/` untuk mengunci widget target.
+   - **Dynamic/L10n Fallback**: Jika teks dinamis (harga/user), kenali domain visual layar (Feed, Checkout, Profile, Auth) dan langsung cari di folder `lib/features/<domain>/components/`.
+   - **Surgical Edit**: Buka HANYA file leaf component dan edit dengan `replace_file_content`. Jangan pernah mengedit screen orchestrator untuk komponen anak.
 
 9. **Strict Read-Only Directive for Plane.so (`/plane`)**:
    - Plane.so access via MCP tools or `/plane` is 100% read-only (reading issue details, descriptions, requirements).
@@ -50,6 +60,10 @@
     - **Design Tokens**: Selalu gunakan `AppColors.*` (`lib/core/theme/app_colors.dart`), `LucideIcons.*`, dan `SnapsLogo`.
     - **Touch Targets**: Pastikan setiap elemen interaktif memiliki hit area minimal 44x44 dp dengan haptic feedback yang tepat.
 
-
-
+12. **Surgical Dual-Read & AGENT_MANIFEST Mandate**:
+    - **Single Source of Truth**: Wajib periksa [`AGENT_MANIFEST.md`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/AGENT_MANIFEST.md) di root (<80 baris) jika butuh konteks arsitektur dan peta rute.
+    - **Interface-First Dual-Read**:
+      - Jika task murni styling/UI visual: Cukup baca Leaf Component (deklarasi konstruktor & method `build()`). Dilarang membaca controller jika props tidak berubah.
+      - Jika task mengubah alur data/state: Baca pasangan [Parent Orchestrator / Controller] + [Leaf Component] sekaligus dalam 1 batch call untuk menjaga kontrak parameter.
+    - **Pre-Commit Guard**: Skrip `./scripts/verify-agent-map.sh` otomatis memvalidasi manifest di pre-commit hook untuk mencegah path stale.
 

@@ -10,6 +10,7 @@ Before modifying code or navigating complex tasks, consult these canonical guide
 
 | Document | Purpose & Scope |
 | :--- | :--- |
+| **[AGENT_MANIFEST.md](../AGENT_MANIFEST.md)** | **SINGLE SOURCE OF TRUTH**: Kompas tunggal di root (<80 baris). Berisi aturan mutlak, anti-pattern, dan peta rute parent-to-leaf untuk 1-call lookup. |
 | **[01-architecture-overview.md](./01-architecture-overview.md)** | Dual Frontend (Flutter + React 18 PWA), Supabase backend, unified data flow, and directory structure. |
 | **[02-flutter-app-guide.md](./02-flutter-app-guide.md)** | Flutter feature-first architecture (`lib/features/`), design tokens, routes, atomic widgets, and state conventions. |
 | **[03-react-pwa-guide.md](./03-react-pwa-guide.md)** | React 18 + Vite + Tailwind v4 PWA (`src/ui/`), Zustand cart store, cache layer, and services. |

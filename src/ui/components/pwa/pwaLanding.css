@@ -154,9 +154,19 @@ input[name="username"] {
   display: flex !important;
   align-items: center !important;
   margin: 0 !important;
-  font-weight: 700 !important;
+  font-weight: 600 !important;
   font-size: 14.5px !important;
   letter-spacing: -0.2px !important;
+}
+
+/* 🎯 Placeholder styling - regular weight, NOT bold */
+.framer-1oduyj0 input::placeholder,
+.framer-1wlgcwd input::placeholder,
+.framer-7j981h input::placeholder,
+input[name="username"]::placeholder {
+  font-weight: 400 !important;
+  color: #8e8e93 !important;
+  opacity: 1 !important;
 }
 
 @media (max-width: 809.98px) {
@@ -166,8 +176,33 @@ input[name="username"] {
   input[name="username"] {
     line-height: 48px !important;
     font-size: 14px !important;
-    font-weight: 700 !important;
+    font-weight: 600 !important;
   }
+}
+
+/* 🎯 Snaps Brand Logo in PWA Landing Header */
+.framer-1n2iirr {
+  display: flex !important;
+  align-items: center !important;
+  text-decoration: none !important;
+  width: auto !important;
+  min-width: 90px !important;
+  height: 28px !important;
+}
+
+.framer-1n2iirr .svgContainer {
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+  width: auto !important;
+}
+
+.framer-1n2iirr img {
+  height: 26px !important;
+  width: auto !important;
+  max-width: 100% !important;
+  object-fit: contain !important;
+  display: block !important;
 }
 
 .framer-g63eua-container, .framer-upoedb-container {

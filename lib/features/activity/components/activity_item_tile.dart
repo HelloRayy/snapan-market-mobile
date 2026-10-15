@@ -1,5 +1,6 @@
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:snapan_market/core/components/snaps_logo.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/core/ui/default_profile_avatar.dart";
@@ -135,53 +136,19 @@ class ActivityItemTile extends StatelessWidget {
                     ],
                   ),
 
-                  // Title & Announcement Badge (Crucial for broadcasts)
+                  // Title (Clean, no cramped badge)
                   if (isSystem || hasCustomTitle) ...[
                     const SizedBox(height: 4.0),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        if (isSystem) ...[
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
-                            margin: const EdgeInsets.only(right: 6.0),
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? AppColors.primary.withValues(alpha: 0.20)
-                                  : const Color(0xFFEEF0FF),
-                              borderRadius: BorderRadius.circular(4.0),
-                              border: Border.all(
-                                color: isDark
-                                    ? AppColors.primary.withValues(alpha: 0.40)
-                                    : const Color(0xFFD8DBFE),
-                                width: 0.5,
-                              ),
-                            ),
-                            child: const Text(
-                              'PENGUMUMAN',
-                              style: TextStyle(
-                                fontSize: 9.5,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.primary,
-                                letterSpacing: 0.3,
-                              ),
-                            ),
-                          ),
-                        ],
-                        Expanded(
-                          child: Text(
-                            notification.title,
-                            style: TextStyle(
-                              fontSize: 13.5,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.adaptiveText(context),
-                              letterSpacing: -0.2,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      notification.title,
+                      style: TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.adaptiveText(context),
+                        letterSpacing: -0.2,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
 
@@ -214,41 +181,45 @@ class ActivityItemTile extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
 
-                  // Direct Inline Action Button (if notification contains CTA action)
+                  // Direct Inline Action Button (White Pill style with subtle border)
                   if (notification.hasAction) ...[
                     const SizedBox(height: 8.0),
                     GestureDetector(
-                      onTap: onActionTap ?? onTap,
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        if (onActionTap != null) {
+                          onActionTap!();
+                        } else if (onTap != null) {
+                          onTap!();
+                        }
+                      },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 11.0, vertical: 5.5),
+                        padding: const EdgeInsets.symmetric(horizontal: 13.0, vertical: 6.0),
                         decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(8.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.25),
-                              blurRadius: 4.0,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
+                          color: isDark ? AppColors.darkSurface : Colors.white,
+                          borderRadius: BorderRadius.circular(100.0),
+                          border: Border.all(
+                            color: isDark ? AppColors.darkBorder : const Color(0xFFCBD5E1),
+                            width: 1.0,
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
                               _getActionIcon(notification.actionType),
-                              size: 13.0,
-                              color: Colors.white,
+                              size: 13.5,
+                              color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
                             ),
-                            const SizedBox(width: 5.0),
+                            const SizedBox(width: 5.5),
                             Text(
                               notification.actionButtonLabel?.isNotEmpty == true
                                   ? notification.actionButtonLabel!
                                   : _getDefaultActionLabel(notification.actionType),
-                              style: const TextStyle(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
+                              style: TextStyle(
+                                fontSize: 12.0,
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
                                 letterSpacing: -0.2,
                               ),
                             ),
@@ -291,63 +262,35 @@ class ActivityItemTile extends StatelessWidget {
     );
   }
 
-  Color _getBadgeColor(ActivityType type) {
-    switch (type) {
-      case ActivityType.like:
-        return const Color(0xFFF43F5E);
-      case ActivityType.comment:
-        return const Color(0xFF3B82F6);
-      case ActivityType.mention:
-        return AppColors.primary;
-      case ActivityType.follow:
-        return const Color(0xFF6366F1);
-      case ActivityType.order:
-        return const Color(0xFF10B981);
-      case ActivityType.system:
-        return const Color(0xFF3D38F5);
-    }
-  }
+  Color _getBadgeColor(ActivityType type) => switch (type) {
+        ActivityType.like => const Color(0xFFF43F5E),
+        ActivityType.comment => const Color(0xFF3B82F6),
+        ActivityType.mention => AppColors.primary,
+        ActivityType.follow => const Color(0xFF6366F1),
+        ActivityType.order => const Color(0xFF10B981),
+        ActivityType.system => const Color(0xFF3D38F5),
+      };
 
-  IconData _getBadgeIcon(ActivityType type) {
-    switch (type) {
-      case ActivityType.like:
-        return CupertinoIcons.heart_fill;
-      case ActivityType.comment:
-        return CupertinoIcons.chat_bubble_fill;
-      case ActivityType.mention:
-        return CupertinoIcons.at;
-      case ActivityType.follow:
-        return CupertinoIcons.person_badge_plus_fill;
-      case ActivityType.order:
-        return CupertinoIcons.bag_fill;
-      case ActivityType.system:
-        return CupertinoIcons.speaker_2_fill;
-    }
-  }
+  IconData _getBadgeIcon(ActivityType type) => switch (type) {
+        ActivityType.like => CupertinoIcons.heart_fill,
+        ActivityType.comment => CupertinoIcons.chat_bubble_fill,
+        ActivityType.mention => CupertinoIcons.at,
+        ActivityType.follow => CupertinoIcons.person_badge_plus_fill,
+        ActivityType.order => CupertinoIcons.bag_fill,
+        ActivityType.system => CupertinoIcons.speaker_2_fill,
+      };
 
-  IconData _getActionIcon(String? actionType) {
-    switch (actionType) {
-      case 'update_app':
-        return CupertinoIcons.arrow_down_to_line;
-      case 'external_url':
-        return CupertinoIcons.link;
-      case 'post_link':
-        return CupertinoIcons.doc_text;
-      default:
-        return CupertinoIcons.arrow_right;
-    }
-  }
+  IconData _getActionIcon(String? actionType) => switch (actionType) {
+        'update_app' => CupertinoIcons.arrow_down_to_line,
+        'external_url' => CupertinoIcons.link,
+        'post_link' => CupertinoIcons.doc_text,
+        _ => CupertinoIcons.arrow_right,
+      };
 
-  String _getDefaultActionLabel(String? actionType) {
-    switch (actionType) {
-      case 'update_app':
-        return 'Perbarui Aplikasi';
-      case 'external_url':
-        return 'Buka Tautan';
-      case 'post_link':
-        return 'Lihat Postingan';
-      default:
-        return 'Lihat Rincian';
-    }
-  }
+  String _getDefaultActionLabel(String? actionType) => switch (actionType) {
+        'update_app' => 'Perbarui Aplikasi',
+        'external_url' => 'Buka Tautan',
+        'post_link' => 'Lihat Postingan',
+        _ => 'Lihat Rincian',
+      };
 }

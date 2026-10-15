@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/string_utils.dart';
 
 /// Interactive Interest/Bakat Chips Editor matching EditProfilePage.tsx
@@ -65,6 +66,15 @@ class _EditProfileChipsEditorState extends State<EditProfileChipsEditor> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final titleColor = isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A);
+    final subHintColor = isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8);
+    final chipBg = isDark ? AppColors.darkSurfaceElevated : const Color(0xFFF4F4F5);
+    final chipBorder = isDark ? AppColors.darkBorder : const Color(0xFFE4E4E7);
+    final chipTextColor = isDark ? AppColors.darkTextPrimary : const Color(0xFF1E293B);
+    final inputTextColor = isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A);
+    final inputHintColor = isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 14.0),
       child: Column(
@@ -73,13 +83,13 @@ class _EditProfileChipsEditorState extends State<EditProfileChipsEditor> {
           // Header Row: Label & Subtext hint
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
+            children: [
               Text(
                 'Minat',
                 style: TextStyle(
                   fontSize: 14.0,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF0F172A),
+                  color: titleColor,
                   letterSpacing: -0.1,
                 ),
               ),
@@ -87,7 +97,7 @@ class _EditProfileChipsEditorState extends State<EditProfileChipsEditor> {
                 'Pisahkan dengan koma / enter',
                 style: TextStyle(
                   fontSize: 11.5,
-                  color: Color(0xFF94A3B8),
+                  color: subHintColor,
                   fontWeight: FontWeight.normal,
                 ),
               ),
@@ -107,10 +117,10 @@ class _EditProfileChipsEditorState extends State<EditProfileChipsEditor> {
                     child: Container(
                       padding: const EdgeInsets.fromLTRB(11.0, 4.0, 7.0, 4.0),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF4F4F5),
+                        color: chipBg,
                         borderRadius: BorderRadius.circular(20.0),
                         border: Border.all(
-                          color: const Color(0xFFE4E4E7),
+                          color: chipBorder,
                           width: 0.8,
                         ),
                       ),
@@ -119,17 +129,17 @@ class _EditProfileChipsEditorState extends State<EditProfileChipsEditor> {
                         children: [
                           Text(
                             tag,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13.0,
                               fontWeight: FontWeight.w500,
-                              color: Color(0xFF1E293B),
+                              color: chipTextColor,
                             ),
                           ),
                           const SizedBox(width: 4.0),
-                          const Icon(
+                          Icon(
                             Icons.close_rounded,
                             size: 13.0,
-                            color: Color(0xFF94A3B8),
+                            color: subHintColor,
                           ),
                         ],
                       ),
@@ -143,21 +153,21 @@ class _EditProfileChipsEditorState extends State<EditProfileChipsEditor> {
                 child: TextField(
                   controller: _inputController,
                   focusNode: _focusNode,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'SFPro',
                     fontSize: 13.5,
-                    color: Color(0xFF0F172A),
+                    color: inputTextColor,
                   ),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: '+ Tambah minat...',
                     hintStyle: TextStyle(
                       fontFamily: 'SFPro',
                       fontSize: 13.5,
-                      color: Color(0xFF94A3B8),
+                      color: inputHintColor,
                     ),
                     border: InputBorder.none,
                     isDense: true,
-                    contentPadding: EdgeInsets.symmetric(vertical: 6.0),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 6.0),
                   ),
                   onChanged: (val) {
                     if (val.contains(',') || val.contains('\n')) {

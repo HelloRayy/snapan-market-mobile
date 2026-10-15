@@ -145,6 +145,12 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
   @override
   Widget build(BuildContext context) {
     final filtered = _filteredConversations;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final searchBg = isDark ? AppColors.darkSurface : const Color(0xFFF4F5F7);
+    final searchBorder = isDark ? AppColors.darkBorder : Colors.transparent;
+    final searchIconColor = isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8);
+    final searchTextColor = AppColors.adaptiveText(context);
+    final searchHintColor = isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8);
 
     final content = Column(
       children: [
@@ -192,28 +198,29 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
                   child: Container(
                     height: 38.0,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF4F5F7),
+                      color: searchBg,
                       borderRadius: BorderRadius.circular(19.0),
+                      border: Border.all(color: searchBorder, width: 0.8),
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
                     child: Row(
                       children: [
-                        const Icon(CupertinoIcons.search, size: 18.0, color: Color(0xFF94A3B8)),
+                        Icon(CupertinoIcons.search, size: 18.0, color: searchIconColor),
                         const SizedBox(width: 8.0),
                         Expanded(
                           child: TextField(
                             controller: _searchController,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'SFPro',
                               fontSize: 13.5,
-                              color: AppColors.ink,
+                              color: searchTextColor,
                             ),
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               hintText: 'Cari pesan...',
                               hintStyle: TextStyle(
                                 fontFamily: 'SFPro',
                                 fontSize: 13.5,
-                                color: Color(0xFF94A3B8),
+                                color: searchHintColor,
                               ),
                               border: InputBorder.none,
                               isDense: true,
@@ -224,7 +231,7 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
                         if (_searchQuery.isNotEmpty)
                           GestureDetector(
                             onTap: () => _searchController.clear(),
-                            child: const Icon(CupertinoIcons.clear_thick_circled, size: 16.0, color: Color(0xFF94A3B8)),
+                            child: Icon(CupertinoIcons.clear_thick_circled, size: 16.0, color: searchIconColor),
                           ),
                       ],
                     ),
@@ -247,10 +254,10 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
                   itemCount: (_searchQuery.isEmpty && _activeFilter == 'inbox')
                       ? filtered.length + 1
                       : filtered.length,
-                  separatorBuilder: (context, index) => const Divider(
+                  separatorBuilder: (context, index) => Divider(
                     height: 1.0,
                     thickness: 0.6,
-                    color: Color(0xFFE6E6E6),
+                    color: AppColors.adaptiveDivider(context),
                     indent: 76.0,
                   ),
                   itemBuilder: (ctx, index) {

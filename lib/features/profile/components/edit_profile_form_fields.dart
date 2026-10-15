@@ -18,11 +18,12 @@ class FormRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dividerColor = AppColors.adaptiveDivider(context);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14.0),
       decoration: BoxDecoration(
         border: showDivider
-            ? const Border(bottom: BorderSide(color: Color(0xFFF1F5F9), width: 1.0))
+            ? Border(bottom: BorderSide(color: dividerColor, width: 1.0))
             : null,
       ),
       child: child,
@@ -37,12 +38,8 @@ class EditProfileFormFields extends StatelessWidget {
   final TextEditingController usernameController;
   final TextEditingController bioController;
   final TextEditingController linkController;
-  final String? selectedGrade;
-  final String? selectedMajor;
-  final String? selectedClassNum;
-  final ValueChanged<String?> onGradeChanged;
-  final ValueChanged<String?> onMajorChanged;
-  final ValueChanged<String?> onClassNumChanged;
+  final String? selectedGrade, selectedMajor, selectedClassNum;
+  final ValueChanged<String?> onGradeChanged, onMajorChanged, onClassNumChanged;
   final List<String> tags;
   final ValueChanged<List<String>> onTagsChanged;
   final bool showSalesStats;
@@ -69,6 +66,10 @@ class EditProfileFormFields extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryTextColor = isDark ? AppColors.darkTextPrimary : AppColors.ink;
+    final secondaryTextColor = isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -77,11 +78,11 @@ class EditProfileFormFields extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Nama pengguna', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600, color: AppColors.ink, letterSpacing: -0.1)),
+              Text('Nama pengguna', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600, color: primaryTextColor, letterSpacing: -0.1)),
               const SizedBox(height: 4.0),
               Row(
                 children: [
-                  const Text('@', style: TextStyle(fontSize: 15.5, fontWeight: FontWeight.w700, color: AppColors.ink)),
+                  Text('@', style: TextStyle(fontSize: 15.5, fontWeight: FontWeight.w700, color: primaryTextColor)),
                   const SizedBox(width: 2.0),
                   Expanded(
                     child: TextField(
@@ -92,10 +93,10 @@ class EditProfileFormFields extends StatelessWidget {
                         FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9._]')),
                         TextInputFormatter.withFunction((oldValue, newValue) => newValue.copyWith(text: newValue.text.toLowerCase())),
                       ],
-                      style: const TextStyle(fontFamily: 'SFPro', fontSize: 15.5, fontWeight: FontWeight.w700, color: AppColors.ink),
-                      decoration: const InputDecoration(
+                      style: TextStyle(fontFamily: 'SFPro', fontSize: 15.5, fontWeight: FontWeight.w700, color: primaryTextColor),
+                      decoration: InputDecoration(
                         hintText: 'username_kamu',
-                        hintStyle: TextStyle(fontFamily: 'SFPro', color: Color(0xFF64748B)),
+                        hintStyle: TextStyle(fontFamily: 'SFPro', color: secondaryTextColor),
                         border: InputBorder.none,
                         isDense: true,
                         counterText: '',
@@ -116,7 +117,7 @@ class EditProfileFormFields extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Bio', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600, color: AppColors.ink, letterSpacing: -0.1)),
+                  Text('Bio', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600, color: primaryTextColor, letterSpacing: -0.1)),
                   ValueListenableBuilder<TextEditingValue>(
                     valueListenable: bioController,
                     builder: (context, value, _) => Text(
@@ -132,14 +133,14 @@ class EditProfileFormFields extends StatelessWidget {
                 maxLength: 150,
                 maxLines: 3,
                 minLines: 2,
-                style: const TextStyle(fontFamily: 'SFPro', fontSize: 14.5, color: AppColors.ink, height: 1.35),
-                decoration: const InputDecoration(
+                style: TextStyle(fontFamily: 'SFPro', fontSize: 14.5, color: primaryTextColor, height: 1.35),
+                decoration: InputDecoration(
                   hintText: 'Tulis bio singkat...',
-                  hintStyle: TextStyle(fontFamily: 'SFPro', color: Color(0xFF64748B)),
+                  hintStyle: TextStyle(fontFamily: 'SFPro', color: secondaryTextColor),
                   border: InputBorder.none,
                   isDense: true,
                   counterText: '',
-                  contentPadding: EdgeInsets.symmetric(vertical: 4.0),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 4.0),
                 ),
               ),
             ],
@@ -153,7 +154,7 @@ class EditProfileFormFields extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Kelas & Jurusan', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600, color: AppColors.ink, letterSpacing: -0.1)),
+                  Text('Kelas & Jurusan', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600, color: primaryTextColor, letterSpacing: -0.1)),
                   if (selectedGrade != null && selectedMajor != null && selectedClassNum != null)
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
@@ -224,19 +225,19 @@ class EditProfileFormFields extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Tautan', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600, color: AppColors.ink, letterSpacing: -0.1)),
+              Text('Tautan', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600, color: primaryTextColor, letterSpacing: -0.1)),
               const SizedBox(height: 4.0),
               TextField(
                 controller: linkController,
                 maxLength: 100,
-                style: const TextStyle(fontFamily: 'SFPro', fontSize: 15.0, color: AppColors.ink),
-                decoration: const InputDecoration(
+                style: TextStyle(fontFamily: 'SFPro', fontSize: 15.0, color: primaryTextColor),
+                decoration: InputDecoration(
                   hintText: 'https://wa.me/... atau https://instagram.com/...',
-                  hintStyle: TextStyle(fontFamily: 'SFPro', color: Color(0xFF64748B)),
+                  hintStyle: TextStyle(fontFamily: 'SFPro', color: secondaryTextColor),
                   border: InputBorder.none,
                   isDense: true,
                   counterText: '',
-                  contentPadding: EdgeInsets.symmetric(vertical: 4.0),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 4.0),
                 ),
               ),
             ],
@@ -247,7 +248,7 @@ class EditProfileFormFields extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Tampilkan statistik penjualan', style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600, color: AppColors.ink, letterSpacing: -0.1)),
+              Text('Tampilkan statistik penjualan', style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600, color: primaryTextColor, letterSpacing: -0.1)),
               GestureDetector(
                 onTap: () {
                   HapticFeedback.lightImpact();
@@ -260,7 +261,7 @@ class EditProfileFormFields extends StatelessWidget {
                   padding: const EdgeInsets.all(2.0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(13.0),
-                    color: showSalesStats ? AppColors.primary : const Color(0xFFCBD5E1),
+                    color: showSalesStats ? AppColors.primary : (isDark ? AppColors.darkBorder : const Color(0xFFCBD5E1)),
                   ),
                   alignment: showSalesStats ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
@@ -274,13 +275,13 @@ class EditProfileFormFields extends StatelessWidget {
           ),
         ),
         // Privacy Row
-        const FormRow(
+        FormRow(
           showDivider: false,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Privasi profil', style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600, color: AppColors.ink, letterSpacing: -0.1)),
-              Row(
+              Text('Privasi profil', style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600, color: primaryTextColor, letterSpacing: -0.1)),
+              const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text('Publik', style: TextStyle(fontSize: 13.5, color: AppColors.lightMuted)),

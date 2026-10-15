@@ -28,12 +28,21 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final effectiveDark = isDark || Theme.of(context).brightness == Brightness.dark;
-    final Color bgColor = effectiveDark ? const Color(0xFF000000) : Colors.white;
-    final Color iconColor = effectiveDark ? const Color(0xFFF8FAFC) : const Color(0xFF1A1A1A);
-    final Color textColor = effectiveDark ? const Color(0xFFF8FAFC) : const Color(0xFF111827);
+    final Color bgColor = AppColors.adaptiveSurface(context);
+    final Color iconColor = effectiveDark ? AppColors.darkTextPrimary : const Color(0xFF1A1A1A);
+    final Color textColor = effectiveDark ? AppColors.darkTextPrimary : const Color(0xFF111827);
+    final Color borderColor = AppColors.adaptiveDivider(context);
 
     return Container(
-      color: bgColor,
+      decoration: BoxDecoration(
+        color: bgColor,
+        border: Border(
+          bottom: BorderSide(
+            color: borderColor,
+            width: 0.8,
+          ),
+        ),
+      ),
       child: SafeArea(
         bottom: false,
         child: Container(

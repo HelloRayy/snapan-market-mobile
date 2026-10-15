@@ -88,6 +88,7 @@ class ConversationListItem extends StatelessWidget {
                         child: AppAvatar(
                           avatarUrl: conversation.user.avatar,
                           size: conversation.user.isOnline ? 47.0 : 50.0,
+                          name: conversation.user.name,
                         ),
                       ),
                     ],

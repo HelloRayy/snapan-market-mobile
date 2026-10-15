@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
 
 /// Horizontal carousel filter chips ("Obrolan", "Pembeli", "Belum Dibaca") for Direct Messages.
@@ -30,6 +31,13 @@ class DirectMessagesFilterTabs extends StatelessWidget {
       (key: 'unread', label: 'Belum Dibaca', count: totalUnreadCount > 0 ? totalUnreadCount : null),
     ];
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final activeBg = isDark ? Colors.white : const Color(0xFF0F172A);
+    final activeText = isDark ? const Color(0xFF0F172A) : Colors.white;
+    final inactiveBg = isDark ? AppColors.darkSurface : Colors.transparent;
+    final inactiveBorder = isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0);
+    final inactiveText = isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B);
+
     return SizedBox(
       height: 40.0,
       child: ListView.separated(
@@ -54,10 +62,10 @@ class DirectMessagesFilterTabs extends StatelessWidget {
               height: 36.0,
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               decoration: BoxDecoration(
-                color: isActive ? const Color(0xFFF1F5F9) : Colors.transparent,
+                color: isActive ? activeBg : inactiveBg,
                 borderRadius: BorderRadius.circular(18.0),
                 border: Border.all(
-                  color: isActive ? const Color(0xFFE2E8F0) : const Color(0xFFF1F5F9),
+                  color: isActive ? activeBg : inactiveBorder,
                   width: 1.0,
                 ),
               ),
@@ -71,7 +79,7 @@ class DirectMessagesFilterTabs extends StatelessWidget {
                       fontFamily: 'SF Pro',
                       fontSize: 14.0,
                       fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-                      color: isActive ? const Color(0xFF0F172A) : const Color(0xFF64748B),
+                      color: isActive ? activeText : inactiveText,
                       letterSpacing: -0.2,
                     ),
                   ),

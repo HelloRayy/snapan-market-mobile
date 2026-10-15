@@ -168,9 +168,9 @@
     "semantic_hash": ""
   },
   "lib/features/activity/screens/activity_screen.dart": {
-    "mtime": 1792073501.2443027,
-    "seen": 1792073521.7476306,
-    "ast_hash": "4349f73ca96e249ce988b6985388a755",
+    "mtime": 1792073963.8516502,
+    "seen": 1792073983.2538311,
+    "ast_hash": "47de8f5b9709fdc256ad329583c0538c",
     "semantic_hash": ""
   },
   "lib/features/auth/components/auth_header.dart": {

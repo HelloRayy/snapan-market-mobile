@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/features/locations/models/campus_location_spot.dart";
 
 class LocationSpotCard extends StatelessWidget {
@@ -17,16 +18,30 @@ class LocationSpotCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isSelected
+        ? (isDark ? AppColors.darkPrimaryPastel : const Color(0xFFF5F7FF))
+        : (isDark ? AppColors.darkSurface : Colors.white);
+    final cardBorder = isSelected
+        ? const Color(0xFF3D38F5)
+        : (isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0));
+    final primaryTextColor = isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A);
+    final secondaryTextColor = isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B);
+    final hintBg = isDark ? AppColors.darkSurfaceElevated : const Color(0xFFF8FAFC);
+    final hintBorder = isDark ? AppColors.darkBorder : const Color(0xFFF1F5F9);
+    final hintTextColor = isDark ? AppColors.darkTextSecondary : const Color(0xFF475569);
+    final tagBg = isDark ? AppColors.darkSurfaceElevated : const Color(0xFFF1F5F9);
+
     return GestureDetector(
       onTap: onSelect,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(14.0),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFF5F7FF) : Colors.white,
+          color: cardBg,
           borderRadius: BorderRadius.circular(16.0),
           border: Border.all(
-            color: isSelected ? const Color(0xFF3D38F5) : const Color(0xFFE2E8F0),
+            color: cardBorder,
             width: isSelected ? 1.5 : 1.0,
           ),
           boxShadow: [
@@ -72,10 +87,10 @@ class LocationSpotCard extends StatelessWidget {
                           Expanded(
                             child: Text(
                               spot.name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14.5,
                                 fontWeight: FontWeight.w700,
-                                color: Color(0xFF0F172A),
+                                color: primaryTextColor,
                                 letterSpacing: -0.3,
                               ),
                               maxLines: 1,
@@ -106,10 +121,10 @@ class LocationSpotCard extends StatelessWidget {
                       const SizedBox(height: 2.0),
                       Text(
                         spot.buildingName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12.0,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFF64748B),
+                          color: secondaryTextColor,
                         ),
                       ),
                     ],
@@ -123,9 +138,9 @@ class LocationSpotCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10.0),
               decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
+                color: hintBg,
                 borderRadius: BorderRadius.circular(10.0),
-                border: Border.all(color: const Color(0xFFF1F5F9), width: 0.8),
+                border: Border.all(color: hintBorder, width: 0.8),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,10 +150,10 @@ class LocationSpotCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       spot.codSafetyHint,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w400,
-                        color: Color(0xFF475569),
+                        color: hintTextColor,
                         height: 1.3,
                       ),
                       maxLines: 2,
@@ -175,15 +190,15 @@ class LocationSpotCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 3.0),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF1F5F9),
+                        color: tagBg,
                         borderRadius: BorderRadius.circular(6.0),
                       ),
                       child: Text(
                         spot.categoryLabel,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11.0,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF475569),
+                          color: hintTextColor,
                         ),
                       ),
                     ),

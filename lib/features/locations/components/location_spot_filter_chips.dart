@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:snapan_market/core/theme/app_colors.dart";
 
 class LocationSpotFilterChips extends StatelessWidget {
   final String activeFilter;
@@ -23,6 +24,13 @@ class LocationSpotFilterChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final activeBg = isDark ? Colors.white : const Color(0xFF0F172A);
+    final activeText = isDark ? const Color(0xFF0F172A) : Colors.white;
+    final inactiveBg = isDark ? AppColors.darkSurface : Colors.white;
+    final inactiveBorder = isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0);
+    final inactiveText = isDark ? AppColors.darkTextSecondary : const Color(0xFF475569);
+
     return SizedBox(
       height: 38.0,
       child: ListView.separated(
@@ -41,16 +49,16 @@ class LocationSpotFilterChips extends StatelessWidget {
               duration: const Duration(milliseconds: 180),
               padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
               decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFF0F172A) : Colors.white,
+                color: isSelected ? activeBg : inactiveBg,
                 borderRadius: BorderRadius.circular(20.0),
                 border: Border.all(
-                  color: isSelected ? const Color(0xFF0F172A) : const Color(0xFFE2E8F0),
+                  color: isSelected ? activeBg : inactiveBorder,
                   width: 1.0,
                 ),
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: const Color(0xFF0F172A).withValues(alpha: 0.12),
+                          color: (isDark ? Colors.white : const Color(0xFF0F172A)).withValues(alpha: 0.12),
                           blurRadius: 6.0,
                           offset: const Offset(0, 2),
                         ),
@@ -63,7 +71,7 @@ class LocationSpotFilterChips extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12.5,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected ? Colors.white : const Color(0xFF475569),
+                    color: isSelected ? activeText : inactiveText,
                     letterSpacing: -0.2,
                   ),
                 ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Card containing buyer notes/instructions for the seller.
 class CheckoutBuyerNoteCard extends StatelessWidget {
@@ -11,26 +12,33 @@ class CheckoutBuyerNoteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? AppColors.darkSurface : Colors.white;
+    final cardBorder = isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0);
+    final primaryTextColor = isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A);
+    final secondaryTextColor = isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B);
+    final fieldFillColor = isDark ? AppColors.darkSurfaceElevated : const Color(0xFFF8FAFC);
+
     return Container(
       padding: const EdgeInsets.all(14.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(16.0),
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 0.8),
+        border: Border.all(color: cardBorder, width: 0.8),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            children: const [
-              Icon(Icons.edit_note_rounded, size: 18.0, color: Color(0xFF334155)),
-              SizedBox(width: 8.0),
+            children: [
+              Icon(Icons.edit_note_rounded, size: 18.0, color: secondaryTextColor),
+              const SizedBox(width: 8.0),
               Text(
                 "Catatan untuk Penjual",
                 style: TextStyle(
                   fontSize: 13.5,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF0F172A),
+                  color: primaryTextColor,
                 ),
               ),
             ],
@@ -39,27 +47,27 @@ class CheckoutBuyerNoteCard extends StatelessWidget {
           TextField(
             controller: controller,
             maxLines: 2,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'SFPro',
               fontSize: 13.0,
-              color: Color(0xFF0F172A),
+              color: primaryTextColor,
             ),
             decoration: InputDecoration(
               hintText: "Misal: Aku pakai jaket hoodie abu-abu di meja pojok...",
-              hintStyle: const TextStyle(
+              hintStyle: TextStyle(
                 fontFamily: 'SFPro',
                 fontSize: 12.5,
-                color: Color(0xFF94A3B8),
+                color: secondaryTextColor,
               ),
               filled: true,
-              fillColor: const Color(0xFFF8FAFC),
+              fillColor: fieldFillColor,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),
-                borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 0.8),
+                borderSide: BorderSide(color: cardBorder, width: 0.8),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),
-                borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 0.8),
+                borderSide: BorderSide(color: cardBorder, width: 0.8),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),

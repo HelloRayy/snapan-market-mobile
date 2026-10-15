@@ -39,9 +39,16 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
 
   Future<void> _handlePickAvatar() async {
     HapticFeedback.lightImpact();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final sheetBg = isDark ? AppColors.darkSurfaceElevated : Colors.white;
+    final titleColor = isDark ? AppColors.darkTextPrimary : AppColors.ink;
+    final itemTitleColor = isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A);
+    final itemSubColor = isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B);
+    final handleColor = isDark ? AppColors.darkBorder : const Color(0xFFCBD5E1);
+
     final ImageSource? source = await showModalBottomSheet<ImageSource>(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: sheetBg,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
       ),
@@ -55,30 +62,30 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFCBD5E1),
+                  color: handleColor,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'Ganti Foto Profil',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.ink,
+                  color: titleColor,
                 ),
               ),
               const SizedBox(height: 14),
               ListTile(
                 leading: const Icon(Icons.photo_library_outlined, color: AppColors.primary),
-                title: const Text('Buka Galeri HP', style: TextStyle(fontWeight: FontWeight.w600)),
-                subtitle: const Text('Pilih foto profil dari galeri (Kompres 1080p)'),
+                title: Text('Buka Galeri HP', style: TextStyle(fontWeight: FontWeight.w600, color: itemTitleColor)),
+                subtitle: Text('Pilih foto profil dari galeri (Kompres 1080p)', style: TextStyle(color: itemSubColor)),
                 onTap: () => Navigator.pop(ctx, ImageSource.gallery),
               ),
               ListTile(
                 leading: const Icon(Icons.camera_alt_outlined, color: AppColors.primary),
-                title: const Text('Ambil Foto Kamera', style: TextStyle(fontWeight: FontWeight.w600)),
-                subtitle: const Text('Ambil selfie atau foto baru langsung'),
+                title: Text('Ambil Foto Kamera', style: TextStyle(fontWeight: FontWeight.w600, color: itemTitleColor)),
+                subtitle: Text('Ambil selfie atau foto baru langsung', style: TextStyle(color: itemSubColor)),
                 onTap: () => Navigator.pop(ctx, ImageSource.camera),
               ),
             ],
@@ -131,6 +138,13 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryTextColor = isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A);
+    final secondaryTextColor = isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8);
+    final avatarBg = isDark ? AppColors.darkSurfaceElevated : const Color(0xFFF1F5F9);
+    final badgeBorderColor = isDark ? AppColors.darkSurface : Colors.white;
+    final dividerColor = AppColors.adaptiveDivider(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -145,12 +159,12 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Display Name',
                       style: TextStyle(
                         fontSize: 14.0,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF0F172A),
+                        color: primaryTextColor,
                         letterSpacing: -0.1,
                       ),
                     ),
@@ -158,24 +172,24 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                     TextField(
                       controller: widget.nameController,
                       maxLength: 50,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'SFPro',
                         fontSize: 15.5,
                         fontWeight: FontWeight.normal,
-                        color: Color(0xFF0F172A),
+                        color: primaryTextColor,
                       ),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: 'Nama tampilan kamu',
                         hintStyle: TextStyle(
                           fontFamily: 'SFPro',
                           fontSize: 15.5,
-                          color: Color(0xFF94A3B8),
+                          color: secondaryTextColor,
                           fontWeight: FontWeight.normal,
                         ),
                         border: InputBorder.none,
                         isDense: true,
                         counterText: '',
-                        contentPadding: EdgeInsets.symmetric(vertical: 4.0),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 4.0),
                       ),
                     ),
                   ],
@@ -194,9 +208,9 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                     Container(
                       width: 52.0,
                       height: 52.0,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Color(0xFFF1F5F9),
+                        color: avatarBg,
                       ),
                       child: ClipOval(
                         child: _isUploadingAvatar
@@ -228,7 +242,7 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                           shape: BoxShape.circle,
                           color: const Color(0xFF101010),
                           border: Border.all(
-                            color: Colors.white,
+                            color: badgeBorderColor,
                             width: 1.5,
                           ),
                         ),
@@ -248,7 +262,7 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
           ),
         ),
 
-        const Divider(height: 1.0, thickness: 0.8, color: Color(0xFFF1F5F9)),
+        Divider(height: 1.0, thickness: 0.8, color: dividerColor),
 
         // Row 1.5: Mascot Bundle Picker (SNAPS-13 for beta pilot) OR Preset Avatars Accordion
         if (widget.isBetaPilotUser)
@@ -256,12 +270,13 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
         else
           _buildPresetAvatarSection(),
 
-        const Divider(height: 1.0, thickness: 0.8, color: Color(0xFFF1F5F9)),
+        Divider(height: 1.0, thickness: 0.8, color: dividerColor),
       ],
     );
   }
 
   Widget _buildMascotSection() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final activeBundle = widget.currentMascotFlair?.bundle ?? MascotBundle.koala;
     final curatedEmotions = [
       MascotEmotion.delighted, // Happy 😊
@@ -282,12 +297,12 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
             children: [
               Row(
                 children: [
-                  const Text(
+                  Text(
                     'Pilihan Maskot Bundle',
                     style: TextStyle(
                       fontSize: 14.0,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF0F172A),
+                      color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
                       letterSpacing: -0.1,
                     ),
                   ),
@@ -295,7 +310,7 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF1F5F9),
+                      color: isDark ? AppColors.darkPrimaryPastel : const Color(0xFFF1F5F9),
                       borderRadius: BorderRadius.circular(4.0),
                     ),
                     child: const Text(
@@ -334,7 +349,7 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
               height: 36.0,
               padding: const EdgeInsets.all(3.0),
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
+                color: isDark ? AppColors.darkSurfaceElevated : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Row(
@@ -355,7 +370,7 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                       duration: const Duration(milliseconds: 140),
                       padding: const EdgeInsets.symmetric(horizontal: 22.0),
                       decoration: BoxDecoration(
-                        color: isSelected ? Colors.white : Colors.transparent,
+                        color: isSelected ? (isDark ? AppColors.darkSurface : Colors.white) : Colors.transparent,
                         borderRadius: BorderRadius.circular(8.0),
                         boxShadow: isSelected
                             ? const [
@@ -407,10 +422,14 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                       width: 84.0,
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       decoration: BoxDecoration(
-                        color: isEmotionSelected ? const Color(0xFFEFF6FF) : Colors.white,
+                        color: isEmotionSelected
+                            ? (isDark ? AppColors.darkPrimaryPastel : const Color(0xFFEFF6FF))
+                            : (isDark ? AppColors.darkSurface : Colors.white),
                         borderRadius: BorderRadius.circular(12.0),
                         border: Border.all(
-                          color: isEmotionSelected ? AppColors.primary : const Color(0xFFE2E8F0),
+                          color: isEmotionSelected
+                              ? AppColors.primary
+                              : (isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0)),
                           width: isEmotionSelected ? 1.5 : 1.0,
                         ),
                         boxShadow: const [
@@ -437,7 +456,9 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                             style: TextStyle(
                               fontSize: 11.0,
                               fontWeight: isEmotionSelected ? FontWeight.w700 : FontWeight.w500,
-                              color: isEmotionSelected ? AppColors.primary : const Color(0xFF334155),
+                              color: isEmotionSelected
+                                  ? AppColors.primary
+                                  : (isDark ? AppColors.darkTextSecondary : const Color(0xFF334155)),
                             ),
                           ),
                         ],
@@ -454,6 +475,7 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
   }
 
   Widget _buildPresetAvatarSection() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 14.0),
       child: Column(
@@ -468,12 +490,12 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Pilihan avatar preset',
                   style: TextStyle(
                     fontSize: 14.0,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF0F172A),
+                    color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
                     letterSpacing: -0.1,
                   ),
                 ),
@@ -525,9 +547,9 @@ class _EditProfileAvatarSectionState extends State<EditProfileAvatarSection> {
                           height: 44.0,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: const Color(0xFFF1F5F9),
+                            color: isDark ? AppColors.darkSurfaceElevated : const Color(0xFFF1F5F9),
                             border: Border.all(
-                              color: const Color(0xFFCBD5E1),
+                              color: isDark ? AppColors.darkBorder : const Color(0xFFCBD5E1),
                               width: 1.2,
                             ),
                           ),

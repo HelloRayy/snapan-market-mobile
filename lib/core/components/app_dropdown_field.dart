@@ -47,16 +47,22 @@ class _AppDropdownFieldState extends State<AppDropdownField> {
 
     setState(() => _isOpen = true);
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final menuBg = isDark ? AppColors.darkSurfaceElevated : Colors.white;
+    final menuBorder = isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0);
+    final activeItemBg = isDark ? AppColors.darkPrimaryPastel : AppColors.primaryPastel;
+    final itemTextColor = isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A);
+
     final selected = await showMenu<String>(
       context: context,
       position: RelativeRect.fromLTRB(left, top, right, bottom),
-      color: Colors.white,
+      color: menuBg,
       surfaceTintColor: Colors.transparent,
       elevation: 6,
       shadowColor: Colors.black.withValues(alpha: 0.10),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.0),
-        side: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
+        side: BorderSide(color: menuBorder, width: 1.2),
       ),
       menuPadding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
       constraints: BoxConstraints(minWidth: popupWidth, maxWidth: popupWidth + 24.0),
@@ -70,7 +76,7 @@ class _AppDropdownFieldState extends State<AppDropdownField> {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
             decoration: BoxDecoration(
-              color: isItemActive ? AppColors.primaryPastel : Colors.transparent,
+              color: isItemActive ? activeItemBg : Colors.transparent,
               borderRadius: BorderRadius.circular(10.0),
             ),
             child: Row(
@@ -82,7 +88,7 @@ class _AppDropdownFieldState extends State<AppDropdownField> {
                     fontFamily: 'SFPro',
                     fontSize: 14.0,
                     fontWeight: isItemActive ? FontWeight.w700 : FontWeight.w500,
-                    color: isItemActive ? AppColors.primary : const Color(0xFF0F172A),
+                    color: isItemActive ? AppColors.primary : itemTextColor,
                   ),
                 ),
                 if (isItemActive)
@@ -111,6 +117,11 @@ class _AppDropdownFieldState extends State<AppDropdownField> {
   @override
   Widget build(BuildContext context) {
     final bool isSelected = widget.value != null && widget.value!.isNotEmpty;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final fieldBg = isDark ? AppColors.darkSurface : Colors.white;
+    final defaultBorder = isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0);
+    final textColor = isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A);
+    final placeholderColor = isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8);
 
     return GestureDetector(
       onTap: _handleTap,
@@ -119,12 +130,12 @@ class _AppDropdownFieldState extends State<AppDropdownField> {
         height: 48.0,
         padding: const EdgeInsets.symmetric(horizontal: 12.0),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: fieldBg,
           borderRadius: BorderRadius.circular(16.0),
           border: Border.all(
             color: widget.hasError
                 ? AppColors.error
-                : (_isOpen ? AppColors.primary : const Color(0xFFE2E8F0)),
+                : (_isOpen ? AppColors.primary : defaultBorder),
             width: (widget.hasError || _isOpen) ? 1.6 : 1.2,
           ),
         ),
@@ -139,7 +150,7 @@ class _AppDropdownFieldState extends State<AppDropdownField> {
                   fontFamily: 'SFPro',
                   fontSize: isSelected ? 14.5 : 13.5,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                  color: isSelected ? const Color(0xFF0F172A) : const Color(0xFF94A3B8),
+                  color: isSelected ? textColor : placeholderColor,
                 ),
               ),
             ),

@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Global flag to force default profile avatar across the entire app.
 /// Set to false so that users with an avatar in the database display their photo,
@@ -23,19 +25,23 @@ class DefaultProfileAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultBg = isDark ? AppColors.darkSurfaceElevated : const Color(0xFFE2E8F0);
+    final defaultIcon = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: backgroundColor ?? const Color(0xFFE2E8F0),
+        color: backgroundColor ?? defaultBg,
         border: border,
       ),
       child: Center(
         child: Icon(
           CupertinoIcons.person_fill,
           size: (size * 0.56).clamp(10.0, 72.0),
-          color: iconColor ?? const Color(0xFF94A3B8),
+          color: iconColor ?? defaultIcon,
         ),
       ),
     );

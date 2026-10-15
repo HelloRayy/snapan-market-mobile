@@ -37,7 +37,7 @@ class HomeFeedTabSwitch extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = AppColors.adaptiveCanvas(context);
+    final bgColor = AppColors.adaptiveSurface(context);
     final borderColor = AppColors.adaptiveDivider(context);
     final indicatorColor = AppColors.adaptiveText(context);
 

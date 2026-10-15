@@ -22,12 +22,18 @@ class CheckoutSellerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? AppColors.darkSurface : Colors.white;
+    final cardBorder = isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0);
+    final primaryTextColor = isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A);
+    final secondaryTextColor = isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B);
+
     return Container(
       padding: const EdgeInsets.all(14.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(16.0),
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 0.8),
+        border: Border.all(color: cardBorder, width: 0.8),
       ),
       child: Row(
         children: [
@@ -52,10 +58,10 @@ class CheckoutSellerCard extends StatelessWidget {
                       Flexible(
                         child: Text(
                           sellerName,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14.0,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF0F172A),
+                            color: primaryTextColor,
                             letterSpacing: -0.2,
                           ),
                           maxLines: 1,
@@ -69,10 +75,10 @@ class CheckoutSellerCard extends StatelessWidget {
                   const SizedBox(height: 2.0),
                   Text(
                     "@$sellerUsername • $department",
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12.0,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xFF64748B),
+                      color: secondaryTextColor,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

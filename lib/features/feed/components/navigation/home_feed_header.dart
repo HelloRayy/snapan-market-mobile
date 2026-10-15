@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/snaps_logo.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Top App Bar Header for Home Feed
 /// Sliced from pen.dev `Toobar - Top - Chats` adapted for Home Screen

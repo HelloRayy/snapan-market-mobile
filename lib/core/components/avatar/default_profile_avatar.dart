@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/components/avatar/oreo_avatar_helper.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Global flag to force default profile avatar across the entire app.
@@ -102,8 +103,43 @@ class AppAvatar extends StatelessWidget {
       return avatar;
     }
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final baseBg = backgroundColor ?? (isDark ? AppColors.darkSurfaceElevated : const Color(0xFFE2E8F0));
+
     Widget content;
-    if (cleanUrl.startsWith('assets/')) {
+    if (cleanUrl.startsWith('preset:')) {
+      final presetId = cleanUrl.substring(7);
+      final preset = kOreoGradientPresets.firstWhere(
+        (p) => p.id == presetId,
+        orElse: () => kOreoGradientPresets[0],
+      );
+      final initialLetter = (name?.trim().isNotEmpty == true
+          ? name!.trim()[0]
+          : (username?.trim().isNotEmpty == true ? username!.trim()[0] : 'S')).toUpperCase();
+
+      content = Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+            colors: preset.colors,
+            begin: preset.begin,
+            end: preset.end,
+          ),
+        ),
+        child: Center(
+          child: Text(
+            initialLetter,
+            style: TextStyle(
+              fontSize: (size * 0.42).clamp(10.0, 28.0),
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      );
+    } else if (cleanUrl.startsWith('assets/')) {
       content = Image.asset(
         cleanUrl,
         width: size,
@@ -121,6 +157,16 @@ class AppAvatar extends StatelessWidget {
         width: size,
         height: size,
         fit: BoxFit.cover,
+        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+          if (wasSynchronouslyLoaded || frame != null) {
+            return child;
+          }
+          return DefaultProfileAvatar(
+            size: size,
+            backgroundColor: backgroundColor,
+            iconColor: iconColor,
+          );
+        },
         errorBuilder: (context, error, stackTrace) => DefaultProfileAvatar(
           size: size,
           backgroundColor: backgroundColor,
@@ -133,6 +179,7 @@ class AppAvatar extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
+        color: baseBg,
         shape: BoxShape.circle,
         border: border,
         boxShadow: boxShadow,

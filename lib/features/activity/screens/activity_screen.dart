@@ -1,11 +1,13 @@
 import "package:flutter/material.dart";
 import "package:snapan_market/core/components/snaps_skeleton.dart";
+import "package:snapan_market/core/navigation/app_slide_page_route.dart";
 import "package:snapan_market/core/services/global_notification_service.dart";
 import "package:snapan_market/core/services/supabase_service.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/features/activity/components/activity_item_tile.dart";
 import "package:snapan_market/features/activity/components/broadcast_detail_modal.dart";
 import "package:snapan_market/features/activity/models/activity_notification_model.dart";
+import "package:snapan_market/features/feed/screens/post_detail_screen.dart";
 
 abstract class _ActivityListItem {}
 
@@ -127,6 +129,22 @@ class _ActivityScreenState extends State<ActivityScreen> {
       }
     });
     SupabaseService.instance.markSingleNotificationAsRead(notif.id);
+  }
+
+  Future<void> _navigateToPost(String postId) async {
+    try {
+      final post = await SupabaseService.instance.fetchPostById(postId);
+      if (post != null && mounted) {
+        Navigator.push(
+          context,
+          AppSlidePageRoute(
+            builder: (_) => PostDetailScreen(post: post),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error navigating to post from activity: $e');
+    }
   }
 
   void _markAllAsRead() {
@@ -308,16 +326,18 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                     notification: notif,
                                     onTap: () {
                                       _markSingleAsRead(notif);
-                                      // Jika notifikasi memiliki aksi (misal update app, url, post), langsung eksekusi aksinya
-                                      if (notif.hasAction) {
-                                        GlobalNotificationService.executeNotificationAction(context, notif);
-                                      } else if (notif.type == ActivityType.system) {
-                                        // Jika pengumuman biasa tanpa aksi khusus, buka teks pengumuman
+                                      final isAnnouncement = notif.type == ActivityType.system ||
+                                          notif.actorName.toLowerCase().startsWith('admin');
+                                      if (isAnnouncement) {
+                                        // Tap container pengumuman: selalu buka teks lengkap di bottom sheet modal
                                         BroadcastDetailModal.show(context, notif);
+                                      } else if (notif.postId != null && notif.postId!.isNotEmpty) {
+                                        _navigateToPost(notif.postId!);
                                       }
                                     },
                                     onActionTap: () {
                                       _markSingleAsRead(notif);
+                                      // Tap tombol putih inline secara spesifik: langsung eksekusi aksinya
                                       GlobalNotificationService.executeNotificationAction(context, notif);
                                     },
                                   ),

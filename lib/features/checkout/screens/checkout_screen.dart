@@ -162,7 +162,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       body: Column(
         children: [
           Container(
-            color: AppColors.adaptiveCanvas(context),
             padding: EdgeInsets.only(
               top: topPadding > 0 ? topPadding + 4.0 : 10.0,
               left: 12.0,
@@ -170,6 +169,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               bottom: 8.0,
             ),
             decoration: BoxDecoration(
+              color: AppColors.adaptiveCanvas(context),
               border: Border(bottom: BorderSide(color: AppColors.adaptiveBorder(context), width: 0.8)),
             ),
             child: Row(

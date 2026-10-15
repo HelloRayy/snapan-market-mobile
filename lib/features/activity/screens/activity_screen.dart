@@ -149,9 +149,9 @@ class _ActivityScreenState extends State<ActivityScreen> {
       children: [
         // Header
         Container(
-          color: AppColors.adaptiveSurface(context),
           padding: const EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 12.0),
           decoration: BoxDecoration(
+            color: AppColors.adaptiveSurface(context),
             border: Border(
               bottom: BorderSide(
                 color: isDark ? AppColors.darkBorder : const Color(0xFFF1F5F9),

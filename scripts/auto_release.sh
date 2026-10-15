@@ -54,7 +54,7 @@ git push origin -f "v${VERSION_NAME}"
 
 # Ekstrak GitHub Token dari konfigurasi remote git
 REMOTE_URL=$(git config remote.origin.url)
-GH_TOKEN=$(echo "$REMOTE_URL" | sed -n -E 's#.*(github_pat_[^@]+)@.*#\1#p')
+GH_TOKEN=$(echo "$REMOTE_URL" | sed -n -E 's#.*((github_pat_|ghp_)[^@]+)@.*#\1#p')
 
 if [ -z "$GH_TOKEN" ]; then
   echo "⚠️ Token GitHub tidak ditemukan di URL remote. Menggunakan environment GITHUB_TOKEN..."

@@ -217,7 +217,7 @@ fi
 echo -e "\n${CYAN}${BOLD}[5/6] 📦 Persiapan GitHub Release & Upload Asset...${NC}"
 
 REMOTE_URL=$(git config remote.origin.url || true)
-GH_TOKEN=$(echo "$REMOTE_URL" | sed -n -E 's#.*(github_pat_[^@]+)@.*#\1#p')
+GH_TOKEN=$(echo "$REMOTE_URL" | sed -n -E 's#.*((github_pat_|ghp_)[^@]+)@.*#\1#p')
 
 if [ -z "$GH_TOKEN" ] && [ -n "${GITHUB_TOKEN}" ]; then
   GH_TOKEN="${GITHUB_TOKEN}"

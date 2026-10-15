@@ -9,15 +9,23 @@ import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 class UserNavGlyph extends StatelessWidget {
   final bool isActive;
   final String? userAvatar;
+  final Color? activeColor;
+  final Color? inactiveColor;
 
   const UserNavGlyph({
     super.key,
     required this.isActive,
     this.userAvatar,
+    this.activeColor,
+    this.inactiveColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final effectiveActive = activeColor ?? (isDark ? Colors.white : AppColors.primary);
+    final effectiveInactive = inactiveColor ?? (isDark ? const Color(0x99FFFFFF) : const Color(0xFF64748B));
+
     return ValueListenableBuilder<Map<String, dynamic>?>(
       valueListenable: SupabaseService.instance.currentUserProfileNotifier,
       builder: (context, profile, _) {
@@ -41,7 +49,9 @@ class UserNavGlyph extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: isActive ? AppColors.primary : const Color(0xFFCBD5E1),
+                color: isActive
+                    ? effectiveActive
+                    : (isDark ? const Color(0x33FFFFFF) : const Color(0xFFCBD5E1)),
                 width: isActive ? 1.8 : 1.0,
               ),
             ),
@@ -49,12 +59,13 @@ class UserNavGlyph extends StatelessWidget {
               child: Image.network(
                 effectiveAvatar,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => _buildFallbackGlyph(),
+                errorBuilder: (context, error, stackTrace) =>
+                    _buildFallbackGlyph(effectiveActive, effectiveInactive),
               ),
             ),
           );
         } else {
-          glyph = _buildFallbackGlyph();
+          glyph = _buildFallbackGlyph(effectiveActive, effectiveInactive);
         }
 
         if (!shouldShowWarning) {
@@ -94,11 +105,11 @@ class UserNavGlyph extends StatelessWidget {
     );
   }
 
-  Widget _buildFallbackGlyph() {
+  Widget _buildFallbackGlyph(Color effectiveActive, Color effectiveInactive) {
     return Icon(
       isActive ? CupertinoIcons.person_fill : CupertinoIcons.person,
       size: 20.0,
-      color: isActive ? AppColors.primary : const Color(0xFF64748B),
+      color: isActive ? effectiveActive : effectiveInactive,
     );
   }
 }

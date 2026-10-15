@@ -47,16 +47,17 @@ class ChatProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final maxCardWidth = screenWidth * 0.75;
 
     return Container(
       constraints: BoxConstraints(maxWidth: maxCardWidth),
       margin: const EdgeInsets.only(bottom: 6.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.adaptiveSurfaceElevated(context),
         borderRadius: _getBorderRadius(),
         border: Border.all(
-          color: const Color(0xFFE2E8F0),
+          color: AppColors.adaptiveBorder(context),
           width: 0.8,
         ),
         boxShadow: const [
@@ -83,10 +84,10 @@ class ChatProductCard extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(10.0),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
+                  color: isDark ? AppColors.darkSurface : const Color(0xFFF8FAFC),
                   borderRadius: BorderRadius.circular(12.0),
                   border: Border.all(
-                    color: const Color(0xFFF1F5F9),
+                    color: AppColors.adaptiveBorder(context),
                     width: 0.8,
                   ),
                 ),
@@ -104,7 +105,7 @@ class ChatProductCard extends StatelessWidget {
                         errorBuilder: (context, error, stackTrace) => Container(
                           width: 56.0,
                           height: 56.0,
-                          color: const Color(0xFFE2E8F0),
+                          color: isDark ? AppColors.darkSurfaceElevated : const Color(0xFFE2E8F0),
                           child: const Icon(CupertinoIcons.bag, color: AppColors.muted, size: 24.0),
                         ),
                       ),
@@ -120,28 +121,28 @@ class ChatProductCard extends StatelessWidget {
                             product.title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13.0,
                               fontWeight: FontWeight.w400,
-                              color: Color(0xFF475569),
+                              color: AppColors.adaptiveText(context),
                               height: 1.25,
                             ),
                           ),
                           const SizedBox(height: 3.0),
                           RichText(
                             text: TextSpan(
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 13.0,
-                                color: Color(0xFF64748B),
+                                color: AppColors.adaptiveMuted(context),
                               ),
                               children: [
                                 const TextSpan(text: "Total: "),
                                 TextSpan(
                                   text: product.price,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13.5,
                                     fontWeight: FontWeight.w700,
-                                    color: Color(0xFF0F172A),
+                                    color: AppColors.adaptiveText(context),
                                   ),
                                 ),
                               ],
@@ -165,10 +166,10 @@ class ChatProductCard extends StatelessWidget {
             ),
 
             // 2. Thin Horizontal Divider
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Divider(
-                color: Color(0xFFF1F5F9),
+                color: AppColors.adaptiveDivider(context),
                 height: 1.0,
                 thickness: 0.8,
               ),
@@ -178,20 +179,20 @@ class ChatProductCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   "Titik COD",
                   style: TextStyle(
                     fontSize: 12.5,
-                    color: Color(0xFF64748B),
+                    color: AppColors.adaptiveMuted(context),
                     fontWeight: FontWeight.w400,
                   ),
                 ),
                 Text(
                   location,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF0F172A),
+                    color: AppColors.adaptiveText(context),
                   ),
                 ),
               ],
@@ -210,19 +211,19 @@ class ChatProductCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? AppColors.darkSurface : Colors.white,
                   borderRadius: BorderRadius.circular(12.0),
                   border: Border.all(
-                    color: const Color(0xFFE2E8F0),
+                    color: AppColors.adaptiveBorder(context),
                     width: 1.0,
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   "Cek Lokasi di Peta",
                   style: TextStyle(
                     fontSize: 13.0,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF0F172A),
+                    color: AppColors.adaptiveText(context),
                     letterSpacing: -0.1,
                   ),
                 ),

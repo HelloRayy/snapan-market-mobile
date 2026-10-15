@@ -8,20 +8,28 @@ class PaperPlaneNavGlyph extends StatelessWidget {
   final bool isActive;
   final bool hasBadge;
   final int badgeCount;
+  final Color? activeColor;
+  final Color? inactiveColor;
 
   const PaperPlaneNavGlyph({
     super.key,
     required this.isActive,
     this.hasBadge = false,
     this.badgeCount = 1,
+    this.activeColor,
+    this.inactiveColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final effectiveActive = activeColor ?? (isDark ? Colors.white : AppColors.primary);
+    final effectiveInactive = inactiveColor ?? (isDark ? const Color(0x99FFFFFF) : const Color(0xFF64748B));
+
     final icon = Icon(
       isActive ? CupertinoIcons.chat_bubble_fill : CupertinoIcons.chat_bubble,
       size: 21.5,
-      color: isActive ? AppColors.primary : const Color(0xFF64748B),
+      color: isActive ? effectiveActive : effectiveInactive,
     );
 
     if (!hasBadge || badgeCount <= 0) {
@@ -47,7 +55,7 @@ class PaperPlaneNavGlyph extends StatelessWidget {
               shape: badgeCount > 9 ? BoxShape.rectangle : BoxShape.circle,
               borderRadius: badgeCount > 9 ? BorderRadius.circular(9.0) : null,
               border: Border.all(
-                color: Colors.white,
+                color: isDark ? AppColors.darkSurface : Colors.white,
                 width: 1.5,
               ),
               boxShadow: const [

@@ -131,22 +131,17 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
       width: 216.0,
       padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.adaptiveSurfaceElevated(context),
         borderRadius: BorderRadius.circular(16.0),
         border: Border.all(
-          color: const Color(0xFFF1F5F9),
+          color: AppColors.adaptiveDivider(context),
           width: 0.8,
         ),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x18000000),
-            blurRadius: 24.0,
-            offset: Offset(0, 8),
-          ),
-          BoxShadow(
-            color: Color(0x08000000),
-            blurRadius: 6.0,
-            offset: Offset(0, 2),
+            color: Color(0x1F000000), // Subtle ambient shadow
+            blurRadius: 16.0,
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -157,7 +152,7 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
           // 1. Simpan ke Markah / Hapus
           PostSubmenuItem(
             icon: _isSaved ? CupertinoIcons.bookmark_fill : CupertinoIcons.bookmark,
-            iconColor: _isSaved ? AppColors.primary : const Color(0xFF334155),
+            iconColor: _isSaved ? AppColors.primary : null,
             label: _isSaved ? 'Hapus Markah' : 'Simpan Markah',
             onTap: () {
               setState(() => _isSaved = !_isSaved);
@@ -178,9 +173,9 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
             },
           ),
 
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
-            child: Divider(height: 1.0, thickness: 0.6, color: Color(0xFFF1F5F9)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
+            child: Divider(height: 1.0, thickness: 0.6, color: AppColors.adaptiveDivider(context)),
           ),
 
           if (widget.isOwner) ...[
@@ -231,9 +226,9 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
             ),
 
             if (widget.isAdmin) ...[
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
-                child: Divider(height: 1.0, thickness: 0.6, color: Color(0xFFF1F5F9)),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
+                child: Divider(height: 1.0, thickness: 0.6, color: AppColors.adaptiveDivider(context)),
               ),
               PostSubmenuItem(
                 icon: CupertinoIcons.trash,
@@ -247,9 +242,9 @@ class _PostSubmenuPopoverState extends State<PostSubmenuPopover> {
               ),
             ],
 
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
-              child: Divider(height: 1.0, thickness: 0.6, color: Color(0xFFF1F5F9)),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
+              child: Divider(height: 1.0, thickness: 0.6, color: AppColors.adaptiveDivider(context)),
             ),
 
             // 5. Laporkan Postingan (Destructive Red)

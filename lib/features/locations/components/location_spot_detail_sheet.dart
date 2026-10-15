@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:snapan_market/core/components/kumo_button.dart";
+import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/features/locations/models/campus_location_spot.dart";
 
 class LocationSpotDetailSheet extends StatelessWidget {
@@ -29,10 +30,12 @@ class LocationSpotDetailSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+      decoration: BoxDecoration(
+        color: AppColors.adaptiveSurfaceElevated(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
       ),
       padding: EdgeInsets.only(
         left: 20.0,
@@ -50,7 +53,7 @@ class LocationSpotDetailSheet extends StatelessWidget {
               width: 40.0,
               height: 4.5,
               decoration: BoxDecoration(
-                color: const Color(0xFFCBD5E1),
+                color: isDark ? AppColors.darkBorder : const Color(0xFFCBD5E1),
                 borderRadius: BorderRadius.circular(2.5),
               ),
             ),
@@ -80,20 +83,20 @@ class LocationSpotDetailSheet extends StatelessWidget {
                   children: [
                     Text(
                       spot.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16.5,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF0F172A),
+                        color: AppColors.adaptiveText(context),
                         letterSpacing: -0.3,
                       ),
                     ),
                     const SizedBox(height: 2.0),
                     Text(
                       "${spot.buildingName} • Lantai ${spot.floor}",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13.0,
                         fontWeight: FontWeight.w500,
-                        color: Color(0xFF64748B),
+                        color: AppColors.adaptiveMuted(context),
                       ),
                     ),
                   ],
@@ -106,10 +109,10 @@ class LocationSpotDetailSheet extends StatelessWidget {
           // Description Box
           Text(
             spot.description,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13.5,
               fontWeight: FontWeight.w400,
-              color: Color(0xFF334155),
+              color: isDark ? AppColors.darkTextPrimary : const Color(0xFF334155),
               height: 1.4,
             ),
           ),

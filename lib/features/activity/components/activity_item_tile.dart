@@ -9,20 +9,33 @@ import "package:snapan_market/features/activity/models/activity_notification_mod
 class ActivityItemTile extends StatelessWidget {
   final ActivityNotification notification;
   final VoidCallback? onTap;
+  final VoidCallback? onActionTap;
 
   const ActivityItemTile({
     super.key,
     required this.notification,
     this.onTap,
+    this.onActionTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isSystem = notification.type == ActivityType.system ||
+        notification.actorName.toLowerCase().startsWith('admin');
+    final hasCustomTitle = notification.title.isNotEmpty &&
+        notification.title != 'Notifikasi baru' &&
+        notification.title != 'Pengumuman Baru';
+
+    final Color tileBackground = notification.isRead
+        ? (isDark ? AppColors.darkCanvas : Colors.white)
+        : (isDark ? AppColors.darkSurface : const Color(0xFFF8FAFC));
+
     return InkWell(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-        color: notification.isRead ? Colors.white : const Color(0xFFF8FAFC),
+        color: tileBackground,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -37,9 +50,12 @@ class ActivityItemTile extends StatelessWidget {
                           width: 44.0,
                           height: 44.0,
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: isDark ? AppColors.darkSurface : Colors.white,
                             shape: BoxShape.circle,
-                            border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
+                            border: Border.all(
+                              color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0),
+                              width: 1.0,
+                            ),
                           ),
                           padding: const EdgeInsets.all(7.0),
                           child: const Center(
@@ -62,7 +78,10 @@ class ActivityItemTile extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: _getBadgeColor(notification.type),
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 1.5),
+                      border: Border.all(
+                        color: isDark ? AppColors.darkCanvas : Colors.white,
+                        width: 1.5,
+                      ),
                     ),
                     child: Icon(
                       _getBadgeIcon(notification.type),
@@ -80,26 +99,23 @@ class ActivityItemTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Row: Sender + Verified Seal + Dot Time Ago
                   Row(
                     children: [
                       Flexible(
                         child: Text(
-                          notification.type == ActivityType.system ||
-                                  notification.actorName.toLowerCase().startsWith('admin')
-                              ? 'Snaps'
-                              : notification.actorName,
-                          style: const TextStyle(
+                          isSystem ? 'Snaps' : notification.actorName,
+                          style: TextStyle(
                             fontSize: 13.5,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF0F172A),
+                            color: AppColors.adaptiveText(context),
                             letterSpacing: -0.2,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (notification.type == ActivityType.system ||
-                          notification.actorName.toLowerCase().startsWith('admin')) ...[
+                      if (isSystem) ...[
                         const SizedBox(width: 4.0),
                         const Icon(
                           CupertinoIcons.checkmark_seal_fill,
@@ -110,22 +126,76 @@ class ActivityItemTile extends StatelessWidget {
                       const SizedBox(width: 6.0),
                       Text(
                         "• ${notification.timeAgo}",
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11.5,
                           fontWeight: FontWeight.w400,
-                          color: Color(0xFF94A3B8),
+                          color: isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 2.0),
+
+                  // Title & Announcement Badge (Crucial for broadcasts)
+                  if (isSystem || hasCustomTitle) ...[
+                    const SizedBox(height: 4.0),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if (isSystem) ...[
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+                            margin: const EdgeInsets.only(right: 6.0),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? AppColors.primary.withValues(alpha: 0.20)
+                                  : const Color(0xFFEEF0FF),
+                              borderRadius: BorderRadius.circular(4.0),
+                              border: Border.all(
+                                color: isDark
+                                    ? AppColors.primary.withValues(alpha: 0.40)
+                                    : const Color(0xFFD8DBFE),
+                                width: 0.5,
+                              ),
+                            ),
+                            child: const Text(
+                              'PENGUMUMAN',
+                              style: TextStyle(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.primary,
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                          ),
+                        ],
+                        Expanded(
+                          child: Text(
+                            notification.title,
+                            style: TextStyle(
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.adaptiveText(context),
+                              letterSpacing: -0.2,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+
+                  // Body Message
+                  const SizedBox(height: 2.5),
                   Text.rich(
                     TextSpan(
                       style: TextStyle(
                         fontSize: 13.0,
                         fontWeight: notification.isRead ? FontWeight.w400 : FontWeight.w500,
-                        color: notification.isRead ? const Color(0xFF64748B) : const Color(0xFF334155),
-                        height: 1.3,
+                        color: notification.isRead
+                            ? (isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B))
+                            : (isDark ? Colors.white : const Color(0xFF334155)),
+                        height: 1.35,
                       ),
                       children: MentionTextSpanHelper.buildSpans(
                         context: context,
@@ -133,12 +203,60 @@ class ActivityItemTile extends StatelessWidget {
                         defaultStyle: TextStyle(
                           fontSize: 13.0,
                           fontWeight: notification.isRead ? FontWeight.w400 : FontWeight.w500,
-                          color: notification.isRead ? const Color(0xFF64748B) : const Color(0xFF334155),
-                          height: 1.3,
+                          color: notification.isRead
+                              ? (isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B))
+                              : (isDark ? Colors.white : const Color(0xFF334155)),
+                          height: 1.35,
                         ),
                       ),
                     ),
+                    maxLines: isSystem ? 3 : 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
+
+                  // Direct Inline Action Button (if notification contains CTA action)
+                  if (notification.hasAction) ...[
+                    const SizedBox(height: 8.0),
+                    GestureDetector(
+                      onTap: onActionTap ?? onTap,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 11.0, vertical: 5.5),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(8.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.25),
+                              blurRadius: 4.0,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              _getActionIcon(notification.actionType),
+                              size: 13.0,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(width: 5.0),
+                            Text(
+                              notification.actionButtonLabel?.isNotEmpty == true
+                                  ? notification.actionButtonLabel!
+                                  : _getDefaultActionLabel(notification.actionType),
+                              style: const TextStyle(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                                letterSpacing: -0.2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -203,7 +321,33 @@ class ActivityItemTile extends StatelessWidget {
       case ActivityType.order:
         return CupertinoIcons.bag_fill;
       case ActivityType.system:
-        return CupertinoIcons.checkmark_seal_fill;
+        return CupertinoIcons.speaker_2_fill;
+    }
+  }
+
+  IconData _getActionIcon(String? actionType) {
+    switch (actionType) {
+      case 'update_app':
+        return CupertinoIcons.arrow_down_to_line;
+      case 'external_url':
+        return CupertinoIcons.link;
+      case 'post_link':
+        return CupertinoIcons.doc_text;
+      default:
+        return CupertinoIcons.arrow_right;
+    }
+  }
+
+  String _getDefaultActionLabel(String? actionType) {
+    switch (actionType) {
+      case 'update_app':
+        return 'Perbarui Aplikasi';
+      case 'external_url':
+        return 'Buka Tautan';
+      case 'post_link':
+        return 'Lihat Postingan';
+      default:
+        return 'Lihat Rincian';
     }
   }
 }

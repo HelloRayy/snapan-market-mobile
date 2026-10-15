@@ -33,6 +33,9 @@ create index if not exists idx_profiles_is_suspended on public.profiles(is_suspe
 
 alter table public.profiles add column if not exists nis text unique;
 alter table public.profiles add column if not exists display_name text;
+alter table public.profiles add column if not exists bio text;
+alter table public.profiles add column if not exists link text;
+alter table public.profiles add column if not exists interests text;
 create index if not exists idx_profiles_nis on public.profiles(nis);
 
 -- Trigger Otomatis saat User Sign Up (Google OAuth / Email / NIS)
@@ -45,6 +48,8 @@ declare
   v_display_name text;
   v_username text;
   v_avatar text;
+  v_bio text;
+  v_link text;
 begin
   -- Ekstraksi metadata dari raw_user_meta_data
   v_nis := nullif(trim(coalesce(new.raw_user_meta_data->>'nis', '')), '');
@@ -53,10 +58,11 @@ begin
   v_display_name := nullif(trim(coalesce(new.raw_user_meta_data->>'display_name', '')), '');
   v_username := coalesce(new.raw_user_meta_data->>'username', lower(replace(v_full_name, ' ', '')));
   v_avatar := coalesce(new.raw_user_meta_data->>'avatar_url', new.raw_user_meta_data->>'picture', '');
+  v_bio := nullif(trim(coalesce(new.raw_user_meta_data->>'bio', '')), '');
+  v_link := nullif(trim(coalesce(new.raw_user_meta_data->>'link', '')), '');
 
   -- 1. Jika NIS disertakan, periksa ke student_registry
-  if v_nis is not null and exists (
-    select 1 from information_schema.tables 
+  if v_nis is not null and exists (\n    select 1 from information_schema.tables 
     where table_schema = 'public' and table_name = 'student_registry'
   ) then
     select class_group, full_name into v_class, v_full_name
@@ -84,7 +90,9 @@ begin
     username,
     avatar_url,
     class_group,
-    nis
+    nis,
+    bio,
+    link
   )
   values (
     new.id,
@@ -93,7 +101,9 @@ begin
     v_username,
     v_avatar,
     v_class,
-    v_nis
+    v_nis,
+    v_bio,
+    v_link
   )
   on conflict (id) do update set
     full_name = case 
@@ -103,7 +113,9 @@ begin
       when public.profiles.class_group is null or public.profiles.class_group = 'Siswa Snapan' or public.profiles.class_group = ''
       then excluded.class_group else public.profiles.class_group end,
     nis = coalesce(public.profiles.nis, excluded.nis),
-    display_name = coalesce(public.profiles.display_name, excluded.display_name);
+    display_name = coalesce(public.profiles.display_name, excluded.display_name),
+    bio = coalesce(public.profiles.bio, excluded.bio),
+    link = coalesce(public.profiles.link, excluded.link);
 
   return new;
 end;

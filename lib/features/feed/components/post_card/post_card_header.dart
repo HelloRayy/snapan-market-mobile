@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/components/mascot_flair_badge.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
@@ -94,6 +95,11 @@ class PostCardHeader extends StatelessWidget {
         ? item.seller.displayName!.trim()
         : (cleanUsername.isNotEmpty ? '@$cleanUsername' : 'Pengguna');
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryTextColor = isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A);
+    final secondaryTextColor = isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B);
+    final mutedTextColor = isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -122,11 +128,11 @@ class PostCardHeader extends StatelessWidget {
                     displayAuthor,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'SFPro',
                       fontSize: 14.5,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF0F172A),
+                      color: primaryTextColor,
                       letterSpacing: -0.2,
                     ),
                   ),
@@ -143,13 +149,22 @@ class PostCardHeader extends StatelessWidget {
                 ),
               ],
 
+              // Mascot Flair Badge (SNAPS-13)
+              if (item.seller.mascotFlair != null) ...[
+                const SizedBox(width: 4.0),
+                MascotFlairBadge(
+                  flair: item.seller.mascotFlair!,
+                  size: 26.0,
+                ),
+              ],
+
               // 2. Topic Tag or Class Group
               if (item.topicTag != null) ...[
                 const SizedBox(width: 4.0),
-                const Icon(
+                Icon(
                   Icons.chevron_right_rounded,
                   size: 14.0,
-                  color: Color(0xFF94A3B8),
+                  color: mutedTextColor,
                 ),
                 const SizedBox(width: 4.0),
                 if (item.isOfficialTopic) ...[
@@ -171,7 +186,7 @@ class PostCardHeader extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                         color: item.isOfficialTopic
                             ? AppColors.primary
-                            : const Color(0xFF0F172A),
+                            : primaryTextColor,
                       ),
                     ),
                   ),
@@ -183,10 +198,10 @@ class PostCardHeader extends StatelessWidget {
                     item.seller.classGroup,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13.0,
                       fontWeight: FontWeight.normal,
-                      color: Color(0xFF94A3B8),
+                      color: mutedTextColor,
                     ),
                   ),
                 ),
@@ -204,27 +219,27 @@ class PostCardHeader extends StatelessWidget {
           children: [
             Text(
               formatSmartTimestamp(item.timestamp),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13.0,
                 fontWeight: FontWeight.normal,
-                color: Color(0xFF64748B),
-                fontFeatures: [FontFeature.tabularFigures()],
+                color: secondaryTextColor,
+                fontFeatures: const [FontFeature.tabularFigures()],
               ),
             ),
             const SizedBox(width: 2.0),
             InkWell(
               onTapDown: (details) => _showOptionsMenu(context, details.globalPosition),
               borderRadius: BorderRadius.circular(16.0),
-              splashColor: AppColors.mistGray,
+              splashColor: isDark ? const Color(0xFF242626) : AppColors.mistGray,
               highlightColor: Colors.transparent,
-              child: const SizedBox(
+              child: SizedBox(
                 width: 32.0,
                 height: 28.0,
                 child: Center(
                   child: Icon(
                     CupertinoIcons.ellipsis,
                     size: 19.0,
-                    color: AppColors.ashGray,
+                    color: secondaryTextColor,
                   ),
                 ),
               ),

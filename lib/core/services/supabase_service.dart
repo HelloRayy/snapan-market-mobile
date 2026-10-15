@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/core/services/supabase/supabase_auth_service.dart';
 import 'package:snapan_market/core/services/supabase/supabase_profile_service.dart';
@@ -60,6 +61,18 @@ class SupabaseService {
   }) =>
       storage.uploadImage(bytes: bytes, fileName: fileName, bucket: bucket);
 
+  Future<bool> deleteImage({
+    required String urlOrPath,
+    String bucket = 'market-media',
+  }) =>
+      storage.deleteImage(urlOrPath: urlOrPath, bucket: bucket);
+
+  Future<bool> deleteImages({
+    required List<String> urlsOrPaths,
+    String bucket = 'market-media',
+  }) =>
+      storage.deleteImages(urlsOrPaths: urlsOrPaths, bucket: bucket);
+
   // --- PROFILE DELEGATIONS ---
   ValueNotifier<Map<String, dynamic>?> get currentUserProfileNotifier =>
       profile.currentUserProfileNotifier;
@@ -93,6 +106,7 @@ class SupabaseService {
     String? bio,
     List<String>? tags,
     String? link,
+    Map<String, dynamic>? mascotFlair,
   }) =>
       profile.updateProfile(
         userId: userId,
@@ -105,6 +119,7 @@ class SupabaseService {
         bio: bio,
         tags: tags,
         link: link,
+        mascotFlair: mascotFlair,
       );
 
   Future<bool> isUsernameTaken(String username) =>
@@ -120,8 +135,11 @@ class SupabaseService {
       profile.syncProfileAuthCredentials();
 
   // --- FEED & POST DELEGATIONS ---
+  List<MarketPostModel> get cachedFeedPosts => feed.cachedFeedPosts;
+  bool get hasCachedFeedPosts => feed.hasCachedFeedPosts;
+
   Future<List<MarketPostModel>> fetchFeedPosts({
-    int limit = 30,
+    int limit = 15,
     int offset = 0,
   }) =>
       feed.fetchFeedPosts(limit: limit, offset: offset);
@@ -139,6 +157,7 @@ class SupabaseService {
     String? topicTag,
     List<String> images = const [],
     Map<String, dynamic>? poll,
+    MascotFlairModel? mascotFlair,
   }) =>
       feed.createPost(
         postType: postType,
@@ -153,6 +172,7 @@ class SupabaseService {
         topicTag: topicTag,
         images: images,
         poll: poll,
+        mascotFlair: mascotFlair,
       );
 
   Future<int?> recordPostView(String postId, {required String deviceId}) =>
@@ -225,6 +245,9 @@ class SupabaseService {
   Future<List<Map<String, dynamic>>> fetchConversations() =>
       chat.fetchConversations();
 
+  Future<Map<String, dynamic>?> fetchConversationById(String conversationId) =>
+      chat.fetchConversationById(conversationId);
+
   Future<String?> getOrCreateConversation({
     required String otherUserId,
     String? productId,
@@ -269,6 +292,9 @@ class SupabaseService {
 
   Future<void> markNotificationsAsRead() =>
       social.markNotificationsAsRead();
+
+  Future<void> markSingleNotificationAsRead(String notificationId) =>
+      social.markSingleNotificationAsRead(notificationId);
 
   Future<int> getUnreadNotificationsCount() =>
       social.getUnreadNotificationsCount();

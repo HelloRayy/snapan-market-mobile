@@ -76,11 +76,12 @@ class BroadcastDetailModal extends StatelessWidget {
   Widget build(BuildContext context) {
     final actionType = notification.actionType ?? 'none';
     final hasAction = actionType != 'none';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+      decoration: BoxDecoration(
+        color: AppColors.adaptiveSurfaceElevated(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
       ),
       padding: EdgeInsets.only(
         left: 20.0,
@@ -98,7 +99,7 @@ class BroadcastDetailModal extends StatelessWidget {
               width: 38.0,
               height: 4.5,
               decoration: BoxDecoration(
-                color: const Color(0xFFCBD5E1),
+                color: isDark ? AppColors.darkBorder : const Color(0xFFCBD5E1),
                 borderRadius: BorderRadius.circular(3.0),
               ),
             ),
@@ -113,8 +114,11 @@ class BroadcastDetailModal extends StatelessWidget {
                 height: 44.0,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white,
-                  border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
+                  color: isDark ? AppColors.darkSurface : Colors.white,
+                  border: Border.all(
+                    color: AppColors.adaptiveBorder(context),
+                    width: 1.0,
+                  ),
                 ),
                 padding: const EdgeInsets.all(7.0),
                 child: const Center(
@@ -128,13 +132,13 @@ class BroadcastDetailModal extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Flexible(
+                        Flexible(
                           child: Text(
                             'Snaps',
                             style: TextStyle(
                               fontSize: 15.0,
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF0F172A),
+                              color: AppColors.adaptiveText(context),
                               letterSpacing: -0.2,
                             ),
                             maxLines: 1,
@@ -151,9 +155,12 @@ class BroadcastDetailModal extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6.5, vertical: 2.0),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEFF6FF),
+                            color: isDark ? const Color(0x331D4ED8) : const Color(0xFFEFF6FF),
                             borderRadius: BorderRadius.circular(6.0),
-                            border: Border.all(color: const Color(0xFFBFDBFE), width: 0.8),
+                            border: Border.all(
+                              color: isDark ? const Color(0x663B82F6) : const Color(0xFFBFDBFE),
+                              width: 0.8,
+                            ),
                           ),
                           child: const Text(
                             "OFFICIAL",
@@ -170,9 +177,9 @@ class BroadcastDetailModal extends StatelessWidget {
                     const SizedBox(height: 2.0),
                     Text(
                       "Pengumuman Resmi • ${notification.timeAgo}",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.0,
-                        color: Color(0xFF64748B),
+                        color: AppColors.adaptiveMuted(context),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -187,16 +194,16 @@ class BroadcastDetailModal extends StatelessWidget {
           ),
 
           const SizedBox(height: 16.0),
-          const Divider(color: Color(0xFFF1F5F9), height: 1.0),
+          Divider(color: AppColors.adaptiveDivider(context), height: 1.0),
           const SizedBox(height: 16.0),
 
           // Judul Pengumuman Penuh
           Text(
             notification.title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18.0,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF0F172A),
+              color: AppColors.adaptiveText(context),
               letterSpacing: -0.3,
               height: 1.3,
             ),
@@ -209,18 +216,18 @@ class BroadcastDetailModal extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
+                color: isDark ? AppColors.darkSurface : const Color(0xFFF8FAFC),
                 borderRadius: BorderRadius.circular(16.0),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
+                border: Border.all(color: AppColors.adaptiveBorder(context)),
               ),
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 child: SelectableText(
                   notification.message,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14.5,
                     fontWeight: FontWeight.w400,
-                    color: Color(0xFF334155),
+                    color: isDark ? AppColors.darkTextPrimary : const Color(0xFF334155),
                     height: 1.6,
                   ),
                 ),

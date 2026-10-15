@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/services/poll_sync_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/auth/screens/auth_screen.dart';
 import 'package:snapan_market/features/feed/components/post_card/post_poll_option_tile.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
@@ -105,14 +106,16 @@ class PostPollSection extends StatelessWidget {
             );
           }),
           const SizedBox(height: 4.0),
-          _buildFooter(poll),
+          _buildFooter(context, poll),
         ],
       ),
     );
   }
 
-  Widget _buildFooter(PostPollModel poll) {
+  Widget _buildFooter(BuildContext context, PostPollModel poll) {
     final hasLocation = post.locationTag != null && post.locationTag!.isNotEmpty;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final mutedColor = isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B);
 
     return Padding(
       padding: const EdgeInsets.only(top: 4.0),
@@ -127,10 +130,10 @@ class PostPollSection extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.start,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w400,
-                  color: Color(0xFF64748B),
+                  color: mutedColor,
                   letterSpacing: -0.1,
                 ),
               ),
@@ -144,10 +147,10 @@ class PostPollSection extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: hasLocation ? TextAlign.end : TextAlign.start,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w400,
-                color: Color(0xFF64748B),
+                color: mutedColor,
                 letterSpacing: -0.1,
               ),
             ),

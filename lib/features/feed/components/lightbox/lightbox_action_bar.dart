@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
 import 'package:snapan_market/features/feed/components/post_card/market_feed_icons.dart';
@@ -36,6 +35,34 @@ class LightboxActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final inactiveIconColor = isDark
+        ? Colors.white.withValues(alpha: 0.85)
+        : const Color(0xFF334155);
+
+    final countTextColor = isDark
+        ? Colors.white.withValues(alpha: 0.85)
+        : const Color(0xFF475569);
+
+    final likeActiveColor = isDark
+        ? const Color(0xFFF43F5E)
+        : const Color(0xFFE11D48);
+
+    const repostActiveColor = Color(0xFF10B981);
+
+    final gradientColors = isDark
+        ? [
+            const Color(0xFF0B0F17).withValues(alpha: 0.95),
+            const Color(0xFF0B0F17).withValues(alpha: 0.70),
+            Colors.transparent,
+          ]
+        : [
+            Colors.white.withValues(alpha: 0.98),
+            Colors.white.withValues(alpha: 0.85),
+            Colors.white.withValues(alpha: 0.0),
+          ];
+
     return Positioned(
       bottom: 0,
       left: 0,
@@ -51,11 +78,7 @@ class LightboxActionBar extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
-            colors: [
-              Colors.white.withValues(alpha: 0.98),
-              Colors.white.withValues(alpha: 0.85),
-              Colors.white.withValues(alpha: 0.0),
-            ],
+            colors: gradientColors,
             stops: const [0.0, 0.55, 1.0],
           ),
         ),
@@ -80,8 +103,8 @@ class LightboxActionBar extends StatelessWidget {
                           child: FeedHeartIcon(
                             isLiked: isLiked,
                             size: 20.0,
-                            activeColor: const Color(0xFFE11D48),
-                            inactiveColor: const Color(0xFF334155),
+                            activeColor: likeActiveColor,
+                            inactiveColor: inactiveIconColor,
                           ),
                         ),
                         if (likesCount > 0) ...[
@@ -91,9 +114,7 @@ class LightboxActionBar extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 12.5,
                               fontWeight: isLiked ? FontWeight.w600 : FontWeight.w400,
-                              color: isLiked
-                                  ? const Color(0xFFE11D48)
-                                  : const Color(0xFF475569),
+                              color: isLiked ? likeActiveColor : countTextColor,
                               fontFeatures: const [FontFeature.tabularFigures()],
                             ),
                           ),
@@ -117,19 +138,19 @@ class LightboxActionBar extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const FeedCommentIcon(
+                        FeedCommentIcon(
                           size: 19.0,
-                          color: Color(0xFF334155),
+                          color: inactiveIconColor,
                         ),
                         if (post.commentsCount > 0) ...[
                           const SizedBox(width: 5.0),
                           Text(
                             formatCompactNumber(post.commentsCount),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12.5,
                               fontWeight: FontWeight.w400,
-                              color: Color(0xFF475569),
-                              fontFeatures: [FontFeature.tabularFigures()],
+                              color: countTextColor,
+                              fontFeatures: const [FontFeature.tabularFigures()],
                             ),
                           ),
                         ],
@@ -155,8 +176,8 @@ class LightboxActionBar extends StatelessWidget {
                         FeedRepostIcon(
                           isReposted: isReposted,
                           size: 19.0,
-                          activeColor: const Color(0xFF10B981),
-                          inactiveColor: const Color(0xFF334155),
+                          activeColor: repostActiveColor,
+                          inactiveColor: inactiveIconColor,
                         ),
                         if (repostsCount > 0) ...[
                           const SizedBox(width: 5.0),
@@ -166,8 +187,8 @@ class LightboxActionBar extends StatelessWidget {
                               fontSize: 12.5,
                               fontWeight: isReposted ? FontWeight.w600 : FontWeight.w400,
                               color: isReposted
-                                  ? const Color(0xFF10B981)
-                                  : const Color(0xFF475569),
+                                  ? repostActiveColor
+                                  : countTextColor,
                               fontFeatures: const [FontFeature.tabularFigures()],
                             ),
                           ),
@@ -186,11 +207,11 @@ class LightboxActionBar extends StatelessWidget {
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: onShareClick,
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
                     child: FeedShareIcon(
                       size: 19.0,
-                      color: Color(0xFF334155),
+                      color: inactiveIconColor,
                     ),
                   ),
                 ),

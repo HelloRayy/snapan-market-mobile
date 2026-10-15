@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Modal bottom sheet providing conversation actions (view profile, report, clear chat).
 class ChatOptionsSheet extends StatelessWidget {
@@ -22,7 +23,7 @@ class ChatOptionsSheet extends StatelessWidget {
   }) {
     return showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.adaptiveSurface(context),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
       ),
@@ -45,6 +46,12 @@ class ChatOptionsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final iconColor = AppColors.adaptiveText(context);
+    final textStyle = TextStyle(
+      fontWeight: FontWeight.w600,
+      color: AppColors.adaptiveText(context),
+    );
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -52,13 +59,13 @@ class ChatOptionsSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(CupertinoIcons.person, color: Color(0xFF0F172A)),
-              title: const Text('Lihat Profil', style: TextStyle(fontWeight: FontWeight.w600)),
+              leading: Icon(CupertinoIcons.person, color: iconColor),
+              title: Text('Lihat Profil', style: textStyle),
               onTap: onViewProfile,
             ),
             ListTile(
-              leading: const Icon(CupertinoIcons.shield, color: Color(0xFF0F172A)),
-              title: const Text('Laporkan Pengguna', style: TextStyle(fontWeight: FontWeight.w600)),
+              leading: Icon(CupertinoIcons.shield, color: iconColor),
+              title: Text('Laporkan Pengguna', style: textStyle),
               onTap: onReportUser,
             ),
             ListTile(

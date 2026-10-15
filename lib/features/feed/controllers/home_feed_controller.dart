@@ -1,14 +1,19 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/services/follow_service.dart';
 import 'package:snapan_market/core/services/poll_sync_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 class HomeFeedController extends ChangeNotifier {
+  static const int _pageSize = 15;
+
   List<MarketPostModel> posts = [];
   bool isLoading = true;
+  bool isLoadingMore = false;
+  bool hasMorePosts = true;
   bool hasError = false;
   String errorMessage = '';
   Map<String, dynamic>? userProfile;
@@ -20,7 +25,18 @@ class HomeFeedController extends ChangeNotifier {
     PollSyncService.instance.addListener(_handlePollSyncUpdate);
     SupabaseService.instance.currentUserProfileNotifier.addListener(_handleProfileChange);
     _setupProfileSubscription();
-    fetchPosts();
+
+    // 1. Stale-While-Revalidate: load in-memory cache instantly (0ms)
+    if (SupabaseService.instance.hasCachedFeedPosts) {
+      posts = List.from(SupabaseService.instance.cachedFeedPosts);
+      isLoading = false;
+      notifyListeners();
+      // Silently revalidate in background
+      fetchPosts(isSilent: true);
+    } else {
+      fetchPosts();
+    }
+
     _authSubscription = SupabaseService.instance.client.auth.onAuthStateChange.listen((data) {
       if (data.event == AuthChangeEvent.signedOut) {
         SupabaseService.instance.currentUserProfileNotifier.value = null;
@@ -80,8 +96,9 @@ class HomeFeedController extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchPosts({bool isRefresh = false}) async {
-    if (!isRefresh) {
+  /// Fetch initial or refreshed posts with Future.wait parallelization & SWR support
+  Future<void> fetchPosts({bool isRefresh = false, bool isSilent = false}) async {
+    if (!isRefresh && !isSilent && posts.isEmpty) {
       isLoading = true;
       hasError = false;
       errorMessage = '';
@@ -89,9 +106,16 @@ class HomeFeedController extends ChangeNotifier {
     }
 
     try {
-      final livePosts = await SupabaseService.instance.fetchFeedPosts();
-      final likedIds = await SupabaseService.instance.fetchLikedPostIds();
-      final savedIds = await SupabaseService.instance.fetchBookmarkedPostIds();
+      // Parallel execution: fetch feed posts, likes, and bookmarks simultaneously
+      final results = await Future.wait([
+        SupabaseService.instance.fetchFeedPosts(limit: _pageSize, offset: 0),
+        SupabaseService.instance.fetchLikedPostIds(),
+        SupabaseService.instance.fetchBookmarkedPostIds(),
+      ]);
+
+      final livePosts = results[0] as List<MarketPostModel>;
+      final likedIds = results[1] as Set<String>;
+      final savedIds = results[2] as Set<String>;
 
       final currentUser = SupabaseService.instance.currentUser;
       if (currentUser != null) {
@@ -108,20 +132,77 @@ class HomeFeedController extends ChangeNotifier {
         isLiked: likedIds.contains(p.id),
         isSaved: savedIds.contains(p.id),
       )).toList();
+
+      hasMorePosts = livePosts.length >= _pageSize;
       isLoading = false;
       hasError = false;
       notifyListeners();
     } catch (e) {
       debugPrint('Supabase fetch error: $e');
-      posts = [];
+      // If we already had cached posts, do not wipe them!
+      if (posts.isEmpty) {
+        posts = [];
+        hasError = true;
+        errorMessage = 'Gagal memuat feed. Periksa koneksi internet Anda.';
+      }
       isLoading = false;
-      hasError = false;
+      notifyListeners();
+    }
+  }
+
+  /// Infinite scroll pagination: fetch next batch of posts (15 items)
+  Future<void> fetchMorePosts() async {
+    if (isLoadingMore || !hasMorePosts || isLoading) return;
+
+    isLoadingMore = true;
+    notifyListeners();
+
+    try {
+      final currentOffset = posts.length;
+      final results = await Future.wait([
+        SupabaseService.instance.fetchFeedPosts(limit: _pageSize, offset: currentOffset),
+        SupabaseService.instance.fetchLikedPostIds(),
+        SupabaseService.instance.fetchBookmarkedPostIds(),
+      ]);
+
+      final nextPosts = results[0] as List<MarketPostModel>;
+      final likedIds = results[1] as Set<String>;
+      final savedIds = results[2] as Set<String>;
+
+      if (nextPosts.isEmpty) {
+        hasMorePosts = false;
+      } else {
+        if (nextPosts.length < _pageSize) {
+          hasMorePosts = false;
+        }
+
+        final enriched = nextPosts.map((p) => p.copyWith(
+          isLiked: likedIds.contains(p.id),
+          isSaved: savedIds.contains(p.id),
+        )).toList();
+
+        // Deduplicate against existing post IDs
+        final existingIds = posts.map((p) => p.id).toSet();
+        final newUniquePosts = enriched.where((p) => !existingIds.contains(p.id)).toList();
+        posts.addAll(newUniquePosts);
+      }
+    } catch (e) {
+      debugPrint('Error fetchMorePosts: $e');
+    } finally {
+      isLoadingMore = false;
       notifyListeners();
     }
   }
 
   Future<void> createPost(Map<String, dynamic> data) async {
     try {
+      MascotFlairModel? postFlair;
+      if (data['mascotFlair'] != null && data['mascotFlair'] is Map) {
+        postFlair = MascotFlairModel.fromJson(Map<String, dynamic>.from(data['mascotFlair'] as Map));
+      } else if (data['mascotFlair'] is MascotFlairModel) {
+        postFlair = data['mascotFlair'] as MascotFlairModel;
+      }
+
       final liveCreated = await SupabaseService.instance.createPost(
         postType: data['postType'] as String? ?? 'thread',
         caption: data['caption'] as String? ?? '',
@@ -133,6 +214,7 @@ class HomeFeedController extends ChangeNotifier {
         topicTag: data['topicTag'] as String?,
         images: (data['images'] as List<dynamic>?)?.cast<String>() ?? [],
         poll: data['poll'] as Map<String, dynamic>?,
+        mascotFlair: postFlair,
       );
       posts.insert(0, liveCreated);
       notifyListeners();

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/services/follow_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/ui/oreo_avatar_helper.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
@@ -96,25 +97,34 @@ class PostAuthorAvatar extends StatelessWidget {
                             }
                           }
                         },
-                        child: Container(
-                          padding: const EdgeInsets.all(4.0),
-                          color: Colors.transparent,
-                          child: Container(
-                            width: 20.0,
-                            height: 20.0,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: const Color(0xFF000000), // Threads Ink Black #000000
-                              border: Border.all(color: Colors.white, width: 1.5),
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.add_rounded,
-                                size: 14.0,
-                                color: Colors.white,
+                        child: Builder(
+                          builder: (context) {
+                            final isDark = Theme.of(context).brightness == Brightness.dark;
+                            final plusBgColor = isDark ? Colors.white : const Color(0xFF000000);
+                            final plusBorderColor = isDark ? AppColors.darkSurface : Colors.white;
+                            final plusIconColor = isDark ? const Color(0xFF000000) : Colors.white;
+
+                            return Container(
+                              padding: const EdgeInsets.all(4.0),
+                              color: Colors.transparent,
+                              child: Container(
+                                width: 20.0,
+                                height: 20.0,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: plusBgColor,
+                                  border: Border.all(color: plusBorderColor, width: 1.5),
+                                ),
+                                child: Center(
+                                  child: Icon(
+                                    Icons.add_rounded,
+                                    size: 14.0,
+                                    color: plusIconColor,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
+                            );
+                          },
                         ),
                       ),
                     ),

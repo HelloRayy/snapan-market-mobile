@@ -2,9 +2,22 @@ import "package:flutter/material.dart";
 import "package:snapan_market/core/components/snaps_skeleton.dart";
 import "package:snapan_market/core/services/global_notification_service.dart";
 import "package:snapan_market/core/services/supabase_service.dart";
+import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/features/activity/components/activity_item_tile.dart";
 import "package:snapan_market/features/activity/components/broadcast_detail_modal.dart";
 import "package:snapan_market/features/activity/models/activity_notification_model.dart";
+
+abstract class _ActivityListItem {}
+
+class _HeaderItem extends _ActivityListItem {
+  final String label;
+  _HeaderItem(this.label);
+}
+
+class _TileItem extends _ActivityListItem {
+  final ActivityNotification notification;
+  _TileItem(this.notification);
+}
 
 class ActivityScreen extends StatefulWidget {
   final bool showAppBar;
@@ -15,7 +28,7 @@ class ActivityScreen extends StatefulWidget {
 }
 
 class _ActivityScreenState extends State<ActivityScreen> {
-  int _activeTabIndex = 0; // 0: Semua, 1: Pesanan, 2: Interaksi
+  int _activeTabIndex = 0; // 0: Semua, 1: Pengumuman, 2: Interaksi, 3: Pesanan COD
   late List<ActivityNotification> _notifications;
   bool _isLoading = true;
   dynamic _realtimeChannel;
@@ -66,17 +79,54 @@ class _ActivityScreenState extends State<ActivityScreen> {
   }
 
   List<ActivityNotification> get _filteredNotifications {
-    if (_activeTabIndex == 1) {
-      return _notifications.where((n) => n.type == ActivityType.order).toList();
-    } else if (_activeTabIndex == 2) {
-      return _notifications.where((n) =>
-        n.type == ActivityType.like ||
-        n.type == ActivityType.comment ||
-        n.type == ActivityType.mention ||
-        n.type == ActivityType.follow
-      ).toList();
+    switch (_activeTabIndex) {
+      case 1:
+        return _notifications.where((n) => n.type == ActivityType.system).toList();
+      case 2:
+        return _notifications.where((n) =>
+          n.type == ActivityType.like ||
+          n.type == ActivityType.comment ||
+          n.type == ActivityType.mention ||
+          n.type == ActivityType.follow
+        ).toList();
+      case 3:
+        return _notifications.where((n) => n.type == ActivityType.order).toList();
+      default:
+        return _notifications;
     }
-    return _notifications;
+  }
+
+  List<_ActivityListItem> get _flattenedItems {
+    final list = <_ActivityListItem>[];
+    final items = _filteredNotifications;
+    if (items.isEmpty) return list;
+
+    final Map<ActivityTimelineGroup, List<ActivityNotification>> grouped = {};
+    for (final notif in items) {
+      grouped.putIfAbsent(notif.timelineGroup, () => []).add(notif);
+    }
+
+    for (final group in ActivityTimelineGroup.values) {
+      final notifs = grouped[group];
+      if (notifs != null && notifs.isNotEmpty) {
+        list.add(_HeaderItem(group.label));
+        for (final notif in notifs) {
+          list.add(_TileItem(notif));
+        }
+      }
+    }
+    return list;
+  }
+
+  void _markSingleAsRead(ActivityNotification notif) {
+    if (notif.isRead) return;
+    setState(() {
+      final i = _notifications.indexWhere((n) => n.id == notif.id);
+      if (i != -1) {
+        _notifications[i] = _notifications[i].copyWith(isRead: true);
+      }
+    });
+    SupabaseService.instance.markSingleNotificationAsRead(notif.id);
   }
 
   void _markAllAsRead() {
@@ -94,33 +144,44 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final bodyContent = Column(
       children: [
         // Header
         Container(
-          color: Colors.white,
+          color: AppColors.adaptiveSurface(context),
           padding: const EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 12.0),
-          decoration: const BoxDecoration(
-            border: Border(bottom: BorderSide(color: Color(0xFFF1F5F9), width: 0.8)),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: isDark ? AppColors.darkBorder : const Color(0xFFF1F5F9),
+                width: 0.8,
+              ),
+            ),
           ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (widget.showAppBar) ...[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       "Aktivitas & Notifikasi",
                       style: TextStyle(
                         fontSize: 18.0,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF0F172A),
+                        color: AppColors.adaptiveText(context),
                         letterSpacing: -0.3,
                       ),
                     ),
                     IconButton(
                       onPressed: _markAllAsRead,
-                      icon: const Icon(Icons.done_all_rounded, size: 20.0, color: Color(0xFF64748B)),
+                      icon: Icon(
+                        Icons.done_all_rounded,
+                        size: 20.0,
+                        color: isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B),
+                      ),
                       tooltip: "Tandai semua dibaca",
                     ),
                   ],
@@ -128,124 +189,157 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 const SizedBox(height: 10.0),
               ],
 
-                  // Category Chips
-                  Row(
-                    children: [
-                      _FilterChip(
-                        label: "Semua",
-                        isActive: _activeTabIndex == 0,
-                        onTap: () => setState(() => _activeTabIndex = 0),
-                      ),
-                      _FilterChip(
-                        label: "Pesanan COD",
-                        isActive: _activeTabIndex == 1,
-                        onTap: () => setState(() => _activeTabIndex = 1),
-                      ),
-                      _FilterChip(
-                        label: "Interaksi",
-                        isActive: _activeTabIndex == 2,
-                        onTap: () => setState(() => _activeTabIndex = 2),
-                      ),
-                    ],
-                  ),
-                ],
+              // Category Chips (Horizontal Scrollable for overflow prevention)
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                child: Row(
+                  children: [
+                    _FilterChip(
+                      label: "Semua",
+                      isActive: _activeTabIndex == 0,
+                      onTap: () => setState(() => _activeTabIndex = 0),
+                    ),
+                    _FilterChip(
+                      label: "Pengumuman",
+                      isActive: _activeTabIndex == 1,
+                      onTap: () => setState(() => _activeTabIndex = 1),
+                    ),
+                    _FilterChip(
+                      label: "Interaksi",
+                      isActive: _activeTabIndex == 2,
+                      onTap: () => setState(() => _activeTabIndex = 2),
+                    ),
+                    _FilterChip(
+                      label: "Pesanan COD",
+                      isActive: _activeTabIndex == 3,
+                      onTap: () => setState(() => _activeTabIndex = 3),
+                    ),
+                  ],
+                ),
               ),
-            ),
+            ],
+          ),
+        ),
 
-            // Notification List
-            Expanded(
-              child: _isLoading
-                  ? const SingleChildScrollView(
-                      child: ActivityListSkeleton(itemCount: 6),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _loadLiveNotifications,
-                      color: const Color(0xFF3D38F5),
-                      child: _filteredNotifications.isEmpty
-                          ? ListView(
-                              children: [
-                                SizedBox(height: MediaQuery.of(context).size.height * 0.15),
-                                Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 64.0,
-                                        height: 64.0,
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFFF8FAFC),
-                                          shape: BoxShape.circle,
-                                          border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
-                                        ),
-                                        child: const Icon(
-                                          Icons.notifications_none_rounded,
-                                          size: 28.0,
-                                          color: Color(0xFF94A3B8),
-                                        ),
+        // Notification List
+        Expanded(
+          child: _isLoading
+              ? const SingleChildScrollView(
+                  child: ActivityListSkeleton(itemCount: 6),
+                )
+              : RefreshIndicator(
+                  onRefresh: _loadLiveNotifications,
+                  color: const Color(0xFF3D38F5),
+                  child: _filteredNotifications.isEmpty
+                      ? ListView(
+                          children: [
+                            SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+                            Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: 64.0,
+                                    height: 64.0,
+                                    decoration: BoxDecoration(
+                                      color: isDark ? AppColors.darkSurface : const Color(0xFFF8FAFC),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0),
+                                        width: 1.0,
                                       ),
-                                      const SizedBox(height: 12.0),
-                                      const Text(
-                                        "Belum ada aktivitas baru",
-                                        style: TextStyle(
-                                          color: Color(0xFF0F172A),
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 14.5,
-                                          letterSpacing: -0.2,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4.0),
-                                      const Text(
-                                        "Notifikasi pesanan dan interaksi akan muncul di sini.",
-                                        style: TextStyle(
-                                          color: Color(0xFF94A3B8),
-                                          fontSize: 12.5,
-                                        ),
-                                      ),
-                                    ],
+                                    ),
+                                    child: Icon(
+                                      Icons.notifications_none_rounded,
+                                      size: 28.0,
+                                      color: isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12.0),
+                                  Text(
+                                    "Belum ada aktivitas baru",
+                                    style: TextStyle(
+                                      color: AppColors.adaptiveText(context),
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14.5,
+                                      letterSpacing: -0.2,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4.0),
+                                  Text(
+                                    "Notifikasi pengumuman dan interaksi akan muncul di sini.",
+                                    style: TextStyle(
+                                      color: isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8),
+                                      fontSize: 12.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.only(top: 4.0, bottom: 120.0),
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemCount: _flattenedItems.length,
+                          itemBuilder: (context, idx) {
+                            final item = _flattenedItems[idx];
+                            if (item is _HeaderItem) {
+                              return Container(
+                                padding: const EdgeInsets.fromLTRB(16.0, 14.0, 16.0, 6.0),
+                                color: isDark ? AppColors.darkCanvas : const Color(0xFFFAFAFA),
+                                child: Text(
+                                  item.label.toUpperCase(),
+                                  style: TextStyle(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 0.6,
+                                    color: isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B),
                                   ),
                                 ),
-                              ],
-                            )
-                          : ListView.separated(
-                              padding: const EdgeInsets.only(top: 4.0, bottom: 120.0),
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              itemCount: _filteredNotifications.length,
-                              separatorBuilder: (_, _) => const Divider(
-                                color: Color(0xFFF1F5F9),
-                                height: 1.0,
-                                thickness: 0.5,
-                              ),
-                              itemBuilder: (_, idx) {
-                                final notif = _filteredNotifications[idx];
-                                return ActivityItemTile(
-                                  notification: notif,
-                                  onTap: () {
-                                    setState(() {
-                                      final i = _notifications.indexWhere((n) => n.id == notif.id);
-                                      if (i != -1) {
-                                        _notifications[i] = _notifications[i].copyWith(isRead: true);
+                              );
+                            } else if (item is _TileItem) {
+                              final notif = item.notification;
+                              return Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ActivityItemTile(
+                                    notification: notif,
+                                    onTap: () {
+                                      _markSingleAsRead(notif);
+                                      // Jika notifikasi memiliki aksi (misal update app, url, post), langsung eksekusi aksinya
+                                      if (notif.hasAction) {
+                                        GlobalNotificationService.executeNotificationAction(context, notif);
+                                      } else if (notif.type == ActivityType.system) {
+                                        // Jika pengumuman biasa tanpa aksi khusus, buka teks pengumuman
+                                        BroadcastDetailModal.show(context, notif);
                                       }
-                                    });
-
-                                    // Jika notifikasi memiliki aksi (misal update app, url, post), langsung eksekusi aksinya
-                                    if (notif.hasAction) {
+                                    },
+                                    onActionTap: () {
+                                      _markSingleAsRead(notif);
                                       GlobalNotificationService.executeNotificationAction(context, notif);
-                                    } else if (notif.type == ActivityType.system) {
-                                      // Jika pengumuman biasa tanpa aksi khusus, buka teks pengumuman
-                                      BroadcastDetailModal.show(context, notif);
-                                    }
-                                  },
-                                );
-                              },
-                            ),
-                    ),
-            ),
-          ],
-        );
+                                    },
+                                  ),
+                                  Divider(
+                                    color: isDark ? AppColors.darkBorder : const Color(0xFFF1F5F9),
+                                    height: 1.0,
+                                    thickness: 0.5,
+                                  ),
+                                ],
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        ),
+                ),
+        ),
+      ],
+    );
 
     if (widget.showAppBar) {
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.adaptiveCanvas(context),
         body: SafeArea(
           bottom: false,
           child: bodyContent,
@@ -254,7 +348,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }
 
     return Container(
-      color: Colors.white,
+      color: AppColors.adaptiveCanvas(context),
       child: bodyContent,
     );
   }
@@ -273,6 +367,13 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final activeBg = isDark ? Colors.white : const Color(0xFF0F172A);
+    final activeText = isDark ? const Color(0xFF0F172A) : Colors.white;
+    final inactiveBg = isDark ? AppColors.darkSurface : Colors.white;
+    final inactiveBorder = isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0);
+    final inactiveText = isDark ? AppColors.darkTextSecondary : const Color(0xFF475569);
+
     return Padding(
       padding: const EdgeInsets.only(right: 8.0),
       child: GestureDetector(
@@ -281,16 +382,16 @@ class _FilterChip extends StatelessWidget {
           duration: const Duration(milliseconds: 180),
           padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 7.0),
           decoration: BoxDecoration(
-            color: isActive ? const Color(0xFF0F172A) : Colors.white,
+            color: isActive ? activeBg : inactiveBg,
             borderRadius: BorderRadius.circular(20.0),
             border: Border.all(
-              color: isActive ? const Color(0xFF0F172A) : const Color(0xFFE2E8F0),
+              color: isActive ? activeBg : inactiveBorder,
               width: 1.0,
             ),
             boxShadow: isActive
                 ? [
                     BoxShadow(
-                      color: const Color(0xFF0F172A).withValues(alpha: 0.12),
+                      color: (isDark ? Colors.black : const Color(0xFF0F172A)).withValues(alpha: 0.12),
                       blurRadius: 6.0,
                       offset: const Offset(0, 2),
                     ),
@@ -302,7 +403,7 @@ class _FilterChip extends StatelessWidget {
             style: TextStyle(
               fontSize: 12.5,
               fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-              color: isActive ? Colors.white : const Color(0xFF475569),
+              color: isActive ? activeText : inactiveText,
               letterSpacing: -0.2,
             ),
           ),

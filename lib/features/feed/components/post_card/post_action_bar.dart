@@ -43,6 +43,10 @@ class PostActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final iconColor = isDark ? AppColors.darkTextSecondary : AppColors.ashGray;
+    final counterColor = isDark ? AppColors.darkTextSecondary : AppColors.graphite;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -75,19 +79,19 @@ class PostActionBar extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const FeedCommentIcon(
+                    FeedCommentIcon(
                       size: 18.0,
-                      color: AppColors.ashGray,
+                      color: iconColor,
                     ),
                     if (item.commentsCount > 0) ...[
                       const SizedBox(width: 4.5),
                       Text(
                         formatCompactNumber(item.commentsCount),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13.0,
                           fontWeight: FontWeight.w400,
-                          color: AppColors.graphite,
-                          fontFeatures: [FontFeature.tabularFigures()],
+                          color: counterColor,
+                          fontFeatures: const [FontFeature.tabularFigures()],
                           letterSpacing: -0.2,
                         ),
                       ),
@@ -119,7 +123,7 @@ class PostActionBar extends StatelessWidget {
                         isReposted: isReposted,
                         size: 19.0,
                         activeColor: const Color(0xFF10B981),
-                        inactiveColor: AppColors.ashGray,
+                        inactiveColor: iconColor,
                       ),
                     ),
                     if (repostsCount > 0) ...[
@@ -129,7 +133,7 @@ class PostActionBar extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 13.0,
                           fontWeight: isReposted ? FontWeight.w600 : FontWeight.w400,
-                          color: isReposted ? const Color(0xFF10B981) : AppColors.graphite,
+                          color: isReposted ? const Color(0xFF10B981) : counterColor,
                           fontFeatures: const [FontFeature.tabularFigures()],
                           letterSpacing: -0.2,
                         ),
@@ -157,9 +161,9 @@ class PostActionBar extends StatelessWidget {
                 color: Colors.transparent,
                 padding: const EdgeInsets.symmetric(horizontal: 6.0),
                 alignment: Alignment.center,
-                child: const FeedShareIcon(
+                child: FeedShareIcon(
                   size: 18.0,
-                  color: AppColors.ashGray,
+                  color: iconColor,
                 ),
               ),
             ),
@@ -179,19 +183,19 @@ class PostActionBar extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Icon(
+                    Icon(
                       CupertinoIcons.eye,
                       size: 14.5,
-                      color: AppColors.ashGray,
+                      color: iconColor,
                     ),
                     const SizedBox(width: 4.5),
                     Text(
                       formatCompactNumber(item.viewsCount),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.0,
                         fontWeight: FontWeight.w400,
-                        color: AppColors.graphite,
-                        fontFeatures: [FontFeature.tabularFigures()],
+                        color: counterColor,
+                        fontFeatures: const [FontFeature.tabularFigures()],
                         letterSpacing: -0.2,
                       ),
                     ),
@@ -208,26 +212,33 @@ class PostActionBar extends StatelessWidget {
                 constraints: const BoxConstraints(minHeight: 26.0),
                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5F9).withValues(alpha: 0.9),
+                  color: isDark
+                      ? const Color(0xFF1D1F1F)
+                      : const Color(0xFFF1F5F9).withValues(alpha: 0.9),
                   borderRadius: BorderRadius.circular(13.0),
-                  border: Border.all(color: const Color(0xFFE2E8F0).withValues(alpha: 0.8), width: 1.0),
+                  border: Border.all(
+                    color: isDark
+                        ? const Color(0x1AFFFFFF)
+                        : const Color(0xFFE2E8F0).withValues(alpha: 0.8),
+                    width: 1.0,
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const FeedBoxIcon(
+                    FeedBoxIcon(
                       size: 14.0,
-                      color: Color(0xFF71717A),
+                      color: isDark ? AppColors.darkTextSecondary : const Color(0xFF71717A),
                       strokeWidth: 1.8,
                     ),
                     const SizedBox(width: 4.5),
                     Text(
                       '${item.stock}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.0,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF1E293B),
+                        color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1E293B),
                         letterSpacing: -0.2,
                       ),
                     ),

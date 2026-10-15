@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Floating top bar with back navigation, blueprint title, floor selector, and category chips.
 class CampusMapHeader extends StatelessWidget {
@@ -29,9 +30,9 @@ class CampusMapHeader extends StatelessWidget {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.95),
+                    color: AppColors.adaptiveSurfaceElevated(context),
                     shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFFE2E8F0), width: 0.8),
+                    border: Border.all(color: AppColors.adaptiveBorder(context), width: 0.8),
                     boxShadow: const [
                       BoxShadow(
                         color: Color(0x0A000000),
@@ -42,7 +43,7 @@ class CampusMapHeader extends StatelessWidget {
                   ),
                   child: IconButton(
                     onPressed: onBack,
-                    icon: const Icon(Icons.arrow_back, size: 20.0, color: Color(0xFF0F172A)),
+                    icon: Icon(Icons.arrow_back, size: 20.0, color: AppColors.adaptiveText(context)),
                     constraints: const BoxConstraints(minWidth: 40.0, minHeight: 40.0),
                   ),
                 ),
@@ -50,9 +51,9 @@ class CampusMapHeader extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.95),
+                    color: AppColors.adaptiveSurfaceElevated(context),
                     borderRadius: BorderRadius.circular(16.0),
-                    border: Border.all(color: const Color(0xFFE2E8F0), width: 0.8),
+                    border: Border.all(color: AppColors.adaptiveBorder(context), width: 0.8),
                     boxShadow: const [
                       BoxShadow(
                         color: Color(0x0A000000),
@@ -62,15 +63,15 @@ class CampusMapHeader extends StatelessWidget {
                     ],
                   ),
                   child: Row(
-                    children: const [
-                      Icon(Icons.location_on, size: 14.0, color: Color(0xFF3D38F5)),
-                      SizedBox(width: 4.0),
+                    children: [
+                      const Icon(Icons.location_on, size: 14.0, color: Color(0xFF3D38F5)),
+                      const SizedBox(width: 4.0),
                       Text(
                         "Denah 2D SMKN 8",
                         style: TextStyle(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w700,
-                          color: Color(0xFF0F172A),
+                          color: AppColors.adaptiveText(context),
                         ),
                       ),
                     ],
@@ -81,9 +82,9 @@ class CampusMapHeader extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(3.0),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.95),
+                color: AppColors.adaptiveSurfaceElevated(context),
                 borderRadius: BorderRadius.circular(20.0),
-                border: Border.all(color: const Color(0xFFE2E8F0), width: 0.8),
+                border: Border.all(color: AppColors.adaptiveBorder(context), width: 0.8),
                 boxShadow: const [
                   BoxShadow(
                     color: Color(0x0A000000),
@@ -160,13 +161,17 @@ class _FloorButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
         decoration: BoxDecoration(
-          color: isActive ? const Color(0xFF0F172A) : Colors.transparent,
+          color: isActive
+              ? (isDark ? Colors.white : const Color(0xFF0F172A))
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(16.0),
         ),
         child: Text(
@@ -174,7 +179,9 @@ class _FloorButton extends StatelessWidget {
           style: TextStyle(
             fontSize: 11.5,
             fontWeight: FontWeight.w700,
-            color: isActive ? Colors.white : const Color(0xFF64748B),
+            color: isActive
+                ? (isDark ? const Color(0xFF0F172A) : Colors.white)
+                : AppColors.adaptiveMuted(context),
           ),
         ),
       ),
@@ -195,6 +202,8 @@ class _CategoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.only(right: 6.0),
       child: GestureDetector(
@@ -203,10 +212,12 @@ class _CategoryChip extends StatelessWidget {
           duration: const Duration(milliseconds: 150),
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
           decoration: BoxDecoration(
-            color: isActive ? const Color(0xFF3D38F5) : Colors.white.withValues(alpha: 0.95),
+            color: isActive
+                ? const Color(0xFF3D38F5)
+                : (isDark ? AppColors.darkSurface : Colors.white.withValues(alpha: 0.95)),
             borderRadius: BorderRadius.circular(14.0),
             border: Border.all(
-              color: isActive ? const Color(0xFF3D38F5) : const Color(0xFFE2E8F0),
+              color: isActive ? const Color(0xFF3D38F5) : AppColors.adaptiveBorder(context),
               width: 0.8,
             ),
             boxShadow: const [
@@ -218,7 +229,9 @@ class _CategoryChip extends StatelessWidget {
             style: TextStyle(
               fontSize: 11.5,
               fontWeight: FontWeight.w700,
-              color: isActive ? Colors.white : const Color(0xFF334155),
+              color: isActive
+                  ? Colors.white
+                  : (isDark ? AppColors.darkTextPrimary : const Color(0xFF334155)),
             ),
           ),
         ),

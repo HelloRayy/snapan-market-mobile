@@ -122,6 +122,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final placeholder = widget.replyToUser != null
         ? 'Balas @${widget.replyToUser!.replaceAll('@', '')}...'
         : widget.targetAuthor != null
@@ -153,13 +154,10 @@ class _CommentInputBarState extends State<CommentInputBar> {
               margin: const EdgeInsets.only(bottom: 6.0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16.0),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x1F000000),
-                    blurRadius: 20.0,
-                    offset: Offset(0, 4),
-                  ),
-                ],
+                border: Border.all(
+                  color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0),
+                  width: 0.8,
+                ),
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16.0),
@@ -169,16 +167,13 @@ class _CommentInputBarState extends State<CommentInputBar> {
                     padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16.0),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.white.withValues(alpha: 0.75),
-                          Colors.white.withValues(alpha: 0.48),
-                        ],
-                      ),
+                      color: isDark
+                          ? AppColors.darkSurfaceElevated.withValues(alpha: 0.85)
+                          : Colors.white.withValues(alpha: 0.75),
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.90),
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.12)
+                            : Colors.white.withValues(alpha: 0.90),
                         width: 1.2,
                       ),
                     ),
@@ -199,9 +194,9 @@ class _CommentInputBarState extends State<CommentInputBar> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             text: TextSpan(
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 13.0,
-                                color: Color(0xFF64748B),
+                                color: isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B),
                               ),
                               children: [
                                 const TextSpan(
@@ -224,12 +219,12 @@ class _CommentInputBarState extends State<CommentInputBar> {
                             HapticFeedback.lightImpact();
                             widget.onCancelReply?.call();
                           },
-                          child: const Padding(
-                            padding: EdgeInsets.all(4.0),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
                             child: Icon(
                               CupertinoIcons.xmark,
                               size: 15.0,
-                              color: Color(0xFF94A3B8),
+                              color: isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8),
                             ),
                           ),
                         ),
@@ -263,118 +258,57 @@ class _CommentInputBarState extends State<CommentInputBar> {
                 child: Container(
                   width: 42.0,
                   height: 42.0,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    boxShadow: [
-                      // Diffuse outer shadow from pen.dev Frame 1 (#0000001f, y=8, blur=35)
-                      BoxShadow(
-                        color: Color(0x1F000000),
-                        blurRadius: 35.0,
-                        offset: Offset(0, 8),
-                      ),
-                      BoxShadow(
-                        color: Color(0x0A000000),
-                        blurRadius: 10.0,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: ClipOval(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
-                      child: Container(
-                        width: 42.0,
-                        height: 42.0,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.white.withValues(alpha: 0.72),
-                              Colors.white.withValues(alpha: 0.45),
-                            ],
-                          ),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.90),
-                            width: 1.2,
-                          ),
-                        ),
-                        child: Center(
-                          child: widget.userAvatar != null && widget.userAvatar!.isNotEmpty
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  child: Image.network(
-                                    widget.userAvatar!,
-                                    width: 30.0,
-                                    height: 30.0,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => const Icon(
-                                      CupertinoIcons.paperclip,
-                                      color: Color(0xFF1A1A1A),
-                                      size: 20.0,
-                                    ),
-                                  ),
-                                )
-                              : const Icon(
-                                  CupertinoIcons.paperclip,
-                                  color: Color(0xFF1A1A1A), // pen.dev #1A1A1A
-                                  size: 20.0,
-                                ),
-                        ),
-                      ),
+                    color: isDark ? AppColors.darkSurfaceElevated : const Color(0xFFF1F5F9),
+                    border: Border.all(
+                      color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0),
+                      width: 1.0,
                     ),
+                  ),
+                  child: Center(
+                    child: widget.userAvatar != null && widget.userAvatar!.isNotEmpty
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(15.0),
+                            child: Image.network(
+                              widget.userAvatar!,
+                              width: 30.0,
+                              height: 30.0,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Icon(
+                                CupertinoIcons.paperclip,
+                                color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1A1A1A),
+                                size: 20.0,
+                              ),
+                            ),
+                          )
+                        : Icon(
+                            CupertinoIcons.paperclip,
+                            color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1A1A1A),
+                            size: 20.0,
+                          ),
                   ),
                 ),
               ),
 
               const SizedBox(width: 6.0), // pen.dev gap: 6
 
-              // 2. WRITE BAR (pen.dev cXg3A: cornerRadius 21, height 42, frosted liquid glass + shadow)
+              // 2. WRITE BAR (Clean Flat Capsule Bordered)
               Expanded(
                 child: Container(
                   constraints: const BoxConstraints(minHeight: 42.0),
+                  padding: const EdgeInsets.fromLTRB(14.0, 3.0, 3.0, 3.0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(21.0),
-                    boxShadow: const [
-                      // Diffuse outer shadow from pen.dev Frame 1 (#0000001f, y=8, blur=35)
-                      BoxShadow(
-                        color: Color(0x1F000000),
-                        blurRadius: 35.0,
-                        offset: Offset(0, 8),
-                      ),
-                      BoxShadow(
-                        color: Color(0x0A000000),
-                        blurRadius: 10.0,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
+                    color: isDark ? AppColors.darkSurface : const Color(0xFFF8FAFC),
+                    border: Border.all(
+                      color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0),
+                      width: 1.0,
+                    ),
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(21.0),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
-                      child: Container(
-                        constraints: const BoxConstraints(minHeight: 42.0),
-                        padding: const EdgeInsets.fromLTRB(14.0, 3.0, 3.0, 3.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(21.0),
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.white.withValues(alpha: 0.72),
-                              Colors.white.withValues(alpha: 0.45),
-                            ],
-                          ),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.90),
-                            width: 1.2,
-                          ),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
                       // Text Input
                       Expanded(
                         child: TextField(
@@ -385,19 +319,19 @@ class _CommentInputBarState extends State<CommentInputBar> {
                           keyboardType: TextInputType.multiline,
                           textInputAction: TextInputAction.send,
                           onSubmitted: (_) => _handleSubmit(),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'SFPro',
                             fontSize: 15.5,
-                            color: Color(0xFF000000),
+                            color: isDark ? AppColors.darkTextPrimary : const Color(0xFF000000),
                             letterSpacing: -0.3,
                             height: 1.25,
                           ),
                           decoration: InputDecoration(
                             hintText: placeholder,
-                            hintStyle: const TextStyle(
+                            hintStyle: TextStyle(
                               fontFamily: 'SFPro',
                               fontSize: 15.5,
-                              color: Color(0xFF999999), // pen.dev #999999
+                              color: isDark ? AppColors.darkTextDisabled : const Color(0xFF999999),
                               letterSpacing: -0.3,
                               height: 1.25,
                             ),
@@ -439,13 +373,13 @@ class _CommentInputBarState extends State<CommentInputBar> {
                           ),
                         )
                       else
-                        const SizedBox(
+                        SizedBox(
                           width: 36.0,
                           height: 36.0,
                           child: Center(
                             child: Icon(
                               CupertinoIcons.smiley,
-                              color: Color(0xFF727272), // pen.dev #727272
+                              color: isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8),
                               size: 22.0,
                             ),
                           ),
@@ -454,15 +388,12 @@ class _CommentInputBarState extends State<CommentInputBar> {
                   ),
                 ),
               ),
-            ),
+            ],
           ),
-        ),
-      ],
-    ),
-  ],
-),
-);
-}
+        ],
+      ),
+    );
+  }
 }
 
 

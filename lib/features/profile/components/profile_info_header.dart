@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/components/mascot_flair_badge.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/core/utils/string_utils.dart';
@@ -68,17 +69,33 @@ class ProfileInfoHeader extends StatelessWidget {
                             color: AppColors.verifiedBlue,
                           ),
                         ],
+                        // Mascot Flair Badge right next to Verified icon (SNAPS-13)
+                        if (user.mascotFlair != null) ...[
+                          const SizedBox(width: 6.0),
+                          MascotFlairBadge(
+                            flair: user.mascotFlair!,
+                            size: 32.0,
+                          ),
+                        ],
                       ],
                     ),
                     const SizedBox(height: 2.5),
-                    Text(
-                      '@${user.username.replaceAll('@', '')} · ${user.classGroup}',
-                      style: const TextStyle(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.normal,
-                        color: Color(0xFF64748B),
-                        letterSpacing: -0.1,
-                      ),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            '@${user.username.replaceAll('@', '')} · ${user.classGroup}',
+                            style: const TextStyle(
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.normal,
+                              color: Color(0xFF64748B),
+                              letterSpacing: -0.1,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
 
                   ],
@@ -96,9 +113,12 @@ class ProfileInfoHeader extends StatelessWidget {
                     SizedBox(
                       width: 60.0,
                       height: 60.0,
-                      child: AppAvatar(
-                        avatarUrl: user.avatar,
-                        size: 60.0,
+                      child: Hero(
+                        tag: 'profile_avatar_${user.id}',
+                        child: AppAvatar(
+                          avatarUrl: user.avatar,
+                          size: 60.0,
+                        ),
                       ),
                     ),
                     if (isOwnProfile && (user.avatar.trim().isEmpty || user.avatar.startsWith('assets/')))

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
 
 /// Sticky bottom CTA bar with total COD price and submit order button.
@@ -26,8 +27,8 @@ class CheckoutBottomBar extends StatelessWidget {
         bottomPadding > 0 ? bottomPadding + 8.0 : 16.0,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: const Border(top: BorderSide(color: Color(0xFFF1F5F9), width: 0.8)),
+        color: AppColors.adaptiveCanvas(context),
+        border: Border(top: BorderSide(color: AppColors.adaptiveBorder(context), width: 0.8)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -43,21 +44,21 @@ class CheckoutBottomBar extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   "Total Pembayaran (COD)",
                   style: TextStyle(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF64748B),
+                    color: AppColors.adaptiveMuted(context),
                   ),
                 ),
                 const SizedBox(height: 2.0),
                 Text(
                   formatRupiah(price),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF0F172A),
+                    color: AppColors.adaptiveText(context),
                     letterSpacing: -0.4,
                   ),
                 ),

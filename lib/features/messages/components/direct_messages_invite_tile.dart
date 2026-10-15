@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// "Undang Teman SMKN 8" action tile matching iOS pen.dev specs.
 class DirectMessagesInviteTile extends StatelessWidget {
@@ -13,17 +14,17 @@ class DirectMessagesInviteTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: AppColors.adaptiveCanvas(context),
       child: InkWell(
         onTap: onTap,
-        highlightColor: const Color(0xFFF2F4F7),
-        splashColor: const Color(0xFFF2F4F7),
+        highlightColor: AppColors.adaptiveSurfaceElevated(context),
+        splashColor: AppColors.adaptiveSurfaceElevated(context),
         child: Container(
           height: 72.0,
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: const Row(
+          child: Row(
             children: [
-              Padding(
+              const Padding(
                 padding: EdgeInsets.only(right: 12.0),
                 child: SizedBox(
                   width: 48.0,
@@ -45,7 +46,7 @@ class DirectMessagesInviteTile extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16.0,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF000000),
+                    color: AppColors.adaptiveText(context),
                     letterSpacing: -0.3,
                   ),
                 ),
@@ -53,7 +54,7 @@ class DirectMessagesInviteTile extends StatelessWidget {
               Icon(
                 CupertinoIcons.chevron_forward,
                 size: 16.0,
-                color: Color(0x4D3C3C43),
+                color: AppColors.adaptiveMuted(context),
               ),
             ],
           ),

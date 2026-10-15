@@ -19,9 +19,9 @@ class CheckoutLocationCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.adaptiveSurfaceElevated(context),
         borderRadius: BorderRadius.circular(16.0),
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 0.8),
+        border: Border.all(color: AppColors.adaptiveBorder(context), width: 0.8),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,13 +44,13 @@ class CheckoutLocationCard extends StatelessWidget {
                   const SizedBox(width: 10.0),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
                         "Titik Temu COD di Sekolah",
                         style: TextStyle(
                           fontSize: 13.5,
                           fontWeight: FontWeight.w700,
-                          color: Color(0xFF0F172A),
+                          color: AppColors.adaptiveText(context),
                           letterSpacing: -0.2,
                         ),
                       ),
@@ -59,7 +59,7 @@ class CheckoutLocationCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 11.5,
                           fontWeight: FontWeight.w400,
-                          color: Color(0xFF64748B),
+                          color: AppColors.adaptiveMuted(context),
                         ),
                       ),
                     ],

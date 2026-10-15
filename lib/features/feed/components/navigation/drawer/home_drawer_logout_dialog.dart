@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Confirmation dialog when logging out from the navigation drawer.
 class HomeDrawerLogoutDialog {
@@ -6,36 +7,36 @@ class HomeDrawerLogoutDialog {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.adaptiveSurfaceElevated(context),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-        title: const Text(
+        title: Text(
           'Keluar dari Snaps?',
           style: TextStyle(
             fontFamily: 'SFPro',
             fontSize: 17.0,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF0F172A),
+            color: AppColors.adaptiveText(context),
           ),
         ),
-        content: const Text(
+        content: Text(
           'Anda harus masuk kembali untuk membuat postingan, pesan, dan berbelanja.',
           style: TextStyle(
             fontFamily: 'SFPro',
             fontSize: 14.0,
-            color: Color(0xFF64748B),
+            color: AppColors.adaptiveMuted(context),
           ),
         ),
         actionsPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
+            child: Text(
               'Batal',
               style: TextStyle(
                 fontFamily: 'SFPro',
                 fontSize: 14.5,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF64748B),
+                color: AppColors.adaptiveMuted(context),
               ),
             ),
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// 1:1 Threads-style Header Navigation Menu Popover Overlay
 ///
@@ -173,26 +174,31 @@ class HomeMenuPopover extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF1D1F1F) : Colors.white;
+    final borderColor = isDark ? const Color(0x1AFFFFFF) : const Color(0xFFF1F5F9);
+    final primaryTextColor = isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A);
+
     return Container(
       width: 224.0,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: bgColor,
         borderRadius: BorderRadius.circular(16.0),
         border: Border.all(
-          color: const Color(0xFFF1F5F9),
+          color: borderColor,
           width: 0.8,
         ),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Color(0x18000000),
+            color: isDark ? const Color(0x40000000) : const Color(0x18000000),
             blurRadius: 24.0,
             spreadRadius: 0,
-            offset: Offset(0, 8),
+            offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: Color(0x08000000),
+            color: isDark ? const Color(0x20000000) : const Color(0x08000000),
             blurRadius: 6.0,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -206,6 +212,7 @@ class HomeMenuPopover extends StatelessWidget {
             context: context,
             label: 'Tampilan',
             hasChevron: true,
+            textColor: primaryTextColor,
             onTap: onAppearanceTap,
           ),
 
@@ -213,6 +220,7 @@ class HomeMenuPopover extends StatelessWidget {
           _buildMenuItem(
             context: context,
             label: 'Pengaturan',
+            textColor: primaryTextColor,
             onTap: onSettingsTap,
           ),
 
@@ -220,6 +228,7 @@ class HomeMenuPopover extends StatelessWidget {
           _buildMenuItem(
             context: context,
             label: 'Disukai',
+            textColor: primaryTextColor,
             onTap: onLikedTap,
           ),
 
@@ -227,6 +236,7 @@ class HomeMenuPopover extends StatelessWidget {
           _buildMenuItem(
             context: context,
             label: 'Arsip',
+            textColor: primaryTextColor,
             onTap: onArchiveTap,
           ),
 
@@ -234,6 +244,7 @@ class HomeMenuPopover extends StatelessWidget {
           _buildMenuItem(
             context: context,
             label: 'Laporkan masalah',
+            textColor: primaryTextColor,
             onTap: onReportTap,
           ),
 
@@ -242,7 +253,7 @@ class HomeMenuPopover extends StatelessWidget {
             _buildMenuItem(
               context: context,
               label: 'Masuk / Daftar Akun',
-              textColor: const Color(0xFF3D38F5),
+              textColor: isDark ? const Color(0xFF6366F1) : const Color(0xFF3D38F5),
               onTap: onAuthTap,
             )
           else
@@ -266,14 +277,18 @@ class HomeMenuPopover extends StatelessWidget {
     bool hasChevron = false,
     bool isDestructive = false,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final hoverColor = isDark ? const Color(0x14FFFFFF) : const Color(0xFFF8FAFC);
+    final splashColor = isDark ? const Color(0x1FFFFFFF) : const Color(0xFFF1F5F9);
+
     return InkWell(
       onTap: () {
         HapticFeedback.lightImpact();
         onTap?.call();
       },
       borderRadius: BorderRadius.circular(10.0),
-      hoverColor: const Color(0xFFF8FAFC),
-      splashColor: const Color(0xFFF1F5F9),
+      hoverColor: hoverColor,
+      splashColor: splashColor,
       highlightColor: Colors.transparent,
       child: Container(
         height: 39.0,
@@ -308,33 +323,33 @@ class HomeMenuPopover extends StatelessWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.adaptiveSurfaceElevated(context),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-        title: const Text(
+        title: Text(
           'Keluar dari Snaps?',
           style: TextStyle(
             fontSize: 17.0,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF0F172A),
+            color: AppColors.adaptiveText(context),
           ),
         ),
-        content: const Text(
+        content: Text(
           'Anda harus masuk kembali untuk membuat postingan, pesan, dan berbelanja.',
           style: TextStyle(
             fontSize: 14.0,
-            color: Color(0xFF64748B),
+            color: AppColors.adaptiveMuted(context),
           ),
         ),
         actionsPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
+            child: Text(
               'Batal',
               style: TextStyle(
                 fontSize: 14.5,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF64748B),
+                color: AppColors.adaptiveMuted(context),
               ),
             ),
           ),
@@ -356,6 +371,7 @@ class HomeMenuPopover extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14.5,
                 fontWeight: FontWeight.w600,
+                color: Colors.white,
               ),
             ),
           ),

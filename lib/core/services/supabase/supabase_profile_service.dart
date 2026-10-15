@@ -126,6 +126,7 @@ class SupabaseProfileService {
     String? bio,
     List<String>? tags,
     String? link,
+    Map<String, dynamic>? mascotFlair,
   }) async {
     // Immediately update local profile notifier so entire app UI updates with zero delay
     final existing = currentUserProfileNotifier.value ?? {};
@@ -145,6 +146,7 @@ class SupabaseProfileService {
       if (bio != null) 'bio': bio,
       if (tags != null) 'interests': tags.join(','),
       if (link != null) 'link': link,
+      'mascot_flair': mascotFlair,
     };
     // 1. If username has changed, synchronize auth.users email and credentials atomically
     final oldUsername = (existing['username'] as String?)?.trim().toLowerCase();
@@ -195,6 +197,7 @@ class SupabaseProfileService {
             if (bio != null) 'bio': bio,
             if (tags != null) 'tags': tags,
             if (link != null) 'link': link,
+            'mascot_flair': mascotFlair,
           },
         ),
       );
@@ -213,6 +216,7 @@ class SupabaseProfileService {
       if (bio != null) 'bio': bio,
       if (link != null) 'link': link,
       if (tags != null) 'interests': tags.join(','),
+      'mascot_flair': mascotFlair,
     };
 
     final corePayload = <String, dynamic>{

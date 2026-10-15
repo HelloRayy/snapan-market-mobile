@@ -37,13 +37,17 @@ class HomeFeedTabSwitch extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = AppColors.adaptiveCanvas(context);
+    final borderColor = AppColors.adaptiveDivider(context);
+    final indicatorColor = AppColors.adaptiveText(context);
+
     return Container(
       height: 47.0,
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: bgColor,
         border: Border(
           bottom: BorderSide(
-            color: Color(0xFFF1F5F9),
+            color: borderColor,
             width: 1.0,
           ),
         ),
@@ -63,9 +67,9 @@ class HomeFeedTabSwitch extends StatelessWidget implements PreferredSizeWidget {
                 alignment: Alignment.bottomCenter,
                 child: Container(
                   height: 2.5,
-                  decoration: const BoxDecoration(
-                    color: AppColors.ink,
-                    borderRadius: BorderRadius.vertical(
+                  decoration: BoxDecoration(
+                    color: indicatorColor,
+                    borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(2.0),
                     ),
                   ),
@@ -142,6 +146,10 @@ class _TabButtonState extends State<_TabButton> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final activeTextColor = AppColors.adaptiveText(context);
+    final inactiveTextColor = isDark ? AppColors.darkTextSecondary : const Color(0xFF8E8E93);
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTapDown: _handleTapDown,
@@ -156,7 +164,9 @@ class _TabButtonState extends State<_TabButton> {
           height: 47.0,
           alignment: Alignment.center,
           color: _isPressed
-              ? Colors.black.withValues(alpha: 0.04)
+              ? (isDark
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : Colors.black.withValues(alpha: 0.04))
               : Colors.transparent,
           child: AnimatedDefaultTextStyle(
             duration: const Duration(milliseconds: 200),
@@ -165,7 +175,7 @@ class _TabButtonState extends State<_TabButton> {
               fontFamily: 'Plus Jakarta Sans',
               fontSize: 15.0,
               fontWeight: widget.isActive ? FontWeight.w700 : FontWeight.w500,
-              color: widget.isActive ? AppColors.ink : const Color(0xFF8E8E93),
+              color: widget.isActive ? activeTextColor : inactiveTextColor,
               letterSpacing: -0.2,
             ),
             child: Text(

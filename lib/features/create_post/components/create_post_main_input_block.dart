@@ -1,5 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/constants/app_constants.dart';
+import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/features/create_post/components/create_post_author_line.dart';
@@ -37,6 +38,11 @@ class CreatePostMainInputBlock extends StatelessWidget {
   final ValueChanged<Duration> onPollDurationChanged;
   final bool pollAllowChangeVote;
   final ValueChanged<bool> onPollAllowChangeVoteChanged;
+  final MascotFlairModel? selectedMascotFlair;
+  final bool isBetaPilotUser;
+  final VoidCallback? onMascotTriggerTap;
+  final GlobalKey? mascotTriggerKey;
+  final bool isMascotDropdownOpen;
 
   const CreatePostMainInputBlock({
     super.key,
@@ -66,6 +72,11 @@ class CreatePostMainInputBlock extends StatelessWidget {
     required this.onPollDurationChanged,
     required this.pollAllowChangeVote,
     required this.onPollAllowChangeVoteChanged,
+    this.selectedMascotFlair,
+    this.isBetaPilotUser = false,
+    this.onMascotTriggerTap,
+    this.mascotTriggerKey,
+    this.isMascotDropdownOpen = false,
   });
 
   @override
@@ -108,6 +119,11 @@ class CreatePostMainInputBlock extends StatelessWidget {
                     authorName: currentUserName,
                     selectedTopic: selectedTopic,
                     topicTriggerKey: topicTriggerKey,
+                    selectedMascotFlair: selectedMascotFlair,
+                    isBetaPilotUser: isBetaPilotUser,
+                    onMascotTriggerTap: onMascotTriggerTap,
+                    mascotTriggerKey: mascotTriggerKey,
+                    isMascotDropdownOpen: isMascotDropdownOpen,
                     onTopicTriggerTap: () => CreatePostBottomSheets.showTopicPickerPopup(
                       context: context,
                       triggerKey: topicTriggerKey,
@@ -186,12 +202,14 @@ class CreatePostMainInputBlock extends StatelessWidget {
                     ),
                     onAudioTap: () {},
                   ),
-                  const SizedBox(height: 8.0),
+                  if (AppConstants.enableCommerceMode) ...[
+                    const SizedBox(height: 8.0),
                     CreatePostSellingToggle(
                       isProductMode: postMode == PostMode.product,
                       onToggle: onToggleMode,
                     ),
                   ],
+                ],
                 ),
               ),
             ],

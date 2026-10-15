@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/skeleton/snaps_shimmer.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Sliced Activity Item Skeleton matching ActivityItemTile 1:1 (<100 lines)
 class ActivityItemSkeleton extends StatelessWidget {
@@ -9,11 +10,11 @@ class ActivityItemSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.transparent,
         border: Border(
           bottom: BorderSide(
-            color: Color(0xFFF1F3F5),
+            color: AppColors.adaptiveDivider(context),
             width: 0.8,
           ),
         ),
@@ -41,7 +42,7 @@ class ActivityItemSkeleton extends StatelessWidget {
   }
 }
 
-/// List of Activity Skeletons on a solid pure white canvas
+/// List of Activity Skeletons on a solid adaptive canvas
 class ActivityListSkeleton extends StatelessWidget {
   final int itemCount;
 
@@ -50,7 +51,7 @@ class ActivityListSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: AppColors.adaptiveCanvas(context),
       child: SnapsShimmer(
         child: Column(
           children: List.generate(

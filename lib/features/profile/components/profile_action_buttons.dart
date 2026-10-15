@@ -50,13 +50,6 @@ class ProfileActionButtons extends StatelessWidget {
           decoration: BoxDecoration(
             color: const Color(0xFF3D38F5),
             borderRadius: BorderRadius.circular(10.0),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x333D38F5),
-                blurRadius: 6.0,
-                offset: Offset(0, 2),
-              ),
-            ],
           ),
           alignment: Alignment.center,
           child: const Text(
@@ -85,13 +78,6 @@ class ProfileActionButtons extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(10.0),
           border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x08000000),
-              blurRadius: 2.0,
-              offset: Offset(0, 1),
-            ),
-          ],
         ),
         alignment: Alignment.center,
         child: Stack(
@@ -175,13 +161,6 @@ class ProfileActionButtons extends StatelessWidget {
                   color: isFollowing ? const Color(0xFFE2E8F0) : const Color(0xFF000000),
                   width: 1.0,
                 ),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x0A000000),
-                    blurRadius: 2.0,
-                    offset: Offset(0, 1),
-                  ),
-                ],
               ),
               alignment: Alignment.center,
               child: Text(
@@ -212,13 +191,6 @@ class ProfileActionButtons extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10.0),
                 border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x08000000),
-                    blurRadius: 2.0,
-                    offset: Offset(0, 1),
-                  ),
-                ],
               ),
               alignment: Alignment.center,
               child: const Text(

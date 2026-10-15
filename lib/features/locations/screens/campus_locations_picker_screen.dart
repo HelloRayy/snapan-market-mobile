@@ -119,26 +119,27 @@ class _CampusLocationsPickerScreenState extends State<CampusLocationsPickerScree
   @override
   Widget build(BuildContext context) {
     final filtered = _filteredSpots;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.adaptiveCanvas(context),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.adaptiveCanvas(context),
         elevation: 0,
         scrolledUnderElevation: 0.5,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back, color: AppColors.adaptiveText(context)),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
+          children: [
             Text(
               "Pilih Titik Temu COD",
               style: TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF0F172A),
+                color: AppColors.adaptiveText(context),
                 letterSpacing: -0.3,
               ),
             ),
@@ -147,28 +148,27 @@ class _CampusLocationsPickerScreenState extends State<CampusLocationsPickerScree
               style: TextStyle(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w400,
-                color: Color(0xFF64748B),
+                color: AppColors.adaptiveMuted(context),
               ),
             ),
           ],
         ),
         actions: [
-          // 2D Map Button in Header
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
             child: TextButton.icon(
               onPressed: _open2DMap,
               icon: const Icon(Icons.map_outlined, size: 16.0, color: Color(0xFF3D38F5)),
               label: const Text(
-                "Buka Denah",
+                "Buka Peta",
                 style: TextStyle(
                   fontSize: 12.5,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   color: Color(0xFF3D38F5),
                 ),
               ),
               style: TextButton.styleFrom(
-                backgroundColor: const Color(0xFFEEF0FF),
+                backgroundColor: isDark ? const Color(0x333D38F5) : const Color(0xFFEEF0FF),
                 padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
               ),
@@ -180,35 +180,35 @@ class _CampusLocationsPickerScreenState extends State<CampusLocationsPickerScree
         children: [
           // Top Section: Search Bar & Info Banner
           Container(
-            color: Colors.white,
+            color: AppColors.adaptiveCanvas(context),
             padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 12.0),
             child: Column(
               children: [
                 // Search TextField
                 Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF1F5F9),
+                    color: isDark ? AppColors.darkSurface : const Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: TextField(
                     controller: _searchController,
                     onChanged: (_) => setState(() {}),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'SFPro',
                       fontSize: 13.5,
-                      color: Color(0xFF0F172A),
+                      color: AppColors.adaptiveText(context),
                     ),
                     decoration: InputDecoration(
                       hintText: "Cari nama spot, gedung, atau lantai...",
-                      hintStyle: const TextStyle(
+                      hintStyle: TextStyle(
                         fontFamily: 'SFPro',
                         fontSize: 13.0,
-                        color: Color(0xFF94A3B8),
+                        color: AppColors.adaptiveMuted(context),
                       ),
-                      prefixIcon: const Icon(Icons.search, size: 18.0, color: Color(0xFF64748B)),
+                      prefixIcon: Icon(Icons.search, size: 18.0, color: AppColors.adaptiveMuted(context)),
                       suffixIcon: _searchController.text.isNotEmpty
                           ? IconButton(
-                              icon: const Icon(Icons.clear, size: 16.0, color: Color(0xFF64748B)),
+                              icon: Icon(Icons.clear, size: 16.0, color: AppColors.adaptiveMuted(context)),
                               onPressed: () {
                                 _searchController.clear();
                                 setState(() {});
@@ -226,7 +226,7 @@ class _CampusLocationsPickerScreenState extends State<CampusLocationsPickerScree
 
           // Filter Chips
           Container(
-            color: Colors.white,
+            color: AppColors.adaptiveCanvas(context),
             padding: const EdgeInsets.only(bottom: 12.0),
             child: LocationSpotFilterChips(
               activeFilter: _activeFilter,
@@ -236,7 +236,7 @@ class _CampusLocationsPickerScreenState extends State<CampusLocationsPickerScree
             ),
           ),
 
-          const Divider(height: 1, color: Color(0xFFE2E8F0)),
+          Divider(height: 1, color: AppColors.adaptiveBorder(context)),
 
           // Spot List
           Expanded(

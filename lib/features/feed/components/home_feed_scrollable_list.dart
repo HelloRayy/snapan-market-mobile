@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/constants/app_constants.dart';
 import 'package:snapan_market/core/components/snaps_skeleton.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/components/navigation/home_feed_tab_switch.dart';
@@ -14,11 +15,13 @@ class HomeFeedScrollableList extends StatefulWidget {
   final FeedTab activeTab;
   final ValueChanged<FeedTab> onTabChanged;
   final bool isLoading;
+  final bool isLoadingMore;
   final bool hasError;
   final String errorMessage;
   final List<MarketPostModel> allPosts;
   final Future<void> Function() onRefresh;
   final VoidCallback onRetry;
+  final VoidCallback? onLoadMore;
   final VoidCallback onScrollToTop;
   final VoidCallback onShowFab;
   final VoidCallback onHideFab;
@@ -37,11 +40,13 @@ class HomeFeedScrollableList extends StatefulWidget {
     required this.activeTab,
     required this.onTabChanged,
     required this.isLoading,
+    this.isLoadingMore = false,
     required this.hasError,
     required this.errorMessage,
     required this.allPosts,
     required this.onRefresh,
     required this.onRetry,
+    this.onLoadMore,
     required this.onScrollToTop,
     required this.onShowFab,
     required this.onHideFab,
@@ -95,6 +100,16 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
   @override
   Widget build(BuildContext context) {
     final forYouPosts = widget.allPosts;
+
+    if (!AppConstants.enableCommerceMode) {
+      return _buildTimelinePage(
+        key: const PageStorageKey('timeline_for_you'),
+        scrollController: _forYouScrollController,
+        posts: forYouPosts,
+        isMarket: false,
+      );
+    }
+
     final marketPosts = widget.allPosts
         .where((p) => p.postType == 'product' || (p.price != null && p.price! > 0))
         .toList();
@@ -160,13 +175,20 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
               widget.onShowFab();
             }
           }
+
+          // Trigger infinite scroll threshold (75% of list length)
+          if (maxScroll > 0 && currentOffset >= maxScroll * 0.75) {
+            widget.onLoadMore?.call();
+          }
         }
         return false;
       },
       child: RefreshIndicator(
         onRefresh: widget.onRefresh,
         color: AppColors.primary,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.darkSurfaceElevated
+            : Colors.white,
         child: CustomScrollView(
           key: key,
           controller: scrollController,
@@ -207,6 +229,22 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
                   );
                 },
               ),
+              if (widget.isLoadingMore)
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24.0),
+                    child: Center(
+                      child: SizedBox(
+                        width: 22.0,
+                        height: 22.0,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.2,
+                          valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               SliverToBoxAdapter(
                 child: _buildFooter(),
               ),
@@ -218,6 +256,7 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
   }
 
   Widget _buildErrorState() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(32.0, 32.0, 32.0, 100.0),
@@ -227,18 +266,22 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
             const Icon(Icons.wifi_off_rounded,
                 size: 52, color: Color(0xFF94A3B8)),
             const SizedBox(height: 14),
-            const Text(
+            Text(
               'Koneksi Terputus',
               style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF1E293B)),
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1E293B),
+              ),
             ),
             const SizedBox(height: 6),
             Text(
               widget.errorMessage,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+              style: TextStyle(
+                fontSize: 13,
+                color: isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B),
+              ),
             ),
             const SizedBox(height: 18),
             ElevatedButton(
@@ -262,6 +305,7 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
   }
 
   Widget _buildEmptyState({required bool isMarket}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(32.0, 32.0, 32.0, 100.0),
@@ -272,7 +316,7 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
               width: 54.0,
               height: 54.0,
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
+                color: isDark ? AppColors.darkSurfaceElevated : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(18.0),
               ),
               child: Icon(
@@ -280,16 +324,16 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
                     ? Icons.storefront_outlined
                     : Icons.dynamic_feed_rounded,
                 size: 28.0,
-                color: const Color(0xFF94A3B8),
+                color: isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8),
               ),
             ),
             const SizedBox(height: 14.0),
             Text(
               isMarket ? 'Belum Ada Jualan' : 'Belum Ada Postingan',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF0F172A),
+                color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
               ),
             ),
             const SizedBox(height: 6.0),
@@ -298,9 +342,9 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
                   ? 'Belum ada produk atau karya yang dijual saat ini. Mulai jual karyamu!'
                   : 'Jadilah yang pertama membuat utas atau menjual karya di SMKN 8!',
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13.0,
-                color: Color(0xFF64748B),
+                color: isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B),
                 height: 1.4,
               ),
             ),
@@ -311,8 +355,9 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
   }
 
   Widget _buildFooter() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      color: AppColors.canvas,
+      color: AppColors.adaptiveCanvas(context),
       padding: const EdgeInsets.fromLTRB(16.0, 28.0, 16.0, 100.0),
       child: Column(
         children: [
@@ -320,27 +365,27 @@ class HomeFeedScrollableListState extends State<HomeFeedScrollableList> {
             width: 32.0,
             height: 3.0,
             decoration: BoxDecoration(
-              color: const Color(0xFFE2E8F0),
+              color: isDark ? const Color(0x1AFFFFFF) : const Color(0xFFE2E8F0),
               borderRadius: BorderRadius.circular(2.0),
             ),
           ),
           const SizedBox(height: 14.0),
-          const Text(
+          Text(
             'Scroll ke bawah untuk memuat postingan baru',
             style: TextStyle(
               fontSize: 13.0,
               fontWeight: FontWeight.w500,
-              color: Color(0xFF94A3B8),
+              color: isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8),
             ),
           ),
           if (widget.onLogout != null) ...[
             const SizedBox(height: 16.0),
             TextButton.icon(
               onPressed: widget.onLogout,
-              icon: const Icon(
+              icon: Icon(
                 Icons.logout_rounded,
                 size: 16.0,
-                color: AppColors.muted,
+                color: isDark ? AppColors.darkTextSecondary : AppColors.muted,
               ),
               label: const Text(
                 'Keluar Akun',

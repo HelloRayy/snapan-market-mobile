@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/kumo_button.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 import 'package:snapan_market/features/locations/models/campus_location_spot.dart';
@@ -37,10 +38,12 @@ class CheckoutSuccessModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28.0)),
+      decoration: BoxDecoration(
+        color: AppColors.adaptiveSurfaceElevated(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28.0)),
       ),
       padding: EdgeInsets.only(
         left: 20.0,
@@ -55,7 +58,7 @@ class CheckoutSuccessModal extends StatelessWidget {
             width: 40.0,
             height: 4.0,
             decoration: BoxDecoration(
-              color: const Color(0xFFE2E8F0),
+              color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0),
               borderRadius: BorderRadius.circular(2.0),
             ),
           ),
@@ -63,19 +66,19 @@ class CheckoutSuccessModal extends StatelessWidget {
           Container(
             width: 64.0,
             height: 64.0,
-            decoration: const BoxDecoration(
-              color: Color(0xFFDCFCE7),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0x3310B981) : const Color(0xFFDCFCE7),
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.check_rounded, size: 36.0, color: Color(0xFF10B981)),
           ),
           const SizedBox(height: 16.0),
-          const Text(
+          Text(
             "Pesanan COD Berhasil Dibuat!",
             style: TextStyle(
               fontSize: 18.0,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF0F172A),
+              color: AppColors.adaptiveText(context),
               letterSpacing: -0.3,
             ),
           ),
@@ -83,10 +86,10 @@ class CheckoutSuccessModal extends StatelessWidget {
           Text(
             "Temui ${post.sellerName} di ${selectedSpot.name} (${selectedSpot.buildingName}) saat jam istirahat sekolah.",
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13.5,
               fontWeight: FontWeight.w400,
-              color: Color(0xFF64748B),
+              color: AppColors.adaptiveMuted(context),
               height: 1.35,
             ),
           ),

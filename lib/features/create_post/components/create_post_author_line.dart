@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/components/mascot_flair_badge.dart';
 import 'package:snapan_market/core/components/snaps_skeleton.dart';
+import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
 
@@ -12,6 +13,11 @@ class CreatePostAuthorLine extends StatelessWidget {
   final GlobalKey topicTriggerKey;
   final VoidCallback onTopicTriggerTap;
   final VoidCallback onTopicClear;
+  final MascotFlairModel? selectedMascotFlair;
+  final bool isBetaPilotUser;
+  final VoidCallback? onMascotTriggerTap;
+  final GlobalKey? mascotTriggerKey;
+  final bool isMascotDropdownOpen;
 
   const CreatePostAuthorLine({
     super.key,
@@ -20,6 +26,11 @@ class CreatePostAuthorLine extends StatelessWidget {
     required this.topicTriggerKey,
     required this.onTopicTriggerTap,
     required this.onTopicClear,
+    this.selectedMascotFlair,
+    this.isBetaPilotUser = false,
+    this.onMascotTriggerTap,
+    this.mascotTriggerKey,
+    this.isMascotDropdownOpen = false,
   });
 
   @override
@@ -40,6 +51,46 @@ class CreatePostAuthorLine extends StatelessWidget {
             ),
           ),
         const SizedBox(width: 4.0),
+
+        // Mascot Flair Trigger (SNAPS-13: Interactive container encompassing mascot and dropdown arrow)
+        if (isBetaPilotUser) ...[
+          GestureDetector(
+            key: mascotTriggerKey,
+            onTap: () {
+              HapticFeedback.selectionClick();
+              onMascotTriggerTap?.call();
+            },
+            behavior: HitTestBehavior.opaque,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 4.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (selectedMascotFlair != null)
+                    MascotFlairBadge(
+                      flair: selectedMascotFlair!,
+                      size: 26.0,
+                      enableGradientFade: false,
+                      onTap: onMascotTriggerTap,
+                    )
+                  else
+                    const Icon(
+                      CupertinoIcons.sparkles,
+                      size: 16.0,
+                      color: Color(0xFF64748B),
+                    ),
+                  const SizedBox(width: 3.0),
+                  const Icon(
+                    CupertinoIcons.chevron_down,
+                    size: 11.0,
+                    color: Color(0xFF64748B),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 4.0),
+        ],
 
         // Chevron Right Separator
         const Icon(
@@ -64,17 +115,17 @@ class CreatePostAuthorLine extends StatelessWidget {
                 Icon(
                   selectedTopic!.isOfficial
                       ? CupertinoIcons.star_fill
-                      : CupertinoIcons.number,
-                  size: 14.0,
+                      : CupertinoIcons.tag_fill,
+                  size: 13.0,
                   color: selectedTopic!.isOfficial
                       ? AppColors.primary
-                      : const Color(0xFF0F172A),
+                      : const Color(0xFF64748B),
                 ),
-                const SizedBox(width: 3.0),
+                const SizedBox(width: 4.0),
                 Text(
                   selectedTopic!.name,
                   style: TextStyle(
-                    fontSize: 14.0,
+                    fontSize: 13.5,
                     fontWeight: FontWeight.w600,
                     color: selectedTopic!.isOfficial
                         ? AppColors.primary
@@ -87,10 +138,13 @@ class CreatePostAuthorLine extends StatelessWidget {
                     HapticFeedback.selectionClick();
                     onTopicClear();
                   },
-                  child: const Icon(
-                    CupertinoIcons.xmark,
-                    size: 12.0,
-                    color: Color(0xFF94A3B8),
+                  child: const Padding(
+                    padding: EdgeInsets.all(2.0),
+                    child: Icon(
+                      CupertinoIcons.xmark_circle_fill,
+                      size: 14.0,
+                      color: Color(0xFF94A3B8),
+                    ),
                   ),
                 ),
               ] else ...[

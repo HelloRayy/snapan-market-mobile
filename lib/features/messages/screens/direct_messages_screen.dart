@@ -103,7 +103,7 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.adaptiveSurface(context),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
       ),
@@ -149,11 +149,11 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
     final content = Column(
       children: [
         Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
+          decoration: BoxDecoration(
+            color: AppColors.adaptiveCanvas(context),
             border: Border(
               bottom: BorderSide(
-                color: Color(0xFFF1F5F9),
+                color: AppColors.adaptiveBorder(context),
                 width: 0.8,
               ),
             ),
@@ -281,11 +281,11 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
 
     if (widget.showAppBar) {
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.adaptiveCanvas(context),
         body: SafeArea(bottom: false, child: content),
       );
     }
 
-    return Container(color: Colors.white, child: content);
+    return Container(color: AppColors.adaptiveCanvas(context), child: content);
   }
 }

@@ -60,6 +60,26 @@ class SupabaseChatService {
     }
   }
 
+  /// Fetch a single conversation by ID with populated participant profiles
+  Future<Map<String, dynamic>?> fetchConversationById(String conversationId) async {
+    final user = _currentUser;
+    if (user == null) return null;
+
+    try {
+      final response = await _client
+          .from('conversations')
+          .select('*, participant_one_profile:profiles!conversations_participant_one_fkey(*), participant_two_profile:profiles!conversations_participant_two_fkey(*), product:market_posts(*)')
+          .eq('id', conversationId)
+          .maybeSingle();
+
+      if (response == null) return null;
+      return Map<String, dynamic>.from(response);
+    } catch (e) {
+      debugPrint('Error fetchConversationById: $e');
+      return null;
+    }
+  }
+
   /// Get existing conversation or create a new one between two users.
   /// Handles both casual chat (productId == null) and product inquiry chat.
   Future<String?> getOrCreateConversation({

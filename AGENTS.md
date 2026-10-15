@@ -169,6 +169,31 @@
       - **Jika task melibatkan data / state / event**: Baca pasangan [Parent Orchestrator / Controller] + [Leaf Component] sekaligus dalam 1 batch call untuk menjaga kontrak parameter dan null-safety.
     - **Pre-Commit Enforcement**: Seluruh path di [`AGENT_MANIFEST.md`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/AGENT_MANIFEST.md) dikawal ketat oleh `./scripts/verify-agent-map.sh` di dalam git pre-commit hook. Jika memindahkan/membuat file baru, wajib perbarui baris di manifest sebelum commit.
 
+15. **Protokol Analisis Pra-Implementasi UX & Motion (Pelajaran Penting Kasus SNAPS-26)**:
+    - **Mencegah Kesalahan Desain Sejak Analisis Tanpa Perlu Coding**:
+      Sebelum mengusulkan atau mengimplementasikan gesture motion (khususnya *horizontal swipe* pada layar utama), agen **WAJIB** mengevaluasi ergonomi dan frekuensi interaksi terlebih dahulu di awal:
+      1. **Rasio Frekuensi Aksi (Primary vs. Secondary Interaction)**:
+         - Jika pengguna menghabiskan 95% waktunya untuk scroll vertikal (membaca timeline) dan hanya 5% untuk aksi sekunder (misal belanja di tab Jualan), **DILARANG** mengalokasikan gesture *full-screen horizontal swipe* yang mengorbankan stabilitas scroll vertikal.
+      2. **Ergonomi Busur Jempol (Thumb Arc & Diagonal Drift)**:
+         - Gerakan jempol saat scrolling vertikal satu tangan melengkung diagonal 15°–35°. Mengaktifkan horizontal swipe layar penuh di area feed pasti memicu *slanted scroll conflict* (niat scroll ke bawah malah terpelintir ke samping), memicu frustrasi pengguna (*rage swipe*).
+      3. **Prioritaskan Pola Industri Teruji (Threads / Instagram Standard)**:
+         - Gunakan **Tap-Only dengan Polished Spring Micro-Interactions & Haptics** alih-alih memaksakan horizontal swipe layar penuh pada viewport konsumsi konten. Analisis matang di awal mencegah pemborosan energi coding dan refactoring.
+
+16. **Self-Learning AI Agent: Kebijakan Penolakan Fitur & Mitigasi Tech Debt (Pelajaran Penting Kasus SNAPS-71)**:
+    - **Prinsip Utama: *"Don't build complex production infrastructure just to satisfy single-device developer testing."***:
+      Sebelum mengiyakan atau langsung mengimplementasikan permintaan fitur yang terdengar logis saat ditest lokal, agen **WAJIB** mengevaluasi apakah kasus tersebut adalah perilaku natural user asli atau hanya ilusi *developer edge-case*:
+      1. **Validasi Kebutuhan Pengguna Asli vs. Kasus Testing Developer**:
+         - *Contoh Kasus*: Tester login Akun A dan Akun B di 1 perangkat HP yang sama, lalu kirim DM A ke B dan heran kenapa tidak ada push notification.
+         - *Kenyataan di Lapangan*: Di lingkungan nyata sekolah (SMKN 8), setiap siswa memiliki HP fisik masing-masing. Siswa A chat ke Siswa B di HP lain pasti menerima notifikasi normal. Skenario 1 HP chat ke akun sendiri hanya terjadi saat developer menguji aplikasi sendirian.
+      2. **Kalkulasi Biaya Tech Debt vs. Manfaat (Cost-to-Benefit Audit)**:
+         - Jika mendukung kasus tersebut menuntut perubahan besar yang memicu risiko:
+           - *Pelanggaran Privasi Pengguna (Zombie Session / Ghost Notification)*: HP dipinjamkan/dijual, akun lama yang sudah logout tetap menerima notifikasi obrolan privat orang lain karena token FCM masih terikat di HP itu.
+           - *Auth Session Conflict & Deep-Link Crash*: Notifikasi Akun B diklik saat HP sedang aktif membuka Akun A, menyebabkan query Supabase ditolak RLS (403 Forbidden) karena ketidakcocokan token JWT session global.
+           - *Ledakan Arsitektur*: Memaksa perombakan total dari Single-Account Auth ke Multi-Session Keyring Store yang belum saatnya dibangun.
+      3. **Sikap Agen yang Bertanggung Jawab**:
+         - Agen AI yang hebat **bukanlah** yang selalu bilang "bisa" dan langsung mengotori codebase dengan *workaround* rapuh.
+         - Agen AI harus berani memberikan **penolakan beralasan (*reasoned rejection*)**, mengedukasi pengguna secara transparan mengapa hal itu terjadi, dan mengarahkan ke cara pengujian yang benar (gunakan 2 perangkat fisik / browser terpisah).
+
 ---
 
 ## Flutter Architecture & Modular Structure (`lib/`)

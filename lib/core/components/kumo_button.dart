@@ -167,29 +167,28 @@ class _KumoButtonState extends State<KumoButton> {
             ),
             boxShadow: [
               if (isEnabled && isPrimary) ...[
-                // Diffuse outer shadow from pen.dev (#0000001f, y: 8, blur: 35)
                 const BoxShadow(
-                  color: Color(0x1F000000),
-                  blurRadius: 35.0,
-                  offset: Offset(0, 8),
+                  color: Color(0x243D38F5), // Subtle primary glow
+                  blurRadius: 12.0,
+                  offset: Offset(0, 3),
                 ),
               ] else if (isEnabled && isBlack) ...[
                 const BoxShadow(
-                  color: Color(0x1F000000),
-                  blurRadius: 35.0,
-                  offset: Offset(0, 8),
-                ),
-              ] else if (isEnabled && isSecondary) ...[
-                const BoxShadow(
-                  color: Color(0x0F000000),
+                  color: Color(0x0F000000), // Subtle 6% ambient shadow
                   blurRadius: 10.0,
                   offset: Offset(0, 3),
                 ),
-              ] else if (isEnabled && !isOutline) ...[
+              ] else if (isEnabled && isSecondary) ...[
                 const BoxShadow(
                   color: Color(0x0A000000),
-                  blurRadius: 4.0,
+                  blurRadius: 6.0,
                   offset: Offset(0, 2),
+                ),
+              ] else if (isEnabled && !isOutline) ...[
+                const BoxShadow(
+                  color: Color(0x08000000),
+                  blurRadius: 4.0,
+                  offset: Offset(0, 1),
                 ),
               ],
             ],

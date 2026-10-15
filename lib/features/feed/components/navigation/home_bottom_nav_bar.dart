@@ -75,6 +75,10 @@ class HomeBottomNavBar extends StatelessWidget {
 
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final activeColor = isDark ? Colors.white : AppColors.primary;
+    final inactiveColor = isDark ? const Color(0x99FFFFFF) : const Color(0xFF64748B);
+
     return Padding(
       padding: EdgeInsets.only(
         left: 20.0,
@@ -90,20 +94,14 @@ class HomeBottomNavBar extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(31.0),
               border: Border.all(
-                color: const Color(0x14000000), // Subtle 0.8px rim border against white canvas
+                color: isDark ? const Color(0x1AFFFFFF) : const Color(0xFFE2E8F0),
                 width: 0.8,
               ),
-              boxShadow: const [
-                // Layered shadow for crisp depth on white background
+              boxShadow: [
                 BoxShadow(
-                  color: Color(0x14000000),
-                  blurRadius: 28.0,
-                  offset: Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Color(0x0A000000),
-                  blurRadius: 4.0,
-                  offset: Offset(0, 1),
+                  color: isDark ? const Color(0x66000000) : const Color(0x0A000000),
+                  blurRadius: isDark ? 20.0 : 16.0,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -119,10 +117,15 @@ class HomeBottomNavBar extends StatelessWidget {
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.white.withValues(alpha: 0.90),
-                        Colors.white.withValues(alpha: 0.80),
-                      ],
+                      colors: isDark
+                          ? [
+                              const Color(0xFF161717).withValues(alpha: 0.94),
+                              const Color(0xFF161717).withValues(alpha: 0.88),
+                            ]
+                          : [
+                              Colors.white.withValues(alpha: 0.90),
+                              Colors.white.withValues(alpha: 0.80),
+                            ],
                     ),
                   ),
                   child: LayoutBuilder(
@@ -140,7 +143,9 @@ class HomeBottomNavBar extends StatelessWidget {
                             height: 50.0,
                             child: Container(
                               decoration: BoxDecoration(
-                                color: AppColors.primary.withValues(alpha: 0.08),
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.12)
+                                    : AppColors.primary.withValues(alpha: 0.08),
                                 borderRadius: BorderRadius.circular(25.0),
                               ),
                             ),
@@ -154,6 +159,8 @@ class HomeBottomNavBar extends StatelessWidget {
                                 label: 'Home',
                                 glyph: HomeNavGlyph(
                                   isActive: currentTab == HomeNavTab.home,
+                                  activeColor: activeColor,
+                                  inactiveColor: inactiveColor,
                                 ),
                                 onTap: () => onTabSelected(HomeNavTab.home),
                               ),
@@ -166,6 +173,8 @@ class HomeBottomNavBar extends StatelessWidget {
                                   isActive: currentTab == HomeNavTab.messages,
                                   hasBadge: hasUnreadMessages,
                                   badgeCount: unreadMessagesCount,
+                                  activeColor: activeColor,
+                                  inactiveColor: inactiveColor,
                                 ),
                                 onTap: () => onTabSelected(HomeNavTab.messages),
                               ),
@@ -177,6 +186,8 @@ class HomeBottomNavBar extends StatelessWidget {
                                 glyph: HeartNavGlyph(
                                   isActive: currentTab == HomeNavTab.activity,
                                   hasBadge: hasUnreadActivity,
+                                  activeColor: activeColor,
+                                  inactiveColor: inactiveColor,
                                 ),
                                 onTap: () => onTabSelected(HomeNavTab.activity),
                               ),
@@ -188,6 +199,8 @@ class HomeBottomNavBar extends StatelessWidget {
                                 glyph: UserNavGlyph(
                                   isActive: currentTab == HomeNavTab.profile,
                                   userAvatar: userAvatar,
+                                  activeColor: activeColor,
+                                  inactiveColor: inactiveColor,
                                 ),
                                 onTap: () => onTabSelected(HomeNavTab.profile),
                               ),
@@ -230,8 +243,9 @@ class _DockTabItemState extends State<_DockTabItem> {
 
   @override
   Widget build(BuildContext context) {
-    const activeColor = AppColors.primary; // Electric Indigo #3D38F5
-    const inactiveColor = Color(0xFF64748B); // Slate 500
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final activeColor = isDark ? Colors.white : AppColors.primary;
+    final inactiveColor = isDark ? const Color(0x99FFFFFF) : const Color(0xFF64748B);
 
     return Expanded(
       child: GestureDetector(

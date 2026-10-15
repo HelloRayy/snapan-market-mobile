@@ -89,29 +89,35 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
   @override
   Widget build(BuildContext context) {
     final ratio = _resolvedRatio ?? (16 / 9);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final placeholderColor = isDark ? const Color(0xFF1E2021) : const Color(0xFFF1F5F9);
 
     return GestureDetector(
       onTap: widget.onTap,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(18.0),
+        borderRadius: BorderRadius.circular(16.0),
         child: Container(
           constraints: const BoxConstraints(maxHeight: 460.0),
           decoration: BoxDecoration(
-            color: const Color(0xFFF1F5F9),
-            borderRadius: BorderRadius.circular(18.0),
-            border: Border.all(color: const Color(0x14000000), width: 1.0),
+            color: isDark ? const Color(0xFF1B1D1E) : const Color(0xFFF8FAFC),
+            borderRadius: BorderRadius.circular(16.0),
+            border: Border.all(
+              color: isDark ? const Color(0x1AFFFFFF) : const Color(0xFFE2E8F0),
+              width: 0.6,
+            ),
           ),
           child: AspectRatio(
             aspectRatio: ratio,
             child: Image.network(
               widget.imageUrl,
+              cacheWidth: 800,
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(
-                color: const Color(0xFFF1F5F9),
-                child: const Center(
+                color: placeholderColor,
+                child: Center(
                   child: Icon(
                     Icons.image_outlined,
-                    color: Color(0xFF94A3B8),
+                    color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
                     size: 40.0,
                   ),
                 ),
@@ -119,14 +125,16 @@ class _DynamicFeedImageState extends State<DynamicFeedImage> {
               loadingBuilder: (context, child, progress) {
                 if (progress == null) return child;
                 return Container(
-                  color: const Color(0xFFF1F5F9),
-                  child: const Center(
+                  color: placeholderColor,
+                  child: Center(
                     child: SizedBox(
                       width: 24.0,
                       height: 24.0,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.0,
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFCBD5E1)),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          isDark ? const Color(0xFF424445) : const Color(0xFFCBD5E1),
+                        ),
                       ),
                     ),
                   ),

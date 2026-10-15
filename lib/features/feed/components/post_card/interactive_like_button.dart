@@ -107,7 +107,9 @@ class _InteractiveLikeButtonState extends State<InteractiveLikeButton>
   @override
   Widget build(BuildContext context) {
     const activeColor = Color(0xFFF43F5E);
-    const inactiveColor = AppColors.ashGray;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final inactiveColor = isDark ? AppColors.darkTextSecondary : AppColors.ashGray;
+    final counterColor = isDark ? AppColors.darkTextSecondary : AppColors.graphite;
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -219,7 +221,7 @@ class _InteractiveLikeButtonState extends State<InteractiveLikeButton>
                       style: TextStyle(
                         fontSize: 13.0,
                         fontWeight: widget.isLiked ? FontWeight.w600 : FontWeight.w400,
-                        color: widget.isLiked ? activeColor : AppColors.graphite,
+                        color: widget.isLiked ? activeColor : counterColor,
                         fontFeatures: const [FontFeature.tabularFigures()],
                         letterSpacing: -0.2,
                       ),

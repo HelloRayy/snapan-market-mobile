@@ -5,22 +5,30 @@ import 'package:snapan_market/core/theme/app_colors.dart';
 class HomeNavGlyph extends StatelessWidget {
   final bool isActive;
   final double size;
+  final Color? activeColor;
+  final Color? inactiveColor;
 
   const HomeNavGlyph({
     super.key,
     required this.isActive,
     this.size = 22.0,
+    this.activeColor,
+    this.inactiveColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final effectiveActive = activeColor ?? (isDark ? Colors.white : AppColors.primary);
+    final effectiveInactive = inactiveColor ?? (isDark ? const Color(0x99FFFFFF) : const Color(0xFF64748B));
+
     return SizedBox(
       width: size,
       height: size,
       child: CustomPaint(
         size: Size(size, size),
         painter: _ThreadsHomePainter(
-          color: isActive ? AppColors.primary : const Color(0xFF64748B),
+          color: isActive ? effectiveActive : effectiveInactive,
           isFilled: isActive,
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/mention_text_span_helper.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
@@ -18,13 +19,18 @@ class PostCaptionText extends StatelessWidget {
     final hasMultiThread =
         item.totalThreadParts != null && item.totalThreadParts! > 1;
 
-    const baseStyle = TextStyle(
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryTextColor = isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A);
+    final secondaryTextColor = isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B);
+    final badgeBgColor = isDark ? const Color(0xFF242626) : const Color(0xFFF1F5F9);
+
+    final baseStyle = TextStyle(
       fontFamily: 'SFPro',
-      fontFamilyFallback: ['AppleColorEmoji'],
+      fontFamilyFallback: const ['AppleColorEmoji'],
       fontSize: 14.5,
       height: 1.35,
       fontWeight: FontWeight.normal,
-      color: Color(0xFF0F172A),
+      color: primaryTextColor,
     );
 
     return Text.rich(
@@ -45,15 +51,15 @@ class PostCaptionText extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5F9),
+                  color: badgeBgColor,
                   borderRadius: BorderRadius.circular(6.0),
                 ),
                 child: Text(
                   '1/${item.totalThreadParts}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11.0,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF64748B),
+                    color: secondaryTextColor,
                     letterSpacing: -0.2,
                   ),
                 ),

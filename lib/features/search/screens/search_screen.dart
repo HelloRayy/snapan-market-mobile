@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/snaps_skeleton.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/features/feed/components/navigation/home_menu_popover.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
@@ -16,21 +17,27 @@ import 'package:snapan_market/features/search/models/search_models.dart';
 /// Halaman Pencarian & Saran Akun Siswa SMKN 8 Semarang (<200 lines).
 class SearchScreen extends StatefulWidget {
   final VoidCallback? onBack;
+  final String? initialQuery;
 
-  const SearchScreen({super.key, this.onBack});
+  const SearchScreen({
+    super.key,
+    this.onBack,
+    this.initialQuery,
+  });
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  final TextEditingController _textController = TextEditingController();
+  late final TextEditingController _textController;
   final AppSearchController _controller = AppSearchController();
 
   @override
   void initState() {
     super.initState();
-    _controller.init();
+    _textController = TextEditingController(text: widget.initialQuery ?? '');
+    _controller.init(initialQuery: widget.initialQuery);
   }
 
   @override
@@ -100,7 +107,7 @@ class _SearchScreenState extends State<SearchScreen> {
         final hasQuery = _controller.searchQuery.trim().isNotEmpty;
 
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.adaptiveCanvas(context),
           body: Column(
             children: [
               SearchBarHeader(

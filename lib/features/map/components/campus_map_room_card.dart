@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/kumo_button.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/map/models/campus_map_models.dart';
 
 /// Floating bottom card displaying selected room/spot details and confirmation CTA.
@@ -18,9 +19,9 @@ class CampusMapRoomCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.adaptiveSurfaceElevated(context),
         borderRadius: BorderRadius.circular(20.0),
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 0.8),
+        border: Border.all(color: AppColors.adaptiveBorder(context), width: 0.8),
         boxShadow: const [
           BoxShadow(color: Color(0x14000000), blurRadius: 16.0, offset: Offset(0, 4)),
         ],
@@ -81,20 +82,20 @@ class CampusMapRoomCard extends StatelessWidget {
           const SizedBox(height: 8.0),
           Text(
             room.name,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16.0,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF0F172A),
+              color: AppColors.adaptiveText(context),
               letterSpacing: -0.3,
             ),
           ),
           const SizedBox(height: 4.0),
           Text(
             room.hint,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12.5,
               fontWeight: FontWeight.w400,
-              color: Color(0xFF64748B),
+              color: AppColors.adaptiveMuted(context),
               height: 1.3,
             ),
           ),

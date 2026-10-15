@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/constants/app_constants.dart';
+import 'package:snapan_market/core/models/mascot_flair_model.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/create_post/components/create_post_bottom_sheets.dart';
 import 'package:snapan_market/features/create_post/components/create_post_footer_bar.dart';
 import 'package:snapan_market/features/create_post/components/create_post_header_bar.dart';
@@ -15,6 +19,7 @@ class CreatePostModal extends StatefulWidget {
   final PostMode initialMode;
   final String currentUserName;
   final String currentUserAvatar;
+  final MascotFlairModel? initialMascotFlair;
   final ValueChanged<Map<String, dynamic>>? onSubmitPost;
 
   const CreatePostModal({
@@ -22,6 +27,7 @@ class CreatePostModal extends StatefulWidget {
     this.initialMode = PostMode.thread,
     this.currentUserName = '',
     this.currentUserAvatar = '',
+    this.initialMascotFlair,
     this.onSubmitPost,
   });
 
@@ -30,16 +36,18 @@ class CreatePostModal extends StatefulWidget {
     PostMode initialMode = PostMode.thread,
     String? currentUserName,
     String? currentUserAvatar,
+    MascotFlairModel? initialMascotFlair,
     ValueChanged<Map<String, dynamic>>? onSubmitPost,
   }) {
     return Navigator.of(context).push(
       PageRouteBuilder(
         opaque: true,
         fullscreenDialog: true,
-        pageBuilder: (context, _, __) => CreatePostModal(
+        pageBuilder: (context, _, _) => CreatePostModal(
           initialMode: initialMode,
           currentUserName: currentUserName ?? '',
           currentUserAvatar: currentUserAvatar ?? '',
+          initialMascotFlair: initialMascotFlair,
           onSubmitPost: onSubmitPost,
         ),
         transitionsBuilder: (context, animation, _, child) => SlideTransition(
@@ -74,12 +82,15 @@ class _CreatePostModalState extends State<CreatePostModal> {
   final GlobalKey _priceKey = GlobalKey();
   final GlobalKey _descKey = GlobalKey();
   final GlobalKey _topicTriggerKey = GlobalKey();
+  final GlobalKey _mascotTriggerKey = GlobalKey();
 
   final List<String> _images = [];
   final List<SubThreadItem> _subThreads = [];
   TopicOption? _selectedTopic;
   SchoolPlace? _selectedLocation;
   PresetGif? _selectedGif;
+  MascotFlairModel? _selectedMascotFlair;
+  bool _isMascotDropdownOpen = false;
   bool _showPoll = false;
   bool _showEmojiBar = false;
   final List<TextEditingController> _pollOptionControllers = [TextEditingController(), TextEditingController(), TextEditingController()];
@@ -87,17 +98,46 @@ class _CreatePostModalState extends State<CreatePostModal> {
   bool _pollAllowChangeVote = true;
   String _audiencePrivacy = 'Semua orang dapat membalas';
   bool _isSubmitting = false;
+  double _uploadProgress = 0.0;
+  String? _uploadStatusText;
   bool _showSellingIntentBanner = false;
+
+  bool get _isBetaPilotUser {
+    final profile = SupabaseService.instance.currentUserProfileNotifier.value;
+    final username = (profile?['username'] as String?)?.toLowerCase().trim() ?? '';
+    final email = SupabaseService.instance.currentUser?.email?.toLowerCase().trim() ?? '';
+    return username == 'snaps' || email.contains('snaps');
+  }
 
   @override
   void initState() {
     super.initState();
-    _postMode = widget.initialMode;
-    _captionController.addListener(_checkSellingIntent);
+    _postMode = AppConstants.enableCommerceMode ? widget.initialMode : PostMode.thread;
+    _initMascotFlair();
+
+    if (AppConstants.enableCommerceMode) {
+      _captionController.addListener(_checkSellingIntent);
+    }
     _captionController.addListener(() => setState(() {}));
 
     for (final pair in [(_titleFocusNode, _titleKey), (_priceFocusNode, _priceKey), (_descFocusNode, _descKey)]) {
       pair.$1.addListener(() { if (pair.$1.hasFocus) _scrollToField(pair.$2); });
+    }
+  }
+
+  void _initMascotFlair() {
+    if (widget.initialMascotFlair != null) {
+      _selectedMascotFlair = widget.initialMascotFlair;
+    } else {
+      final profile = SupabaseService.instance.currentUserProfileNotifier.value;
+      if (profile?['mascot_flair'] != null && profile!['mascot_flair'] is Map) {
+        _selectedMascotFlair = MascotFlairModel.fromJson(Map<String, dynamic>.from(profile['mascot_flair'] as Map));
+      } else if (_isBetaPilotUser) {
+        _selectedMascotFlair = const MascotFlairModel(
+          bundle: MascotBundle.koala,
+          emotion: MascotEmotion.delighted,
+        );
+      }
     }
   }
 
@@ -118,6 +158,10 @@ class _CreatePostModalState extends State<CreatePostModal> {
   }
 
   void _checkSellingIntent() {
+    if (!AppConstants.enableCommerceMode) {
+      if (_showSellingIntentBanner) setState(() => _showSellingIntentBanner = false);
+      return;
+    }
     if (_postMode == PostMode.product) {
       if (_showSellingIntentBanner) setState(() => _showSellingIntentBanner = false);
       return;
@@ -153,9 +197,23 @@ class _CreatePostModalState extends State<CreatePostModal> {
   Future<void> _handleSubmit() async {
     if (!_canSubmit) return;
     HapticFeedback.mediumImpact();
-    setState(() => _isSubmitting = true);
+    setState(() {
+      _isSubmitting = true;
+      _uploadProgress = 0.0;
+      _uploadStatusText = _images.isNotEmpty ? 'Menyiapkan media...' : 'Mempublikasikan...';
+    });
 
-    final uploadedImages = await CreatePostImageHelper.uploadAllImages(_images);
+    final uploadedImages = await CreatePostImageHelper.uploadAllImages(
+      _images,
+      onProgress: (completed, total, progress) {
+        if (mounted) {
+          setState(() {
+            _uploadProgress = progress;
+            _uploadStatusText = 'Mengunggah media ($completed/$total)...';
+          });
+        }
+      },
+    );
     final isProduct = _postMode == PostMode.product;
 
     Map<String, dynamic>? pollData;
@@ -194,6 +252,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
       'topicTag': _selectedTopic?.name,
       'subThreads': _subThreads.map((s) => {'caption': s.caption, 'images': s.images}).toList(),
       'poll': pollData,
+      'mascotFlair': _selectedMascotFlair?.toJson(),
       'createdAt': DateTime.now().toIso8601String(),
     };
 
@@ -213,7 +272,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
       onTap: () => FocusScope.of(context).unfocus(),
       behavior: HitTestBehavior.opaque,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.adaptiveCanvas(context),
         resizeToAvoidBottomInset: false,
         body: SafeArea(
           child: Column(
@@ -264,7 +323,9 @@ class _CreatePostModalState extends State<CreatePostModal> {
                             onTogglePoll: () => setState(() => _showPoll = !_showPoll),
                             onTopicSelected: (t) => setState(() => _selectedTopic = t),
                             onLocationSelected: (l) => setState(() => _selectedLocation = l),
-                            onToggleMode: (isProduct) => setState(() => _postMode = isProduct ? PostMode.product : PostMode.thread),
+                            onToggleMode: AppConstants.enableCommerceMode
+                                ? (isProduct) => setState(() => _postMode = isProduct ? PostMode.product : PostMode.thread)
+                                : (_) {},
                             onRemoveImage: (idx) => setState(() => _images.removeAt(idx)),
                             onAddPollOption: () => setState(() => _pollOptionControllers.add(TextEditingController())),
                             onRemovePollOption: (idx) => setState(() {
@@ -282,8 +343,24 @@ class _CreatePostModalState extends State<CreatePostModal> {
                             onPollDurationChanged: (d) => setState(() => _pollDeadlineDuration = d),
                             pollAllowChangeVote: _pollAllowChangeVote,
                             onPollAllowChangeVoteChanged: (v) => setState(() => _pollAllowChangeVote = v),
+                            selectedMascotFlair: _selectedMascotFlair,
+                            isBetaPilotUser: _isBetaPilotUser,
+                            mascotTriggerKey: _mascotTriggerKey,
+                            isMascotDropdownOpen: _isMascotDropdownOpen,
+                            onMascotTriggerTap: () async {
+                              setState(() => _isMascotDropdownOpen = true);
+                              await CreatePostBottomSheets.showMascotPickerPopup(
+                                context: context,
+                                triggerKey: _mascotTriggerKey,
+                                currentFlair: _selectedMascotFlair,
+                                onFlairSelected: (f) => setState(() => _selectedMascotFlair = f),
+                              );
+                              if (mounted) {
+                                setState(() => _isMascotDropdownOpen = false);
+                              }
+                            },
                           ),
-                          if (_postMode == PostMode.product) ...[
+                          if (AppConstants.enableCommerceMode && _postMode == PostMode.product) ...[
                             const SizedBox(height: 8.0),
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -326,6 +403,8 @@ class _CreatePostModalState extends State<CreatePostModal> {
                 audiencePrivacy: _audiencePrivacy,
                 canSubmit: _canSubmit,
                 isSubmitting: _isSubmitting,
+                uploadProgress: _uploadProgress,
+                uploadStatusText: _uploadStatusText,
                 onPrivacyTap: () => CreatePostBottomSheets.showPrivacyPickerBottomSheet(
                   context: context,
                   onPrivacySelected: (p) => setState(() => _audiencePrivacy = p),

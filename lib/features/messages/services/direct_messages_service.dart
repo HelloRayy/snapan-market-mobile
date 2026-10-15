@@ -16,6 +16,9 @@ class DirectMessagesService extends ChangeNotifier {
   String? _activeUserId;
   StreamSubscription<AuthState>? _authSub;
 
+  /// ID percakapan yang saat ini sedang aktif dibuka pengguna di layar (in-room chat suppression)
+  String? activeConversationId;
+
   List<ConversationModel> get conversations => List.unmodifiable(_conversations);
   bool get isFetchingConversations => _isFetchingConversations;
   int get totalUnreadCount => _conversations.fold<int>(0, (acc, c) => acc + c.unreadCount);
@@ -38,6 +41,31 @@ class DirectMessagesService extends ChangeNotifier {
         loadConversations();
       }
     });
+  }
+
+  /// Find an existing conversation model or fetch it directly from Supabase
+  Future<ConversationModel?> getOrFetchConversation(String conversationId) async {
+    for (final conv in _conversations) {
+      if (conv.id == conversationId) {
+        return conv;
+      }
+    }
+
+    final currentUser = SupabaseService.instance.currentUser;
+    if (currentUser == null) return null;
+
+    try {
+      final raw = await SupabaseService.instance.fetchConversationById(conversationId);
+      if (raw != null) {
+        final conv = ConversationModel.fromJson(raw, currentUser.id);
+        _conversations.insert(0, conv);
+        notifyListeners();
+        return conv;
+      }
+    } catch (e) {
+      debugPrint('Error getOrFetchConversation: $e');
+    }
+    return null;
   }
 
   /// Completely purge local in-memory conversation list & message histories

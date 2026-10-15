@@ -1,5 +1,6 @@
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
+import "package:snapan_market/core/theme/app_colors.dart";
 import "package:snapan_market/features/search/models/search_models.dart";
 export "package:snapan_market/features/search/models/search_models.dart" show SearchResultsTab;
 
@@ -41,11 +42,13 @@ class SearchBarHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: AppColors.adaptiveCanvas(context),
         border: Border(
-          bottom: BorderSide(color: Color(0xFFF1F5F9), width: 0.5),
+          bottom: BorderSide(color: AppColors.adaptiveBorder(context), width: 0.5),
         ),
       ),
       child: SafeArea(
@@ -65,10 +68,10 @@ class SearchBarHeader extends StatelessWidget {
                   Positioned(
                     left: 0,
                     child: IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         CupertinoIcons.chevron_back,
                         size: 22.0,
-                        color: Color(0xFF1A1A1A),
+                        color: AppColors.adaptiveText(context),
                       ),
                       onPressed: onBack,
                       tooltip: 'Kembali',
@@ -79,14 +82,14 @@ class SearchBarHeader extends StatelessWidget {
                   ),
 
                   // Center Title: 'Cari' (matching standard 17.5px SF Pro bold)
-                  const Center(
+                  Center(
                     child: Text(
                       'Cari',
                       style: TextStyle(
                         fontFamily: 'SF Pro',
                         fontSize: 17.5,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF1A1A1A),
+                        color: AppColors.adaptiveText(context),
                         letterSpacing: -0.4,
                       ),
                     ),
@@ -102,18 +105,18 @@ class SearchBarHeader extends StatelessWidget {
                 height: 42.0,
                 padding: const EdgeInsets.symmetric(horizontal: 14.0),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5F9),
+                  color: isDark ? AppColors.darkSurface : const Color(0xFFF1F5F9),
                   borderRadius: BorderRadius.circular(12.0),
-                  border: Border.all(color: const Color(0xFFE2E8F0), width: 0.8),
+                  border: Border.all(color: AppColors.adaptiveBorder(context), width: 0.8),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Search Icon
-                    const Icon(
+                    Icon(
                       CupertinoIcons.search,
                       size: 18.0,
-                      color: Color(0xFF94A3B8),
+                      color: AppColors.adaptiveMuted(context),
                     ),
 
                     const SizedBox(width: 10.0),
@@ -125,20 +128,20 @@ class SearchBarHeader extends StatelessWidget {
                         onChanged: onChanged,
                         onSubmitted: (_) => onSubmitted(),
                         textInputAction: TextInputAction.search,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: 'SFPro',
                           fontSize: 14.5,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFF0F172A),
+                          color: AppColors.adaptiveText(context),
                           letterSpacing: -0.2,
                         ),
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: "Cari",
                           hintStyle: TextStyle(
                             fontFamily: 'SFPro',
                             fontSize: 14.5,
                             fontWeight: FontWeight.w400,
-                            color: Color(0xFF94A3B8),
+                            color: AppColors.adaptiveMuted(context),
                           ),
                           border: InputBorder.none,
                           isDense: true,
@@ -179,9 +182,9 @@ class SearchBarHeader extends StatelessWidget {
             // 3. Search Results Tabs [Terpopuler | Terbaru | Profil] when query is submitted
             if (hasQuery && isSubmitted) ...[
               Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   border: Border(
-                    bottom: BorderSide(color: Color(0xFFF1F5F9), width: 0.8),
+                    bottom: BorderSide(color: AppColors.adaptiveBorder(context), width: 0.8),
                   ),
                 ),
                 child: Row(
@@ -234,7 +237,7 @@ class _TabItem extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: isActive ? const Color(0xFF0F172A) : Colors.transparent,
+                color: isActive ? AppColors.adaptiveText(context) : Colors.transparent,
                 width: 2.0,
               ),
             ),
@@ -245,7 +248,7 @@ class _TabItem extends StatelessWidget {
             style: TextStyle(
               fontSize: 13.5,
               fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-              color: isActive ? const Color(0xFF0F172A) : const Color(0xFF94A3B8),
+              color: isActive ? AppColors.adaptiveText(context) : AppColors.adaptiveMuted(context),
               letterSpacing: -0.1,
             ),
           ),

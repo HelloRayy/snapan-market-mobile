@@ -3,7 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 
 /// Service for picking and uploading media files to Supabase Storage
-/// with built-in automatic downscaling (1080p) and compression (quality 80%)
+/// with built-in automatic downscaling (960p) and compression (quality 70%)
 /// to minimize bandwidth and storage consumption.
 class MediaUploadService {
   MediaUploadService._();
@@ -11,11 +11,11 @@ class MediaUploadService {
 
   final ImagePicker _picker = ImagePicker();
 
-  /// Pick multiple images from gallery with automatic compression (1080p, quality 80)
+  /// Pick multiple images from gallery with automatic compression (960p, quality 70)
   Future<List<XFile>> pickMultiImages({
-    int maxWidth = 1080,
-    int maxHeight = 1080,
-    int imageQuality = 80,
+    int maxWidth = 960,
+    int maxHeight = 960,
+    int imageQuality = 70,
     int limit = 5,
   }) async {
     try {
@@ -34,12 +34,12 @@ class MediaUploadService {
     }
   }
 
-  /// Pick a single image from camera or gallery
+  /// Pick a single image from camera or gallery (960p, quality 70)
   Future<XFile?> pickSingleImage({
     ImageSource source = ImageSource.gallery,
-    int maxWidth = 1080,
-    int maxHeight = 1080,
-    int imageQuality = 80,
+    int maxWidth = 960,
+    int maxHeight = 960,
+    int imageQuality = 70,
   }) async {
     try {
       return await _picker.pickImage(
@@ -72,18 +72,27 @@ class MediaUploadService {
     }
   }
 
-  /// Upload multiple XFiles sequentially to Supabase Storage
+  /// Upload multiple XFiles concurrently to Supabase Storage with progress reporting
   Future<List<String>> uploadMultipleXFiles(
     List<XFile> files, {
     String bucket = 'market-media',
+    void Function(int completed, int total, double progress)? onProgress,
   }) async {
-    final List<String> uploadedUrls = [];
-    for (final f in files) {
+    if (files.isEmpty) return [];
+
+    final total = files.length;
+    int completed = 0;
+    onProgress?.call(0, total, 0.0);
+
+    // Parallel upload with progress reporting as each finishes
+    final futures = files.map((f) async {
       final url = await uploadXFile(f, bucket: bucket);
-      if (url != null && url.isNotEmpty) {
-        uploadedUrls.add(url);
-      }
-    }
-    return uploadedUrls;
+      completed++;
+      onProgress?.call(completed, total, completed / total);
+      return url;
+    }).toList();
+
+    final results = await Future.wait(futures);
+    return results.whereType<String>().where((u) => u.isNotEmpty).toList();
   }
 }

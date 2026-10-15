@@ -8,7 +8,8 @@ import 'package:snapan_market/core/navigation/navigation_service.dart';
 import 'package:snapan_market/core/services/app_update_service.dart';
 import 'package:snapan_market/core/services/global_notification_service.dart';
 import 'package:snapan_market/core/services/suspension_service.dart';
-import 'package:snapan_market/core/theme/app_colors.dart';
+import 'package:snapan_market/core/services/theme_service.dart';
+import 'package:snapan_market/core/theme/snaps_theme.dart';
 import 'package:snapan_market/features/feed/screens/home_feed_screen.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/services/follow_service.dart';
@@ -60,6 +61,9 @@ Future<void> main() async {
   // Clean obsolete OTA APK installers in background to reclaim disk space (SNAPS-36)
   unawaited(AppUpdateService.instance.cleanObsoleteInstallers());
 
+  // Initialize theme service from persistent storage
+  await ThemeService.instance.init();
+
   runApp(const SnapanMarketApp());
 }
 
@@ -68,56 +72,19 @@ class SnapanMarketApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: NavigationService.navigatorKey,
-      title: 'Snaps',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        fontFamily: 'SFPro',
-        fontFamilyFallback: const ['AppleColorEmoji'],
-        textTheme: ThemeData.light().textTheme.apply(
-          fontFamily: 'SFPro',
-          fontFamilyFallback: const ['AppleColorEmoji'],
-        ),
-        primaryTextTheme: ThemeData.light().primaryTextTheme.apply(
-          fontFamily: 'SFPro',
-          fontFamilyFallback: const ['AppleColorEmoji'],
-        ),
-        inputDecorationTheme: const InputDecorationTheme(
-          hintStyle: TextStyle(
-            fontFamily: 'SFPro',
-            fontFamilyFallback: ['AppleColorEmoji'],
-            color: Color(0xFF64748B),
-          ),
-          labelStyle: TextStyle(
-            fontFamily: 'SFPro',
-            fontFamilyFallback: ['AppleColorEmoji'],
-            color: Color(0xFF64748B),
-          ),
-        ),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primary,
-          primary: AppColors.primary,
-          surface: Colors.white,
-        ),
-        scaffoldBackgroundColor: Colors.white,
-        snackBarTheme: SnackBarThemeData(
-          behavior: SnackBarBehavior.floating,
-          insetPadding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 96.0),
-          backgroundColor: const Color(0xFF1E293B),
-          contentTextStyle: const TextStyle(
-            color: Colors.white,
-            fontSize: 13.5,
-            fontWeight: FontWeight.w500,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0),
-            side: const BorderSide(color: Color(0x14FFFFFF), width: 0.8),
-          ),
-        ),
-      ),
-      home: const AppRoot(),
+    return ListenableBuilder(
+      listenable: ThemeService.instance,
+      builder: (context, _) {
+        return MaterialApp(
+          navigatorKey: NavigationService.navigatorKey,
+          title: 'Snaps',
+          debugShowCheckedModeBanner: false,
+          theme: SnapsTheme.lightTheme,
+          darkTheme: SnapsTheme.darkTheme,
+          themeMode: ThemeService.instance.materialThemeMode,
+          home: const AppRoot(),
+        );
+      },
     );
   }
 }

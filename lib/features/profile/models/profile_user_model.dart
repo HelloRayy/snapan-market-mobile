@@ -1,3 +1,4 @@
+import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
 /// Profile User Information Model matching Web Profile Data
@@ -17,6 +18,7 @@ class ProfileUserModel {
   final double rating;
   final int reviewsCount;
   final bool isVerified;
+  final MascotFlairModel? mascotFlair;
 
   const ProfileUserModel({
     required this.id,
@@ -34,6 +36,7 @@ class ProfileUserModel {
     this.rating = 0.0,
     this.reviewsCount = 0,
     this.isVerified = false,
+    this.mascotFlair,
   });
 
   ProfileUserModel copyWith({
@@ -52,6 +55,7 @@ class ProfileUserModel {
     double? rating,
     int? reviewsCount,
     bool? isVerified,
+    MascotFlairModel? mascotFlair,
   }) {
     return ProfileUserModel(
       id: id ?? this.id,
@@ -69,6 +73,7 @@ class ProfileUserModel {
       rating: rating ?? this.rating,
       reviewsCount: reviewsCount ?? this.reviewsCount,
       isVerified: isVerified ?? this.isVerified,
+      mascotFlair: mascotFlair ?? this.mascotFlair,
     );
   }
 

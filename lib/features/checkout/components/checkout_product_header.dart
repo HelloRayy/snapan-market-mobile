@@ -36,15 +36,17 @@ class CheckoutProductHeader extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkSurface
+                    : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(8.0),
               ),
               child: Text(
                 post.department.isNotEmpty ? post.department : "SMKN 8 Semarang",
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF64748B),
+                  color: AppColors.adaptiveMuted(context),
                 ),
               ),
             ),
@@ -55,10 +57,10 @@ class CheckoutProductHeader extends StatelessWidget {
         // Product Title
         Text(
           (post.title != null && post.title!.isNotEmpty) ? post.title! : "Produk Tanpa Judul",
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18.0,
             fontWeight: FontWeight.w800,
-            color: Color(0xFF0F172A),
+            color: AppColors.adaptiveText(context),
             letterSpacing: -0.4,
             height: 1.25,
           ),

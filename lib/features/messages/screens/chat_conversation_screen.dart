@@ -39,6 +39,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
   void initState() {
     super.initState();
     _activeConvId = widget.conversation.id;
+    DirectMessagesService.instance.activeConversationId = _activeConvId;
     DirectMessagesService.instance.addListener(_onServiceChanged);
 
     final savedMessages = DirectMessagesService.instance.getMessages(_activeConvId);
@@ -96,6 +97,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
         if (realId != null && realId != _activeConvId) {
           final oldId = _activeConvId;
           _activeConvId = realId;
+          DirectMessagesService.instance.activeConversationId = realId;
           DirectMessagesService.instance.updateConversationId(
             oldId: oldId,
             newId: realId,
@@ -141,6 +143,9 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
 
   @override
   void dispose() {
+    if (DirectMessagesService.instance.activeConversationId == _activeConvId) {
+      DirectMessagesService.instance.activeConversationId = null;
+    }
     DirectMessagesService.instance.removeListener(_onServiceChanged);
     _messagesSubscription?.unsubscribe();
     _scrollController.dispose();

@@ -7,6 +7,7 @@
 ## 1. Aturan Mutlak & Pantangan Arsitektur (Invariants)
 
 - **Design Tokens**: Wajib gunakan `AppColors.*` dari [`lib/core/theme/app_colors.dart`](file:///home/rayhan/Windows-D/project/snapan-market-mobile/lib/core/theme/app_colors.dart). Dilarang menulis nilai hex manual. Hit area interaktif minimal 44x44 dp dengan `HapticFeedback.lightImpact()`.
+- **Verifikasi Urgensi & UX Friksi (Pelajaran SNAPS-33)**: Dilarang langsung membuat layar interstitial yang menginterupsi alur utama (misal: onboarding form paksa pasca-register). Wajib verifikasi urgensi & fatigue pengguna terlebih dahulu. Lebih utamakan **Contextual In-App Nudge / Progress Reminder** di layar tujuan daripada memblokir jalan masuk user.
 - **Autentikasi Siswa (SNAPS-64)**: Login berbasis NIS/Username, **BUKAN email Google**. Format email sintetis: `$identifier@snapan.id` atau RPC `lookup_login_email`.
 - **Keamanan & Suspensi**: Validasi `SuspensionService.instance.getCurrentUserSuspensionStatus()` pasca-login. Jika ditangguhkan, paksa logout dan tampilkan banner/screen akun suspend.
 - **Pemisahan Lapisan**: Dilarang menjalankan query Supabase langsung di dalam method `build()`. Delegasikan ke Controller atau Service.

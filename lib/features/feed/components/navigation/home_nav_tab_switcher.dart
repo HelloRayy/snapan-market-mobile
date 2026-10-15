@@ -56,17 +56,8 @@ class HomeNavTabSwitcher extends StatelessWidget {
             duration: const Duration(milliseconds: 240),
             curve: const Cubic(0.22, 1.0, 0.36, 1.0),
             child: DecoratedBox(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
-                boxShadow: index > 0
-                    ? const [
-                        BoxShadow(
-                          color: Color(0x14000000),
-                          blurRadius: 18.0,
-                          offset: Offset(-4, 0),
-                        ),
-                      ]
-                    : null,
               ),
               child: child,
             ),

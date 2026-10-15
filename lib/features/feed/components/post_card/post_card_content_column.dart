@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/feed/components/post_card/post_card_header.dart';
 import 'package:snapan_market/features/feed/components/post_card/post_caption_text.dart';
 import 'package:snapan_market/features/feed/components/post_card/post_media_section.dart';
@@ -114,10 +115,12 @@ class PostCardContentColumn extends StatelessWidget {
             item.locationTag!,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11.5,
               fontWeight: FontWeight.w400,
-              color: Color(0xFF64748B),
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkTextSecondary
+                  : const Color(0xFF64748B),
               letterSpacing: -0.1,
               height: 1.25,
             ),

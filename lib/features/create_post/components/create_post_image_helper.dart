@@ -71,30 +71,44 @@ class CreatePostImageHelper {
     }
   }
 
-  static Future<List<String>> uploadAllImages(List<String> images) async {
-    final List<String> uploadedImages = [];
-    for (final img in images) {
+  static Future<List<String>> uploadAllImages(
+    List<String> images, {
+    void Function(int completed, int total, double progress)? onProgress,
+  }) async {
+    if (images.isEmpty) return [];
+
+    final total = images.length;
+    int completed = 0;
+    onProgress?.call(0, total, 0.0);
+
+    final futures = images.map((img) async {
       if (img.startsWith('http://') || img.startsWith('https://')) {
-        uploadedImages.add(img);
-      } else {
-        try {
-          final file = File(img);
-          if (await file.exists()) {
-            final bytes = await file.readAsBytes();
-            final fileName = img.split(Platform.pathSeparator).last;
-            final uploadedUrl = await SupabaseService.instance.uploadImage(
-              bytes: bytes,
-              fileName: fileName,
-              bucket: 'market-media',
-            );
-            uploadedImages.add(uploadedUrl ?? img);
-          }
-        } catch (e) {
-          debugPrint('Error uploading image $img: $e');
-          uploadedImages.add(img);
-        }
+        completed++;
+        onProgress?.call(completed, total, completed / total);
+        return img;
       }
-    }
-    return uploadedImages;
+      try {
+        final file = File(img);
+        if (await file.exists()) {
+          final bytes = await file.readAsBytes();
+          final fileName = img.split(Platform.pathSeparator).last;
+          final uploadedUrl = await SupabaseService.instance.uploadImage(
+            bytes: bytes,
+            fileName: fileName,
+            bucket: 'market-media',
+          );
+          completed++;
+          onProgress?.call(completed, total, completed / total);
+          return uploadedUrl ?? img;
+        }
+      } catch (e) {
+        debugPrint('Error uploading image $img: $e');
+      }
+      completed++;
+      onProgress?.call(completed, total, completed / total);
+      return img;
+    }).toList();
+
+    return await Future.wait(futures);
   }
 }

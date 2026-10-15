@@ -19,8 +19,8 @@ class AppColors {
   static const Color gradientLavender = gradientMid;
   static const Color gradientSky = gradientBottom;
 
-  // Neutral Canvas & Ink (Matching pen.dev #1A1A1A, #EDEDED, #727272, #999999)
-  static const Color canvas = Color(0xFFF8FAFC);
+  // Neutral Canvas & Ink (Aligned with Meta Threads Barcelona / WDS Paper White #FAFAFA)
+  static const Color canvas = Color(0xFFFAFAFA);
   static const Color white = Colors.white;
   static const Color ink = Color(0xFF1A1A1A);
   static const Color slateInk = Color(0xFF334155);
@@ -69,4 +69,66 @@ class AppColors {
       gradientBottom,
     ],
   );
+
+  // ===========================================================================
+  // PRODUCTION META THREADS DARK MODE TOKENS (PROJECT BARCELONA / WDS)
+  // ===========================================================================
+
+  /// Canvas / Root OLED pure black background (--surface-background)
+  static const Color darkCanvas = Color(0xFF000000);
+
+  /// Card Surface default for feed posts (--WDS-surface-default)
+  static const Color darkSurface = Color(0xFF161717);
+
+  /// Elevated containers for modal sheets, dialogs (--WDS-surface-elevated-default)
+  static const Color darkSurfaceElevated = Color(0xFF1D1F1F);
+
+  /// Floating popover menus and tooltips (--WDS-surface-elevated-emphasized)
+  static const Color darkSurfaceEmphasized = Color(0xFF242626);
+
+  /// State hover / highlight touch feedback (--WDS-surface-highlight)
+  static const Color darkSurfaceHighlight = Color(0x1AFFFFFF); // 10% white
+
+  /// State pressed / active touch feedback (--WDS-surface-pressed)
+  static const Color darkSurfacePressed = Color(0x33FFFFFF); // 20% white
+
+  /// Primary high-contrast text on dark surface
+  static const Color darkTextPrimary = Color(0xFFF8FAFC);
+
+  /// Secondary muted text (60% white - prevents glare & halation)
+  static const Color darkTextSecondary = Color(0x99FFFFFF); // ~60% white
+
+  /// Disabled text and input placeholders (--WDS-content-disabled)
+  static const Color darkTextDisabled = Color(0xFF424445);
+
+  /// Subtle border lines & feed dividers (--WDS-lines-divider / --card-border-color)
+  static const Color darkBorder = Color(0x1AFFFFFF); // 10% white
+  static const Color darkDivider = Color(0x1AFFFFFF);
+
+  /// Dark mode brand accent adjustment (softer luminance glow on dark background)
+  static const Color darkPrimary = Color(0xFF6366F1);
+  static const Color darkPrimaryDark = Color(0xFF4F46E5);
+  static const Color darkPrimaryPastel = Color(0xFF1E1B4B);
+
+  /// Context-Aware Adaptive Color Helpers
+  static Color adaptiveCanvas(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? darkCanvas : canvas;
+
+  static Color adaptiveSurface(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? darkSurface : Colors.white;
+
+  static Color adaptiveSurfaceElevated(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? darkSurfaceElevated : Colors.white;
+
+  static Color adaptiveText(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? darkTextPrimary : ink;
+
+  static Color adaptiveMuted(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? darkTextSecondary : muted;
+
+  static Color adaptiveBorder(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? darkBorder : border;
+
+  static Color adaptiveDivider(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? darkDivider : separator;
 }

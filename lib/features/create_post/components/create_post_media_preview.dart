@@ -1,8 +1,8 @@
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
+import 'package:snapan_market/features/feed/components/post_card/adaptive_carousel_card.dart';
 
 class CreatePostSellingIntentBanner extends StatelessWidget {
   final VoidCallback onSwitchToProduct;
@@ -75,20 +75,22 @@ class CreatePostImagesPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
+    const previewHeight = 220.0;
+    final maxCardWidth = screenWidth * 0.82;
 
     return SizedBox(
-      height: 185.0,
+      height: previewHeight,
       child: Transform.translate(
         offset: const Offset(-64.0, 0),
         child: OverflowBox(
           minWidth: screenWidth,
           maxWidth: screenWidth,
-          minHeight: 185.0,
-          maxHeight: 185.0,
+          minHeight: previewHeight,
+          maxHeight: previewHeight,
           alignment: Alignment.topLeft,
           child: SizedBox(
             width: screenWidth,
-            height: 185.0,
+            height: previewHeight,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
@@ -102,7 +104,7 @@ class CreatePostImagesPreview extends StatelessWidget {
                     onTap: onAddImage,
                     child: Container(
                       width: 115.0,
-                      height: 185.0,
+                      height: previewHeight,
                       decoration: BoxDecoration(
                         color: const Color(0xFFF8FAFC),
                         borderRadius: BorderRadius.circular(16.0),
@@ -135,42 +137,17 @@ class CreatePostImagesPreview extends StatelessWidget {
                 }
 
                 final img = images[index];
-                final isNetwork = img.startsWith('http://') || img.startsWith('https://');
 
                 return Stack(
                   children: [
-                    Container(
-                      width: 155.0,
-                      height: 185.0,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16.0),
-                        border: Border.all(
-                          color: const Color(0xFFE2E8F0),
-                          width: 1.0,
-                        ),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(15.0),
-                        child: isNetwork
-                            ? Image.network(
-                                img,
-                                width: 155.0,
-                                height: 185.0,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => _errorPlaceholder(),
-                              )
-                            : Image.file(
-                                File(img),
-                                width: 155.0,
-                                height: 185.0,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => _errorPlaceholder(),
-                              ),
-                      ),
+                    AdaptiveCarouselCard(
+                      imageUrl: img,
+                      height: previewHeight,
+                      maxCardWidth: maxCardWidth,
                     ),
                     Positioned(
-                      top: 6.0,
-                      right: 6.0,
+                      top: 8.0,
+                      right: 8.0,
                       child: GestureDetector(
                         onTap: () => onRemoveImage(index),
                         child: Container(
@@ -181,7 +158,7 @@ class CreatePostImagesPreview extends StatelessWidget {
                           ),
                           child: const Icon(
                             CupertinoIcons.xmark,
-                            size: 12.0,
+                            size: 13.0,
                             color: Colors.white,
                           ),
                         ),
@@ -193,19 +170,6 @@ class CreatePostImagesPreview extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _errorPlaceholder() {
-    return Container(
-      width: 155.0,
-      height: 185.0,
-      color: const Color(0xFFF1F5F9),
-      child: const Icon(
-        CupertinoIcons.photo,
-        size: 32.0,
-        color: AppColors.muted,
       ),
     );
   }

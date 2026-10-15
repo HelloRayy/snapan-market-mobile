@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/features/feed/models/post_poll_model.dart';
 export 'package:snapan_market/features/feed/models/post_poll_model.dart';
 export 'package:snapan_market/features/feed/models/mock_market_posts.dart';
@@ -34,6 +35,7 @@ class SellerModel {
   final String avatar;
   final String classGroup;
   final bool isVerified;
+  final MascotFlairModel? mascotFlair;
 
   const SellerModel({
     required this.id,
@@ -43,9 +45,21 @@ class SellerModel {
     required this.avatar,
     required this.classGroup,
     this.isVerified = false,
+    this.mascotFlair,
   });
 
   factory SellerModel.fromJson(Map<String, dynamic> json) {
+    MascotFlairModel? parsedFlair;
+    if (json['mascot_flair'] != null && json['mascot_flair'] is Map) {
+      parsedFlair = MascotFlairModel.fromJson(Map<String, dynamic>.from(json['mascot_flair'] as Map));
+    } else if (json['username']?.toString().toLowerCase() == 'snaps') {
+      // Default pilot mascot flair for official snaps account during beta
+      parsedFlair = const MascotFlairModel(
+        bundle: MascotBundle.koala,
+        emotion: MascotEmotion.delighted,
+      );
+    }
+
     return SellerModel(
       id: json['id']?.toString() ?? '',
       name: json['full_name']?.toString() ?? json['name']?.toString() ?? (json['username'] != null ? '@${json['username']}' : 'Pengguna'),
@@ -54,6 +68,7 @@ class SellerModel {
       avatar: json['avatar_url']?.toString() ?? json['avatar']?.toString() ?? '',
       classGroup: json['class_group']?.toString() ?? json['classGroup']?.toString() ?? '',
       isVerified: json['is_verified'] == true || json['isVerified'] == true,
+      mascotFlair: parsedFlair,
     );
   }
 
@@ -65,6 +80,7 @@ class SellerModel {
     'avatar_url': avatar,
     'class_group': classGroup,
     'is_verified': isVerified,
+    if (mascotFlair != null) 'mascot_flair': mascotFlair!.toJson(),
   };
 
   SellerModel copyWith({
@@ -75,6 +91,7 @@ class SellerModel {
     String? avatar,
     String? classGroup,
     bool? isVerified,
+    MascotFlairModel? mascotFlair,
   }) {
     return SellerModel(
       id: id ?? this.id,
@@ -84,6 +101,7 @@ class SellerModel {
       avatar: avatar ?? this.avatar,
       classGroup: classGroup ?? this.classGroup,
       isVerified: isVerified ?? this.isVerified,
+      mascotFlair: mascotFlair ?? this.mascotFlair,
     );
   }
 
@@ -422,6 +440,7 @@ class MarketPostModel {
   final bool isReposted;
   final bool isSaved;
   final String timestamp;
+  final DateTime? deletedAt;
   final List<ThreadChainItemModel> threadChain;
   final List<PostCommentModel> comments;
   final PostPollModel? poll;
@@ -450,6 +469,7 @@ class MarketPostModel {
     this.isReposted = false,
     this.isSaved = false,
     required this.timestamp,
+    this.deletedAt,
     this.threadChain = const [],
     this.comments = const [],
     this.poll,
@@ -505,6 +525,14 @@ class MarketPostModel {
         name: 'Penjual Snapan',
         avatar: '',
         classGroup: 'Siswa',
+      );
+    }
+
+    if (json['mascot_flair'] != null && json['mascot_flair'] is Map) {
+      postSeller = postSeller.copyWith(
+        mascotFlair: MascotFlairModel.fromJson(
+          Map<String, dynamic>.from(json['mascot_flair'] as Map),
+        ),
       );
     }
 
@@ -599,12 +627,14 @@ class MarketPostModel {
       isReposted: json['is_reposted'] == true || json['isReposted'] == true,
       isSaved: json['is_saved'] == true || json['isSaved'] == true,
       timestamp: _formatRelativeTimestamp(json['created_at'] ?? json['timestamp']),
+      deletedAt: json['deleted_at'] != null ? DateTime.tryParse(json['deleted_at'].toString()) : null,
       threadChain: parsedChain,
       comments: parsedComments,
       poll: parsedPoll,
     );
   }
 
+  bool get isDeleted => deletedAt != null;
   bool get isProduct => postType == 'product';
   bool get isThread => postType == 'thread';
   String get sellerName => seller.name;

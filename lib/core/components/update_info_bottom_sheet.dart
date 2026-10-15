@@ -124,7 +124,7 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
             case OtaStatus.ALREADY_RUNNING_ERROR:
               setState(() {
                 _isDownloading = false;
-                _errorMessage = 'Proses unduhan sedang berjalan di latar belakang.';
+                _errorMessage = 'Proses unduhan sedang berjalan di bilah notifikasi HP Anda. Silakan tarik panel notifikasi ke bawah untuk melihat progresnya, atau gunakan tombol di bawah untuk unduh manual.';
               });
               break;
 
@@ -168,7 +168,7 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
           if (!mounted) return;
           setState(() {
             _isDownloading = false;
-            _errorMessage = 'Terjadi kendala saat mengunduh pembaruan. Silakan coba lagi.';
+            _errorMessage = 'Terjadi kesalahan sistem saat mengunduh ($err). Silakan gunakan tombol unduh manual di bawah.';
           });
         },
       );
@@ -176,25 +176,26 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
       if (!mounted) return;
       setState(() {
         _isDownloading = false;
-        _errorMessage = 'Gagal memulai unduhan pembaruan. Silakan coba lagi.';
+        _errorMessage = 'Gagal memulai unduhan: $e';
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
     final formattedChangelog = widget.update.changelog
         .replaceAll(r'\n', '\n')
         .trim();
 
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
-        boxShadow: [
+      decoration: BoxDecoration(
+        color: AppColors.adaptiveSurfaceElevated(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
+        boxShadow: const [
           BoxShadow(
-            color: Color(0x18000000),
+            color: Color(0x24000000),
             blurRadius: 24.0,
             offset: Offset(0, -6),
           ),
@@ -221,7 +222,7 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                     height: 4.0,
                     margin: const EdgeInsets.only(bottom: 16.0),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE2E8F0),
+                      color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0),
                       borderRadius: BorderRadius.circular(2.0),
                     ),
                   ),
@@ -235,7 +236,9 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                     width: 44.0,
                     height: 44.0,
                     decoration: BoxDecoration(
-                      color: AppColors.primaryPastel,
+                      color: isDark
+                          ? AppColors.primary.withValues(alpha: 0.20)
+                          : AppColors.primaryPastel,
                       borderRadius: BorderRadius.circular(14.0),
                     ),
                     child: const Center(
@@ -253,10 +256,10 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                       children: [
                         Text(
                           widget.update.title,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 17.0,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF0F172A),
+                            color: AppColors.adaptiveText(context),
                             letterSpacing: -0.3,
                           ),
                         ),
@@ -265,32 +268,34 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                           children: [
                             Text(
                               'v${widget.currentVersionName}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12.5,
                                 fontWeight: FontWeight.w500,
-                                color: Color(0xFF94A3B8),
+                                color: isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8),
                               ),
                             ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 6.0),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 6.0),
                               child: Icon(
                                 Icons.arrow_forward_rounded,
                                 size: 12.0,
-                                color: Color(0xFF94A3B8),
+                                color: isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8),
                               ),
                             ),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 1.5),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFDCFCE7),
+                                color: isDark
+                                    ? const Color(0xFF14532D)
+                                    : const Color(0xFFDCFCE7),
                                 borderRadius: BorderRadius.circular(6.0),
                               ),
                               child: Text(
                                 'v${widget.update.versionName}',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12.0,
                                   fontWeight: FontWeight.w700,
-                                  color: Color(0xFF15803D),
+                                  color: isDark ? const Color(0xFF86EFAC) : const Color(0xFF15803D),
                                 ),
                               ),
                             ),
@@ -313,10 +318,10 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF8FAFC),
+                    color: isDark ? AppColors.darkSurface : const Color(0xFFF8FAFC),
                     borderRadius: BorderRadius.circular(16.0),
                     border: Border.all(
-                      color: const Color(0xFFE2E8F0),
+                      color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0),
                       width: 0.8,
                     ),
                   ),
@@ -326,16 +331,20 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Row(
+                        Row(
                           children: [
-                            Icon(Icons.article_rounded, size: 16.0, color: Color(0xFF64748B)),
-                            SizedBox(width: 6.0),
+                            Icon(
+                              Icons.article_rounded,
+                              size: 16.0,
+                              color: isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B),
+                            ),
+                            const SizedBox(width: 6.0),
                             Text(
                               'Catatan Pembaruan:',
                               style: TextStyle(
                                 fontSize: 13.5,
                                 fontWeight: FontWeight.w700,
-                                color: Color(0xFF334155),
+                                color: AppColors.adaptiveText(context),
                               ),
                             ),
                           ],
@@ -343,10 +352,10 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                         const SizedBox(height: 10.0),
                         SelectableText(
                           formattedChangelog,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13.5,
                             fontWeight: FontWeight.w400,
-                            color: Color(0xFF475569),
+                            color: isDark ? AppColors.darkTextSecondary : const Color(0xFF475569),
                             height: 1.55,
                           ),
                         ),
@@ -361,19 +370,24 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                 Container(
                   padding: const EdgeInsets.all(12.0),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFEE2E2),
+                    color: isDark
+                        ? const Color(0xFF450A0A).withValues(alpha: 0.6)
+                        : const Color(0xFFFEE2E2),
                     borderRadius: BorderRadius.circular(10.0),
-                    border: Border.all(color: const Color(0xFFFCA5A5), width: 0.8),
+                    border: Border.all(
+                      color: isDark ? const Color(0xFF991B1B) : const Color(0xFFFCA5A5),
+                      width: 0.8,
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         _errorMessage!,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFFB91C1C),
+                          color: isDark ? const Color(0xFFFCA5A5) : const Color(0xFFB91C1C),
                           height: 1.4,
                         ),
                       ),
@@ -413,13 +427,19 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                                 ),
                               );
                             },
-                            icon: const Icon(Icons.copy_rounded, size: 16.0, color: Color(0xFFB91C1C)),
+                            icon: Icon(
+                              Icons.copy_rounded,
+                              size: 16.0,
+                              color: isDark ? const Color(0xFFFCA5A5) : const Color(0xFFB91C1C),
+                            ),
                             tooltip: 'Salin Link',
                             style: IconButton.styleFrom(
-                              backgroundColor: Colors.white,
+                              backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
-                                side: const BorderSide(color: Color(0xFFFCA5A5)),
+                                side: BorderSide(
+                                  color: isDark ? const Color(0xFF991B1B) : const Color(0xFFFCA5A5),
+                                ),
                               ),
                             ),
                           ),
@@ -442,10 +462,10 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                       children: [
                         Text(
                           _isInstalling ? 'Mempersiapkan pemasangan...' : 'Mengunduh pembaruan...',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13.0,
                             fontWeight: FontWeight.w500,
-                            color: Color(0xFF64748B),
+                            color: isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B),
                           ),
                         ),
                         Text(
@@ -463,7 +483,7 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                       borderRadius: BorderRadius.circular(6.0),
                       child: LinearProgressIndicator(
                         value: _downloadProgress > 0 ? (_downloadProgress / 100.0) : null,
-                        backgroundColor: const Color(0xFFE2E8F0),
+                        backgroundColor: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0),
                         valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
                         minHeight: 8.0,
                       ),

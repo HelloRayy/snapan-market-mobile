@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:snapan_market/core/services/follow_service.dart';
 import 'package:snapan_market/core/services/poll_sync_service.dart';
@@ -328,6 +329,17 @@ class ProfileController extends ChangeNotifier {
     }
     effectiveClass = AuthConstants.normalizeClassGroup(effectiveClass);
 
+    final rawFlair = profile?['mascot_flair'] ?? meta['mascot_flair'];
+    MascotFlairModel? parsedFlair;
+    if (rawFlair != null && rawFlair is Map) {
+      parsedFlair = MascotFlairModel.fromJson(Map<String, dynamic>.from(rawFlair));
+    } else if (uName.replaceAll('@', '').toLowerCase() == 'snaps') {
+      parsedFlair = const MascotFlairModel(
+        bundle: MascotBundle.koala,
+        emotion: MascotEmotion.delighted,
+      );
+    }
+
     return ProfileUserModel(
       id: id,
       name: effectiveDisplayName,
@@ -342,6 +354,7 @@ class ProfileController extends ChangeNotifier {
       tags: tags,
       followersCount: followersCount,
       isVerified: profile?['is_verified'] as bool? ?? false,
+      mascotFlair: parsedFlair,
     );
   }
 }

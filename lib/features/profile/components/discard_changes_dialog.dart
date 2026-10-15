@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Modal Dialog confirming unsaved changes discard matching ConfirmActionModal.tsx
 class DiscardChangesDialog extends StatelessWidget {
@@ -16,7 +17,7 @@ class DiscardChangesDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.adaptiveSurfaceElevated(context),
       elevation: 16.0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),
@@ -29,12 +30,12 @@ class DiscardChangesDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Title
-            const Text(
+            Text(
               'Buang perubahan?',
               style: TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF0F172A),
+                color: AppColors.adaptiveText(context),
                 letterSpacing: -0.3,
               ),
             ),
@@ -42,12 +43,12 @@ class DiscardChangesDialog extends StatelessWidget {
             const SizedBox(height: 8.0),
 
             // Description
-            const Text(
+            Text(
               'Jika Anda keluar sekarang, perubahan profil yang baru saja diedit tidak akan disimpan.',
               style: TextStyle(
                 fontSize: 14.0,
                 fontWeight: FontWeight.normal,
-                color: Color(0xFF64748B),
+                color: AppColors.adaptiveMuted(context),
                 height: 1.4,
               ),
             ),

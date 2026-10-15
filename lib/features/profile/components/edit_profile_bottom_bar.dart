@@ -17,10 +17,10 @@ class EditProfileBottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(20.0, 12.0, 20.0, 16.0),
-      decoration: const BoxDecoration(
-        color: AppColors.white,
-        border: Border(top: BorderSide(color: Color(0xFFF1F5F9), width: 1.0)),
-        boxShadow: [
+      decoration: BoxDecoration(
+        color: AppColors.adaptiveCanvas(context),
+        border: Border(top: BorderSide(color: AppColors.adaptiveBorder(context), width: 1.0)),
+        boxShadow: const [
           BoxShadow(
             color: Color(0x0A000000),
             blurRadius: 16.0,
@@ -38,12 +38,19 @@ class EditProfileBottomBar extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: isSaving ? null : onDiscard,
                   style: OutlinedButton.styleFrom(
-                    backgroundColor: AppColors.white,
-                    foregroundColor: AppColors.ink,
-                    side: const BorderSide(color: AppColors.border, width: 1.0),
+                    backgroundColor: AppColors.adaptiveCanvas(context),
+                    foregroundColor: AppColors.adaptiveText(context),
+                    side: BorderSide(color: AppColors.adaptiveBorder(context), width: 1.0),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.0)),
                   ),
-                  child: const Text('Discard', style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w700, color: AppColors.ink)),
+                  child: Text(
+                    'Discard',
+                    style: TextStyle(
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.adaptiveText(context),
+                    ),
+                  ),
                 ),
               ),
             ),

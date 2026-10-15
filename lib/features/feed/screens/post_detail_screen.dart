@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:snapan_market/core/components/glass_toolbar_top.dart';
+import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/services/device_security_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/core/constants/app_constants.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/features/feed/components/sheets/buy_bottom_sheet.dart';
@@ -14,6 +16,7 @@ import 'package:snapan_market/features/feed/components/detail/post_detail_commen
 import 'package:snapan_market/features/feed/components/detail/post_detail_comments_list.dart';
 import 'package:snapan_market/features/feed/controllers/post_detail_controller.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
+import 'package:snapan_market/features/search/screens/search_screen.dart';
 
 /// Focused single post detail view with author thread continuation, comments, and buyer actions.
 class PostDetailScreen extends StatefulWidget {
@@ -41,7 +44,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   CommentSortOrder _selectedSort = CommentSortOrder.newest;
   final ScrollController _scrollController = ScrollController();
 
-  bool get _isProductMode => _controller.post.isProduct && (_controller.post.price ?? 0) > 0;
+  bool get _isProductMode =>
+      AppConstants.enableCommerceMode &&
+      _controller.post.isProduct &&
+      (_controller.post.price ?? 0) > 0;
 
   List<PostCommentModel> get _sortedComments {
     final list = List<PostCommentModel>.from(_controller.comments);
@@ -146,7 +152,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         Navigator.pop(context, {'updatedPost': post});
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.adaptiveCanvas(context),
         appBar: GlassToolbarTop(
           leadingIcon: CupertinoIcons.chevron_back,
           leadingTooltip: 'Kembali',
@@ -213,6 +219,15 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     ),
                     onImageClick: (item, idx) => _handleImageClick(item.images, idx),
                     onVotePoll: (item, optionIds) => _controller.votePoll(optionIds),
+                    onTopicClick: (tag) => Navigator.push(
+                      context,
+                      AppSlidePageRoute(
+                        builder: (_) => SearchScreen(
+                          initialQuery: tag,
+                          onBack: () => Navigator.pop(context),
+                        ),
+                      ),
+                    ),
                   ),
                   PostDetailCommentsHeader(
                     isProductMode: _isProductMode,

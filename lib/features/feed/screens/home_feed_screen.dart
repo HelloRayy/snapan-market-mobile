@@ -6,12 +6,15 @@ import 'package:snapan_market/core/services/app_update_service.dart';
 import 'package:snapan_market/core/services/global_notification_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_animations.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/snaps_toast.dart';
 import 'package:snapan_market/features/activity/screens/activity_screen.dart';
 import 'package:snapan_market/features/auth/components/auth_prompt_overlay.dart';
 import 'package:snapan_market/features/auth/screens/auth_screen.dart';
 import 'package:snapan_market/features/create_post/models/create_post_types.dart';
 import 'package:snapan_market/features/create_post/screens/create_post_modal.dart';
+import 'package:snapan_market/features/feedback/components/bug_report_bottom_sheet.dart';
+import 'package:snapan_market/features/feed/components/navigation/appearance_bottom_sheet.dart';
 import 'package:snapan_market/features/feed/components/navigation/home_dock_overlay.dart';
 import 'package:snapan_market/features/feed/components/navigation/home_feed_header.dart';
 import 'package:snapan_market/features/feed/components/home_feed_scrollable_list.dart';
@@ -195,15 +198,20 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
     final double fabBottom = (bottomPadding > 0 ? bottomPadding + 8.0 : 18.0) + 62.0 + 12.0;
     final bool isUnauthenticated = SupabaseService.instance.currentUser == null;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     final scaffold = Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? AppColors.darkCanvas : Colors.white,
       extendBody: true,
       drawerScrimColor: Colors.black.withValues(alpha: 0.35),
       drawerEdgeDragWidth: AppAnimations.drawerEdgeDragWidth,
       drawer: HomeNavDrawer(
         userProfile: _feedController.userProfile,
-        onAppearanceTap: () {},
+        onAppearanceTap: () {
+          Navigator.of(context).maybePop();
+          AppearanceBottomSheet.show(context);
+        },
         onSettingsTap: () {
           Navigator.of(context).maybePop();
           NotificationGuideBottomSheet.show(context);
@@ -213,14 +221,17 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
           setState(() => _currentNavTab = HomeNavTab.activity);
         },
         onArchiveTap: () {},
-        onReportTap: () {},
+        onReportTap: () {
+          Navigator.of(context).maybePop();
+          BugReportBottomSheet.show(context);
+        },
         onCheckUpdateTap: _handleManualCheckUpdate,
         onAuthTap: _handleOpenAuth,
         onLogout: widget.onLogout,
         onClose: () => Navigator.of(context).maybePop(),
       ),
       appBar: HomeFeedHeader(
-        isDark: false,
+        isDark: isDark,
         title: switch (_currentNavTab) {
           HomeNavTab.home => 'Snaps.',
           HomeNavTab.messages => 'Chat',
@@ -244,18 +255,28 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
               activeTab: _activeTab,
               onTabChanged: (t) => setState(() => _activeTab = t),
               isLoading: _feedController.isLoading,
+              isLoadingMore: _feedController.isLoadingMore,
               hasError: _feedController.hasError,
               errorMessage: _feedController.errorMessage,
               allPosts: _feedController.posts,
               onRefresh: () => _feedController.fetchPosts(isRefresh: true),
               onRetry: () => _feedController.fetchPosts(),
+              onLoadMore: _feedController.fetchMorePosts,
               onScrollToTop: _scrollToTop,
               onShowFab: _showFab,
               onHideFab: _hideFab,
               onLikeToggle: _feedController.toggleLike,
               onRepostToggle: _feedController.toggleRepost,
               onPostClick: _handlePostClick,
-              onTopicClick: (_) {},
+              onTopicClick: (tag) => Navigator.push(
+                context,
+                AppSlidePageRoute(
+                  builder: (_) => SearchScreen(
+                    initialQuery: tag,
+                    onBack: () => Navigator.pop(context),
+                  ),
+                ),
+              ),
               onUserClick: (u) => Navigator.push(context, AppSlidePageRoute(builder: (_) => ProfileScreen(username: u, onBack: () => Navigator.pop(context)))),
               onImageClick: (item, idx) => MediaLightboxDialog.show(context: context, images: item.images, initialIndex: idx, post: item, onLikeToggle: _feedController.toggleLike, onRepostToggle: _feedController.toggleRepost, onPostClick: _handlePostClick),
               onDeletePost: _feedController.deletePost,

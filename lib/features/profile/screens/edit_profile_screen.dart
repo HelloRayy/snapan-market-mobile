@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/auth/models/auth_constants.dart';
@@ -37,6 +38,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? _selectedClassNum;
 
   late String _avatar;
+  MascotFlairModel? _mascotFlair;
   late List<String> _tags;
   late bool _showSalesStats;
   bool _isSaving = false;
@@ -56,6 +58,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _selectedClassNum = parsedClass.classNum;
 
     _avatar = widget.initialUser.avatar;
+    _mascotFlair = widget.initialUser.mascotFlair;
     _tags = List<String>.from(widget.initialUser.tags);
     _showSalesStats = widget.initialUser.showSalesStats;
   }
@@ -97,6 +100,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _currentClassGroup.trim() != widget.initialUser.classGroup.trim() ||
         _linkController.text.trim() != (widget.initialUser.link ?? '').trim() ||
         _avatar != widget.initialUser.avatar ||
+        _mascotFlair?.toJson().toString() != widget.initialUser.mascotFlair?.toJson().toString() ||
         _showSalesStats != widget.initialUser.showSalesStats ||
         _tags.join(',') != widget.initialUser.tags.join(',');
   }
@@ -187,6 +191,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           bio: _bioController.text.trim(),
           tags: _tags,
           link: _linkController.text.trim(),
+          mascotFlair: _mascotFlair?.toJson(),
         );
       }
 
@@ -199,6 +204,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         link: _linkController.text.trim(),
         tags: _tags,
         showSalesStats: _showSalesStats,
+        mascotFlair: _mascotFlair,
       );
 
       widget.onSave(updated);
@@ -230,15 +236,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         if (!didPop) _handleAttemptExit();
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.adaptiveCanvas(context),
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.adaptiveCanvas(context),
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(CupertinoIcons.chevron_back, color: AppColors.ink),
+            icon: Icon(CupertinoIcons.chevron_back, color: AppColors.adaptiveText(context)),
             onPressed: _handleAttemptExit,
           ),
-          title: const Text('Edit Profil', style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.w700, color: AppColors.ink)),
+          title: Text(
+            'Edit Profil',
+            style: TextStyle(
+              fontSize: 17.0,
+              fontWeight: FontWeight.w700,
+              color: AppColors.adaptiveText(context),
+            ),
+          ),
           actions: [
             TextButton(
               onPressed: (_hasChanges && !_isSaving) ? _handleSave : null,
@@ -272,6 +285,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       nameController: _nameController,
                       currentAvatar: _avatar,
                       onAvatarChanged: (newAvatar) => setState(() => _avatar = newAvatar),
+                      currentMascotFlair: _mascotFlair,
+                      onMascotFlairChanged: (flair) => setState(() => _mascotFlair = flair),
+                      isBetaPilotUser: widget.initialUser.username.replaceAll('@', '').toLowerCase() == 'snaps',
                     ),
                     EditProfileFormFields(
                       usernameController: _usernameController,

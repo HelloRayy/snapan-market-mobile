@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/components/avatar/avatar_viewer_dialog.dart';
 import 'package:snapan_market/core/components/snaps_skeleton.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/ui/default_profile_avatar.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
 import 'package:snapan_market/core/services/follow_service.dart';
@@ -315,7 +317,13 @@ class ProfileScreenState extends State<ProfileScreen> {
                                 if (_isOwnProfile && (user.avatar.trim().isEmpty || user.avatar.startsWith('assets/'))) {
                                   _handleEditProfile();
                                 } else if (!kForceDefaultProfileAvatar && user.avatar.isNotEmpty) {
-                                  MediaLightboxDialog.show(context: context, images: [user.avatar], initialIndex: 0);
+                                  AvatarViewerDialog.show(
+                                    context: context,
+                                    imageUrl: user.avatar,
+                                    title: user.displayName,
+                                    subtitle: '@${user.username}',
+                                    heroTag: 'profile_avatar_${user.id}',
+                                  );
                                 }
                               },
                             ),
@@ -438,7 +446,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
     if (widget.showAppBar) {
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.adaptiveCanvas(context),
         appBar: HomeFeedHeader(
           onBackTap: widget.onBack,
           onMenuTap: widget.onOpenMenu,

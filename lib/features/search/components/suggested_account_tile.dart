@@ -45,13 +45,6 @@ class SuggestedAccountTile extends StatelessWidget {
               name: account.fullName,
               username: account.username,
               border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x0A000000),
-                  blurRadius: 3.0,
-                  offset: Offset(0, 1),
-                ),
-              ],
             ),
             const SizedBox(width: 12.0),
 
@@ -133,13 +126,6 @@ class SuggestedAccountTile extends StatelessWidget {
                       color: const Color(0xFFE2E8F0),
                       width: 1.0,
                     ),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x08000000),
-                        blurRadius: 2.0,
-                        offset: Offset(0, 1),
-                      ),
-                    ],
                   ),
                   child: Text(
                     following ? "Mengikuti" : "Ikuti",

@@ -27,9 +27,10 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color bgColor = isDark ? const Color(0xFF101010) : Colors.white;
-    final Color iconColor = isDark ? const Color(0xFFF3F5F7) : const Color(0xFF1A1A1A);
-    final Color textColor = isDark ? const Color(0xFFF3F5F7) : const Color(0xFF111827);
+    final effectiveDark = isDark || Theme.of(context).brightness == Brightness.dark;
+    final Color bgColor = effectiveDark ? const Color(0xFF000000) : Colors.white;
+    final Color iconColor = effectiveDark ? const Color(0xFFF8FAFC) : const Color(0xFF1A1A1A);
+    final Color textColor = effectiveDark ? const Color(0xFFF8FAFC) : const Color(0xFF111827);
 
     return Container(
       color: bgColor,
@@ -68,7 +69,10 @@ class HomeFeedHeader extends StatelessWidget implements PreferredSizeWidget {
                   onTap: onTitleTap,
                   behavior: HitTestBehavior.opaque,
                   child: title == 'Snaps.'
-                      ? const SnapsLogo(height: 34.0)
+                      ? SnapsLogo(
+                          height: 34.0,
+                          color: effectiveDark ? const Color(0xFFF8FAFC) : null,
+                        )
                       : Text(
                           title,
                           style: TextStyle(

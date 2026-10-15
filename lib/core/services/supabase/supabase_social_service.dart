@@ -71,6 +71,18 @@ class SupabaseSocialService {
     }
   }
 
+  /// Mark a single notification as read
+  Future<void> markSingleNotificationAsRead(String notificationId) async {
+    try {
+      await _client
+          .from('notifications')
+          .update({'is_read': true})
+          .eq('id', notificationId);
+    } catch (e) {
+      debugPrint('Error markSingleNotificationAsRead: $e');
+    }
+  }
+
   /// Realtime channel subscription for user's notifications
   RealtimeChannel subscribeToNotifications(void Function(Map<String, dynamic> record) onNewNotification) {
     final user = _currentUser;

@@ -14,6 +14,8 @@ import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/activity/models/activity_notification_model.dart';
 import 'package:snapan_market/features/feed/screens/post_detail_screen.dart';
+import 'package:snapan_market/features/messages/screens/chat_conversation_screen.dart';
+import 'package:snapan_market/features/messages/services/direct_messages_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -120,10 +122,17 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       ];
     }
 
+    final isDm = message.data['type']?.toString() == 'dm';
+    final channelId = isDm ? 'snaps_direct_messages' : 'snaps_announcements';
+    final channelName = isDm ? 'Pesan Masuk (DM)' : 'Pengumuman & Notifikasi Snaps';
+    final channelDescription = isDm
+        ? 'Notifikasi pesan langsung dari pembeli dan penjual Snaps.'
+        : 'Notifikasi broadcast pengumuman resmi dan aktivitas interaksi Snaps.';
+
     final androidDetails = AndroidNotificationDetails(
-      'snaps_announcements',
-      'Pengumuman & Notifikasi Snaps',
-      channelDescription: 'Notifikasi broadcast pengumuman resmi dan aktivitas interaksi Snaps.',
+      channelId,
+      channelName,
+      channelDescription: channelDescription,
       importance: Importance.max,
       priority: Priority.high,
       styleInformation: bigTextStyle,
@@ -255,8 +264,45 @@ class GlobalNotificationService {
 
       // When app is in foreground and FCM receives a message
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        final title = message.notification?.title ?? message.data['title'] ?? 'Pengumuman Baru';
+        final isDm = message.data['type']?.toString() == 'dm';
+        final conversationId = message.data['conversation_id']?.toString() ?? '';
+
+        // In-room chat suppression:
+        // Jika user sedang aktif membuka ruang percakapan ini, abaikan notifikasi banner/suara
+        if (isDm &&
+            conversationId.isNotEmpty &&
+            DirectMessagesService.instance.activeConversationId == conversationId) {
+          debugPrint('[FCM Foreground] Suppressed DM notification: user active in conversation $conversationId');
+          return;
+        }
+
+        final title = message.notification?.title ??
+            message.data['title'] ??
+            (isDm ? 'Pesan Masuk' : 'Pengumuman Baru');
         final body = message.notification?.body ?? message.data['message'] ?? '';
+
+        if (isDm) {
+          _showOsNotification(
+            title: title,
+            message: body,
+            payloadJson: jsonEncode(message.data),
+            channelId: 'snaps_direct_messages',
+          );
+
+          showTopBanner(
+            title: title,
+            message: body,
+            type: 'dm',
+            onTap: () {
+              final ctx = NavigationService.currentContext;
+              if (ctx != null && conversationId.isNotEmpty) {
+                navigateToChatConversation(ctx, conversationId);
+              }
+            },
+          );
+          return;
+        }
+
         final actionType = message.data['action_type'] ?? 'none';
         final actionUrl = message.data['action_url'] ?? '';
         final actionButtonLabel = message.data['action_button_label'] ?? 'Buka Tautan';
@@ -312,6 +358,19 @@ class GlobalNotificationService {
   }
 
   void _handleFcmMessageClick(RemoteMessage message) {
+    final isDm = message.data['type']?.toString() == 'dm';
+    final conversationId = message.data['conversation_id']?.toString() ?? '';
+
+    if (isDm && conversationId.isNotEmpty) {
+      Future.delayed(const Duration(milliseconds: 600), () {
+        final ctx = NavigationService.currentContext;
+        if (ctx != null) {
+          navigateToChatConversation(ctx, conversationId);
+        }
+      });
+      return;
+    }
+
     final title = message.notification?.title ?? message.data['title'] ?? 'Pengumuman Resmi';
     final body = message.notification?.body ?? message.data['message'] ?? '';
     final actionType = message.data['action_type'] ?? 'none';
@@ -380,6 +439,23 @@ class GlobalNotificationService {
     }
   }
 
+  /// Navigasi langsung ke ruang chat percakapan berdasarkan conversationId
+  static Future<void> navigateToChatConversation(BuildContext context, String conversationId) async {
+    try {
+      final conv = await DirectMessagesService.instance.getOrFetchConversation(conversationId);
+      if (conv != null && context.mounted) {
+        Navigator.push(
+          context,
+          AppSlidePageRoute(
+            builder: (_) => ChatConversationScreen(conversation: conv),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error navigating to chat conversation from notification: $e');
+    }
+  }
+
   Future<void> _initLocalNotifications() async {
     if (_isLocalNotifsInitialized) return;
 
@@ -394,10 +470,18 @@ class GlobalNotificationService {
           if (payload != null && payload.isNotEmpty) {
             try {
               final json = jsonDecode(payload) as Map<String, dynamic>;
+              final isDm = json['type']?.toString() == 'dm';
+              final conversationId = json['conversation_id']?.toString() ?? '';
+
+              final ctx = NavigationService.currentContext;
+              if (ctx != null && isDm && conversationId.isNotEmpty) {
+                await navigateToChatConversation(ctx, conversationId);
+                return;
+              }
+
               final notif = ActivityNotification.fromJson(json);
 
               // Eksekusi aksi jika ada (misal update_app, open_url, post_link)
-              final ctx = NavigationService.currentContext;
               if (ctx != null) {
                 if (details.actionId == 'open_url') {
                   final url = notif.actionUrl ?? json['action_url']?.toString();
@@ -463,6 +547,18 @@ class GlobalNotificationService {
         );
 
         await androidPlatformPlugin.createNotificationChannel(channel);
+
+        const dmChannel = AndroidNotificationChannel(
+          'snaps_direct_messages',
+          'Pesan Masuk (DM)',
+          description: 'Notifikasi pesan langsung dari pembeli dan penjual Snaps.',
+          importance: Importance.max,
+          enableVibration: true,
+          playSound: true,
+          showBadge: true,
+        );
+
+        await androidPlatformPlugin.createNotificationChannel(dmChannel);
       }
 
       _isLocalNotifsInitialized = true;
@@ -532,6 +628,7 @@ class GlobalNotificationService {
     required String title,
     required String message,
     String? payloadJson,
+    String? channelId,
   }) async {
     try {
       final bigTextStyle = BigTextStyleInformation(
@@ -542,10 +639,14 @@ class GlobalNotificationService {
         htmlFormatContentTitle: false,
       );
 
+      bool isDm = channelId == 'snaps_direct_messages';
       List<AndroidNotificationAction>? actions;
       if (payloadJson != null && payloadJson.isNotEmpty) {
         try {
           final map = jsonDecode(payloadJson) as Map<String, dynamic>;
+          if (map['type']?.toString() == 'dm') {
+            isDm = true;
+          }
           final actionType = map['action_type']?.toString();
           final actionUrl = map['action_url']?.toString();
           final actionLabel = map['action_button_label']?.toString() ??
@@ -586,10 +687,16 @@ class GlobalNotificationService {
         } catch (_) {}
       }
 
+      final effectiveChannelId = channelId ?? (isDm ? 'snaps_direct_messages' : 'snaps_announcements');
+      final effectiveChannelName = isDm ? 'Pesan Masuk (DM)' : 'Pengumuman & Notifikasi Snaps';
+      final effectiveChannelDesc = isDm
+          ? 'Notifikasi pesan langsung dari pembeli dan penjual Snaps.'
+          : 'Notifikasi broadcast pengumuman resmi dan aktivitas interaksi Snaps.';
+
       final androidDetails = AndroidNotificationDetails(
-        'snaps_announcements',
-        'Pengumuman & Notifikasi Snaps',
-        channelDescription: 'Notifikasi broadcast pengumuman resmi dan aktivitas interaksi Snaps.',
+        effectiveChannelId,
+        effectiveChannelName,
+        channelDescription: effectiveChannelDesc,
         importance: Importance.max,
         priority: Priority.high,
         styleInformation: bigTextStyle,
@@ -636,13 +743,11 @@ class GlobalNotificationService {
     _currentBannerEntry?.remove();
     _currentBannerEntry = null;
 
-    final isSystem = type == 'system';
-
     _currentBannerEntry = OverlayEntry(
       builder: (ctx) => _FloatingNotificationBanner(
         title: title,
         message: message,
-        isSystem: isSystem,
+        type: type,
         onDismiss: () {
           _currentBannerEntry?.remove();
           _currentBannerEntry = null;
@@ -674,17 +779,20 @@ class GlobalNotificationService {
 class _FloatingNotificationBanner extends StatefulWidget {
   final String title;
   final String message;
-  final bool isSystem;
+  final String type;
   final VoidCallback onDismiss;
   final VoidCallback onTap;
 
   const _FloatingNotificationBanner({
     required this.title,
     required this.message,
-    required this.isSystem,
+    required this.type,
     required this.onDismiss,
     required this.onTap,
   });
+
+  bool get isDm => type == 'dm';
+  bool get isSystem => type == 'system';
 
   @override
   State<_FloatingNotificationBanner> createState() => _FloatingNotificationBannerState();
@@ -773,22 +881,30 @@ class _FloatingNotificationBannerState extends State<_FloatingNotificationBanner
                         height: 38.0,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: widget.isSystem
+                          gradient: widget.isDm
                               ? const LinearGradient(
-                                  colors: [Color(0xFF3D38F5), Color(0xFF6366F1)],
+                                  colors: [Color(0xFF0284C7), Color(0xFF2563EB)],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 )
-                              : const LinearGradient(
-                                  colors: [Color(0xFF10B981), Color(0xFF059669)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
+                              : widget.isSystem
+                                  ? const LinearGradient(
+                                      colors: [Color(0xFF3D38F5), Color(0xFF6366F1)],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    )
+                                  : const LinearGradient(
+                                      colors: [Color(0xFF10B981), Color(0xFF059669)],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
                         ),
                         child: Icon(
-                          widget.isSystem
-                              ? CupertinoIcons.speaker_2_fill
-                              : CupertinoIcons.bell_fill,
+                          widget.isDm
+                              ? CupertinoIcons.chat_bubble_2_fill
+                              : widget.isSystem
+                                  ? CupertinoIcons.speaker_2_fill
+                                  : CupertinoIcons.bell_fill,
                           color: Colors.white,
                           size: 18.0,
                         ),
@@ -820,12 +936,14 @@ class _FloatingNotificationBannerState extends State<_FloatingNotificationBanner
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 1.5),
                                   decoration: BoxDecoration(
-                                    color: AppColors.primary.withValues(alpha: 0.4),
+                                    color: widget.isDm
+                                        ? const Color(0xFF2563EB).withValues(alpha: 0.6)
+                                        : AppColors.primary.withValues(alpha: 0.4),
                                     borderRadius: BorderRadius.circular(4.0),
                                   ),
-                                  child: const Text(
-                                    "BARU",
-                                    style: TextStyle(
+                                  child: Text(
+                                    widget.isDm ? "PESAN" : "BARU",
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 9.0,
                                       fontWeight: FontWeight.w800,
@@ -845,12 +963,14 @@ class _FloatingNotificationBannerState extends State<_FloatingNotificationBanner
                               maxLines: 3,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            if (widget.isSystem) ...[
+                            if (widget.isSystem || widget.isDm) ...[
                               const SizedBox(height: 4.0),
                               Row(
                                 children: [
                                   Text(
-                                    "Ketuk untuk buka pesan penuh",
+                                    widget.isDm
+                                        ? "Ketuk untuk balas pesan"
+                                        : "Ketuk untuk buka pesan penuh",
                                     style: TextStyle(
                                       color: Colors.white.withValues(alpha: 0.75),
                                       fontSize: 10.5,

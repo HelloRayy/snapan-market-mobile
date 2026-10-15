@@ -147,11 +147,11 @@ class _CommentReplyTileState extends State<CommentReplyTile> {
                     displayAuthor,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'SFPro',
                       fontSize: 13.0,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF0F172A),
+                      color: AppColors.adaptiveText(context),
                     ),
                   ),
                 ),
@@ -175,11 +175,11 @@ class _CommentReplyTileState extends State<CommentReplyTile> {
         // Timestamp
         Text(
           formatSmartTimestamp(widget.reply.timestamp),
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'SFPro',
             fontSize: 11.5,
             fontWeight: FontWeight.normal,
-            color: Color(0xFF94A3B8),
+            color: AppColors.adaptiveMuted(context),
           ),
         ),
         const SizedBox(width: 8.0),
@@ -198,12 +198,12 @@ class _CommentReplyTileState extends State<CommentReplyTile> {
             );
           },
           behavior: HitTestBehavior.opaque,
-          child: const Padding(
-            padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
             child: Icon(
               Icons.more_horiz_rounded,
               size: 15.0,
-              color: Color(0xFF94A3B8),
+              color: AppColors.adaptiveMuted(context),
             ),
           ),
         ),
@@ -212,12 +212,12 @@ class _CommentReplyTileState extends State<CommentReplyTile> {
   }
 
   Widget _buildContentText(BuildContext context) {
-    const baseStyle = TextStyle(
+    final baseStyle = TextStyle(
       fontFamily: 'SFPro',
-      fontFamilyFallback: ['AppleColorEmoji'],
+      fontFamilyFallback: const ['AppleColorEmoji'],
       fontSize: 13.5,
       fontWeight: FontWeight.normal,
-      color: Color(0xFF0F172A),
+      color: AppColors.adaptiveText(context),
       height: 1.35,
       letterSpacing: -0.1,
     );

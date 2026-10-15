@@ -1,5 +1,25 @@
 enum ActivityType { like, comment, mention, follow, order, system }
 
+enum ActivityTimelineGroup {
+  today,
+  yesterday,
+  thisWeek,
+  older;
+
+  String get label {
+    switch (this) {
+      case ActivityTimelineGroup.today:
+        return 'Hari Ini';
+      case ActivityTimelineGroup.yesterday:
+        return 'Kemarin';
+      case ActivityTimelineGroup.thisWeek:
+        return 'Minggu Ini';
+      case ActivityTimelineGroup.older:
+        return 'Lebih Lama';
+    }
+  }
+}
+
 class ActivityNotification {
   final String id;
   final ActivityType type;
@@ -9,6 +29,7 @@ class ActivityNotification {
   final String title;
   final String message;
   final String timeAgo;
+  final DateTime? createdAt;
   final String? postThumbnail;
   final String? actionUrl;
   final String? actionType;
@@ -25,6 +46,7 @@ class ActivityNotification {
     required this.title,
     required this.message,
     required this.timeAgo,
+    this.createdAt,
     this.postThumbnail,
     this.actionUrl,
     this.actionType,
@@ -35,6 +57,50 @@ class ActivityNotification {
 
   bool get hasAction =>
       actionType != null && actionType != 'none' && actionType!.isNotEmpty;
+
+  ActivityTimelineGroup get timelineGroup {
+    if (createdAt == null) return ActivityTimelineGroup.today;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final itemDay = DateTime(createdAt!.year, createdAt!.month, createdAt!.day);
+    final dayDiff = today.difference(itemDay).inDays;
+
+    if (dayDiff <= 0) return ActivityTimelineGroup.today;
+    if (dayDiff == 1) return ActivityTimelineGroup.yesterday;
+    if (dayDiff < 7) return ActivityTimelineGroup.thisWeek;
+    return ActivityTimelineGroup.older;
+  }
+
+  static String formatRelativeTime(DateTime dt) {
+    final now = DateTime.now();
+    final diff = now.difference(dt);
+    if (diff.isNegative || diff.inSeconds < 60) {
+      return 'Baru saja';
+    } else if (diff.inMinutes < 60) {
+      return '${diff.inMinutes}m lalu';
+    } else if (diff.inHours < 24 && now.day == dt.day) {
+      return '${diff.inHours}j lalu';
+    } else {
+      final today = DateTime(now.year, now.month, now.day);
+      final itemDay = DateTime(dt.year, dt.month, dt.day);
+      final dayDiff = today.difference(itemDay).inDays;
+      if (dayDiff == 1) {
+        return 'Kemarin';
+      } else if (dayDiff < 7) {
+        return '${dayDiff}h lalu';
+      } else {
+        const months = [
+          'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+          'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+        ];
+        final monthStr = dt.month >= 1 && dt.month <= 12 ? months[dt.month - 1] : '';
+        if (now.year == dt.year) {
+          return '${dt.day} $monthStr';
+        }
+        return '${dt.day} $monthStr ${dt.year}';
+      }
+    }
+  }
 
   factory ActivityNotification.fromJson(Map<String, dynamic> json) {
     final typeStr = json['type']?.toString().toLowerCase() ?? 'system';
@@ -62,6 +128,20 @@ class ActivityNotification {
         : rawActorName;
     final actorAvatar = actor?['avatar_url']?.toString() ?? '';
 
+    final rawCreatedAt = json['created_at'];
+    DateTime? parsedCreatedAt;
+    if (rawCreatedAt != null) {
+      if (rawCreatedAt is DateTime) {
+        parsedCreatedAt = rawCreatedAt.toLocal();
+      } else {
+        parsedCreatedAt = DateTime.tryParse(rawCreatedAt.toString())?.toLocal();
+      }
+    }
+
+    final timeAgo = parsedCreatedAt != null
+        ? formatRelativeTime(parsedCreatedAt)
+        : (json['time_ago']?.toString() ?? 'Baru saja');
+
     return ActivityNotification(
       id: json['id']?.toString() ?? '',
       type: notifType,
@@ -70,7 +150,8 @@ class ActivityNotification {
       actorAvatar: actorAvatar,
       title: json['title']?.toString() ?? 'Notifikasi baru',
       message: json['message']?.toString() ?? '',
-      timeAgo: 'Baru saja',
+      timeAgo: timeAgo,
+      createdAt: parsedCreatedAt,
       actionUrl: json['action_url']?.toString(),
       actionType: json['action_type']?.toString(),
       actionButtonLabel: json['action_button_label']?.toString(),
@@ -89,6 +170,7 @@ class ActivityNotification {
       'title': title,
       'message': message,
       'time_ago': timeAgo,
+      'created_at': createdAt?.toIso8601String(),
       'action_url': actionUrl,
       'action_type': actionType,
       'action_button_label': actionButtonLabel,
@@ -106,9 +188,11 @@ class ActivityNotification {
     String? title,
     String? message,
     String? timeAgo,
+    DateTime? createdAt,
     String? postThumbnail,
     String? actionUrl,
     String? actionType,
+    String? actionButtonLabel,
     String? postId,
     bool? isRead,
   }) {
@@ -121,9 +205,11 @@ class ActivityNotification {
       title: title ?? this.title,
       message: message ?? this.message,
       timeAgo: timeAgo ?? this.timeAgo,
+      createdAt: createdAt ?? this.createdAt,
       postThumbnail: postThumbnail ?? this.postThumbnail,
       actionUrl: actionUrl ?? this.actionUrl,
       actionType: actionType ?? this.actionType,
+      actionButtonLabel: actionButtonLabel ?? this.actionButtonLabel,
       postId: postId ?? this.postId,
       isRead: isRead ?? this.isRead,
     );

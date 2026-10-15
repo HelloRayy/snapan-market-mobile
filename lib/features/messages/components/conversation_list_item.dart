@@ -28,19 +28,19 @@ class ConversationListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasUnread = conversation.unreadCount > 0;
-    const secondaryInk = Color(0x993C3C43); // pen.dev #3c3c4399
+    final secondaryInk = AppColors.adaptiveMuted(context);
     const azurePrimary = Color(0xFF008BFF); // pen.dev Accent #008BFF
-    const titleBlack = Color(0xFF000000); // pen.dev #000000ff
+    final titleColor = AppColors.adaptiveText(context);
 
     return Material(
-      color: Colors.white,
+      color: AppColors.adaptiveCanvas(context),
       child: InkWell(
         onTap: () {
           HapticFeedback.selectionClick();
           onTap();
         },
-        highlightColor: const Color(0xFFF2F4F7),
-        splashColor: const Color(0xFFF2F4F7),
+        highlightColor: AppColors.adaptiveSurfaceElevated(context),
+        splashColor: AppColors.adaptiveSurfaceElevated(context),
         child: Container(
           height: 74.0, // pen.dev chaat-1 row height
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -80,9 +80,9 @@ class ConversationListItem extends StatelessWidget {
                       Container(
                         width: conversation.user.isOnline ? 47.0 : 50.0,
                         height: conversation.user.isOnline ? 47.0 : 50.0,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.white,
+                          color: AppColors.adaptiveCanvas(context),
                         ),
                         padding: EdgeInsets.all(conversation.user.isOnline ? 1.5 : 0),
                         child: AppAvatar(
@@ -114,7 +114,7 @@ class ConversationListItem extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 17.0, // pen.dev chaat-1 UCIvl: SF Pro 17px
                               fontWeight: hasUnread ? FontWeight.w600 : FontWeight.w500,
-                              color: titleBlack,
+                              color: titleColor,
                               letterSpacing: -0.43,
                               height: 1.25,
                             ),
@@ -149,7 +149,7 @@ class ConversationListItem extends StatelessWidget {
                             conversation.lastMessage,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 15.0, // pen.dev chaat-1 azG1g: 15px
                               fontWeight: FontWeight.normal,
                               color: secondaryInk, // pen.dev #3C3C4399

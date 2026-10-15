@@ -172,9 +172,9 @@ class _MarketPostCardState extends State<MarketPostCard>
     if (widget.variant == 'detail') {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          border: Border(bottom: BorderSide(color: AppColors.separator, width: 0.8)),
+        decoration: BoxDecoration(
+          color: AppColors.adaptiveSurface(context),
+          border: Border(bottom: BorderSide(color: AppColors.adaptiveDivider(context), width: 0.8)),
         ),
         child: PostCardContentColumn(
           item: _currentItem,
@@ -209,15 +209,15 @@ class _MarketPostCardState extends State<MarketPostCard>
       behavior: HitTestBehavior.opaque,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          border: Border(bottom: BorderSide(color: AppColors.separator, width: 0.8)),
+        decoration: BoxDecoration(
+          color: AppColors.adaptiveSurface(context),
+          border: Border(bottom: BorderSide(color: AppColors.adaptiveDivider(context), width: 0.8)),
         ),
         child: hasChain
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildRowWithAvatar(showConnector: true),
+                  _buildRowWithAvatar(context, showConnector: true),
                   ...widget.item.threadChain.asMap().entries.map((entry) {
                     final isLast = entry.key == widget.item.threadChain.length - 1;
                     return PostThreadChainItem(
@@ -228,16 +228,18 @@ class _MarketPostCardState extends State<MarketPostCard>
                   }),
                 ],
               )
-            : _buildRowWithAvatar(showConnector: false),
+            : _buildRowWithAvatar(context, showConnector: false),
       ),
     );
   }
 
-  Widget _buildRowWithAvatar({required bool showConnector}) {
+  Widget _buildRowWithAvatar(BuildContext context, {required bool showConnector}) {
     final bool isFollowingAuthor = FollowService.instance.isFollowing(
       widget.item.seller.id,
       widget.item.seller.username,
     );
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final spineColor = isDark ? const Color(0x26FFFFFF) : AppColors.cloudGray;
 
     return IntrinsicHeight(
       child: Row(
@@ -260,7 +262,7 @@ class _MarketPostCardState extends State<MarketPostCard>
                       child: Container(
                         width: 2.0,
                         decoration: BoxDecoration(
-                          color: AppColors.cloudGray,
+                          color: spineColor,
                           borderRadius: BorderRadius.circular(1.0),
                         ),
                       ),

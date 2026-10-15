@@ -127,10 +127,10 @@ class _PostCommentItemState extends State<PostCommentItem> {
     // 2. MAIN TOP-LEVEL COMMENT VARIANT (Instagram Style)
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: AppColors.adaptiveCanvas(context),
         border: Border(
-          bottom: BorderSide(color: Color(0xFFF8FAFC), width: 0.8),
+          bottom: BorderSide(color: AppColors.adaptiveDivider(context), width: 0.8),
         ),
       ),
       child: Column(
@@ -158,7 +158,7 @@ class _PostCommentItemState extends State<PostCommentItem> {
                   children: [
                     _buildHeaderRow(context),
                     const SizedBox(height: 2.5),
-                    _buildContentText(),
+                    _buildContentText(context),
                     if (widget.comment.images.isNotEmpty) ...[
                       const SizedBox(height: 8.0),
                       CommentImagesSection(
@@ -319,11 +319,11 @@ class _PostCommentItemState extends State<PostCommentItem> {
                     displayAuthor,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'SFPro',
                       fontSize: 13.5,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF0F172A),
+                      color: AppColors.adaptiveText(context),
                     ),
                   ),
                 ),
@@ -347,11 +347,11 @@ class _PostCommentItemState extends State<PostCommentItem> {
         // Timestamp
         Text(
           formatSmartTimestamp(widget.comment.timestamp),
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'SFPro',
             fontSize: 12.0,
             fontWeight: FontWeight.normal,
-            color: Color(0xFF94A3B8),
+            color: AppColors.adaptiveMuted(context),
           ),
         ),
         const SizedBox(width: 8.0),
@@ -370,12 +370,12 @@ class _PostCommentItemState extends State<PostCommentItem> {
             );
           },
           behavior: HitTestBehavior.opaque,
-          child: const Padding(
-            padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
             child: Icon(
               Icons.more_horiz_rounded,
               size: 16.0,
-              color: Color(0xFF94A3B8),
+              color: AppColors.adaptiveMuted(context),
             ),
           ),
         ),
@@ -383,13 +383,13 @@ class _PostCommentItemState extends State<PostCommentItem> {
     );
   }
 
-  Widget _buildContentText() {
-    const baseStyle = TextStyle(
+  Widget _buildContentText(BuildContext context) {
+    final baseStyle = TextStyle(
       fontFamily: 'SFPro',
-      fontFamilyFallback: ['AppleColorEmoji'],
+      fontFamilyFallback: const ['AppleColorEmoji'],
       fontSize: 14.0,
       fontWeight: FontWeight.normal,
-      color: Color(0xFF0F172A),
+      color: AppColors.adaptiveText(context),
       height: 1.35,
       letterSpacing: -0.1,
     );

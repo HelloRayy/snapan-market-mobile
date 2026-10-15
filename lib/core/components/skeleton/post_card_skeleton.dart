@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/components/skeleton/snaps_shimmer.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Sliced Post Card Skeleton matching MarketPostCard 1:1 (<150 lines)
 class PostCardSkeleton extends StatelessWidget {
@@ -9,13 +10,14 @@ class PostCardSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.transparent,
         border: Border(
           bottom: BorderSide(
-            color: Color(0xFFF1F3F5),
+            color: isDark ? const Color(0x1AFFFFFF) : const Color(0xFFF1F3F5),
             width: 0.8,
           ),
         ),
@@ -100,7 +102,7 @@ class FeedTimelineSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: AppColors.adaptiveCanvas(context),
       child: SnapsShimmer(
         child: Column(
           children: List.generate(

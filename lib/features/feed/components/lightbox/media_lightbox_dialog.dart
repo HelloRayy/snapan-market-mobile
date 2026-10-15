@@ -38,11 +38,14 @@ class MediaLightboxDialog extends StatefulWidget {
     ValueChanged<MarketPostModel>? onRepostToggle,
     ValueChanged<MarketPostModel>? onPostClick,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return showGeneralDialog(
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Media Lightbox',
-      barrierColor: Colors.black.withValues(alpha: 0.95),
+      barrierColor: isDark
+          ? Colors.black.withValues(alpha: 0.96)
+          : Colors.white.withValues(alpha: 0.96),
       transitionDuration: const Duration(milliseconds: 240),
       pageBuilder: (ctx, anim1, anim2) {
         return MediaLightboxDialog(
@@ -229,10 +232,15 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
     final double imageScale = (1.0 - pullProgress * 0.16).clamp(0.7, 1.0);
     final double controlsAlpha = (1.0 - pullProgress * 2.5).clamp(0.0, 1.0);
 
-    return Material(
-      color: Colors.white.withValues(alpha: bgOpacity),
-      child: GestureDetector(
-        behavior: HitTestBehavior.translucent,
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color bgColor = isDark ? const Color(0xFF0B0F17) : Colors.white;
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+      child: Material(
+        color: bgColor.withValues(alpha: bgOpacity),
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
         onVerticalDragUpdate: _handleVerticalDragUpdate,
         onVerticalDragEnd: _handleVerticalDragEnd,
         child: Stack(
@@ -312,6 +320,7 @@ class _MediaLightboxDialogState extends State<MediaLightboxDialog>
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

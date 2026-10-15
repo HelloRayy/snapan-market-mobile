@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Action descriptor for trailing buttons in [GlassToolbarTop]
 class GlassToolbarAction {
@@ -107,7 +108,7 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
               // ===============================================================
               if (centerTitle)
                 Center(
-                  child: _buildCenterTitle(),
+                  child: _buildCenterTitle(context),
                 )
               else
                 Positioned(
@@ -117,7 +118,7 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
                       : (trailing != null || trailingText != null || trailingIcon != null ? 80.0 : 16.0),
                   child: Align(
                     alignment: Alignment.centerLeft,
-                    child: _buildCenterTitle(),
+                    child: _buildCenterTitle(context),
                   ),
                 ),
 
@@ -151,24 +152,24 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
         child: leadingText != null
             ? Text(
                 leadingText!,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'SF Pro',
                   fontSize: 15.5,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF1A1A1A), // pen.dev #1A1A1A
+                  color: AppColors.adaptiveText(context),
                   letterSpacing: -0.2,
                 ),
               )
             : Icon(
                 leadingIcon ?? CupertinoIcons.chevron_back,
                 size: 22.0,
-                color: const Color(0xFF1A1A1A),
+                color: AppColors.adaptiveText(context),
               ),
       ),
     );
   }
 
-  Widget _buildCenterTitle() {
+  Widget _buildCenterTitle(BuildContext context) {
     return GestureDetector(
       onTap: () {
         if (onTitleTap != null) {
@@ -188,11 +189,11 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'SF Pro',
                     fontSize: 17.0,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF1A1A1A), // pen.dev #333333 / #1A1A1A
+                    color: AppColors.adaptiveText(context),
                     letterSpacing: -0.4,
                   ),
                 ),
@@ -229,18 +230,18 @@ class GlassToolbarTop extends StatelessWidget implements PreferredSizeWidget {
           child: trailingText != null
               ? Text(
                   trailingText!,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'SF Pro',
                     fontSize: 15.5,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF1A1A1A),
+                    color: AppColors.adaptiveText(context),
                     letterSpacing: -0.2,
                   ),
                 )
               : Icon(
                   trailingIcon!,
                   size: 21.0,
-                  color: const Color(0xFF1A1A1A),
+                  color: AppColors.adaptiveText(context),
                 ),
         ),
       );
@@ -315,6 +316,8 @@ class _GlassActionsPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       height: 38.0,
       decoration: BoxDecoration(
@@ -329,16 +332,21 @@ class _GlassActionsPill extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 3.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(19.0),
-              gradient: const LinearGradient(
+              gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFFFFFFFF),
-                  Color(0xFFF8FAFC),
-                ],
+                colors: isDark
+                    ? [
+                        AppColors.darkSurfaceElevated,
+                        AppColors.darkSurface,
+                      ]
+                    : const [
+                        Color(0xFFFFFFFF),
+                        Color(0xFFF8FAFC),
+                      ],
               ),
               border: Border.all(
-                color: const Color(0xFFE2E8F0),
+                color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0),
                 width: 1.0,
               ),
             ),
@@ -371,6 +379,9 @@ class _GlassActionButtonItemState extends State<_GlassActionButtonItem> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultItemColor = isDark ? AppColors.darkTextPrimary : const Color(0xFF1A1A1A);
+
     return Tooltip(
       message: widget.action.tooltip,
       child: GestureDetector(
@@ -392,7 +403,7 @@ class _GlassActionButtonItemState extends State<_GlassActionButtonItem> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: _isPressed
-                  ? Colors.black.withValues(alpha: 0.05)
+                  ? (isDark ? Colors.white.withValues(alpha: 0.10) : Colors.black.withValues(alpha: 0.05))
                   : Colors.transparent,
             ),
             child: Stack(
@@ -407,7 +418,7 @@ class _GlassActionButtonItemState extends State<_GlassActionButtonItem> {
                         fontFamily: 'SF Pro',
                         fontSize: 15.0,
                         fontWeight: FontWeight.w500,
-                        color: widget.action.color ?? const Color(0xFF1A1A1A),
+                        color: widget.action.color ?? defaultItemColor,
                         letterSpacing: -0.2,
                       ),
                     ),
@@ -416,7 +427,7 @@ class _GlassActionButtonItemState extends State<_GlassActionButtonItem> {
                   Icon(
                     widget.action.icon,
                     size: 20.5,
-                    color: widget.action.color ?? const Color(0xFF1A1A1A),
+                    color: widget.action.color ?? defaultItemColor,
                   ),
                 if (widget.action.badgeCount != null && widget.action.badgeCount! > 0)
                   Positioned(

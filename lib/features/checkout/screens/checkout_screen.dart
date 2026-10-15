@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/navigation/app_slide_page_route.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/core/utils/formatters.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/checkout/components/checkout_bottom_bar.dart';
@@ -157,36 +158,36 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final topPadding = MediaQuery.paddingOf(context).top;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.adaptiveCanvas(context),
       body: Column(
         children: [
           Container(
-            color: Colors.white.withValues(alpha: 0.96),
+            color: AppColors.adaptiveCanvas(context),
             padding: EdgeInsets.only(
               top: topPadding > 0 ? topPadding + 4.0 : 10.0,
               left: 12.0,
               right: 12.0,
               bottom: 8.0,
             ),
-            decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: Color(0xFFF1F5F9), width: 0.8)),
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: AppColors.adaptiveBorder(context), width: 0.8)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
                   onPressed: widget.onBack ?? () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.arrow_back, size: 20.0, color: Color(0xFF0F172A)),
+                  icon: Icon(Icons.arrow_back, size: 20.0, color: AppColors.adaptiveText(context)),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(minWidth: 36.0, minHeight: 36.0),
                   splashRadius: 20.0,
                 ),
-                const Text(
+                Text(
                   "Checkout Pesanan",
                   style: TextStyle(
                     fontSize: 15.5,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF0F172A),
+                    color: AppColors.adaptiveText(context),
                     letterSpacing: -0.2,
                   ),
                 ),
@@ -195,7 +196,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   icon: Icon(
                     _isLiked ? Icons.favorite : Icons.favorite_border,
                     size: 20.0,
-                    color: _isLiked ? const Color(0xFFF43F5E) : const Color(0xFF0F172A),
+                    color: _isLiked ? const Color(0xFFF43F5E) : AppColors.adaptiveText(context),
                   ),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(minWidth: 36.0, minHeight: 36.0),

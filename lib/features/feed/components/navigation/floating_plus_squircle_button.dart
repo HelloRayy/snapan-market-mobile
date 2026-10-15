@@ -58,11 +58,10 @@ class _FloatingPlusSquircleButtonState extends State<FloatingPlusSquircleButton>
                 ],
               ),
               boxShadow: const [
-                // Diffuse Outer Shadow matching user spec (#0000001f, y: 4, blur: 8)
                 BoxShadow(
-                  color: Color(0x1F000000),
-                  blurRadius: 8.0,
-                  offset: Offset(0, 4),
+                  color: Color(0x333D38F5), // Soft indigo brand glow
+                  blurRadius: 10.0,
+                  offset: Offset(0, 3),
                 ),
               ],
             ),

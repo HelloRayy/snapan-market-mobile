@@ -17,9 +17,16 @@ class AppSearchController extends ChangeNotifier {
   List<MarketPost> liveMatchingPosts = [];
   List<SuggestedAccount> liveMatchingAccounts = [];
 
-  void init() {
+  void init({String? initialQuery}) {
     PollSyncService.instance.addListener(_handlePollSync);
-    loadLiveSuggestedAccounts();
+    if (initialQuery != null && initialQuery.trim().isNotEmpty) {
+      searchQuery = initialQuery.trim();
+      isSubmitted = true;
+      isLoadingInitial = false;
+      performSearch(searchQuery);
+    } else {
+      loadLiveSuggestedAccounts();
+    }
   }
 
   @override

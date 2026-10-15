@@ -100,3 +100,8 @@ supabase/.temp/
 
 # VibeWise local state
 .vibe-wise/
+
+# Scratch & temporary logs
+nohup.out
+waktu.txt
+*.bak

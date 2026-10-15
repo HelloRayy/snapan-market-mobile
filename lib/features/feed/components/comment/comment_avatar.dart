@@ -26,14 +26,6 @@ class CommentAvatar extends StatelessWidget {
       name: name,
       username: username,
       onTap: onUserClick != null ? () => onUserClick!(username ?? name) : null,
-      border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
-      boxShadow: const [
-        BoxShadow(
-          color: Color(0x0D000000),
-          blurRadius: 4.0,
-          offset: Offset(0, 1),
-        ),
-      ],
     );
   }
 }

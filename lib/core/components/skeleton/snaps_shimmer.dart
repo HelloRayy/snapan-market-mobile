@@ -5,15 +5,15 @@ import 'package:flutter/material.dart';
 class SnapsShimmer extends StatefulWidget {
   final Widget child;
   final Duration duration;
-  final Color baseColor;
-  final Color highlightColor;
+  final Color? baseColor;
+  final Color? highlightColor;
 
   const SnapsShimmer({
     super.key,
     required this.child,
     this.duration = const Duration(milliseconds: 1400),
-    this.baseColor = const Color(0xFFF1F3F5), // Neutral gray 100 (clean, zero blue tint)
-    this.highlightColor = const Color(0xFFFFFFFF), // Pure crisp white highlight
+    this.baseColor,
+    this.highlightColor,
   });
 
   @override
@@ -39,6 +39,11 @@ class _SnapsShimmerState extends State<SnapsShimmer>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // Threads / X standard: Base is elevated charcoal #242626, highlight is crisp ambient sweep #383A3A
+    final effectiveBase = widget.baseColor ?? (isDark ? const Color(0xFF242626) : const Color(0xFFF1F3F5));
+    final effectiveHighlight = widget.highlightColor ?? (isDark ? const Color(0xFF383A3A) : const Color(0xFFFFFFFF));
+
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
@@ -50,9 +55,9 @@ class _SnapsShimmerState extends State<SnapsShimmer>
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                widget.baseColor,
-                widget.highlightColor,
-                widget.baseColor,
+                effectiveBase,
+                effectiveHighlight,
+                effectiveBase,
               ],
               stops: const [0.0, 0.5, 1.0],
               transform: _SlidingGradientTransform(slidePercent: progress),
@@ -73,17 +78,18 @@ class _SlidingGradientTransform extends GradientTransform {
 
   @override
   Matrix4? transform(Rect bounds, {TextDirection? textDirection}) {
-    final double translationX = bounds.width * (slidePercent * 3.0 - 1.0);
-    return Matrix4.translationValues(translationX, 0.0, 0.0);
+    final double translation = bounds.width * 2 * (slidePercent - 0.5);
+    return Matrix4.translationValues(translation, 0.0, 0.0);
   }
 }
 
-/// Atomic Base Skeleton Box with neutral gray styling
+/// Sliced Skeleton Primitive Box (<50 lines)
 class SnapsSkeletonBox extends StatelessWidget {
   final double? width;
   final double? height;
   final double borderRadius;
   final EdgeInsetsGeometry? margin;
+  final Color? color;
 
   const SnapsSkeletonBox({
     super.key,
@@ -91,24 +97,29 @@ class SnapsSkeletonBox extends StatelessWidget {
     this.height,
     this.borderRadius = 8.0,
     this.margin,
+    this.color,
   });
 
   const SnapsSkeletonBox.circle({
     super.key,
     required double size,
     this.margin,
+    this.color,
   })  : width = size,
         height = size,
         borderRadius = size / 2.0;
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final effectiveColor = color ?? (isDark ? const Color(0xFF242626) : const Color(0xFFF1F3F5));
+
     return Container(
       width: width,
       height: height,
       margin: margin,
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F3F5),
+        color: effectiveColor,
         borderRadius: BorderRadius.circular(borderRadius),
       ),
     );

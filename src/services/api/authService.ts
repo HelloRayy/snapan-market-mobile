@@ -109,7 +109,19 @@ export async function signInWithEmail(emailOrIdentifier: string, password: strin
 /**
  * Sign Up dengan Email & Password
  */
-export async function signUpWithEmail(email: string, password: string, fullName?: string, classGroup?: string) {
+export async function signUpWithEmail(
+  email: string,
+  password: string,
+  fullName?: string,
+  classGroup?: string,
+  username?: string
+) {
+  const reservedUsername =
+    username ||
+    (typeof window !== 'undefined'
+      ? localStorage.getItem('snapan_reserved_username') || undefined
+      : undefined);
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -117,7 +129,8 @@ export async function signUpWithEmail(email: string, password: string, fullName?
       data: {
         full_name: fullName || 'Siswa Snapan',
         name: fullName || 'Siswa Snapan',
-        class_group: classGroup || 'Siswa Snapan'
+        class_group: classGroup || 'Siswa Snapan',
+        username: reservedUsername
       }
     }
   });
@@ -130,12 +143,16 @@ export async function signUpWithEmail(email: string, password: string, fullName?
   // Backup Manual Upsert ke public.profiles jika trigger belum terpasang
   if (data?.user) {
     try {
-      await supabase.from('profiles').upsert({
+      const profileData: any = {
         id: data.user.id,
         full_name: fullName || 'Siswa Snapan',
         class_group: classGroup || 'Siswa Snapan',
         role: 'user'
-      });
+      };
+      if (reservedUsername) {
+        profileData.username = reservedUsername;
+      }
+      await supabase.from('profiles').upsert(profileData);
     } catch (profileErr) {
       console.warn('Manual profile upsert skipped:', profileErr);
     }

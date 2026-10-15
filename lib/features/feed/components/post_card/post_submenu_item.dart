@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 /// Interactive Row Item for PostSubmenuPopover (<80 lines)
 class PostSubmenuItem extends StatefulWidget {
@@ -27,6 +28,8 @@ class _PostSubmenuItemState extends State<PostSubmenuItem> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTapDown: (_) => setState(() => _isPressed = true),
       onTapUp: (_) => setState(() => _isPressed = false),
@@ -41,14 +44,16 @@ class _PostSubmenuItemState extends State<PostSubmenuItem> {
         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 9.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0),
-          color: _isPressed ? const Color(0xFFF8FAFC) : Colors.transparent,
+          color: _isPressed
+              ? (isDark ? AppColors.darkSurface : const Color(0xFFF8FAFC))
+              : Colors.transparent,
         ),
         child: Row(
           children: [
             Icon(
               widget.icon,
               size: 18.0,
-              color: widget.iconColor ?? const Color(0xFF334155),
+              color: widget.iconColor ?? (isDark ? AppColors.darkTextSecondary : const Color(0xFF334155)),
             ),
             const SizedBox(width: 10.0),
             Expanded(
@@ -57,7 +62,7 @@ class _PostSubmenuItemState extends State<PostSubmenuItem> {
                 style: TextStyle(
                   fontSize: 14.0,
                   fontWeight: FontWeight.w500,
-                  color: widget.textColor ?? const Color(0xFF0F172A),
+                  color: widget.textColor ?? AppColors.adaptiveText(context),
                   letterSpacing: -0.15,
                 ),
                 maxLines: 1,

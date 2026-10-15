@@ -23,7 +23,7 @@ class CommentOptionsSheet {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.adaptiveSurfaceElevated(context),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
       ),
@@ -38,15 +38,15 @@ class CommentOptionsSheet {
                 height: 4.0,
                 margin: const EdgeInsets.only(bottom: 16.0),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFCBD5E1),
+                  color: AppColors.adaptiveDivider(context),
                   borderRadius: BorderRadius.circular(2.0),
                 ),
               ),
               ListTile(
-                leading: const Icon(Icons.reply_rounded, color: Color(0xFF334155)),
-                title: const Text(
+                leading: Icon(Icons.reply_rounded, color: AppColors.adaptiveMuted(context)),
+                title: Text(
                   'Balas Komentar',
-                  style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF0F172A)),
+                  style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.adaptiveText(context)),
                 ),
                 onTap: () {
                   Navigator.pop(ctx);
@@ -62,10 +62,10 @@ class CommentOptionsSheet {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.copy_rounded, color: Color(0xFF334155)),
-                title: const Text(
+                leading: Icon(Icons.copy_rounded, color: AppColors.adaptiveMuted(context)),
+                title: Text(
                   'Salin Teks Komentar',
-                  style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF0F172A)),
+                  style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.adaptiveText(context)),
                 ),
                 onTap: () {
                   Navigator.pop(ctx);
@@ -118,9 +118,9 @@ class CommentOptionsSheet {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+        decoration: BoxDecoration(
+          color: AppColors.adaptiveSurfaceElevated(context),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
         ),
         padding: const EdgeInsets.fromLTRB(20.0, 12.0, 20.0, 24.0),
         child: SafeArea(
@@ -133,7 +133,7 @@ class CommentOptionsSheet {
                 height: 4.0,
                 margin: const EdgeInsets.only(bottom: 20.0),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE2E8F0),
+                  color: AppColors.adaptiveDivider(context),
                   borderRadius: BorderRadius.circular(2.0),
                 ),
               ),
@@ -141,7 +141,7 @@ class CommentOptionsSheet {
                 width: 48.0,
                 height: 48.0,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFEE2E2),
+                  color: const Color(0xFFFEE2E2).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(16.0),
                 ),
                 child: const Center(
@@ -153,21 +153,21 @@ class CommentOptionsSheet {
                 ),
               ),
               const SizedBox(height: 14.0),
-              const Text(
+              Text(
                 'Hapus Komentar?',
                 style: TextStyle(
                   fontSize: 16.0,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF0F172A),
+                  color: AppColors.adaptiveText(context),
                 ),
               ),
               const SizedBox(height: 6.0),
-              const Text(
+              Text(
                 'Komentar ini akan dihapus secara permanen dan tidak dapat dipulihkan.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 13.0,
-                  color: Color(0xFF64748B),
+                  color: AppColors.adaptiveMuted(context),
                 ),
               ),
               const SizedBox(height: 20.0),
@@ -179,11 +179,11 @@ class CommentOptionsSheet {
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 13.0),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.0)),
-                        side: const BorderSide(color: Color(0xFFE2E8F0)),
+                        side: BorderSide(color: AppColors.adaptiveDivider(context)),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Batal',
-                        style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF475569)),
+                        style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.adaptiveMuted(context)),
                       ),
                     ),
                   ),

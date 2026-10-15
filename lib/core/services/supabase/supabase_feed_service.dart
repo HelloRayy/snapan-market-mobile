@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:snapan_market/core/models/mascot_flair_model.dart';
 import 'package:snapan_market/core/services/poll_sync_service.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
 
@@ -9,9 +10,40 @@ class SupabaseFeedService {
 
   User? get _currentUser => _client.auth.currentUser;
 
-  /// Fetch live feed posts joined with profiles
+  // --- IN-MEMORY CACHE (Stale-While-Revalidate) ---
+  static List<MarketPostModel> _cachedFeedPosts = [];
+  static DateTime? _lastFeedFetchTime;
+
+  /// In-memory cached feed posts available instantly (0ms)
+  List<MarketPostModel> get cachedFeedPosts => List.unmodifiable(_cachedFeedPosts);
+  bool get hasCachedFeedPosts => _cachedFeedPosts.isNotEmpty;
+  DateTime? get lastFeedFetchTime => _lastFeedFetchTime;
+
+  /// Manually update in-memory cache
+  void updateCachedFeedPosts(List<MarketPostModel> posts) {
+    _cachedFeedPosts = List.from(posts);
+    _lastFeedFetchTime = DateTime.now();
+  }
+
+  /// Prepend a newly created post to cache
+  void prependCachedPost(MarketPostModel post) {
+    _cachedFeedPosts.insert(0, post);
+  }
+
+  /// Remove a post from cache
+  void removeCachedPost(String postId) {
+    _cachedFeedPosts.removeWhere((p) => p.id == postId);
+  }
+
+  /// Clear in-memory feed cache on logout
+  void clearCache() {
+    _cachedFeedPosts.clear();
+    _lastFeedFetchTime = null;
+  }
+
+  /// Fetch live feed posts joined with profiles (default 15 items per batch)
   Future<List<MarketPostModel>> fetchFeedPosts({
-    int limit = 30,
+    int limit = 15,
     int offset = 0,
   }) async {
     try {
@@ -26,10 +58,21 @@ class SupabaseFeedService {
           .map((json) => MarketPostModel.fromJson(json))
           .toList();
 
-      return await PollSyncService.instance.hydrateAndSyncPosts(
-        client: _client,
-        posts: rawList,
-      );
+      // Only perform poll hydration if the returned batch contains any polls
+      final hasPolls = rawList.any((p) => p.poll != null);
+      final hydratedList = hasPolls
+          ? await PollSyncService.instance.hydrateAndSyncPosts(
+              client: _client,
+              posts: rawList,
+            )
+          : rawList;
+
+      if (offset == 0) {
+        _cachedFeedPosts = List.from(hydratedList);
+        _lastFeedFetchTime = DateTime.now();
+      }
+
+      return hydratedList;
     } catch (e) {
       debugPrint('Error fetchFeedPosts: $e');
       rethrow;
@@ -50,6 +93,7 @@ class SupabaseFeedService {
     String? topicTag,
     List<String> images = const [],
     Map<String, dynamic>? poll,
+    MascotFlairModel? mascotFlair,
   }) async {
     final user = _currentUser;
     if (user == null) {
@@ -72,6 +116,7 @@ class SupabaseFeedService {
       'images': images,
       // ignore: use_null_aware_elements
       if (poll != null) 'poll': poll,
+      if (mascotFlair != null) 'mascot_flair': mascotFlair.toJson(),
     };
 
     try {
@@ -81,30 +126,75 @@ class SupabaseFeedService {
           .select('*, seller:profiles!market_posts_seller_id_fkey(*)')
           .single();
 
-      return MarketPostModel.fromJson(inserted);
+      final created = MarketPostModel.fromJson(inserted);
+      prependCachedPost(created);
+      return created;
     } catch (e) {
-      debugPrint('Error createPost: $e');
+      debugPrint('Error createPost with full payload: $e');
+      // If table public.market_posts doesn't yet have 'mascot_flair' column, fallback without it
+      if (postData.containsKey('mascot_flair')) {
+        try {
+          final fallbackData = Map<String, dynamic>.from(postData)..remove('mascot_flair');
+          final inserted = await _client
+              .from('market_posts')
+              .insert(fallbackData)
+              .select('*, seller:profiles!market_posts_seller_id_fkey(*)')
+              .single();
+
+          var created = MarketPostModel.fromJson(inserted);
+          if (mascotFlair != null) {
+            created = created.copyWith(
+              seller: created.seller.copyWith(mascotFlair: mascotFlair),
+            );
+          }
+          prependCachedPost(created);
+          return created;
+        } catch (fallbackErr) {
+          debugPrint('Error createPost fallback: $fallbackErr');
+          rethrow;
+        }
+      }
       rethrow;
     }
   }
 
-  /// Delete a post created by current user, or any post if caller is admin
+  /// Delete a post created by current user, or any post if caller is admin.
+  /// Uses soft-delete (setting deleted_at = NOW()) for audit trail & data integrity,
+  /// with automatic fallback to hard delete if the database migration hasn't run yet.
   Future<void> deletePost(String postId, {bool asAdmin = false}) async {
     final user = _currentUser;
     if (user == null) return;
 
     try {
+      final nowUtc = DateTime.now().toUtc().toIso8601String();
       if (asAdmin) {
-        await _client.from('market_posts').delete().eq('id', postId);
+        await _client
+            .from('market_posts')
+            .update({'deleted_at': nowUtc})
+            .eq('id', postId);
       } else {
         await _client
             .from('market_posts')
-            .delete()
+            .update({'deleted_at': nowUtc})
             .match({'id': postId, 'seller_id': user.id});
       }
+      removeCachedPost(postId);
     } catch (e) {
-      debugPrint('Error deletePost: $e');
-      rethrow;
+      debugPrint('[SupabaseFeedService] Soft delete failed, attempting hard delete fallback: $e');
+      try {
+        if (asAdmin) {
+          await _client.from('market_posts').delete().eq('id', postId);
+        } else {
+          await _client
+              .from('market_posts')
+              .delete()
+              .match({'id': postId, 'seller_id': user.id});
+        }
+        removeCachedPost(postId);
+      } catch (hardErr) {
+        debugPrint('Error deletePost hard fallback: $hardErr');
+        rethrow;
+      }
     }
   }
 
@@ -386,11 +476,11 @@ class SupabaseFeedService {
     if (query.trim().isEmpty) return [];
 
     try {
-      final clean = query.trim();
+      final clean = query.trim().replaceAll('#', '');
       final response = await _client
           .from('market_posts')
           .select('*, seller:profiles!market_posts_seller_id_fkey(*), post_likes(count), post_comments(count)')
-          .or('caption.ilike.%$clean%,title.ilike.%$clean%,location_tag.ilike.%$clean%')
+          .or('caption.ilike.%$clean%,title.ilike.%$clean%,location_tag.ilike.%$clean%,topic_tag.ilike.%$clean%')
           .order('created_at', ascending: false)
           .limit(30);
 

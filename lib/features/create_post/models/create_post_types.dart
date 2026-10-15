@@ -35,36 +35,36 @@ class TopicOption {
 const List<TopicOption> kPresetTopics = [
   TopicOption(
     id: 't-1',
-    name: 'frontend',
+    name: 'Frontend',
     isOfficial: true,
     iconType: 'threads',
-    subtitle: '1.2M anggota · 220 postingan baru',
+    subtitle: 'Diskusi web & mobile dev SMKN 8',
   ),
   TopicOption(
     id: 't-2',
     name: 'PJBL',
     isOfficial: true,
     iconType: 'party-popper',
-    subtitle: 'Project Based Learning SMKN 8',
+    subtitle: 'Project Based Learning & pameran',
   ),
   TopicOption(
     id: 't-3',
-    name: 'JajananKantin',
+    name: 'Kantin Sekolah',
     isOfficial: true,
     iconType: 'threads',
-    subtitle: 'Kantin Sekolah & Snack',
+    subtitle: 'Jajanan & pre-order makanan',
   ),
   TopicOption(
     id: 't-4',
-    name: 'Github',
+    name: 'GitHub',
     isOfficial: false,
-    subtitle: '92 postingan baru',
+    subtitle: 'Showcase repositori & coding',
   ),
   TopicOption(
     id: 't-5',
-    name: 'PrelovedOutfit',
+    name: 'Preloved',
     isOfficial: false,
-    subtitle: '136 postingan baru',
+    subtitle: 'Jual beli seragam & perlengkapan',
   ),
 ];
 

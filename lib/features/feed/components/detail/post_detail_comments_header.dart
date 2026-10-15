@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 enum CommentSortOrder { newest, top, oldest }
 
@@ -19,6 +20,7 @@ class PostDetailCommentsHeader extends StatelessWidget {
   });
 
   PopupMenuItem<CommentSortOrder> _buildSortMenuItem(
+    BuildContext context,
     CommentSortOrder order,
     String title,
   ) {
@@ -35,15 +37,17 @@ class PostDetailCommentsHeader extends StatelessWidget {
             style: TextStyle(
               fontSize: 13.5,
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-              color: isSelected ? const Color(0xFF0F172A) : const Color(0xFF64748B),
+              color: isSelected
+                  ? AppColors.adaptiveText(context)
+                  : AppColors.adaptiveMuted(context),
             ),
           ),
           const SizedBox(width: 14.0),
           if (isSelected)
-            const Icon(
+            Icon(
               Icons.check_rounded,
               size: 16.0,
-              color: Color(0xFF0F172A),
+              color: AppColors.adaptiveText(context),
             ),
         ],
       ),
@@ -54,10 +58,10 @@ class PostDetailCommentsHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: AppColors.adaptiveCanvas(context),
         border: Border(
-          bottom: BorderSide(color: Color(0xFFF1F5F9), width: 0.5),
+          bottom: BorderSide(color: AppColors.adaptiveDivider(context), width: 0.5),
         ),
       ),
       child: Row(
@@ -67,10 +71,10 @@ class PostDetailCommentsHeader extends StatelessWidget {
             isProductMode
                 ? 'Tanya Jawab & Diskusi ($totalCount)'
                 : 'Komentar ($totalCount)',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14.0,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF0F172A),
+              color: AppColors.adaptiveText(context),
             ),
           ),
           PopupMenuButton<CommentSortOrder>(
@@ -83,15 +87,14 @@ class PostDetailCommentsHeader extends StatelessWidget {
             offset: const Offset(0, 26.0),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14.0),
-              side: const BorderSide(color: Color(0xFFE2E8F0), width: 1.0),
+              side: BorderSide(color: AppColors.adaptiveDivider(context), width: 1.0),
             ),
-            elevation: 12,
-            shadowColor: const Color(0x26000000),
-            color: Colors.white,
-            itemBuilder: (context) => [
-              _buildSortMenuItem(CommentSortOrder.newest, 'Terbaru'),
-              _buildSortMenuItem(CommentSortOrder.top, 'Teratas'),
-              _buildSortMenuItem(CommentSortOrder.oldest, 'Terlama'),
+            elevation: 3,
+            color: AppColors.adaptiveSurfaceElevated(context),
+            itemBuilder: (ctx) => [
+              _buildSortMenuItem(ctx, CommentSortOrder.newest, 'Terbaru'),
+              _buildSortMenuItem(ctx, CommentSortOrder.top, 'Teratas'),
+              _buildSortMenuItem(ctx, CommentSortOrder.oldest, 'Terlama'),
             ],
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
@@ -104,10 +107,10 @@ class PostDetailCommentsHeader extends StatelessWidget {
                         : selectedSort == CommentSortOrder.top
                             ? 'Teratas'
                             : 'Terlama',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13.0,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF64748B),
+                      color: AppColors.adaptiveMuted(context),
                     ),
                   ),
                   const SizedBox(width: 2.0),

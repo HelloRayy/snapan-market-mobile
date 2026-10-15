@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:snapan_market/core/services/app_update_service.dart';
 import 'package:snapan_market/core/services/student_registry_service.dart';
 import 'package:snapan_market/core/services/supabase_service.dart';
+import 'package:snapan_market/core/services/theme_service.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
 import 'package:snapan_market/features/auth/models/auth_constants.dart';
 import 'package:snapan_market/features/feed/components/navigation/drawer/home_drawer_footer.dart';
@@ -132,16 +133,17 @@ class HomeNavDrawer extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 12.0),
                 physics: const BouncingScrollPhysics(),
                 children: [
-                  HomeDrawerItem(
-                    icon: CupertinoIcons.circle_lefthalf_fill,
-                    label: 'Tampilan',
-                    hasChevron: true,
-                    inkColor: inkColor,
-                    mutedColor: mutedColor,
-                    hoverColor: tileHoverColor,
-                    onTap: onAppearanceTap,
-                    onClose: onClose,
-                  ),
+                  if (ThemeService.instance.canToggleTheme)
+                    HomeDrawerItem(
+                      icon: CupertinoIcons.circle_lefthalf_fill,
+                      label: 'Tampilan (Dev)',
+                      hasChevron: true,
+                      inkColor: inkColor,
+                      mutedColor: mutedColor,
+                      hoverColor: tileHoverColor,
+                      onTap: onAppearanceTap,
+                      onClose: onClose,
+                    ),
                   HomeDrawerItem(
                     icon: CupertinoIcons.bell,
                     label: 'Panduan Notifikasi HP',

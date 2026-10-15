@@ -3942,9 +3942,9 @@
     "semantic_hash": ""
   },
   "lib/core/components/avatar/default_profile_avatar.dart": {
-    "mtime": 1792074476.5920734,
-    "seen": 1792075017.9273357,
-    "ast_hash": "86d39c7ba0f783934df3cbd5a5d1fbdc",
+    "mtime": 1792075116.8191133,
+    "seen": 1792075146.5253608,
+    "ast_hash": "453e8751c638336bd174396f5bd25aec",
     "semantic_hash": ""
   },
   "lib/core/components/avatar/oreo_avatar_helper.dart": {
@@ -4068,9 +4068,9 @@
     "semantic_hash": ""
   },
   "lib/features/feed/components/navigation/home_feed_header.dart": {
-    "mtime": 1792074618.0797422,
-    "seen": 1792075017.9275892,
-    "ast_hash": "cb5e81040fb6af87cdd7b8e0097648b7",
+    "mtime": 1792075127.2821634,
+    "seen": 1792075146.5257056,
+    "ast_hash": "231ee9c8d1c864e481c2e8732e3b1414",
     "semantic_hash": ""
   },
   "lib/features/feed/components/navigation/home_feed_tab_switch.dart": {

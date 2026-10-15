@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,10 +21,17 @@ class ThemeService extends ChangeNotifier {
   AppThemeMode _currentMode = AppThemeMode.system;
   bool _isInitialized = false;
 
-  AppThemeMode get themeMode => _currentMode;
+  /// Whether theme toggling is enabled (enabled during development in debug mode)
+  bool get canToggleTheme => kDebugMode;
+
+  AppThemeMode get themeMode => kDebugMode ? _currentMode : AppThemeMode.light;
   bool get isInitialized => _isInitialized;
 
   ThemeMode get materialThemeMode {
+    // In release/production builds, strictly lock to Light theme to prevent visual glitches on student devices.
+    if (!kDebugMode) {
+      return ThemeMode.light;
+    }
     switch (_currentMode) {
       case AppThemeMode.light:
         return ThemeMode.light;
@@ -72,6 +80,8 @@ class ThemeService extends ChangeNotifier {
 
   /// Helper to check if currently dark based on context brightness
   bool isDark(BuildContext context) {
+    // Strictly force Light mode in release mode
+    if (!kDebugMode) return false;
     if (_currentMode == AppThemeMode.dark) return true;
     if (_currentMode == AppThemeMode.light) return false;
     return MediaQuery.platformBrightnessOf(context) == Brightness.dark;

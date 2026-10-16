@@ -98,6 +98,3 @@ flutter:
           weight: 600
         - asset: assets/fonts/SF-Pro-Display-Bold.otf
           weight: 700
-    - family: AppleColorEmoji
-      fonts:
-        - asset: assets/fonts/AppleColorEmoji.ttf

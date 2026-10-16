@@ -26,7 +26,6 @@ class PostCaptionText extends StatelessWidget {
 
     final baseStyle = TextStyle(
       fontFamily: 'SFPro',
-      fontFamilyFallback: const ['AppleColorEmoji'],
       fontSize: 14.5,
       height: 1.35,
       fontWeight: FontWeight.normal,

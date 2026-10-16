@@ -168,9 +168,9 @@
     "semantic_hash": ""
   },
   "lib/features/activity/screens/activity_screen.dart": {
-    "mtime": 1792073963.8516502,
-    "seen": 1792073983.2538311,
-    "ast_hash": "47de8f5b9709fdc256ad329583c0538c",
+    "mtime": 1792109946.492603,
+    "seen": 1792109978.3375652,
+    "ast_hash": "45d7b2cd4eb9effa9648261e078a7dbc",
     "semantic_hash": ""
   },
   "lib/features/auth/components/auth_header.dart": {
@@ -2514,8 +2514,8 @@
     "semantic_hash": ""
   },
   "pubspec.yaml": {
-    "mtime": 1792076511.3709862,
-    "seen": 1792076574.800562,
+    "mtime": 1792076718.4790223,
+    "seen": 1792109978.3386497,
     "ast_hash": "29e9ba21743be58f0212f4bd40bf345a",
     "semantic_hash": ""
   },
@@ -4887,6 +4887,24 @@
     "mtime": 1792070138.906614,
     "seen": 1792072997.480555,
     "ast_hash": "4fc51ddd5a706baf6bf1f44181867762",
+    "semantic_hash": ""
+  },
+  "lib/features/activity/components/activity_empty_state.dart": {
+    "mtime": 1792109921.8735247,
+    "seen": 1792109978.3375497,
+    "ast_hash": "68414139728f68f1e2fa09917659b002",
+    "semantic_hash": ""
+  },
+  "lib/features/activity/components/activity_header_bar.dart": {
+    "mtime": 1792109911.8554928,
+    "seen": 1792109978.3375533,
+    "ast_hash": "16cb9eb0eec7e084912d542d354f74d1",
+    "semantic_hash": ""
+  },
+  "lib/features/activity/models/activity_list_item.dart": {
+    "mtime": 1792109832.7013066,
+    "seen": 1792109978.3375604,
+    "ast_hash": "cd6f6ee89fea537c76fd8e0d97acecb6",
     "semantic_hash": ""
   }
 }

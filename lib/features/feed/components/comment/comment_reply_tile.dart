@@ -214,7 +214,6 @@ class _CommentReplyTileState extends State<CommentReplyTile> {
   Widget _buildContentText(BuildContext context) {
     final baseStyle = TextStyle(
       fontFamily: 'SFPro',
-      fontFamilyFallback: const ['AppleColorEmoji'],
       fontSize: 13.5,
       fontWeight: FontWeight.normal,
       color: AppColors.adaptiveText(context),

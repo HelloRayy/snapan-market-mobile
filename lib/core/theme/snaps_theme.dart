@@ -15,26 +15,21 @@ class SnapsTheme {
       useMaterial3: true,
       brightness: Brightness.light,
       fontFamily: 'SFPro',
-      fontFamilyFallback: const ['AppleColorEmoji'],
       textTheme: ThemeData.light().textTheme.apply(
         fontFamily: 'SFPro',
-        fontFamilyFallback: const ['AppleColorEmoji'],
         bodyColor: AppColors.ink,
         displayColor: AppColors.ink,
       ),
       primaryTextTheme: ThemeData.light().primaryTextTheme.apply(
         fontFamily: 'SFPro',
-        fontFamilyFallback: const ['AppleColorEmoji'],
       ),
       inputDecorationTheme: const InputDecorationTheme(
         hintStyle: TextStyle(
           fontFamily: 'SFPro',
-          fontFamilyFallback: ['AppleColorEmoji'],
           color: Color(0xFF64748B),
         ),
         labelStyle: TextStyle(
           fontFamily: 'SFPro',
-          fontFamilyFallback: ['AppleColorEmoji'],
           color: Color(0xFF64748B),
         ),
       ),
@@ -83,26 +78,21 @@ class SnapsTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       fontFamily: 'SFPro',
-      fontFamilyFallback: const ['AppleColorEmoji'],
       textTheme: ThemeData.dark().textTheme.apply(
         fontFamily: 'SFPro',
-        fontFamilyFallback: const ['AppleColorEmoji'],
         bodyColor: AppColors.darkTextPrimary,
         displayColor: AppColors.darkTextPrimary,
       ),
       primaryTextTheme: ThemeData.dark().primaryTextTheme.apply(
         fontFamily: 'SFPro',
-        fontFamilyFallback: const ['AppleColorEmoji'],
       ),
       inputDecorationTheme: const InputDecorationTheme(
         hintStyle: TextStyle(
           fontFamily: 'SFPro',
-          fontFamilyFallback: ['AppleColorEmoji'],
           color: AppColors.darkTextDisabled,
         ),
         labelStyle: TextStyle(
           fontFamily: 'SFPro',
-          fontFamilyFallback: ['AppleColorEmoji'],
           color: AppColors.darkTextSecondary,
         ),
       ),

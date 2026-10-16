@@ -386,7 +386,6 @@ class _PostCommentItemState extends State<PostCommentItem> {
   Widget _buildContentText(BuildContext context) {
     final baseStyle = TextStyle(
       fontFamily: 'SFPro',
-      fontFamilyFallback: const ['AppleColorEmoji'],
       fontSize: 14.0,
       fontWeight: FontWeight.normal,
       color: AppColors.adaptiveText(context),

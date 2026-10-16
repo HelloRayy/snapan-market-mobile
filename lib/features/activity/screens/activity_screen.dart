@@ -4,23 +4,16 @@ import "package:snapan_market/core/navigation/app_slide_page_route.dart";
 import "package:snapan_market/core/services/global_notification_service.dart";
 import "package:snapan_market/core/services/supabase_service.dart";
 import "package:snapan_market/core/theme/app_colors.dart";
+import "package:snapan_market/features/activity/components/activity_empty_state.dart";
+import "package:snapan_market/features/activity/components/activity_header_bar.dart";
 import "package:snapan_market/features/activity/components/activity_item_tile.dart";
 import "package:snapan_market/features/activity/components/broadcast_detail_modal.dart";
+import "package:snapan_market/features/activity/models/activity_list_item.dart";
 import "package:snapan_market/features/activity/models/activity_notification_model.dart";
 import "package:snapan_market/features/feed/screens/post_detail_screen.dart";
 
-abstract class _ActivityListItem {}
-
-class _HeaderItem extends _ActivityListItem {
-  final String label;
-  _HeaderItem(this.label);
-}
-
-class _TileItem extends _ActivityListItem {
-  final ActivityNotification notification;
-  _TileItem(this.notification);
-}
-
+/// Screen orchestrator for the Activity & Notifications module.
+/// Manages live data subscriptions, category filtering, and timeline grouping.
 class ActivityScreen extends StatefulWidget {
   final bool showAppBar;
   const ActivityScreen({super.key, this.showAppBar = true});
@@ -55,7 +48,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
         if (!mounted) return;
         final newNotif = ActivityNotification.fromJson(newRecord);
         setState(() {
-          // Tambahkan ke paling atas jika belum ada di list
           _notifications.removeWhere((n) => n.id == newNotif.id);
           _notifications.insert(0, newNotif);
         });
@@ -98,8 +90,8 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }
   }
 
-  List<_ActivityListItem> get _flattenedItems {
-    final list = <_ActivityListItem>[];
+  List<ActivityListItem> get _flattenedItems {
+    final list = <ActivityListItem>[];
     final items = _filteredNotifications;
     if (items.isEmpty) return list;
 
@@ -111,9 +103,9 @@ class _ActivityScreenState extends State<ActivityScreen> {
     for (final group in ActivityTimelineGroup.values) {
       final notifs = grouped[group];
       if (notifs != null && notifs.isNotEmpty) {
-        list.add(_HeaderItem(group.label));
+        list.add(ActivityHeaderItem(group.label));
         for (final notif in notifs) {
-          list.add(_TileItem(notif));
+          list.add(ActivityTileItem(notif));
         }
       }
     }
@@ -165,82 +157,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bodyContent = Column(
       children: [
-        // Header
-        Container(
-          padding: const EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 12.0),
-          decoration: BoxDecoration(
-            color: AppColors.adaptiveSurface(context),
-            border: Border(
-              bottom: BorderSide(
-                color: isDark ? AppColors.darkBorder : const Color(0xFFF1F5F9),
-                width: 0.8,
-              ),
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (widget.showAppBar) ...[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Aktivitas & Notifikasi",
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.adaptiveText(context),
-                        letterSpacing: -0.3,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: _markAllAsRead,
-                      icon: Icon(
-                        Icons.done_all_rounded,
-                        size: 20.0,
-                        color: isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B),
-                      ),
-                      tooltip: "Tandai semua dibaca",
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10.0),
-              ],
-
-              // Category Chips (Horizontal Scrollable for overflow prevention)
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                child: Row(
-                  children: [
-                    _FilterChip(
-                      label: "Semua",
-                      isActive: _activeTabIndex == 0,
-                      onTap: () => setState(() => _activeTabIndex = 0),
-                    ),
-                    _FilterChip(
-                      label: "Pengumuman",
-                      isActive: _activeTabIndex == 1,
-                      onTap: () => setState(() => _activeTabIndex = 1),
-                    ),
-                    _FilterChip(
-                      label: "Interaksi",
-                      isActive: _activeTabIndex == 2,
-                      onTap: () => setState(() => _activeTabIndex = 2),
-                    ),
-                    _FilterChip(
-                      label: "Pesanan COD",
-                      isActive: _activeTabIndex == 3,
-                      onTap: () => setState(() => _activeTabIndex = 3),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+        ActivityHeaderBar(
+          showAppBar: widget.showAppBar,
+          activeTabIndex: _activeTabIndex,
+          onTabChanged: (index) => setState(() => _activeTabIndex = index),
+          onMarkAllAsRead: _markAllAsRead,
         ),
-
-        // Notification List
         Expanded(
           child: _isLoading
               ? const SingleChildScrollView(
@@ -248,53 +170,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 )
               : RefreshIndicator(
                   onRefresh: _loadLiveNotifications,
-                  color: const Color(0xFF3D38F5),
+                  color: AppColors.primary,
                   child: _filteredNotifications.isEmpty
                       ? ListView(
                           children: [
                             SizedBox(height: MediaQuery.of(context).size.height * 0.15),
-                            Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 64.0,
-                                    height: 64.0,
-                                    decoration: BoxDecoration(
-                                      color: isDark ? AppColors.darkSurface : const Color(0xFFF8FAFC),
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0),
-                                        width: 1.0,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      Icons.notifications_none_rounded,
-                                      size: 28.0,
-                                      color: isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12.0),
-                                  Text(
-                                    "Belum ada aktivitas baru",
-                                    style: TextStyle(
-                                      color: AppColors.adaptiveText(context),
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 14.5,
-                                      letterSpacing: -0.2,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4.0),
-                                  Text(
-                                    "Notifikasi pengumuman dan interaksi akan muncul di sini.",
-                                    style: TextStyle(
-                                      color: isDark ? AppColors.darkTextSecondary : const Color(0xFF94A3B8),
-                                      fontSize: 12.5,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            const ActivityEmptyState(),
                           ],
                         )
                       : ListView.builder(
@@ -303,7 +184,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                           itemCount: _flattenedItems.length,
                           itemBuilder: (context, idx) {
                             final item = _flattenedItems[idx];
-                            if (item is _HeaderItem) {
+                            if (item is ActivityHeaderItem) {
                               return Container(
                                 padding: const EdgeInsets.fromLTRB(16.0, 14.0, 16.0, 6.0),
                                 color: isDark ? AppColors.darkCanvas : const Color(0xFFFAFAFA),
@@ -317,7 +198,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                   ),
                                 ),
                               );
-                            } else if (item is _TileItem) {
+                            } else if (item is ActivityTileItem) {
                               final notif = item.notification;
                               return Column(
                                 mainAxisSize: MainAxisSize.min,
@@ -329,7 +210,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                       final isAnnouncement = notif.type == ActivityType.system ||
                                           notif.actorName.toLowerCase().startsWith('admin');
                                       if (isAnnouncement) {
-                                        // Tap container pengumuman: selalu buka teks lengkap di bottom sheet modal
                                         BroadcastDetailModal.show(context, notif);
                                       } else if (notif.postId != null && notif.postId!.isNotEmpty) {
                                         _navigateToPost(notif.postId!);
@@ -337,7 +217,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                     },
                                     onActionTap: () {
                                       _markSingleAsRead(notif);
-                                      // Tap tombol putih inline secara spesifik: langsung eksekusi aksinya
                                       GlobalNotificationService.executeNotificationAction(context, notif);
                                     },
                                   ),
@@ -370,65 +249,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
     return Container(
       color: AppColors.adaptiveCanvas(context),
       child: bodyContent,
-    );
-  }
-}
-
-class _FilterChip extends StatelessWidget {
-  final String label;
-  final bool isActive;
-  final VoidCallback onTap;
-
-  const _FilterChip({
-    required this.label,
-    required this.isActive,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final activeBg = isDark ? Colors.white : const Color(0xFF0F172A);
-    final activeText = isDark ? const Color(0xFF0F172A) : Colors.white;
-    final inactiveBg = isDark ? AppColors.darkSurface : Colors.white;
-    final inactiveBorder = isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0);
-    final inactiveText = isDark ? AppColors.darkTextSecondary : const Color(0xFF475569);
-
-    return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 7.0),
-          decoration: BoxDecoration(
-            color: isActive ? activeBg : inactiveBg,
-            borderRadius: BorderRadius.circular(20.0),
-            border: Border.all(
-              color: isActive ? activeBg : inactiveBorder,
-              width: 1.0,
-            ),
-            boxShadow: isActive
-                ? [
-                    BoxShadow(
-                      color: (isDark ? Colors.black : const Color(0xFF0F172A)).withValues(alpha: 0.12),
-                      blurRadius: 6.0,
-                      offset: const Offset(0, 2),
-                    ),
-                  ]
-                : null,
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 12.5,
-              fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-              color: isActive ? activeText : inactiveText,
-              letterSpacing: -0.2,
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

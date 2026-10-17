@@ -254,7 +254,8 @@ class _AuthScreenState extends State<AuthScreen> {
     }
 
     if (_verifiedStudent == null) {
-      final student = StudentRegistryService.instance.findByNis(rawNis);
+      var student = StudentRegistryService.instance.findByNis(rawNis);
+      student ??= await StudentRegistryService.instance.findByNisRemote(rawNis);
       if (student == null) {
         setState(() => _nisError = 'NIS belum terdaftar sebagai siswa SMKN 8');
         return;

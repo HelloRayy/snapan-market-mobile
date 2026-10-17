@@ -120,6 +120,32 @@ class StudentRegistryService {
     }
   }
 
+  /// Lookup NIS with remote fallback if not found in memory
+  Future<RegisteredStudent?> findByNisRemote(String rawNis) async {
+    final local = findByNis(rawNis);
+    if (local != null) return local;
+
+    final clean = rawNis.trim();
+    if (clean.isEmpty) return null;
+
+    try {
+      final res = await SupabaseService.instance.client
+          .from('student_registry')
+          .select('nis, full_name, class_group, is_claimed, claimed_by')
+          .eq('nis', clean)
+          .maybeSingle();
+
+      if (res != null) {
+        final student = RegisteredStudent.fromJson(res);
+        registerStudent(student);
+        return student;
+      }
+    } catch (e) {
+      debugPrint('StudentRegistryService: Remote lookup error for $clean: $e');
+    }
+    return null;
+  }
+
   /// Generates clean username from [first name + middle name], e.g.
   /// "Raditya Rayhan Yogiswara" -> "radityarayhan"
   static String generateSuggestedUsername(String fullName, {String? suffix}) {
@@ -157,6 +183,45 @@ class StudentRegistryService {
       if (onlyUnclaimed && s.isClaimed) return false;
       return s.nis.contains(clean) || s.name.toLowerCase().contains(clean);
     }).toList();
+  }
+
+  /// Async search combining local memory + live Supabase lookup
+  Future<List<RegisteredStudent>> searchStudentsAsync(
+    String query, {
+    bool onlyUnclaimed = false,
+  }) async {
+    final clean = query.trim().toLowerCase();
+    if (clean.isEmpty) return [];
+
+    final localMatches = searchStudents(clean, onlyUnclaimed: onlyUnclaimed);
+    if (localMatches.isNotEmpty) return localMatches;
+
+    // Jika belum ditemukan di memori lokal, coba cari langsung ke Supabase
+    try {
+      final res = await SupabaseService.instance.client
+          .from('student_registry')
+          .select('nis, full_name, class_group, is_claimed, claimed_by')
+          .or('nis.ilike.%$clean%,full_name.ilike.%$clean%')
+          .limit(8);
+
+      if (res is List && res.isNotEmpty) {
+        final fetched = res
+            .whereType<Map<String, dynamic>>()
+            .map(RegisteredStudent.fromJson)
+            .toList();
+
+        for (final s in fetched) {
+          registerStudent(s);
+        }
+
+        if (onlyUnclaimed) {
+          return fetched.where((s) => !s.isClaimed).toList();
+        }
+        return fetched;
+      }
+    } catch (_) {}
+
+    return localMatches;
   }
 
   /// Mark student as claimed in local cache

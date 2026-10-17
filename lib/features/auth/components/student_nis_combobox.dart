@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -33,6 +34,7 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
   @override
   void initState() {
     super.initState();
+    unawaited(StudentRegistryService.instance.refresh());
     _focusNode.addListener(() {
       if (!_focusNode.hasFocus) {
         _removeOverlay();
@@ -58,7 +60,7 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
     if (clean.length >= 2) {
       final results = StudentRegistryService.instance.searchStudents(clean);
       setState(() {
-        _suggestions = results.take(5).toList();
+        _suggestions = results.take(6).toList();
       });
 
       if (_suggestions.isNotEmpty && _focusNode.hasFocus) {
@@ -66,6 +68,18 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
       } else {
         _removeOverlay();
       }
+
+      // Live async check ke Supabase jika pencarian lokal nihil atau data baru di-input admin
+      StudentRegistryService.instance.searchStudentsAsync(clean).then((remoteResults) {
+        if (mounted && _focusNode.hasFocus && widget.controller.text.trim() == clean) {
+          if (remoteResults.isNotEmpty) {
+            setState(() {
+              _suggestions = remoteResults.take(6).toList();
+            });
+            _showOverlay();
+          }
+        }
+      });
     } else {
       _removeOverlay();
     }

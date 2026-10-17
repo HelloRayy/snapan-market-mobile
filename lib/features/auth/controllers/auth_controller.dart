@@ -313,14 +313,17 @@ class AuthController {
       }
       return 'Pendaftaran gagal. Silakan coba lagi.';
     } catch (e) {
+      debugPrint('Error submitRegister details: $e');
       final errStr = e.toString().toLowerCase();
       if (errStr.contains('already registered') || errStr.contains('user_already_exists')) {
         return 'Username sudah terdaftar. Silakan beralih ke tab Masuk.';
-      } else if (errStr.contains('retryable') ||
-          errStr.contains('xmlhttprequest') ||
-          errStr.contains('failed host lookup') ||
+      } else if (errStr.contains('profiles_role_check') ||
+          errStr.contains('check constraint') ||
+          errStr.contains('database error saving new user')) {
+        return 'Pendaftaran gagal karena batasan role database. Silakan jalankan migrasi role di Supabase.';
+      } else if (errStr.contains('failed host lookup') ||
           errStr.contains('socketexception') ||
-          errStr.contains('connection')) {
+          errStr.contains('no internet')) {
         return 'Gagal terhubung ke server. Periksa koneksi internet Anda.';
       } else if (errStr.contains('rate limit')) {
         return 'Terlalu banyak percobaan. Silakan tunggu beberapa saat.';

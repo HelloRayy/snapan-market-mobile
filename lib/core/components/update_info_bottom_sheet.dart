@@ -107,31 +107,31 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
             case OtaStatus.ALREADY_RUNNING_ERROR:
               setState(() {
                 _isDownloading = false;
-                _errorMessage =
-                    'Proses unduhan sedang berjalan di latar belakang. Silakan keluar dan buka kembali aplikasi.';
+                _errorMessage = 'Proses unduhan sedang berjalan di latar belakang. Silakan keluar dan buka kembali aplikasi.';
+              });
               });
               break;
 
             case OtaStatus.PERMISSION_NOT_GRANTED_ERROR:
               setState(() {
                 _isDownloading = false;
-                _errorMessage =
-                    'Izin pemasangan aplikasi belum aktif. Buka Pengaturan HP > Aplikasi > Snaps > Aktifkan "Instal aplikasi tidak dikenal", lalu buka kembali aplikasi.';
+                _errorMessage = 'Izin pemasangan aplikasi belum aktif. Buka Pengaturan HP > Aplikasi > Snaps > Aktifkan "Instal aplikasi tidak dikenal", lalu keluar dan buka kembali aplikasi.';
+              });
               });
               break;
 
             case OtaStatus.INTERNAL_ERROR:
-            case OtaStatus.DOWNLOAD_ERROR:
-            case OtaStatus.CHECKSUM_ERROR:
               setState(() {
                 _isDownloading = false;
+                _errorMessage = 'Gagal mengunduh pembaruan. Silakan keluar dari aplikasi dan masuk kembali.';
+              });
                 _errorMessage =
                     'Gagal mengunduh pembaruan. Silakan keluar dari aplikasi dan masuk kembali.';
               });
               break;
-
-            case OtaStatus.INSTALLATION_ERROR:
-              setState(() {
+                _isInstalling = false;
+                _errorMessage = 'Pemasangan pembaruan belum berhasil. Silakan keluar dari aplikasi dan masuk kembali.';
+              });
                 _isDownloading = false;
                 _isInstalling = false;
                 _errorMessage =
@@ -151,18 +151,18 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
               break;
           }
         },
-        onError: (err) {
-          if (!mounted) return;
           setState(() {
             _isDownloading = false;
+            _errorMessage = 'Terjadi kendala saat mengunduh pembaruan. Silakan keluar dari aplikasi dan masuk kembali.';
+          });
             _errorMessage =
                 'Terjadi kendala saat mengunduh pembaruan. Silakan keluar dari aplikasi dan masuk kembali.';
           });
         },
-      );
-    } catch (e) {
-      if (!mounted) return;
       setState(() {
+        _isDownloading = false;
+        _errorMessage = 'Gagal memulai unduhan. Silakan keluar dari aplikasi dan masuk kembali.';
+      });
         _isDownloading = false;
         _errorMessage =
             'Gagal memulai unduhan. Silakan keluar dari aplikasi dan masuk kembali.';
@@ -385,9 +385,12 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                         children: [
                           Expanded(
                             child: ElevatedButton.icon(
-                              onPressed: _openDownloadInBrowser,
-                              icon: const Icon(Icons.open_in_browser_rounded, size: 16.0),
-                              label: const Text('Buka di Browser (Download Manual)'),
+                              onPressed: () {
+                                HapticFeedback.mediumImpact();
+                                SystemNavigator.pop();
+                              },
+                              icon: const Icon(Icons.power_settings_new_rounded, size: 16.0),
+                              label: const Text('Keluar dari Aplikasi'),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFFB91C1C),
                                 foregroundColor: Colors.white,
@@ -397,37 +400,8 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
                                 textStyle: const TextStyle(
-                                  fontSize: 12.0,
+                                  fontSize: 12.5,
                                   fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8.0),
-                          IconButton(
-                            onPressed: () {
-                              HapticFeedback.selectionClick();
-                              Clipboard.setData(ClipboardData(text: widget.update.downloadUrl));
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Tautan unduhan disalin ke papan klip!'),
-                                  behavior: SnackBarBehavior.floating,
-                                  duration: Duration(seconds: 2),
-                                ),
-                              );
-                            },
-                            icon: Icon(
-                              Icons.copy_rounded,
-                              size: 16.0,
-                              color: isDark ? const Color(0xFFFCA5A5) : const Color(0xFFB91C1C),
-                            ),
-                            tooltip: 'Salin Link',
-                            style: IconButton.styleFrom(
-                              backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                side: BorderSide(
-                                  color: isDark ? const Color(0xFF991B1B) : const Color(0xFFFCA5A5),
                                 ),
                               ),
                             ),

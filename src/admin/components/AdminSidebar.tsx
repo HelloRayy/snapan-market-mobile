@@ -1,7 +1,7 @@
 import type { ProfileRow, AdminStats } from '../services/adminService';
 import { UserAvatar } from './UserAvatar';
 
-export type AdminTab = 'overview' | 'users' | 'moderation' | 'reports' | 'broadcast' | 'devices' | 'meeting-points' | 'server';
+export type AdminTab = 'overview' | 'users' | 'students' | 'moderation' | 'reports' | 'broadcast' | 'devices' | 'meeting-points' | 'server';
 
 interface AdminSidebarProps {
   activeTab: AdminTab;
@@ -138,6 +138,20 @@ export function AdminSidebar({
                     {stats.totalUsers}
                   </span>
                 )}
+              </a>
+            </li>
+
+            <li className={activeTab === 'students' ? 'active' : ''}>
+              <a
+                href="#students"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onTabChange('students');
+                  onCloseMobile?.();
+                }}
+              >
+                <i className="fa-solid fa-id-card"></i>
+                <span style={{ flex: 1, whiteSpace: 'nowrap' }}>Buku Induk (NIS)</span>
               </a>
             </li>
 

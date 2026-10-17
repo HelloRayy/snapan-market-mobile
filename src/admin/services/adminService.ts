@@ -12,6 +12,23 @@ export interface ContentReportWithDetails extends ContentReportRow {
   post?: (MarketPostRow & { seller?: ProfileRow | null }) | null;
 }
 
+export interface StudentRegistryRow {
+  nis: string;
+  full_name: string;
+  class_group: string;
+  is_claimed: boolean;
+  claimed_by?: string | null;
+  claimed_at?: string | null;
+  created_at?: string;
+  claimed_profile?: ProfileRow | null;
+}
+
+export interface StudentRegistryStats {
+  total: number;
+  claimed: number;
+  unclaimed: number;
+}
+
 export interface GlobalSearchResult {
   users: ProfileRow[];
   posts: (MarketPostRow & { seller?: ProfileRow | null })[];
@@ -1318,5 +1335,235 @@ export const adminService = {
         () => onUpdate()
       )
       .subscribe();
+  },
+
+  /**
+   * Mengambil daftar master buku induk siswa (student_registry)
+   */
+  async getStudentRegistry(options?: {
+    search?: string;
+    classGroup?: string;
+    status?: 'all' | 'claimed' | 'unclaimed';
+    limit?: number;
+    offset?: number;
+  }): Promise<{ data: StudentRegistryRow[]; count: number }> {
+    try {
+      let query = (supabase as any)
+        .from('student_registry')
+        .select('*, claimed_profile:profiles!claimed_by(*)', { count: 'exact' });
+
+      if (options?.search && options.search.trim()) {
+        const cleanSearch = options.search.trim();
+        query = query.or(`nis.ilike.%${cleanSearch}%,full_name.ilike.%${cleanSearch}%`);
+      }
+
+      if (options?.classGroup && options.classGroup !== 'all') {
+        query = query.eq('class_group', options.classGroup);
+      }
+
+      if (options?.status === 'claimed') {
+        query = query.eq('is_claimed', true);
+      } else if (options?.status === 'unclaimed') {
+        query = query.eq('is_claimed', false);
+      }
+
+      query = query.order('nis', { ascending: true });
+
+      if (typeof options?.offset === 'number' && typeof options?.limit === 'number') {
+        query = query.range(options.offset, options.offset + options.limit - 1);
+      } else if (typeof options?.limit === 'number') {
+        query = query.limit(options.limit);
+      }
+
+      const { data, count, error } = await query;
+      if (error) throw error;
+
+      return {
+        data: (data || []) as StudentRegistryRow[],
+        count: count ?? 0,
+      };
+    } catch (err: any) {
+      console.error('Failed getStudentRegistry:', err);
+      throw new Error(err?.message || 'Gagal memuat master buku induk siswa.');
+    }
+  },
+
+  /**
+   * Mengambil statistik ringkas status keterisian master NIS siswa
+   */
+  async getStudentRegistryStats(): Promise<StudentRegistryStats> {
+    try {
+      const [totalRes, claimedRes] = await Promise.all([
+        (supabase as any).from('student_registry').select('*', { count: 'exact', head: true }),
+        (supabase as any)
+          .from('student_registry')
+          .select('*', { count: 'exact', head: true })
+          .eq('is_claimed', true),
+      ]);
+
+      const total = totalRes.count ?? 0;
+      const claimed = claimedRes.count ?? 0;
+      return {
+        total,
+        claimed,
+        unclaimed: Math.max(0, total - claimed),
+      };
+    } catch (err: any) {
+      console.error('Failed getStudentRegistryStats:', err);
+      return { total: 0, claimed: 0, unclaimed: 0 };
+    }
+  },
+
+  /**
+   * Menambahkan satu data siswa ke master buku induk
+   */
+  async addStudent(student: {
+    nis: string;
+    full_name: string;
+    class_group: string;
+  }): Promise<StudentRegistryRow> {
+    try {
+      const cleanNis = student.nis.trim();
+      const cleanName = student.full_name.trim();
+      const cleanClass = student.class_group.trim();
+
+      if (!cleanNis || !cleanName || !cleanClass) {
+        throw new Error('NIS, Nama Lengkap, dan Kelas/Jurusan wajib diisi.');
+      }
+
+      const { data, error } = await (supabase as any)
+        .from('student_registry')
+        .insert({
+          nis: cleanNis,
+          full_name: cleanName,
+          class_group: cleanClass,
+          is_claimed: false,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as StudentRegistryRow;
+    } catch (err: any) {
+      console.error('Failed addStudent:', err);
+      if (err?.code === '23505' || err?.message?.includes('duplicate key')) {
+        throw new Error(`NIS ${student.nis} sudah terdaftar di buku induk.`);
+      }
+      throw new Error(err?.message || 'Gagal menambahkan data siswa.');
+    }
+  },
+
+  /**
+   * Impor massal data siswa ke master buku induk
+   */
+  async batchAddStudents(
+    students: Array<{ nis: string; full_name: string; class_group: string }>
+  ): Promise<{ inserted: number; errors: string[] }> {
+    const errors: string[] = [];
+    const validRows: Array<{ nis: string; full_name: string; class_group: string }> = [];
+
+    students.forEach((s, idx) => {
+      const cleanNis = s.nis?.toString().trim();
+      const cleanName = s.full_name?.trim();
+      const cleanClass = s.class_group?.trim();
+
+      if (!cleanNis || !cleanName || !cleanClass) {
+        errors.push(`Baris ${idx + 1}: Data tidak lengkap (NIS, Nama, atau Kelas kosong).`);
+        return;
+      }
+      validRows.push({
+        nis: cleanNis,
+        full_name: cleanName,
+        class_group: cleanClass,
+      });
+    });
+
+    if (validRows.length === 0) {
+      return { inserted: 0, errors };
+    }
+
+    try {
+      // Upsert ignoring duplicate key conflicts or insert
+      const { data, error } = await (supabase as any)
+        .from('student_registry')
+        .upsert(
+          validRows.map((r) => ({
+            ...r,
+            is_claimed: false,
+          })),
+          { onConflict: 'nis', ignoreDuplicates: true }
+        )
+        .select();
+
+      if (error) throw error;
+      return {
+        inserted: data?.length ?? validRows.length,
+        errors,
+      };
+    } catch (err: any) {
+      console.error('Failed batchAddStudents:', err);
+      throw new Error(err?.message || 'Gagal melakukan impor massal siswa.');
+    }
+  },
+
+  /**
+   * Memperbarui informasi nama atau kelas siswa di buku induk
+   */
+  async updateStudent(
+    nis: string,
+    updates: { full_name?: string; class_group?: string }
+  ): Promise<void> {
+    try {
+      const { error } = await (supabase as any)
+        .from('student_registry')
+        .update({
+          ...(updates.full_name ? { full_name: updates.full_name.trim() } : {}),
+          ...(updates.class_group ? { class_group: updates.class_group.trim() } : {}),
+        })
+        .eq('nis', nis);
+
+      if (error) throw error;
+    } catch (err: any) {
+      console.error('Failed updateStudent:', err);
+      throw new Error(err?.message || 'Gagal memperbarui data siswa.');
+    }
+  },
+
+  /**
+   * Menghapus NIS dari buku induk
+   */
+  async deleteStudent(nis: string): Promise<void> {
+    try {
+      const { error } = await (supabase as any)
+        .from('student_registry')
+        .delete()
+        .eq('nis', nis);
+
+      if (error) throw error;
+    } catch (err: any) {
+      console.error('Failed deleteStudent:', err);
+      throw new Error(err?.message || 'Gagal menghapus data siswa dari buku induk.');
+    }
+  },
+
+  /**
+   * Melepas status klaim akun pada NIS (Reset Claim)
+   */
+  async resetStudentClaim(nis: string): Promise<void> {
+    try {
+      const { error } = await (supabase as any)
+        .from('student_registry')
+        .update({
+          is_claimed: false,
+          claimed_by: null,
+          claimed_at: null,
+        })
+        .eq('nis', nis);
+
+      if (error) throw error;
+    } catch (err: any) {
+      console.error('Failed resetStudentClaim:', err);
+      throw new Error(err?.message || 'Gagal me-reset status klaim NIS.');
+    }
   },
 };

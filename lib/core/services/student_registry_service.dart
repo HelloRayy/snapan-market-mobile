@@ -1,24 +1,33 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/services/supabase_service.dart';
 import 'package:snapan_market/features/auth/models/auth_constants.dart';
 
 class RegisteredStudent {
   final String nis;
   final String name;
   final String classGroup;
+  final bool isClaimed;
+  final String? claimedBy;
 
   const RegisteredStudent({
     required this.nis,
     required this.name,
     required this.classGroup,
+    this.isClaimed = false,
+    this.claimedBy,
   });
 
   factory RegisteredStudent.fromJson(Map<String, dynamic> json) {
     final rawClass = json['class_group']?.toString() ?? '';
+    final rawName = (json['full_name'] ?? json['name'])?.toString() ?? '';
     return RegisteredStudent(
       nis: json['nis']?.toString() ?? '',
-      name: json['name']?.toString() ?? '',
+      name: rawName,
       classGroup: AuthConstants.normalizeClassGroup(rawClass),
+      isClaimed: json['is_claimed'] == true,
+      claimedBy: json['claimed_by']?.toString(),
     );
   }
 
@@ -26,7 +35,25 @@ class RegisteredStudent {
         'nis': nis,
         'name': name,
         'class_group': classGroup,
+        'is_claimed': isClaimed,
+        'claimed_by': claimedBy,
       };
+
+  RegisteredStudent copyWith({
+    String? nis,
+    String? name,
+    String? classGroup,
+    bool? isClaimed,
+    String? claimedBy,
+  }) {
+    return RegisteredStudent(
+      nis: nis ?? this.nis,
+      name: name ?? this.name,
+      classGroup: classGroup ?? this.classGroup,
+      isClaimed: isClaimed ?? this.isClaimed,
+      claimedBy: claimedBy ?? this.claimedBy,
+    );
+  }
 }
 
 /// Service to handle local lookup and offline demo verification of student NIS records
@@ -37,9 +64,30 @@ class StudentRegistryService {
   List<RegisteredStudent> _students = [];
   bool _isLoaded = false;
 
-  /// Ensure students dataset is loaded into memory
-  Future<void> init() async {
-    if (_isLoaded) return;
+  /// Ensure students dataset is loaded into memory (prioritizes Supabase live data)
+  Future<void> init({bool forceRefresh = false}) async {
+    if (_isLoaded && !forceRefresh) return;
+
+    // 1. Prioritaskan fetch live master data dari tabel Supabase public.student_registry
+    try {
+      final response = await SupabaseService.instance.client
+          .from('student_registry')
+          .select('nis, full_name, class_group, is_claimed, claimed_by')
+          .order('nis', ascending: true);
+
+      if (response is List && response.isNotEmpty) {
+        _students = response
+            .whereType<Map<String, dynamic>>()
+            .map(RegisteredStudent.fromJson)
+            .toList();
+        _isLoaded = true;
+        return;
+      }
+    } catch (e) {
+      debugPrint('StudentRegistryService: Supabase fetch error ($e), fallback ke aset JSON demo');
+    }
+
+    // 2. Fallback aman ke aset JSON offline jika Supabase belum terhubung
     try {
       final jsonString =
           await rootBundle.loadString('assets/data/students_demo_11_pplg_2.json');
@@ -55,6 +103,9 @@ class StudentRegistryService {
       _students = [];
     }
   }
+
+  /// Memaksa refresh dataset dari database Supabase
+  Future<void> refresh() => init(forceRefresh: true);
 
   /// Instant lookup by NIS
   RegisteredStudent? findByNis(String rawNis) {
@@ -99,12 +150,25 @@ class StudentRegistryService {
   }
 
   /// Search matching students by query (NIS or Name)
-  List<RegisteredStudent> searchStudents(String query) {
+  List<RegisteredStudent> searchStudents(String query, {bool onlyUnclaimed = false}) {
     final clean = query.trim().toLowerCase();
     if (clean.isEmpty) return [];
     return _students.where((s) {
+      if (onlyUnclaimed && s.isClaimed) return false;
       return s.nis.contains(clean) || s.name.toLowerCase().contains(clean);
     }).toList();
+  }
+
+  /// Mark student as claimed in local cache
+  void markNisClaimed(String nis, {required String userId}) {
+    final clean = nis.trim();
+    final idx = _students.indexWhere((s) => s.nis == clean);
+    if (idx >= 0) {
+      _students[idx] = _students[idx].copyWith(
+        isClaimed: true,
+        claimedBy: userId,
+      );
+    }
   }
 
   /// Find class group by NIS. Returns null if NIS is not found or empty.

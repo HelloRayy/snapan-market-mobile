@@ -234,6 +234,13 @@ class AuthController {
       final cleanDisplayName = displayName?.trim();
       final hasDisplayName = cleanDisplayName != null && cleanDisplayName.isNotEmpty;
 
+      if (cleanNis != null && cleanNis.isNotEmpty) {
+        final alreadyClaimed = await SupabaseService.instance.isNisClaimed(cleanNis);
+        if (alreadyClaimed) {
+          return 'NIS ini sudah terdaftar oleh akun lain. Silakan masuk ke akun Anda.';
+        }
+      }
+
       final email = '$cleanUsername@snapan.id';
 
       final response = await SupabaseService.instance.client.auth.signUp(
@@ -281,6 +288,7 @@ class AuthController {
                   'claimed_at': DateTime.now().toUtc().toIso8601String(),
                 })
                 .eq('nis', cleanNis);
+            StudentRegistryService.instance.markNisClaimed(cleanNis, userId: response.user!.id);
           } catch (_) {
             // Non-critical fallback jika tabel migration belum dieksekusi di Supabase
           }

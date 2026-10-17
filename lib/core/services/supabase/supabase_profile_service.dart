@@ -285,12 +285,26 @@ class SupabaseProfileService {
     try {
       final clean = nis.trim();
       if (clean.isEmpty) return false;
+
+      // 1. Cek di tabel profiles
       final res = await _client
           .from('profiles')
           .select('id')
           .eq('nis', clean)
           .maybeSingle();
-      return res != null;
+      if (res != null) return true;
+
+      // 2. Cek di tabel master student_registry
+      final regRes = await _client
+          .from('student_registry')
+          .select('is_claimed')
+          .eq('nis', clean)
+          .maybeSingle();
+      if (regRes != null && regRes['is_claimed'] == true) {
+        return true;
+      }
+
+      return false;
     } catch (e) {
       debugPrint('Error isNisClaimed: $e');
       return false;

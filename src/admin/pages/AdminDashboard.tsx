@@ -5,6 +5,7 @@ import { AdminSidebar, type AdminTab } from '../components/AdminSidebar';
 import { AdminHeader } from '../components/AdminHeader';
 import { OverviewTab } from './OverviewTab';
 import { UsersManagementTab } from './UsersManagementTab';
+import { StudentRegistryTab } from './StudentRegistryTab';
 import { ContentModerationTab } from './ContentModerationTab';
 import { ContentReportsTab } from './ContentReportsTab';
 import { BroadcastNotificationTab } from './BroadcastNotificationTab';
@@ -226,6 +227,10 @@ export function AdminDashboard({ onLogout, onNavigateLogin }: AdminDashboardProp
 
               <div className={activeTab === 'users' ? 'block' : 'hidden'}>
                 <UsersManagementTab isActive={activeTab === 'users'} />
+              </div>
+
+              <div className={activeTab === 'students' ? 'block' : 'hidden'}>
+                <StudentRegistryTab isActive={activeTab === 'students'} />
               </div>
 
               <div className={activeTab === 'moderation' ? 'block' : 'hidden'}>

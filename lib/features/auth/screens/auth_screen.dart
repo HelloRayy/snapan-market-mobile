@@ -86,6 +86,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkForAppUpdate();
+      unawaited(StudentRegistryService.instance.refresh());
     });
   }
 
@@ -258,8 +259,15 @@ class _AuthScreenState extends State<AuthScreen> {
         setState(() => _nisError = 'NIS belum terdaftar sebagai siswa SMKN 8');
         return;
       }
+      if (student.isClaimed) {
+        setState(() => _nisError = 'NIS ini sudah terdaftar. Silakan login ke akun Anda');
+        return;
+      }
       _verifiedStudent = student;
       _fullNameController.text = student.name;
+    } else if (_verifiedStudent!.isClaimed) {
+      setState(() => _nisError = 'NIS ini sudah terdaftar. Silakan login ke akun Anda');
+      return;
     }
 
     final fullName = _verifiedStudent!.name;

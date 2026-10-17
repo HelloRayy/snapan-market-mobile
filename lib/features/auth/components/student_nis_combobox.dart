@@ -109,67 +109,115 @@ class _StudentNisComboboxState extends State<StudentNisCombobox> {
                     final student = _suggestions[index];
                     return InkWell(
                       onTap: () {
+                        if (student.isClaimed) {
+                          HapticFeedback.mediumImpact();
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('NIS ${student.nis} sudah memiliki akun aktif. Silakan masuk.'),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                          return;
+                        }
                         HapticFeedback.selectionClick();
                         widget.controller.text = student.nis;
                         widget.onStudentSelected(student);
                         _removeOverlay();
                         _focusNode.unfocus();
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 3.5),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF1F5F9),
-                                borderRadius: BorderRadius.circular(6.0),
-                              ),
-                              child: Text(
-                                student.nis,
-                                style: const TextStyle(
-                                  fontFamily: 'SFPro',
-                                  fontSize: 12.0,
-                                  fontWeight: FontWeight.w700,
-                                  color: Color(0xFF334155),
+                      child: Opacity(
+                        opacity: student.isClaimed ? 0.55 : 1.0,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 3.5),
+                                decoration: BoxDecoration(
+                                  color: student.isClaimed
+                                      ? const Color(0xFFE2E8F0)
+                                      : const Color(0xFFF1F5F9),
+                                  borderRadius: BorderRadius.circular(6.0),
+                                ),
+                                child: Text(
+                                  student.nis,
+                                  style: TextStyle(
+                                    fontFamily: 'SFPro',
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.w700,
+                                    color: student.isClaimed
+                                        ? const Color(0xFF64748B)
+                                        : const Color(0xFF334155),
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(width: 10.0),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    student.name,
-                                    style: const TextStyle(
-                                      fontFamily: 'SFPro',
-                                      fontSize: 13.0,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF0F172A),
+                              const SizedBox(width: 10.0),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      student.name,
+                                      style: TextStyle(
+                                        fontFamily: 'SFPro',
+                                        fontSize: 13.0,
+                                        fontWeight: FontWeight.w600,
+                                        color: student.isClaimed
+                                            ? const Color(0xFF64748B)
+                                            : const Color(0xFF0F172A),
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Text(
-                                    student.classGroup,
-                                    style: const TextStyle(
-                                      fontFamily: 'SFPro',
-                                      fontSize: 11.5,
-                                      fontWeight: FontWeight.w400,
-                                      color: Color(0xFF64748B),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          student.classGroup,
+                                          style: const TextStyle(
+                                            fontFamily: 'SFPro',
+                                            fontSize: 11.5,
+                                            fontWeight: FontWeight.w400,
+                                            color: Color(0xFF64748B),
+                                          ),
+                                        ),
+                                        if (student.isClaimed) ...[
+                                          const SizedBox(width: 6.0),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 5.0,
+                                              vertical: 1.5,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFFFEF3C7),
+                                              borderRadius: BorderRadius.circular(4.0),
+                                            ),
+                                            child: const Text(
+                                              'Sudah Terdaftar',
+                                              style: TextStyle(
+                                                fontFamily: 'SFPro',
+                                                fontSize: 10.0,
+                                                fontWeight: FontWeight.w600,
+                                                color: Color(0xFFD97706),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ],
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            const Icon(
-                              LucideIcons.arrowUpRight,
-                              size: 15.0,
-                              color: Color(0xFF94A3B8),
-                            ),
-                          ],
+                              Icon(
+                                student.isClaimed ? LucideIcons.lock : LucideIcons.arrowUpRight,
+                                size: 15.0,
+                                color: student.isClaimed
+                                    ? const Color(0xFFD97706)
+                                    : const Color(0xFF94A3B8),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );

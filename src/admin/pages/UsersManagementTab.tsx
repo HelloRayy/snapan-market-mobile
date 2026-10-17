@@ -7,6 +7,11 @@ import { UserAvatar } from '../components/UserAvatar';
 import { AdminModalPortal } from '../components/AdminModalPortal';
 import { AdminTooltip } from '../components/AdminTooltip';
 
+// Daftar pilihan standar SMKN 8 Semarang
+const SMKN8_GRADES = ['X', 'XI', 'XII'] as const;
+const SMKN8_MAJORS = ['PPLG', 'TJKT', 'DKV', 'PS', 'LK'] as const;
+const SMKN8_CLASS_NUMS = ['1', '2', '3'] as const;
+
 interface UsersManagementTabProps {
   isActive?: boolean;
 }
@@ -44,6 +49,22 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
 
   // Modal Hapus Akun Permanen (Anti-Miss Click)
   const [pendingDeleteTarget, setPendingDeleteTarget] = useState<ProfileRow | null>(null);
+
+  // Modal Tambah Siswa Baru (Pre-Register NIS ke Buku Induk)
+  const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
+  const [newStudentNis, setNewStudentNis] = useState('');
+  const [newStudentName, setNewStudentName] = useState('');
+  const [newStudentGrade, setNewStudentGrade] = useState<'X' | 'XI' | 'XII'>('XI');
+  const [newStudentMajor, setNewStudentMajor] = useState<string>('PPLG');
+  const [newStudentClassNum, setNewStudentClassNum] = useState<string>('2');
+  const [isCustomClass, setIsCustomClass] = useState(false);
+  const [customClassText, setCustomClassText] = useState('');
+  const [isSubmittingStudent, setIsSubmittingStudent] = useState(false);
+
+  // Modal Impor Massal
+  const [isBulkImportOpen, setIsBulkImportOpen] = useState(false);
+  const [bulkText, setBulkText] = useState('');
+  const [isSubmittingBulk, setIsSubmittingBulk] = useState(false);
 
   const fetchUsers = useCallback(async () => {
     setIsLoading(true);
@@ -251,7 +272,7 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
             Kelola data siswa SMKN 8 Semarang, status verifikasi NIS, dan otorisasi hak akses.
           </p>
         </div>
-        <div className="page-header__actions">
+        <div className="page-header__actions d-flex align-items-center gap-2">
           <button
             type="button"
             className="m-btn m-btn--ghost"
@@ -261,6 +282,31 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
           >
             <i className={`fa-solid fa-arrows-rotate ${isLoading ? 'fa-spin' : ''}`}></i>
             Segarkan
+          </button>
+          <button
+            type="button"
+            className="m-btn m-btn--ghost"
+            onClick={() => setIsBulkImportOpen(true)}
+          >
+            <i className="fa-solid fa-file-import"></i>
+            Impor Massal
+          </button>
+          <button
+            type="button"
+            className="m-btn m-btn--primary"
+            onClick={() => {
+              setNewStudentNis('');
+              setNewStudentName('');
+              setNewStudentGrade('XI');
+              setNewStudentMajor('PPLG');
+              setNewStudentClassNum('2');
+              setIsCustomClass(false);
+              setCustomClassText('');
+              setIsAddStudentOpen(true);
+            }}
+          >
+            <i className="fa-solid fa-user-plus"></i>
+            Tambah Siswa (NIS)
           </button>
         </div>
       </div>
@@ -1392,6 +1438,448 @@ export function UsersManagementTab({ isActive = true }: UsersManagementTabProps)
             </div>
           </div>
         )}
+      </AdminModalPortal>
+
+      {/* MODAL TAMBAH SISWA BARU (NIS) */}
+      <AdminModalPortal
+        isOpen={isAddStudentOpen}
+        onClose={() => {
+          if (!isSubmittingStudent) setIsAddStudentOpen(false);
+        }}
+      >
+        <div
+          style={{
+            background: '#ffffff',
+            borderRadius: '14px',
+            padding: '24px',
+            maxWidth: '480px',
+            width: '100%',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          }}
+        >
+          {/* Header Modal */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '20px' }}>
+            <div
+              style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '10px',
+                background: '#eaf0fc',
+                color: '#4272d7',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '19px',
+                flexShrink: 0,
+              }}
+            >
+              <i className="fa-solid fa-user-plus"></i>
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 700, color: '#1e293b' }}>
+                Tambah Siswa Baru
+              </h3>
+              <span style={{ fontSize: '12.5px', color: '#64748b' }}>
+                Daftarkan NIS agar siswa dapat membuat akun di aplikasi
+              </span>
+            </div>
+          </div>
+
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const finalClass = isCustomClass
+                ? customClassText.trim()
+                : `${newStudentGrade} ${newStudentMajor} ${newStudentClassNum}`.trim();
+
+              if (!newStudentNis.trim() || !newStudentName.trim() || !finalClass) {
+                setFeedbackMsg({ type: 'error', text: 'Semua kolom wajib diisi.' });
+                return;
+              }
+
+              setIsSubmittingStudent(true);
+              try {
+                await adminService.addStudent({
+                  nis: newStudentNis.trim(),
+                  full_name: newStudentName.trim(),
+                  class_group: finalClass,
+                });
+                setFeedbackMsg({
+                  type: 'success',
+                  text: `NIS ${newStudentNis} (${newStudentName} - ${finalClass}) berhasil didaftarkan. Siswa kini bisa mendaftar di aplikasi.`,
+                });
+                setIsAddStudentOpen(false);
+                setNewStudentNis('');
+                setNewStudentName('');
+                setTimeout(() => setFeedbackMsg(null), 5000);
+              } catch (err: any) {
+                setFeedbackMsg({ type: 'error', text: err?.message || 'Gagal menambahkan data siswa.' });
+              } finally {
+                setIsSubmittingStudent(false);
+              }
+            }}
+          >
+            {/* NIS Input */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>
+                Nomor Induk Siswa (NIS)
+              </label>
+              <input
+                type="text"
+                className="au-input"
+                placeholder="Contoh: 11816"
+                value={newStudentNis}
+                onChange={(e) => setNewStudentNis(e.target.value)}
+                disabled={isSubmittingStudent}
+                required
+                style={{
+                  width: '100%',
+                  height: '40px',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                  padding: '0 14px',
+                  fontSize: '13.5px',
+                  fontFamily: 'inherit',
+                  color: '#1e293b',
+                  background: '#ffffff',
+                }}
+              />
+            </div>
+
+            {/* Nama Lengkap Input */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>
+                Nama Lengkap Siswa
+              </label>
+              <input
+                type="text"
+                className="au-input"
+                placeholder="Contoh: Raditya Rayhan Yogiswara"
+                value={newStudentName}
+                onChange={(e) => setNewStudentName(e.target.value)}
+                disabled={isSubmittingStudent}
+                required
+                style={{
+                  width: '100%',
+                  height: '40px',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                  padding: '0 14px',
+                  fontSize: '13.5px',
+                  fontFamily: 'inherit',
+                  color: '#1e293b',
+                  background: '#ffffff',
+                }}
+              />
+            </div>
+
+            {/* Kelas & Jurusan Selection */}
+            <div style={{ marginBottom: '22px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <label style={{ fontSize: '13px', fontWeight: 600, color: '#334155', margin: 0 }}>
+                  Kelas & Jurusan
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setIsCustomClass(!isCustomClass)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    color: '#4272d7',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {isCustomClass ? 'Gunakan Pilihan Jurusan' : '+ Ketik Kustom'}
+                </button>
+              </div>
+
+              {isCustomClass ? (
+                <input
+                  type="text"
+                  className="au-input"
+                  placeholder="Ketik kelas kustom (misal: XII Animasi 1)"
+                  value={customClassText}
+                  onChange={(e) => setCustomClassText(e.target.value)}
+                  disabled={isSubmittingStudent}
+                  required
+                  style={{
+                    width: '100%',
+                    height: '40px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    padding: '0 14px',
+                    fontSize: '13.5px',
+                    fontFamily: 'inherit',
+                  }}
+                />
+              ) : (
+                <div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '85px 1fr 75px', gap: '8px' }}>
+                    {/* Tingkat */}
+                    <select
+                      value={newStudentGrade}
+                      onChange={(e) => setNewStudentGrade(e.target.value as any)}
+                      disabled={isSubmittingStudent}
+                      style={{
+                        height: '40px',
+                        borderRadius: '8px',
+                        border: '1px solid #cbd5e1',
+                        padding: '0 10px',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        color: '#1e293b',
+                        background: '#ffffff',
+                      }}
+                    >
+                      {SMKN8_GRADES.map((g) => (
+                        <option key={g} value={g}>
+                          {g}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Jurusan Combobox: PPLG, TJKT, DKV, PS, LK */}
+                    <select
+                      value={newStudentMajor}
+                      onChange={(e) => setNewStudentMajor(e.target.value)}
+                      disabled={isSubmittingStudent}
+                      style={{
+                        height: '40px',
+                        borderRadius: '8px',
+                        border: '1px solid #cbd5e1',
+                        padding: '0 12px',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        color: '#4272d7',
+                        background: '#f8fafc',
+                      }}
+                    >
+                      {SMKN8_MAJORS.map((m) => (
+                        <option key={m} value={m}>
+                          {m}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Nomor Rombel */}
+                    <select
+                      value={newStudentClassNum}
+                      onChange={(e) => setNewStudentClassNum(e.target.value)}
+                      disabled={isSubmittingStudent}
+                      style={{
+                        height: '40px',
+                        borderRadius: '8px',
+                        border: '1px solid #cbd5e1',
+                        padding: '0 10px',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        color: '#1e293b',
+                        background: '#ffffff',
+                      }}
+                    >
+                      {SMKN8_CLASS_NUMS.map((n) => (
+                        <option key={n} value={n}>
+                          {n}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#64748b' }}>
+                    <span>Format kelas:</span>
+                    <span
+                      style={{
+                        padding: '2px 8px',
+                        borderRadius: '5px',
+                        background: '#eff6ff',
+                        color: '#1d4ed8',
+                        fontWeight: 700,
+                        fontSize: '12px',
+                        border: '1px solid #dbeafe',
+                      }}
+                    >
+                      {newStudentGrade} {newStudentMajor} {newStudentClassNum}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+              <button
+                type="button"
+                className="m-btn m-btn--ghost"
+                onClick={() => setIsAddStudentOpen(false)}
+                disabled={isSubmittingStudent}
+                style={{ height: '38px', padding: '0 16px', borderRadius: '8px' }}
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                className="m-btn m-btn--primary"
+                disabled={isSubmittingStudent}
+                style={{ height: '38px', padding: '0 18px', borderRadius: '8px' }}
+              >
+                {isSubmittingStudent ? (
+                  <>
+                    <i className="fa-solid fa-spinner fa-spin"></i> Mendaftarkan...
+                  </>
+                ) : (
+                  'Daftarkan Siswa'
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      </AdminModalPortal>
+
+      {/* MODAL IMPOR MASSAL SISWA */}
+      <AdminModalPortal
+        isOpen={isBulkImportOpen}
+        onClose={() => {
+          if (!isSubmittingBulk) setIsBulkImportOpen(false);
+        }}
+      >
+        <div
+          style={{
+            background: '#ffffff',
+            borderRadius: '12px',
+            padding: '24px',
+            maxWidth: '560px',
+            width: '100%',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          }}
+        >
+          {/* Header Modal */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+            <div
+              style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '50%',
+                background: '#eaf0fc',
+                color: '#4272d7',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '18px',
+                flexShrink: 0,
+              }}
+            >
+              <i className="fa-solid fa-file-import"></i>
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#1e293b' }}>
+                Impor Massal NIS Siswa ke Buku Induk
+              </h3>
+              <span style={{ fontSize: '12px', color: '#64748b' }}>
+                Masukkan data siswa sekelas sekaligus (format CSV / baris teks)
+              </span>
+            </div>
+          </div>
+
+          <p style={{ fontSize: '12.5px', color: '#64748b', marginBottom: '10px' }}>
+            Tempel data siswa dengan format:{' '}
+            <code style={{ background: '#f1f5f9', padding: '2px 5px', borderRadius: '4px', color: '#1e293b' }}>
+              NIS, Nama Lengkap, Kelas
+            </code>
+          </p>
+
+          <div style={{ marginBottom: '16px' }}>
+            <textarea
+              rows={7}
+              placeholder={`11816, AIDA DWI RIANA PUTRI, XI PPLG 2\n11817, ALAIS LUTFI NAFISAH, XI PPLG 2\n11818, ALFIAN DZAKY RAMADHAN, XI PPLG 2`}
+              value={bulkText}
+              onChange={(e) => setBulkText(e.target.value)}
+              disabled={isSubmittingBulk}
+              style={{
+                width: '100%',
+                borderRadius: '6px',
+                border: '1px solid #e2e8f0',
+                padding: '10px 12px',
+                fontSize: '12.5px',
+                fontFamily: 'SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+                resize: 'vertical',
+              }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+            <button
+              type="button"
+              className="m-btn m-btn--ghost"
+              onClick={() => setIsBulkImportOpen(false)}
+              disabled={isSubmittingBulk}
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              className="m-btn m-btn--primary"
+              disabled={isSubmittingBulk || !bulkText.trim()}
+              onClick={async () => {
+                if (!bulkText.trim()) return;
+                const lines = bulkText.split('\n');
+                const rows: Array<{ nis: string; full_name: string; class_group: string }> = [];
+
+                for (const rawLine of lines) {
+                  const line = rawLine.trim();
+                  if (!line || line.startsWith('#') || line.toLowerCase().startsWith('nis')) continue;
+                  let parts: string[] = [];
+                  if (line.includes('\t')) parts = line.split('\t');
+                  else if (line.includes(',')) parts = line.split(',');
+                  else if (line.includes(';')) parts = line.split(';');
+
+                  if (parts.length >= 3) {
+                    const nis = parts[0].trim();
+                    const full_name = parts[1].trim();
+                    const class_group = parts[2].trim();
+                    if (nis && full_name && class_group) {
+                      rows.push({ nis, full_name, class_group });
+                    }
+                  }
+                }
+
+                if (rows.length === 0) {
+                  setFeedbackMsg({
+                    type: 'error',
+                    text: 'Tidak ada baris data valid yang terdeteksi. Pastikan format: NIS, Nama Lengkap, Kelas',
+                  });
+                  return;
+                }
+
+                setIsSubmittingBulk(true);
+                try {
+                  const res = await adminService.batchAddStudents(rows);
+                  setFeedbackMsg({
+                    type: 'success',
+                    text: `Berhasil mengimpor ${res.inserted} siswa ke buku induk.`,
+                  });
+                  setIsBulkImportOpen(false);
+                  setBulkText('');
+                  setTimeout(() => setFeedbackMsg(null), 5000);
+                } catch (err: any) {
+                  setFeedbackMsg({ type: 'error', text: err?.message || 'Gagal mengimpor siswa.' });
+                } finally {
+                  setIsSubmittingBulk(false);
+                }
+              }}
+            >
+              {isSubmittingBulk ? (
+                <>
+                  <i className="fa-solid fa-spinner fa-spin"></i> Mengimpor...
+                </>
+              ) : (
+                'Mulai Impor Siswa'
+              )}
+            </button>
+          </div>
+        </div>
       </AdminModalPortal>
     </>
   );

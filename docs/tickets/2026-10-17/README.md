@@ -8,7 +8,7 @@ Direktori ini memuat tiket spesifikasi teknis dan panduan pengerjaan untuk perba
 
 | Sequence | Judul Tiket | Domain | Prioritas | Status | File Panduan |
 | :---: | :--- | :--- | :---: | :---: | :--- |
-| **SNAPS-87** | `fix(feed): deleted post reappears on refresh due to soft-delete filter leak` | `feed / post_deletion / supabase / rls` | CRITICAL | Ready | [`SNAPS-87.md`](./SNAPS-87.md) |
+| **SNAPS-87** | `fix(feed): deleted post reappears on refresh due to soft-delete filter leak` | `feed / post_deletion / supabase / rls` | CRITICAL | **DONE** | [`SNAPS-87.md`](./SNAPS-87.md) |
 
 ---
 

@@ -4,7 +4,7 @@
 > - **Sequence**: SNAPS-87
 > - **Priority**: CRITICAL
 > - **Domain**: `feed / post_deletion / supabase / rls`
-> - **Status**: Ticket (Awaiting User Approach Selection)
+> - **Status**: DONE (Implemented via Permanent Hard Delete & Multi-layer Filtering)
 
 ---
 
@@ -63,8 +63,8 @@
 
 ## 4. Definition of Done (DoD)
 
-- [ ] Menjalankan penghapusan postingan oleh author atau admin.
-- [ ] Setelah refresh layar feed (pull-to-refresh) atau restart aplikasi, postingan yang telah dihapus tidak pernah muncul kembali.
-- [ ] Di layar profil pengguna (tab post), postingan yang telah dihapus tidak tampil.
-- [ ] Hasil pencarian (`searchPosts`) tidak menampilkan postingan yang telah dihapus.
-- [ ] Kode bersih, modular, dan sesuai batas baris file.
+- [x] Menjalankan penghapusan postingan oleh author atau admin.
+- [x] Setelah refresh layar feed (pull-to-refresh) atau restart aplikasi, postingan yang telah dihapus tidak pernah muncul kembali.
+- [x] Di layar profil pengguna (tab post), postingan yang telah dihapus tidak tampil.
+- [x] Hasil pencarian (`searchPosts`) tidak menampilkan postingan yang telah dihapus.
+- [x] Kode bersih, modular, dan sesuai batas baris file.

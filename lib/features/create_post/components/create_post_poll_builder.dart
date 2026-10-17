@@ -184,7 +184,7 @@ class CreatePostPollBuilder extends StatelessWidget {
                       HapticFeedback.selectionClick();
                       onAllowChangeVoteChanged(val);
                     },
-                    activeColor: AppColors.primary,
+                    activeTrackColor: AppColors.primary,
                   ),
                 ],
               ),

@@ -181,7 +181,15 @@ class _CreatePostModalState extends State<CreatePostModal> {
       return;
     }
     final picked = await CreatePostImageHelper.pickImages(context, remaining: 5 - _images.length);
-    if (picked != null && mounted) setState(() => _images.addAll(picked));
+    if (picked != null && mounted) {
+      setState(() {
+        for (final path in picked) {
+          if (!_images.contains(path)) {
+            _images.add(path);
+          }
+        }
+      });
+    }
   }
 
   void _handleReorderImage(int oldIndex, int newIndex) {

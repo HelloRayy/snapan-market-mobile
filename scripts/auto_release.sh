@@ -61,7 +61,7 @@ if [ -z "$GH_TOKEN" ]; then
   GH_TOKEN="${GITHUB_TOKEN}"
 fi
 
-DOWNLOAD_URL="https://github.com/HelloRayy/snapan-market-mobile/releases/download/v${VERSION_NAME}/app-release.apk"
+DOWNLOAD_URL="https://github.com/HelloRayy/snaps/releases/download/v${VERSION_NAME}/app-release.apk"
 
 if [ -n "$GH_TOKEN" ]; then
   echo "=========================================================="
@@ -81,7 +81,7 @@ EOF
 
   # Cek apakah release sudah ada
   EXISTING_RELEASE_ID=$(curl -s -H "Authorization: token ${GH_TOKEN}" \
-    "https://api.github.com/repos/HelloRayy/snapan-market-mobile/releases/tags/v${VERSION_NAME}" \
+    "https://api.github.com/repos/HelloRayy/snaps/releases/tags/v${VERSION_NAME}" \
     | grep -m 1 '"id":' | awk '{print $2}' | tr -d ',')
 
   if [ -n "$EXISTING_RELEASE_ID" ] && [ "$EXISTING_RELEASE_ID" != "null" ]; then
@@ -91,7 +91,7 @@ EOF
     CREATE_RESP=$(curl -s -X POST -H "Authorization: token ${GH_TOKEN}" \
       -H "Content-Type: application/json" \
       -d "$RELEASE_PAYLOAD" \
-      "https://api.github.com/repos/HelloRayy/snapan-market-mobile/releases")
+      "https://api.github.com/repos/HelloRayy/snaps/releases")
     RELEASE_ID=$(echo "$CREATE_RESP" | grep -m 1 '"id":' | awk '{print $2}' | tr -d ',')
   fi
 
@@ -100,11 +100,11 @@ EOF
     
     # Hapus asset lama jika ada
     EXISTING_ASSET_ID=$(curl -s -H "Authorization: token ${GH_TOKEN}" \
-      "https://api.github.com/repos/HelloRayy/snapan-market-mobile/releases/${RELEASE_ID}/assets" \
+      "https://api.github.com/repos/HelloRayy/snaps/releases/${RELEASE_ID}/assets" \
       | grep -m 1 '"id":' | awk '{print $2}' | tr -d ',')
     if [ -n "$EXISTING_ASSET_ID" ] && [ "$EXISTING_ASSET_ID" != "null" ]; then
       curl -s -X DELETE -H "Authorization: token ${GH_TOKEN}" \
-        "https://api.github.com/repos/HelloRayy/snapan-market-mobile/releases/assets/${EXISTING_ASSET_ID}" > /dev/null || true
+        "https://api.github.com/repos/HelloRayy/snaps/releases/assets/${EXISTING_ASSET_ID}" > /dev/null || true
     fi
 
     # Upload APK binary
@@ -112,7 +112,7 @@ EOF
       -H "Authorization: token ${GH_TOKEN}" \
       -H "Content-Type: application/vnd.android.package-archive" \
       --data-binary @"$APK_PATH" \
-      "https://uploads.github.com/repos/HelloRayy/snapan-market-mobile/releases/${RELEASE_ID}/assets?name=app-release.apk")
+      "https://uploads.github.com/repos/HelloRayy/snaps/releases/${RELEASE_ID}/assets?name=app-release.apk")
     
     UPLOAD_STATE=$(echo "$UPLOAD_RESP" | grep -m 1 '"state":' | awk '{print $2}' | tr -d '",')
     echo "✅ Asset APK terunggah dengan status: ${UPLOAD_STATE:-uploaded}!"

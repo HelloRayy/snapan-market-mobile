@@ -41,13 +41,13 @@ echo "3. Mendorong tag ke GitHub..."
 git push origin main
 git push origin "v${VERSION_NAME}"
 
-DOWNLOAD_URL="https://github.com/HelloRayy/snapan-market-mobile/releases/download/v${VERSION_NAME}/app-release.apk"
+DOWNLOAD_URL="https://github.com/HelloRayy/snaps/releases/download/v${VERSION_NAME}/app-release.apk"
 
 echo ""
 echo "========================================================"
 echo "✅ GitHub Tag v${VERSION_NAME} terkirim!"
 echo "GitHub Actions akan otomatis membangun APK dan merilisnya di:"
-echo "https://github.com/HelloRayy/snapan-market-mobile/releases"
+echo "https://github.com/HelloRayy/snaps/releases"
 echo ""
 echo "📲 UNTUK MENERAPKAN KE PERANGKAT YANG SUDAH DOWNLOAD:"
 echo "Jalankan SQL berikut di Supabase Dashboard -> SQL Editor:"

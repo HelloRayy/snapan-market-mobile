@@ -104,7 +104,7 @@ export const CustomPwaInstallModal: React.FC<CustomPwaInstallModalProps> = ({
           </ButtonPrimary>
 
           <a
-            href="https://github.com/HelloRayy/snapan-market-mobile/releases/latest/download/app-release.apk"
+            href="https://github.com/HelloRayy/snaps/releases/latest/download/app-release.apk"
             target="_blank"
             rel="noopener noreferrer"
             download="Snaps-Market.apk"

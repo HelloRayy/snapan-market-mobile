@@ -96,9 +96,22 @@ graphify-out/
 # Supabase CLI temp files
 supabase/.temp/
 
-# VibeWise local state
-.vibe-wise/
+# AI Tools & Multi-Editor Configs
+.agent-context/
+.agents/
+.claude/
 .codewhale/
+.codex/
+.cursor/
+.gemini/
+.kiro/
+.omp/
+.vibe-wise/
+.vscode/
+.zed/
+.mcp.json
+opencode.jsonc
+gatekeep-secret/
 
 # Scratch & temporary logs
 nohup.out

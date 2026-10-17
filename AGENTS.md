@@ -121,7 +121,7 @@
          - Lampirkan file `build/app/outputs/flutter-apk/app-release.apk`.
          - URL download menjadi:
            ```text
-           https://github.com/HelloRayy/snapan-market-mobile/releases/download/v<new_version_name>/app-release.apk
+           https://github.com/HelloRayy/snaps/releases/download/v<new_version_name>/app-release.apk
            ```
 
       4. **Aktifkan Pembaruan di Supabase**:
@@ -138,7 +138,7 @@
          ) VALUES (
            <new_version_code>,
            '<new_version_name>',
-           'https://github.com/HelloRayy/snapan-market-mobile/releases/download/v<new_version_name>/app-release.apk',
+           'https://github.com/HelloRayy/snaps/releases/download/v<new_version_name>/app-release.apk',
            'Pembaruan Snaps v<new_version_name>',
            '<descriptive changelog of recent features & fixes>',
            false,

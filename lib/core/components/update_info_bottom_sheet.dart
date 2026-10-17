@@ -56,23 +56,6 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
   int _downloadProgress = 0;
   String? _errorMessage;
   bool _isInstalling = false;
-  Future<void> _openDownloadInBrowser() async {
-    HapticFeedback.lightImpact();
-    try {
-      const platform = MethodChannel('com.snapan.market/browser');
-      await platform.invokeMethod('openUrl', {'url': widget.update.downloadUrl});
-    } catch (_) {
-      Clipboard.setData(ClipboardData(text: widget.update.downloadUrl));
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Tautan unduhan disalin ke papan klip! Buka browser untuk mengunduh.'),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    }
-  }
 
   void _startOtaUpdate() {
     if (_isDownloading) return;
@@ -124,14 +107,16 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
             case OtaStatus.ALREADY_RUNNING_ERROR:
               setState(() {
                 _isDownloading = false;
-                _errorMessage = 'Proses unduhan sedang berjalan di bilah notifikasi HP Anda. Silakan tarik panel notifikasi ke bawah untuk melihat progresnya, atau gunakan tombol di bawah untuk unduh manual.';
+                _errorMessage =
+                    'Proses unduhan sedang berjalan di latar belakang. Silakan keluar dan buka kembali aplikasi.';
               });
               break;
 
             case OtaStatus.PERMISSION_NOT_GRANTED_ERROR:
               setState(() {
                 _isDownloading = false;
-                _errorMessage = 'Izin pemasangan aplikasi belum aktif. Buka Pengaturan HP > Aplikasi > Snaps > Aktifkan "Instal aplikasi tidak dikenal", lalu coba lagi.';
+                _errorMessage =
+                    'Izin pemasangan aplikasi belum aktif. Buka Pengaturan HP > Aplikasi > Snaps > Aktifkan "Instal aplikasi tidak dikenal", lalu buka kembali aplikasi.';
               });
               break;
 
@@ -140,7 +125,8 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
             case OtaStatus.CHECKSUM_ERROR:
               setState(() {
                 _isDownloading = false;
-                _errorMessage = 'Gagal mengunduh pembaruan. Periksa koneksi internet Anda dan coba lagi.';
+                _errorMessage =
+                    'Gagal mengunduh pembaruan. Silakan keluar dari aplikasi dan masuk kembali.';
               });
               break;
 
@@ -148,7 +134,8 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
               setState(() {
                 _isDownloading = false;
                 _isInstalling = false;
-                _errorMessage = 'Pemasangan pembaruan belum berhasil. Anda dapat mengunduh manual melalui tombol di bawah.';
+                _errorMessage =
+                    'Pemasangan pembaruan belum selesai. Silakan keluar dari aplikasi dan masuk kembali.';
               });
               break;
 
@@ -168,7 +155,8 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
           if (!mounted) return;
           setState(() {
             _isDownloading = false;
-            _errorMessage = 'Terjadi kesalahan sistem saat mengunduh ($err). Silakan gunakan tombol unduh manual di bawah.';
+            _errorMessage =
+                'Terjadi kendala saat mengunduh pembaruan. Silakan keluar dari aplikasi dan masuk kembali.';
           });
         },
       );
@@ -176,7 +164,8 @@ class _UpdateInfoBottomSheetState extends State<UpdateInfoBottomSheet> {
       if (!mounted) return;
       setState(() {
         _isDownloading = false;
-        _errorMessage = 'Gagal memulai unduhan: $e';
+        _errorMessage =
+            'Gagal memulai unduhan. Silakan keluar dari aplikasi dan masuk kembali.';
       });
     }
   }

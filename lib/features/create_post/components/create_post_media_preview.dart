@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapan_market/core/theme/app_colors.dart';
@@ -64,12 +65,14 @@ class CreatePostImagesPreview extends StatelessWidget {
   final List<String> images;
   final VoidCallback onAddImage;
   final ValueChanged<int> onRemoveImage;
+  final void Function(int oldIndex, int newIndex) onReorderImage;
 
   const CreatePostImagesPreview({
     super.key,
     required this.images,
     required this.onAddImage,
     required this.onRemoveImage,
+    required this.onReorderImage,
   });
 
   @override
@@ -77,6 +80,7 @@ class CreatePostImagesPreview extends StatelessWidget {
     final screenWidth = MediaQuery.sizeOf(context).width;
     const previewHeight = 220.0;
     final maxCardWidth = screenWidth * 0.82;
+    final canAddMore = images.length < 5;
 
     return SizedBox(
       height: previewHeight,
@@ -91,80 +95,105 @@ class CreatePostImagesPreview extends StatelessWidget {
           child: SizedBox(
             width: screenWidth,
             height: previewHeight,
-            child: ListView.separated(
+            child: ReorderableListView.builder(
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
               clipBehavior: Clip.none,
               padding: const EdgeInsets.only(left: 64.0, right: 16.0),
-              itemCount: images.length + 1,
-              separatorBuilder: (context, index) => const SizedBox(width: 10.0),
-              itemBuilder: (context, index) {
-                if (index == images.length) {
-                  return GestureDetector(
-                    onTap: onAddImage,
-                    child: Container(
-                      width: 115.0,
-                      height: previewHeight,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF8FAFC),
+              itemCount: images.length,
+              onReorder: onReorderImage,
+              buildDefaultDragHandles: true,
+              proxyDecorator: (child, index, animation) {
+                return AnimatedBuilder(
+                  animation: animation,
+                  builder: (context, _) {
+                    final animVal = Curves.easeInOut.transform(animation.value);
+                    final scale = lerpDouble(1.0, 1.03, animVal)!;
+                    final elevation = lerpDouble(0.0, 10.0, animVal)!;
+                    return Transform.scale(
+                      scale: scale,
+                      child: Material(
+                        color: Colors.transparent,
+                        elevation: elevation,
+                        shadowColor: Colors.black45,
                         borderRadius: BorderRadius.circular(16.0),
-                        border: Border.all(
-                          color: const Color(0xFFE2E8F0),
-                          width: 1.2,
-                        ),
+                        child: child,
                       ),
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            CupertinoIcons.plus,
-                            size: 26.0,
-                            color: Color(0xFF64748B),
+                    );
+                  },
+                );
+              },
+              footer: canAddMore
+                  ? GestureDetector(
+                      onTap: onAddImage,
+                      child: Container(
+                        width: 115.0,
+                        height: previewHeight,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(16.0),
+                          border: Border.all(
+                            color: const Color(0xFFE2E8F0),
+                            width: 1.2,
                           ),
-                          SizedBox(height: 6.0),
-                          Text(
-                            'Tambah Foto',
-                            style: TextStyle(
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.w600,
+                        ),
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              CupertinoIcons.plus,
+                              size: 26.0,
                               color: Color(0xFF64748B),
                             ),
-                          ),
-                        ],
+                            SizedBox(height: 6.0),
+                            Text(
+                              'Tambah Foto',
+                              style: TextStyle(
+                                fontSize: 12.0,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF64748B),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                }
-
+                    )
+                  : null,
+              itemBuilder: (context, index) {
                 final img = images[index];
 
-                return Stack(
-                  children: [
-                    AdaptiveCarouselCard(
-                      imageUrl: img,
-                      height: previewHeight,
-                      maxCardWidth: maxCardWidth,
-                    ),
-                    Positioned(
-                      top: 8.0,
-                      right: 8.0,
-                      child: GestureDetector(
-                        onTap: () => onRemoveImage(index),
-                        child: Container(
-                          padding: const EdgeInsets.all(5.0),
-                          decoration: const BoxDecoration(
-                            color: Color(0xB3000000),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            CupertinoIcons.xmark,
-                            size: 13.0,
-                            color: Colors.white,
+                return Container(
+                  key: ValueKey('preview_img_$img'),
+                  margin: const EdgeInsets.only(right: 10.0),
+                  child: Stack(
+                    children: [
+                      AdaptiveCarouselCard(
+                        imageUrl: img,
+                        height: previewHeight,
+                        maxCardWidth: maxCardWidth,
+                      ),
+                      Positioned(
+                        top: 8.0,
+                        right: 8.0,
+                        child: GestureDetector(
+                          onTap: () => onRemoveImage(index),
+                          behavior: HitTestBehavior.opaque,
+                          child: Container(
+                            padding: const EdgeInsets.all(5.0),
+                            decoration: const BoxDecoration(
+                              color: Color(0xB3000000),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              CupertinoIcons.xmark,
+                              size: 13.0,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 );
               },
             ),

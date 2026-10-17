@@ -184,6 +184,17 @@ class _CreatePostModalState extends State<CreatePostModal> {
     if (picked != null && mounted) setState(() => _images.addAll(picked));
   }
 
+  void _handleReorderImage(int oldIndex, int newIndex) {
+    HapticFeedback.selectionClick();
+    setState(() {
+      if (oldIndex < newIndex) {
+        newIndex -= 1;
+      }
+      final item = _images.removeAt(oldIndex);
+      _images.insert(newIndex, item);
+    });
+  }
+
   bool get _canSubmit {
     final hasPoll = _showPoll &&
         _postMode == PostMode.thread &&
@@ -327,6 +338,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                 ? (isProduct) => setState(() => _postMode = isProduct ? PostMode.product : PostMode.thread)
                                 : (_) {},
                             onRemoveImage: (idx) => setState(() => _images.removeAt(idx)),
+                            onReorderImage: _handleReorderImage,
                             onAddPollOption: () => setState(() => _pollOptionControllers.add(TextEditingController())),
                             onRemovePollOption: (idx) => setState(() {
                               if (_pollOptionControllers.length > 2) {

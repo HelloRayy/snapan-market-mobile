@@ -31,6 +31,7 @@ class CreatePostMainInputBlock extends StatelessWidget {
   final ValueChanged<SchoolPlace?> onLocationSelected;
   final ValueChanged<bool> onToggleMode;
   final ValueChanged<int> onRemoveImage;
+  final void Function(int oldIndex, int newIndex) onReorderImage;
   final VoidCallback onAddPollOption;
   final ValueChanged<int> onRemovePollOption;
   final VoidCallback onDismissPoll;
@@ -65,6 +66,7 @@ class CreatePostMainInputBlock extends StatelessWidget {
     required this.onLocationSelected,
     required this.onToggleMode,
     required this.onRemoveImage,
+    required this.onReorderImage,
     required this.onAddPollOption,
     required this.onRemovePollOption,
     required this.onDismissPoll,
@@ -161,6 +163,7 @@ class CreatePostMainInputBlock extends StatelessWidget {
                       images: images,
                       onAddImage: onPickImage,
                       onRemoveImage: onRemoveImage,
+                      onReorderImage: onReorderImage,
                     ),
                   ],
                   if (selectedGif != null) ...[

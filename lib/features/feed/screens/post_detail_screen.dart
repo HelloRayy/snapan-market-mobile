@@ -229,11 +229,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       setState(() => _controller.post = updated);
                       widget.onRepostToggle?.call(updated);
                     },
-                    onDeletePost: (_) => _controller.showSubmenu(
-                      context: context,
-                      onBookmarkToggle: widget.onBookmarkToggle,
-                      onDeletePost: widget.onDeletePost,
-                    ),
+                    onDeletePost: (item) {
+                      Navigator.of(context).pop({'deleted': true, 'postId': item.id});
+                      if (widget.onDeletePost != null) {
+                        widget.onDeletePost!(item);
+                      } else {
+                        SupabaseService.instance.deletePost(item.id);
+                      }
+                    },
                     onImageClick: (item, idx) => _handleImageClick(item.images, idx),
                     onVotePoll: (item, optionIds) => _controller.votePoll(optionIds),
                     onTopicClick: (tag) => Navigator.push(

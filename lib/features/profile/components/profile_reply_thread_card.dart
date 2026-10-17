@@ -61,10 +61,10 @@ class _ProfileReplyThreadCardState extends State<ProfileReplyThreadCard> {
     final reply = widget.thread.reply;
 
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: AppColors.adaptiveSurface(context),
         border: Border(
-          bottom: BorderSide(color: Color(0xFFF1F5F9), width: 0.5),
+          bottom: BorderSide(color: AppColors.adaptiveDivider(context), width: 0.5),
         ),
       ),
       child: Column(

@@ -98,6 +98,7 @@ supabase/.temp/
 
 # VibeWise local state
 .vibe-wise/
+.codewhale/
 
 # Scratch & temporary logs
 nohup.out

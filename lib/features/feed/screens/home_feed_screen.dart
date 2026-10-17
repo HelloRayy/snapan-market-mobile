@@ -202,7 +202,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen>
 
     final scaffold = Scaffold(
       key: _scaffoldKey,
-      backgroundColor: isDark ? AppColors.darkCanvas : Colors.white,
+      backgroundColor: AppColors.adaptiveCanvas(context),
       extendBody: true,
       drawerScrimColor: Colors.black.withValues(alpha: 0.35),
       drawerEdgeDragWidth: AppAnimations.drawerEdgeDragWidth,

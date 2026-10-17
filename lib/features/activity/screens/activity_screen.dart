@@ -187,7 +187,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                             if (item is ActivityHeaderItem) {
                               return Container(
                                 padding: const EdgeInsets.fromLTRB(16.0, 14.0, 16.0, 6.0),
-                                color: isDark ? AppColors.darkCanvas : const Color(0xFFFAFAFA),
+                                color: AppColors.adaptiveCanvas(context),
                                 child: Text(
                                   item.label.toUpperCase(),
                                   style: TextStyle(

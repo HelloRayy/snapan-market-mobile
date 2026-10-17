@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:snapan_market/core/theme/app_colors.dart';
 
 enum ProfileTab {
   threads,
@@ -37,6 +38,11 @@ class ProfileTabBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   Widget _buildBar(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color bgColor = AppColors.adaptiveSurface(context);
+    final Color borderColor = AppColors.adaptiveDivider(context);
+    final Color indicatorColor = isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A);
+
     double pageOffset = activeTab.index.toDouble();
     if (pageController != null &&
         pageController!.hasClients &&
@@ -51,10 +57,10 @@ class ProfileTabBar extends StatelessWidget implements PreferredSizeWidget {
 
     return Container(
       height: 47.0,
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: bgColor,
         border: Border(
-          bottom: BorderSide(color: Color(0xFFF1F5F9), width: 0.5),
+          bottom: BorderSide(color: borderColor, width: 0.5),
         ),
       ),
       child: Stack(
@@ -64,16 +70,19 @@ class ProfileTabBar extends StatelessWidget implements PreferredSizeWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildTabItem(
+                context: context,
                 title: 'Utas',
                 tab: ProfileTab.threads,
                 isSelected: currentActiveTab == ProfileTab.threads,
               ),
               _buildTabItem(
+                context: context,
                 title: 'Balasan',
                 tab: ProfileTab.replies,
                 isSelected: currentActiveTab == ProfileTab.replies,
               ),
               _buildTabItem(
+                context: context,
                 title: 'Media',
                 tab: ProfileTab.media,
                 isSelected: currentActiveTab == ProfileTab.media,
@@ -91,7 +100,7 @@ class ProfileTabBar extends StatelessWidget implements PreferredSizeWidget {
                 child: Container(
                   height: 2.0,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0F172A),
+                    color: indicatorColor,
                     borderRadius: BorderRadius.circular(1.0),
                   ),
                 ),
@@ -104,6 +113,7 @@ class ProfileTabBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   Widget _buildTabItem({
+    required BuildContext context,
     required String title,
     required ProfileTab tab,
     required bool isSelected,
@@ -129,8 +139,8 @@ class ProfileTabBar extends StatelessWidget implements PreferredSizeWidget {
               fontSize: 14.0,
               fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
               color: isSelected
-                  ? const Color(0xFF0F172A)
-                  : const Color(0xFF94A3B8),
+                  ? AppColors.adaptiveText(context)
+                  : AppColors.adaptiveMuted(context),
               letterSpacing: -0.1,
             ),
           ),

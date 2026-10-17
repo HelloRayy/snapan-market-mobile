@@ -19,8 +19,8 @@ class AppColors {
   static const Color gradientLavender = gradientMid;
   static const Color gradientSky = gradientBottom;
 
-  // Neutral Canvas & Ink (Aligned with Meta Threads Barcelona / WDS Paper White #FAFAFA)
-  static const Color canvas = Color(0xFFFAFAFA);
+  // Neutral Canvas & Ink (Unified Pure White #FFFFFF Canvas & Paper White Accent)
+  static const Color canvas = Colors.white;
   static const Color white = Colors.white;
   static const Color ink = Color(0xFF1A1A1A);
   static const Color slateInk = Color(0xFF334155);

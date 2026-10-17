@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:snapan_market/core/ui/oreo_avatar_helper.dart';
 
 /// Standard 36x36 Circular Avatar for comment authors & replies
@@ -20,12 +21,20 @@ class CommentAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveUser = (username != null && username!.trim().isNotEmpty)
+        ? username!.trim().replaceAll('@', '')
+        : name;
     return AppAvatar(
       avatarUrl: avatarUrl,
       size: size,
       name: name,
       username: username,
-      onTap: onUserClick != null ? () => onUserClick!(username ?? name) : null,
+      onTap: onUserClick != null
+          ? () {
+              HapticFeedback.lightImpact();
+              onUserClick!(effectiveUser);
+            }
+          : null,
     );
   }
 }

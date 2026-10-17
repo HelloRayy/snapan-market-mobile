@@ -184,6 +184,27 @@ class AppSearchController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> deletePost(MarketPost post) async {
+    final idx = liveMatchingPosts.indexWhere((p) => p.id == post.id);
+    if (idx != -1) {
+      liveMatchingPosts.removeAt(idx);
+      notifyListeners();
+    }
+
+    try {
+      final isAdmin = await SupabaseService.instance.isCurrentUserAdmin();
+      final isOwner = SupabaseService.instance.currentUser?.id == post.seller.id;
+      await SupabaseService.instance.deletePost(post.id, asAdmin: isAdmin && !isOwner);
+    } catch (e) {
+      debugPrint('Error deleting post in SearchController: $e');
+      if (idx != -1 && !liveMatchingPosts.any((p) => p.id == post.id)) {
+        liveMatchingPosts.insert(idx.clamp(0, liveMatchingPosts.length), post);
+        notifyListeners();
+      }
+      rethrow;
+    }
+  }
+
   void removePost(String postId) {
     liveMatchingPosts.removeWhere((p) => p.id == postId);
     notifyListeners();

@@ -5,23 +5,27 @@
 
 ---
 
-## 🚀 Sprint Aktif Hari Ini (2026-10-15)
+## 🚀 Sprint Aktif Hari Ini (2026-10-17)
 
-> Folder: [`docs/tickets/2026-10-15/`](./2026-10-15/README.md)  
-> Fokus: **Beta Release Operational Readiness (Bug Reporting, App About Info, Empty States Recovery, & Content Moderation)**.
+> Folder: [`docs/tickets/2026-10-17/`](./2026-10-17/README.md)  
+> Fokus: **Critical Feed & Deletion Integrity Bug Fixes**.
 
 | Sequence | Judul Tiket | Domain | Prioritas | Status Plane | File Panduan |
 | :---: | :--- | :--- | :---: | :---: | :--- |
-| **SNAPS-83** | `feat(feedback): in-app bug and feedback reporter modal with category and screenshot` | `feedback / bug_report / supabase` | HIGH | `Ticket` | [`SNAPS-83.md`](./2026-10-15/SNAPS-83.md) |
-| **SNAPS-84** | `feat(about): release status, app version info and environment sheet in settings/profile` | `settings / version / build_info` | MEDIUM | `Ticket` | [`SNAPS-84.md`](./2026-10-15/SNAPS-84.md) |
-| **SNAPS-85** | `feat(empty-state): polish contextual empty states and action recoveries across screens` | `ui / empty_state / search / feed` | MEDIUM | `Ticket` | [`SNAPS-85.md`](./2026-10-15/SNAPS-85.md) |
-| **SNAPS-86** | `feat(moderation): quick content reporting pipeline and auto-hide threshold for flagged posts` | `moderation / report / rls / safety` | HIGH | `Ticket` | [`SNAPS-86.md`](./2026-10-15/SNAPS-86.md) |
+| **SNAPS-87** | `fix(feed): deleted post reappears on refresh due to soft-delete filter leak` | `feed / post_deletion / supabase / rls` | CRITICAL | `Ticket` | [`SNAPS-87.md`](./2026-10-17/SNAPS-87.md) |
 
 ---
 
 ## 📦 Arsip Sprint Sebelumnya
 
-### 1. Sprint 2026-10-13 (Media Experience & Aspect Ratio)
+### 1. Sprint 2026-10-15 (Beta Release Operational Readiness)
+> Folder: [`docs/tickets/2026-10-15/`](./2026-10-15/README.md)
+* **SNAPS-83**: `feat(feedback): in-app bug and feedback reporter modal with category and screenshot`
+* **SNAPS-84**: `feat(about): release status, app version info and environment sheet in settings/profile`
+* **SNAPS-85**: `feat(empty-state): polish contextual empty states and action recoveries across screens`
+* **SNAPS-86**: `feat(moderation): quick content reporting pipeline and auto-hide threshold for flagged posts`
+
+### 2. Sprint 2026-10-13 (Media Experience & Aspect Ratio)
 > Folder: [`docs/tickets/2026-10-13/`](./2026-10-13/README.md)
 * **SNAPS-79**: `fix(image-ratio): issue image di feed page ketika di upload tidak sesuai dengna ratio yang ada` (Done)
 * **SNAPS-80**: `fix(image): when image open, ini memiliki ui yang sama semua` (Done)

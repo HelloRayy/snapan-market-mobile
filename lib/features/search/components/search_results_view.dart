@@ -19,6 +19,7 @@ class SearchResultsView extends StatelessWidget {
   final ValueChanged<MarketPost>? onLikeToggle;
   final ValueChanged<MarketPost>? onBookmarkToggle;
   final ValueChanged<MarketPost>? onRepostToggle;
+  final ValueChanged<MarketPost>? onDeletePost;
   final void Function(MarketPost item, List<String> optionIds)? onVotePoll;
 
   const SearchResultsView({
@@ -35,6 +36,7 @@ class SearchResultsView extends StatelessWidget {
     this.onLikeToggle,
     this.onBookmarkToggle,
     this.onRepostToggle,
+    this.onDeletePost,
     this.onVotePoll,
   });
 
@@ -139,6 +141,7 @@ class SearchResultsView extends StatelessWidget {
           onUserClick: (_) => onNavigateToProfile(post.sellerUsername),
           onLikeToggle: onLikeToggle != null ? (_) => onLikeToggle!(post) : null,
           onRepostToggle: onRepostToggle != null ? (_) => onRepostToggle!(post) : null,
+          onDeletePost: onDeletePost,
           onVotePoll: onVotePoll,
         );
       },

@@ -99,6 +99,16 @@ class _PostCommentItemState extends State<PostCommentItem> {
     );
   }
 
+  String _resolveTargetHandle(CommentUserModel user) {
+    if (user.username != null && user.username!.trim().isNotEmpty) {
+      return user.username!.trim().replaceAll('@', '');
+    }
+    if (user.id.isNotEmpty) {
+      return user.id;
+    }
+    return user.name;
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasReplies = widget.comment.replies.isNotEmpty;
@@ -144,7 +154,7 @@ class _PostCommentItemState extends State<PostCommentItem> {
               CommentAvatar(
                 avatarUrl: widget.comment.user.avatar,
                 name: widget.comment.user.name,
-                username: widget.comment.user.username,
+                username: _resolveTargetHandle(widget.comment.user),
                 size: 36.0,
                 onUserClick: widget.onUserClick,
               ),
@@ -294,6 +304,7 @@ class _PostCommentItemState extends State<PostCommentItem> {
   }
 
   Widget _buildHeaderRow(BuildContext context) {
+    final targetUserHandle = _resolveTargetHandle(widget.comment.user);
     final hasDisplayName = widget.comment.user.displayName != null && widget.comment.user.displayName!.trim().isNotEmpty;
     final rawUsername = (widget.comment.user.username != null && widget.comment.user.username!.isNotEmpty)
         ? widget.comment.user.username!
@@ -307,14 +318,18 @@ class _PostCommentItemState extends State<PostCommentItem> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: GestureDetector(
-                  onTap: () {
-                    widget.onUserClick?.call(cleanUsername);
-                  },
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              if (targetUserHandle.isNotEmpty) {
+                HapticFeedback.lightImpact();
+                widget.onUserClick?.call(targetUserHandle);
+              }
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
                   child: Text(
                     displayAuthor,
                     maxLines: 1,
@@ -327,20 +342,20 @@ class _PostCommentItemState extends State<PostCommentItem> {
                     ),
                   ),
                 ),
-              ),
-              if (widget.comment.user.isVerified) ...[
-                const SizedBox(width: 4.0),
-                const Icon(
-                  Icons.verified_rounded,
-                  size: 13.5,
-                  color: AppColors.verifiedBlue,
-                ),
+                if (widget.comment.user.isVerified) ...[
+                  const SizedBox(width: 4.0),
+                  const Icon(
+                    Icons.verified_rounded,
+                    size: 13.5,
+                    color: AppColors.verifiedBlue,
+                  ),
+                ],
+                if (widget.comment.user.isAuthor) ...[
+                  const SizedBox(width: 5.0),
+                  const CommentAuthorBadge(),
+                ],
               ],
-              if (widget.comment.user.isAuthor) ...[
-                const SizedBox(width: 5.0),
-                const CommentAuthorBadge(),
-              ],
-            ],
+            ),
           ),
         ),
         const SizedBox(width: 8.0),

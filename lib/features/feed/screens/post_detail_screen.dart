@@ -16,6 +16,7 @@ import 'package:snapan_market/features/feed/components/detail/post_detail_commen
 import 'package:snapan_market/features/feed/components/detail/post_detail_comments_list.dart';
 import 'package:snapan_market/features/feed/controllers/post_detail_controller.dart';
 import 'package:snapan_market/features/feed/models/market_post_model.dart';
+import 'package:snapan_market/features/profile/screens/profile_screen.dart';
 import 'package:snapan_market/features/search/screens/search_screen.dart';
 
 /// Focused single post detail view with author thread continuation, comments, and buyer actions.
@@ -138,6 +139,21 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
   }
 
+  void _navigateToProfile(String username) {
+    final cleanUsername = username.trim().replaceAll('@', '');
+    if (cleanUsername.isEmpty) return;
+    HapticFeedback.lightImpact();
+    Navigator.push(
+      context,
+      AppSlidePageRoute(
+        builder: (_) => ProfileScreen(
+          username: cleanUsername,
+          onBack: () => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final post = _controller.post.copyWith(
@@ -200,6 +216,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   MarketPostCard(
                     item: post,
                     variant: 'detail',
+                    onUserClick: _navigateToProfile,
                     onLikeToggle: (updated) {
                       setState(() => _controller.post = updated);
                       if (widget.onLikeToggle != null) {
@@ -244,6 +261,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     onReplyClick: (u, [cId]) => _controller.setReply(u, cId),
                     onImageClick: _handleImageClick,
                     onDeleteComment: (cId) => _controller.deleteComment(context, cId),
+                    onUserClick: _navigateToProfile,
                   ),
                   const SizedBox(height: 100.0),
                 ],

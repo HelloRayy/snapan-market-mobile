@@ -128,10 +128,13 @@ class HomeFeedController extends ChangeNotifier {
         });
       }
 
-      posts = livePosts.map((p) => p.copyWith(
-        isLiked: likedIds.contains(p.id),
-        isSaved: savedIds.contains(p.id),
-      )).toList();
+      posts = livePosts
+          .where((p) => !p.isDeleted)
+          .map((p) => p.copyWith(
+            isLiked: likedIds.contains(p.id),
+            isSaved: savedIds.contains(p.id),
+          ))
+          .toList();
 
       hasMorePosts = livePosts.length >= _pageSize;
       isLoading = false;
@@ -176,10 +179,13 @@ class HomeFeedController extends ChangeNotifier {
           hasMorePosts = false;
         }
 
-        final enriched = nextPosts.map((p) => p.copyWith(
-          isLiked: likedIds.contains(p.id),
-          isSaved: savedIds.contains(p.id),
-        )).toList();
+        final enriched = nextPosts
+            .where((p) => !p.isDeleted)
+            .map((p) => p.copyWith(
+              isLiked: likedIds.contains(p.id),
+              isSaved: savedIds.contains(p.id),
+            ))
+            .toList();
 
         // Deduplicate against existing post IDs
         final existingIds = posts.map((p) => p.id).toSet();

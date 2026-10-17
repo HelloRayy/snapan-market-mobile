@@ -90,12 +90,16 @@ class _SearchScreenState extends State<SearchScreen> {
           post: post,
           onLikeToggle: _controller.toggleLike,
           onBookmarkToggle: _controller.toggleBookmark,
-          onDeletePost: (del) => _controller.removePost(del.id),
+          onDeletePost: _controller.deletePost,
         ),
       ),
     );
-    if (result is Map && result['updatedPost'] is MarketPostModel && mounted) {
-      _controller.updatePost(result['updatedPost'] as MarketPostModel);
+    if (result is Map) {
+      if (result['deleted'] == true && result['postId'] is String) {
+        _controller.removePost(result['postId'] as String);
+      } else if (result['updatedPost'] is MarketPostModel && mounted) {
+        _controller.updatePost(result['updatedPost'] as MarketPostModel);
+      }
     }
   }
 
@@ -158,6 +162,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               onToggleFollow: _controller.toggleFollow,
                               onLikeToggle: _controller.toggleLike,
                               onBookmarkToggle: _controller.toggleBookmark,
+                              onDeletePost: _controller.deletePost,
                               onVotePoll: _controller.votePoll,
                             ),
                 ),

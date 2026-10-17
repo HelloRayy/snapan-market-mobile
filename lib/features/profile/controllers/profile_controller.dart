@@ -242,6 +242,27 @@ class ProfileController extends ChangeNotifier {
     );
   }
 
+  Future<void> deletePost(MarketPostModel post) async {
+    final idx = allUserPosts.indexWhere((p) => p.id == post.id);
+    if (idx != -1) {
+      allUserPosts.removeAt(idx);
+      notifyListeners();
+    }
+
+    try {
+      final isAdmin = await SupabaseService.instance.isCurrentUserAdmin();
+      final isOwner = SupabaseService.instance.currentUser?.id == post.seller.id;
+      await SupabaseService.instance.deletePost(post.id, asAdmin: isAdmin && !isOwner);
+    } catch (e) {
+      debugPrint('Error deleting post in ProfileController: $e');
+      if (idx != -1 && !allUserPosts.any((p) => p.id == post.id)) {
+        allUserPosts.insert(idx.clamp(0, allUserPosts.length), post);
+        notifyListeners();
+      }
+      rethrow;
+    }
+  }
+
   void removePost(String postId) {
     allUserPosts.removeWhere((p) => p.id == postId);
     notifyListeners();

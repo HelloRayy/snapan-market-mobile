@@ -316,13 +316,15 @@ class PostDetailController extends ChangeNotifier {
         );
 
         if (confirmed == true && context.mounted) {
-          onDeletePost?.call(post);
           Navigator.of(context).pop({'deleted': true, 'postId': post.id});
-
-          try {
-            await SupabaseService.instance.deletePost(post.id, asAdmin: isAdmin && !isOwner);
-          } catch (e) {
-            debugPrint('Error deleting post: $e');
+          if (onDeletePost != null) {
+            onDeletePost?.call(post);
+          } else {
+            try {
+              await SupabaseService.instance.deletePost(post.id, asAdmin: isAdmin && !isOwner);
+            } catch (e) {
+              debugPrint('Error deleting post: $e');
+            }
           }
         }
       },

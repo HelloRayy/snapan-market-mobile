@@ -56,6 +56,16 @@ class _CommentReplyTileState extends State<CommentReplyTile> {
     widget.onLikeToggle(widget.reply.copyWith(isLiked: isLiked, likesCount: count));
   }
 
+  String _resolveTargetHandle(CommentUserModel user) {
+    if (user.username != null && user.username!.trim().isNotEmpty) {
+      return user.username!.trim().replaceAll('@', '');
+    }
+    if (user.id.isNotEmpty) {
+      return user.id;
+    }
+    return user.name;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -65,7 +75,7 @@ class _CommentReplyTileState extends State<CommentReplyTile> {
         CommentAvatar(
           avatarUrl: widget.reply.user.avatar,
           name: widget.reply.user.name,
-          username: widget.reply.user.username,
+          username: _resolveTargetHandle(widget.reply.user),
           size: 28.0,
           onUserClick: widget.onUserClick,
         ),
@@ -122,6 +132,7 @@ class _CommentReplyTileState extends State<CommentReplyTile> {
   }
 
   Widget _buildHeaderRow(BuildContext context) {
+    final targetUserHandle = _resolveTargetHandle(widget.reply.user);
     final hasDisplayName = widget.reply.user.displayName != null && widget.reply.user.displayName!.trim().isNotEmpty;
     final rawUsername = (widget.reply.user.username != null && widget.reply.user.username!.isNotEmpty)
         ? widget.reply.user.username!
@@ -135,14 +146,18 @@ class _CommentReplyTileState extends State<CommentReplyTile> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: GestureDetector(
-                  onTap: () {
-                    widget.onUserClick?.call(cleanUsername);
-                  },
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              if (targetUserHandle.isNotEmpty) {
+                HapticFeedback.lightImpact();
+                widget.onUserClick?.call(targetUserHandle);
+              }
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
                   child: Text(
                     displayAuthor,
                     maxLines: 1,
@@ -155,20 +170,20 @@ class _CommentReplyTileState extends State<CommentReplyTile> {
                     ),
                   ),
                 ),
-              ),
-              if (widget.reply.user.isVerified) ...[
-                const SizedBox(width: 4.0),
-                const Icon(
-                  Icons.verified_rounded,
-                  size: 13.0,
-                  color: AppColors.verifiedBlue,
-                ),
+                if (widget.reply.user.isVerified) ...[
+                  const SizedBox(width: 4.0),
+                  const Icon(
+                    Icons.verified_rounded,
+                    size: 13.0,
+                    color: AppColors.verifiedBlue,
+                  ),
+                ],
+                if (widget.reply.user.isAuthor) ...[
+                  const SizedBox(width: 5.0),
+                  const CommentAuthorBadge(),
+                ],
               ],
-              if (widget.reply.user.isAuthor) ...[
-                const SizedBox(width: 5.0),
-                const CommentAuthorBadge(),
-              ],
-            ],
+            ),
           ),
         ),
         const SizedBox(width: 8.0),

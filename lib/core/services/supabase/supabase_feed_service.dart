@@ -56,6 +56,7 @@ class SupabaseFeedService {
       final rawList = (response as List<dynamic>)
           .whereType<Map<String, dynamic>>()
           .map((json) => MarketPostModel.fromJson(json))
+          .where((post) => !post.isDeleted)
           .toList();
 
       // Only perform poll hydration if the returned batch contains any polls
@@ -158,43 +159,24 @@ class SupabaseFeedService {
     }
   }
 
-  /// Delete a post created by current user, or any post if caller is admin.
-  /// Uses soft-delete (setting deleted_at = NOW()) for audit trail & data integrity,
-  /// with automatic fallback to hard delete if the database migration hasn't run yet.
+  /// Permanently delete a post created by current user, or any post if caller is admin.
   Future<void> deletePost(String postId, {bool asAdmin = false}) async {
     final user = _currentUser;
     if (user == null) return;
 
     try {
-      final nowUtc = DateTime.now().toUtc().toIso8601String();
       if (asAdmin) {
-        await _client
-            .from('market_posts')
-            .update({'deleted_at': nowUtc})
-            .eq('id', postId);
+        await _client.from('market_posts').delete().eq('id', postId);
       } else {
         await _client
             .from('market_posts')
-            .update({'deleted_at': nowUtc})
+            .delete()
             .match({'id': postId, 'seller_id': user.id});
       }
       removeCachedPost(postId);
     } catch (e) {
-      debugPrint('[SupabaseFeedService] Soft delete failed, attempting hard delete fallback: $e');
-      try {
-        if (asAdmin) {
-          await _client.from('market_posts').delete().eq('id', postId);
-        } else {
-          await _client
-              .from('market_posts')
-              .delete()
-              .match({'id': postId, 'seller_id': user.id});
-        }
-        removeCachedPost(postId);
-      } catch (hardErr) {
-        debugPrint('Error deletePost hard fallback: $hardErr');
-        rethrow;
-      }
+      debugPrint('[SupabaseFeedService] Error deletePost: $e');
+      rethrow;
     }
   }
 
@@ -210,6 +192,7 @@ class SupabaseFeedService {
       final rawList = (response as List<dynamic>)
           .whereType<Map<String, dynamic>>()
           .map((json) => MarketPostModel.fromJson(json))
+          .where((post) => !post.isDeleted)
           .toList();
 
       return await PollSyncService.instance.hydrateAndSyncPosts(
@@ -322,6 +305,7 @@ class SupabaseFeedService {
 
       if (response == null) return null;
       var post = MarketPostModel.fromJson(response);
+      if (post.isDeleted) return null;
       final likedIds = await fetchLikedPostIds();
       final savedIds = await fetchBookmarkedPostIds();
       post = post.copyWith(
@@ -487,6 +471,7 @@ class SupabaseFeedService {
       final rawList = (response as List<dynamic>)
           .whereType<Map<String, dynamic>>()
           .map((json) => MarketPostModel.fromJson(json))
+          .where((post) => !post.isDeleted)
           .toList();
 
       return await PollSyncService.instance.hydrateAndSyncPosts(
